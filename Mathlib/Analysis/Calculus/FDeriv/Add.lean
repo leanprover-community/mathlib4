@@ -111,7 +111,7 @@ theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
   · have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
-      contrapose! h
+      contrapose h
       exact (differentiableWithinAt_smul_iff c).mp h
     simp [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this]
