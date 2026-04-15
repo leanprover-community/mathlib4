@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.LocallyConvex.Polar
 public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Dual -- this imports Hahn-Banach extension, gross
 public import Mathlib.Analysis.LocallyConvex.Separation
 
 /-!
@@ -29,37 +30,6 @@ bipolar, locally convex space
 -/
 
 public section
-
-namespace WeakBilin
-
-variable {𝕜 E F : Type*} [CommSemiring 𝕜] [AddCommMonoid E]
-    [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
-/-- The canonical linear equivalence between `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` and `E`. -/
-noncomputable def linearEquiv : WeakBilin B ≃ₗ[𝕜] E :=
-  LinearEquiv.refl ..
-
-/-- The dual pairing between `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)` and `F`. In order to avoid abuse
-of the definitional equality between `E` and `WeakBilin B`, it is necessary to use this pairing
-instead of `B` itself when considering statements involving the weak topology induced by the
-pairing, such as the bipolar theorem. -/
-noncomputable def pairing : WeakBilin B →ₗ[𝕜] F →ₗ[𝕜] 𝕜 :=
-  (linearEquiv B).symm.arrowCongr (.refl _ _) B
-
-end WeakBilin
-
-namespace LinearMap
-
-open WeakBilin
-
-lemma isClosed_polar {𝕜 E F : Type*} [NormedCommRing 𝕜] [AddCommMonoid E]
-    [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (s : Set E) :
-    IsClosed ((pairing B.flip).flip.polar s) := by
-  rw [polar_eq_biInter_preimage]
-  exact isClosed_biInter
-    fun _ _ ↦ Metric.isClosed_closedBall.preimage (WeakBilin.eval_continuous B.flip _)
-
-end LinearMap
 
 open scoped ComplexOrder
 
