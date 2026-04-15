@@ -71,8 +71,8 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
-      (Std.Irrefl fun x y : V => RelMap adj ![x, y]) ∧
-        Symmetric fun x y : V => RelMap adj ![x, y] := by
+      (Std.Irrefl fun x y : V ↦ RelMap adj ![x, y]) ∧
+        Std.Symm fun x y : V ↦ RelMap adj ![x, y] := by
   simp [Theory.simpleGraph]
 
 instance simpleGraph_model (G : SimpleGraph V) :
@@ -87,13 +87,6 @@ variable (V) in
 def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
     SimpleGraph V where
   Adj x y := RelMap adj ![x, y]
-  symm :=
-    Relations.realize_symmetric.1
-      (Theory.realize_sentence_of_mem Theory.simpleGraph
-        (Set.mem_insert_of_mem _ (Set.mem_singleton _)))
-  loopless :=
-    Relations.realize_irreflexive.1
-      (Theory.realize_sentence_of_mem Theory.simpleGraph (Set.mem_insert _ _))
 
 @[simp]
 theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :

@@ -103,6 +103,9 @@ instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   trans := @Eq.trans _
   refl := Eq.refl
 
+instance (α : Sort*) : @Std.Symm α Ne where
+  symm _ _ := Ne.symm
+
 /-- `Iff` is an equivalence relation. -/
 instance iff_isEquiv : IsEquiv Prop Iff where
   symm := @Iff.symm
@@ -206,6 +209,7 @@ section
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Symm (since := "2026-04-15")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
@@ -229,13 +233,21 @@ theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
 
 @[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
-theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
-  fun _ _ ↦ h.symm
+theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
+  symm _ _ := h.symm
+
+@[deprecated (since := "2026-04-15")] alias Equivalence.symmetric := Equivalence.stdSymm
 
 theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
   ⟨fun _ _ _ ↦ h.trans⟩
 
 @[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
+
+theorem Equivalence.isEquiv (h : Equivalence r) : IsEquiv α r :=
+  have := h.stdRefl
+  have := h.stdSymm
+  have := h.isTrans
+  {}
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 

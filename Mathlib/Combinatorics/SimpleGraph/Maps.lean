@@ -56,9 +56,7 @@ the adjacency relation.
 This is injective when the function is (see `SimpleGraph.map_injective`). -/
 protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Ne ⊓ Relation.Map G.Adj f f
-  symm a b := by
-    rintro ⟨v, w, h, _⟩
-    aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
+  symm.symm a b := by aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
 
 instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) :=
@@ -116,8 +114,7 @@ This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for
 This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
-  symm _ _ h := h.symm
-  loopless := ⟨fun _ ↦ G.loopless.irrefl _⟩
+  symm.symm _ _ h := h.symm
 
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
@@ -681,7 +678,7 @@ variable [Fintype V] {n : ℕ}
 `G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
 def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
   Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
-  symm x y := by simp_rw [adj_comm, imp_self]
+  symm.symm x y := by simp_rw [adj_comm, imp_self]
 
 /-- The isomorphism between `G` and `G.overFin hc`. -/
 noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by

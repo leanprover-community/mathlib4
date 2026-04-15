@@ -456,13 +456,8 @@ theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X,
     left; fconstructor
     exact StructuredArrow.homMk f
   | refl => fconstructor
-  | symm x y _ ih =>
-    apply zigzag_symmetric
-    exact ih
-  | trans x y z _ _ ih₁ ih₂ =>
-    apply Relation.ReflTransGen.trans
-    · exact ih₁
-    · exact ih₂
+  | symm x y _ ih => exact ih.symm
+  | trans x y z _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 end Final
 

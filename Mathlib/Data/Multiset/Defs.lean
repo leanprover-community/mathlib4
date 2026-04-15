@@ -340,9 +340,9 @@ theorem pairwise_coe_iff {r : α → α → Prop} {l : List α} :
     Multiset.Pairwise r l ↔ ∃ l' : List α, l ~ l' ∧ l'.Pairwise r :=
   exists_congr <| by simp
 
-theorem pairwise_coe_iff_pairwise {r : α → α → Prop} (hr : Symmetric r) {l : List α} :
+theorem pairwise_coe_iff_pairwise {r : α → α → Prop} [Std.Symm r] {l : List α} :
     Multiset.Pairwise r l ↔ l.Pairwise r :=
-  Iff.intro (fun ⟨_l', Eq, h⟩ => ((Quotient.exact Eq).pairwise_iff @hr).2 h) fun h => ⟨l, rfl, h⟩
+  ⟨fun ⟨_l', Eq, h⟩ ↦ Quotient.exact Eq |>.pairwise_iff symm |>.mpr h, fun h ↦ ⟨l, rfl, h⟩⟩
 
 section Nodup
 

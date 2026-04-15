@@ -51,10 +51,10 @@ variable {f g h : Perm α}
 @[symm]
 theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint, or_comm, imp_self]
 
-theorem Disjoint.symmetric : Symmetric (@Disjoint α) := fun _ _ => Disjoint.symm
+instance Disjoint.stdSymm : Std.Symm (α := Perm α) Disjoint where
+  symm _ _ := Disjoint.symm
 
-instance : Std.Symm (α := Perm α) Disjoint :=
-  ⟨Disjoint.symmetric⟩
+@[deprecated (since := "2026-04-15")] alias Disjoint.symmetric := Disjoint.stdSymm
 
 theorem disjoint_comm : Disjoint f g ↔ Disjoint g f :=
   ⟨Disjoint.symm, Disjoint.symm⟩

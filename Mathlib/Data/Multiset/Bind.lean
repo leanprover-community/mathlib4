@@ -256,10 +256,10 @@ open scoped Function in -- required for scoped `on` notation
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
-  have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
+  have _ : Std.Symm fun a b : List β ↦ List.Disjoint a b := { symm a b h := h.symm }
   exact Quot.induction_on s <| by
     unfold Function.onFun
-    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :

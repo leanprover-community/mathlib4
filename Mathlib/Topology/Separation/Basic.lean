@@ -260,16 +260,19 @@ if every neighborhood of `y` contains `x`, then every neighborhood of `x` contai
 @[mk_iff]
 class R0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- In an R₀ space, the `Specializes` relation is symmetric. -/
-  specializes_symmetric : Symmetric (Specializes : X → X → Prop)
+  specializes_symm : Std.Symm (Specializes : X → X → Prop)
 
-export R0Space (specializes_symmetric)
+@[deprecated (since := "2026-04-15")] alias specializes_symmetric := R0Space.specializes_symm
+
+export R0Space (specializes_symm)
 
 section R0Space
 
 variable [R0Space X] {x y : X}
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, dot notation version. -/
-theorem Specializes.symm (h : x ⤳ y) : y ⤳ x := specializes_symmetric h
+theorem Specializes.symm (h : x ⤳ y) : y ⤳ x :=
+  specializes_symm.symm x y h
 
 /-- In an R₀ space, the `Specializes` relation is symmetric, `Iff` version. -/
 theorem specializes_comm : x ⤳ y ↔ y ⤳ x := ⟨Specializes.symm, Specializes.symm⟩
@@ -283,17 +286,17 @@ alias ⟨Specializes.inseparable, _⟩ := specializes_iff_inseparable
 
 theorem Topology.IsInducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :
     R0Space Y where
-  specializes_symmetric a b := by
+  specializes_symm.symm a b := by
     simpa only [← hf.specializes_iff] using Specializes.symm
 
 instance {p : X → Prop} : R0Space {x // p x} := IsInducing.subtypeVal.r0Space
 
 instance [TopologicalSpace Y] [R0Space Y] : R0Space (X × Y) where
-  specializes_symmetric _ _ h := h.fst.symm.prod h.snd.symm
+  specializes_symm.symm _ _ h := h.fst.symm.prod h.snd.symm
 
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R0Space (X i)] :
     R0Space (∀ i, X i) where
-  specializes_symmetric _ _ h := specializes_pi.2 fun i ↦ (specializes_pi.1 h i).symm
+  specializes_symm.symm _ _ h := specializes_pi.2 fun i ↦ (specializes_pi.1 h i).symm
 
 lemma R0Space.closure_singleton (x : X) : closure {x} = (𝓝 x).ker := by
   ext; simp [ker_nhds_eq_specializes, ← specializes_iff_mem_closure, specializes_comm]
@@ -423,7 +426,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
   tfae_have 10 ↔ 11 :=
-    ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩,
+    ⟨fun h => ⟨⟨fun _ _ h₂ => h h₂.specializes⟩, ⟨⟨fun _ _ h₂ => specializes_of_eq (h h₂).symm⟩⟩⟩,
       fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
   tfae_finish
 
@@ -782,16 +785,15 @@ theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
-  constructor
-  · intro h x y xspecy
-    rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
+  refine ⟨fun h ↦ ⟨fun x y xspecy ↦ ?_⟩, ?_⟩
+  · rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
   · -- TODO is there are better way to do this,
     -- so the case split produces `SeparationQuotient.mk` directly, rather than `Quot.mk`?
     -- Currently we need the `change` statement to recover this.
     rintro h ⟨x⟩ ⟨y⟩ sxspecsy
     change mk _ = mk _
     have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
-    have yspecx : y ⤳ x := h xspecy
+    have yspecx : y ⤳ x := h.symm x y xspecy
     rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
@@ -882,7 +884,7 @@ export R1Space (specializes_or_disjoint_nhds)
 variable [R1Space X] {x y : X}
 
 instance (priority := 100) : R0Space X where
-  specializes_symmetric _ _ h := (specializes_or_disjoint_nhds _ _).resolve_right <| fun hd ↦
+  specializes_symm.symm _ _ h := (specializes_or_disjoint_nhds _ _).resolve_right <| fun hd ↦
     h.not_disjoint hd.symm
 
 theorem disjoint_nhds_nhds_iff_not_specializes : Disjoint (𝓝 x) (𝓝 y) ↔ ¬x ⤳ y :=

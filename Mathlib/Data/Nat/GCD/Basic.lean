@@ -90,7 +90,10 @@ See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m 
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
-theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
+instance Coprime.stdSymm : Std.Symm Coprime where
+  symm _ _ := Coprime.symm
+
+@[deprecated (since := "2026-04-15")] alias Coprime.symmetric := Coprime.stdSymm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
   ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩

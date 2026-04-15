@@ -106,11 +106,11 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
   ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
-theorem pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
+instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
   refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
 
-theorem pseudoEqual_symm {P : C} : Symmetric (PseudoEqual P) :=
-  fun _ _ ⟨R, p, q, ep, Eq, comm⟩ => ⟨R, q, p, Eq, ep, comm.symm⟩
+instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
+  symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
 
 variable [Abelian.{v} C]
 
@@ -119,7 +119,7 @@ section
 set_option backward.isDefEq.respectTransparency false in
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
 be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
-theorem pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
+instance pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
   refine ⟨fun f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩ ↦ ?_⟩
   refine ⟨pullback q p', pullback.fst _ _ ≫ p, pullback.snd _ _ ≫ q',
     epi_comp _ _, epi_comp _ _, ?_⟩
@@ -131,7 +131,7 @@ end
 /-- The arrows with codomain `P` equipped with the equivalence relation of being pseudo-equal. -/
 @[instance_reducible]
 def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
-  ⟨_, ⟨pseudoEqual_refl.refl, @pseudoEqual_symm _ _ _, pseudoEqual_trans.trans _ _ _⟩⟩
+  ⟨_, ⟨pseudoEqual_refl.refl, pseudoEqual_symm.symm _ _, pseudoEqual_trans.trans _ _ _⟩⟩
 
 attribute [local instance] Pseudoelement.setoid
 

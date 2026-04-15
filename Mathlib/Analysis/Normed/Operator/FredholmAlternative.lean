@@ -191,8 +191,8 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   -- Then the points `T (f n)` are bounded away from each other, using the separation property
   -- of the `f n` and the lower bound on their norms.
   have hp : Pairwise fun x₁ x₂ ↦ ‖μ‖ ≤ ‖T (f x₁) - T (f x₂)‖ := by
+    have : Std.Symm fun x₁ x₂ ↦ ‖μ‖ ≤ ‖T (f x₁) - T (f x₂)‖ := by grind [symm_def, norm_sub_rev]
     apply Pairwise.of_lt
-    · grind [Symmetric, norm_sub_rev]
     intro m n hmn
     let u : X := μ⁻¹ • (S (f n) - S (f m) + μ • f n)
     have hu : μ • (f m - u) = T (f m) - T (f n) := by

@@ -33,8 +33,10 @@ section General
 
 variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
-  hr <| h hr'
+protected instance Std.Symm.compl [Std.Symm r] : Std.Symm rᶜ where
+  symm a b hr hr' := hr <| symm b a hr'
+
+@[deprecated (since := "2026-04-15")] alias Symmetric.compl := Std.Symm.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
@@ -101,13 +103,18 @@ protected theorem insert (hs : IsAntichain r s) (hl : ∀ ⦃b⦄, b ∈ s → a
     (hr : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) : IsAntichain r (insert a s) :=
   isAntichain_insert.2 ⟨hs, fun _ hb hab => ⟨hr hb hab, hl hb hab⟩⟩
 
-theorem _root_.isAntichain_insert_of_symmetric (hr : Symmetric r) :
+theorem _root_.isAntichain_insert_of_symm [Std.Symm r] :
     IsAntichain r (insert a s) ↔ IsAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b :=
-  pairwise_insert_of_symmetric hr.compl
+  pairwise_insert_of_symm
 
-theorem insert_of_symmetric (hs : IsAntichain r s) (hr : Symmetric r)
-    (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) : IsAntichain r (insert a s) :=
-  (isAntichain_insert_of_symmetric hr).2 ⟨hs, h⟩
+@[deprecated (since := "2026-04-15")]
+alias _root_.isAntichain_insert_of_symmetric := _root_.isAntichain_insert_of_symm
+
+theorem insert_of_symm (hs : IsAntichain r s) [Std.Symm r] (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ¬r a b) :
+    IsAntichain r (insert a s) :=
+  isAntichain_insert_of_symm.mpr ⟨hs, h⟩
+
+@[deprecated (since := "2026-04-15")] alias insert_of_symmetric := insert_of_symm
 
 theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain r' (φ '' s) := by
   intro b hb b' hb' h₁ h₂
@@ -348,7 +355,8 @@ theorem preimage (hs : IsStrongAntichain r s) {f : β → α} (hf : Injective f)
 theorem _root_.isStrongAntichain_insert :
     IsStrongAntichain r (insert a s) ↔
       IsStrongAntichain r s ∧ ∀ ⦃b⦄, b ∈ s → a ≠ b → ∀ c, ¬r a c ∨ ¬r b c :=
-  Set.pairwise_insert_of_symmetric fun _ _ h c => (h c).symm
+  have : Std.Symm fun a b ↦ ∀ c, ¬r a c ∨ ¬r b c := { symm _ _ h c := h c |>.symm }
+  Set.pairwise_insert_of_symm
 
 protected theorem insert (hs : IsStrongAntichain r s)
     (h : ∀ ⦃b⦄, b ∈ s → a ≠ b → ∀ c, ¬r a c ∨ ¬r b c) : IsStrongAntichain r (insert a s) :=

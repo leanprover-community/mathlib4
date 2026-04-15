@@ -883,14 +883,15 @@ theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ 
 instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel R) where
   refl _ := ⟨fun {a} as => ⟨a, as, refl_of R a⟩, fun {b} bs => ⟨b, bs, refl_of R b⟩⟩
 
-theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
-  fun _ _ ⟨l, r⟩ =>
-  ⟨fun {_} a2 =>
-    let ⟨b, b1, ab⟩ := r a2
-    ⟨b, b1, H ab⟩,
-    fun {_} a1 =>
-    let ⟨b, b2, ab⟩ := l a1
-    ⟨b, b2, H ab⟩⟩
+instance LiftRel.symm (R : α → α → Prop) [Std.Symm R] : Std.Symm (LiftRel R) where
+  symm _ _ := fun ⟨l, r⟩ ↦ {
+    left a2 :=
+      let ⟨b, b1, ab⟩ := r a2
+      ⟨b, b1, symm_of R ab⟩
+    right a1 :=
+      let ⟨b, b2, ab⟩ := l a1
+      ⟨b, b2, symm_of R ab⟩
+  }
 
 instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) :=
   ⟨fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
@@ -905,7 +906,7 @@ instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (Lift
 
 theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) where
   refl := @LiftRel.refl α R H.stdRefl |>.refl
-  symm := @LiftRel.symm α R H.symmetric
+  symm := @LiftRel.symm α R H.stdSymm |>.symm _ _
   trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :

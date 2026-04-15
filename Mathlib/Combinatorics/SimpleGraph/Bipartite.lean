@@ -380,7 +380,7 @@ section Between
 set `t`. -/
 def between (s t : Set V) (G : SimpleGraph V) : SimpleGraph V where
   Adj v w := G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s)
-  symm v w := by tauto
+  symm.symm v w := by tauto
 
 lemma between_adj : (G.between s t).Adj v w ↔ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s) := by rfl
 
@@ -518,7 +518,7 @@ such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent
   Adj
   | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
   | _, _ => False
-  symm _ _ := by grind [adj_symm]
+  symm.symm _ _ := by grind [adj_symm]
 
 instance [h : DecidableRel G.Adj] : DecidableRel G.bipartiteDoubleCover.Adj
   | .inl _, .inr _ | .inr _, .inl _ => h _ _

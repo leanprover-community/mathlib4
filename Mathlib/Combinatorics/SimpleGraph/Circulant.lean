@@ -63,8 +63,6 @@ def cycleGraph : (n : ℕ) → SimpleGraph (Fin n)
   | 0 | 1 => ⊥
   | _ + 2 => {
     Adj a b := a - b = 1 ∨ b - a = 1
-    symm _ _ := Or.symm
-    loopless.irrefl _ h := h.elim (by simp) (by simp)
   }
 
 instance : (n : ℕ) → DecidableRel (cycleGraph n).Adj

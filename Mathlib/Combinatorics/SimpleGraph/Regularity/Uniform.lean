@@ -70,15 +70,20 @@ theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) 
   refine (hε hs' ht' (le_trans ?_ hs) (le_trans ?_ ht)).trans_le h <;> gcongr
 
 omit [IsStrictOrderedRing 𝕜] in
-theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
-  rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
-  exact h hs' ht' hs ht
+instance : Std.Symm (IsUniform G ε) where
+  symm s t h t' ht' s' hs' ht hs := by
+    rw [edgeDensity_comm _ t', edgeDensity_comm _ t]
+    exact h hs' ht' hs ht
+
+omit [IsStrictOrderedRing 𝕜] in
+theorem IsUniform.symm : IsUniform G ε s t → IsUniform G ε t s :=
+  symm_of _
 
 variable (G)
 
 omit [IsStrictOrderedRing 𝕜] in
 theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨symm_of _, symm_of _⟩
 
 lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
   intro s' hs' t' ht' hs ht
@@ -393,11 +398,10 @@ that have edge density at least `δ`. -/
 @[simps] def regularityReduced (ε δ : 𝕜) : SimpleGraph α where
   Adj a b := G.Adj a b ∧
     ∃ U ∈ P.parts, ∃ V ∈ P.parts, a ∈ U ∧ b ∈ V ∧ U ≠ V ∧ G.IsUniform ε U V ∧ δ ≤ G.edgeDensity U V
-  symm a b := by
+  symm.symm a b := by
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
-    refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
+    refine ⟨ab.symm, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
 instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj :=
   inferInstanceAs <| DecidableRel (mk _ _).Adj
