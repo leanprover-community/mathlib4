@@ -153,11 +153,9 @@ theorem exp_eq_one_iff_of_im_nonneg {x : ℂ} (hx : 0 ≤ x.im) :
     exp x = 1 ↔ ∃ n : ℕ, x = n * (2 * π * I) := by
   rw [exp_eq_one_iff]
   refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ⟨n, by rw [hn]; norm_cast⟩⟩
-  lift n to ℕ
-  · rw [hn] at hx
-    rw [show (n * (2 * ↑π * I) : ℂ).im = n * (2 * π) by simp] at hx
-    exact_mod_cast nonneg_of_mul_nonneg_left hx (mul_pos two_pos Real.pi_pos)
-  · exact ⟨n, hn⟩
+  have : 0 ≤ n * (2 * π) := by simpa [hn] using hx
+  lift n to ℕ using by exact_mod_cast nonneg_of_mul_nonneg_left this (by positivity)
+  exact ⟨n, hn⟩
 
 theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
     exp (2 * π * I * k / N) = 1 ↔ N ∣ k := by
