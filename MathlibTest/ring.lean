@@ -258,16 +258,16 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
   to use `fail_if_success` since the instances could change without warning.
   -/
   have : x = y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : x - y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x = f y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x - f y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   trivial
 
