@@ -277,6 +277,7 @@ end cdotLinter
 set_option linter.style.dollarSyntax true
 
 set_option linter.globalAttributeIn false in
+set_option linter.impossibleInstance false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
 
