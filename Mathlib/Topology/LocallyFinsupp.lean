@@ -137,18 +137,34 @@ instance [Zero Y] : FunLike (LocallyFinsuppWithin U Y) X Y where
 /-- This allows writing `D.support` instead of `Function.support D` -/
 abbrev support [Zero Y] (D : LocallyFinsuppWithin U Y) := Function.support D
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.support := support
+
 lemma supportWithinDomain [Zero Y] (D : LocallyFinsuppWithin U Y) :
     D.support ⊆ U := D.supportWithinDomain'
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.supportWithinDomain := supportWithinDomain
+
 lemma supportLocallyFiniteWithinDomain [Zero Y] (D : LocallyFinsuppWithin U Y) :
     ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.supportLocallyFiniteWithinDomain :=
+    supportLocallyFiniteWithinDomain
 
 @[ext]
 lemma ext [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :
     D₁ = D₂ := DFunLike.ext _ _ h
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.ext := ext
+
 lemma coe_injective [Zero Y] :
     Injective (· : LocallyFinsuppWithin U Y → X → Y) := DFunLike.coe_injective
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_injective := coe_injective
 
 end Function.LocallyFinsuppWithin
 
@@ -168,6 +184,9 @@ noncomputable def single [DecidableEq X] [Zero Y] (x : X) (y : Y) : LocallyFinsu
   supportLocallyFiniteWithinDomain' _ _ :=
     ⟨Set.univ, univ_mem, by simpa using (finite_singleton x).subset Pi.support_single_subset⟩
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsupp.single := single
+
 /--
 Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
 -/
@@ -176,11 +195,17 @@ Simplifier lemma: `single x y` takes the value `y` at `x` and is zero otherwise.
   classical
   simp_rw [DFunLike.coe, single, Pi.single_apply]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsupp.single_apply := single_apply
+
 /--
 Simplifier lemma: `single x 0` is zero.
 -/
 @[simp] lemma single_zero [DecidableEq X] [Zero Y] {x : X} :
     single x (0 : Y) = 0 := by aesop
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsupp.single_zero := single_zero
 
 /--
 Simplifier lemma: coercion of `single x y` to a function.
@@ -189,6 +214,9 @@ Simplifier lemma: coercion of `single x y` to a function.
     (single x y : X → Y) = Pi.single x y := by
   ext
   simp [Pi.single_apply]
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsupp.coe_single := coe_single
 
 end Function.LocallyFinsupp
 
@@ -208,6 +236,9 @@ lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : LocallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.apply_eq_zero_of_notMem := apply_eq_zero_of_notMem
+
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
 `U`.
@@ -221,6 +252,9 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : LocallyFinsuppWithin 
     exact (support_subset_iff.1 D.supportWithinDomain) x
   rw [← this]
   exact D.supportLocallyFiniteWithinDomain
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.eq_zero_codiscreteWithin := eq_zero_codiscreteWithin
 
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete.
@@ -240,6 +274,9 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : LocallyFinsuppWithin U Y) :
   apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
   exact D.supportLocallyFiniteWithinDomain
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.discreteSupport := discreteSupport
+
 /--
 If `X` is T1 and if `U` is closed, then the support of support of a function with locally finite
 support within `U` is also closed.
@@ -254,6 +291,9 @@ theorem closedSupport [T1Space X] [Zero Y] (D : LocallyFinsuppWithin U Y)
   · simp_all [D.supportWithinDomain hx]
   · simp_all
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.closedSupport := closedSupport
+
 /--
 If `X` is T2 and if `U` is compact, then the support of a function with locally finite support
 within `U` is finite.
@@ -263,6 +303,9 @@ theorem finiteSupport [T2Space X] [Zero Y] (D : LocallyFinsuppWithin U Y)
     Set.Finite D.support :=
   (hU.of_isClosed_subset (D.closedSupport hU.isClosed)
     D.supportWithinDomain).finite D.discreteSupport
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.finiteSupport := finiteSupport
 
 /-!
 ## Lattice ordered group structure
@@ -299,9 +342,15 @@ protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
       by_contra! hCon
       simp_all
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.addSubmonoid := LocallyFinsuppWithin.addSubmonoid
+
 protected lemma memAddSubmonoid [AddMonoid Y] (D : LocallyFinsuppWithin U Y) :
     (D : X → Y) ∈ LocallyFinsuppWithin.addSubmonoid U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.memAddSubmonoid := LocallyFinsuppWithin.memAddSubmonoid
 
 variable (U) in
 /--
@@ -312,9 +361,15 @@ protected def addSubgroup [AddGroup Y] : AddSubgroup (X → Y) where
   __ := LocallyFinsuppWithin.addSubmonoid U
   neg_mem' {f} hf := by simp_all
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.addSubgroup := LocallyFinsuppWithin.addSubgroup
+
 protected lemma memAddSubgroup [AddGroup Y] (D : LocallyFinsuppWithin U Y) :
     (D : X → Y) ∈ LocallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.memAddSubgroup := LocallyFinsuppWithin.memAddSubgroup
 
 /--
 Assign a function with locally finite support within `U` to a function in the subgroup.
@@ -323,6 +378,9 @@ Assign a function with locally finite support within `U` to a function in the su
 def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
     (hf : f ∈ LocallyFinsuppWithin.addSubmonoid U) :
     LocallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.mk_of_mem_addSubmonoid := mk_of_mem_addSubmonoid
 
 instance [AddMonoid Y] : Zero (LocallyFinsuppWithin U Y) where
   zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
@@ -342,6 +400,9 @@ def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ LocallyFinsuppW
 
 @[deprecated (since := "2026-03-06")] alias mk_of_mem := mk_of_mem_addSubgroup
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.mk_of_mem_addSubgroup := mk_of_mem_addSubgroup
+
 instance [AddGroup Y] : Neg (LocallyFinsuppWithin U Y) where
   neg D := mk_of_mem_addSubgroup (-D) <| neg_mem D.memAddSubgroup
 
@@ -353,16 +414,28 @@ instance [AddGroup Y] : SMul ℤ (LocallyFinsuppWithin U Y) where
 
 @[simp] lemma coe_zero [AddMonoid Y] :
     ((0 : LocallyFinsuppWithin U Y) : X → Y) = 0 := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_zero := coe_zero
 @[simp] lemma coe_add [AddMonoid Y] (D₁ D₂ : LocallyFinsuppWithin U Y) :
     (↑(D₁ + D₂) : X → Y) = D₁ + D₂ := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_add := coe_add
 @[simp] lemma coe_neg [AddGroup Y] (D : LocallyFinsuppWithin U Y) :
     (↑(-D) : X → Y) = -(D : X → Y) := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_neg := coe_neg
 @[simp] lemma coe_sub [AddGroup Y] (D₁ D₂ : LocallyFinsuppWithin U Y) :
     (↑(D₁ - D₂) : X → Y) = D₁ - D₂ := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_sub := coe_sub
 @[simp] lemma coe_nsmul [AddMonoid Y] (D : LocallyFinsuppWithin U Y) (n : ℕ) :
     (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_nsmul := coe_nsmul
 @[simp] lemma coe_zsmul [AddGroup Y] (D : LocallyFinsuppWithin U Y) (n : ℤ) :
     (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_zsmul := coe_zsmul
 
 instance [AddMonoid Y] : AddMonoid (LocallyFinsuppWithin U Y) :=
   Injective.addMonoid (M₁ := LocallyFinsuppWithin U Y) (M₂ := X → Y)
@@ -380,6 +453,9 @@ instance [AddCommMonoid Y] : AddCommMonoid (LocallyFinsuppWithin U Y) :=
   | empty => simp_all
   | insert => simp_all
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_sum := coe_sum
+
 @[simp] lemma coe_finsum {ι : Type*} {F : ι → LocallyFinsuppWithin U ℤ} :
     (↑(∑ᶠ i, F i) : X → ℤ) = ∑ᶠ i, (F i : X → ℤ) := by
   have : F.support = (fun i ↦ (F i : X → ℤ)).support := by
@@ -389,6 +465,9 @@ instance [AddCommMonoid Y] : AddCommMonoid (LocallyFinsuppWithin U Y) :=
     have h₂ : (fun i ↦ (F i : X → ℤ)).support.Finite := by simp_all
     simp_all [finsum_eq_sum _ h₂]
   · simp_all [finsum_of_infinite_support]
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.coe_finsum := coe_finsum
 
 instance [AddGroup Y] : AddGroup (LocallyFinsuppWithin U Y) :=
   Injective.addGroup (M₁ := LocallyFinsuppWithin U Y) (M₂ := X → Y)
@@ -404,11 +483,17 @@ instance [LE Y] [Zero Y] : LE (LocallyFinsuppWithin U Y) where
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.le_def := le_def
+
 lemma _root_.Function.LocallyFinsupp.single_nonneg
     [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 ≤ single x y ↔ 0 ≤ y := by
   simp only [le_def, coe_single]
   apply Pi.single_nonneg
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.single_nonneg := single_nonneg
 
 instance [Preorder Y] [Zero Y] : LT (LocallyFinsuppWithin U Y) where
   lt := fun D₁ D₂ ↦ (D₁ : X → Y) < D₂
@@ -416,11 +501,17 @@ instance [Preorder Y] [Zero Y] : LT (LocallyFinsuppWithin U Y) where
 lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} :
     D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.lt_def := lt_def
+
 lemma _root_.Function.LocallyFinsupp.single_pos
     [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
     0 < single x y ↔ 0 < y := by
   rw [lt_def, coe_single]
   exact Pi.single_pos
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.single_pos := single_pos
 
 @[simp] lemma _root_.Function.LocallyFinsupp.single_pos_nat_one [DecidableEq X] {x : X} :
     0 < single x 1 := single_pos.2 Nat.one_pos
@@ -460,6 +551,9 @@ instance [SemilatticeSup Y] [Zero Y] : Max (LocallyFinsuppWithin U Y) where
 lemma max_apply [SemilatticeSup Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} {x : X} :
     max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.max_apply := max_apply
+
 instance [SemilatticeInf Y] [Zero Y] : Min (LocallyFinsuppWithin U Y) where
   min D₁ D₂ :=
   { toFun z := min (D₁ z) (D₂ z)
@@ -484,6 +578,9 @@ instance [SemilatticeInf Y] [Zero Y] : Min (LocallyFinsuppWithin U Y) where
 lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : LocallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.min_apply := min_apply
+
 section Lattice
 variable [Lattice Y]
 
@@ -505,10 +602,14 @@ instance [Zero Y] : Lattice (LocallyFinsuppWithin U Y) where
 variable [AddCommGroup Y]
 
 @[simp] lemma posPart_apply (a : LocallyFinsuppWithin U Y) (x : X) : a⁺ x = (a x)⁺ := rfl
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.posPart_apply := posPart_apply
+
 @[simp] lemma negPart_apply (a : LocallyFinsuppWithin U Y) (x : X) : a⁻ x = (a x)⁻ := rfl
 
-@[deprecated (since := "2026-04-15")] alias _root_.Function.locallyFinsuppWithin.negPart_apply :=
-    posPart_apply
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.negPart_apply := negPart_apply
 
 end Lattice
 
@@ -534,6 +635,9 @@ theorem posPart_add (f₁ f₂ : LocallyFinsuppWithin U Y) :
   · simp [add_le_add]
   · simp [add_nonneg]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.posPart_add := posPart_add
+
 /--
 The negative part of a sum is less than or equal to the sum of the negative parts.
 -/
@@ -548,6 +652,9 @@ theorem negPart_add (f₁ f₂ : LocallyFinsuppWithin U Y) :
   · simp [add_comm, add_le_add]
   · simp [add_nonneg]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.negPart_add := negPart_add
+
 /--
 Taking the positive part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
@@ -559,6 +666,9 @@ theorem nsmul_posPart (n : ℕ) (f : LocallyFinsuppWithin U Y) : (n • f)⁺ = 
   by_cases h : f x < 0
   · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
   · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.nsmul_posPart := nsmul_posPart
 
 /--
 Taking the negative part of a function with locally finite support commutes with
@@ -573,6 +683,9 @@ theorem nsmul_negPart (n : ℕ) (f : LocallyFinsuppWithin U Y) : (n • f)⁻ = 
   · simpa [max_eq_right_of_lt h] using nsmul_le_nsmul_right h.le n
   · simpa [not_lt.1 h] using nsmul_nonneg (not_lt.1 h) n
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.nsmul_negPart := nsmul_negPart
+
 /--
 Every positive function with locally finite supports dominates a singleton indicator.
 -/
@@ -584,6 +697,10 @@ lemma _root_.Function.LocallyFinsupp.exists_single_le_pos
   obtain (rfl | he) := eq_or_ne e z
   · simpa [single_apply] using Int.lt_iff_le_and_ne.mpr ⟨h.le e, hz.symm⟩
   · simpa [he, single_apply] using h.le e
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.exists_single_le_pos :=
+    _root_.Function.LocallyFinsupp.exists_single_le_pos
 
 end LinearOrder
 
@@ -612,19 +729,31 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : LocallyFinsuppWithin U Y) (
     intro _ _
     simp_all
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict := restrict
+
 open Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : LocallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_apply := restrict_apply
 
 lemma restrict_eqOn [Zero Y] {V : Set X} (D : LocallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
   simp_all [restrict_apply]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_eqOn := restrict_eqOn
+
 lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : LocallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
   simp_all
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_eqOn_compl := restrict_eqOn_compl
 
 /--
 Restriction of the zero function is the zero function.
@@ -634,6 +763,9 @@ Restriction of the zero function is the zero function.
   ext
   rw [restrict_apply]
   aesop
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_zero := restrict_zero
 
 /-- Restriction as a group morphism -/
 noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
@@ -647,10 +779,16 @@ noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
     by_cases hx : x ∈ V
     <;> simp [restrict_apply, hx]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrictMonoidHom := restrictMonoidHom
+
 @[simp]
 lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : LocallyFinsuppWithin U Y)
     (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrictMonoidHom_apply := restrictMonoidHom_apply
 
 /--
 Present a function with with finite support as a finsum of singleton indicator functions.
@@ -671,6 +809,10 @@ Present a function with with finite support as a finsum of singleton indicator f
   · aesop
   · aesop
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.sum_apply_smul_single_eq_self :=
+    sum_apply_smul_single_eq_self
+
 /-- Restriction as a lattice morphism -/
 noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
     LatticeHom (LocallyFinsuppWithin U Y) (LocallyFinsuppWithin V Y) where
@@ -684,10 +826,17 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
     by_cases hx : x ∈ V
     <;> simp [LocallyFinsuppWithin.restrict_apply, hx]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrictLatticeHom := restrictLatticeHom
+
 @[simp]
 lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
     (D : LocallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrictLatticeHom_apply := restrictLatticeHom_apply
+
 /--
 Restriction commutes with taking positive parts.
 -/
@@ -697,6 +846,9 @@ lemma restrict_posPart {V : Set X} (D : LocallyFinsuppWithin U ℤ) (h : V ⊆ U
   simp only [LocallyFinsuppWithin.restrict_apply, LocallyFinsuppWithin.posPart_apply]
   aesop
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_posPart := restrict_posPart
+
 /--
 Restriction commutes with taking negative parts.
 -/
@@ -705,5 +857,8 @@ lemma restrict_negPart {V : Set X} (D : LocallyFinsuppWithin U ℤ) (h : V ⊆ U
   ext x
   simp only [LocallyFinsuppWithin.restrict_apply, LocallyFinsuppWithin.negPart_apply]
   aesop
+
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsuppWithin.restrict_negPart := restrict_negPart
 
 end Function.LocallyFinsuppWithin
