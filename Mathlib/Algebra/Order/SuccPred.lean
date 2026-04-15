@@ -20,7 +20,7 @@ and `pred x = x - 1` respectively. This allows us to transfer the API for succes
 predecessors into these common arithmetical forms.
 -/
 
-@[expose] public section
+public section
 
 /-- A typeclass for `succ x = x + 1`. -/
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where
