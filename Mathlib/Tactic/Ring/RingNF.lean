@@ -38,7 +38,7 @@ inductive RingMode where
 
 /-- Configuration for `ring_nf`. -/
 structure Config extends AtomM.Recurse.Config where
-  /-- how to behave if no progress is made: warn, error or keep silent -/
+  /-- How to behave if no progress is made: warn, error or keep silent. Default to error -/
   ifUnchanged := BehaviorIfUnchanged.error
   /-- The normalization style. -/
   mode := RingMode.SOP

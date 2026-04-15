@@ -197,7 +197,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | _ =>
     match ← resolvePushId? stx with
     | some (.const c _) => return .const c
-    | _ => throwError "Could not resolve `push` argument {stx}. \
+    | _ => throwError "Could not resolve `push` argument `{stx}`. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
 

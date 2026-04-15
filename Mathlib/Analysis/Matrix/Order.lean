@@ -196,6 +196,10 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
+lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    A.PosDef ↔ A.det ≠ 0 := by
+  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
+
 @[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
