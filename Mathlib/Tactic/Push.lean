@@ -211,7 +211,7 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
     (failIfUnchanged : Bool := true) : TacticM Unit := do
   let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
-  transformAtLocation (pushCore head cfg disch? ·) "push" loc failIfUnchanged
+  transformAtLocation (pushCore head cfg disch? ·) s!"push {head}" loc failIfUnchanged
 
 /--
 `push c` rewrites the goal by pushing the constant `c` deeper into an expression.
