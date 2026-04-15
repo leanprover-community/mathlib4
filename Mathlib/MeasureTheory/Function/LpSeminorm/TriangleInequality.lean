@@ -88,20 +88,26 @@ end MeasureTheory
 namespace ENNReal
 
 open MeasureTheory
+open scoped ENNReal
 
 /-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow` using `LpAddConst` as the constant,
 valid for all `0 ≤ p` (not just `1 ≤ p`). -/
 theorem rpow_add_le_mul_rpow_add_rpow' (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 0 ≤ p) :
     (z₁ + z₂) ^ p ≤ LpAddConst (ENNReal.ofReal p)⁻¹ * (z₁ ^ p + z₂ ^ p) := by
-  unfold LpAddConst
-  split_ifs with h
-  · simp only [Set.mem_Ioo, ENNReal.inv_pos, ne_eq, ofReal_ne_top, not_false_eq_true,
-      ENNReal.inv_lt_one, one_lt_ofReal, true_and] at h
+  by_cases h : 1 < p
+  · have hmem : (ENNReal.ofReal p)⁻¹ ∈ Set.Ioo (0 : ℝ≥0∞) 1 := by
+      constructor
+      · simp
+      · rwa [ENNReal.inv_lt_one, one_lt_ofReal]
+    rw [show LpAddConst (ENNReal.ofReal p)⁻¹ =
+        (2 : ℝ≥0∞) ^ (1 / ((ENNReal.ofReal p)⁻¹).toReal - 1) from by
+      rw [LpAddConst, if_pos hmem]]
     simp only [ENNReal.toReal_inv, div_inv_eq_mul, one_mul]
     rw [ENNReal.toReal_ofReal hp]
     exact ENNReal.rpow_add_le_mul_rpow_add_rpow _ _ h.le
-  · rw [one_mul]
-    exact ENNReal.rpow_add_le_add_rpow _ _ hp (by simpa using h)
+  · have hp1 : p ≤ 1 := not_lt.mp h
+    rw [LpAddConst_of_one_le (ENNReal.one_le_inv.mpr (ENNReal.ofReal_le_one.mpr hp1)), one_mul]
+    exact ENNReal.rpow_add_le_add_rpow _ _ hp hp1
 
 /-- Variant of `ENNReal.rpow_add_le_mul_rpow_add_rpow'` with `p : ℝ≥0∞`. -/
 theorem rpow_add_le_mul_rpow_add_rpow'' (z₁ z₂ : ℝ≥0∞) {p : ℝ≥0∞} :
