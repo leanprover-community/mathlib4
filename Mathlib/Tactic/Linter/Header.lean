@@ -181,7 +181,9 @@ public def copyrightHeaderChecks (copyright : String) : Array (Syntax × String)
   -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
   -- This is to allow the copyright or authors' lines to span several lines.
+  -- We also allow the "All rights reserved" line to be on a separate line.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
+    |>.replace ".\nAll rights reserved." ". All rights reserved."
   -- Filter out everything after the first isolated `-/`.
   let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -413,20 +415,19 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for msg in errors do
       msgs := msgs ++ "\n\n" ++ (← msg.toString)
     Linter.logLint linter.directoryDependency stx msgs.trimAsciiStart.copy
-  let afterImports := firstNonImport? upToStx
-  if afterImports.isNone then return
+  let some afterImports := firstNonImport? upToStx | return
+  if afterImports.isOfKind ``Lean.Parser.Command.eoi then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init then
+  if mainModule != `Mathlib.Init && mainModule != `Mathlib.Tactic then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.
   match afterImports with
-    | none => return
-    | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
-    | some rest =>
+  | (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+  | rest =>
     Linter.logLint linter.style.header rest
       m!"The module doc-string for a file should be the first command after the imports.\n\
        Please, add a module doc-string before `{stx}`."
