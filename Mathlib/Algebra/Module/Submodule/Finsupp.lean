@@ -10,7 +10,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-! # Results for pointwise instances on `Submodule`s using Finsupp
 
-This file provides the followijg results in the `Pointwise` locale:
+This file provides the following results in the `Pointwise` locale:
 
 When we consider subsets of `R` acting on `M`
 - `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
