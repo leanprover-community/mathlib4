@@ -673,23 +673,26 @@ section Star
 def starGraph (r : V) : SimpleGraph V :=
  .fromRel fun v _ ↦ v = r
 
-instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj := by
-  unfold starGraph; infer_instance
+instance [DecidableEq V] (r : V) : DecidableRel (starGraph r).Adj :=
+  inferInstanceAs (DecidableRel fun x y ↦ x ≠ y ∧ (x = r ∨ y = r))
 
 @[simp]
 lemma starGraph_adj {r x y : V} : (starGraph r).Adj x y ↔ x ≠ y ∧ (x = r ∨ y = r) := by
   simp [starGraph, fromRel]
 
-/-- If v ≠ r, then v is adjacent to r. -/
+/-- If r ≠ v, then v is adjacent to r. -/
 lemma starGraph_center_adj {r v : V} (h : r ≠ v) : (starGraph r).Adj r v :=
   starGraph_adj.mpr ⟨h, Or.inl rfl⟩
+
+lemma starGraph_center_adj' {r v : V} (h : r ≠ v) : (starGraph r).Adj v r :=
+  (starGraph_center_adj h).symm
 
 lemma connected_starGraph (r : V) : (starGraph r).Connected := by
   have (v : V) : (starGraph r).Reachable r v := by
     by_cases! h : r = v
     · exact h ▸ Reachable.rfl
     · exact (starGraph_center_adj h).reachable
-  exact connected_iff _ |>.mpr ⟨fun u v => (this u).symm.trans (this v), ⟨r⟩⟩
+  exact connected_iff _ |>.mpr ⟨fun u v ↦ (this u).symm.trans (this v), ⟨r⟩⟩
 
 lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ isBridge_iff.mpr ⟨hadj, ?_⟩
