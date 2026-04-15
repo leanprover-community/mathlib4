@@ -65,7 +65,8 @@ lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
 
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
-  let φ := CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
+  let φ : Γ(X, U) ⟶ CommRingCat.of (Γ(X, U) ⧸ I.ideal U) :=
+    CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
   change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
   rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
@@ -84,7 +85,8 @@ lemma range_glueDataObjι (U : X.affineOpens) :
   simp only [glueDataObjι, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [range_comap_of_surjective]
   swap; · exact Ideal.Quotient.mk_surjective
-  simp only [Ideal.mk_ker, CommRingCat.hom_ofHom]
+  simp
+  rfl
 
 lemma range_glueDataObjι_ι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U ≫ U.1.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
