@@ -291,6 +291,10 @@ protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsCoinduc
     IsCoinducing g :=
   ⟨le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
+lemma isOpenMap_of_injective (hf : IsCoinducing f) (hf' : Injective f) : IsOpenMap f := by
+  intro s hs
+  rwa [← hf.isOpen_preimage, preimage_image_eq _ hf']
+
 end IsCoinducing
 
 end IsCoinducing

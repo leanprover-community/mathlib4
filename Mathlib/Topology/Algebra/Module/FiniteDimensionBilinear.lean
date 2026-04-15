@@ -37,7 +37,7 @@ variable
   vector spaces over a complete field. -/
 def LinearMap.toContinuousBilinearMap (f : E →ₗ[𝕜] F →ₗ[𝕜] G) : E →L[𝕜] F →L[𝕜] G :=
   IsLinearMap.mk' (fun x : E ↦ f x |>.toContinuousLinearMap)
-      (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+      (by constructor <;> (intros; simp)) |>.toContinuousLinearMap
 
 @[simp]
 lemma LinearMap.toContinuousBilinearMap_apply (f : E →ₗ[𝕜] F →ₗ[𝕜] G) (x : E) (y : F) :
