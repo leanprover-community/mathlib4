@@ -24,9 +24,8 @@ preserves this colimit, then `L` carries the structure of an initial
   Adamek algebra to any other algebra
 - `CategoryTheory.Endofunctor.Algebra.adamekFromInitial` : the Adamek algebra constructed from
   `HasColimit` and `PreservesColimit` instances
-- `CategoryTheory.Endofunctor.Algebra.adamekStructureIso` : the isomorphism `F(L) ≅ L`
-  (Lambek's lemma)
-- `CategoryTheory.Endofunctor.Algebra.adamekFixedPoint` : the colimit as a fixed point of `F`
+- `CategoryTheory.Endofunctor.Algebra.adamekFixedPoint` : the colimit of the initial chain as
+  a fixed point of `F`, i.e. the isomorphism `F(L) ≅ L` (Lambek's lemma)
 
 ## Main results
 
@@ -173,35 +172,23 @@ section Connection
 variable [HasColimit (initialChain F)]
 variable [PreservesColimit (initialChain F) F]
 
-/-- The standard colimit cocone for the initial chain. -/
-noncomputable def standardCocone : Cocone (initialChain F) :=
-  colimit.cocone (initialChain F)
-
-/-- The standard colimit is indeed a colimit. -/
-noncomputable def standardIsColimit : IsColimit (standardCocone F) :=
-  colimit.isColimit (initialChain F)
-
 /-- The Adamek initial algebra constructed from `HasColimit` and `PreservesColimit` instances. -/
 noncomputable def adamekFromInitial : Endofunctor.Algebra F :=
-  adamek F (standardCocone F) (standardIsColimit F)
+  adamek F (colimit.cocone (initialChain F)) (colimit.isColimit (initialChain F))
 
 /-- The Adamek algebra constructed from instances is initial. -/
 noncomputable def adamekFromInitial_isInitial :
     IsInitial (adamekFromInitial F) :=
-  adamek_isInitial F (standardIsColimit F)
+  adamek_isInitial F (colimit.isColimit (initialChain F))
 
-/-- The structure map of the initial algebra is an isomorphism: `F(L) ≅ L`.
+/-- The colimit of the initial chain is a fixed point of `F`: `F(L) ≅ L`.
 This is Lambek's lemma applied to the Adamek initial algebra. -/
-noncomputable def adamekStructureIso :
-    F.obj (adamekFromInitial F).a ≅ (adamekFromInitial F).a := by
+noncomputable def adamekFixedPoint :
+    F.obj (colimit (initialChain F)) ≅ colimit (initialChain F) := by
   haveI : IsIso (adamekFromInitial F).str :=
     Endofunctor.Algebra.Initial.str_isIso (adamekFromInitial_isInitial F)
+  change F.obj (adamekFromInitial F).a ≅ (adamekFromInitial F).a
   exact asIso (adamekFromInitial F).str
-
-/-- The colimit of the initial chain is a fixed point of `F`: `F(L) ≅ L`. -/
-noncomputable def adamekFixedPoint :
-    F.obj (colimit (initialChain F)) ≅ colimit (initialChain F) :=
-  adamekStructureIso F
 
 end Connection
 
