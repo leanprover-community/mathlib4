@@ -145,7 +145,7 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
-  contrapose! h
+  contrapose h
   exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
