@@ -180,12 +180,10 @@ theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap
       exact ⟨1 ⊗ₜ (maximalIdeal Λ).toCotangent ⟨x, x_in⟩, by simp⟩
     | zero => use 0; simp [show (⟨0, _⟩ : maximalIdeal A) = 0 by rfl]
     | add z w hz hw ihz ihw =>
-      change _ ∈ (maximalIdeal Λ).map (algebraMap Λ A) at hz hw
       rw [show (⟨z + w, _⟩ : maximalIdeal A) = ⟨z, map_maximalIdeal_le _ hz⟩ +
         ⟨w, map_maximalIdeal_le _ hw⟩ by simp, map_add]
       exact add_mem (ihz hz) (ihw hw)
     | smul a x hx ihx =>
-      change _ ∈ (maximalIdeal Λ).map (algebraMap Λ A) at hx
       rw [show (⟨a • x, _⟩ : maximalIdeal A) = a • ⟨x, map_maximalIdeal_le _ hx⟩ by simp, map_smul,
         ← residue_smul_cotangent]
       exact smul_mem _ _ (ihx hx)
