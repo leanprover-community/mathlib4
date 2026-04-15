@@ -246,8 +246,6 @@ theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
 
-@[deprecated (since := "2025-10-08")] alias iSup_succ := _root_.iSup_succ
-
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β] :
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
@@ -544,12 +542,6 @@ set_option linter.deprecated false in
 theorem iSup_Iio_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
   simp_rw [Iio, bsup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
 
-@[deprecated (since := "2025-10-01")] alias sup_eq_sup := iSup_eq_iSup
-@[deprecated (since := "2025-10-01")] alias sup_eq_bsup' := iSup'_eq_bsup
-@[deprecated (since := "2025-10-01")] alias sup_eq_bsup := iSup_eq_bsup
-@[deprecated (since := "2025-10-01")] alias bsup_eq_sup' := bsup'_eq_iSup
-@[deprecated (since := "2025-10-01")] alias bsup_eq_sup := bsup_eq_iSup
-
 end bsup
 
 section lsub
@@ -729,18 +721,6 @@ theorem iSup_typein_succ {o : Ordinal} :
   rw [← csSup_Iic (a := o), iSup, PrincipalSeg.range_eq]
   congr
   simp
-
-@[deprecated (since := "2025-10-01")] alias sup_eq_lsub := iSup_eq_lsub
-@[deprecated (since := "2025-10-01")] alias sup_le_lsub := iSup_le_lsub
-@[deprecated (since := "2025-10-01")] alias lsub_le_sup_succ := lsub_le_succ_iSup
-@[deprecated (since := "2025-10-01")] alias sup_eq_lsub_or_sup_succ_eq_lsub :=
-  iSup_eq_lsub_or_succ_iSup_eq_lsub
-@[deprecated (since := "2025-10-01")] alias sup_succ_le_lsub := succ_iSup_le_lsub_iff
-@[deprecated (since := "2025-10-01")] alias sup_succ_eq_lsub := succ_iSup_eq_lsub_iff
-@[deprecated (since := "2025-10-01")] alias sup_eq_lsub_iff_succ := iSup_eq_lsub_iff
-@[deprecated (since := "2025-10-01")] alias sup_eq_lsub_iff_lt_sup := iSup_eq_lsub_iff_lt_iSup
-@[deprecated (since := "2025-10-01")] alias sup_typein_limit := iSup_typein_limit
-@[deprecated (since := "2025-10-01")] alias sup_typein_succ := iSup_typein_succ
 
 end lsub
 

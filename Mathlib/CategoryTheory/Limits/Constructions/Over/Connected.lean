@@ -122,16 +122,10 @@ instance createsLimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) :=
   inferInstanceAs <| CreatesLimitsOfShape J (CostructuredArrow.proj _ _)
 
-@[deprecated (since := "2025-09-29")]
-noncomputable alias forgetCreatesConnectedLimits := createsLimitsOfShapeForgetOfIsConnected
-
 /-- The forgetful functor from the over category preserves any connected limit. -/
 instance preservesLimitsOfShape_forget_of_isConnected [IsConnected J] {B : C} :
     PreservesLimitsOfShape J (forget B) :=
   inferInstanceAs <| PreservesLimitsOfShape J (CostructuredArrow.proj _ _)
-
-@[deprecated (since := "2025-09-29")]
-alias forgetPreservesConnectedLimits := preservesLimitsOfShape_forget_of_isConnected
 
 /-- The over category has any connected limit which the original category has. -/
 instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfShape J C] :

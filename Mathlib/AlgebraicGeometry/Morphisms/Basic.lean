@@ -506,8 +506,6 @@ lemma of_isZariskiLocalAtTarget (P : MorphismProperty Scheme.{u})
       exact P.of_zeroHypercover_target Y.affineCover
         fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) hf
 
-@[deprecated (since := "2025-10-07")] alias of_isLocalAtTarget := of_isZariskiLocalAtTarget
-
 lemma copy {P P'} {Q Q'} [HasAffineProperty P Q]
     (e : P = P') (e' : Q = Q') : HasAffineProperty P' Q' where
   isLocal_affineProperty := e' ▸ isLocal_affineProperty P
@@ -679,75 +677,11 @@ instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
 
 section Deprecations
 
-@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
-
 namespace IsLocalAtTarget
-
-@[deprecated (since := "2025-10-07")]
-alias mk' := IsZariskiLocalAtTarget.mk'
-
-@[deprecated (since := "2025-10-07")]
-alias of_iSup_eq_top := IsZariskiLocalAtTarget.of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_iSup_eq_top := IsZariskiLocalAtTarget.iff_of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias of_openCover := IsZariskiLocalAtTarget.of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_openCover := IsZariskiLocalAtTarget.iff_of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias of_isPullback := IsZariskiLocalAtTarget.of_isPullback
-
-@[deprecated (since := "2025-10-07")]
-alias restrict := IsZariskiLocalAtTarget.restrict
-
-@[deprecated (since := "2025-10-07")]
-alias of_range_subset_iSup := IsZariskiLocalAtTarget.of_range_subset_iSup
 
 end IsLocalAtTarget
 
-@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
-
 namespace IsLocalAtSource
-
-@[deprecated (since := "2025-10-07")]
-alias mk' := IsZariskiLocalAtSource.mk'
-
-@[deprecated (since := "2025-10-07")]
-alias comp := IsZariskiLocalAtSource.comp
-
-@[deprecated (since := "2025-10-07")]
-alias respectsLeft_isOpenImmersion := IsZariskiLocalAtSource.respectsLeft_isOpenImmersion
-
-@[deprecated (since := "2025-10-07")]
-alias of_iSup_eq_top := IsZariskiLocalAtSource.of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_iSup_eq_top := IsZariskiLocalAtSource.iff_of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias of_openCover := IsZariskiLocalAtSource.of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_openCover := IsZariskiLocalAtSource.iff_of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias of_isOpenImmersion := IsZariskiLocalAtSource.of_isOpenImmersion
-
-@[deprecated (since := "2025-10-07")]
-alias isLocalAtTarget := IsZariskiLocalAtSource.isZariskiLocalAtTarget
-
-@[deprecated (since := "2025-10-07")]
-alias sigmaDesc := IsZariskiLocalAtSource.sigmaDesc
-
-@[deprecated (since := "2025-10-07")]
-alias resLE := IsZariskiLocalAtSource.resLE
-
-@[deprecated (since := "2025-10-07")]
-alias iff_exists_resLE := IsZariskiLocalAtSource.iff_exists_resLE
 
 end IsLocalAtSource
 
