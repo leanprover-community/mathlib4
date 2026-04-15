@@ -42,7 +42,6 @@ We provide several equivalent ways to characterize a strict map `f`:
 
 open Function Set Topology
 
-
 namespace Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
