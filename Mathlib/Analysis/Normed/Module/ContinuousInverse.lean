@@ -219,11 +219,8 @@ section
 variable [T1Space F]
 
 lemma isClosed_range (hf : f.HasLeftInverse) [IsTopologicalAddGroup F] :
-    IsClosed (range f) := by
-  -- `range f = ker (f ∘ g - id)` is closed since `f ∘ g - id` is continuous.
-  rw [← f.range_toLinearMap, ← f.coe_range,
-    f.range_eq_ker_of_leftInverse (hf.leftInverse_leftInverse)]
-  exact ((f.comp hf.leftInverse) - (ContinuousLinearMap.id R F)).isClosed_ker
+    IsClosed (range f) :=
+  hf.leftInverse_leftInverse.isClosed_range hf.leftInverse.continuous f.continuous
 
 /-- Choice of a closed complement of `range f` -/
 def complement (h : f.HasLeftInverse) : Submodule R F :=

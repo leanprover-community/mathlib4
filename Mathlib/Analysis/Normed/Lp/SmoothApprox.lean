@@ -97,13 +97,9 @@ theorem _root_.MeasureTheory.Lp.dense_hasCompactSupport_contDiff {p : ℝ≥0∞
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := exist_eLpNorm_sub_le hp hp₂.out (Lp.memLp f) hε
   have hg₄ : MemLp g p μ := hg₂.continuous.memLp_of_hasCompactSupport hg₁
-  use hg₄.toLp
-  use ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩
-  rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
-    ← le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp hg₄.toLp)).eLpNorm_ne_top hε.le]
-  convert hg₃ using 1
-  apply eLpNorm_congr_ae
-  gcongr
-  exact hg₄.coeFn_toLp
+  refine ⟨hg₄.toLp, ⟨g, hg₄.coeFn_toLp, hg₁, hg₂⟩, ?_⟩
+  rw [Metric.mem_closedBall, dist_comm, ← Lp.toLp_coeFn f (Lp.memLp f), Lp.dist_edist,
+    Lp.edist_toLp_toLp _ _ (Lp.memLp f) hg₄]
+  exact ENNReal.toReal_le_of_le_ofReal hε.le hg₃
 
 end MeasureTheory.MemLp

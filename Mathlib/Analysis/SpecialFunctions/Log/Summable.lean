@@ -158,42 +158,17 @@ lemma prod_vanishing_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) {ε : 
   have : Set.Iio ε ∈ nhds (f 0) := by simpa [f] using Iio_mem_nhds hε
   exact ContinuousAt.preimage_mem_nhds (by fun_prop) this
 
-open Finset in
-/-- In a complete normed ring, `∏' i, (1 + f i)` is convergent if the sum of real numbers
-`∑' i, ‖f i‖` is convergent. -/
-lemma multipliable_one_add_of_summable [CompleteSpace R]
-    (hf : Summable fun i ↦ ‖f i‖) : Multipliable fun i ↦ (1 + f i) := by
-  classical
-  refine CompleteSpace.complete <| Metric.cauchy_iff.mpr ⟨by infer_instance, fun ε hε ↦ ?_⟩
-  obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
-    (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finset_prod
-  obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
-  simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
-    Set.mem_preimage]
-  let s := s₁ ∪ s₂
-  -- The idea here is that if `s` is a large enough finset, then the product over `s` is bounded
-  -- by some `r`, and the product over finsets disjoint from `s` is within `ε / (2 * r)` of 1.
-  -- From this it follows that the products over any two finsets containing `s` are within `ε` of
-  -- each other.
-  -- Here `s₁ ⊆ s` guarantees that the product over `s` is bounded, and `s₂ ⊆ s` guarantees that
-  -- the product over terms not in `s` is small.
-  refine ⟨Metric.ball (∏ i ∈ s, (1 + f i)) (ε / 2), ⟨s, fun b hb ↦ ?_⟩, ?_⟩
-  · rw [← union_sdiff_of_subset hb, prod_union sdiff_disjoint.symm,
-      Metric.mem_ball, dist_eq_norm_sub, ← mul_sub_one,
-      show ε / 2 = r₁ * (ε / (2 * r₁)) by field]
-    apply (norm_mul_le _ _).trans_lt
-    refine lt_of_le_of_lt (b := r₁ * ‖∏ x ∈ b \ s, (1 + f x) - 1‖) ?_ ?_
-    · refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      exact (Finset.norm_prod_le _ _).trans (hs₁ _ subset_union_left)
-    · refine mul_lt_mul_of_pos_left (hs₂ _ ?_) hr₁
-      simp [s, sdiff_union_distrib, disjoint_iff_inter_eq_empty]
-  · intro x hx y hy
-    exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
-
 lemma summable_finset_prod_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
     Summable (fun s ↦ ∏ i ∈ s, f i) :=
   (summable_finset_prod_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
     fun _ ↦ Finset.norm_prod_le _ _
+
+open Finset in
+/-- In a complete normed ring, `∏' i, (1 + f i)` is convergent if the sum of real numbers
+`∑' i, ‖f i‖` is convergent. -/
+lemma multipliable_one_add_of_summable [CompleteSpace R]
+    (hf : Summable fun i ↦ ‖f i‖) : Multipliable fun i ↦ (1 + f i) :=
+  multipliable_one_add_of_summable_prod (summable_finset_prod_of_summable_norm hf)
 
 lemma Summable.summable_log_norm_one_add (hu : Summable fun n ↦ ‖f n‖) :
     Summable fun i ↦ Real.log ‖1 + f i‖ := by
