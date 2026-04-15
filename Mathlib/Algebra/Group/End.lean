@@ -104,14 +104,6 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[deprecated symm_apply_apply (since := "2025-08-16")]
-theorem inv_apply_self (f : Perm α) (x) : f⁻¹ (f x) = x :=
-  f.symm_apply_apply x
-
-@[deprecated apply_symm_apply (since := "2025-08-16")]
-theorem apply_inv_self (f : Perm α) (x) : f (f⁻¹ x) = x :=
-  f.apply_symm_apply x
-
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
@@ -285,8 +277,6 @@ completely in terms of the group structure. -/
 theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
-
 @[simp]
 lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
     e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
@@ -298,8 +288,6 @@ def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
 
 attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
 extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
-
-@[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
 
 @[simp]
 theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :

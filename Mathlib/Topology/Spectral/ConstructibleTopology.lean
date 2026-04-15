@@ -47,7 +47,7 @@ def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   X
 
 instance : TopologicalSpace (WithConstructibleTopology X) :=
-  constructibleTopology X
+  fast_instance% constructibleTopology X
 
 open Topology
 

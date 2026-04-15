@@ -115,7 +115,6 @@ theorem convexBodyLT_volume :
 
 variable {f}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a technical result: quite often, we want to impose conditions at all infinite places
 but one and choose the value at the remaining place so that we can apply
 `exists_ne_zero_mem_ringOfIntegers_lt`. -/

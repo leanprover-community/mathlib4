@@ -126,9 +126,6 @@ theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := 
   · rw [eq_nil_of_le h]
     exact .nil
 
-@[deprecated (since := "2025-09-19")]
-alias chain'_succ := isChain_succ
-
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :

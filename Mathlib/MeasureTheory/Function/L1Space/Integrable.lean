@@ -235,7 +235,7 @@ lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AESt
   rcases hq.eq_or_lt with (rfl | hq)
   · grind
   rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
-  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf  (by simp [hq]) (by simp)] at hint
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf (by simp [hq]) (by simp)] at hint
   exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
 
 lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
@@ -413,16 +413,13 @@ theorem Integrable.add' {f g : α → ε'} (hf : Integrable f μ) (hg : Integrab
     _ = _ := lintegral_enorm_add_left hf.aestronglyMeasurable _
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩
 
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem Integrable.add [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f + g) μ :=
   ⟨hf.aestronglyMeasurable.add hg.aestronglyMeasurable, hf.add' hg⟩
 
-@[fun_prop]
-theorem Integrable.add'' [ContinuousAdd ε']
-    {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
-    Integrable (fun x ↦ f x + g x) μ := hf.add hg
+@[deprecated (since := "2026-03-19")] alias Integrable.add'' := Integrable.fun_add
 
 @[simp]
 lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
@@ -448,21 +445,20 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
 
 end ESeminormedAddCommMonoid
 
-/-- If `f` is integrable, then so is `-f`.
-See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
-@[fun_prop]
+/-- If `f` is integrable, then so is `-f`. -/
+@[to_fun (attr := fun_prop)]
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
   ⟨hf.aestronglyMeasurable.neg, by fun_prop⟩
 
-/-- If `f` is integrable, then so is `fun x ↦ - f x`.
-See `Integrable.neg` for the same statement, but formulated with `-f` instead of `fun x ↦ - f x`. -/
-@[fun_prop]
-theorem Integrable.neg' {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ - f x) μ :=
-  ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
+@[deprecated (since := "2026-03-19")] alias Integrable.neg' := Integrable.fun_neg
 
 @[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
+
+@[simp]
+theorem integrable_fun_neg_iff {f : α → β} : Integrable (fun x ↦ -f x) μ ↔ Integrable f μ :=
+  integrable_neg_iff
 
 /-- if `f` is integrable, then `f + g` is integrable iff `g` is.
 See `integrable_add_iff_integrable_right'` for the same statement with `fun x ↦ f x + g x` instead
@@ -855,7 +851,6 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
 
 variable (μ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
 noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f) :
     Lp E 1 (μ.withDensity fun x => f x) →ₗᵢ[ℝ] Lp E 1 μ where
