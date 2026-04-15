@@ -65,6 +65,9 @@ variable.
 Examples:
 ```
 /--
+import Mathlib
+
+open Real
 Here, the assumption `hn` is about natural numbers, `hk` is about integers
 and involves casting a natural number to `ℤ`, and the conclusion is about real numbers.
 -/
@@ -77,6 +80,10 @@ example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
 example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : a < b + c := by
   rify [hab] at h ⊢ -- Here `zify` or `qify` would have also worked.
   linarith
+
+example (a b : ℕ) (ha : π ≤ a) : 3 ≤ a + b := by
+  rify
+  linarith [pi_gt_three]
 ```
 -/
 syntax (name := rify) "rify" (simpArgs)? (location)? : tactic
