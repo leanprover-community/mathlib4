@@ -58,7 +58,7 @@ theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x
   simp [adjoin_singleton_eq_range_aeval]
 
 instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
-    CoeT B (p.aeval x) (Algebra.adjoin A {x}) where
+    CoeDep B (p.aeval x) (Algebra.adjoin A {x}) where
   coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
 
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :
