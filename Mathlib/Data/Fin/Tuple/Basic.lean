@@ -400,9 +400,8 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
 
 /-- Splitting a dependent finite sequence v into an initial part and a final part,
 and then concatenating these components, produces an identical sequence. -/
-theorem addCases_castAdd_natAdd {γ : Fin (m + n) → Sort*} (v : ∀ i, γ i) :
-    addCases (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j)) = v := by
-  ext i
+theorem addCases_castAdd_natAdd {γ : Fin (m + n) → Sort*} (v : ∀ i, γ i) (i) :
+    addCases (fun i ↦ v (castAdd n i)) (fun j ↦ v (natAdd m j)) i = v i := by
   cases i using addCases <;> simp
 
 theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
@@ -803,7 +802,7 @@ theorem forall_fin_add_pi {γ : Fin (m + n) → Sort*} {P : (∀ i, γ i) → Pr
   mp hv vm vn := hv (addCases vm vn)
   mpr h v := by
     convert h (fun i => v (castAdd n i)) (fun j => v (natAdd m j))
-    exact (addCases_castAdd_natAdd v).symm
+    exact (addCases_castAdd_natAdd v _).symm
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
