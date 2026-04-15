@@ -35,73 +35,76 @@ abbrev UnitMonomial := List ℝ
 
 namespace UnitMonomial
 
+/-- Type representing a sign of the first non-zero exponent, returned by `sign`. -/
+inductive Sign
+| pos | neg | zero
+
+/-- Sign of the first non-zero exponent of a unit monomial. -/
+noncomputable def sign : UnitMonomial → Sign
+  | [] => .zero
+  | hd :: tl =>
+    if 0 < hd then
+      .pos
+    else if hd < 0 then
+      .neg
+    else
+      sign tl
+
 /-- Predicate stating that the first non-zero exponent is positive. -/
-def FirstNonzeroIsPos (li : UnitMonomial) : Prop := match li with
-  | [] => False
-  | hd :: tl => 0 < hd ∨ (hd = 0 ∧ FirstNonzeroIsPos tl)
+def FirstNonzeroIsPos (m : UnitMonomial) : Prop := m.sign = .pos
 
 /-- Predicate stating that the first non-zero exponent is negative. -/
-def FirstNonzeroIsNeg (li : UnitMonomial) : Prop := match li with
-  | [] => False
-  | hd :: tl => hd < 0 ∨ (hd = 0 ∧ FirstNonzeroIsNeg tl)
+def FirstNonzeroIsNeg (m : UnitMonomial) : Prop := m.sign = .neg
 
 /-- Predicate stating that all exponents are zero. -/
-def AllZero (li : UnitMonomial) : Prop := ∀ x ∈ li, x = 0
+def AllZero (m : UnitMonomial) : Prop := m.sign = .zero
 
 namespace AllZero
 
 @[simp]
 theorem nil : AllZero [] :=
-  List.forall_mem_nil _
+  rfl
 
 @[simp]
 theorem cons_iff {hd : ℝ} {tl : UnitMonomial} :
     AllZero (hd :: tl) ↔ hd = 0 ∧ AllZero tl := by
-  simp [AllZero]
-
-theorem of_head {hd : ℝ} (tl : UnitMonomial) (h : 0 < hd) :
-    FirstNonzeroIsPos (hd :: tl) :=
-  Or.inl h
+  grind [AllZero, sign]
 
 theorem of_tail {hd : ℝ} {tl : UnitMonomial} (h_hd : hd = 0) (h_tl : AllZero tl) :
     AllZero (hd :: tl) :=
-  List.forall_mem_cons.mpr ⟨h_hd, h_tl⟩
+  cons_iff.mpr ⟨h_hd, h_tl⟩
 
 theorem replicate {n : ℕ} : AllZero (List.replicate n 0) := by
-  simp [AllZero]
+  induction n <;> grind [AllZero, sign]
 
 theorem not_FirstNonzeroIsPos {li : UnitMonomial} (h : AllZero li) :
     ¬ FirstNonzeroIsPos li := by
-  induction li with
-  | nil => exact not_false
-  | cons hd tl ih => grind [cons_iff, FirstNonzeroIsPos]
+  grind [AllZero, FirstNonzeroIsPos]
 
 theorem not_FirstNonzeroIsNeg {li : UnitMonomial} (h : AllZero li) :
     ¬ FirstNonzeroIsNeg li := by
-  induction li with
-  | nil => exact not_false
-  | cons hd tl ih => grind [cons_iff, FirstNonzeroIsNeg]
+  grind [AllZero, FirstNonzeroIsNeg]
 
 end AllZero
 
 namespace FirstNonzeroIsPos
 
 @[simp]
-theorem not_nil : ¬ FirstNonzeroIsPos [] := not_false
-
-theorem of_head {hd : ℝ} (tl : UnitMonomial) (h_hd : 0 < hd) :
-    FirstNonzeroIsPos (hd :: tl) :=
-  Or.inl h_hd
-
-theorem of_tail {hd : ℝ} {tl : UnitMonomial} (h_hd : hd = 0)
-    (h_tl : FirstNonzeroIsPos tl) :
-    FirstNonzeroIsPos (hd :: tl) :=
-  Or.inr ⟨h_hd, h_tl⟩
+theorem not_nil : ¬ FirstNonzeroIsPos [] := by simp [FirstNonzeroIsPos, sign]
 
 @[simp]
 theorem cons_iff {hd : ℝ} {tl : UnitMonomial} :
     FirstNonzeroIsPos (hd :: tl) ↔ 0 < hd ∨ (hd = 0 ∧ FirstNonzeroIsPos tl) := by
-  rfl
+  grind [FirstNonzeroIsPos, sign]
+
+theorem of_head {hd : ℝ} (tl : UnitMonomial) (h_hd : 0 < hd) :
+    FirstNonzeroIsPos (hd :: tl) := by
+  simp [h_hd]
+
+theorem of_tail {hd : ℝ} {tl : UnitMonomial} (h_hd : hd = 0)
+    (h_tl : FirstNonzeroIsPos tl) :
+    FirstNonzeroIsPos (hd :: tl) := by
+  simp [h_hd, h_tl]
 
 theorem not_AllZero {li : UnitMonomial} (h : FirstNonzeroIsPos li) :
     ¬ AllZero li :=
@@ -109,30 +112,27 @@ theorem not_AllZero {li : UnitMonomial} (h : FirstNonzeroIsPos li) :
 
 theorem not_FirstNonzeroIsNeg {li : UnitMonomial} (h : FirstNonzeroIsPos li) :
     ¬ FirstNonzeroIsNeg li := by
-  induction li with
-  | nil => exact not_false
-  | cons hd tl ih => grind [cons_iff, FirstNonzeroIsNeg]
+  grind [FirstNonzeroIsPos, FirstNonzeroIsNeg]
 
 end FirstNonzeroIsPos
 
 namespace FirstNonzeroIsNeg
 
 @[simp]
-theorem not_nil : ¬ FirstNonzeroIsNeg [] := not_false
-
-theorem of_head {hd : ℝ} (tl : UnitMonomial) (h_hd : hd < 0) :
-    FirstNonzeroIsNeg (hd :: tl) :=
-  Or.inl h_hd
-
-theorem of_tail {hd : ℝ} {tl : UnitMonomial} (h_hd : hd = 0)
-    (h_tl : FirstNonzeroIsNeg tl) :
-    FirstNonzeroIsNeg (hd :: tl) :=
-  Or.inr ⟨h_hd, h_tl⟩
+theorem not_nil : ¬ FirstNonzeroIsNeg [] := by simp [FirstNonzeroIsNeg, sign]
 
 @[simp]
 theorem cons_iff {hd : ℝ} {tl : UnitMonomial} :
     FirstNonzeroIsNeg (hd :: tl) ↔ hd < 0 ∨ (hd = 0 ∧ FirstNonzeroIsNeg tl) := by
-  rfl
+  grind [FirstNonzeroIsNeg, sign]
+
+theorem of_head {hd : ℝ} (tl : UnitMonomial) (h_hd : hd < 0) :
+    FirstNonzeroIsNeg (hd :: tl) := by
+  simp [h_hd]
+
+theorem of_tail {hd : ℝ} {tl : UnitMonomial} (h_hd : hd = 0) (h_tl : FirstNonzeroIsNeg tl) :
+    FirstNonzeroIsNeg (hd :: tl) := by
+  simp [h_hd, h_tl]
 
 theorem not_AllZero {li : UnitMonomial} (h : FirstNonzeroIsNeg li) :
     ¬ AllZero li :=
