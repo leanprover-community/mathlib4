@@ -129,13 +129,15 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
 
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
-noncomputable def Presentation.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) : N.Presentation where
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
 
+@[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
+
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
-    (σ : M.Presentation) [σ.IsFinite] : (σ.of_isIso f).IsFinite where
+    (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
   isFiniteType_generators := inferInstanceAs (σ.generators.ofEpi _).IsFiniteType
   isFiniteType_relations := inferInstanceAs (σ.relations.ofEpi _).IsFiniteType
 
@@ -318,28 +320,28 @@ theorem Presentation.isQuasicoherent {M : SheafOfModules.{u} R} (P : Presentatio
 
 /-- Mapping quasicoherent data under an isomorphism. -/
 @[simps]
-noncomputable def QuasicoherentData.of_isIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
+noncomputable def QuasicoherentData.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.QuasicoherentData) : N.QuasicoherentData where
   I := σ.I
   X := σ.X
   coversTop := σ.coversTop
-  presentation i := Presentation.of_isIso (f.over (σ.X i)) (σ.presentation i)
+  presentation i := Presentation.ofIsIso (f.over (σ.X i)) (σ.presentation i)
 
 instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
   of_iso e := by
     intro ⟨⟨q⟩⟩
-    exact ⟨⟨q.of_isIso e.hom⟩⟩
+    exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
-    [σ.IsFinitePresentation] : (σ.of_isIso f).IsFinitePresentation where
+    [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
   isFinite_presentation i := by
     dsimp
-    exact inferInstanceAs ((σ.presentation i).of_isIso _).IsFinite
+    exact inferInstanceAs ((σ.presentation i).ofIsIso _).IsFinite
 
 instance : (isFinitePresentation R).IsClosedUnderIsomorphisms where
   of_iso e := by
     intro ⟨σ, hσ⟩
-    exact ⟨σ.of_isIso e.hom, inferInstance⟩
+    exact ⟨σ.ofIsIso e.hom, inferInstance⟩
 
 end
 
@@ -368,7 +370,7 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
       (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
-    (((D i.1).presentation i.2).map e.inverse (.refl _)).of_isIso
+    (((D i.1).presentation i.2).map e.inverse (.refl _)).ofIsIso
       (e.fullyFaithfulFunctor.preimageIso
       (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom
 
