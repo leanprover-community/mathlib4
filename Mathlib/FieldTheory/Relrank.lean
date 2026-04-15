@@ -45,7 +45,6 @@ when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
 This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `Nat` version of `Subfield.relrank`.
 If `B / A ⊓ B` is an infinite extension, then it is zero. -/
 noncomputable def relfinrank := finrank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
@@ -68,7 +67,6 @@ theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (exten
   have := inf_of_le_left h
   congr!
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(toNat $(relrank_eq_rank_of_le h))
@@ -122,11 +120,9 @@ theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E 
 
 variable (A B)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
@@ -141,7 +137,6 @@ theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
 theorem relfinrank_top_right : relfinrank A ⊤ = finrank A E := by
   simp [relfinrank_eq_toNat_relrank, finrank]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_relrank_map_map (f : E →+* L) :
     lift.{v} (relrank (A.map f) (B.map f)) = lift.{w} (relrank A B) :=
   -- typeclass inference is slow
@@ -443,7 +438,6 @@ variable {A B} in
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
   simpa using congr(toNat $(relrank_mul_rank_top h))
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]

@@ -61,7 +61,6 @@ include hY
 `J.CoversTop Y` -/
 abbrev cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
     (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
       g ≫ c.π.app (Opposite.op (Y i))) :
@@ -70,7 +69,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
-lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
+lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
     (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
     x = y := by
   ext W

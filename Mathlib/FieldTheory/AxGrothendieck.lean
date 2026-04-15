@@ -45,7 +45,6 @@ noncomputable section
 
 open MvPolynomial Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] [alg : Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)
@@ -238,7 +237,6 @@ theorem ax_grothendieck_zeroLocus
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an

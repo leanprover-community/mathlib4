@@ -56,7 +56,7 @@ variable (hA : A.IsHermitian) (hB : B.IsHermitian)
 /-- The eigenvalues of a Hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
-  (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
+  (isSymmetric_toEuclideanLin_iff.mpr hA).eigenvalues finrank_euclideanSpace
 
 lemma eigenvalues₀_antitone : Antitone hA.eigenvalues₀ :=
   LinearMap.IsSymmetric.eigenvalues_antitone ..
@@ -67,14 +67,14 @@ noncomputable def eigenvalues : n → ℝ := fun i =>
 
 /-- A choice of an orthonormal basis of eigenvectors of a Hermitian matrix. -/
 noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
-  ((isHermitian_iff_isSymmetric.1 hA).eigenvectorBasis finrank_euclideanSpace).reindex
+  ((isSymmetric_toEuclideanLin_iff.mpr hA).eigenvectorBasis finrank_euclideanSpace).reindex
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
   simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
-      congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
+      congr(⇑$((isSymmetric_toEuclideanLin_iff.mpr hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
 /-- Eigenvalues of a Hermitian matrix A are in the ℝ spectrum of A. -/
@@ -127,13 +127,13 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
   simp only [conjStarAlgAut_star_apply, toLpLin_apply, OrthonormalBasis.coe_toBasis,
-    EuclideanSpace.basisFun_apply, EuclideanSpace.ofLp_single, ← mulVec_mulVec,
+    EuclideanSpace.basisFun_apply, PiLp.ofLp_single, ← mulVec_mulVec,
     eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
     Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, EuclideanSpace.toLp_single,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.toLp_smul, PiLp.toLp_single,
     Function.comp_apply, mul_one]
   apply PiLp.ext fun j ↦ ?_
-  simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
 @[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
   conjStarAlgAut_star_eigenvectorUnitary
@@ -193,13 +193,11 @@ theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Splits :=
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   simp [det_eq_prod_roots_charpoly_of_splits hA.splits_charpoly, hA.roots_charpoly_eq_eigenvalues]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem, conjStarAlgAut_apply, ← coe_star]
   simp [-isUnit_iff_ne_zero, -coe_star, rank_diagonal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
@@ -231,7 +229,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
   classical
   have : hA.eigenvalues ≠ 0 := by
-    contrapose! h_ne
+    contrapose h_ne
     have := hA.spectral_theorem
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, map_zero] at this

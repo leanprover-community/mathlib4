@@ -335,9 +335,9 @@ variable (C)
 @[simps]
 def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
   obj X := Subobject X.unop
-  map f := (pullback f.unop).obj
-  map_id _ := funext pullback_id
-  map_comp _ _ := funext (pullback_comp _ _)
+  map f := TypeCat.ofHom (pullback f.unop).obj
+  map_id _ := by ext : 3; simp [pullback_id]
+  map_comp _ _ := by ext : 3; simp [pullback_comp]
 
 end Functor
 
@@ -626,8 +626,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
-  sInf_le := sInf_le
-  le_sInf := le_sInf
+  isGLB_sInf _ := ⟨sInf_le _, le_sInf _⟩
 
 end Inf
 
@@ -679,8 +678,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
-  le_sSup := le_sSup
-  sSup_le := sSup_le
+  isLUB_sSup _ := ⟨le_sSup _, sSup_le _⟩
 
 end Sup
 

@@ -18,8 +18,8 @@ to the category `Opens U`.
 
 ## TODO
 * show that both functors of the equivalence `overEquivalence U` are continuous and
-induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
-and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
+  induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
+  and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
 
 -/
 

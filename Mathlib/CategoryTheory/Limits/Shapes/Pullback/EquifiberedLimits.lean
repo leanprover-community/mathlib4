@@ -37,12 +37,11 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
       refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (WithTerminal.isLimitEquiv.symm hc)
       · exact NatIso.ofComponents (fun i ↦ i.casesOn (fun _ ↦ .refl _) (.refl _)) <| by
           rintro (i | _) (j | _) <;> (try rintro ⟨⟩) <;> simp
-      · exact Cones.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
+      · exact Cone.ext (.refl _) (by rintro ⟨⟩ <;> simp))⟩, fun i ↦
         i.casesOn H (.of_isIso (𝟙 F))⟩ f
   refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ i j f ↦ ⟨⟨by simp⟩, ⟨Limits.PullbackCone.isLimitAux' _ fun s ↦ ?_⟩⟩⟩
   let hcᵢ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj i) hc
   let hcⱼ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj j) hc
-  dsimp at s
   let l : s.pt ⟶ G.left.obj i := hcᵢ.lift ⟨_, fun k ↦ (H k f).lift (s.fst ≫ (α.app k).left.app j)
     s.snd (by simp [← s.condition, ← NatTrans.comp_app]), fun k₁ k₂ fk₁k₂ ↦ (H _ f).hom_ext
     (by simp [← NatTrans.naturality, ← NatTrans.comp_app, ← Over.comp_left])
@@ -68,7 +67,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     hasColimitsOfShape_of_equivalence (Discrete.equivalence Quiver.Hom.opEquiv)
   let e : Over F.op ≌ (Under F)ᵒᵖ := (postEquiv _ (opUnopEquiv _ _)).symm.trans (opEquivOpUnder F)
   rw [isClosedUnderColimitsOfShape_iff_op, ← isClosedUnderLimitsOfShape_inverseImage_iff _ _ e]
-  convert (inferInstanceAs <| IsClosedUnderLimitsOfShape
+  convert (inferInstance : IsClosedUnderLimitsOfShape
     (fun f : Over F.op ↦ f.hom.Equifibered) Jᵒᵖ) with f
   simp [e, MorphismProperty.cancel_left_of_respectsIso, ← coequifibered_unop_iff]
   rfl

@@ -83,7 +83,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
 lemma GeneralizingMap.restrictPreimage (H : GeneralizingMap f) (s : Set β) :
     GeneralizingMap (s.restrictPreimage f) := by
   intro x y h
-  obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtype_val (p := s))
+  obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtype_val (p := (· ∈ s)))
   use ⟨a, by simp [hy]⟩
   simp [hy, subtype_specializes_iff, ha]
 
@@ -235,7 +235,6 @@ end LocalAtSource
 end TopologicalSpace.IsOpenCover
 
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a continuous map `f : X → Y` between topological spaces.
 Suppose we have an open cover `U i` of the range of `f`, and a family of continuous maps `V i → X`

@@ -35,8 +35,8 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
   {X : Type*} [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-@[to_additive]
-instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
+@[to_additive (dont_translate := R)]
+instance instCoalgebra : Coalgebra R A[X] := inferInstanceAs <| Coalgebra R (X →₀ A)
 
 @[to_additive]
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := Finsupp.instIsCocomm R X A
@@ -62,6 +62,7 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Module R A] [Coalgebra R A
 
 instance instCoalgebra : Coalgebra R A[T;T⁻¹] := inferInstanceAs <| Coalgebra R A[ℤ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsCocomm [IsCocomm R A] : IsCocomm R A[T;T⁻¹] := inferInstanceAs <| IsCocomm R A[ℤ]
 
 variable {R A}

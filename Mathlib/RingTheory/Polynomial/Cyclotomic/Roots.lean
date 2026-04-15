@@ -95,7 +95,6 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   specialize hn (X - C μ) ⟨(∏ x ∈ n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
   simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
     IsRoot (cyclotomic n R) μ ↔ IsPrimitiveRoot μ n := by
   have hf : Function.Injective _ := IsFractionRing.injective R (FractionRing R)
@@ -219,7 +218,7 @@ variable {p : ℕ} {ζ : K}
 
 /-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
 coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
-polynomial. See Washington, *Introduction to Cyclotomic Fields*, Lemma 2.8.5. -/
+polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   haveI : Fact p.Prime := ⟨hp⟩

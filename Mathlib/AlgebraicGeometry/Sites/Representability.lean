@@ -95,43 +95,44 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def yonedaGluedToSheaf :
     zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F where
   -- The map is obtained by finding an object of `F((glueData hf).glued)`.
-  val := yonedaEquiv.symm
+  hom := yonedaEquiv.symm
   -- This section is obtained from gluing the section corresponding to `f i : Hom(-, X i) ⟶ F`.
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
       apply yonedaEquiv.symm.injective
       dsimp only [glueData_V, glueData_J, glueData_U, glueData_f, glueData_t]
       rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
-        FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
+        Functor.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
         Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w]))
 
 @[reassoc (attr := simp)]
 lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
-    yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).val = f i := by
+    yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).hom = f i := by
   apply yonedaEquiv.injective
   rw [yonedaGluedToSheaf, yonedaEquiv_apply, yonedaEquiv_apply,
-    FunctorToTypes.comp, yoneda_map_app, id_comp, yonedaEquiv_symm_app_apply]
-  apply GlueData.sheafValGluedMk_val
+    NatTrans.comp_app_apply, yoneda_map_app]
+  simpa using GlueData.sheafValGluedMk_val _ _ _ _
 
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
-    (yonedaGluedToSheaf hf).val.app _ (toGlued hf i) = yonedaEquiv (f i) := by
+    dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]
+  rfl
 
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
-    (yonedaGluedToSheaf hf).val.app (op V) (γ ≫ α) =
-      F.val.map γ.op ((yonedaGluedToSheaf hf).val.app (op U) α) :=
-  congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
+    dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
+      F.obj.map γ.op ((yonedaGluedToSheaf hf).hom.app (op U) α) :=
+  ConcreteCategory.congr_hom ((yonedaGluedToSheaf hf).hom.naturality γ.op) α
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
-      (yonedaGluedToSheaf hf).val = Sigma.desc f by cat_disch)
+      (yonedaGluedToSheaf hf).hom = Sigma.desc f by cat_disch)
 
 lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
@@ -147,15 +148,15 @@ lemma glueData_openCover_map : (glueData hf).openCover.f j = toGlued hf j := rfl
 instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
     rintro ⟨U⟩ (α β : U ⟶ _) h
-    replace h : (yonedaGluedToSheaf hf).val.app _ α = (yonedaGluedToSheaf hf).val.app _ β := h
+    replace h : (yonedaGluedToSheaf hf).hom.app _ α = (yonedaGluedToSheaf hf).hom.app _ β := h
     have mem := (glueData hf).openCover.mem_grothendieckTopology
     refine GrothendieckTopology.superset_covering _ ?_
       (zariskiTopology.intersection_covering (zariskiTopology.pullback_stable α mem)
         (zariskiTopology.pullback_stable β mem))
     rintro V (γ : _ ⟶ U) ⟨⟨W₁, a, _, ⟨i⟩, fac₁⟩, ⟨W₂, b, _, ⟨j⟩, fac₂⟩⟩
     change γ ≫ α = γ ≫ β
-    replace h : (yonedaGluedToSheaf hf).val.app _ (γ ≫ α) =
-        (yonedaGluedToSheaf hf).val.app _ (γ ≫ β) := by simp [h]
+    replace h : (yonedaGluedToSheaf hf).hom.app _ (γ ≫ α) =
+        (yonedaGluedToSheaf hf).hom.app _ (γ ≫ β) := by dsimp at h; simp [h]
     rw [← fac₁, ← fac₂] at h ⊢
     apply comp_toGlued_eq
     simpa [Scheme.GlueData.openCover_X, yonedaEquiv_naturality] using h

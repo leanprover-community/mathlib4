@@ -125,7 +125,7 @@ of morphisms $p^* M ⟶ p^* N$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
-  map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
+  map {T₁ T₂} p := TypeCat.ofHom (fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom)
 
 /-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
 @[simps! -isSimp]
@@ -172,8 +172,8 @@ a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
     Sheaf (J.over S) (Type v') where
-  val := F.presheafHom M N
-  cond := IsPrestack.isSheaf _ _ _
+  obj := F.presheafHom M N
+  property := IsPrestack.isSheaf _ _ _
 
 end Pseudofunctor
 

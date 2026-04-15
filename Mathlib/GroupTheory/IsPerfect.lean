@@ -48,7 +48,7 @@ lemma isPerfect_def : IsPerfect G ↔ commutator G = ⊤ :=
   ⟨fun h ↦ h.commutator_eq_top, fun h ↦ ⟨h⟩⟩
 
 lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
-  rw [Group.isPerfect_def, ← (map_injective H.subtype_injective).eq_iff,
+  rw [Group.isPerfect_def, ← map_subtype_inj,
     map_subtype_commutator, ← MonoidHom.range_eq_map, range_subtype]
 
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
@@ -64,7 +64,7 @@ instance [Subsingleton G] : IsPerfect G where
   commutator_eq_top := Subsingleton.elim _ _
 
 theorem top_iff : IsPerfect (⊤ : Subgroup G) ↔ IsPerfect G := by
-  rw [isPerfect_def, isPerfect_def, ← (map_injective (⊤ : Subgroup G).subtype_injective).eq_iff,
+  rw [isPerfect_def, isPerfect_def, ← map_subtype_inj,
     map_subtype_commutator, ← MonoidHom.range_eq_map, subtype_range, commutator_def]
 
 instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
@@ -79,6 +79,7 @@ variable (G) in
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
   fun _ ↦ (not_isSolvable G) IsNilpotent.to_isSolvable
 
+open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
   fun _ ↦ (not_isSolvable G) CommGroup.isSolvable

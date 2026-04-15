@@ -204,7 +204,6 @@ lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Me
 @[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_zero :=
   uncenteredCovarianceBilinDual_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     ‖uncenteredCovarianceBilinDual μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
   by_cases h : MemLp id 2 μ
@@ -271,7 +270,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
   have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
     apply Integrable.norm
-    contrapose! hx
+    contrapose hx
     exact integral_undef hx
   have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
   apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
@@ -282,8 +281,9 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   rcases le_total ‖y‖ (‖c‖ / 2)
   · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
     calc ‖c‖ ^ (p : ℝ)
-    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) :=
-      Real.rpow_le_rpow (by positivity) (by linarith) (by positivity)
+    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) := by
+      gcongr
+      linarith
     _ = 0 + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       rw [Real.mul_rpow (by simp) (by positivity)]
       ring
@@ -308,7 +308,7 @@ lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y �
 lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
-  contrapose! h
+  contrapose h
   exact memLp_id_of_self_sub_integral h
 
 @[simp]

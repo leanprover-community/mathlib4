@@ -368,7 +368,6 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
   exact ⟨⟨c.lim, c.continuous_lim⟩, fun x hx ↦ c.lim_of_mem_C _ (sk.trans interior_subset hx),
     fun x hx => c.lim_of_notMem_U _ fun h => h hx, c.lim_mem_Icc⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous
 function `f : X → ℝ` such that
@@ -393,7 +392,6 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   · intro x
     simpa [and_comm] using hicc x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
@@ -415,7 +413,7 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]
     apply (hft _).symm
-    contrapose! hx
+    contrapose hx
     simp only [mem_compl_iff, not_not] at hx
     exact interior_subset hx
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x

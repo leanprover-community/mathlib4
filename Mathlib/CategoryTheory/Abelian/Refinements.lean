@@ -135,6 +135,7 @@ lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f :
   · rintro ⟨A', π, hπ, x, fac⟩
     simp [← cancel_epi π, reassoc_of% fac, condition]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ShortComplex.liftCycles_comp_homologyπ_eq_zero_iff_up_to_refinements
     {A : C} (x₂ : A ⟶ S.X₂) (hx₂ : x₂ ≫ S.g = 0) :
     S.liftCycles x₂ hx₂ ≫ S.homologyπ = 0 ↔

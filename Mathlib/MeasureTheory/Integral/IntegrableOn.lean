@@ -120,14 +120,20 @@ theorem integrableOn_const {C : ε'} (hs : μ s ≠ ∞ := by finiteness)
     (hC : ‖C‖ₑ ≠ ∞ := by finiteness) : IntegrableOn (fun _ ↦ C) s μ :=
   (integrableOn_const_iff hC).2 <| Or.inr <| lt_top_iff_ne_top.2 hs
 
+@[gcongr]
 theorem IntegrableOn.mono (h : IntegrableOn f t ν) (hs : s ⊆ t) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_mono hs hμ
 
+@[gcongr]
 theorem IntegrableOn.mono_set (h : IntegrableOn f t μ) (hst : s ⊆ t) : IntegrableOn f s μ :=
   h.mono hst le_rfl
 
 theorem IntegrableOn.mono_measure (h : IntegrableOn f s ν) (hμ : μ ≤ ν) : IntegrableOn f s μ :=
   h.mono (Subset.refl _) hμ
+
+theorem IntegrableOn.mono_measure' (h : IntegrableOn f s ν) (hμ : μ.restrict s ≤ ν.restrict s) :
+    IntegrableOn f s μ :=
+  Integrable.mono_measure h hμ
 
 theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t) : IntegrableOn f s μ :=
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
@@ -142,6 +148,7 @@ theorem IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.res
     IntegrableOn g s μ :=
   Integrable.congr h hst
 
+@[gcongr]
 theorem integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun_ae hst, fun h => h.congr_fun_ae hst.symm⟩
@@ -234,7 +241,6 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
   cases nonempty_fintype β
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
@@ -255,6 +261,29 @@ theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
     (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
+
+@[to_fun]
+theorem IntegrableOn.add [ContinuousAdd ε'] {f g : α → ε'}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f + g) s μ :=
+  Integrable.add hf hg
+
+@[to_fun]
+theorem IntegrableOn.sub {f g : α → E}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f - g) s μ :=
+  Integrable.sub hf hg
+
+@[to_fun]
+theorem IntegrableOn.neg {f : α → E} (hf : IntegrableOn f s μ) : IntegrableOn (-f) s μ :=
+  Integrable.neg hf
+
+@[simp]
+theorem integrableOn_neg_iff {f : α → E} : IntegrableOn (-f) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
+@[simp]
+theorem integrableOn_fun_neg_iff {f : α → E} :
+    IntegrableOn (fun x ↦ -f x) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
 
 @[simp]
 theorem integrableOn_add_measure [PseudoMetrizableSpace ε] :
@@ -338,6 +367,10 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
+
+theorem integrableOn_indicator_iff (hs : MeasurableSet s) :
+    IntegrableOn (indicator s f) t μ ↔ IntegrableOn f (s ∩ t) μ := by
+  simp_rw [IntegrableOn, integrable_indicator_iff hs, IntegrableOn, Measure.restrict_restrict hs]
 
 end indicator
 
@@ -444,6 +477,13 @@ theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : Int
     (∫⁻ x in s, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   Integrable.lintegral_lt_top hf
 
+theorem _root_.ContinuousLinearMap.integrableOn_comp {E H 𝕜 𝕜' : Type*}
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
+    IntegrableOn (L ∘ f) s μ :=
+  L.integrable_comp hf
+
 /-- We say that a function `f` is *integrable at filter* `l` if it is integrable on some
 set `s ∈ l`. Equivalently, it is eventually integrable on `s` in `l.smallSets`. -/
 def IntegrableAtFilter (f : α → ε) (l : Filter α) (μ : Measure α := by volume_tac) :=
@@ -484,6 +524,20 @@ theorem integrableAtFilter_atBot_iff [Preorder α] [IsCodirectedOrder α] [Nonem
 theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedOrder α] [Nonempty α] :
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
+
+@[gcongr]
+lemma IntegrableAtFilter.mono_measure (hf : IntegrableAtFilter f l μ) (h : ν ≤ μ) :
+    IntegrableAtFilter f l ν :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.mono_measure h⟩
+
+@[gcongr]
+lemma IntegrableAtFilter.congr (hf : IntegrableAtFilter f l μ) (h : f =ᵐ[μ] g) :
+    IntegrableAtFilter g l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr h.restrict⟩
+
+lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
+    IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
+  ⟨(·.congr h), (·.congr h.symm)⟩
 
 protected theorem IntegrableAtFilter.add [ContinuousAdd ε'] {f g : α → ε'}
     (hf : IntegrableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
@@ -554,6 +608,13 @@ theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} 
   constructor
   · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
   · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+
+theorem _root_.ContinuousLinearMap.integrableAtFilter_comp {E H 𝕜 𝕜' : Type*}
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} (L : H →SL[σ] E)
+    (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter (L ∘ f) l μ :=
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, L.integrableOn_comp hf⟩
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
@@ -768,7 +829,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ioc'
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
   · rw [Icc_eq_empty hab, Ioc_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Icc_iff_integrableOn_Ico'
@@ -777,7 +838,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ico'
   by_cases hab : a ≤ b
   · rw [← Ico_union_right hab, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
   · rw [Icc_eq_empty hab, Ico_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Ico_iff_integrableOn_Ioo'

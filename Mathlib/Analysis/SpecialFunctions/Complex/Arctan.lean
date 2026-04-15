@@ -35,11 +35,11 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
     ← mul_div_mul_right _ _ (exp_ne_zero (arctan z * I)), sub_mul, add_mul,
     ← exp_add, neg_mul, neg_add_cancel, exp_zero, ← exp_add, ← two_mul]
   have z₁ : 1 + z * I ≠ 0 := by
-    contrapose! h₁
+    contrapose h₁
     rw [add_eq_zero_iff_neg_eq, ← div_eq_iff I_ne_zero, div_I, neg_one_mul, neg_neg] at h₁
     exact h₁.symm
   have z₂ : 1 - z * I ≠ 0 := by
-    contrapose! h₂
+    contrapose h₂
     rw [sub_eq_zero, ← div_eq_iff I_ne_zero, div_I, one_mul] at h₂
     exact h₂.symm
   have key : exp (2 * (arctan z * I)) = (1 + z * I) / (1 - z * I) := by
@@ -58,7 +58,7 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
   rw [ne_eq, Complex.ext_iff, not_and_or] at h₀ ⊢
   norm_cast at h₀ ⊢
   rcases h₀ with nr | ni
-  · left; contrapose! nr
+  · left; contrapose nr
     rw [nr, mul_div_assoc, neg_eq_neg_one_mul, mul_lt_mul_iff_of_pos_right (by positivity)] at h₁
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
     norm_cast at h₁ h₂
@@ -66,6 +66,7 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     rwa [show 2 * k + 1 = 1 by lia, Int.cast_one, one_mul] at nr
   · exact Or.inr ni
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h₂ : z.re ≤ π / 2) :
     arctan (tan z) = z := by
   have h := cos_ne_zero_of_arctan_bounds h₀ h₁ h₂
@@ -77,7 +78,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
     rw [sub_eq_add_neg, ← neg_mul, ← sin_neg, ← cos_neg]
   rw [← exp_mul_I, ← exp_mul_I, ← exp_sub, show z * I - -z * I = 2 * (I * z) by ring, log_exp,
     show -I / 2 * (2 * (I * z)) = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
-  all_goals norm_num
+  all_goals simp
   · rwa [← div_lt_iff₀' two_pos, neg_div]
   · rwa [← le_div_iff₀' two_pos]
 
@@ -90,7 +91,6 @@ theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   · exact Real.neg_pi_div_two_lt_arctan _
   · exact (Real.arctan_lt_pi_div_two _).le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The argument of `1 + z` for `z` in the open unit disc is always in `(-π / 2, π / 2)`. -/
 lemma arg_one_add_mem_Ioo {z : ℂ} (hz : ‖z‖ < 1) : (1 + z).arg ∈ Set.Ioo (-(π / 2)) (π / 2) := by
   rw [Set.mem_Ioo, ← abs_lt, abs_arg_lt_pi_div_two_iff, add_re, one_re, ← neg_lt_iff_pos_add']

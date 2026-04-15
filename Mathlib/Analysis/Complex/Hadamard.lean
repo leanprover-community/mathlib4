@@ -227,8 +227,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  norm_num
-  exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -397,12 +396,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       use ((z - l) / (u - l))
       constructor
       · norm_cast
-        rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
-        simp only [sub_re, hz₁, ofReal_re, sub_im, ofReal_im, sub_zero, ofReal_sub, sub_self,
-          mul_zero, zero_div, add_zero]
-        rw [div_mul_eq_div_div_swap, mul_div_assoc,
-          div_self (by norm_cast; linarith),
-          mul_one, div_self (by norm_cast; linarith)]
+        grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp only [one_mul, add_sub_cancel, hz₂]
   rw [this]
@@ -439,7 +433,6 @@ lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip
     norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
       (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
@@ -491,7 +484,6 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : 
     (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
   rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hadamard three-line theorem** on `re ⁻¹' [0, 1]` (Variant in simpler terms): Let `f` be a
 bounded function, continuous on the closed strip `re ⁻¹' [0, 1]` and differentiable on open strip
 `re ⁻¹' (0, 1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
@@ -522,14 +514,15 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
     exact (norm_nonneg _).trans hb
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using ha
-      · use ‖(f 0)‖, 0
-        simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
-          and_self]
+  · gcongr
+    · exact sSupNormIm_nonneg f _
+    · exact sub_nonneg.mpr hz.2
+    rw [sSupNormIm]
+    apply csSup_le _
+    · simpa [comp_apply, mem_image, forall_exists_index,
+        and_imp, forall_apply_eq_imp_iff₂] using ha
+    · use ‖(f 0)‖, 0
+      simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _
@@ -539,7 +532,6 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
         simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
           and_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
   to the strip ``re ⁻¹' (0, 1)``. -/
 lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
@@ -555,7 +547,6 @@ lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) 
   simp only [sub_pos]
   exact hul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
   `re ⁻¹' [0, 1]`. -/
 lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)

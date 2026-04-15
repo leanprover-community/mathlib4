@@ -108,7 +108,7 @@ def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
 
 theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
   simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.fst_sum]
-  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp_all)]
+  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp)]
   · simp
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn
   simp [pow_succ']
@@ -214,7 +214,7 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     choose y hy using hx
     refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
     constructor
-    <;> contrapose!
+    <;> contrapose
     <;> simp_all +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
