@@ -103,7 +103,7 @@ lemma disjoint_sdiff_neighborFinset_image :
   have : t ∉ e := by
     rw [mem_sdiff, mem_incidenceFinset] at he
     obtain ⟨_, h⟩ := he
-    contrapose! h
+    contrapose h
     simp_all [incidenceSet]
   aesop
 
