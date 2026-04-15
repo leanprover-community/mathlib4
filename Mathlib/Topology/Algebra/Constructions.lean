@@ -178,4 +178,18 @@ lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenM
     fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
   all_goals simp_all
 
+@[to_additive]
+lemma _root_.Topology.IsInducing.units_map {f : M →* N} (hf : IsInducing f) :
+    IsInducing (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isInducing.comp <| hf.comp opHomeomorph.symm.isInducing)
+    |>.comp isInducing_embedProduct
+
+@[to_additive]
+lemma _root_.Topology.IsEmbedding.units_map {f : M →* N} (hf : IsEmbedding f) :
+    IsEmbedding (map f) := by
+  refine .of_comp (continuous_map hf.continuous) continuous_embedProduct ?_
+  exact hf.prodMap (opHomeomorph.isEmbedding.comp <| hf.comp opHomeomorph.symm.isEmbedding)
+    |>.comp isEmbedding_embedProduct
+
 end Units
