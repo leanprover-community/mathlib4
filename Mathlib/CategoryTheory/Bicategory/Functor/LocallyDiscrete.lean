@@ -114,7 +114,8 @@ corresponding locally discrete bicategories.
 def Functor.toPseudofunctor : LocallyDiscrete C ⥤ᵖ (LocallyDiscrete D) :=
   pseudofunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦ .mk <| F.obj X) (fun ⟨f⟩ ↦ (F.map f).toLoc)
-    (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
+    (fun ⟨X⟩ ↦ eqToIso (by simp [CategoryStruct.id]))
+    (fun ⟨f⟩ ⟨g⟩ ↦ eqToIso (by simp [CategoryStruct.comp]))
 
 @[deprecated (since := "2026-02-08")] alias Functor.toPseudoFunctor := Functor.toPseudofunctor
 
@@ -145,7 +146,8 @@ be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
 def Functor.toPseudofunctor' : LocallyDiscrete I ⥤ᵖ B :=
   pseudofunctorOfIsLocallyDiscrete
     (fun ⟨X⟩ ↦ F.obj X) (fun ⟨f⟩ ↦ F.map f)
-    (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
+    (fun ⟨X⟩ ↦ eqToIso (by simp [CategoryStruct.id]))
+    (fun f g ↦ eqToIso (by obtain ⟨f⟩ := f; obtain ⟨g⟩ := g; simp [CategoryStruct.comp]))
 
 @[deprecated (since := "2026-02-08")] alias Functor.toPseudoFunctor' := Functor.toPseudofunctor'
 

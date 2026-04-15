@@ -137,6 +137,13 @@ def matchEpsilon : RegularExpression α → Bool
   | P * Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
 
+@[simp]
+theorem matchEpsilon_zero : matchEpsilon (0 : RegularExpression α) = false := by
+  change matchEpsilon zero = false; rfl
+
+theorem matchEpsilon_one : matchEpsilon (1 : RegularExpression α) = true := by
+  change matchEpsilon epsilon = true; rfl
+
 section DecidableEq
 variable [DecidableEq α]
 
@@ -182,10 +189,10 @@ def rmatch : RegularExpression α → List α → Bool
 
 @[simp]
 theorem zero_rmatch (x : List α) : rmatch 0 x = false := by
-  induction x <;> simp [rmatch, matchEpsilon, *]
+  induction x <;> simp [rmatch, matchEpsilon_zero, *]
 
 theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
-  induction x <;> simp [rmatch, matchEpsilon, *]
+  induction x <;> simp [rmatch, matchEpsilon_one, *]
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   rcases x with - | ⟨_, x⟩

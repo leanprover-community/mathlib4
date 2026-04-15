@@ -729,7 +729,8 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  simp
+  simp only [show n + 2 = n + 1 + 1 from rfl, ↓reduceDIte]
+  congr 1 <;> exact (Category.id_comp _).symm
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/

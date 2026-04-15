@@ -230,6 +230,8 @@ lemma hom_ext₀ {F G : ComposableArrows C 0} {φ φ' : F ⟶ G}
 def isoMk₀ {F G : ComposableArrows C 0} (e : F.obj' 0 ≅ G.obj' 0) : F ≅ G where
   hom := homMk₀ e.hom
   inv := homMk₀ e.inv
+  hom_inv_id := by apply hom_ext₀; with_unfolding_all exact e.hom_inv_id
+  inv_hom_id := by apply hom_ext₀; with_unfolding_all exact e.inv_hom_id
 
 lemma isIso_iff₀ {F G : ComposableArrows C 0} (f : F ⟶ G) :
     IsIso f ↔ IsIso (f.app 0) := by
@@ -275,6 +277,18 @@ def isoMk₁ {F G : ComposableArrows C 1}
   inv := homMk₁ left.inv right.inv (by
     rw [← cancel_mono right.hom, assoc, assoc, w, right.inv_hom_id, left.inv_hom_id_assoc]
     apply comp_id)
+  hom_inv_id := by
+    apply hom_ext₁
+    · change left.hom ≫ left.inv = 𝟙 _
+      simp
+    · change right.hom ≫ right.inv = 𝟙 _
+      simp
+  inv_hom_id := by
+    apply hom_ext₁
+    · change left.inv ≫ left.hom = 𝟙 _
+      simp
+    · change right.inv ≫ right.hom = 𝟙 _
+      simp
 
 lemma map'_eq_hom₁ (F : ComposableArrows C 1) : F.map' 0 1 = F.hom := rfl
 
@@ -303,10 +317,12 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
 @[simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
@@ -436,21 +452,21 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
-example : map' (mk₂ f g) 0 1 = f := by dsimp
-example : map' (mk₂ f g) 1 2 = g := by dsimp
-example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
-example : (mk₂ f g).hom = f ≫ g := by dsimp
-example : map' (mk₂ f g) 0 0 = 𝟙 _ := by dsimp
-example : map' (mk₂ f g) 1 1 = 𝟙 _ := by dsimp
-example : map' (mk₂ f g) 2 2 = 𝟙 _ := by dsimp
+example : map' (mk₂ f g) 0 1 = f := by with_unfolding_all rfl
+example : map' (mk₂ f g) 1 2 = g := by with_unfolding_all rfl
+example : map' (mk₂ f g) 0 2 = f ≫ g := by with_unfolding_all rfl
+example : (mk₂ f g).hom = f ≫ g := by with_unfolding_all rfl
+example : map' (mk₂ f g) 0 0 = 𝟙 _ := by with_unfolding_all rfl
+example : map' (mk₂ f g) 1 1 = 𝟙 _ := by with_unfolding_all rfl
+example : map' (mk₂ f g) 2 2 = 𝟙 _ := by with_unfolding_all rfl
 
-example : map' (mk₃ f g h) 0 1 = f := by dsimp
-example : map' (mk₃ f g h) 1 2 = g := by dsimp
-example : map' (mk₃ f g h) 2 3 = h := by dsimp
-example : map' (mk₃ f g h) 0 3 = f ≫ g ≫ h := by dsimp
-example : (mk₃ f g h).hom = f ≫ g ≫ h := by dsimp
-example : map' (mk₃ f g h) 0 2 = f ≫ g := by dsimp
-example : map' (mk₃ f g h) 1 3 = g ≫ h := by dsimp
+example : map' (mk₃ f g h) 0 1 = f := by with_unfolding_all rfl
+example : map' (mk₃ f g h) 1 2 = g := by with_unfolding_all rfl
+example : map' (mk₃ f g h) 2 3 = h := by with_unfolding_all rfl
+example : map' (mk₃ f g h) 0 3 = f ≫ g ≫ h := by with_unfolding_all rfl
+example : (mk₃ f g h).hom = f ≫ g ≫ h := by with_unfolding_all rfl
+example : map' (mk₃ f g h) 0 2 = f ≫ g := by with_unfolding_all rfl
+example : map' (mk₃ f g h) 1 3 = g ≫ h := by with_unfolding_all rfl
 
 end
 
@@ -624,6 +640,8 @@ def isoMk₂ {f g : ComposableArrows C 2}
       comp_id, app₀.hom_inv_id_assoc])
     (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₁, app₂.hom_inv_id,
       comp_id, app₁.hom_inv_id_assoc])
+  hom_inv_id := by apply hom_ext₂ <;> (with_unfolding_all dsimp; simp)
+  inv_hom_id := by apply hom_ext₂ <;> (with_unfolding_all dsimp; simp)
 
 lemma isIso_iff₂ {F G : ComposableArrows C 2} (f : F ⟶ G) :
     IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by
@@ -636,6 +654,7 @@ lemma ext₂ {f g : ComposableArrows C 2}
     (w₁ : f.map' 1 2 = eqToHom h₁ ≫ g.map' 1 2 ≫ eqToHom h₂.symm) : f = g :=
   ext_succ h₀ (ext₁ h₁ h₂ w₁) w₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₂_surjective (X : ComposableArrows C 2) :
     ∃ (X₀ X₁ X₂ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂), X = mk₂ f₀ f₁ :=
   ⟨_, _, _, X.map' 0 1, X.map' 1 2, ext₂ rfl rfl rfl (by simp) (by simp)⟩
@@ -713,6 +732,7 @@ lemma ext₃ {f g : ComposableArrows C 3}
     (w₂ : f.map' 2 3 = eqToHom h₂ ≫ g.map' 2 3 ≫ eqToHom h₃.symm) : f = g :=
   ext_succ h₀ (ext₂ h₁ h₂ h₃ w₁ w₂) w₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₃_surjective (X : ComposableArrows C 3) :
     ∃ (X₀ X₁ X₂ X₃ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃), X = mk₃ f₀ f₁ f₂ :=
   ⟨_, _, _, _, X.map' 0 1, X.map' 1 2, X.map' 2 3,
@@ -792,6 +812,7 @@ lemma ext₄ {f g : ComposableArrows C 4}
     f = g :=
   ext_succ h₀ (ext₃ h₁ h₂ h₃ h₄ w₁ w₂ w₃) w₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₄_surjective (X : ComposableArrows C 4) :
     ∃ (X₀ X₁ X₂ X₃ X₄ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (f₃ : X₃ ⟶ X₄),
       X = mk₄ f₀ f₁ f₂ f₃ :=
@@ -874,6 +895,7 @@ lemma ext₅ {f g : ComposableArrows C 5}
     f = g :=
   ext_succ h₀ (ext₄ h₁ h₂ h₃ h₄ h₅ w₁ w₂ w₃ w₄) w₀
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mk₅_surjective (X : ComposableArrows C 5) :
     ∃ (X₀ X₁ X₂ X₃ X₄ X₅ : C) (f₀ : X₀ ⟶ X₁) (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
       (f₃ : X₃ ⟶ X₄) (f₄ : X₄ ⟶ X₅), X = mk₅ f₀ f₁ f₂ f₃ f₄ :=
@@ -950,6 +972,7 @@ def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
 `.mk₁ (G.map f)`. -/
 @[simps!]
@@ -957,6 +980,7 @@ def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
     (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
   isoMk₁ (Iso.refl _) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
 `.mk₂ (G.map f) (G.map g)`. -/
 @[simps!]

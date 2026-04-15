@@ -541,7 +541,9 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
         | WalkingMulticospan.right b => ι (J.fst b) ≫ I.fst b
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
-          dsimp <;> simp only [Category.id_comp, Category.comp_id]
+          simp only [WalkingMulticospan.Hom.id_eq_id,
+            Functor.map_id, Functor.const_obj_map, Category.comp_id] <;>
+          dsimp <;> simp only [Category.id_comp]
         apply w }
 
 @[simp]
@@ -659,10 +661,18 @@ def ofPiFork
     | WalkingMulticospan.right _ => a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _
   π.naturality := by
     rintro (_ | _) (_ | _) (_ | _ | _)
-    · simp
-    · simp
+    -- left.left.id
+    · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id,
+        Functor.const_obj_map, Category.comp_id]
+      exact Category.id_comp _
+    -- left.right.fst
+    · dsimp; simp [MulticospanIndex.fstPiMapOfIsLimit_proj]
+    -- left.right.snd
     · dsimp; rw [a.condition_assoc]; simp
-    · simp
+    -- right.right.id
+    · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id,
+        Functor.const_obj_map, Category.comp_id]
+      exact Category.id_comp _
 
 @[simp]
 theorem ofPiFork_ι (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) (i) :

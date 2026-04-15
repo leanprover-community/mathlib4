@@ -227,7 +227,9 @@ def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
     | right => g
   -- `sorry` can cope with this, but it's too slow:
   map_comp := by
-    rintro _ _ _ ⟨⟩ g <;> cases g <;> simp
+    rintro _ _ _ ⟨⟩ g <;> cases g <;>
+      dsimp only [CategoryStruct.comp, CategoryStruct.id, WalkingParallelPairHom.comp] <;>
+      first | rfl | simp
 
 @[simp]
 theorem parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl

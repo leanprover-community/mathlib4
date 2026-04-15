@@ -158,8 +158,10 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
-    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
+    (homologyMap φ j)
+    (by set_option backward.isDefEq.respectTransparency false in simp)
+    (by set_option backward.isDefEq.respectTransparency false in simp [-Fin.reduceFinMk])
+    (by change K.homologyπ j ≫ homologyMap φ j = cyclesMap φ j ≫ L.homologyπ j; simp)
 
 end HomologySequence
 

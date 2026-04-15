@@ -193,6 +193,15 @@ def normalizeIsoApp' :
   | tensor X Y, n =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
 
+-- Equation lemmas for `normalizeIsoApp'` matching `⊗`/`𝟙_` instead of `tensor`/`unit`.
+-- Needed because `canUnfoldAtMatcher` no longer unfolds class projections in match discriminants.
+@[simp] theorem normalizeIsoApp'_tensor (X Y : F C) (n : NormalMonoidalObject C) :
+    normalizeIsoApp' C (X ⊗ Y) n =
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
+        normalizeIsoApp' C Y _ := rfl
+@[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
+    normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
+
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of _, _ => rfl
@@ -252,18 +261,18 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
   case comp f g ihf ihg => simp [ihg, reassoc_of% (ihf _)]
   case whiskerLeft X' X Y f ih =>
     intro n
-    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+    simp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
   case whiskerRight X Y h η' ih =>
     intro n
-    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+    simp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
     have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
     simp [this]
-  all_goals simp
+  all_goals simp [normalizeIsoApp'_tensor, normalizeIsoApp'_unit]
 
 end
 

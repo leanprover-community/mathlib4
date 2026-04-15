@@ -524,7 +524,11 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     match k' with
     | 0 => rfl
     | 1 => simp [npowRec']
-    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
+    | k + 2 =>
+      rw [show 2 * (k + 2) = k + k + 4 from by omega]
+      simp only [npowRec']
+      rw [← ih (k + 1) (by omega), show 2 * (k + 1) = k + k + 2 from by omega]
+      simp only [npowRec', ← mul_assoc]
 
 @[to_additive]
 theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :

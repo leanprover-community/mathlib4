@@ -116,8 +116,10 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       | WalkingMulticospan.left _ => Iso.refl _
       | WalkingMulticospan.right _ => Iso.refl _)
     (by
-      rintro (a | b) (a | b) (f | f | f)
-      all_goals cat_disch)
+      rintro (a | b) (a | b) (f | f | f) <;>
+        simp only [WalkingMulticospan.Hom.id_eq_id, Iso.refl_hom, Category.id_comp,
+          Category.comp_id, Functor.map_id] <;>
+        dsimp [CategoryStruct.comp] <;> simp)
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)

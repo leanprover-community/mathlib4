@@ -122,7 +122,9 @@ theorem count_some (hp : Irreducible p) (s : Multiset _) :
 
 @[simp]
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
-  simp only [count, dif_pos hp, bcount, Multiset.count_zero]
+  simp only [count, dif_pos hp, bcount]
+  change Multiset.count _ 0 = 0
+  simp only [Multiset.count_zero]
 
 theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dif_neg hp
 
