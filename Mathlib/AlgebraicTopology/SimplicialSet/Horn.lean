@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
@@ -157,6 +158,13 @@ lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
       (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
   simp [objEquiv_symm_δ_mem_horn_iff.{u}]
 
+#check horn
+lemma op_horn_ {n : ℕ} (i : Fin (n + 1)) :
+    0 = by
+        have pif := Λ[n, i].op
+        sorry := sorry
+
+#exit
 namespace horn
 
 open SimplexCategory Finset Opposite
