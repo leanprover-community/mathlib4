@@ -162,7 +162,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   swap
   · ext
     exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
-  simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
+  simp only [map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
 variable [IsIntegrallyClosed A]
@@ -506,7 +506,7 @@ lemma coeSubmodule_differentIdeal :
         RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+    simp only [RingHom.coe_comp, RingHom.coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
@@ -929,12 +929,12 @@ theorem not_dvd_differentIdeal_iff
     · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
       constructor
       · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
-        contrapose! H
+        contrapose H
         exact dvd_differentIdeal_of_not_isSeparable A hp P H
       · rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hPbot Ideal.map_comap_le]
         apply Ideal.ramificationIdx_spec
         · simp [Ideal.map_le_iff_le_comap]
-        · contrapose! H
+        · contrapose H
           rw [← pow_one P, show 1 = 2 - 1 by simp]
           apply pow_sub_one_dvd_differentIdeal _ _ _ hp
           simpa [Ideal.dvd_iff_le] using H
