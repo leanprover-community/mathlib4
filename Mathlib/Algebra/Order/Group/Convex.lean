@@ -13,58 +13,58 @@ public import Mathlib.Order.Quotient
 
 public section
 
-variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
-
-/-- A subgroup `H` of a linearly ordered abelian group is convex, if for any `a ≤ b ≤ 1`,
-`a ∈ H` implies `b ∈ H`. -/
-@[expose, to_additive /-- A subgroup `H` of a linearly ordered additive abelian group is convex,
-if for any `a ≤ b ≤ 0`, `a ∈ H` implies `b ∈ H`. -/]
-def IsConvexSubgroup (H : Subgroup α) : Prop :=
-  ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H
+variable {α β : Type*}
 
 section
 
-variable [IsOrderedMonoid α]
+variable [Preorder α] [CommGroup α] [IsOrderedMonoid α] [PartialOrder β] [Monoid β]
 
-@[to_additive] lemma IsConvexSubgroup.iff_mem_and_mem_of_mul_mem {H : Subgroup α} :
-    IsConvexSubgroup H ↔ ∀ ⦃a b : α⦄, a ≤ 1 → b ≤ 1 → a * b ∈ H → a ∈ H ∧ b ∈ H where
-  mp convex a _ ale0 ble1 h :=
-    ⟨convex ((mul_le_iff_le_one_right' a).mpr ble1) ale0 h,
-      convex ((mul_le_iff_le_one_left').mpr ale0) ble1 h⟩
-  mpr h a b aleb ble1 ainH :=
-    (h (mul_inv_le_one_iff_le.mpr aleb) ble1 <| (inv_mul_cancel_right a b).symm ▸ ainH).right
-
-@[to_additive] lemma IsConvexSubgroup.iff_ordConnected {H : Subgroup α} :
-    IsConvexSubgroup H ↔ (H : Set α).OrdConnected where
-  mp convex := by
+@[to_additive] lemma Subgroup.ordConnected_iff_mem_of_le_one {H : Subgroup α} :
+    (H : Set α).OrdConnected ↔ ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H where
+  mp h a b aleb ble1 ainH := h.out' ainH H.one_mem ⟨aleb, ble1⟩
+  mpr convex := by
     refine ⟨fun a ha c hc b binIcc ↦ ?_⟩
     rw [← inv_mul_cancel_right b c]
     exact (H.mul_mem_cancel_right hc).mpr <| convex ((mul_le_mul_iff_right c⁻¹).mpr binIcc.1)
       (mul_inv_le_one_iff_le.mpr binIcc.2) <| H.mul_mem ha (inv_mem hc)
-  mpr h a b aleb ble1 ainH := h.out' ainH H.one_mem ⟨aleb, ble1⟩
+
+@[to_additive] lemma Set.OrdConnected.of_subgroup {H : Subgroup α}
+    (h : ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H) : (H : Set α).OrdConnected :=
+  Subgroup.ordConnected_iff_mem_of_le_one.mpr h
+
+@[to_additive] lemma Subgroup.ordConnected_iff_mem_and_mem_of_mul_mem {H : Subgroup α} :
+    (H : Set α).OrdConnected ↔ ∀ ⦃a b : α⦄, a ≤ 1 → b ≤ 1 → a * b ∈ H → a ∈ H ∧ b ∈ H :=
+  H.ordConnected_iff_mem_of_le_one.trans <|
+{ mp convex a _ ale0 ble1 h :=
+    ⟨convex ((mul_le_iff_le_one_right' a).mpr ble1) ale0 h,
+      convex ((mul_le_iff_le_one_left').mpr ale0) ble1 h⟩
+  mpr h a b aleb ble1 ainH :=
+    (h (mul_inv_le_one_iff_le.mpr aleb) ble1 <| (inv_mul_cancel_right a b).symm ▸ ainH).right }
+
+/-- The kernel of a morphism of totally ordered abelian groups is convex. -/
+@[to_additive] lemma MonoidHom.ordConnected_ker (f : α →*o β) : (f.ker : Set α).OrdConnected :=
+  Subgroup.ordConnected_iff_mem_of_le_one.mpr fun a b aleb ble1 fa1 ↦
+    le_antisymm (by simpa using f.monotone' ble1) <| by rw [← fa1]; exact f.monotone' aleb
 
 end
 
-/-- The kernel of a morphism of totally ordered abelian groups is convex. -/
-@[to_additive] lemma isConvexSubgroup_ker (f : α →*o β) : IsConvexSubgroup f.ker :=
-  fun a b aleb ble1 fa1 ↦ le_antisymm (by simpa using f.monotone' ble1) <| by
-    rw [← fa1]; exact f.monotone' aleb
+variable [CommGroup α] [LinearOrder α]
 
 open MulArchimedeanClass in
-@[to_additive] theorem FiniteMulArchimedeanClass.isConvexSubgroup_subgroup [IsOrderedMonoid α]
-    (s : UpperSet (FiniteMulArchimedeanClass α)) : IsConvexSubgroup (subgroup s) :=
-  fun _a _b hab b_le ha b_ne ↦
+@[to_additive] theorem FiniteMulArchimedeanClass.ordConnected_subgroup [IsOrderedMonoid α]
+    (s : UpperSet (FiniteMulArchimedeanClass α)) : (subgroup s : Set α).OrdConnected :=
+  Subgroup.ordConnected_iff_mem_of_le_one.mpr fun _a _b hab b_le ha b_ne ↦
     s.upper (mk_monotoneOn (hab.trans b_le) b_le hab)
       (ha <| mk_eq_top_iff.not.mpr (hab.trans_lt (b_le.lt_of_ne <| mk_eq_top_iff.not.mp b_ne)).ne)
 
 /-- The type of convex subgroups of a linearly ordered additive abelian group. -/
 structure ConvexAddSubgroup (α) [AddCommGroup α] [LinearOrder α] extends AddSubgroup α where
-  convex : IsConvexAddSubgroup toAddSubgroup
+  convex : (toAddSubgroup : Set α).OrdConnected
 
 variable (α) in
 /-- The type of convex subgroups of a linearly ordered abelian group. -/
 @[to_additive (attr := ext)] structure ConvexSubgroup extends Subgroup α where
-  convex : IsConvexSubgroup toSubgroup
+  convex : (toSubgroup : Set α).OrdConnected
 
 @[to_additive] lemma ConvexSubgroup.toSubgroup_injective :
     Function.Injective (ConvexSubgroup.toSubgroup : ConvexSubgroup α → Subgroup α) :=
@@ -80,14 +80,7 @@ variable (α) in
     G.carrier = G := rfl
 
 @[to_additive] lemma ConvexSubgroup.ordConnected [IsOrderedMonoid α] (H : ConvexSubgroup α) :
-     (H : Set α).OrdConnected := IsConvexSubgroup.iff_ordConnected.mp H.convex
-
-/-- Construct a convex subgroup from a subgroup that is `OrdConnected`. -/
-@[to_additive /-- Construct a convex additive subgroup from a subgroup that is `OrdConnected`. -/]
-def ConvexSubgroup.ofOrdConnected (H : Subgroup α) (h : (H : Set α).OrdConnected) :
-    ConvexSubgroup α where
-  toSubgroup := H
-  convex _a _b aleb ble1 ainH := h.out' ainH H.one_mem ⟨aleb, ble1⟩
+     (H : Set α).OrdConnected := H.convex
 
 @[to_additive] instance : SubgroupClass (ConvexSubgroup α) α where
   mul_mem {s} := s.mul_mem
@@ -95,10 +88,10 @@ def ConvexSubgroup.ofOrdConnected (H : Subgroup α) (h : (H : Set α).OrdConnect
   inv_mem {s} := s.inv_mem
 
 @[to_additive] instance : Top (ConvexSubgroup α) where
-  top := .mk ⊤ fun _ _ _ _ _ ↦ ⟨⟩
+  top := .mk ⊤ ⟨fun _ _ _ _ _ _ ↦ ⟨⟩⟩
 
 @[to_additive] instance : Bot (ConvexSubgroup α) where
-  bot := .mk ⊥ fun _a _b hab hb1 ha ↦ hb1.antisymm (ha.ge.trans hab)
+  bot := .mk ⊥ ⟨fun _a ha _b hb _c hab ↦ (hab.2.trans hb.le).antisymm (ha.ge.trans hab.1)⟩
 
 @[to_additive] instance [Subsingleton α] : Subsingleton (ConvexSubgroup α) where
   allEq _ _ := by ext a; simp [Subsingleton.elim a 1]
@@ -123,7 +116,7 @@ variable [IsOrderedMonoid α] (G H : ConvexSubgroup α)
     wlog hb : b ≤ 1 generalizing b
     · exact this b⁻¹ (by simp [bH]) (by simp [bG]) (Left.inv_le_one_iff.mpr (le_of_not_ge hb))
     obtain le | le := le_total a b
-    exacts [bG (G.convex le hb aG), aH (H.convex le ha bH)]
+    exacts [bG (G.convex.1 aG G.one_mem ⟨le, hb⟩), aH (H.convex.1 bH H.one_mem ⟨le, ha⟩)]
   have union_eq (G H : ConvexSubgroup α) : let _ := Classical.dec
       (G : Set α) ∪ H = (if G ≤ H then H else G) :=
     (em (G ≤ H)).elim (by simp [·]) fun h ↦ by simpa [h] using (total G H).resolve_left h
@@ -136,8 +129,7 @@ variable [IsOrderedMonoid α] (G H : ConvexSubgroup α)
       inv_mem' := by simp
       convex := by simp_rw [union_eq]; exact ConvexSubgroup.convex _ }
     max_def G H := SetLike.ext' (union_eq G H)
-    min G H := .mk (G.toSubgroup ⊓ H.toSubgroup)
-      fun _a _b hab hb1 ha ↦ ⟨G.convex hab hb1 ha.1, H.convex hab hb1 ha.2⟩
+    min G H := .mk (G.toSubgroup ⊓ H.toSubgroup) <| G.convex.inter H.convex
     min_def G H := toSubgroup_injective <| (em (G ≤ H)).elim
       (by simpa [·]) fun h ↦ by simpa [h] using (total G H).resolve_left h }
 
@@ -156,16 +148,16 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
       exacts [⟨H, mul_mem (le haG) hbH⟩, ⟨G, mul_mem haG (le hbH)⟩]
     inv_mem' := by simp
     one_mem' := by simp
-    convex a b hab hb1 := by
+    convex := .of_subgroup fun a b hab hb1 ↦ by
       rintro (rfl | ex)
       · exact .inl (hb1.antisymm hab)
       obtain ⟨G, haG⟩ := Set.mem_iUnion.mp ex
-      exact .inr <| Set.mem_iUnion.mpr ⟨G, G.1.convex hab hb1 haG⟩ }
+      exact .inr <| Set.mem_iUnion.mpr ⟨G, G.1.convex.1 haG G.1.one_mem ⟨hab, hb1⟩⟩ }
 
 @[to_additive] instance : InfSet (ConvexSubgroup α) where
-  sInf s := .mk (⨅ G : s, G.1.toSubgroup) fun a b hab hb1 ha ↦ by
+  sInf s := .mk (⨅ G : s, G.1.toSubgroup) <| .of_subgroup fun a b hab hb1 ha ↦ by
     rw [Subgroup.mem_iInf] at ha ⊢
-    exact fun G ↦ G.1.convex hab hb1 (ha G)
+    exact fun G ↦ G.1.convex.1 (ha G) G.1.one_mem ⟨hab, hb1⟩
 
 @[to_additive] noncomputable instance : CompleteLattice (ConvexSubgroup α) := by
   refine ConvexSubgroup.toSubgroup_injective.completeLattice _ .rfl .rfl
@@ -192,8 +184,8 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
     (Quotient.mk _ ⁻¹' {x}).OrdConnected where
   out' := by
     rintro ax rfl ay eq a ha
-    exact QuotientGroup.eq.mpr (G.convex (a := ay⁻¹ * ax) (by have := ha.2; gcongr)
-      (inv_mul_le_one_iff.mpr ha.1) <| QuotientGroup.eq.mp eq)
+    exact QuotientGroup.eq.mpr (G.convex.1 (QuotientGroup.eq.mp eq) G.one_mem
+      ⟨by have := ha.2; gcongr, inv_mul_le_one_iff.mpr ha.1⟩)
 
 /-- The linear order on the quotient of a linearly ordered abelian group by a convex subgroup. -/
 @[to_additive] noncomputable instance : LinearOrder (α ⧸ G) :=
@@ -226,8 +218,7 @@ variable [IsOrderedMonoid α]
     (haG : a ∈ G) : b ∈ G := by
   rw [FiniteMulArchimedeanClass.mk_le_mk, MulArchimedeanClass.mk_le_mk] at le
   have ⟨n, le⟩ := le
-  exact mabs_mem_iff.mp <| (IsConvexSubgroup.iff_ordConnected.mp G.convex).1
-    G.one_mem (G.pow_mem (by simpa) _) ⟨one_le_mabs _, le⟩
+  exact mabs_mem_iff.mp <| G.convex.1 G.one_mem (G.pow_mem (by simpa) _) ⟨one_le_mabs _, le⟩
 
 open MulArchimedeanClass in
 /-- The convex subgroups of a linearly ordered group are in bijection with upper sets of
@@ -242,7 +233,7 @@ noncomputable def ConvexSubgroup.equivUpperSet :
     refine FiniteMulArchimedeanClass.ind fun b hb1 le ↦ ?_
     exact ⟨b, hb1, mabs_mem_iff.mp <| by
       simpa using G.mem_of_finiteMulArchimedeanClass_mk_le le haG, rfl⟩
-  invFun s := .mk _ (FiniteMulArchimedeanClass.isConvexSubgroup_subgroup s)
+  invFun s := .mk _ (FiniteMulArchimedeanClass.ordConnected_subgroup s)
   left_inv G := by
     refine SetLike.ext fun a ↦ ⟨fun h ↦ ?_, fun h ha ↦ ⟨a, mk_eq_top_iff.not.mp ha, h, rfl⟩⟩
     obtain rfl | ha1 := eq_or_ne a 1; · simp
