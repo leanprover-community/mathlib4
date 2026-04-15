@@ -353,15 +353,15 @@ theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] 
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
-theorem compl₁₂_comp₁ {Tₗ : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ] [Module R₁ Tₗ]
+theorem compl₁₂_comp_left {Tₗ : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ] [Module R₁ Tₗ]
     (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) :
     f.compl₁₂ (g ∘ₗ h) g' = (f.compl₁₂ g g') ∘ₗ h := rfl
 
-theorem compl₁₂_comp₂ {Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ'] [Module R₂ Tₗ']
+theorem compl₁₂_comp_right {Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ'] [Module R₂ Tₗ']
     (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h' : Tₗ' →ₗ[R₂] Qₗ') :
     f.compl₁₂ g (g' ∘ₗ h') = (f.compl₁₂ g g').compl₂ h' := rfl
 
-theorem compl₁₂_comp₁₂ {Tₗ Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ]
+theorem compl₁₂_comp_comp {Tₗ Tₗ' : Type*} [SMulCommClass R₂ R₁ Pₗ] [AddCommMonoid Tₗ]
     [AddCommMonoid Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ'] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ)
     (g : Qₗ →ₗ[R₁] Mₗ) (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) (h' : Tₗ' →ₗ[R₂] Qₗ') :
     f.compl₁₂ (g ∘ₗ h) (g' ∘ₗ h') = (f.compl₁₂ g g').compl₁₂ h h' := rfl
