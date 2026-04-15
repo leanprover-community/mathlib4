@@ -124,7 +124,7 @@ theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
   · infer_instance
   · refine Int.natCast_ne_zero.mpr <| absNorm_eq_zero_iff.not.mpr ?_
     have : P ≠ ⊥ := NeZero.ne _
-    contrapose! this
+    contrapose this
     exact eq_bot_of_comap_eq_bot this
 
 end CommRing
