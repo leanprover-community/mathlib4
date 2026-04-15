@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Combinatorics.Graph.Subgraph
 
@@ -33,16 +34,17 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 variable {α β ι : Type*} {x y : α} {e : β} {G G₁ G₂ H : Graph α β} {F F₀ : Set β} {X : Set α}
 
-open Set Function
+open Set Function WithTop
 
 namespace Graph
 
-namespace WithTop
+def ExtendedGraph (α β : Type*) := WithTop (Graph α β)
+deriving PartialOrder, OrderTop, OrderBot
 
-noncomputable instance : CompleteSemilatticeInf (WithTop (Graph α β)) where
+noncomputable instance : CompleteSemilatticeInf (ExtendedGraph α β) where
   sInf Gs :=
     letI : DecidablePred (Set.Nonempty : Set (Graph α β) → _) := Classical.decPred _
-    if hne : (WithTop.some ⁻¹' Gs).Nonempty then ({
+    if hne : (WithTop.some ⁻¹' Gs).Nonempty then WithTop.some ({
     vertexSet := ⋂ G ∈ WithTop.some ⁻¹' Gs, V(G)
     edgeSet := {e | ∃ x y, ∀ G ∈ WithTop.some ⁻¹' Gs, G.IsLink e x y}
     IsLink e x y := ∀ G ∈ WithTop.some ⁻¹' Gs, G.IsLink e x y
@@ -57,11 +59,13 @@ noncomputable instance : CompleteSemilatticeInf (WithTop (Graph α β)) where
     refine ⟨fun G hG => ?_, fun H hH => ?_⟩
     · obtain rfl | htop := eq_or_ne G ⊤
       · exact le_top
+      unfold ExtendedGraph at G Gs ⊢
       lift G to Graph α β using htop
       have hGs : (WithTop.some ⁻¹' Gs).Nonempty := ⟨G, by simpa⟩
-      simp only [hGs, ↓reduceDIte, WithTop.coe_le_coe, ge_iff_le]
-      refine ⟨fun _ ↦ ?_, fun _ _ _ ↦ ?_⟩ <;> simp only [mem_preimage, mem_iInter]
-        <;> exact (· G hG)
+      simp only [hGs, ↓reduceDIte, ge_iff_le]
+      refine coe_le_coe.mpr ⟨fun _ ↦ ?_, fun _ _ _ ↦ ?_⟩
+        <;> simp only [mem_preimage, mem_iInter] <;> exact (· G hG)
+    unfold ExtendedGraph at H Gs
     obtain rfl | htop := eq_or_ne H ⊤
     · suffices ¬ (WithTop.some ⁻¹' Gs).Nonempty by simp [this]
       simp only [not_nonempty_iff_eq_empty, preimage_eq_empty_iff, disjoint_right, mem_range,
@@ -69,37 +73,29 @@ noncomputable instance : CompleteSemilatticeInf (WithTop (Graph α β)) where
       exact fun _ hHs => Option.some_ne_none _ (top_le_iff.mp <| hH hHs)
     lift H to Graph α β using htop
     split_ifs with hne
-    · rw [WithTop.coe_le_coe]
-      exact { vertexSet_mono := by
-                simp only [subset_iInter_iff]
-                exact fun G hG ↦ (WithTop.coe_le_coe.mp <| hH hG).vertexSet_mono
-              isLink_mono e x y hHxy G hG := (WithTop.coe_le_coe.mp <| hH hG).isLink_mono hHxy}
+    · exact coe_le_coe.mpr {
+        vertexSet_mono := by
+          simp only [subset_iInter_iff]
+          exact fun G hG ↦ (coe_le_coe.mp <| hH hG).vertexSet_mono
+        isLink_mono e x y hHxy G hG := (coe_le_coe.mp <| hH hG).isLink_mono hHxy}
     exact le_top
 
-lemma sInf_eq_top_iff (Gs : Set (WithTop (Graph α β))) : sInf Gs = ⊤ ↔ Gs ⊆ {⊤} := by
+lemma sInf_eq_top_iff (Gs : Set (ExtendedGraph α β)) : sInf Gs = ⊤ ↔ Gs ⊆ {⊤} := by
   classical
-  refine ⟨fun h G hG => ?_, fun h => ?_⟩
-  · exact WithTop.top_le_iff.mp (h ▸ sInf_le hG)
+  refine ⟨fun h G hG => top_le_iff.mp (h ▸ show sInf Gs ≤ G from sInf_le hG), fun h => ?_⟩
   obtain rfl | rfl := subset_singleton_iff_eq.mp h
   · exact isGLB_empty.sInf_eq
   exact sInf_singleton
 
-lemma sInf_coe_eq_top_iff (Gs : Set (Graph α β)) : sInf (WithTop.some '' Gs) = ⊤ ↔ Gs = ∅ := by
-  rw [sInf_eq_top_iff, subset_singleton_iff_eq, image_eq_empty, or_iff_left_iff_imp]
-  rintro h
-  simpa using (show ⊤ ∈ WithTop.some '' Gs from h ▸ rfl)
-
-end WithTop
-
 noncomputable instance : ConditionallyCompletePartialOrderInf (Graph α β) where
   sInf Gs :=
     letI : DecidablePred (Set.Nonempty : Set (Graph α β) → _) := Classical.decPred _
-    sInf (WithTop.some '' Gs) |>.untopD ⊥
+    (sInf (WithTop.some '' Gs) : ExtendedGraph α β).untopD ⊥
   isGLB_csInf_of_directed Gs hGs hGsne hGsBddB := by
     classical
-    refine ⟨fun G hG => (WithTop.untopD_le <| sInf_le (by simpa)), fun H hH => ?_⟩
-    change H ≤ (WithTop.untopD ⊥ (if hne : Set.Nonempty _ then _ else _))
-    simp only [WithTop.coe_injective, preimage_image_eq, hGsne, ↓reduceDIte, WithTop.untopD_coe]
+    refine ⟨fun G hG => (untopD_le <| sInf_le (α := ExtendedGraph α β) (by use G)), fun H hH ↦ ?_⟩
+    change H ≤ (untopD ⊥ (if hne : Set.Nonempty _ then _ else _))
+    simp only [ExtendedGraph, coe_injective.preimage_image, hGsne, ↓reduceDIte, untopD_coe]
     exact { vertexSet_mono := by
               simp only [subset_iInter_iff]
               exact fun _ hG ↦ (hH hG).vertexSet_mono
@@ -107,9 +103,9 @@ noncomputable instance : ConditionallyCompletePartialOrderInf (Graph α β) wher
 
 lemma isGLB_sInf_of_nonempty {Gs : Set (Graph α β)} (hGsne : Gs.Nonempty) : IsGLB Gs (sInf Gs) := by
   classical
-  refine ⟨fun G hG => (WithTop.untopD_le <| sInf_le (by simpa)), fun H hH => ?_⟩
-  change H ≤ (WithTop.untopD ⊥ (if hne : Set.Nonempty _ then _ else _))
-  simp only [WithTop.coe_injective, preimage_image_eq, hGsne, ↓reduceDIte, WithTop.untopD_coe]
+  refine ⟨fun G hG ↦ (untopD_le <| sInf_le (α := ExtendedGraph α β) (by use G)), fun H hH ↦ ?_⟩
+  change H ≤ (untopD ⊥ (if hne : Set.Nonempty _ then _ else _))
+  simp only [ExtendedGraph, coe_injective, preimage_image_eq, hGsne, ↓reduceDIte, untopD_coe]
   exact { vertexSet_mono := by
             simp only [subset_iInter_iff]
             exact fun _ hG ↦ (hH hG).vertexSet_mono
@@ -118,7 +114,7 @@ lemma isGLB_sInf_of_nonempty {Gs : Set (Graph α β)} (hGsne : Gs.Nonempty) : Is
 @[grind =]
 lemma vertexSet_sInf_eq_ite (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
     V(sInf Gs) = if Gs.Nonempty then ⋂ G ∈ Gs, V(G) else ∅ := by
-  simp only [sInf, WithTop.coe_injective.preimage_image]
+  simp only [sInf, ExtendedGraph, coe_injective.preimage_image]
   split_ifs with hne <;> rfl
 
 @[simp]
@@ -130,7 +126,7 @@ lemma vertexSet_sInf_of_nonempty {Gs : Set (Graph α β)} (hGsne : Gs.Nonempty) 
 @[grind =]
 lemma edgeSet_sInf_eq_ite (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
     E(sInf Gs) = if Gs.Nonempty then {e | ∃ x y, ∀ G ∈ Gs, G.IsLink e x y} else ∅ := by
-  simp only [sInf, WithTop.coe_injective.preimage_image]
+  simp only [sInf, ExtendedGraph, coe_injective.preimage_image]
   split_ifs with hne <;> rfl
 
 @[simp]
@@ -142,7 +138,7 @@ lemma edgeSet_sInf_of_nonempty {Gs : Set (Graph α β)} (hGsne : Gs.Nonempty) :
 @[grind =]
 lemma sInf_isLink (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
     (sInf Gs).IsLink e x y ↔ if Gs.Nonempty then ∀ G ∈ Gs, G.IsLink e x y else False := by
-  simp only [sInf, WithTop.coe_injective.preimage_image]
+  simp only [sInf, ExtendedGraph, coe_injective.preimage_image]
   split_ifs with hne <;> rfl
 
 @[simp]
