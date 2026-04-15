@@ -36,7 +36,7 @@ section `set_acting_on_submodules` does not have a counterpart in the files
 `Mathlib/Algebra/Group/Submonoid/Pointwise.lean` and
 `Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`.
 
-Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
+Other than section `DistribMulAction`, most of the lemmas in this file are direct copies of
 lemmas from the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
 
@@ -288,14 +288,6 @@ to prove:
 
 To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
-
-When we consider subsets of `R` acting on `M`
-- `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
-- `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
-  `rᵢ ∈ s` and `nᵢ ∈ N`.
-- `Submodule.coe_span_smul`: `s • N` is the same as `⟨s⟩ • N` where `⟨s⟩` is the ideal spanned
-  by `s`.
-
 
 #### Notes
 - If we assume the addition on subsets of `R` is the `⊔` and subtraction `⊓` i.e. use `SetSemiring`,
