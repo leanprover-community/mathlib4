@@ -77,6 +77,20 @@ instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalR
 
 end IsRegularLocalRing
 
+/-!
+
+# Definition of Regular Ring
+
+In this section, we define regular rings as noetherian rings whose localization at every prime are
+regular local rings.
+(Note that regular local ring is not natrually regular ring in this definition).
+
+## TODO
+Show that regular local rings are regular under this definition.
+This follows from localizations of regular local rings being regular (@Thmoas-Guan).
+
+-/
+
 /-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing (R : Type*) [CommRing R] : Prop extends IsNoetherianRing R where
   isRegularLocalRing_localization : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
@@ -101,6 +115,13 @@ lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
   ext x
   simpa using ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
     fun h ↦ ⟨e.symm x, (e.apply_symm_apply x).symm ▸ h, e.apply_symm_apply x⟩⟩
+
+lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
+    IsRegularLocalRing R := by
+  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
+  let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
+    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
+  exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
 
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
