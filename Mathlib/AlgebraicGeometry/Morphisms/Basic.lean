@@ -675,16 +675,4 @@ instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
   HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
 
-section Deprecations
-
-namespace IsLocalAtTarget
-
-end IsLocalAtTarget
-
-namespace IsLocalAtSource
-
-end IsLocalAtSource
-
-end Deprecations
-
 end AlgebraicGeometry
