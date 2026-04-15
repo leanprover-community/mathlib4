@@ -17,7 +17,7 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 
 ## Main statements
 
-- `LinearMap.flip_polar_polar_eq`: The Bipolar Theorem: The bipolar of a set coincides with its
+- `LinearMap.pairing_flip_polar_polar`: The Bipolar Theorem: The bipolar of a set coincides with its
   closed absolutely convex hull.
 
 ## References
@@ -42,14 +42,13 @@ section
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-
 /-
 When `B` is left-separating, the closure of the empty set is the singleton `{0}`. This is in
 contrast to the closed absolutely convex hull of the empty set, which is again the empty set.
 c.f. `closureOperator_polar_gc_nonempty` below.
 -/
-example (h : SeparatingLeft B) : B.polar_gc.closureOperator (∅ : Set E) = {0} := by
+example (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (h : SeparatingLeft B) :
+    B.polar_gc.closureOperator (∅ : Set E) = {0} := by
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
 
@@ -60,9 +59,7 @@ section RCLike
 
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [Module 𝕜 E] [Module 𝕜 F]
-
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
-
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 
