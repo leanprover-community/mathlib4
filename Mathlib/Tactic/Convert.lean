@@ -232,7 +232,7 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 * `convert_to (config := cfg) t` uses the configuration options in `cfg` to control the congruence
   rules (see `Congr!.Config`).
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convertTo) "convert_to" Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
