@@ -228,15 +228,13 @@ lemma IsMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, 
   obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
   intro a ha
   simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff]
-  suffices he : ∃ b : V, M.Adj a b from by
-    obtain ⟨b, hadj⟩ := he
-    refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
-    have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
-    have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
-    cases hb <;> cases hb' <;> rcases ha <;>
-    try (simp_all only [Set.mem_singleton_iff] <;> exfalso <;>
-    refine G.loopless _ <| M.adj_sub (by assumption))
-  exact Or.elim ha (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
+  have he : ∃ b : V, M.Adj a b :=
+    Or.elim ha (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
+  obtain ⟨b, hadj⟩ := he
+  refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
+  have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
+  have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
+  grind [M.loopless.irrefl v, M.loopless.irrefl w]
 
 section card
 

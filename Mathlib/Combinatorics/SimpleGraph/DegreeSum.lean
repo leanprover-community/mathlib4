@@ -129,19 +129,15 @@ open scoped Cardinal
 lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
   let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
   suffices fib_size : ∀ e, #{d // f d = e} = 2 by
-    simp [←(Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
+   simp [←(Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
   rintro ⟨e, he⟩
-  have := e.exists_rep
   obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
   have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
   set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by grind⟩
   set d₁ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨w, v⟩, hadj.symm⟩, by simp [f]; aesop⟩
-  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨fun _ => (G.loopless v).elim (by grind), ?_⟩⟩
-  rintro ⟨⟨⟨u₁, u₂⟩, hadj⟩, hd⟩ h₀
-  simp only [ne_eq, Subtype.mk.injEq, Dart.mk.injEq, Prod.mk.injEq, d₀, d₁, f] at h₀ hd ⊢
-  have := hvw ▸ hd
-  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at this
-  exact Or.elim this h₀.elim id
+  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨by grind [G.loopless.irrefl v], fun d h₀ ↦ ?_⟩⟩
+  obtain ⟨⟨_, hadj⟩, hd⟩ := d
+  grind
 
 end card
 
