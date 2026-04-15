@@ -255,7 +255,6 @@ theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
   ext
   grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
     coeFn_compQuasiMeasurePreserving, comp_assoc]
-  assumption
 
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :
