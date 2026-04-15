@@ -100,7 +100,7 @@ variable {R E : Type*}
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = ofSubmodule (-S) :=
   neg_restrictScalars S
 
 end Submodule
@@ -330,20 +330,8 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
 
 end OrderedAddCommGroup
 
-section Ring
-
-variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
-
-@[simp] lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = S := by
-  ext x; simp
-
-<<<<<<< pointed-minor
-end Ring
-
 section Lineal
 
-=======
->>>>>>> master
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
