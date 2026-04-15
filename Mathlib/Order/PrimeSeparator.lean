@@ -120,7 +120,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have ba₁a₂F : b ⊔ (a₁ ⊓ a₂) ∈ F := PFilter.mem_of_le ineq (PFilter.inf_mem c₁F c₂F)
   -- Now, if we would have a₁ ⊓ a₂ ∈ J, then, since J is an ideal and b ∈ J, we would also get
   -- b ⊔ (a₁ ⊓ a₂) ∈ J. But this contradicts that J is disjoint from F.
-  contrapose! JF with ha₁a₂
+  contrapose JF with ha₁a₂
   rw [Set.not_disjoint_iff]
   use b ⊔ (a₁ ⊓ a₂)
   exact ⟨ba₁a₂F, sup_mem bJ ha₁a₂⟩
