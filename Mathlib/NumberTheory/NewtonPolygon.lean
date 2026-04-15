@@ -9,7 +9,6 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Order.WithBotTop
 public import Mathlib.Data.Seq.Basic
-
 @[expose] public section
 
 variable {Γ : Type*} [CommSemiring Γ] [Algebra Γ ℝ]
@@ -562,10 +561,12 @@ def finite_newtonPolygon (h : FiniteNewtonPolygon v) : List (Step Γ) :=
 structure NewtonPolygon where
   support : WithTop ℕ
   slopes : ℕ → WithTopBot ℝ
+  slopes_junk : ∀ n : ℕ, support ≤ n → slopes n = ⊥
   lengths : ℕ → WithTop ℕ
+  lengths_junk : ∀ n : ℕ, support ≤ n → lengths n = 0
   increasing : ∀ n : ℕ, n + 1 < support → slopes n ≤ slopes (n + 1)
 
-lemma newtonPolygon_ge_length_none (n : ℕ) (h : ↑n + 1 < (newtonPolygon_seq v).length') :
+lemma newtonPolygon_lt_length_neq_none (n : ℕ) (h : ↑n + 1 < (newtonPolygon_seq v).length') :
     newtonPolygon v (n + 1) ≠ none := by
   by_contra
   suffices (newtonPolygon_seq v).length' ≤ n + 1 by
@@ -579,17 +580,29 @@ lemma newtonPolygon_ge_length_none (n : ℕ) (h : ↑n + 1 < (newtonPolygon_seq 
     exact ENat.coe_le_coe.mpr this
   exact Stream'.Seq.length_le_iff.mpr this
 
+lemma newtonPolygon_ge_length_eq_none (n : ℕ) (h : (newtonPolygon_seq v).length' ≤ ↑n) :
+    newtonPolygon v n = none := by
+  simp_rw [Stream'.Seq.length'] at h
+  split_ifs at h
+  · simp only [Nat.cast_le] at h
+    exact Stream'.Seq.length_le_iff.mp h
+  · aesop
+
 noncomputable
 def NP' : NewtonPolygon where
   support := Stream'.Seq.length' (newtonPolygon_seq v)
   slopes := newtonPolygon_slopes v
+  slopes_junk :=
+    fun n hn ↦ by simp [newtonPolygon_slopes, slopes', newtonPolygon_ge_length_eq_none v n hn]
   lengths := newtonPolygon_lengths v
+  lengths_junk :=
+    fun n hn ↦ by simp [newtonPolygon_lengths, newtonPolygon_ge_length_eq_none v n hn]
   increasing := by
     intro n hn
     have := newtonPolygon_slopes_increasing' v
     simp_rw [newtonPolygon_slopes_increasing] at this
     specialize this n
-    simp only [(newtonPolygon_ge_length_none v n hn), ↓reduceIte] at this
+    simp only [(newtonPolygon_lt_length_neq_none v n hn), ↓reduceIte] at this
     split_ifs at this
     · exact this
     · exact le_of_lt this
