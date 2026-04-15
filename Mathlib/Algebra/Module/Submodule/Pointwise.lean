@@ -132,6 +132,11 @@ theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i
 theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
   (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 
+variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
+
+@[simp] theorem neg_restrictScalars (p : Submodule R M) :
+  -(restrictScalars S p) = restrictScalars S (-p) := by ext; simp
+
 end Semiring
 
 open Pointwise

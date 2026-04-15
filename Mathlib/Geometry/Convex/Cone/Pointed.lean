@@ -90,7 +90,9 @@ variable {R E : Type*}
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 open Pointwise in
-lemma ofSubmodule_neg (S : Submodule R E) : ofSubmodule (-S) = -(ofSubmodule S) := by ext; simp
+set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+  neg_restrictScalars S
 
 end Submodule
 
@@ -295,11 +297,11 @@ variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup
 
 lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
-  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le, ← ofSubmodule_neg])
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le])
 
 lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
-  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le, ← ofSubmodule_neg])
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le])
 
 end AddCommGroup
 
