@@ -84,7 +84,7 @@ inductive Code
   deriving DecidableEq, Inhabited
 
 /-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`. By convention
-we use functions that return a single result return a singleton `[n]`, or in some cases `n :: v`
+functions that return a single result return a singleton `[n]`, or in some cases `n :: v`
 where `v` will be ignored by a subsequent function.
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
