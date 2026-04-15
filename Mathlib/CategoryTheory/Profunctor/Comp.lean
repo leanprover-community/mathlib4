@@ -1,8 +1,16 @@
+/-
+Copyright (c) 2026 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.End
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Profunctor.Basic
+/-!
+
+-/
 
 @[expose] public section
 
@@ -45,10 +53,6 @@ end Types
 class ChosenCoends.{v',u'} (C : Type*) [Category* C] where
   cowedge {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
   isCoend {J : Type u'} [Category.{v'} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
-
-instance : Limits.ChosenCoends.{v, u} (Type max w u) where
-  cowedge := Types.cowedge
-  isCoend := Types.cowedgeIsColimit
 
 variable {C : Type*} [Category* C] [ChosenCoends.{v, u} C]
 
@@ -104,9 +108,43 @@ lemma chosenCoend.map_comp {G H : Jᵒᵖ ⥤ J ⥤ C} (f : F ⟶ G) (g : G ⟶ 
 
 end
 
+section
+
+instance : Limits.ChosenCoends.{v, u} (Type max w u) where
+  cowedge := Types.cowedge
+  isCoend := Types.cowedgeIsColimit
+
+variable {J : Type u} [Category.{v} J] {F : Jᵒᵖ ⥤ J ⥤ Type max w u}
+
+lemma chosenCoend.ι_apply (j : J) (x : (F.obj (op j)).obj j) :
+    chosenCoend.ι F j x = Quot.mk _ ⟨j, x⟩ :=
+  rfl
+
+lemma chosenCoend.desc_apply {X : Type max w u} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
+    (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), (F.map g.op).app i ≫ f i = (F.obj (op j)).map g ≫ f j)
+    (x : chosenCoend F) : chosenCoend.desc f hf x =
+      Quot.lift (fun j ↦ f j.fst j.snd) (fun _ _ h ↦ by
+        cases h with | mk f x => exact ConcreteCategory.congr_hom (hf f) _) x :=
+  rfl
+
+lemma chosenCoend.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G) (x : chosenCoend F) :
+    chosenCoend.map f x = Quot.map (fun ⟨j, y⟩ ↦ ⟨j, (f.app _).app _ y⟩) (fun _ _ h ↦ by
+      cases h with | mk g x =>
+        dsimp
+        convert Types.coendRel.mk g ((f.app _).app _ x)
+        · simp only [← NatTrans.comp_app_apply, f.naturality]
+        · simp [← (f.app _).naturality_apply, -NatTrans.naturality_apply]) x :=
+  rfl
+
+end
+
 end Limits
 
 namespace Profunctor
+
+section Composition
+
+section Definition
 
 variable {C : Type*} [Category* C] {D : Type u} [Category.{v} D]
   {E : Type*} [Category* E]
@@ -152,6 +190,56 @@ def univComp (P : Profunctor.{w} C D) (Q : Profunctor.{w'} D E) :
 @[simps! obj_obj obj_map map_app]
 def comp (P : Profunctor.{u} C D) (Q : Profunctor.{u} D E) : Profunctor.{u} C E :=
   Profunctor.univComp.{u, u} P Q
+
+end Definition
+
+section LeftUnitor
+
+variable {C : Type u} [Category.{u} C] {D : Type u} [Category* D]
+
+set_option backward.isDefEq.respectTransparency false in
+def leftUnitor (P : Profunctor.{u} C D) : (Profunctor.id (C := C)).comp P ≅ P :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ Equiv.toIso {
+    toFun := Quot.lift (fun ⟨d, f, x⟩ ↦ (P.map f).app _ x) fun _ _ h ↦ by
+      simp only [compDiagram_obj_obj, id_obj_obj, op_unop]
+      cases h with
+      | mk f x =>
+        dsimp
+        rw [← comp_apply, ← NatTrans.comp_app, ← Functor.map_comp]
+    invFun x := Quot.mk _ ⟨X, 𝟙 X, x⟩
+    left_inv x := by
+      obtain ⟨⟨_, f, x⟩, rfl⟩ := Quot.mk_surjective x
+      symm
+      apply Quot.sound
+      dsimp
+      convert Limits.Types.coendRel.mk
+        (F := compDiagram (Profunctor.id.{u} (C := C)) P X (unop Y)) f ⟨𝟙 X, x⟩
+      cat_disch
+    right_inv _ := by simp }) (by
+      dsimp
+      intro x y f
+      ext
+      simp only [compDiagram_obj_obj, id_obj_obj, op_unop, Limits.chosenCoend.ι_map_assoc,
+        compDiagramMap_app_app, Functor.map_id, NatTrans.id_app, Quiver.Hom.op_unop,
+        TypeCat.Fun.toFun_apply, comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
+        Equiv.toIso_hom_hom_apply, Equiv.coe_fn_mk]
+      conv =>
+        enter [1, 3]
+        change Limits.Types.coend.ι _ _ _
+      conv =>
+        enter [2, 2, 3]
+        change Limits.Types.coend.ι _ _ _
+      simp [Limits.Types.coend.ι] )) (by
+      dsimp
+      intro x y f
+      ext _ z
+      simp [Limits.chosenCoend.map_apply, Quot.map]
+      obtain ⟨_, rfl⟩ := Quot.mk_surjective z
+      simp)
+
+end LeftUnitor
+
+end Composition
 
 end Profunctor
 
