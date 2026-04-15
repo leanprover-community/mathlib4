@@ -32,9 +32,9 @@ structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- we can reorder arguments of arguments in `SemilatticeInf.mk`
-set_option linter.impossibleInstance false in
-@[to_dual]
-instance [Min α] (le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c) : SemilatticeInf α where
+@[to_dual, implicit_reducible]
+def instSemilatticeInfOfForallLeForallMin [Min α]
+    (le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c) : SemilatticeInf α where
   le_inf
 
 -- we can reorder arguments of arguments of arguments in `SemilatticeInf.casesOn`
