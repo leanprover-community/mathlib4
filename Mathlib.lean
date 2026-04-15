@@ -809,6 +809,7 @@ public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Submodule.Finsupp
 public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.Algebra.Module.Submodule.IterateMapComap
 public import Mathlib.Algebra.Module.Submodule.Ker
