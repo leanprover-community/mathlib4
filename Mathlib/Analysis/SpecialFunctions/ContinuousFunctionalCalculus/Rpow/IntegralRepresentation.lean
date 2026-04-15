@@ -474,7 +474,7 @@ lemma monotoneOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 
       rw [cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one hp ht b hb]
 
 open CStarAlgebra in
-/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` and all `t ∈ Ioi 0`. -/
+/-- `rpowIntegrand₀₁ p t` is operator concave for all `p ∈ Ioo 0 1` and all `0 < t`. -/
 lemma concaveOn_cfcₙ_rpowIntegrand₀₁ {p : ℝ} {t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t) :
     ConcaveOn ℝ (Ici (0 : A)) (cfcₙ (rpowIntegrand₀₁ p t)) := by
   apply concaveOn_cfcₙ_of_concaveOn_cfc

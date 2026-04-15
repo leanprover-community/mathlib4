@@ -585,11 +585,8 @@ lemma preimage_inr_Icc_zero_one :
   simp [-mem_Icc, inr_mem_Icc_iff_norm_le]
 
 lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
-  intro a ha
-  rw [Set.mem_image] at ha
-  obtain ⟨a', ha'⟩ := ha
-  rw [← ha'.2]
-  exact Unitization.inr_nonneg_iff.mpr ha'.1
+  rintro - ⟨a, ha, rfl⟩
+  exact Unitization.inr_nonneg_iff.mpr ha
 
 end Icc
 

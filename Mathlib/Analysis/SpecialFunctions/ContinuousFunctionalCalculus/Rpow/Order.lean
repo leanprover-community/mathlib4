@@ -119,9 +119,12 @@ lemma concaveOn_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
 
 /-- The square root is operator concave. -/
 lemma concaveOn_sqrt : ConcaveOn ℝ (Ici (0 : A)) (sqrt : A → A) := by
-  have : (sqrt : A → A) = fun a => a ^ (1 / 2 : ℝ≥0) := by ext; rw [sqrt_eq_nnrpow]
-  rw [this]
+  eta_expand
+  simp_rw [sqrt_eq_nnrpow]
   exact concaveOn_nnrpow ⟨by norm_num, by norm_num⟩
+
+  --have : (sqrt : A → A) = fun a => a ^ (1 / 2 : ℝ≥0) := by ext; rw [sqrt_eq_nnrpow]
+  --rw [this]
 
 end NonUnitalCStarAlgebra
 
