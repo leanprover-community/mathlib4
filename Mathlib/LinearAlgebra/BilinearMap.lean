@@ -476,6 +476,7 @@ def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P �
 theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
     f.compr₂ₛₗ g m n = g (f m n) := rfl
 
+@[simp]
 theorem compr₂ₛₗ_id (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) : f.compr₂ₛₗ LinearMap.id = f := rfl
 
 theorem compr₂ₛₗ_comp {Q' R₅ : Type*} [CommSemiring R₅] [AddCommMonoid Q'] [Module R₅ Q']
