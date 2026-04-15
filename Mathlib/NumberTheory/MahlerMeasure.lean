@@ -224,7 +224,7 @@ theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degr
   obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
     hpdegC
   have hz₀ : z ≠ 0 := by
-    contrapose! hX
+    contrapose hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
   have h_z_root : z ∈ p.aroots ℂ := by aesop
   obtain ⟨m, h_m_pos, h_prim⟩ := isPrimitiveRoot_of_mahlerMeasure_eq_one h hz₀ h_z_root
