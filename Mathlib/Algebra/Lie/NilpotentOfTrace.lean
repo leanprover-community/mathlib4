@@ -90,8 +90,7 @@ lemma exists_polynomial_eval_eq
 lemma exists_polynomial_eval_sub [CharZero K]
     {ι : Type*} [Finite ι] {E : Submodule ℚ K}
     (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →ₗ[ℚ] ℚ) :
-    ∃ r : Polynomial K, ∀ i j, eval (a i - a j) r =
-      algebraMap ℚ K (f ⟨a i, ha i⟩) - algebraMap ℚ K (f ⟨a j, ha j⟩) := by
+    ∃ r : Polynomial K, ∀ i j, eval (a i - a j) r = f ⟨a i, ha i⟩ - f ⟨a j, ha j⟩ := by
   have hwd : ∀ ij kl : ι × ι, a ij.1 - a ij.2 = a kl.1 - a kl.2 →
       algebraMap ℚ K (f ⟨a ij.1, ha ij.1⟩) - algebraMap ℚ K (f ⟨a ij.2, ha ij.2⟩) =
       algebraMap ℚ K (f ⟨a kl.1, ha kl.1⟩) - algebraMap ℚ K (f ⟨a kl.2, ha kl.2⟩) := by
@@ -115,53 +114,72 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
     (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
-  rw [LieModule.isNilpotent_iff_forall' (R := K)]
-  intro ⟨x, hx⟩
-  rw [show toEnd K (derivedSeries K L 1) M ⟨x, hx⟩ = toEnd K L M x from rfl]
-  set X : Module.End K M := toEnd K L M x with hX_def
-  rcases eq_or_ne X 0 with hX_zero | hX_ne
-  · rw [hX_zero]; exact IsNilpotent.zero
+  /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
+  suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (toEnd K L M x) from
+    isNilpotent_iff_forall'.mpr fun ⟨x, hx⟩ ↦ this x hx
+  intro x hx
+  set X : End K M := toEnd K L M x with hX_def
+  /- Without loss of generality we may assume `X` is non-zero. -/
+  rcases eq_or_ne X 0 with hX_zero | hX_ne; · aesop
+  /- Using Jordan-Chevalley, let `s` and `n` be the semisimple and nilpotent parts of `X`. -/
   obtain ⟨n, hn_adj, s, hs_adj, hn_nil, hs_ss, hX_ns⟩ := X.exists_isNilpotent_isSemisimple
+  /- It suffices to prove `s = 0`. -/
+  suffices s = 0 by aesop
   classical
+  /- Decompose `M` as a direct sum of eigenspaces of `s`. -/
   let eigenDecomp := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
-  let v := eigenDecomp.collectedBasis (fun μ => finBasis K (s.eigenspace μ))
-  let μ : (Σ ν, Fin (finrank K (s.eigenspace ν))) → K := fun i => i.1
-  have hv_diag : ∀ i, s (v i) = μ i • v i := fun i =>
+  let I := (ν : K) × Fin (finrank K (s.eigenspace ν))
+  let v : Basis I K M := eigenDecomp.collectedBasis fun μ => finBasis K (s.eigenspace μ)
+  have : Fintype I := v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
+  let μ : I → K := Sigma.fst
+  have hv_diag (i : I) : s (v i) = μ i • v i :=
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
+  /- Let `E ⊆ K` be the `ℚ`-submodule of scalars spanned by the eigenvalues of `s`. -/
   let E : Submodule ℚ K := Submodule.span ℚ (Set.range μ)
-  suffices hs_zero : s = 0 by rw [hX_ns, hs_zero, add_zero]; exact hn_nil
-  suffices hf_zero : ∀ f : Module.Dual ℚ E, f = 0 by
-    have : Subsingleton E := (subsingleton_dual_iff ℚ).mp
-      ⟨fun a b => by rw [hf_zero a, hf_zero b]⟩
-    refine hs_ss.eq_zero_iff_forall_eigenvalue.mpr fun ν hν => ?_
+  have hμ (i : I) : μ i ∈ E := Submodule.subset_span (Set.mem_range_self i)
+  /- It suffices to prove that the `ℚ`-dual of `E` is trivial. -/
+  suffices ∀ f : Dual ℚ E, f = 0 by
+    suffices ∀ ν, s.HasEigenvalue ν → ν = 0 from hs_ss.eq_zero_iff_forall_eigenvalue.mpr this
+    intro ν hν
     have : Nontrivial (s.eigenspace ν) :=
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hν)
-    have hν_E : ν ∈ E := Submodule.subset_span ⟨⟨ν, ⟨0, finrank_pos⟩⟩, rfl⟩
-    simpa using Subsingleton.elim (⟨ν, hν_E⟩ : E) 0
+    replace hν : ν ∈ E := Submodule.subset_span ⟨⟨ν, ⟨0, finrank_pos⟩⟩, rfl⟩
+    have : Subsingleton E := (subsingleton_dual_iff ℚ).mp ⟨by aesop⟩
+    simpa using Subsingleton.elim (⟨ν, hν⟩ : E) 0
   intro f
-  have hμ : ∀ i, μ i ∈ E := fun i => Submodule.subset_span (Set.mem_range_self i)
-  have : Fintype (Σ ν, Fin (finrank K (s.eigenspace ν))) :=
-    v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
-  let c := fun i => algebraMap ℚ K (f ⟨μ i, hμ i⟩)
-  let y : Module.End K M := Matrix.toLin v v (Matrix.diagonal c)
-  have hy_diag : ∀ i, y (v i) = c i • v i := fun i =>
+  /- It suffices to show that any `f : Dual ℚ E` vanishes on all the eigenvalues of `s`. -/
+  suffices ∀ i, f ⟨μ i, hμ i⟩ = 0 by
+    rw [Submodule.linearMap_eq_zero_iff_of_eq_span f rfl]
+    rintro ⟨-, ⟨i, rfl⟩⟩
+    exact this i
+  /- We will deduce this by proving that the sum of the squares of all such values vanishes. -/
+  suffices ∑ i, f ⟨μ i, hμ i⟩ ^ 2 = 0 from fun i ↦ eq_zero_of_pow_eq_zero <|
+    (Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => sq_nonneg _)).mp this i (Finset.mem_univ _)
+  /- Which will follow from the fact that the following `f`-linear expression vanishes. -/
+  suffices ∑ i, (f ⟨μ i, hμ i⟩) • (⟨μ i, hμ i⟩ : E) = 0 by
+    simpa only [map_sum, map_zero, map_smul, sq] using f.congr_arg this
+  let c (i : I) : K := f ⟨μ i, hμ i⟩
+  /- Defining `c i = f ⟨μ i, hμ i⟩`, we can restate our goal as `∑ i, μ i * c i = 0`. -/
+  suffices ∑ i, μ i * c i = 0 by simp [Subtype.ext_iff, c, ← this, mul_comm (μ _), Algebra.smul_def]
+  let y : End K M := (Matrix.diagonal c).toLin v v
+  have hy_diag (i : I) : y (v i) = c i • v i :=
     mem_eigenspace_iff.mp (hasEigenvector_toLin_diagonal c i v).1
   have had_s : ∀ i j, ⁅s, v.end (i, j)⁆ = (μ i - μ j) • v.end (i, j) := ad_diag_basis v μ s hv_diag
   have had_y : ∀ i j, ⁅y, v.end (i, j)⁆ = (c i - c j) • v.end (i, j) := ad_diag_basis v c y hy_diag
   obtain ⟨r, hr_eval⟩ := exists_polynomial_eval_sub μ hμ f
-  let ad_X := ad K (Module.End K M) X
-  let ad_s := ad K (Module.End K M) s
-  let ad_y := ad K (Module.End K M) y
+  let ad_X : End K (End K M) := ad K _ X
+  let ad_s : End K (End K M) := ad K _ s
+  let ad_y : End K (End K M) := ad K _ y
   have hns_comm : Commute n s :=
     commute_of_mem_adjoin_singleton_of_commute hs_adj (commute_of_mem_adjoin_self hn_adj).symm
   have h_ad_s_mem : ad_s ∈ K[ad_X] := by
     have h := ad_mem_adjoin_of_isSemisimple hns_comm hn_nil hs_ss
     rwa [← hX_ns] at h
   obtain ⟨p, hp_eq⟩ := adjoin_mem_exists_aeval K ad_X h_ad_s_mem
-  let g : LieSubalgebra K (Module.End K M) := (toEnd K L M).range
+  let g : LieSubalgebra K (End K M) := (toEnd K L M).range
   have hxg : ∀ b ∈ g, ⁅X, b⁆ ∈ g := by
-    rintro _ ⟨b, rfl⟩
+    rintro - ⟨b, rfl⟩
     exact ⟨⁅x, b⁆, LieHom.map_lie (toEnd K L M) x b⟩
   have hyg : ∀ b ∈ g, ⁅y, b⁆ ∈ g := by
     have had_y_eq : ad_y = aeval ad_s r := by
@@ -189,7 +207,7 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
       ((LieSubmodule.lieIdeal_oper_eq_linear_span' (⊤ : LieIdeal K L) ⊤).le hx)
     simp only [← hxeq, map_sum, Finset.sum_mul, map_smul, smul_mul_assoc, smul_eq_mul]
     refine Finset.sum_eq_zero fun z hz => ?_
-    obtain ⟨a, _, b, _, rfl⟩ := hts hz
+    obtain ⟨a, -, b, -, rfl⟩ := hts hz
     rw [hcomm a b, mul_zero]
   have hny_comm : Commute n y := by
     have hy_adj : y ∈ K[s] := by
@@ -209,23 +227,6 @@ theorem isNilpotent_toEnd_of_traceForm_eq_zero_algClosed {K L M : Type*}
     refine Finset.sum_congr rfl fun i _ => ?_
     simp [Matrix.diag, toMatrix_apply, mul_apply, hy_diag i, map_smul, hv_diag i, smul_smul,
       mul_comm (c i)]
-  have htr_sum : ∑ i : (Σ ν, Fin (finrank K (s.eigenspace ν))), μ i * c i = 0 := by
-    rw [← htr_sy, ← htr_xy, hX_ns, add_mul, map_add, htr_ny, zero_add]
-  have h_sum_sq : ∑ i : (Σ ν, Fin (finrank K (s.eigenspace ν))), f ⟨μ i, hμ i⟩ ^ 2 = 0 := by
-    have h_sum_E : ∑ i, (f ⟨μ i, hμ i⟩) • (⟨μ i, hμ i⟩ : E) = 0 := by
-      apply_fun E.subtype using Subtype.val_injective
-      simp only [map_sum, map_smul, map_zero, Submodule.subtype_apply]
-      exact (Finset.sum_congr rfl fun i _ => by rw [smul_def, mul_comm]).trans htr_sum
-    have h : f (∑ i, (f ⟨μ i, hμ i⟩) • (⟨μ i, hμ i⟩ : E)) = 0 := by rw [h_sum_E, map_zero]
-    simp only [map_sum, map_smul, smul_eq_mul] at h
-    simpa [sq] using h
-  have h_each_zero : ∀ i, f ⟨μ i, hμ i⟩ = 0 := by
-    intro i
-    have h_nonneg : ∀ j ∈ Finset.univ, 0 ≤ f ⟨μ j, hμ j⟩ ^ 2 := fun j _ => sq_nonneg _
-    have h_sq_zero := (Finset.sum_eq_zero_iff_of_nonneg h_nonneg).mp h_sum_sq i (Finset.mem_univ _)
-    exact eq_zero_of_pow_eq_zero h_sq_zero
-  rw [Submodule.linearMap_eq_zero_iff_of_eq_span f rfl]
-  rintro ⟨_, ⟨i, rfl⟩⟩
-  exact h_each_zero i
+  rw [← htr_sy, ← htr_xy, hX_ns, add_mul, map_add, htr_ny, zero_add]
 
 end LieModule
