@@ -11,7 +11,7 @@ public import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Separation.SeparatedNhds
 public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Bases
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.DatabaseAttributes
 
 /-!
 # Separation properties of topological spaces
