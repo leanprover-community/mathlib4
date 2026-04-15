@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.Topology.Algebra.Module.LinearSpan
-public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Weak dual topology
@@ -25,10 +22,6 @@ The main definition is the type `WeakBilin B`.
 * Given `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, the type `WeakBilin B` is a type synonym for `E`.
 * The instance `WeakBilin.instTopologicalSpace` is the weak topology induced by the bilinear form
   `B`.
-* `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
-  strong dual of `E` with the weak topology.
-* `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
-  strong dual of `F` with the weak topology.
 
 ## Main results
 
@@ -136,23 +129,15 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   ext
   simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
 
-variable [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-
 set_option backward.isDefEq.respectTransparency false in
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
-def eval : F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
+def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
   toFun f := ⟨B.flip f, by fun_prop⟩
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-
-open LinearMap in
-lemma dualEmbedding_injective_of_separatingRight {E F : Type*} [AddCommGroup E] [AddCommGroup F]
-    [Module 𝕜 E] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (hr : B.SeparatingRight) :
-    Function.Injective (WeakBilin.eval B) :=
-  (injective_iff_map_eq_zero _).mpr (fun f hf ↦
-    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
 end Semiring
 
@@ -181,41 +166,3 @@ end Ring
 end WeakBilin
 
 end WeakTopology
-
-section NontriviallyNormedField
-
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
-variable [Module 𝕜 E] [Module 𝕜 F]
-
-variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
-namespace LinearMap
-
-open ContinuousLinearMap in
-set_option backward.isDefEq.respectTransparency false in
-lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
-  rintro ⟨f₁, hf₁⟩
-  have mem_span :
-    f₁ ∈ Submodule.span 𝕜 (⇑((coeLMₛₗ _).comp (WeakBilin.eval B)) '' Set.univ) := by
-      rw [Set.image_univ, mem_span_iff_continuous]
-      convert hf₁
-      simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
-  obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
-  use Finsupp.linearCombination 𝕜 (id (M := F) (R := 𝕜)) l
-  rw [← ContinuousLinearMap.coe_inj, WeakBilin.eval, coe_mk, AddHom.coe_mk]
-  simpa [Finsupp.linearCombination_apply, map_finsuppSum, ← hl2] using (by rfl)
-
-/-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
-weak topology. -/
-noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
-  LinearEquiv.ofBijective (WeakBilin.eval B)
-    ⟨WeakBilin.dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
-
-/-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
-weak topology. -/
-noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
-  rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
-
-end LinearMap
-
-end NontriviallyNormedField
