@@ -79,7 +79,7 @@ by `cR.pt` on `ModuleColimit hcR hcM`. -/
 noncomputable def coconeSMul :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) where
   pt := ModuleColimit hcR hcM
-  ι.app U := fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
+  ι.app U := TypeCat.ofHom fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
   ι.naturality V U f := by
     ext ⟨r, m⟩
     exact (ConcreteCategory.congr_arg (cM.ι.app U)
@@ -88,7 +88,7 @@ noncomputable def coconeSMul :
 noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
   smul :=
     (((isColimitOfPreserves (forget _) hcR).tensor
-      (isColimitOfPreserves (forget _) hcM)).desc (coconeSMul hcR hcM)).curry
+      (isColimitOfPreserves (forget _) hcM)).desc (coconeSMul hcR hcM) : _ → _).curry
 
 variable (cR) in
 /-- The "inclusion" maps to the colimit ring. -/
@@ -102,7 +102,7 @@ noncomputable abbrev ιM {U : Cᵒᵖ} : M.obj U →+ ModuleColimit hcR hcM :=
 @[simp]
 lemma smul_eq {U : Cᵒᵖ} (r : R.obj U) (m : M.obj U) :
     ιR cR r • ιM (hcR := hcR) (hcM := hcM) m = ιM (r • m) :=
-  congr_fun (((isColimitOfPreserves (forget _) hcR).tensor
+  ConcreteCategory.congr_hom (((isColimitOfPreserves (forget _) hcR).tensor
     (isColimitOfPreserves (forget _) hcM)).fac (coconeSMul hcR hcM) U) ⟨r, m⟩
 
 variable {hcR hcM} in
