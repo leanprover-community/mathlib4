@@ -119,8 +119,14 @@ instance : Add (F.Point σ) where
       (hasSubst_of_constantCoeff_nilpotent fun s => by fin_cases s <;> simp [x.prop, y.prop])
         (by simp [F.zero_constantCoeff])⟩
 
+@[simp]
+lemma add_apply {x y : F.Point σ} : (x + y).val = F.toPowerSeries.subst ![x.val, y.val] := rfl
+
 instance : Zero (F.Point σ) where
   zero := ⟨0, PowerSeries.HasSubst.zero⟩
+
+@[simp]
+lemma zero_apply : (0 : F.Point σ).val = 0 := rfl
 
 /- TODO : Zero, SMul, Inv instance. -/
 

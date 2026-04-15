@@ -79,9 +79,6 @@ lemma coeff_subst_addInv_trunc (hn : n ≠ 0) :
   congr! 3 with i
   fin_cases i <;>  simp [this]
 
-lemma _root_.MvPowerSeries.HasSubst.X_zero : MvPowerSeries.HasSubst ![X (R := R), 0] :=
-  MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp [← constantCoeff_eq])
-
 lemma _root_.MvPowerSeries.HasSubst.addInv_fin :
     MvPowerSeries.HasSubst ![X, (∑ (i ∈ range (n + 1)), Polynomial.C (F.addInv_aux i) *
       Polynomial.X (R := R) ^ i).toPowerSeries] :=
@@ -93,8 +90,10 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
   rw [sum_univ_eq_sum_range fun i => (Polynomial.C (F.addInv_aux i) * Polynomial.X (R := R) ^ i)]
   induction n with
   | zero =>
-    simp [constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero MvPowerSeries.HasSubst.X_zero
-      (by simp [← constantCoeff_eq]) F.zero_constantCoeff]
+    simp only [_root_.zero_add, range_one, sum_singleton, addInv_aux_zero, map_zero,
+      pow_zero, mul_one, Polynomial.coe_zero, coeff_zero_eq_constantCoeff, constantCoeff]
+    rw [MvPowerSeries.constantCoeff_subst_eq_zero _ (by simp [X]) F.zero_constantCoeff]
+    · exact MvPowerSeries.HasSubst.X_zero
   | succ k ih =>
     by_cases hk : k = 0
     · rw [hk, show range 2 = {0, 1} by rfl, coeff, MvPowerSeries.coeff_subst
@@ -135,7 +134,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
           rw [coeff_X_pow_mul', coeff_X_pow_mul']
           by_cases hd : d = single 1 1
           · simp [hd]
-          rw [if_neg hd, add_zero]
+          rw [if_neg hd, _root_.add_zero]
           by_cases hd_le : d 0 ≤ k + 1
           · simp_rw [if_pos hd_le, add_pow, map_sum]
             rw [Finset.sum_eq_single (d 1) _ (by simp)]
@@ -197,24 +196,27 @@ def addInv : MvPowerSeries σ R := subst φ (addInv_X F)
 theorem addInv_apply : addInv F φ = subst φ (addInv_X F) := rfl
 
 instance : Neg (F.Point σ) where
-  neg f := addInv F f
+  neg f := ⟨F.addInv f.val, MvPowerSeries.isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff
+    f.prop.const (HasSubst.of_constantCoeff_zero' rfl)⟩
 
 @[simp]
-lemma neg_apply {f : F.Point σ} : -f = addInv F f := rfl
+lemma neg_apply {f : F.Point σ} : (-f).val = F.addInv f.val := rfl
 
 /-- For any multivariate power series `φ` with zero constant coefficient, then
 `φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
-theorem add_addInv_eq_zero {f : F.Point σ} (hf : f.constantCoeff = 0) : f + (-f) = 0 := calc
-  _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toPowerSeries) := by
-    rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
-      (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf), add_apply]
-    congr! 1
-    funext s;
-    fin_cases s
-    · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf]
-    · simp [neg_apply, subst]
-  _ = _ := by
-    rw [subst_addInv_eq_zero]; ext n
-    simp [coeff_subst <| HasSubst.of_constantCoeff_zero hf, zero_apply]
+theorem add_addInv_eq_zero {f : F.Point σ} (hf : f.val.constantCoeff = 0) : f + (-f) = 0 := by
+  apply Subtype.ext
+  calc
+    _ = subst f.val (MvPowerSeries.subst ![PowerSeries.X, addInv_X F] F.toPowerSeries) := by
+      rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
+        (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf), add_apply]
+      congr! 1
+      funext s;
+      fin_cases s
+      · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf]
+      · simp [neg_apply, subst]
+    _ = _ := by
+      rw [subst_addInv_eq_zero]; ext n
+      simp [coeff_subst <| HasSubst.of_constantCoeff_zero hf, zero_apply]
 
 end FormalGroup
