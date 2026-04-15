@@ -123,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
