@@ -163,7 +163,7 @@ theorem inr_eq_prod : inr R L₁ L₂ = prod 0 LieHom.id :=
 theorem prod_ext_iff {f g : L₁ × L₂ →ₗ⁅R⁆ L} :
     f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) := by
   simp_rw [LieHom.ext_iff]
-  have h := LinearMap.prod_ext_iff (f:=f.toLinearMap) (g:= g.toLinearMap)
+  have h := LinearMap.prod_ext_iff (f := f.toLinearMap) (g := g.toLinearMap)
   simp_rw [LinearMap.ext_iff] at h
   exact h
 
