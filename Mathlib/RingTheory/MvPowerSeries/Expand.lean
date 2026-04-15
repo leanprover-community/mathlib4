@@ -199,7 +199,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
   by_cases! h : ∀ i, p ∣ d i
   · obtain ⟨m, hm⟩ : ∃ m, p • m = d := ⟨d.mapRange (fun a ↦ a / p) (by simp),
       by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
-    by_cases! h_le : m ≤ n
+    by_cases h_le : m ≤ n
     · rw [← hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
         MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
     · have not_le : ¬ p • m ≤ p • n := by
@@ -213,7 +213,7 @@ theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries �
         if_neg h_le]
   · obtain ⟨i, hi⟩ := h
     rw [MvPolynomial.coeff_expand_of_not_dvd _ hi]
-    by_cases! hd : d ≤ p • n
+    by_cases hd : d ≤ p • n
     · rw [coeff_trunc', if_pos hd, coeff_expand_of_not_dvd _ hp _ hi]
     rw [coeff_trunc', if_neg hd]
 
