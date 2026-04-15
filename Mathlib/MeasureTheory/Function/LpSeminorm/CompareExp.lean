@@ -353,6 +353,4 @@ protected lemma MemLp.prod' (hf : ∀ i ∈ s, MemLp (f i) (p i) μ) :
   simpa [Finset.prod_fn] using MemLp.prod hf
 
 end Prod
-
-
 end MeasureTheory
