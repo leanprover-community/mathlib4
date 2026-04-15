@@ -644,6 +644,8 @@ lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_i
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
     (nonDegenerateEquiv.2 (.refl _)) n)
 
+/-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
+`n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/
 protected def opObjEquiv {n : SimplexCategory} {d : SimplexCategoryᵒᵖ} :
     (stdSimplex.{u}.obj n).op.obj d ≃ (stdSimplex.obj n).obj d :=
   SSet.opObjEquiv.trans (objEquiv.trans
@@ -660,6 +662,7 @@ lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] 
     dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
       g (f i.rev).rev := rfl
 
+/-- The opposite of `Δ[n]` is isomorphic to `Δ[n]`. -/
 @[simps! hom_app_hom_apply inv_app_hom_apply]
 def opIso (n : SimplexCategory) :
     (stdSimplex.{u}.obj n).op ≅ stdSimplex.obj n :=
