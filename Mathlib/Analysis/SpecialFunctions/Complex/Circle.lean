@@ -142,17 +142,17 @@ lemma exp_angleDiff_add_symm : exp (angleDiff x y) * x = y := by
   rw [← exp_arg x, ← exp_add, angleDiff]
   split_ifs with hxy <;> simp
 
-lemma Icc_angleDiff_union_eq_Icc_min_add_two_pi (h : x ≠ y) :
+lemma Icc_union_Icc_angleDiff_add_arg (h : x ≠ y) :
     Icc x.val.arg (angleDiff x y + x.val.arg) ∪ Icc y.val.arg (angleDiff y x + y.val.arg) =
     Icc (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
 
-lemma Ico_angleDiff_union_eq_Ico_min_add_two_pi (h : x ≠ y) :
+lemma Ico_union_Ico_angleDiff_add_arg (h : x ≠ y) :
     Ico x.val.arg (angleDiff x y + x.val.arg) ∪ Ico y.val.arg (angleDiff y x + y.val.arg) =
     Ico (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
 
-lemma Ioc_angleDiff_union_eq_Ioc_min_add_two_pi (h : x ≠ y) :
+lemma Ioc_union_Ioc_angleDiff_add_arg (h : x ≠ y) :
     Ioc x.val.arg (angleDiff x y + x.val.arg) ∪ Ioc y.val.arg (angleDiff y x + y.val.arg) =
     Ioc (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
@@ -185,7 +185,6 @@ lemma path_injective_of_ne (hne : x ≠ y) : Injective (path x y) := by
     <| Path.segment_injective_of_ne <| by simp [angleDiff_pos hne |>.ne']
   rw [Path.range_segment, segment_eq_Icc (by simp)]
 
-@[simp]
 lemma range_path (x y : Circle) :
     range (path x y) = exp '' Icc x.val.arg (angleDiff x y + x.val.arg) := by
   rw [coe_path, range_comp, Path.range_segment, segment_eq_Icc (by simp)]
@@ -199,13 +198,13 @@ lemma path_image_Ioc_of_ne (h : x ≠ y) :
   rw [coe_path, image_comp, segment_image_Ioc (by simp [angleDiff_pos h])]
 
 lemma range_path_union_range_path (h : x ≠ y) : range (path x y) ∪ range (path y x) = univ := by
-  rw [range_path, range_path, ← image_union, Icc_angleDiff_union_eq_Icc_min_add_two_pi h,
+  rw [range_path, range_path, ← image_union, Icc_union_Icc_angleDiff_add_arg h,
     periodic_exp.image_Icc two_pi_pos]
   exact exp_surjective.range_eq
 
 lemma path_image_Ioc_union (h : x ≠ y) : path x y '' Ioc 0 1 ∪ path y x '' Ioc 0 1 = univ := by
   rw [path_image_Ioc_of_ne h, path_image_Ioc_of_ne h.symm, ← image_union,
-    Ioc_angleDiff_union_eq_Ioc_min_add_two_pi h, periodic_exp.image_Ioc two_pi_pos]
+    Ioc_union_Ioc_angleDiff_add_arg h, periodic_exp.image_Ioc two_pi_pos]
   exact exp_surjective.range_eq
 
 lemma disjoint_path_image_Ioc (h : x ≠ y) :
@@ -216,7 +215,7 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
   refine Set.disjoint_image_image fun a ha b hb ↦ ?_
   refine exp_injOn_Ioc (a := min x.val.arg y.val.arg) (b := min x.val.arg y.val.arg + 2 * π)
     (by simp) |>.ne ?_ ?_ <| hdisj.ne_of_mem ha hb
-    <;> rw [← Ioc_angleDiff_union_eq_Ioc_min_add_two_pi h] <;> tauto
+    <;> rw [← Ioc_union_Ioc_angleDiff_add_arg h] <;> tauto
 
 lemma path_image_Ioc_compl (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
