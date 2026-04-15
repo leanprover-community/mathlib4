@@ -183,7 +183,7 @@ lemma IsBond.isBridge (heB : e ∈ B) (hB : G.IsBond B) : (G.deleteEdges (B \ {e
 lemma IsBond.of_isClosedSubgraph (hGH : G ≤c H) (hB : G.IsBond B) : H.IsBond B := by
   refine ⟨⟨hB.isEdgeCut.of_isClosedSubgraph hGH, hB.nonempty⟩, fun C ⟨hC, e, heC⟩ hCB ↦ ?_⟩
   exact hB.2 ⟨hC.anti hGH.le, e, hB.subset (hCB heC), heC⟩ (inter_subset_right
-  |>.trans hCB) |>.trans inter_subset_right
+    |>.trans hCB) |>.trans inter_subset_right
 alias IsClosedSubgraph.isBond := IsBond.of_isClosedSubgraph
 
 end IsBond
