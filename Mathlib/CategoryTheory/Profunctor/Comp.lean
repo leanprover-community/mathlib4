@@ -223,13 +223,8 @@ def leftUnitor (P : Profunctor.{u} C D) : (Profunctor.id (C := C)).comp P ≅ P 
         compDiagramMap_app_app, Functor.map_id, NatTrans.id_app, Quiver.Hom.op_unop,
         TypeCat.Fun.toFun_apply, comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
         Equiv.toIso_hom_hom_apply, Equiv.coe_fn_mk]
-      conv =>
-        enter [1, 3]
-        change Limits.Types.coend.ι _ _ _
-      conv =>
-        enter [2, 2, 3]
-        change Limits.Types.coend.ι _ _ _
-      simp [Limits.Types.coend.ι] )) (by
+      erw [Limits.chosenCoend.ι_apply, Limits.chosenCoend.ι_apply] -- TODO: fix
+      simp)) (by
       dsimp
       intro x y f
       ext _ z
