@@ -893,6 +893,11 @@ lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : kr
 lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
   (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
+lemma coheight_lt_top [FiniteDimensionalOrder α] (x : α) : coheight x < ⊤ := by
+  rw [← WithBot.coe_lt_coe]
+  apply lt_of_le_of_lt (coheight_le_krullDim x)
+  simpa using krullDim_ne_top_of_finiteDimensionalOrder.lt_top
+
 end finiteDimensional
 
 section typeclass
