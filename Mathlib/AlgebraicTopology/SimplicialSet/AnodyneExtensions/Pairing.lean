@@ -163,16 +163,29 @@ lemma ofIso_p (x : P.II) :
   change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
   simp
 
+lemma ofIso_ancestralRel_iff (x y : P.II) :
+    (P.ofIso e hA).AncestralRel
+      ⟨(Subcomplex.N.equivOfIso e hA).symm x, by simp⟩
+      ⟨(Subcomplex.N.equivOfIso e hA).symm y, by simp⟩ ↔
+    P.AncestralRel x y :=
+  and_congr (not_congr (by aesop)) (by simp)
+
 instance [P.IsProper] : (P.ofIso e hA).IsProper where
   isUniquelyCodimOneFace := by
     rintro ⟨x, hx⟩
     obtain ⟨x, rfl⟩ := (N.equivOfIso e hA).symm.surjective x
-    simp only [ofIso_II, Set.mem_preimage, Equiv.apply_symm_apply] at hx
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hx
     simp only [ofIso_II, ofIso_I, dsimp% P.ofIso_p e hA ⟨x, hx⟩]
     exact (P.isUniquelyCodimOneFace ⟨x, hx⟩).of_iso e.symm
 
 instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
-  wf := sorry
+  wf := by
+    have hP := P.wf
+    rw [wellFounded_iff_isEmpty_descending_chain] at hP ⊢
+    by_contra!
+    obtain ⟨f, hf⟩ := this
+    refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
+    simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
 end Pairing
 
