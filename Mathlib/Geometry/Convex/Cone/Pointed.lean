@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -37,6 +36,8 @@ abbrev PointedCone (R E)
 namespace PointedCone
 
 open Function Submodule Pointwise
+
+open Pointwise
 
 section Submodule
 
@@ -94,6 +95,13 @@ lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule ''
 
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
+
+variable {R E : Type*}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+  neg_restrictScalars S
 
 end Submodule
 
@@ -296,6 +304,20 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
 
 end PositiveCone
 
+section AddCommGroup
+
+variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le])
+
+lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le])
+
+end AddCommGroup
+
 section OrderedAddCommGroup
 
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
@@ -315,10 +337,13 @@ variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R 
 @[simp] lemma neg_ofSubmodule (S : Submodule R E) : -(ofSubmodule S) = S := by
   ext x; simp
 
+<<<<<<< pointed-minor
 end Ring
 
 section Lineal
 
+=======
+>>>>>>> master
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 
 /-- The lineality space of a cone `C` is the submodule given by `C ⊓ -C`. -/
