@@ -26,9 +26,6 @@ Many important classes of maps are automatically continuous strict maps, includi
 - continuous open maps (`IsOpenMap.isStrictMap`);
 - continuous closed maps (`IsClosedMap.isStrictMap`).
 
-* `Topology.IsStrictMap`: The condition that a map `f` is strict, meaning the natural
-  map to its image is a quotient map.
-
 ## Equivalent characterizations
 
 We provide several equivalent ways to characterize a strict map `f`:
