@@ -149,7 +149,7 @@ theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) 
     simp [coeff_truncFinset_eq_zero _ hx]
 
 theorem support_truncFinset_subset (p : MvPowerSeries σ R) : (truncFinset R s p).support ⊆ s := by
-  intro; contrapose!
+  intro; contrapose
   simpa using coeff_truncFinset_eq_zero p
 
 lemma totalDegree_truncFinset (p : MvPowerSeries σ R) :
@@ -299,7 +299,7 @@ theorem coeff_truncTotal_eq_zero (p : MvPowerSeries σ R) {x : σ →₀ ℕ}
     (h : n ≤ degree x) : (truncTotal R n p).coeff x = 0 := coeff_truncFinset_eq_zero p (by simpa)
 
 lemma truncTotal_one (h : n ≠ 0) : truncTotal R n (1 : MvPowerSeries σ R) = 1 :=
-  truncFinset_one (by revert h; contrapose!; simp)
+  truncFinset_one (by revert h; contrapose; simp)
 
 lemma coeff_truncTotal_mul_truncTotal_eq_coeff_mul {x : σ →₀ ℕ} (p q : MvPowerSeries σ R)
     (hx : degree x < n) : MvPolynomial.coeff x ((truncTotal R n) p * (truncTotal R n) q) =
