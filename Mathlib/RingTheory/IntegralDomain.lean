@@ -188,7 +188,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
     obtain ⟨x, hx⟩ := IsCyclic.exists_monoid_generator (α := MonoidHom.range f.toHomUnits)
     have hx1 : (x.1 : R) - 1 ≠ 0 := by
       rw [sub_ne_zero]
-      contrapose! hf
+      contrapose hf
       ext g
       obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       simpa [hf, Subtype.ext_iff, Units.ext_iff] using hn.symm
