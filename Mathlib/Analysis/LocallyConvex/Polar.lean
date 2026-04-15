@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.Normed.Module.Convex
 

@@ -279,8 +279,10 @@ instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulActi
     ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩ toFinsupp_injective toFinsupp_smul
 
 instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
-  eq_of_smul_eq_smul {_s₁ _s₂} h :=
-    eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
+  eq_of_smul_eq_smul {_s₁ _s₂} h := by
+    apply eq_of_smul_eq_smul (α := ℕ →₀ R)
+    intro a
+    exact congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
   fast_instance% Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
@@ -677,6 +679,7 @@ theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_e
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
+@[grind inj]
 theorem C_injective : Injective (C : R → R[X]) :=
   monomial_injective 0
 
@@ -960,12 +963,10 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
   simp only [erase_def, coeff]
   exact ite_congr rfl (fun _ => rfl) (fun _ => rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
   toFinsupp_injective <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem erase_monomial {n : ℕ} {a : R} : erase n (monomial n a) = 0 :=
   toFinsupp_injective <| by simp

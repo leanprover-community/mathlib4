@@ -240,15 +240,16 @@ section image
 
 variable {F R : Type*} [Field F] [CommRing R] [IsDomain R]
 
+open Algebra
+
 section finite
 
 variable [Finite F]
 
-open Algebra in
 private
 lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} [NeZero n] {χ : MulChar F R} {μ : R}
     (hχ : χ ^ n = 1) (hμ : IsPrimitiveRoot μ n) {x : F} (hx : x ≠ 0) :
-    ∃ z ∈ Algebra.adjoin ℤ {μ}, χ x - 1 = z * (μ - 1) := by
+    ∃ z ∈ ℤ[μ], χ x - 1 = z * (μ - 1) := by
   obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hχ hμ hx
   refine hk ▸ ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
   exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
@@ -256,7 +257,7 @@ lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} [NeZero n] {χ : Mul
 private
 lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} [NeZero n] {χ ψ : MulChar F R}
     {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hμ : IsPrimitiveRoot μ n) (x : F) :
-    ∃ z ∈ Algebra.adjoin ℤ {μ}, (χ x - 1) * (ψ (1 - x) - 1) = z * (μ - 1) ^ 2 := by
+    ∃ z ∈ ℤ[μ], (χ x - 1) * (ψ (1 - x) - 1) = z * (μ - 1) ^ 2 := by
   rcases eq_or_ne x 0 with rfl | hx₀
   · exact ⟨0, Subalgebra.zero_mem _, by rw [sub_zero, ψ.map_one, sub_self, mul_zero, zero_mul]⟩
   rcases eq_or_ne x 1 with rfl | hx₁
@@ -276,7 +277,7 @@ and with values in an integral domain `R`, and `μ` is a primitive `n`th root of
 then the Jacobi sum `J(χ,φ)` is in `ℤ[μ] ⊆ R`. -/
 lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} [NeZero n] {χ φ : MulChar F R}
     (hχ : χ ^ n = 1) (hφ : φ ^ n = 1) {μ : R} (hμ : IsPrimitiveRoot μ n) :
-    jacobiSum χ φ ∈ Algebra.adjoin ℤ {μ} :=
+    jacobiSum χ φ ∈ ℤ[μ] :=
   Subalgebra.sum_mem _ fun _ _ ↦ Subalgebra.mul_mem _
     (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hχ hμ _)
     (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hφ hμ _)
@@ -288,7 +289,7 @@ Note that we do not state this as a divisibility in `R`, as this would give a we
 lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R}
     {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hn' : n ∣ Fintype.card F - 1)
     (hμ : IsPrimitiveRoot μ n) :
-    ∃ z ∈ Algebra.adjoin ℤ {μ}, jacobiSum χ ψ = -1 + z * (μ - 1) ^ 2 := by
+    ∃ z ∈ ℤ[μ], jacobiSum χ ψ = -1 + z * (μ - 1) ^ 2 := by
   obtain ⟨q, hq⟩ := hn'
   rw [Nat.sub_eq_iff_eq_add NeZero.one_le] at hq
   obtain ⟨z₁, hz₁, Hz₁⟩ := hμ.self_sub_one_pow_dvd_order hn

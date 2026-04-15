@@ -185,7 +185,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
       convert lt_norm_sub_of_not_sameRay this <;>
         simp only [hζ.norm'_eq_one hn.ne', Real.norm_of_nonneg hq.le, Complex.norm_real]
     rw [Complex.sameRay_iff]
-    push_neg
+    push Not
     refine ⟨mod_cast hq.ne', hζ.ne_zero hn.ne', ?_⟩
     rw [Complex.arg_ofReal_of_nonneg hq.le, Ne, eq_comm, hζ.arg_eq_zero_iff hn.ne']
     clear_value ζ
@@ -241,7 +241,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
         exact abs_eq_self.mpr hq.le
       · simp [hζ.norm'_eq_one hn.ne']
     rw [Complex.sameRay_iff]
-    push_neg
+    push Not
     refine ⟨mod_cast hq.ne', neg_ne_zero.mpr <| hζ.ne_zero hn.ne', ?_⟩
     rw [Complex.arg_ofReal_of_nonneg hq.le, Ne, eq_comm]
     intro h
@@ -254,7 +254,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
     · rw [← Complex.arg_eq_pi_iff, hζ.arg_eq_pi_iff hn.ne'] at this
       rw [this] at hζ
       linarith [hζ.unique <| IsPrimitiveRoot.neg_one 0 two_ne_zero.symm]
-    · contrapose! hζ₀
+    · contrapose hζ₀
       apply Complex.ext <;> simp [hζ₀, h.2]
   have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by simpa using (cyclotomic_pos' n hq').ne.symm
   suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) <
