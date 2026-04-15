@@ -26,7 +26,7 @@ This file shows that it suffices to have
 Frobenius equations. So we call this one the Frobenius equation too.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct LinearMap Coalgebra
 open scoped RingTheory.LinearMap
