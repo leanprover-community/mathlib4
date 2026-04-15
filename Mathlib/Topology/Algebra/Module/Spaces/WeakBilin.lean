@@ -49,8 +49,6 @@ weak-star, weak dual, duality
 @[expose] public section
 
 
-noncomputable section
-
 open Filter
 
 open Topology
@@ -80,7 +78,7 @@ instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoi
 
 /-- The canonical linear equivalence (over `𝕝`) between `WeakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)`
 and `E`. -/
-noncomputable def linearEquiv (𝕝 : Type*) [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+def linearEquiv (𝕝 : Type*) [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
     [AddCommMonoid F] [Module 𝕜 F] [CommSemiring 𝕝] [Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WeakBilin B ≃ₗ[𝕝] E :=
   LinearEquiv.refl ..
@@ -89,7 +87,7 @@ noncomputable def linearEquiv (𝕝 : Type*) [CommSemiring 𝕜] [AddCommMonoid 
 of the definitional equality between `E` and `WeakBilin B`, it is necessary to use this pairing
 instead of `B` itself when considering statements involving the weak topology induced by the
 pairing, such as the bipolar theorem. -/
-noncomputable def pairing [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
+def pairing [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WeakBilin B →ₗ[𝕜] F →ₗ[𝕜] 𝕜 :=
   (linearEquiv 𝕜 B).symm.arrowCongr (.refl _ _) B
