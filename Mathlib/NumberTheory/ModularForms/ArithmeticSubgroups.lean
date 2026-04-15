@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.ProperAction
 public import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
-public import Mathlib.Topology.Algebra.Ring.Real
-public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -138,16 +136,16 @@ namespace Matrix.SpecialLinearGroup
 
 /-- The image of `SL(n, ℤ)` in `GL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
-  (isEmbedding_mapGL Real.closedEmbedding_intCast.1).toHomeomorph.discreteTopology
+  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.1).toHomeomorph.discreteTopology
 
 /-- The image of `SL(n, ℤ)` in `SL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRangeSL :
     DiscreteTopology (SpecialLinearGroup.map (Int.castRingHom ℝ) (n := n)).range := by
   refine (Topology.IsEmbedding.toHomeomorph ?_).discreteTopology
-  exact Real.closedEmbedding_intCast.specialLinearGroup_map.1
+  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.1
 
 lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
-  isClosedEmbedding_mapGL Real.closedEmbedding_intCast
+  isClosedEmbedding_mapGL Real.isClosedEmbedding_intCast
 
 end Matrix.SpecialLinearGroup
 

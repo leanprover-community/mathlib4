@@ -7,6 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Instances.Matrix
 
@@ -167,9 +168,9 @@ variable [Algebra R S] [IsTopologicalRing S]
 
 omit [IsTopologicalRing R]
 
-lemma continuous_mapGL (h : Continuous (algebraMap R S)) :
-    Continuous (mapGL S : SL n R → _) :=
-  continuous_toGL.comp h.specialLinearGroup_map
+lemma continuous_mapGL [ContinuousSMul R S] : Continuous (mapGL S : SL n R → _) :=
+  continuous_toGL.comp
+    (continuous_algebraMap_iff_smul R S |>.2 continuous_smul).specialLinearGroup_map
 
 lemma isInducing_mapGL (h : IsInducing (algebraMap R S)) :
     IsInducing (mapGL S : SL n R → _) :=

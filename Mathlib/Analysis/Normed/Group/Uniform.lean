@@ -475,11 +475,11 @@ open Topology
 theorem isometry_intCast : Isometry ((↑) : ℤ → ℝ) :=
   Isometry.of_dist_eq <| by tauto
 
-theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
   isometry_intCast.isClosedEmbedding
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℝ)) :=
-  closedEmbedding_intCast.isClosed_range
+  isClosedEmbedding_intCast.isClosed_range
 
 lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℝ))ᶜ :=
   Real.isClosed_range_intCast.isOpen_compl
