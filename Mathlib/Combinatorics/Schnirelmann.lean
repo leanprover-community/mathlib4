@@ -368,9 +368,9 @@ lemma add_min'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddR
     (A + B).min' (hA.add hB) = A.min' hA + B.min' hB :=
   add_max'_add (α := αᵒᵈ) hA hB
 
-@[to_additive]
-lemma powers_nonempty {α : Type*} [Monoid α] {a : α} :
-    Set.Nonempty (Submonoid.powers a : Set α) := ⟨a, by simp⟩
+-- @[to_additive]
+-- lemma powers_nonempty {α : Type*} [Monoid α] {a : α} :
+--     Set.Nonempty (Submonoid.powers a : Set α) := ⟨a, by simp⟩
 
 @[to_additive]
 lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
@@ -398,7 +398,7 @@ lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α
         exact hl.1.eq_one'
     | inr hr =>
         simp only [coe_eq_empty] at hr
-        exact Or.inl (hr.resolve_left powers_nonempty.ne_empty)
+        exact Or.inl (hr.resolve_left Submonoid.powers_nonempty.ne_empty)
 
 open MulOpposite in
 @[to_additive]
@@ -427,7 +427,7 @@ lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq
         exact hl.2.eq_one'
     | inr hr =>
         simp only [coe_eq_empty] at hr
-        exact Or.inl (hr.resolve_right powers_nonempty.ne_empty)
+        exact Or.inl (hr.resolve_right Submonoid.powers_nonempty.ne_empty)
 
 @[to_additive]
 lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
