@@ -11,6 +11,11 @@ public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 import Mathlib.Tactic.Rify
 import Mathlib.Algebra.Order.Ring.Abs
@@ -18,7 +23,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.Set.Pointwise.SMul
+-- import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.GroupTheory.Torsion
@@ -320,11 +325,13 @@ theorem add_eq_univ_of_one_le_schirelmannDensity_add_schnirelmannDensity {A B : 
 
 section
 
-variable {α : Type*} [OrderedAddCommMonoid α] [CanonicallyOrderedAdd α]
+open Pointwise
+
+variable {α : Type*} [PartialOrder α] [AddCommMonoid α] [CanonicallyOrderedAdd α]
   {a : α} {A B : Set α} [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)]
 
 instance [AddLeftReflectLE α] [Sub α] [OrderedSub α] [DecidableRel (· ≤ · : α → α → Prop)] :
-    DecidablePred (· ∈ a +ᵥ B) := fun x =>
+    DecidablePred (· ∈ (a +ᵥ B : Set α)) := fun x =>
   decidable_of_iff (a ≤ x ∧ x - a ∈ B) <| by aesop (add simp Set.mem_vadd_set)
 
 instance [LocallyFiniteOrderBot α] [DecidableEq α] :
@@ -367,7 +374,7 @@ lemma powers_nonempty {α : Type*} [Monoid α] {a : α} :
 
 @[to_additive]
 lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    (h : Monoid.IsTorsionFree α) {A : Finset α} {b : α} :
+    [IsMulTorsionFree α] {A : Finset α} {b : α} :
     b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
   constructor
   case mpr => rintro (rfl | rfl) <;> simp
@@ -375,7 +382,7 @@ lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α
     intro hbA
     have hfin : (Submonoid.powers b : Set α) * A ⊆ A := by
       simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
-        mem_coe, exists_exists_eq_and, forall_exists_index, and_imp]
+        exists_exists_eq_and, forall_exists_index, and_imp]
       rintro _ n a ha rfl
       induction n with
       | zero => simpa
@@ -388,8 +395,7 @@ lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α
     cases this with
     | inl hl =>
         right
-        by_contra! hb
-        exact h _ hb hl.1
+        exact hl.1.eq_one'
     | inr hr =>
         simp only [coe_eq_empty] at hr
         exact Or.inl (hr.resolve_left powers_nonempty.ne_empty)
@@ -397,7 +403,7 @@ lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α
 open MulOpposite in
 @[to_additive]
 lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    (h : Monoid.IsTorsionFree α) {A : Finset α} {b : α} :
+    [IsMulTorsionFree α] {A : Finset α} {b : α} :
     op b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
   constructor
   case mpr => rintro (rfl | rfl) <;> simp
@@ -405,7 +411,7 @@ lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq
     intro hbA
     have hfin : A * (Submonoid.powers b : Set α) ⊆ A := by
       simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
-        mem_coe, exists_exists_eq_and, forall_exists_index, and_imp]
+        exists_exists_eq_and, forall_exists_index, and_imp]
       rintro _ a ha n rfl
       induction n with
       | zero => simpa
@@ -418,15 +424,14 @@ lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq
     cases this with
     | inl hl =>
         right
-        by_contra! hb
-        exact h _ hb hl.2
+        exact hl.2.eq_one'
     | inr hr =>
         simp only [coe_eq_empty] at hr
         exact Or.inl (hr.resolve_right powers_nonempty.ne_empty)
 
 @[to_additive]
 lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    (h : Monoid.IsTorsionFree α) {A B : Finset α} :
+    [IsMulTorsionFree α] {A B : Finset α} :
     B * A ⊆ A ↔ A = ∅ ∨ B ⊆ 1 := by
   constructor
   · intro hBA
@@ -434,7 +439,7 @@ lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
     intro hA b hb
     simp only [mem_one]
     have : b • A ⊆ A := (smul_finset_subset_mul hb).trans hBA
-    exact ((smul_finset_subset_self_iff h).1 this).resolve_left hA
+    exact ((smul_finset_subset_self_iff).1 this).resolve_left hA
   · rintro (rfl | h)
     · simp
     · exact (mul_subset_mul_right h).trans (by simp)
@@ -442,7 +447,7 @@ lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
 open MulOpposite in
 @[to_additive]
 lemma mul_subset_left_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    (h : Monoid.IsTorsionFree α) {A B : Finset α} :
+    [IsMulTorsionFree α] {A B : Finset α} :
     A * B ⊆ A ↔ A = ∅ ∨ B ⊆ 1 := by
   constructor
   · intro hBA
@@ -450,17 +455,17 @@ lemma mul_subset_left_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
     intro hA b hb
     simp only [mem_one]
     have : op b • A ⊆ A := (op_smul_finset_subset_mul hb).trans hBA
-    exact ((op_smul_finset_subset_self_iff h).1 this).resolve_left hA
+    exact ((op_smul_finset_subset_self_iff).1 this).resolve_left hA
   · rintro (rfl | h)
     · simp
     · exact (mul_subset_mul_left h).trans (by simp)
 
 lemma add_sdiff_nonempty {α : Type*}
     [AddCancelMonoid α] [DecidableEq α]
-    (h : AddMonoid.IsTorsionFree α)
+    (h : IsAddTorsionFree α)
     {A B : Finset α} (hA : A.Nonempty) (hB0 : (B \ {0}).Nonempty) :
     ((A + B) \ A).Nonempty := by
-  rw [sdiff_nonempty, add_subset_left_iff h, not_or, ← sdiff_nonempty]
+  rw [sdiff_nonempty, add_subset_left_iff, not_or, ← sdiff_nonempty]
   exact ⟨hA.ne_empty, hB0⟩
 
 @[to_additive]
@@ -484,7 +489,7 @@ theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
       forall_exists_index, and_imp]
     rintro _ b hb0 hbm hb hb' rfl
     refine ⟨⟨by omega, ?_⟩, b, ⟨hb, hb'⟩, rfl⟩
-    simp only [eq_empty_iff_forall_not_mem, mem_inter, not_and, and_imp, mem_Ioc] at h'
+    simp only [eq_empty_iff_forall_notMem, mem_inter, not_and, and_imp, mem_Ioc] at h'
     by_contra! h''
     exact h' b hb0 hbm hb (by omega) hbm
   calc σ * m ≤ #(Ioc 0 m ∩ A) + #(Ioc 0 m ∩ B) := h _ hm
@@ -505,8 +510,9 @@ theorem extracted_4 {σ : ℝ} (n : ℕ) {A A' B B' B'' : Finset ℕ}
     · aesop (add simp [disjoint_left, mem_vadd_finset])
 
 @[to_additive]
-lemma Finset.smul_Icc {α : Type*}
-    [LinearOrderedCommMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α]
+lemma Finset.smul_Icc {α : Type*} [LinearOrder α] [CommMonoid α]
+    [IsOrderedMonoid α] [MulLeftReflectLE α]
+    [ExistsMulOfLE α]
     [LocallyFiniteOrder α]
     {a b c : α} : a • Icc b c = Icc (a * b) (a * c) := by
   rw [← Finset.coe_inj, coe_smul_finset, coe_Icc, coe_Icc]
@@ -526,7 +532,7 @@ lemma disjoint_Ioo_Icc {α : Type*} [LinearOrder α] [LocallyFiniteOrder α] {a 
   refine disjoint_left.2 ?_
   intro i hi hi'
   simp only [mem_Ioo, mem_Icc] at hi hi'
-  exact hi.2.not_le hi'.1
+  exact hi.2.not_ge hi'.1
 
 theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
     (ih : ∀ n' < n, ∀ {A B : Finset ℕ},
@@ -554,7 +560,7 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
   have h₁ : m - b < n := by omega
   have h₂ : σ * (m - b) ≤ (Ioc 0 (m - b) ∩ (Icc 0 (m - b) ∩ A + Icc 0 (m - b) ∩ B)).card := by
     rw [← Nat.cast_sub hb₁.2.1]
-    rcases le_or_lt m b with h1 | h1
+    rcases le_or_gt m b with h1 | h1
     · simp [h1]
     refine ih _ (by omega) inter_subset_left inter_subset_left (by simp [hA0])
       (by simp [hB0]) (fun m' hm' => ?_) (by simp [h1])
@@ -582,7 +588,7 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
   have h₄ : (#(Icc 0 (m - b) ∩ A) : ℝ) = #(Icc b m ∩ (b +ᵥ A)) := by
     rw [← h_eq, ← card_vadd_finset' b]
   have h₅ : (#(Ioc 0 (m - b) ∩ (A + B)) : ℝ) + 1 = #(Icc 0 (m - b) ∩ (A + B)) := by
-    rw [← Ioc_insert_left (by omega), insert_inter_of_mem, card_insert_of_not_mem (by simp),
+    rw [← Ioc_insert_left (by omega), insert_inter_of_mem, card_insert_of_notMem (by simp),
       Nat.cast_add_one]
     exact mem_add.2 ⟨0, hA0, 0, hB0, by simp⟩
   have h₇ : (#(Icc b m ∩ (b +ᵥ A)) : ℝ) ≤ #(Icc b m ∩ A) := by
@@ -601,7 +607,7 @@ theorem extracted_5 {σ : ℝ} (hσ₀ : 0 < σ) (hσ₁ : σ ≤ 1) (n : ℕ)
       simp [hA', subset_inter_iff, subset_union_left, hAn]
     linarith
   have h₉ : σ * (b - 1) ≤ #(Ioc 0 (b - 1) ∩ A') + #(Ioc 0 (b - 1) ∩ B') := by
-    rcases le_or_lt b 1 with hb1 | hb1
+    rcases le_or_gt b 1 with hb1 | hb1
     case inl => calc
         _ ≤ (0 : ℝ) := mul_nonpos_of_nonneg_of_nonpos hσ₀.le (by simpa)
         _ ≤ _ := by simp [hb1]
@@ -655,7 +661,7 @@ theorem dyson_mann' {σ : ℝ} {n : ℕ} {A B : Finset ℕ}
   have : {x ∈ A | ¬ x +ᵥ B ⊆ A}.Nonempty := by
     rw [filter_nonempty_iff]
     by_contra!
-    rw [← add_subset_iff_left, add_subset_left_iff .of_noZeroSMulDivisors] at this
+    rw [← add_subset_iff_left, add_subset_left_iff] at this
     have hAne : A.Nonempty := ⟨0, hA0⟩
     simp [hB₀, hAne.ne_empty] at this
   let a := min' _ this
@@ -692,7 +698,7 @@ theorem dyson_mann {σ : ℝ} {n : ℕ} {A B : Set ℕ} [DecidablePred (· ∈ A
     (h : ∀ m ∈ Ioc 0 n, σ * m ≤ ((Ioc 0 m).filter (· ∈ A)).card + ((Ioc 0 m).filter (· ∈ B)).card)
     {m : ℕ} (hm : m ∈ Ioc 0 n) :
     σ * m ≤ ((Ioc 0 m).filter (· ∈ A + B)).card := by
-  simp only [mem_Ioc, and_imp] at hm
+  simp only [mem_Ioc] at hm
   have h' : ∀ m ∈ Ioc 0 n, ∀ p : ℕ → Prop, ∀ h : DecidablePred p,
       Ioc 0 m ∩ (Icc 0 n).filter p = (Ioc 0 m).filter p := by
     intro m hm p hp
