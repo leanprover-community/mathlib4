@@ -131,11 +131,20 @@ lemma Ideal.height_strict_mono_of_isPrime_of_isPrime {I J : Ideal R} [I.IsPrime]
     (Or.inr (lt_of_le_of_lt (Ideal.height_mono h.le) (J.height_lt_top IsPrime.ne_top')).ne)
   exact Ideal.height_strict_mono_of_isPrime h
 
+@[deprecated (since := "2026-04-02")]
+alias Ideal.height_strict_mono_of_isPrime_of_is_prime :=
+  Ideal.height_strict_mono_of_isPrime_of_isPrime
+
 @[deprecated "Use `Ideal.height_strict_mono_of_isPrime_of_isPrime` instead."
   (since := "2026-04-02")]
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J)
     [J.FiniteHeight] : I.primeHeight < J.primeHeight := by
   simpa [← Ideal.height_eq_primeHeight] using Ideal.height_strict_mono_of_isPrime_of_isPrime h
+
+/-- A prime ideal of finite height is equal to any ideal that contains it with no greater height. -/
+lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
+    {J : Ideal R} (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
+  eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_isPrime hlt) h_height
 
 private lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
