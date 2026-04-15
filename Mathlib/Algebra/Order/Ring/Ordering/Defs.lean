@@ -12,20 +12,16 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 /-!
 # Ring orderings
 
-Let `R` be a commutative ring. A preordering on `R` is a subset closed under
-addition and multiplication that contains all squares, but not `-1`.
+Let `R` be a commutative ring. We define orderings and preorderings on `R`
+as predicates on `Subsemiring R`.
 
-The support of a preordering `P` is the set of elements `x` such that both `x` and `-x` lie in `P`.
+## Definitions
 
-An ordering `O` on `R` is a preordering such that
-1. `O` contains either `x` or `-x` for each `x` in `R` and
-2. the support of `O` is a prime ideal.
+* `IsOrdering`: an ordering is a subsemiring `O` such that `O ∪ -O = R` and
+the support `O ∩ -O` of `O` forms a prime ideal.
+* `IsPreordering`: a preordering is a subsemiring that contains all squares, but not `-1`.
 
-We define preorderings, supports and orderings.
-
-A ring preordering can intuitively be viewed as a set of "non-negative" ring elements.
-Indeed, an ordering `O` with support `p` induces a linear order on `R⧸p` making it
-into an ordered ring, and vice versa.
+All orderings are preorderings.
 
 ## References
 
@@ -35,9 +31,89 @@ into an ordered ring, and vice versa.
 
 @[expose] public section
 
-/-!
-#### Preorderings
+namespace Subsemiring
+
+variable {R : Type*} [CommRing R] (S : Subsemiring R)
+
+/--
+An ordering `O` on a ring `R` is a subsemiring of `R` such that `O ∪ -O = R` and
+the support `O ∩ -O` of `O` forms a prime ideal.
 -/
+class IsOrdering (S : Subsemiring R) : Prop where
+  isSpanning (S) : S.IsSpanning
+  support_ne_top (S) : S.toAddSubmonoid.support ≠ ⊤
+  mem_support_or_mem_support :
+    ∀ {x y : R}, x * y ∈ S.toAddSubmonoid.support →
+      x ∈ S.toAddSubmonoid.support ∨ y ∈ S.toAddSubmonoid.support
+
+attribute [aesop safe forward] IsOrdering.isSpanning
+
+instance [i : S.IsOrdering] : S.HasIdealSupport := i.isSpanning.hasIdealSupport
+
+instance IsOrdering.support_isPrime [i : S.IsOrdering] : S.support.IsPrime where
+  ne_top' := by simpa using i.support_ne_top
+  mem_or_mem' := i.mem_support_or_mem_support
+
+variable {S} in
+theorem IsOrdering.mk' (hS₁ : S.IsSpanning) (hS₂ : have := hS₁.hasIdealSupport; S.support.IsPrime) :
+    S.IsOrdering where
+  isSpanning := hS₁
+  support_ne_top := by simpa [hS₁.hasIdealSupport] using hS₂.ne_top
+  mem_support_or_mem_support := hS₂.mem_or_mem
+
+/-- A preordering on a ring `R` is a subsemiring of `R` that contains all squares, but not `-1`. -/
+class IsPreordering (S : Subsemiring R) : Prop where
+  mem_of_isSquare (S) {x} (hx : IsSquare x) : x ∈ S := by aesop
+  neg_one_notMem (S) : -1 ∉ S := by aesop
+
+export IsPreordering (mem_of_isSquare)
+export IsPreordering (neg_one_notMem)
+
+attribute [aesop simp, aesop safe forward] neg_one_notMem
+
+section IsPreordering
+
+variable [IsPreordering S]
+
+@[aesop 80% (rule_sets := [SetLike])]
+protected theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ S := by
+  induction hx with
+  | zero => simp
+  | sq_add => aesop (add unsafe mem_of_isSquare)
+
+theorem sumSq_le {R : Type*} [CommRing R] (S : Subsemiring R) [IsPreordering S] :
+    Subsemiring.sumSq R ≤ S := fun _ ↦ by aesop
+
+@[simp]
+protected theorem mul_self_mem (x : R) : x * x ∈ S := by aesop
+
+@[simp]
+protected theorem pow_two_mem (x : R) : x ^ 2 ∈ S := by aesop
+
+end IsPreordering
+
+variable {S} in
+theorem IsPreordering.of_support_neq_top
+    (hS : S.IsSpanning) (h : have := hS.hasIdealSupport; S.support ≠ ⊤) :
+    S.IsPreordering where
+  mem_of_isSquare x := by
+    rcases x with ⟨y, rfl⟩
+    cases S.mem_or_neg_mem hS y with
+    | inl h => aesop
+    | inr h => simpa using (show -y * -y ∈ S by aesop (config := { enableSimp := false }))
+  neg_one_notMem hc := by
+    have := hS.hasIdealSupport
+    have : 1 ∈ S.support := by simp [mem_support, hc]
+    exact h (by simpa [Ideal.eq_top_iff_one])
+
+/- An ordering is a preordering. -/
+instance [S.IsOrdering] : S.IsPreordering :=
+  .of_support_neq_top (IsOrdering.isSpanning S) (Ideal.IsPrime.ne_top inferInstance)
+
+end Subsemiring
+
+/- ############## DEPRECATE -/
+
 
 variable (R : Type*) [CommRing R]
 
