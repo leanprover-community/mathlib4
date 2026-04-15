@@ -53,7 +53,8 @@ structure Function.LocallyFinsuppWithin [Zero Y] where
   /-- A proof that the support is locally finite within `U` -/
   supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
-@[deprecated (since := "2026-04-10")] alias Function.locallyFinsuppWithin := LocallyFinsuppWithin
+@[deprecated (since := "2026-04-15")]
+alias Function.locallyFinsuppWithin := Function.LocallyFinsuppWithin
 
 variable (X Y) in
 /--
@@ -62,7 +63,7 @@ A function with locally finite support is a function with locally finite support
 -/
 abbrev Function.LocallyFinsupp [Zero Y] := LocallyFinsuppWithin (Set.univ : Set X) Y
 
-@[deprecated (since := "2026-04-10")] alias Function.locallyFinsupp := LocallyFinsupp
+@[deprecated (since := "2026-04-15")] alias Function.locallyFinsupp := Function.LocallyFinsupp
 
 /--
 Function with locally finite support have a zero.
@@ -119,6 +120,9 @@ lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
 lemma Function.LocallyFinsupp.locallyFiniteSupport [Zero Y] (f : LocallyFinsupp X Y) :
     LocallyFiniteSupport f.toFun :=
   (f.supportLocallyFiniteWithinDomain' · (by trivial))
+
+@[deprecated (since := "2026-04-15")]
+alias Function.locallyFinsupp.locallyFiniteSupport := Function.LocallyFinsupp.locallyFiniteSupport
 
 namespace Function.LocallyFinsuppWithin
 
@@ -421,8 +425,16 @@ lemma _root_.Function.LocallyFinsupp.single_pos
 @[simp] lemma _root_.Function.LocallyFinsupp.single_pos_nat_one [DecidableEq X] {x : X} :
     0 < single x 1 := single_pos.2 Nat.one_pos
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.Function.locallyFinsupp.single_pos_nat_one :=
+    _root_.Function.LocallyFinsupp.single_pos_nat_one
+
 @[simp] lemma _root_.Function.LocallyFinsupp.single_pos_int_one [DecidableEq X] {x : X} :
     0 < single x (1 : ℤ) := single_pos.2 Int.one_pos
+
+@[deprecated (since := "2026-04-15")]
+alias  _root_.Function.locallyFinsupp.single_pos_int_one :=
+    _root_.Function.LocallyFinsupp.single_pos_int_one
 
 instance [SemilatticeSup Y] [Zero Y] : Max (LocallyFinsuppWithin U Y) where
   max D₁ D₂ :=
@@ -494,6 +506,9 @@ variable [AddCommGroup Y]
 
 @[simp] lemma posPart_apply (a : LocallyFinsuppWithin U Y) (x : X) : a⁺ x = (a x)⁺ := rfl
 @[simp] lemma negPart_apply (a : LocallyFinsuppWithin U Y) (x : X) : a⁻ x = (a x)⁻ := rfl
+
+@[deprecated (since := "2026-04-15")] alias _root_.Function.locallyFinsuppWithin.negPart_apply :=
+    posPart_apply
 
 end Lattice
 

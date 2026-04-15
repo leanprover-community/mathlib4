@@ -283,6 +283,10 @@ lemma _root_.LocallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
     LocallyFinsuppWithin.logCounting (divisor f ⊤) = logCounting f 0 - logCounting f ⊤ := by
   simp [logCounting, ← LocallyFinsuppWithin.logCounting.map_sub]
 
+@[deprecated (since := "2026-04-15")]
+alias _root_.locallyFinsuppWithin.logCounting_divisor :=
+  _root_.LocallyFinsuppWithin.logCounting_divisor
+
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the logarithmic
 counting function for the zeros of `f - a₀`.
@@ -598,6 +602,10 @@ theorem Function.LocallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_c
   · simp_all
   · rw [divisor_apply, divisor_apply]
     all_goals aesop
+
+@[deprecated (since := "2026-04-15")]
+alias Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const :=
+  Function.LocallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const
 
 /--
 Variant of `locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const`, using
