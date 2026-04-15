@@ -886,11 +886,11 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
 instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
-  inner x y := y * conj x
-  norm_sq_eq_re_inner x := by simp only [mul_conj, ← ofReal_pow, ofReal_re]
-  conj_inner_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
-  add_left x y z := by simp only [mul_add, map_add]
-  smul_left x y z := by simp only [mul_comm (conj z), mul_assoc, smul_eq_mul, map_mul]
+  inner x y := y * star x
+  norm_sq_eq_re_inner x := by rw [star_def, mul_conj, ← ofReal_pow, ofReal_re]
+  conj_inner_symm x y := by rw [star_def, map_mul, starRingEnd_self_apply, mul_comm]
+  add_left x y z := by rw [star_def, map_add, mul_add]
+  smul_left x y z := by rw [star_def, smul_eq_mul, map_mul, mul_left_comm]
 
 @[simp]
 theorem RCLike.inner_apply (x y : 𝕜) : ⟪x, y⟫ = y * conj x :=
@@ -971,10 +971,11 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm x y := inner_re_symm ..
   add_left x y z :=
-    show re (_ * _) = re (_ * _) + re (_ * _) by simp only [map_add, mul_re, conj_re, conj_im]; ring
+    show re (_ * _) = re (_ * _) + re (_ * _) by
+      simp only [star_def, map_add, mul_re, conj_re, conj_im]; ring
   smul_left x y r :=
     show re (_ * _) = _ * re (_ * _) by
-      simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
+      simp only [star_def, mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
 -- The instance above does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
