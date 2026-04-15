@@ -63,8 +63,8 @@ set_option linter.translateOverwrite false in
 /-- `CommSq.mk'` is the dual of `CommSq.mk`, which we need for `to_dual`.
 Please avoid using this directly. -/
 @[to_dual existing mk]
-abbrev mk' (w : g ≫ i = f ≫ h := by cat_disch) : CommSq f g h i where
-  w := w.symm
+lemma mk' (w : g ≫ i = f ≫ h := by cat_disch) : CommSq f g h i :=
+  ⟨w.symm⟩
 
 attribute [reassoc] CommSq.w
 
