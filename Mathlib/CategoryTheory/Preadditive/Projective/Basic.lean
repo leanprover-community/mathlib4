@@ -77,6 +77,8 @@ an epimorphism `P ↠ X`. -/
 class EnoughProjectives : Prop where
   presentation : ∀ X : C, Nonempty (ProjectivePresentation X)
 
+attribute [instance low] EnoughProjectives.presentation
+
 end
 
 namespace Projective
