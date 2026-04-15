@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Subgroup
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Normed groups homomorphisms
@@ -24,6 +26,8 @@ Some easy other constructions are related to subgroups of normed groups.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -329,8 +333,7 @@ theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAdd
         norm_le_zero_iff.1
           (calc
             _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-            _ = _ := by rw [hn, zero_mul]
-            ))
+            _ = _ := by rw [hn, zero_mul]))
     fun hf => by rw [hf, opNorm_zero]
 
 @[simp]
@@ -351,27 +354,21 @@ variable (V)
 /-- The identity as a continuous normed group hom. -/
 @[simps!]
 def id : NormedAddGroupHom V V :=
-  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp [le_refl])
+  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp)
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
-space is non-trivial.) It means that one can not do better than an inequality in general. -/
+space is non-trivial.) It means that one cannot do better than an inequality in general. -/
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
   le_antisymm (norm_id_le V) <| by
-    let ⟨x, hx⟩ := h
+    let ⟨x, hx⟩ := exists_norm_ne_zero V
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
-
-/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine norm_id_of_nontrivial_seminorm V ?_
-  obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
@@ -403,7 +400,7 @@ instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
-        simp only [AddMonoidHom.sub_apply, AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
+        simp only [AddMonoidHom.toFun_eq_coe, sub_eq_add_neg]
         exact (f + -g).bound' }⟩
 
 @[simp]
@@ -505,7 +502,7 @@ instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
@@ -514,7 +511,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
       add_le' := opNorm_add_le }
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
@@ -565,7 +562,7 @@ protected def comp (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁
 
 theorem norm_comp_le (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     ‖g.comp f‖ ≤ ‖g‖ * ‖f‖ :=
-  mkNormedAddGroupHom_norm_le _ (mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
+  mkNormedAddGroupHom_norm_le _ (by positivity) _
 
 theorem norm_comp_le_of_le {g : NormedAddGroupHom V₂ V₃} {C₁ C₂ : ℝ} (hg : ‖g‖ ≤ C₂)
     (hf : ‖f‖ ≤ C₁) : ‖g.comp f‖ ≤ C₂ * C₁ :=
@@ -588,7 +585,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, Function.comp_apply, AddMonoidHom.add_apply,
+      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -644,7 +641,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
   rw [ker, f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
-    the corestriction of `f` to the kernel of `g`. -/
+the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
@@ -783,7 +780,7 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
         rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
-    simp only [map_add, AddSubgroup.coe_add, Subtype.coe_mk]
+    simp only [map_add, AddSubgroup.coe_add]
   bound' := by
     obtain ⟨C, _C_pos, hC⟩ := φ.bound
     exact ⟨C, hC⟩
@@ -802,9 +799,6 @@ def liftEquiv :
   toFun φ := lift φ φ.prop
   invFun ψ := ⟨(ι f g).comp ψ, by rw [← comp_assoc, ← comp_assoc, comp_ι_eq]⟩
   left_inv φ := by simp
-  right_inv ψ := by
-    ext
-    rfl
 
 /-- Given `φ : NormedAddGroupHom V₁ V₂` and `ψ : NormedAddGroupHom W₁ W₂` such that
 `ψ.comp f₁ = f₂.comp φ` and `ψ.comp g₁ = g₂.comp φ`, the induced morphism

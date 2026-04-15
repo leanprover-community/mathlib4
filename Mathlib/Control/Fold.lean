@@ -3,14 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Sean Leather
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Control.Traversable.Instances
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 
@@ -51,6 +53,8 @@ A special class could be defined for `foldable`, similarly to Haskell,
 but the author cannot think of instances of `foldable` that are not also
 `Traversable`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -107,34 +111,37 @@ abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 
 def Foldl.mk (f : α → α) : Foldl α :=
-  op f
+  op (TypeCat.ofHom f)
 
 def Foldl.get (x : Foldl α) : α → α :=
-  unop x
+  ConcreteCategory.hom (unop x)
 
 @[simps]
 def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β where
-  toFun xs := op <| flip (List.foldl f) (FreeMonoid.toList xs)
+  toFun xs := op <| TypeCat.ofHom (flip (List.foldl f) (FreeMonoid.toList xs))
   map_one' := rfl
   map_mul' := by
     intros
-    simp only [FreeMonoid.toList_mul, unop_op, List.foldl_append, op_inj, Function.flip_def]
+    simp only [FreeMonoid.toList_mul, List.foldl_append, Function.flip_def]
     rfl
 
 abbrev Foldr (α : Type u) : Type u :=
   End α
 
 def Foldr.mk (f : α → α) : Foldr α :=
-  f
+  TypeCat.ofHom f
 
 def Foldr.get (x : Foldr α) : α → α :=
-  x
+  ConcreteCategory.hom x
 
 @[simps]
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
-  toFun xs := flip (List.foldr f) (FreeMonoid.toList xs)
+  toFun xs := TypeCat.ofHom (flip (List.foldr f) (FreeMonoid.toList xs))
   map_one' := rfl
-  map_mul' _ _ := funext fun _ => List.foldr_append
+  map_mul' _ _ := by
+    apply ConcreteCategory.ext
+    ext
+    apply List.foldr_append
 
 abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
@@ -149,7 +156,11 @@ def foldlM.get (x : foldlM m α) : α → m α :=
 def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α →* Monoid.foldlM m β where
   toFun xs := op <| flip (List.foldlM f) (FreeMonoid.toList xs)
   map_one' := rfl
-  map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
+  map_mul' := by
+    intros
+    apply unop_injective
+    funext
+    apply List.foldlM_append
 
 abbrev foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
@@ -233,13 +244,15 @@ theorem Free.map_eq_map (f : α → β) (xs : List α) :
   rfl
 
 theorem foldl.unop_ofFreeMonoid (f : β → α → β) (xs : FreeMonoid α) (a : β) :
-    unop (Foldl.ofFreeMonoid f xs) a = List.foldl f a (FreeMonoid.toList xs) :=
+    ConcreteCategory.hom (unop (Foldl.ofFreeMonoid f xs)) a =
+      List.foldl f a (FreeMonoid.toList xs) :=
   rfl
 
 variable {t : Type u → Type u} [Traversable t] [LawfulTraversable t]
 
 open LawfulTraversable
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldMap_hom [Monoid α] [Monoid β] (f : α →* β) (g : γ → α) (x : t γ) :
     f (foldMap g x) = foldMap (f ∘ g) x :=
   calc
@@ -288,6 +301,7 @@ theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α
   ext
   simp [(· ∘ ·), foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
   Eq.symm <|
     calc
@@ -295,17 +309,19 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
           FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse := by
           simp only [FreeMonoid.reverse_reverse]
       _ = (List.foldr cons [] (foldMap FreeMonoid.of xs).toList.reverse).reverse := by simp
-      _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
+      _ = (ConcreteCategory.hom
+          (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs))) []).reverse := by
             simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs := by
             rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
-            simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
+            simp only [toList, foldl, Foldl.get, foldl.ofFreeMonoid_comp_of,
               Function.comp_apply]
 
 theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
     foldMap g (f <$> xs) = foldMap (g ∘ f) xs := by
   simp only [foldMap, traverse_map, Function.comp_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
     foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (toList xs), ← foldl.unop_ofFreeMonoid]
@@ -314,7 +330,7 @@ theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
 
 theorem foldr_toList (f : α → β → β) (xs : t α) (x : β) :
     foldr f x xs = List.foldr f x (toList xs) := by
-  change _ = Foldr.ofFreeMonoid _ (FreeMonoid.ofList <| toList xs) _
+  change _ = (Foldr.ofFreeMonoid _ (FreeMonoid.ofList <| toList xs)).hom _
   rw [toList_spec, foldr, Foldr.get, FreeMonoid.ofList_toList, foldMap_hom_free,
     foldr.ofFreeMonoid_comp_of]
 
@@ -330,7 +346,7 @@ theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
 @[simp]
 theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
     foldr f a (g <$> l) = foldr (f ∘ g) a l := by
-  simp only [foldr, foldMap_map, Function.comp_def, flip]
+  simp only [foldr, foldMap_map, Function.comp_def]
 
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
@@ -351,6 +367,7 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
   calc foldlm f x xs
@@ -373,7 +390,7 @@ theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) 
 @[simp]
 theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
     foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by
-  simp only [foldrm, foldMap_map, Function.comp_def, flip]
+  simp only [foldrm, foldMap_map, Function.comp_def]
 
 end Equalities
 

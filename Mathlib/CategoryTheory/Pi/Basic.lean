@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -15,27 +17,23 @@ We define the pointwise category structure on indexed families of objects in a c
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
+
+open Functor
 
 universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
 
-/-- `pi C` gives the cartesian product of an indexed family of categories.
+/-- `pi C` gives the Cartesian product of an indexed family of categories.
 -/
 instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
-
-/-- This provides some assistance to typeclass search in a common situation,
-which otherwise fails. (Without this `CategoryTheory.Pi.has_limit_of_has_limit_comp_eval` fails.)
--/
-abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] : Category.{v₁} (∀ i, C i) :=
-  CategoryTheory.pi C
-
-attribute [instance] pi'
 
 namespace Pi
 
@@ -64,12 +62,8 @@ section
 
 variable {J : Type w₁}
 
-/- Porting note: add this because Lean cannot see directly through the `∘` for
-`Function.comp` -/
-
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
-  dsimp
-  infer_instance
+instance (f : J → I) : (j : J) → Category ((C ∘ f) j) :=
+  inferInstanceAs <| (j : J) → Category (C (f j))
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
@@ -80,6 +74,7 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
@@ -93,6 +88,7 @@ example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 variable {I}
 variable {K : Type w₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
 pulling back along their composition
@@ -109,7 +105,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -117,17 +113,9 @@ section
 
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
-/- Porting note: maybe mixing up universes -/
 instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
-  | Sum.inl i => by
-    dsimp
-    infer_instance
-  | Sum.inr j => by
-    dsimp
-    infer_instance
-
-/- Porting note: replaced `Sum.rec` with `match`'s per the error about
-current state of code generation -/
+  | Sum.inl i => inferInstanceAs <| Category (C i)
+  | Sum.inr j => inferInstanceAs <| Category (D j)
 
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
@@ -152,6 +140,13 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s wher
 end
 
 variable {C}
+
+/-- A family of isomorphisms gives rise to an isomorphism of families. -/
+@[simps]
+def isoMk {X Y : ∀ i, C i} (iso : ∀ i, X i ≅ Y i) :
+    X ≅ Y where
+  hom := fun i => (iso i).hom
+  inv := fun i => (iso i).inv
 
 /-- An isomorphism between `I`-indexed objects gives an isomorphism between each
 pair of corresponding components. -/
@@ -196,7 +191,7 @@ def pi' (f : ∀ i, A ⥤ C i) : A ⥤ ∀ i, C i where
 
 /-- The projections of `Functor.pi' F` are isomorphic to the functors of the family `F` -/
 @[simps!]
-def pi'CompEval {A : Type*} [Category A] (F : ∀ i, A ⥤ C i) (i : I) :
+def pi'CompEval {A : Type*} [Category* A] (F : ∀ i, A ⥤ C i) (i : I) :
     pi' F ⋙ Pi.eval C i ≅ F i :=
   Iso.refl _
 
@@ -213,12 +208,8 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
-  apply Functor.ext
-  · intro _ _ _
-    simp
-  · intro _
-    rfl
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i :=
+  rfl
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
 theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :
@@ -230,7 +221,6 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' �
     have := congr_obj h X
     simpa
   · intro X Y g
-    dsimp
     funext i
     specialize h i
     have := congr_hom h g
@@ -253,7 +243,7 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G where
   app := fun X i => (τ i).app X
   naturality _ _ f := by
@@ -275,10 +265,11 @@ def pi (e : ∀ i, F i ≅ G i) : Functor.pi F ≅ Functor.pi G where
   hom := NatTrans.pi (fun i => (e i).hom)
   inv := NatTrans.pi (fun i => (e i).inv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
-def pi' {E : Type*} [Category E] {F G : E ⥤ ∀ i, C i}
+def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (e : ∀ i, F ⋙ Pi.eval C i ≅ G ⋙ Pi.eval C i) : F ≅ G where
   hom := NatTrans.pi' (fun i => (e i).hom)
   inv := NatTrans.pi' (fun i => (e i).inv)
@@ -293,7 +284,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+    exact ⟨fun i => inv (f i), by cat_disch, by cat_disch⟩
 
 variable (C)
 
@@ -322,18 +313,18 @@ attribute [local simp] eqToHom_map
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
-  functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
+  functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+  unitIso := NatIso.pi' (fun i' => leftUnitor _ ≪≫
     (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
     isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
-    (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫
-    (Functor.associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight (Functor.pi'CompEval _ _) _ ≪≫
+    (pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (pi'CompEval _ _).symm ≪≫
+    (associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (associator _ _ _).symm ≪≫
+    isoWhiskerRight (pi'CompEval _ _) _ ≪≫
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
-    (Functor.leftUnitor _).symm)
+    (leftUnitor _).symm)
 
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]

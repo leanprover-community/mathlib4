@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.RightHomology
+public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
 /-!
 # Homology of short complexes
@@ -31,6 +32,8 @@ such a structure could be used as a basis for the *definition* of homology.
 
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -50,11 +53,11 @@ structure HomologyData where
   /-- a right homology data -/
   right : S.RightHomologyData
   /-- the compatibility isomorphism relating the two dual notions of
-    `LeftHomologyData` and `RightHomologyData`  -/
+  `LeftHomologyData` and `RightHomologyData` -/
   iso : left.H ≅ right.H
   /-- the pentagon relation expressing the compatibility of the left
   and right homology data -/
-  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by aesop_cat
+  comm : left.π ≫ iso.hom ≫ right.ι = left.i ≫ right.p := by cat_disch
 
 attribute [reassoc (attr := simp)] HomologyData.comm
 
@@ -201,8 +204,7 @@ class HasHomology : Prop where
   condition : Nonempty S.HomologyData
 
 /-- A chosen `S.HomologyData` for a short complex `S` that has homology -/
-noncomputable def homologyData [HasHomology S] :
-  S.HomologyData := HasHomology.condition.some
+noncomputable def homologyData [HasHomology S] : S.HomologyData := HasHomology.condition.some
 
 variable {S}
 
@@ -290,7 +292,8 @@ def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ : S₁ ⟶ S₂}
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
-def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
+noncomputable def ofZeros (φ : S₁ ⟶ S₂)
+    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     HomologyMapData φ (HomologyData.ofZeros S₁ hf₁ hg₁) (HomologyData.ofZeros S₂ hf₂ hg₂) where
   left := LeftHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
   right := RightHomologyMapData.ofZeros φ hf₁ hg₁ hf₂ hg₂
@@ -326,7 +329,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the homology map
 data (for the identity of `S`) which relates the homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
-def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
     (c : CokernelCofork S.f) (hc : IsColimit c) :
     HomologyMapData (𝟙 S) (HomologyData.ofZeros S hf hg)
       (HomologyData.ofIsColimitCokernelCofork S hg c hc) where
@@ -337,7 +340,7 @@ def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
 data (for the identity of `S`) which relates the homology data
 `HomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
 @[simps]
-def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
+noncomputable def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
     (c : KernelFork S.g) (hc : IsLimit c) :
     HomologyMapData (𝟙 S)
       (HomologyData.ofIsLimitKernelFork S hf c hc)
@@ -392,6 +395,7 @@ noncomputable def RightHomologyData.homologyIso (h : S.RightHomologyData) [S.Has
 
 variable (S)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
     S.leftHomologyData.homologyIso = S.leftHomologyIso.symm := by
@@ -439,6 +443,7 @@ namespace LeftHomologyMapData
 variable {h₁ : S₁.LeftHomologyData} {h₂ : S₂.LeftHomologyData}
   (γ : LeftHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, LeftHomologyData.homologyIso, leftHomologyIso,
@@ -456,6 +461,7 @@ namespace RightHomologyMapData
 variable {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
   (γ : RightHomologyMapData φ h₁ h₂) [S₁.HasHomology] [S₂.HasHomology]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, homologyMap', RightHomologyData.homologyIso,
@@ -522,7 +528,7 @@ def homologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.HomologyData)
 instance isIso_homologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
     IsIso (homologyMap' φ h₁ h₂) :=
-  (inferInstance : IsIso (homologyMapIso' (asIso φ) h₁ h₂).hom)
+  inferInstanceAs <| IsIso (homologyMapIso' (asIso φ) h₁ h₂).hom
 
 /-- The homology isomorphism `S₁.homology ⟶ S₂.homology` induced by an isomorphism
 `S₁ ≅ S₂` of short complexes. -/
@@ -537,7 +543,7 @@ noncomputable def homologyMapIso (e : S₁ ≅ S₂) [S₁.HasHomology]
 instance isIso_homologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasHomology]
     [S₂.HasHomology] :
     IsIso (homologyMap φ) :=
-  (inferInstance : IsIso (homologyMapIso (asIso φ)).hom)
+  inferInstanceAs <| IsIso (homologyMapIso (asIso φ)).hom
 
 variable {S}
 
@@ -620,7 +626,7 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
     π_leftRightHomologyComparison'_ι, comm]
 
 instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
-  IsIso (leftRightHomologyComparison' h.left h.right) := by
+    IsIso (leftRightHomologyComparison' h.left h.right) := by
     rw [h.leftRightHomologyComparison'_eq]
     infer_instance
 
@@ -631,6 +637,7 @@ instance isIso_leftRightHomologyComparison' [S.HasHomology]
     S.homologyData.right]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_leftRightHomologyComparison [S.HasHomology] :
     IsIso S.leftRightHomologyComparison := by
   dsimp only [leftRightHomologyComparison]
@@ -659,6 +666,7 @@ lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHo
   simpa only [h.leftRightHomologyComparison'_eq] using
     leftRightHomologyComparison'_compatibility h₁ h.left h₂ h.right
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftRightHomologyComparison'_fac (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [S.HasHomology] :
@@ -691,6 +699,12 @@ lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
   dsimp
   rw [← leftRightHomologyComparison'_fac, leftRightHomologyComparison'_eq]
 
+lemma HomologyData.left_homologyIso_eq_right_homologyIso_trans_iso_symm
+    (h : S.HomologyData) [S.HasHomology] :
+    h.left.homologyIso = h.right.homologyIso ≪≫ h.iso.symm := by
+  rw [right_homologyIso_eq_left_homologyIso_trans_iso]
+  cat_disch
+
 lemma hasHomology_of_isIso_leftRightHomologyComparison'
     (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [IsIso (leftRightHomologyComparison' h₁ h₂)] :
@@ -707,6 +721,7 @@ section
 
 variable [S₁.HasHomology] [S₂.HasHomology] (φ : S₁ ⟶ S₂)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma LeftHomologyData.leftHomologyIso_hom_naturality
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -715,6 +730,7 @@ lemma LeftHomologyData.leftHomologyIso_hom_naturality
   dsimp [homologyIso, ShortComplex.leftHomologyIso, homologyMap, homologyMap', leftHomologyIso]
   simp only [← leftHomologyMap'_comp, id_comp, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma LeftHomologyData.leftHomologyIso_inv_naturality
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -801,6 +817,7 @@ instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
   dsimp only [homologyMap']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_homologyMap_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
     (h₁ : Epi φ.τ₁) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by
@@ -815,8 +832,9 @@ instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.Ha
 instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso ((homologyFunctor C).map φ) :=
-  (inferInstance : IsIso (homologyMap φ))
+  inferInstanceAs <| IsIso (homologyMap φ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
     IsIso (homologyMap φ) := by
   dsimp only [homologyMap, homologyMap']
@@ -910,7 +928,7 @@ lemma homologyπ_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
 
 @[reassoc (attr := simp)]
 lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] :
-    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ  := by
+    homologyMap φ ≫ S₂.homologyι = S₁.homologyι ≫ S₁.opcyclesMap φ := by
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
@@ -925,15 +943,15 @@ lemma homology_π_ι :
 `cokernel S.f ⟶ S.X₃`. -/
 noncomputable def homologyIsoKernelDesc [HasCokernel S.f]
     [HasKernel (cokernel.desc S.f S.g S.zero)] :
-  S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
-    S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
+    S.homology ≅ kernel (cokernel.desc S.f S.g S.zero) :=
+  S.rightHomologyIso.symm ≪≫ S.rightHomologyIsoKernelDesc
 
 /-- The homology of a short complex `S` identifies to the cokernel of the induced morphism
 `S.X₁ ⟶ kernel S.g`. -/
 noncomputable def homologyIsoCokernelLift [HasKernel S.g]
     [HasCokernel (kernel.lift S.g S.f S.zero)] :
-  S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
-    S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
+    S.homology ≅ cokernel (kernel.lift S.g S.f S.zero) :=
+  S.leftHomologyIso.symm ≪≫ S.leftHomologyIsoCokernelLift
 
 @[reassoc (attr := simp)]
 lemma LeftHomologyData.homologyπ_comp_homologyIso_hom (h : S.LeftHomologyData) :
@@ -985,6 +1003,7 @@ lemma RightHomologyData.rightHomologyIso_hom_comp_homologyIso_inv (h : S.RightHo
   dsimp only [homologyIso]
   simp only [Iso.trans_inv, Iso.symm_inv, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma comp_homologyMap_comp [S₁.HasHomology] [S₂.HasHomology] (φ : S₁ ⟶ S₂)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.RightHomologyData) :
@@ -1024,6 +1043,7 @@ lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
       HomologyMapData.op_left, RightHomologyMapData.op_φH, Quiver.Hom.unop_op, assoc,
       ← γ.comm_assoc, Iso.hom_inv_id, comp_id])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_op [HasHomology S₁] [HasHomology S₂] :
     (homologyMap φ).op =
       (S₂.homologyOpIso).inv ≫ homologyMap (opMap φ) ≫ (S₁.homologyOpIso).hom := by
@@ -1144,7 +1164,7 @@ lemma asIsoHomologyι_inv_comp_homologyι (hg : S.g = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyι_comp_asIsoHomologyι_inv (hg : S.g = 0) [S.HasHomology] :
-    S.homologyι ≫ (S.asIsoHomologyι hg).inv  = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
+    S.homologyι ≫ (S.asIsoHomologyι hg).inv = 𝟙 _ := (S.asIsoHomologyι hg).hom_inv_id
 
 lemma mono_homologyMap_of_mono_opcyclesMap'
     [S₁.HasHomology] [S₂.HasHomology] (h : Mono (opcyclesMap φ)) :

@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Algebra.Colimit.DirectLimit
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finset.Order
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Colimit.DirectLimit
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of modules and abelian groups
@@ -27,7 +29,10 @@ so as to make the operations (addition etc.) "computable".
 
 -/
 
+@[expose] public section
+
 suppress_compilation
+noncomputable section -- needed for `deriving`
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Preorder ι] {G : ι → Type*}
 
@@ -38,41 +43,37 @@ namespace Module
 alias DirectedSystem.map_self := DirectedSystem.map_self'
 alias DirectedSystem.map_map := DirectedSystem.map_map'
 
-variable [DecidableEq ι]
 variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)] (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- The relation on the direct sum that generates the additive congruence that defines the
 colimit as a quotient. -/
-inductive DirectLimit.Eqv : DirectSum ι G → DirectSum ι G → Prop
+inductive DirectLimit.Eqv [DecidableEq ι] : DirectSum ι G → DirectSum ι G → Prop
   | of_map {i j} (h : i ≤ j) (x : G i) :
     Eqv (DirectSum.lof R ι G i x) (DirectSum.lof R ι G j <| f i j h x)
+
+/-- The congruence relation to quotient the direct sum by to obtain the direct limit. -/
+def DirectLimit.moduleCon [DecidableEq ι] : ModuleCon R (DirectSum ι G) :=
+  SMulCon.addConGen' (Eqv f) <| by rintro _ _ _ ⟨⟩; simpa only [← map_smul] using .of_map ..
 
 variable (G)
 
 /-- The direct limit of a directed system is the modules glued together along the maps. -/
-def DirectLimit [DecidableEq ι] : Type _ := (addConGen <| DirectLimit.Eqv f).Quotient
+def DirectLimit [DecidableEq ι] : Type _ := (DirectLimit.moduleCon f).Quotient
+
+variable [DecidableEq ι]
 
 namespace DirectLimit
 
 section Basic
 
 instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  AddCon.addCommMonoid _
+  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
 
-instance module : Module R (DirectLimit G f) where
-  smul r := AddCon.lift _ ((AddCon.mk' _).comp <| smulAddHom R _ r) <|
-    AddCon.addConGen_le fun x y ⟨_, _⟩ ↦ (AddCon.eq _).mpr <| by
-      simpa only [smulAddHom_apply, ← map_smul] using .of _ _ (.of_map _ _)
-  one_smul := by rintro ⟨⟩; exact congr_arg _ (one_smul _ _)
-  mul_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (mul_smul _ _ _)
-  smul_zero _ := congr_arg _ (smul_zero _)
-  smul_add _ := by rintro ⟨⟩ ⟨⟩; exact congr_arg _ (smul_add _ _ _)
-  add_smul _ _ := by rintro ⟨⟩; exact congr_arg _ (add_smul _ _ _)
-  zero_smul := by rintro ⟨⟩; exact congr_arg _ (zero_smul _ _)
+instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup <| AddCon.Quotient _)
+  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
@@ -96,18 +97,18 @@ theorem of_f {i j hij x} : of R ι G f j (f i j hij x) = of R ι G f i x :=
 
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
-theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f) :
+theorem exists_of [Nonempty ι] [IsDirectedOrder ι] (z : DirectLimit G f) :
     ∃ i x, of R ι G f i x = z :=
   Nonempty.elim (by infer_instance) fun ind : ι ↦
     Quotient.inductionOn' z fun z ↦
-      DirectSum.induction_on z ⟨ind, 0, LinearMap.map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
+      DirectSum.induction_on z ⟨ind, 0, map_zero _⟩ (fun i x ↦ ⟨i, x, rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
-          rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
+          rw [map_add, of_f, of_f, ihx, ihy]
           rfl ⟩
 
-theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimit G f) :
+theorem exists_of₂ [Nonempty ι] [IsDirectedOrder ι] (z w : DirectLimit G f) :
     ∃ i x y, of R ι G f i x = z ∧ of R ι G f i y = w :=
   have ⟨i, x, hx⟩ := exists_of z
   have ⟨j, y, hy⟩ := exists_of w
@@ -115,7 +116,7 @@ theorem exists_of₂ [Nonempty ι] [IsDirected ι (· ≤ ·)] (z w : DirectLimi
   ⟨k, f i k hik x, f j k hjk y, by rw [of_f, hx], by rw [of_f, hy]⟩
 
 @[elab_as_elim]
-protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
+protected theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of R ι G f i x)) : C z :=
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
@@ -137,17 +138,28 @@ variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 @[simp] theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
 
-theorem lift_unique (F : DirectLimit G f →ₗ[R] P) (x) :
-    F x = lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) x := by
-  rcases x with ⟨x⟩
-  exact x.induction_on (by simp) (fun _ _ ↦ .symm <| lift_of ..) (by simp +contextual)
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
+    (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) :
+    g₁ = g₂ :=
+  LinearMap.toAddMonoidHom_injective <| AddCon.hom_ext <| DirectSum.addHom_ext' fun i =>
+    congr($(h i).toAddMonoidHom)
 
-lemma lift_injective [IsDirected ι (· ≤ ·)]
+@[simp]
+theorem lift_comp_of (F : DirectLimit G f →ₗ[R] P) :
+    lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) = F := by
+  ext; simp
+
+@[simp]
+theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
+  ext; simp
+
+lemma lift_injective [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift R ι G f g Hg) := by
   cases isEmpty_or_nonempty ι
   · apply Function.injective_of_subsingleton
-  intros z w eq
+  intro z w eq
   obtain ⟨i, x, y, rfl, rfl⟩ := exists_of₂ z w
   simp_rw [lift_of] at eq
   rw [injective _ eq]
@@ -178,9 +190,8 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
   lift_of _ _ _
 
 @[simp] lemma map_id :
-    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
+    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (M := DirectLimit G f) := by
+  ext; simp
 
 lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' i →ₗ[R] G'' i)
     (hg₁ : ∀ i j h, g₁ j ∘ₗ f i j h = f' i j h ∘ₗ g₁ i)
@@ -189,11 +200,8 @@ lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' 
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') =
     (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
         rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
-      DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _ _ _) = map _ _ (of _ _ _ _ _ _)
-    simp_rw [map_apply_of]; rfl
+      DirectLimit G f →ₗ[R] DirectLimit G'' f'') := by
+  ext; simp
 
 open LinearEquiv LinearMap in
 /--
@@ -228,17 +236,17 @@ end Basic
 
 section equiv
 
-variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [DirectedSystem G (f · · ·)]
+variable [Nonempty ι] [IsDirectedOrder ι] [DirectedSystem G (f · · ·)]
 open _root_.DirectLimit
 
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
+  .ofLinear
+    (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
-    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Module.lift, _root_.DirectLimit.lift_def]; rfl) <| by
-      ext ⟨x⟩; refine x.induction_on (by simp) (fun i x ↦ ?_) (by simp+contextual)
-      rw [quotMk_of, LinearMap.comp_apply, lift_of, Module.lift_of, LinearMap.id_apply]
+    (by ext; simp)
+    (by ext; simp)
 
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
   simp [linearEquiv]; rfl
@@ -247,7 +255,7 @@ theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.
 
 end equiv
 
-variable {G f} [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
+variable {G f} [DirectedSystem G (f · · ·)] [IsDirectedOrder ι]
 
 theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
     ∃ j hij, f i j hij x = f i j hij y := by
@@ -275,6 +283,7 @@ variable (G) [∀ i, AddCommMonoid (G i)]
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit [DecidableEq ι] (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
   @Module.DirectLimit ℕ _ ι _ G _ _ (fun i j hij ↦ (f i j hij).toNatLinearMap) _
+deriving AddCommMonoid, Inhabited
 
 namespace DirectLimit
 
@@ -286,17 +295,12 @@ local instance directedSystem [h : DirectedSystem G fun i j h ↦ f i j h] :
 
 variable [DecidableEq ι]
 
-instance : AddCommMonoid (DirectLimit G f) :=
-  Module.DirectLimit.addCommMonoid G fun i j hij ↦ (f i j hij).toNatLinearMap
-
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)]
     (f : ∀ i j, i ≤ j → G i →+ G j) : AddCommGroup (DirectLimit G f) :=
-  Module.DirectLimit.addCommGroup G fun i j hij ↦ (f i j hij).toNatLinearMap
+  inferInstanceAs <| AddCommGroup (Module.DirectLimit G _)
 
-instance : Inhabited (DirectLimit G f) :=
-  ⟨0⟩
-
-instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+instance [IsEmpty ι] : Unique (DirectLimit G f) :=
+  inferInstanceAs <| Unique (Module.DirectLimit G _)
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →+ DirectLimit G f :=
@@ -309,13 +313,13 @@ theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Module.DirectLimit.of_f
 
 @[elab_as_elim]
-protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit G f → Prop}
+protected theorem induction_on [Nonempty ι] [IsDirectedOrder ι] {C : DirectLimit G f → Prop}
     (z : DirectLimit G f) (ih : ∀ i x, C (of G f i x)) : C z :=
   Module.DirectLimit.induction_on z ih
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
-theorem of.zero_exact [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h ↦ f i j h] (i x)
+theorem of.zero_exact [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f i j h] (i x)
     (h : of G f i x = 0) : ∃ j hij, f i j hij x = 0 :=
   Module.DirectLimit.of.zero_exact h
 
@@ -342,12 +346,21 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
     Hg
     x
 
-theorem lift_unique (F : DirectLimit G f →+ P) (x) :
-    F x = lift G f P (fun i ↦ F.comp (of G f i)) (fun i j hij x ↦ by simp) x := by
-  rcases x with ⟨x⟩
-  exact x.induction_on (by simp) (fun _ _ ↦ .symm <| lift_of ..) (by simp +contextual)
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →+ P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ :=
+  AddCon.hom_ext <| DirectSum.addHom_ext' h
 
-lemma lift_injective [IsDirected ι (· ≤ ·)]
+@[simp]
+theorem lift_comp_of (F : DirectLimit G f →+ P) :
+    lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
+  ext; simp
+
+@[simp]
+theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
+  ext; simp
+
+lemma lift_injective [IsDirectedOrder ι]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) :=
   Module.DirectLimit.lift_injective (f := fun i j hij ↦ (f i j hij).toNatLinearMap) _ Hg injective
@@ -379,9 +392,8 @@ def map (g : (i : ι) → G i →+ G' i)
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id :
-    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
+    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) := by
+  ext; simp
 
 lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →+ G'' i)
     (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
@@ -391,11 +403,8 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
     (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
-      DirectLimit G f →+ DirectLimit G'' f'') :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _) = map _ _ (of _ _ _ _)
-    simp_rw [map_apply_of]; rfl
+      DirectLimit G f →+ DirectLimit G'' f'') := by
+  ext; simp
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
@@ -410,7 +419,7 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       have eq1 := DFunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
         AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
-      simp [← eq1, of_f])
+      simp [← eq1])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)

@@ -3,20 +3,25 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Topology.Instances.Rat
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Topology.Instances.Rat
 
 /-! # ℚ as a normed group -/
+
+@[expose] public section
 
 namespace Rat
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
-  dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
+  dist_eq r₁ r₂ := by
+    simp only [dist_eq, norm, cast_add, cast_neg]
+    rw [← abs_neg, neg_sub]
+    abel_nf
 
-@[norm_cast, simp 1001]
--- Porting note: increase priority to prevent the left-hand side from simplifying
+@[norm_cast, simp high] -- increase priority to prevent the left-hand side from simplifying
 theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=
   rfl
 

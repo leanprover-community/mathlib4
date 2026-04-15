@@ -3,15 +3,17 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+module
+
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Strong epimorphisms
 
 In this file, we define strong epimorphisms. A strong epimorphism is an epimorphism `f`
 which has the (unique) left lifting property with respect to monomorphisms. Similarly,
-a strong monomorphisms in a monomorphism which has the (unique) right lifting property
+a strong monomorphism is a monomorphism which has the (unique) right lifting property
 with respect to epimorphisms.
 
 ## Main results
@@ -33,6 +35,8 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -46,7 +50,7 @@ with respect to monomorphisms. -/
 class StrongEpi (f : P ⟶ Q) : Prop where
   /-- The epimorphism condition on `f` -/
   epi : Epi f
-  /-- The left lifting property with respect to all monomorphism -/
+  /-- The left lifting property with respect to all monomorphisms -/
   llp : ∀ ⦃X Y : C⦄ (z : X ⟶ Y) [Mono z], HasLiftingProperty f z
 
 
@@ -86,14 +90,14 @@ section
 variable {R : C} (f : P ⟶ Q) (g : Q ⟶ R)
 
 /-- The composition of two strong epimorphisms is a strong epimorphism. -/
-theorem strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
+instance strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
   { epi := epi_comp _ _
     llp := by
       intros
       infer_instance }
 
 /-- The composition of two strong monomorphisms is a strong monomorphism. -/
-theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
+instance strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
   { mono := mono_comp _ _
     rlp := by
       intros
@@ -132,6 +136,7 @@ instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
   rlp {_ _} _ := HasLiftingProperty.of_right_iso _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=
   { epi := by
@@ -141,6 +146,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
       intro
       apply HasLiftingProperty.of_arrow_iso_left e z }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
   { mono := by

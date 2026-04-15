@@ -3,7 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Data.ENat.Basic
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `enat_to_nat`
@@ -19,6 +22,8 @@ The implementation follows these steps:
 3. Translate the remaining goals from `ENat` to `Nat` using the `enat_to_nat_coe` simp set.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ENatToNat
 
@@ -59,7 +64,7 @@ elab "cases_first_enat" : tactic => focus do
         return Option.some decl
       else
         return Option.none
-    let .some decl := decl? | throwError "No ENats"
+    let some decl := decl? | throwError "No ENats"
     let isInaccessible := ctx.inaccessibleFVars.find? (·.fvarId == decl.fvarId) |>.isSome
     if isInaccessible then
       let name : Name := `enat_to_nat_aux
@@ -73,7 +78,7 @@ elab "cases_first_enat" : tactic => focus do
     evalTactic (← `(tactic| all_goals try simp only [enat_to_nat_top] at *))
 
 /-- `enat_to_nat` shifts all `ENat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `enat_to_nat; omega`. -/
+A typical use case is `enat_to_nat; lia`. -/
 macro "enat_to_nat" : tactic => `(tactic| focus (
     (repeat' cases_first_enat) <;>
     (try simp only [enat_to_nat_top, enat_to_nat_coe] at *)

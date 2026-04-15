@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.FieldTheory.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.FieldTheory.PerfectClosure
 
 /-!
 
@@ -36,8 +38,8 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
   then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
   This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`.
 
-- `PerfectRing.liftEquiv`: `K →+* M` is one-to-one correspondence to `L →+* M`,
-  given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`.
+- `PerfectRing.liftEquiv`: `K →+* M` is in one-to-one correspondence with `L →+* M`,
+  given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`.
 
 - `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
 
@@ -59,6 +61,8 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 perfect ring, perfect closure, purely inseparable
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 
@@ -114,12 +118,12 @@ theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : 
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
@@ -250,7 +254,7 @@ variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
 
 namespace IsPRadical
 
-/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
+/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential characteristic `p` whose
 `p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective. -/
 theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
     Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
@@ -261,8 +265,8 @@ theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M
 
 variable (M)
 
-/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`
 and a generalization of `IsPurelyInseparable.injective_comp_algebraMap`. -/
 theorem injective_comp [IsPRadical i p] [IsReduced M] :
@@ -270,8 +274,8 @@ theorem injective_comp [IsPRadical i p] [IsReduced M] :
   injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
     pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
 
-/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential charactistic `p`,
-the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential characteristic
+`p`, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
 A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
 theorem injective_comp_of_perfect [IsPRadical i p] [PerfectRing M p] :
     Function.Injective fun f : L →+* M ↦ f.comp i :=
@@ -363,10 +367,10 @@ theorem comp_lift : lift i (f.comp i) p = f :=
 theorem comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := congr($(comp_lift i f p) x)
 
 variable (M) in
-/-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
+/-- If `i : K →+* L` is a homomorphism of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring of characteristic `p`,
-then `K →+* M` is one-to-one correspondence to
-`L →+* M`, given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`. -/
+then `K →+* M` is in one-to-one correspondence with
+`L →+* M`, given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`. -/
 def liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
   invFun f := f.comp i

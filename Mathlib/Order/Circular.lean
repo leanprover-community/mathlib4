@@ -3,7 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy
@@ -17,10 +20,13 @@ This file defines circular preorders, circular partial orders and circular order
   - cyclic: `btw a b c → btw b c a`
   - antisymmetric: `btw a b c → btw c b a → a = b ∨ b = c ∨ c = a`
   - total: `btw a b c ∨ btw c b a`
+
   along with a strict betweenness relation `sbtw : α → α → α → Prop` which respects
   `sbtw a b c ↔ btw a b c ∧ ¬ btw c b a`, analogously to how `<` and `≤` are related, and is
   - transitive: `sbtw a b c → sbtw b d c → sbtw a d c`.
+
 * A `CircularPartialOrder` drops totality.
+
 * A `CircularPreorder` further drops antisymmetry.
 
 The intuition is that a circular order is a circle and `btw a b c` means that going around
@@ -54,6 +60,7 @@ There's an unsolved diamond on `OrderDual α` here. The instances `LE α → Btw
   `LE α` → `LE αᵒᵈ` → `Btw αᵒᵈ`
 * `LT α` → `SBtw α` → `SBtw αᵒᵈ` vs
   `LT α` → `LT αᵒᵈ` → `SBtw αᵒᵈ`
+
 The fields are propeq, but not defeq. It is temporarily fixed by turning the circularizing instances
 into definitions.
 
@@ -71,7 +78,7 @@ What's next is to define circular groups and provide instances for `ZMod n`, the
 to work?
 
 We should have circular order homomorphisms. The typical example is
-`days_to_month : days_of_the_year →c months_of_the_year` which relates the circular order of days
+`daysToMonth : DaysOfTheYear →c MonthsOfTheYear` which relates the circular order of days
 and the circular order of months. Is `α →c β` a good notation?
 
 ## References
@@ -83,6 +90,8 @@ and the circular order of months. Is `α →c β` a good notation?
 
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -342,38 +351,37 @@ See note [reducible non-instances]. -/
 abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 
+section
+
+variable {α : Type*} {a b c : α}
+
+attribute [local instance] LE.toBtw LT.toSBtw
+
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma btw_iff [LE α] : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
+
+end
+
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-  btw_refl _ := Or.inl ⟨le_rfl, le_rfl⟩
-  btw_cyclic_left {a b c} h := by
-    rwa [← or_assoc, or_comm]
+  btw_refl _ := .inl ⟨le_rfl, le_rfl⟩
+  btw_cyclic_left {a b c} := .rotate
   sbtw_trans_left {a b c d} := by
-    rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩)
-    · exact Or.inl ⟨hab.trans hbd, hdc⟩
-    · exact (hbc.not_lt hcb).elim
-    · exact (hbc.not_lt hcb).elim
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact (hbc.not_lt hcb).elim
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inl ⟨hdc, hca⟩)
-    · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
+    rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩) <;>
+      first
+      | refine .inl ?_; constructor <;> order
+      | refine .inr <| .inl ?_; constructor <;> order
+      | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
-    simp_rw [lt_iff_le_not_le]
-    have h1 := le_trans a b c
-    have h2 := le_trans b c a
-    have h3 := le_trans c a b
-    -- `tauto` closes the goal from here, but is quite slow (`grind` is fast).
-    revert h1 h2 h3
-    generalize (a ≤ b) = p1
-    generalize (b ≤ a) = p2
-    generalize (a ≤ c) = p3
-    generalize (c ≤ a) = p4
-    generalize (b ≤ c) = p5
-    by_cases p1 <;> by_cases p2 <;> by_cases p3 <;> by_cases p4 <;> by_cases p5 <;> simp [*]
+    simp_rw [lt_iff_le_not_ge]
+    grind
 
 /-- The circular partial order obtained from "looping around" a partial order.
 See note [reducible non-instances]. -/
@@ -412,26 +420,22 @@ abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder
 
 namespace OrderDual
 
-instance btw (α : Type*) [Btw α] : Btw αᵒᵈ :=
-  ⟨fun a b c : α => Btw.btw c b a⟩
+instance btw (α : Type*) [h : Btw α] : Btw αᵒᵈ :=
+  ⟨fun a b c => h.btw c b a⟩
 
-instance sbtw (α : Type*) [SBtw α] : SBtw αᵒᵈ :=
-  ⟨fun a b c : α => SBtw.sbtw c b a⟩
+instance sbtw (α : Type*) [h : SBtw α] : SBtw αᵒᵈ :=
+  ⟨fun a b c => h.sbtw c b a⟩
 
-instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ :=
-  { OrderDual.btw α,
-    OrderDual.sbtw α with
-    btw_refl := fun _ => @btw_refl α _ _
-    btw_cyclic_left := fun {_ _ _} => @btw_cyclic_right α _ _ _ _
-    sbtw_trans_left := fun {_ _ _ _} habc hbdc => hbdc.trans_right habc
-    sbtw_iff_btw_not_btw := fun {a b c} => @sbtw_iff_btw_not_btw α _ c b a }
+instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder αᵒᵈ where
+  btw_refl _ := btw_refl _
+  btw_cyclic_left {_ _ _} := @btw_cyclic_right α _ _ _ _
+  sbtw_trans_left {_ _ _ _} habc hbdc := hbdc.trans_right habc
+  sbtw_iff_btw_not_btw {a b c} := @sbtw_iff_btw_not_btw α _ c b a
 
-instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ :=
-  { OrderDual.circularPreorder α with
-    btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc }
+instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ where
+  btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc
 
-instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ :=
-  { OrderDual.circularPartialOrder α with
-    btw_total := fun {a b c} => @btw_total α _ c b a }
+instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ where
+  btw_total := fun {a b c} => @btw_total α _ c b a
 
 end OrderDual

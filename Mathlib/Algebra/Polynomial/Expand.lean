@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Frobenius
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.Polynomial.Basic
 * `Polynomial.contract p f`: the opposite of `expand`, so it sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -95,7 +99,7 @@ theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
       apply hb2
       rw [← hb3, Nat.mul_div_cancel_left b hp]
     · intro hn
-      rw [not_mem_support_iff.1 hn]
+      rw [notMem_support_iff.1 hn]
       split_ifs <;> rfl
   · rw [Finset.sum_eq_zero]
     intro k _
@@ -188,7 +192,7 @@ theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
   calc
     f.natDegree < f.natDegree + 1 := Nat.lt_succ_self _
     _ ≤ n * 1 := by simpa only [mul_one] using hn
-    _ ≤ n * p := mul_le_mul_of_nonneg_left (show 1 ≤ p from hp.bot_lt) (zero_le n)
+    _ ≤ n * p := by gcongr; exact hp.bot_lt
 
 theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
     (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
@@ -255,21 +259,28 @@ theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivati
   · rw [expand_one, contract_one]
   · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
-theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
+theorem map_frobenius_expand (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine f.induction_on' (fun a b ha hb => ?_) fun n a => ?_
   · rw [map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
 
-theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
-    map (frobenius R p ^ n) (expand R (p ^ n) f) = f ^ p ^ n := by
+@[deprecated (since := "2025-12-27")]
+alias expand_char := map_frobenius_expand
+
+theorem map_iterateFrobenius_expand (f : R[X]) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand R (p ^ n) f) = f ^ p ^ n := by
   induction n with
-  | zero => simp [RingHom.one_def]
-  | succ _ n_ih =>
+  | zero => simp
+  | succ k n_ih =>
     symm
-    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-      expand_mul, ← map_expand]
+    conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
+    simp_rw [← map_frobenius_expand p, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+@[deprecated (since := "2025-12-27")]
+alias map_expand_pow_char := map_iterateFrobenius_expand
 
 end ExpChar
 
@@ -303,9 +314,6 @@ theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
   rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_expand := isLocalHom_expand
 
 variable {R}
 

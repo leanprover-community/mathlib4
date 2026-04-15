@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Types
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `Type u` is well-powered
@@ -21,14 +23,16 @@ This may be possible using Lawvere theories,
 but it remains to be seen whether this just pushes lumps around in the carpet.
 -/
 
+@[expose] public section
+
 
 universe u
 
-open CategoryTheory
+open CategoryTheory ConcreteCategory
 
 open CategoryTheory.Subobject
 
-theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
+theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (TypeCat.ofHom (Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 
 attribute [local instance] subtype_val_mono
@@ -43,10 +47,11 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
-            exact ⟨t.1 x, congr_fun t.w x⟩) }
+            exact ⟨t.hom.1 x, congr_hom t.hom.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
-      map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
+    { obj := fun s => MonoOver.mk <| TypeCat.ofHom (Subtype.val : s → α)
+      map := fun {s t} b => MonoOver.homMk (TypeCat.ofHom
+        fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso

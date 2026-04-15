@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Compare
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Order.Compare
+public import Mathlib.Data.Nat.PSub
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Ordered sets
@@ -46,12 +47,12 @@ of this data structure.
 
 Based on weight balanced trees:
 
- * Stephen Adams, "Efficient sets: a balancing act",
-   Journal of Functional Programming 3(4):553-562, October 1993,
-   <http://www.swiss.ai.mit.edu/~adams/BB/>.
- * J. Nievergelt and E.M. Reingold,
-   "Binary search trees of bounded balance",
-   SIAM journal of computing 2(1), March 1973.
+* Stephen Adams, "Efficient sets: a balancing act",
+  Journal of Functional Programming 3(4):553-562, October 1993,
+  <http://www.swiss.ai.mit.edu/~adams/BB/>.
+* J. Nievergelt and E.M. Reingold,
+  "Binary search trees of bounded balance",
+  SIAM journal of computing 2(1), March 1973.
 
 Ported from Haskell's `Data.Set`.
 
@@ -60,6 +61,8 @@ Ported from Haskell's `Data.Set`.
 ordered map, ordered set, data structure
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -319,7 +322,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
-instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (Any P t)
   | nil => isFalse id
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -335,8 +338,8 @@ of the tree.
 def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 
-instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
-  dsimp [Emem]; infer_instance
+instance Emem.decidable (x : α) [DecidableEq α] (t : Ordnode α) : Decidable (Emem x t) :=
+  inferInstanceAs <| Decidable (Any _ t)
 
 /-- O(n). Approximate membership in the set, that is, whether some element in the
 set is equivalent to this one in the preorder. This is useful primarily for stating
@@ -358,8 +361,8 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
-  dsimp [Amem]; infer_instance
+instance Amem.decidable [LE α] [DecidableLE α] (x : α) (t : Ordnode α) : Decidable (Amem x t) :=
+  inferInstanceAs <| Decidable (Any _ t)
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
 
@@ -596,7 +599,7 @@ instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
-/-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
+/-- O(m * n). The Cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
@@ -753,7 +756,7 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
 
 /-- Auxiliary definition for `ofAscList`.
 
-**Note:** This function is defined by well founded recursion, so it will probably not compute
+**Note:** This function is defined by well-founded recursion, so it will probably not compute
 in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
@@ -1194,7 +1197,7 @@ def ofList (l : List α) : Ordnode α :=
     ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
-  | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
+  | l@(_ :: _) => if List.IsChain (fun a b => ¬b ≤ a) l then ofAscList l else ofList l
 
 /-- O(n * log n). Map a function on a set. Unlike `map` this has no requirements on
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.

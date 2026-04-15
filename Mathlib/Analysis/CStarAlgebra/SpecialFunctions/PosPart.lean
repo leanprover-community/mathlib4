@@ -3,10 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
+
+public section
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -70,10 +74,8 @@ lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder
     · exact CStarAlgebra.norm_negPart_le _ |>.trans <| realPart.norm_le a
     · exact CStarAlgebra.norm_negPart_le _ |>.trans <| imaginaryPart.norm_le a
   · nth_rw 1 [← CStarAlgebra.linear_combination_nonneg a]
-    simp [Fin.sum_univ_four, sub_eq_add_neg]
-    rw [add_add_add_comm]
-    have : ((3 : Fin 4) : ℕ) = 3 := rfl -- ugh, seriously, why can't `norm_num` do this?
-    match_scalars
-    all_goals simp [this, I_pow_three]
+    simp only [Fin.sum_univ_four, Fin.coe_ofNat_eq_mod, Matrix.cons_val, Nat.reduceMod, I_sq,
+      I_pow_three]
+    module
 
 end CStarAlgebra

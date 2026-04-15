@@ -3,9 +3,11 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types
@@ -13,18 +15,20 @@ import Mathlib.Data.Finite.Prod
 We show a type `F` with a `DFunLike F α β` is finite if both `α` and `β` are finite.
 This corresponds to the following two pairs of declarations:
 
- * `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
- * `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
-   are harder to infer.
+* `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
+* `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
+  are harder to infer.
 
 You can use these to produce instances for specific `DFunLike` types.
 (Although there might be options for `Fintype` instances with better definitional behaviour.)
 They can't be instances themselves since they can cause loops.
 -/
+
+@[expose] public section
 
 -- `Type` is a reserved word, switched to `Type'`
 section Type'
@@ -37,6 +41,7 @@ This is not an instance because specific `DFunLike` types might have a better-su
 
 See also `DFunLike.finite`.
 -/
+@[implicit_reducible]
 noncomputable def DFunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype (β i)] : Fintype F :=
   Fintype.ofInjective _ DFunLike.coe_injective
 
@@ -45,6 +50,7 @@ noncomputable def DFunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype
 Non-dependent version of `DFunLike.fintype` that might be easier to infer.
 This is not an instance because specific `FunLike` types might have a better-suited definition.
 -/
+@[implicit_reducible]
 noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : Fintype G :=
   DFunLike.fintype G
 

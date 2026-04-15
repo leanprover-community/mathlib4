@@ -3,13 +3,16 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Algebra
+public import Mathlib.Algebra.Ring.Subring.Units
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules
@@ -22,26 +25,41 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
+@[expose] public noncomputable section
 
-noncomputable section
+open Module
 
 section StrictOrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N]
-variable (ι : Type*) [DecidableEq ι]
-
+-- TODO: remove `[IsStrictOrderedRing R]` and `@[nolint unusedArguments]`.
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
 are equal (in the typical case over a field, this means one of them is a nonnegative multiple of
 the other). -/
-def SameRay (v₁ v₂ : M) : Prop :=
+@[nolint unusedArguments]
+def SameRay (R : Type*) [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    {M : Type*} [AddCommMonoid M] [Module R M] (v₁ v₂ : M) : Prop :=
   v₁ = 0 ∨ v₂ = 0 ∨ ∃ r₁ r₂ : R, 0 < r₁ ∧ 0 < r₂ ∧ r₁ • v₁ = r₂ • v₂
 
-variable {R}
+set_option linter.unusedVariables false in
+/-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
+`RayVector.Setoid` can be an instance. -/
+@[nolint unusedArguments]
+def RayVector (R M : Type*) [Zero M] :=
+  { v : M // v ≠ 0 }
+
+instance RayVector.coe {R M : Type*} [Zero M] : CoeOut (RayVector R M) M where
+  coe := Subtype.val
+
+instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
+  ⟨Classical.indefiniteDescription _ <| exists_ne (0 : M)⟩
+
+variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable (ι : Type*) [DecidableEq ι]
 
 namespace SameRay
 
@@ -67,9 +85,8 @@ theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
 
 /-- `SameRay` is reflexive. -/
 @[refl]
-theorem refl (x : M) : SameRay R x x := by
-  nontriviality R
-  exact Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
+theorem refl (x : M) : SameRay R x x :=
+  Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
 
 protected theorem rfl : SameRay R x x :=
   refl _
@@ -101,12 +118,13 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
-variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
+variable {S : Type*} [CommSemiring S] [PartialOrder S]
+  [Algebra S R] [Module S M] [SMulPosMono S R]
   [IsScalarTower S R M] {a : S}
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
-  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  obtain h | h := (algebraMap_nonneg R h).eq_or_lt'
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
@@ -183,19 +201,6 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
-set_option linter.unusedVariables false in
-/-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
-`RayVector.Setoid` can be an instance. -/
-@[nolint unusedArguments]
-def RayVector (R M : Type*) [Zero M] :=
-  { v : M // v ≠ 0 }
-
-instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
-  coe := Subtype.val
-
-instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
-  let ⟨x, hx⟩ := exists_ne (0 : M)
-  ⟨⟨x, hx⟩⟩
 variable (R M)
 
 /-- The setoid of the `SameRay` relation for the subtype of nonzero vectors. -/
@@ -203,7 +208,7 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
     ⟨fun _ => SameRay.refl _, fun h => h.symm, by
-      intros x y z hxy hyz
+      intro x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
@@ -250,7 +255,7 @@ def RayVector.mapLinearEquiv (e : M ≃ₗ[R] N) : RayVector R M ≃ RayVector R
 
 /-- An equivalence between modules implies an equivalence between rays. -/
 def Module.Ray.map (e : M ≃ₗ[R] N) : Module.Ray R M ≃ Module.Ray R N :=
-  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _=> (SameRay.sameRay_map_iff _).symm
+  Quotient.congr (RayVector.mapLinearEquiv e) fun _ _ => (SameRay.sameRay_map_iff _).symm
 
 @[simp]
 theorem Module.Ray.map_apply (e : M ≃ₗ[R] N) (v : M) (hv : v ≠ 0) :
@@ -335,7 +340,7 @@ end StrictOrderedCommSemiring
 
 section StrictOrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -347,7 +352,7 @@ alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
 
 theorem sameRay_neg_swap : SameRay R (-x) y ↔ SameRay R x (-y) := by rw [← sameRay_neg_iff, neg_neg]
 
-theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr : r < 0)
+lemma eq_zero_of_sameRay_neg_smul_right [IsDomain R] [IsTorsionFree R M] {r : R} (hr : r < 0)
     (h : SameRay R x (r • x)) : x = 0 := by
   rcases h with (rfl | h₀ | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · rfl
@@ -357,8 +362,8 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
-theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
-  nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
+theorem eq_zero_of_sameRay_self_neg [IsDomain R] [IsTorsionFree R M] (h : SameRay R x (-x)) :
+    x = 0 := by
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
 
@@ -373,9 +378,9 @@ instance {R : Type*} : Neg (RayVector R M) :=
 theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
-  neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
 
 /-- If two nonzero vectors are equivalent, so are their negations. -/
@@ -403,12 +408,11 @@ variable {R}
 
 /-- Negating a ray twice produces the original ray. -/
 instance : InvolutiveNeg (Module.Ray R M) where
-  neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
-theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
+theorem ne_neg_self [IsDomain R] [IsTorsionFree R M] (x : Module.Ray R M) : x ≠ -x := by
   induction x using Module.Ray.ind with | h x hx =>
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
@@ -432,7 +436,7 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
@@ -451,7 +455,7 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
 
 section
 
-variable [NoZeroSMulDivisors R M]
+variable [IsTorsionFree R M]
 
 @[simp]
 theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤ r ∨ v = 0 :=
@@ -520,8 +524,8 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
   · rcases h with ⟨m, hm, hmne⟩
-    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.head_cons] at hm
+    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg] at hm
+    dsimp only [Matrix.cons_val] at hm
     rcases lt_trichotomy (m 0) 0 with (hm0 | hm0 | hm0) <;>
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine
@@ -558,7 +562,7 @@ end LinearOrderedCommRing
 
 namespace SameRay
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -608,7 +612,7 @@ end SameRay
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 /-!
 # Continuity of `MeasureTheory.Lp.compMeasurePreserving`
@@ -20,6 +22,8 @@ defined on `MeasureTheory.Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν
 
 Finally, we provide dot notation convenience lemmas.
 -/
+
+public section
 
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff
@@ -41,7 +45,7 @@ Suppose that `μ` is inner regular for finite measure sets with respect to compa
 and `ν` is a locally finite measure.
 Let `1 ≤ p < ∞` be an extended nonnegative real number.
 Then the composition of a function `g : Lp E p ν`
-and a measure preserving continuous function `f : C(X, Y)`
+and a measure-preserving continuous function `f : C(X, Y)`
 is continuous in both variables. -/
 theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     Continuous fun gf : Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν} ↦

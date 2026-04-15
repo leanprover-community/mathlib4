@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -12,19 +14,22 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 
 ## Main definitions
 
- - `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
-   `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
-   (where `n : ℕ` and `n : ℤ` respectively)
- - `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
+- `ZMod.quotientZMultiplesNatEquivZMod` and `ZMod.quotientZMultiplesEquivZMod`:
+  `ZMod n` is the group quotient of `ℤ` by `n ℤ := AddSubgroup.zmultiples (n)`,
+  (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.lift n f` is the map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`.
 
 ## Tags
 
 zmod, quotient group
 -/
 
+@[expose] public section
+
 assert_not_exists Ideal TwoSidedIdeal
 
 open QuotientAddGroup Set ZMod
+open scoped IsMulCommutative
 
 variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
 
@@ -139,7 +144,7 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)
-    haveI : Nonempty (orbit (zpowers a) b) := (orbit_nonempty b).to_subtype
+    haveI : Nonempty (orbit (zpowers a) b) := (nonempty_orbit b).to_subtype
     rw [minimalPeriod_eq_card]
     exact Fintype.card_ne_zero⟩
 
@@ -152,7 +157,7 @@ open Subgroup
 variable {α : Type*} [Group α] (a : α)
 
 /-- See also `Fintype.card_zpowers`. -/
-@[to_additive (attr := simp) "See also `Fintype.card_zmultiples`."]
+@[to_additive (attr := simp) /-- See also `Fintype.card_zmultiples`. -/]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
@@ -179,7 +184,7 @@ open Equiv Function MulAction
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :
-    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
+    G ⧸ H ≃ Σ q : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
   (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
     (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
 
@@ -191,5 +196,18 @@ lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
   rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The sum of minimal periods over all orbits equals the index `[G:H]`. -/
+lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
+    [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :
+    H.index = ∑ q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)),
+      Function.minimalPeriod (g • ·) q.out := by
+  have : Fintype (G ⧸ H) := Fintype.ofFinite _
+  have (q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H))) :
+      Fintype (MulAction.orbit (zpowers g) q.out) := Fintype.ofFinite _
+  simp only [MulAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
+  rw [← Fintype.card_sigma]
+  exact Fintype.card_congr (MulAction.selfEquivSigmaOrbits (zpowers g) (G ⧸ H))
 
 end Subgroup

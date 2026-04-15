@@ -1,11 +1,14 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Algebra.Group.Commutator
+module
+
+public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependency)
+public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
+public meta import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Tactic.Ring
 
 /-!
 # `group` tactic
@@ -19,8 +22,10 @@ some `ring` invocations.
 
 ## Tags
 
-group_theory
+group theory
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Group
 
@@ -51,7 +56,7 @@ macro_rules
   `(tactic| simp -decide -failIfUnchanged only
     [commutatorElement_def, mul_one, one_mul,
       ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
-      Int.ofNat_add, Int.ofNat_mul,
+      Int.natCast_add, Int.natCast_mul,
       Int.mul_neg, Int.neg_mul, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
       ← mul_assoc,
@@ -64,13 +69,16 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
-  `(tactic| ring_nf $[at $location]?)
+  `(tactic| ring_nf (ifUnchanged := .silent) $[at $location]?)
 
-/-- Tactic for normalizing expressions in multiplicative groups, without assuming
-commutativity, using only the group axioms without any information about which group
-is manipulated.
+/-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
+assume commutativity, instead using only the group axioms without any information about which group
+is manipulated. If the goal is an equality, and after normalization the two sides are equal, `group`
+closes the goal.
 
-(For additive commutative groups, use the `abel` tactic instead.)
+For additive commutative groups, use the `abel` tactic instead.
+
+* `group at l1 l2 ...` normalizes at the given locations.
 
 Example:
 ```lean
@@ -87,3 +95,9 @@ macro_rules
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
 
 end Mathlib.Tactic.Group
+
+/-!
+We register `group` with the `hint` tactic.
+-/
+
+register_hint 900 group

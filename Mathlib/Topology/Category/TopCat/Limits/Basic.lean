@@ -3,11 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Adjunctions
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Adjunction.Limits
+module
+
+public import Mathlib.Topology.Category.TopCat.Adjunctions
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -15,6 +17,8 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 Further, these limits and colimits are preserved by the forgetful functor --- that is, the
 underlying types are just the limits in the category of types.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
@@ -31,6 +35,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
+attribute [local fun_prop] continuous_subtype_val
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).
@@ -50,7 +55,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
 (which is in terms of `Types.limitConeIsLimit`).
 -/
-def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
+def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F) where
   lift S := ofHom
     { toFun := fun x =>
         ⟨fun _ => S.π.app _ x, fun f => by
@@ -89,10 +94,10 @@ def coneOfConeForget : Cone F where
   π :=
     { app j := ofHom (ContinuousMap.mk (c.π.app j) (by
         rw [continuous_iff_le_induced]
-        exact iInf_le (fun j ↦ (F.obj j).str.induced (c.π.app j)) j))
+        exact iInf_le _ _ ))
       naturality j j' φ := by
         ext
-        apply congr_fun (c.π.naturality φ) }
+        apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
@@ -107,7 +112,8 @@ def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
   convert continuous_iff_le_induced.1 (s.π.app j).hom.continuous
-  exact hc.fac ((forget).mapCone s) j
+  ext x
+  exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCone s) j) x
 
 end
 
@@ -117,12 +123,13 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone F) (hc : IsLimit c)
 
 include hc
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induced_of_isLimit :
     c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
   let c' := coneOfConeForget ((forget).mapCone c)
   let hc' : IsLimit c' := isLimitConeOfForget _ (isLimitOfPreserves forget hc)
   let e := IsLimit.conePointUniqueUpToIso hc' hc
-  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j  :=
+  have he (j : J) : e.inv ≫ c'.π.app j = c.π.app j :=
     IsLimit.conePointUniqueUpToIso_inv_comp hc' hc j
   apply (homeoOfIso e.symm).induced_eq.symm.trans
   dsimp [coneOfConeForget_pt, c', topologicalSpaceConePtOfConeForget]
@@ -131,9 +138,20 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
+lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
+    (hc : IsLimit ((forget).mapCone c)) :
+    Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ induced_of_isLimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoLimit (isLimitConeOfForget _ hc) (Cone.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
+
 variable (F : J ⥤ TopCat.{u})
 
-theorem limit_topology [HasLimit F]:
+theorem limit_topology [HasLimit F] :
     (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
   induced_of_isLimit _ (limit.isLimit _)
 
@@ -144,7 +162,7 @@ lemma hasLimit_iff_small_sections :
   · infer_instance
   · exact ⟨⟨_, isLimitConeOfForget _ (limit.isLimit _)⟩⟩
 
-instance topCat_hasLimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+instance topCat_hasLimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasLimitsOfShape J TopCat.{u} where
   has_limit := fun F => by
     rw [hasLimit_iff_small_sections]
@@ -183,15 +201,16 @@ instance topologicalSpaceCoconePtOfCoconeForget :
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
 @[simps pt ι_app]
-def coconeOfCoconeForget  : Cocone F where
+def coconeOfCoconeForget : Cocone F where
   pt := of (coconePtOfCoconeForget c)
   ι :=
     { app j := ofHom (ContinuousMap.mk (c.ι.app j) (by
         rw [continuous_iff_coinduced_le]
-        exact le_iSup (fun j ↦ (F.obj j).str.coinduced (c.ι.app j)) j))
+        dsimp [topologicalSpaceCoconePtOfCoconeForget]
+        exact le_iSup (fun j ↦ (F.obj j).str.coinduced _) j))
       naturality j j' φ := by
         ext
-        apply congr_fun (c.ι.naturality φ) }
+        apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
@@ -206,12 +225,10 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
   convert continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
-  exact hc.fac ((forget).mapCocone s) j
+  ext x
+  exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCocone s) j) x
 
 end
-
-@[deprecated (since := "2024-12-31")] alias colimitCocone := coconeOfCoconeForget
-@[deprecated (since := "2024-12-31")] alias colimitCoconeIsColimit := isColimitCoconeOfForget
 
 section IsColimit
 
@@ -228,7 +245,7 @@ theorem coinduced_of_isColimit :
     IsColimit.comp_coconePointUniqueUpToIso_hom hc' hc j
   apply (homeoOfIso e).coinduced_eq.symm.trans
   dsimp [coconeOfCoconeForget_pt, c', topologicalSpaceCoconePtOfCoconeForget]
-  simp only [coinduced_iSup, c']
+  simp only [coinduced_iSup]
   conv_rhs => simp only [← he]
   rfl
 
@@ -244,16 +261,26 @@ lemma isClosed_iff_of_isColimit (X : Set c.pt) :
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
 
-lemma continuous_iff_of_isColimit {X : Type w} [TopologicalSpace X] (f : c.pt → X) :
+lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt → X) :
     Continuous f ↔ ∀ (j : J), Continuous (f ∘ c.ι.app j) := by
   simp only [continuous_def, isOpen_iff_of_isColimit _ hc]
   tauto
 
 end IsColimit
 
+lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
+    Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
+  refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩
+  refine .ofIsoColimit (isColimitCoconeOfForget _ hc) (Cocone.ext ?_ ?_)
+  · refine TopCat.isoOfHomeo
+      { toEquiv := .refl _,
+        continuous_toFun := h ▸ by fun_prop,
+        continuous_invFun := h ▸ by fun_prop }
+  · intro; rfl
+
 variable (F)
 
-theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F]:
+theorem colimit_topology (F : J ⥤ TopCat.{u}) [HasColimit F] :
     (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
   coinduced_of_isColimit _ (colimit.isColimit _)
 
@@ -262,17 +289,17 @@ theorem colimit_isOpen_iff (F : J ⥤ TopCat.{u}) [HasColimit F]
     IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
   apply isOpen_iff_of_isColimit _ (colimit.isColimit _)
 
-lemma hasColimit_iff_small_quot :
-    HasColimit F ↔ Small.{u} (Types.Quot (F ⋙ forget)) := by
-  rw [← Types.hasColimit_iff_small_quot]
+lemma hasColimit_iff_small_colimitType :
+    HasColimit F ↔ Small.{u} (F ⋙ forget).ColimitType := by
+  rw [← Types.hasColimit_iff_small_colimitType]
   constructor <;> intro
   · infer_instance
   · exact ⟨⟨_, isColimitCoconeOfForget _ (colimit.isColimit _)⟩⟩
 
-instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
+instance topCat_hasColimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where
   has_colimit := fun F => by
-    rw [hasColimit_iff_small_quot]
+    rw [hasColimit_iff_small_colimitType]
     infer_instance
 
 instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where
@@ -300,7 +327,7 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨ofHom ⟨fun x => x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+    ⟨⟨ofHom ⟨fun x => x.elim, by fun_prop⟩⟩, fun f => by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/

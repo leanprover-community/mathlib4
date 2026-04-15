@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Finsupp
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -22,6 +24,8 @@ finite and calculates the cardinality of its finite intervals.
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -41,7 +45,7 @@ def rangeSingleton (f : ι →₀ α) : ι →₀ Finset α where
   toFun i := {f i}
   support := f.support
   mem_support_toFun i := by
-    rw [← not_iff_not, not_mem_support_iff, not_ne_iff]
+    rw [← not_iff_not, notMem_support_iff, not_ne_iff]
     exact singleton_injective.eq_iff.symm
 
 theorem mem_rangeSingleton_apply_iff : a ∈ f.rangeSingleton i ↔ a = f i :=
@@ -51,21 +55,23 @@ end RangeSingleton
 
 section RangeIcc
 
-variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α} {i : ι} {a : α}
+variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq ι]
+variable {f g : ι →₀ α} {i : ι} {a : α}
 
-open scoped Classical in
 /-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
-@[simps toFun]
+@[simps apply]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support := f.support ∪ g.support
   mem_support_toFun i := by
-    rw [mem_union, ← not_iff_not, not_or, not_mem_support_iff, not_mem_support_iff, not_ne_iff]
+    rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
+
+@[deprecated (since := "2025-12-15")]
+alias rangeIcc_toFun := rangeIcc_apply
 
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
-open scoped Classical in
 @[simp]
 theorem rangeIcc_support (f g : ι →₀ α) :
     (rangeIcc f g).support = f.support ∪ g.support := rfl
@@ -76,9 +82,9 @@ end RangeIcc
 
 section PartialOrder
 
-variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
+variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] [DecidableEq ι] [DecidableEq α]
+variable (f g : ι →₀ α)
 
-open scoped Classical in
 instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)
     fun f g x => by
@@ -87,22 +93,17 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 
-open scoped Classical in
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 
-open scoped Classical in
-theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)):= by
+theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) := by
   simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 
-open scoped Classical in
 theorem card_Ico : #(Ico f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 
-open scoped Classical in
 theorem card_Ioc : #(Ioc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 
-open scoped Classical in
 theorem card_Ioo : #(Ioo f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 
@@ -120,8 +121,9 @@ end Lattice
 
 section CanonicallyOrdered
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [LocallyFiniteOrder α]
-variable (f : ι →₀ α)
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+  [OrderBot α] [LocallyFiniteOrder α]
+variable [DecidableEq ι] [DecidableEq α] (f : ι →₀ α)
 
 theorem card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by
   classical simp_rw [Iic_eq_Icc, card_Icc, Finsupp.bot_eq_zero, support_zero, empty_union,

@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Category.FinPartOrd
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Category.FinPartOrd
 
 /-!
 # The category of finite bounded distributive lattices
@@ -13,6 +15,8 @@ import Mathlib.Order.Category.FinPartOrd
 This file defines `FinBddDistLat`, the category of finite distributive lattices with
 bounded lattice homomorphisms.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -45,6 +49,7 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
   carrier := α
   isBoundedOrder := Fintype.toBoundedOrder α
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `FinBddDistLat R`. -/
 @[ext]
 structure Hom (X Y : FinBddDistLat.{u}) where
@@ -52,11 +57,15 @@ structure Hom (X Y : FinBddDistLat.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category FinBddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -91,7 +100,7 @@ lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : 
 
 @[simp]
 lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
-    (forget FinBddDistLat).map f = f := rfl
+    (forget FinBddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -118,8 +127,7 @@ lemma hom_ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [Fintype X] [DistribLattice Y]
-    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] [Fintype Y] (f : BoundedLatticeHom X Y) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinBddDistLat} (f : X ⟶ Y) :
@@ -156,7 +164,7 @@ instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
   forget₂.obj X := .of X
-  forget₂.map f := PartOrd.ofHom (OrderHomClass.toOrderHom f.hom)
+  forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/

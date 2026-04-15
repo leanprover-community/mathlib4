@@ -3,10 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Combinatorics.Enumerative.Bell
-import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Combinatorics.Enumerative.Bell
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
 
@@ -18,49 +20,52 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 
 * `DividedPowers.dpow_null` asserts that `dpow n x = 0` for `x ∉ I`
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
+
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
-* `DividedPowers.dpow_add` : `dpow n (x + y) =
-(antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
-this is the binomial theorem without binomial coefficients.
+* `DividedPowers.dpow_add` :
+  `dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
+  this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_mul`: `dpow n (a * x) = a ^ n * dpow n x`
 * `DividedPowers.mul_dpow` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
-* `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficients
-times a divided power
+* `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficient
+  times a divided power
 * `DividedPowers.dpow_sum`: the multinomial theorem for divided powers,
-without multinomial coefficients.
+  without multinomial coefficients.
 * `DividedPowers.ofRingEquiv`: transfer divided powers along `RingEquiv`
 * `DividedPowers.equiv`: the equivalence `DividedPowers I ≃ DividedPowers J`,
-for `e : R ≃+* S`, and `I : Ideal R`,  `J : Ideal S` such that `I.map e = J`
+  for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 * `DividedPowers.exp_add`: its multiplicativity
 
 ## References
 
 * [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-caractéristique $p$ > 0*][Berthelot-1974]
+  caractéristique $p$ > 0*][Berthelot-1974]
 
 * [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-cohomology*][BerthelotOgus-1978]
+  cohomology*][BerthelotOgus-1978]
 
 * [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-modules*][Roby-1963]
+  modules*][Roby-1963]
 
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
 ## Discussion
 
 * In practice, one often has a single such structure to handle on a given ideal,
-but several ideals of the same ring might be considered.
-Without any explicit mention of the ideal, it is not clear whether such structures
-should be provided as instances.
+  but several ideals of the same ring might be considered.
+  Without any explicit mention of the ideal, it is not clear whether such structures
+  should be provided as instances.
 
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
 -/
+
+@[expose] public section
 
 open Finset Nat Ideal
 
@@ -69,7 +74,7 @@ section DividedPowersDefinition
 
 variable {A : Type*} [CommSemiring A] (I : Ideal A)
 
-/-- The divided power structure on an ideal I of a commutative ring A -/
+/-- The divided power structure on an ideal `I` of a commutative ring `A`. -/
 structure DividedPowers where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
@@ -88,8 +93,8 @@ structure DividedPowers where
 
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
-def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
-  dpow n a := ite (a = 0 ∧ n = 0) 1 0
+noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
+  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
@@ -104,19 +109,12 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     exact fun _ a ↦ False.elim (hn a)
   dpow_add ha hb := by
     rw [mem_bot.mp ha, mem_bot.mp hb, add_zero]
-    simp only [true_and, ge_iff_le, tsub_eq_zero_iff_le, mul_ite, mul_one, mul_zero]
+    simp only [true_and, mul_ite, mul_one, mul_zero]
     split_ifs with h
     · simp [h]
     · symm
       apply sum_eq_zero
-      intro i hi
-      simp only [mem_antidiagonal] at hi
-      split_ifs with h2 h1
-      · rw [h1, h2, add_zero] at hi
-        exfalso
-        exact h hi.symm
-      · rfl
-      · rfl
+      grind [mem_antidiagonal]
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
@@ -137,7 +135,12 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
+    (dividedPowersBot A).dpow n a =
+      if a = 0 ∧ n = 0 then 1 else 0 := by
+  simp [dividedPowersBot]
+
+noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
@@ -151,10 +154,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
   obtain ⟨hI, h₀, _⟩ := hI
   obtain ⟨hI', h₀', _⟩ := hI'
   simp only [mk.injEq]
-  ext n x
-  by_cases hx : x ∈ I
-  · exact h_eq n hx
-  · rw [h₀ hx, h₀' hx]
+  grind
 
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
@@ -187,7 +187,7 @@ theorem exp_add' (dp : ℕ → A → A)
     PowerSeries.mk (fun n ↦ dp n (a + b)) =
       (PowerSeries.mk fun n ↦ dp n a) * (PowerSeries.mk fun n ↦ dp n b) := by
   ext n
-  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
+  simp only [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
     sum_antidiagonal_eq_sum_range_succ_mk]
 
 theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
@@ -243,7 +243,7 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a 
     hI.dpow n a = hJ.dpow n a := by
   induction ha using Submodule.smul_induction_on' generalizing n with
   | smul a ha b hb =>
-    rw [Algebra.id.smul_eq_mul, hJ.dpow_mul hb, mul_comm a b, hI.dpow_mul ha,
+    rw [smul_eq_mul, hJ.dpow_mul hb, mul_comm a b, hI.dpow_mul ha,
       ← hJ.factorial_mul_dpow_eq_pow hb, ← hI.factorial_mul_dpow_eq_pow ha]
     ring
   | add x hx y hy hx' hy' =>
@@ -263,7 +263,7 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
   | empty =>
     simp only [prod_empty, multinomial_empty, cast_one, sum_empty, one_mul]
     rw [hI.dpow_zero ha]
-  | insert hi hrec =>
+  | insert _ _ hi hrec =>
     rw [prod_insert hi, hrec, ← mul_assoc, mul_comm (hI.dpow (n _) a),
       mul_assoc, hI.mul_dpow ha, ← sum_insert hi, ← mul_assoc]
     apply congr_arg₂ _ _ rfl
@@ -291,7 +291,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       apply congr_arg
       rw [card_eq_zero, sym_eq_empty]
       exact ⟨hn, rfl⟩
-  | @insert a s ha ih =>
+  | insert a s ha ih =>
     -- This should be golfable using `Finset.symInsertEquiv`
     have hx' : ∀ i, i ∈ s → x i ∈ I := fun i hi ↦ hx i (mem_insert_of_mem hi)
     simp_rw [sum_insert ha,
@@ -323,12 +323,58 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       convert sym_filterNe_mem a hm
       rw [erase_insert ha]
 
-/-- A “multinomial” theorem for divided powers — without multinomial coefficients -/
-theorem dpow_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : ι → A}
-    (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
+variable {ι : Type*} [DecidableEq ι]
+
+/-- A “multinomial” theorem for divided powers — without multinomial coefficients. -/
+theorem dpow_sum {s : Finset ι} {x : ι → A} (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
     hI.dpow n (s.sum x) =
       (s.sym n).sum fun k ↦ s.prod fun i ↦ hI.dpow (Multiset.count i k) (x i) :=
   dpow_sum' hI.dpow hI.dpow_zero hI.dpow_add hI.dpow_eval_zero hx
+
+/-- A "multinomial" theorem for divided powers — without multinomial coefficients — for finitely
+supported functions. -/
+theorem dpow_finsupp_sum {x : ι →₀ A} (hx : ∀ i, x i ∈ I) {n : ℕ} :
+    hI.dpow n (x.sum fun _ r ↦ r) =
+      ∑ k ∈ (x.support.sym n), x.prod fun i r ↦ hI.dpow (Multiset.count i k) r := by
+  simp [Finsupp.sum, hI.dpow_sum (fun i _ ↦ hx i), Finsupp.prod]
+
+theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : Ideal S}
+    (hJ : DividedPowers J) {b : ι → S} {x : ι →₀ A} (hx : ∀ i ∈ x.support, b i ∈ J) {n : ℕ} :
+    hJ.dpow n (x.sum fun i r ↦ r • (b i)) =
+      ∑ k ∈ x.support.sym n,
+        x.prod fun i r ↦ r ^ (Multiset.count i k) • hJ.dpow (Multiset.count i k) (b i) := by
+  rw [Finsupp.sum, hJ.dpow_sum (fun i hi ↦ Submodule.smul_of_tower_mem J _ (hx i hi))]
+  apply Finset.sum_congr rfl
+  intros
+  apply Finset.prod_congr rfl
+  intro i hi
+  rw [Algebra.smul_def, hJ.dpow_mul (hx i hi), ← map_pow, ← Algebra.smul_def]
+
+/-- Given a nonempty `s : Finset ι` and a family `r : ι → R` such that `r i ∈ I` for all `i ∈ S`,
+  one has `hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i))`
+  for all `n : ℕ`. -/
+theorem dpow_prod {ι : Type*} {r : ι → A} {s : Finset ι} (hs : s.Nonempty)
+    (hs' : ∀ i ∈ s, r i ∈ I) {n : ℕ} :
+    hI.dpow n (∏ i ∈ s, r i) = n.factorial ^ (s.card - 1) • (∏ i ∈ s, hI.dpow n (r i)) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp_all
+  | @insert a s has hrec =>
+    rw [Finset.prod_insert has]
+    by_cases h : s.Nonempty
+    · rw [dpow_mul]
+      · simp only [Finset.card_insert_of_notMem has, add_tsub_cancel_right, nsmul_eq_mul,
+          Nat.cast_pow, Finset.prod_insert has,
+          hrec h (fun i hi ↦ hs' i (mem_insert_of_mem hi)), ← mul_assoc]
+        apply congr_arg₂ _ _ rfl
+        have : #s = #s - 1 + 1 := by grind
+        nth_rewrite 2 [this]
+        rw [mul_comm, pow_succ, mul_assoc, hI.factorial_mul_dpow_eq_pow]
+        exact hs' a (mem_insert_self a s)
+      · obtain ⟨j, hj⟩ := h
+        rw [Finset.prod_eq_prod_diff_singleton_mul hj]
+        exact I.mul_mem_left _ (hs' j (mem_insert_of_mem hj))
+    · simp [not_nonempty_iff_eq_empty.mp h]
 
 end BasicLemmas
 

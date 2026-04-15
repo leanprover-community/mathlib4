@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Data.List.Triplewise
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Data.List.Triplewise
 
 /-!
 # Betweenness for lists of points.
@@ -18,6 +20,8 @@ This file defines notions of lists of points in an affine space being in order o
 
 -/
 
+@[expose] public section
+
 
 variable (R : Type*) {V V' P P' : Type*}
 
@@ -27,7 +31,7 @@ namespace List
 
 section OrderedRing
 
-variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points in a list are weakly in that order on a line. -/
@@ -72,7 +76,8 @@ variable {R}
 @[simp] lemma wbtw_triple {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Wbtw R ↔ Wbtw R p₁ p₂ p₃ := by
   simp [List.Wbtw]
 
-@[simp] lemma sbtw_triple {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Sbtw R ↔ Sbtw R p₁ p₂ p₃ := by
+@[simp]
+lemma sbtw_triple [IsOrderedRing R] {p₁ p₂ p₃ : P} : [p₁, p₂, p₃].Sbtw R ↔ Sbtw R p₁ p₂ p₃ := by
   simp only [List.Sbtw, wbtw_triple, ne_eq, pairwise_cons, mem_cons, not_mem_nil, or_false,
     forall_eq_or_imp, forall_eq, IsEmpty.forall_iff, implies_true, Pairwise.nil, and_self, and_true]
   exact ⟨fun ⟨hw, ⟨h₁₂, h₁₃⟩, h₂₃⟩ ↦ ⟨hw, Ne.symm h₁₂, h₂₃⟩,
@@ -82,7 +87,7 @@ lemma wbtw_four {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Wbtw R ↔
     Wbtw R p₁ p₂ p₃ ∧ Wbtw R p₁ p₂ p₄ ∧ Wbtw R p₁ p₃ p₄ ∧ Wbtw R p₂ p₃ p₄ := by
   simp [List.Wbtw, triplewise_cons, and_assoc]
 
-lemma sbtw_four {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Sbtw R ↔
+lemma sbtw_four [IsOrderedRing R] {p₁ p₂ p₃ p₄ : P} : [p₁, p₂, p₃, p₄].Sbtw R ↔
     Sbtw R p₁ p₂ p₃ ∧ Sbtw R p₁ p₂ p₄ ∧ Sbtw R p₁ p₃ p₄ ∧ Sbtw R p₂ p₃ p₄ := by
   simp [List.Sbtw, List.Wbtw, triplewise_cons, Sbtw]
   aesop
@@ -93,7 +98,7 @@ protected lemma Sbtw.wbtw {l : List P} (h : l.Sbtw R) : l.Wbtw R :=
 lemma Sbtw.pairwise_ne {l : List P} (h : l.Sbtw R) : l.Pairwise (· ≠ ·) :=
   h.2
 
-lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
+lemma sbtw_iff_triplewise_and_ne_pair [IsOrderedRing R] {l : List P} :
     l.Sbtw R ↔ l.Triplewise (Sbtw R) ∧ ∀ a, l ≠ [a, a] := by
   rw [List.Sbtw]
   induction l with
@@ -113,19 +118,12 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
           · refine ⟨(hpne.1 head2 ?_).symm, hpne.2.1 a ha⟩
             simp
           · rw [wbtw_cons] at ht
-            refine ih' ?_ hp.2 ht.2
-            rw [pairwise_cons]
-            refine ⟨fun a ha ↦ hpne.1 a ?_, hpne.2.2⟩
-            simp [ha]
+            grind [List.pairwise_iff_forall_sublist]
       · rw [pairwise_cons] at hpne
         exact (ih.1 ⟨ht, hpne.2⟩).1
-      · intro x hx
-        simp only [cons.injEq] at hx
-        rcases hx with ⟨hxh, hxt⟩
-        subst hxh hxt
-        simp at hpne
+      · grind
     · have ht' : tail.Wbtw R := ht.imp _root_.Sbtw.wbtw
-      simp only [ht', hp, true_and, ht] at ih
+      simp only [ht', true_and, ht] at ih
       rw [pairwise_cons, ih]
       refine ⟨fun a ha' ↦ ?_, fun a ↦ ?_⟩
       · rintro rfl
@@ -141,7 +139,7 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
       · rintro rfl
         simp at hp
 
-lemma sbtw_cons {p : P} {l : List P} :
+lemma sbtw_cons [IsOrderedRing R] {p : P} {l : List P} :
     (p :: l).Sbtw R ↔ l.Pairwise (Sbtw R p) ∧ l.Sbtw R ∧ l ≠ [p] := by
   rw [sbtw_iff_triplewise_and_ne_pair, ← not_exists, triplewise_cons]
   simp only [cons.injEq, exists_eq_left', and_assoc, and_congr_right_iff, ne_eq, and_congr_left_iff]
@@ -177,35 +175,42 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
-lemma Sorted.wbtw {l : List R} (h : l.Sorted (· ≤ ·)) : l.Wbtw R := by
+lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
   induction l with
   | nil => simp
   | cons head tail ih =>
     rw [wbtw_cons]
-    refine ⟨?_, ih h.of_cons⟩
+    refine ⟨?_, ih h.pairwise.of_cons.sortedLE⟩
     clear ih
     induction tail with
     | nil => simp
     | cons head' tail' ih =>
       rw [pairwise_cons]
-      refine ⟨?_, ih (h.sublist ?_)⟩
-      · rw [sorted_cons_cons, sorted_cons] at h
-        exact fun a ha ↦ .of_le_of_le h.1 (h.2.1 a ha)
+      refine ⟨?_, ih (h.pairwise.sublist ?_).sortedLE⟩
+      · simp_rw [sortedLE_iff_pairwise, pairwise_cons_cons, pairwise_cons] at h
+        exact fun a ha ↦ .of_le_of_le h.1 (h.2.2.1 a ha)
       · simp
 
-lemma Sorted.sbtw {l : List R} (h : l.Sorted (· < ·)) : l.Sbtw R :=
-  ⟨Sorted.wbtw (h.imp LT.lt.le), h.imp LT.lt.ne⟩
+@[deprecated (since := "2025-10-13")]
+alias Sorted.wbtw := SortedLE.wbtw
+
+lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
+  ⟨h.sortedLE.wbtw, h.nodup⟩
+
+@[deprecated (since := "2025-10-13")]
+alias Sorted.sbtw := SortedLT.sbtw
 
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
-    (∃ l' : List R, l'.Sorted (· ≤ ·) ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
+    (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔
       l.Wbtw R := by
   refine ⟨fun ⟨l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · rw [← hl'l]
     exact Wbtw.map hl's.wbtw _
-  · suffices ∃ l' : List R, (∀ a ∈ l', 0 ≤ a) ∧ l'.Sorted (· ≤ ·) ∧
+  · suffices ∃ l' : List R, (∀ a ∈ l', 0 ≤ a) ∧ l'.SortedLE ∧
         l'.map (lineMap (l.head hl) (l.getLast hl)) = l by
       rcases this with ⟨l', -, hl'⟩
       exact ⟨l', hl'⟩
@@ -214,7 +219,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
     | cons head tail ih =>
       by_cases ht : tail = []
       · refine ⟨[0], ?_⟩
-        simp [ht]
+        simp [ht, sortedLE_iff_pairwise]
       · rw [wbtw_cons] at h
         replace ih := ih ht h.2
         rcases ih with ⟨l'', hl''0, hl''s, hl''⟩
@@ -223,7 +228,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
         | nil => simp at ht
         | cons head2 tail =>
           by_cases ht2 : tail = []
-          · exact ⟨[0, 1], by simp [ht2]⟩
+          · exact ⟨[0, 1], by simp [ht2, sortedLE_iff_pairwise]⟩
           · simp only [head_cons, getLast_cons ht2] at hl'' ⊢
             rw [pairwise_cons] at h
             have hw := h.1.1 _ (getLast_mem ht2)
@@ -234,13 +239,13 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
               intro a ha
               have := hl''0 a ha
               nlinarith
-            · simp only [sorted_cons, mem_map, forall_exists_index, and_imp,
-                forall_apply_eq_imp_iff₂]
+            · simp only [sortedLE_iff_pairwise, pairwise_cons, mem_map,
+                forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
               refine ⟨?_, ?_⟩
               · intro a ha
                 have := hl''0 a ha
                 nlinarith
-              · refine hl''s.map _ fun a b hab ↦ ?_
+              · refine hl''s.pairwise.map _ fun a b hab ↦ ?_
                 gcongr
                 linarith
             · simp only [map_cons, lineMap_apply_zero, map_map, ← hl'', cons.injEq,
@@ -250,34 +255,32 @@ lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
               simp
 
 lemma exists_map_eq_of_sorted_iff_wbtw {l : List P} :
-    (∃ p₁ p₂ : P, ∃ l' : List R, l'.Sorted (· ≤ ·) ∧ l'.map (lineMap p₁ p₂) = l) ↔ l.Wbtw R := by
+    (∃ p₁ p₂ : P, ∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap p₁ p₂) = l) ↔ l.Wbtw R := by
   refine ⟨fun ⟨p₁, p₂, l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · subst hl'l
     exact Wbtw.map hl's.wbtw _
   · by_cases hl : l = []
-    · exact ⟨AddTorsor.nonempty.some, AddTorsor.nonempty.some, [], by simp [hl]⟩
+    · exact ⟨AddTorsor.nonempty.some, AddTorsor.nonempty.some, [], by
+        simp [hl, sortedLE_iff_pairwise]⟩
     · exact ⟨l.head hl, l.getLast hl, (exists_map_eq_of_sorted_nonempty_iff_wbtw hl).2 h⟩
 
 lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
-    (∃ l' : List R, l'.Sorted (· < ·) ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l ∧
+    (∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l ∧
       (l.length = 1 ∨ l.head hl ≠ l.getLast hl)) ↔ l.Sbtw R := by
   refine ⟨fun ⟨l', hl's, hl'l, hla⟩ ↦
-            ⟨(exists_map_eq_of_sorted_nonempty_iff_wbtw hl).1 ⟨l', (hl's.imp LT.lt.le), hl'l⟩, ?_⟩,
+            ⟨(exists_map_eq_of_sorted_nonempty_iff_wbtw hl).1
+            ⟨l', (hl's.pairwise.imp LT.lt.le).sortedLE, hl'l⟩, ?_⟩,
           fun h ↦ ?_⟩
   · rw [← hl'l]
     rcases hla with hla | hla
-    · rw [length_eq_one_iff] at hla
-      rcases hla with ⟨a, rfl⟩
-      apply_fun length at hl'l
-      rw [length_map, length_singleton] at hl'l
-      simp [hl'l]
-    · exact (hl's.imp LT.lt.ne).map _ fun _ _ ↦ (lineMap_injective _ hla).ne
+    · grind [List.pairwise_iff_forall_sublist]
+    · exact (hl's.pairwise.imp LT.lt.ne).map _ fun _ _ ↦ (lineMap_injective _ hla).ne
   · rw [List.Sbtw, ← exists_map_eq_of_sorted_nonempty_iff_wbtw hl] at h
     rcases h with ⟨⟨l', hl's, hl'l⟩, hp⟩
     refine ⟨l', ?_, hl'l, ?_⟩
     · rw [← hl'l] at hp
       have hp' : l'.Pairwise (· ≠ ·) := hp.of_map _ (by simp)
-      exact (pairwise_and_iff.2 ⟨hl's, hp'⟩).imp lt_iff_le_and_ne.2
+      exact ((pairwise_and_iff.2 ⟨hl's.pairwise, hp'⟩).imp lt_iff_le_and_ne.2).sortedLT
     · cases l with
       | nil => simp at hl
       | cons head tail =>
@@ -285,13 +288,13 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
         cases tail with
         | nil => simp
         | cons head2 tail =>
-          simp only [reduceCtorEq, not_false_eq_true, getLast_cons, false_or]
+          simp only [reduceCtorEq, false_or]
           rw [pairwise_cons] at hp
           refine hp.1 ((head :: head2 :: tail).getLast hl) ?_
           simp
 
 lemma exists_map_eq_of_sorted_iff_sbtw [Nontrivial P] {l : List P} :
-    (∃ p₁ p₂ : P, p₁ ≠ p₂ ∧ ∃ l' : List R, l'.Sorted (· < ·) ∧ l'.map (lineMap p₁ p₂) = l) ↔
+    (∃ p₁ p₂ : P, p₁ ≠ p₂ ∧ ∃ l' : List R, l'.SortedLT ∧ l'.map (lineMap p₁ p₂) = l) ↔
       l.Sbtw R := by
   refine ⟨fun ⟨p₁, p₂, hp₁p₂, l', hl's, hl'l⟩ ↦ ?_, fun h ↦ ?_⟩
   · subst hl'l
@@ -299,12 +302,12 @@ lemma exists_map_eq_of_sorted_iff_sbtw [Nontrivial P] {l : List P} :
     exact hl's.sbtw
   · by_cases hl : l = []
     · rcases exists_pair_ne P with ⟨p₁, p₂, hp₁p₂⟩
-      exact ⟨p₁, p₂, hp₁p₂, by simp [hl]⟩
+      exact ⟨p₁, p₂, hp₁p₂, by simp [hl, sortedLT_iff_pairwise]⟩
     · by_cases hlen : l.length = 1
       · rw [length_eq_one_iff] at hlen
         rcases hlen with ⟨p₁, rfl⟩
         rcases exists_ne p₁ with ⟨p₂, hp₂p₁⟩
-        exact ⟨p₁, p₂, hp₂p₁.symm, [0], by simp⟩
+        exact ⟨p₁, p₂, hp₂p₁.symm, [0], by simp [sortedLT_iff_pairwise]⟩
       · refine ⟨l.head hl, l.getLast hl, ?_⟩
         rw [← exists_map_eq_of_sorted_nonempty_iff_sbtw hl] at h
         simp only [hlen, false_or] at h

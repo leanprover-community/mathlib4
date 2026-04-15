@@ -3,15 +3,19 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.GroupWithZero.NeZero
+module
+
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Lifting groups with zero along injective/surjective maps
 
 -/
 
-assert_not_exists DenselyOrdered
+@[expose] public section
+
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -55,14 +59,14 @@ protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZ
 
 protected theorem Function.Injective.isLeftCancelMulZero
     [IsLeftCancelMulZero M₀'] : IsLeftCancelMulZero M₀ where
-  mul_left_cancel_of_ne_zero Hne He := by
+  mul_left_cancel_of_ne_zero Hne _ _ He := by
     have := congr_arg f He
     rw [mul, mul] at this
     exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
 
 protected theorem Function.Injective.isRightCancelMulZero
     [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ where
-  mul_right_cancel_of_ne_zero Hne He := by
+  mul_right_cancel_of_ne_zero Hne _ _ He := by
     have := congr_arg f He
     rw [mul, mul] at this
     exact hf (mul_right_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
@@ -83,16 +87,16 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀' → M₀)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroOneClass M₀' :=
-  reduceProj% zeta%
-  { delta% hf.mulZeroClass f zero mul, delta% hf.mulOneClass f one mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul with }
 
 /-- Push forward a `MulZeroOneClass` instance along a surjective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀ → M₀')
     (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroOneClass M₀' :=
-  reduceProj% zeta%
-  { delta% hf.mulZeroClass f zero mul, delta% hf.mulOneClass f one mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul with }
 
 end MulZeroOneClass
 
@@ -103,16 +107,16 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.semigroupWithZero [Zero M₀'] [Mul M₀'] [SemigroupWithZero M₀]
     (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y) :
     SemigroupWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.mulZeroClass f zero mul, ‹Zero M₀'›, delta% hf.semigroup f mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.mulZeroClass f zero mul, ‹Zero M₀'›, hf.semigroup f mul with }
 
 /-- Push forward a `SemigroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.semigroupWithZero [SemigroupWithZero M₀] [Zero M₀'] [Mul M₀']
     (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y) :
     SemigroupWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.mulZeroClass f zero mul, ‹Zero M₀'›, delta% hf.semigroup f mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.mulZeroClass f zero mul, ‹Zero M₀'›, hf.semigroup f mul with }
 
 end SemigroupWithZero
 
@@ -124,8 +128,8 @@ protected abbrev Function.Injective.monoidWithZero [Zero M₀'] [Mul M₀'] [One
     [MonoidWithZero M₀] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     MonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.monoid f one mul npow, delta% hf.mulZeroClass f zero mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with }
 
 /-- Push forward a `MonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
@@ -133,8 +137,8 @@ protected abbrev Function.Surjective.monoidWithZero [Zero M₀'] [Mul M₀'] [On
     [MonoidWithZero M₀] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     MonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.monoid f one mul npow, delta% hf.mulZeroClass f zero mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.monoid f one mul npow, hf.mulZeroClass f zero mul with }
 
 /-- Pull back a `CommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -142,8 +146,8 @@ protected abbrev Function.Injective.commMonoidWithZero [Zero M₀'] [Mul M₀'] 
     [CommMonoidWithZero M₀] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.commMonoid f one mul npow, delta% hf.mulZeroClass f zero mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.commMonoid f one mul npow, hf.mulZeroClass f zero mul with }
 
 /-- Push forward a `CommMonoidWithZero` along a surjective function.
 See note [reducible non-instances]. -/
@@ -151,45 +155,10 @@ protected abbrev Function.Surjective.commMonoidWithZero [Zero M₀'] [Mul M₀']
     [CommMonoidWithZero M₀] (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.commMonoid f one mul npow, delta% hf.mulZeroClass f zero mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.commMonoid f one mul npow, hf.mulZeroClass f zero mul with }
 
 end MonoidWithZero
-
-section CancelMonoidWithZero
-
-variable [CancelMonoidWithZero M₀]
-
-/-- Pull back a `CancelMonoidWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.cancelMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
-    (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CancelMonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.monoid f one mul npow, delta% hf.mulZeroClass f zero mul with
-    mul_left_cancel_of_ne_zero := fun hx H =>
-      hf <| mul_left_cancel₀ ((hf.ne_iff' zero).2 hx) <| by rw [← mul, ← mul, H],
-    mul_right_cancel_of_ne_zero := fun hx H =>
-      hf <| mul_right_cancel₀ ((hf.ne_iff' zero).2 hx) <| by rw [← mul, ← mul, H] }
-
-end CancelMonoidWithZero
-
-section CancelCommMonoidWithZero
-
-variable [CancelCommMonoidWithZero M₀]
-
-/-- Pull back a `CancelCommMonoidWithZero` along an injective function.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.cancelCommMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀']
-    [Pow M₀' ℕ] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
-    CancelCommMonoidWithZero M₀' :=
-  reduceProj% zeta%
-  { delta% hf.commMonoidWithZero f zero one mul npow,
-    delta% hf.cancelMonoidWithZero f zero one mul npow with }
-
-end CancelCommMonoidWithZero
 
 section GroupWithZero
 
@@ -202,9 +171,9 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
-  reduceProj% zeta%
-  { delta% hf.monoidWithZero f zero one mul npow,
-    delta% hf.divInvMonoid f one mul inv div npow zpow,
+  reduceProj% unfoldReducible% zeta%
+  { hf.monoidWithZero f zero one mul npow,
+    hf.divInvMonoid f one mul inv div npow zpow,
     domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
@@ -218,9 +187,9 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
     GroupWithZero G₀' :=
-  reduceProj% zeta%
-  { delta% hf.monoidWithZero f zero one mul npow,
-    delta% hf.divInvMonoid f one mul inv div npow zpow with
+  reduceProj% unfoldReducible% zeta%
+  { hf.monoidWithZero f zero one mul npow,
+    hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by rw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
         rw [← inv, ← mul, mul_inv_cancel₀ (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
@@ -239,20 +208,21 @@ protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroupWithZero G₀' :=
-  reduceProj% zeta%
-  { delta% hf.groupWithZero f zero one mul inv div npow zpow,
-    delta% hf.commSemigroup f mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.groupWithZero f zero one mul inv div npow zpow,
+    hf.commSemigroup f mul with }
 
 /-- Push forward a `CommGroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
+@[implicit_reducible]
 protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
     CommGroupWithZero G₀' :=
-  reduceProj% zeta%
-  { delta% hf.groupWithZero h01 f zero one mul inv div npow zpow,
-    delta% hf.commSemigroup f mul with }
+  reduceProj% unfoldReducible% zeta%
+  { hf.groupWithZero h01 f zero one mul inv div npow zpow,
+    hf.commSemigroup f mul with }
 
 end CommGroupWithZero

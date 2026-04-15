@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Binary disjoint unions of categories
@@ -20,18 +22,20 @@ We provide an induction principle `Sum.homInduction` to reason and work with mor
 category.
 
 The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B ⥤ C`, written `F.sum' G`.
-This construction should be prefered when defining functors out of a sum.
+This construction should be preferred when defining functors out of a sum.
 
 We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
-`inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
+`inrCompSum' : inr_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
-their precomposition with the inclusion. This construction sholud be preffered when trying
+their precomposition with the inclusion. This construction should be preferred when trying
 to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -39,13 +43,11 @@ namespace CategoryTheory
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 -- morphism levels before object levels. See note [category_theory universes].
-open Sum
+open Sum Functor
 
 section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-
-/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
@@ -62,12 +64,8 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     | inr X => ULift.up (𝟙 X)
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
+    | inl _, inl _, inl _, f, g => ULift.up <| f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
-  assoc {W X Y Z} f g h :=
-    match X, Y, Z, W with
-    | inl _, inl _, inl _, inl _ => by simp
-    | inr _, inr _, inr _, inr _ => by simp
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
@@ -98,8 +96,8 @@ def inr_ : D ⥤ C ⊕ D where
 
 variable {C D}
 
-/-- An induction principle for morphisms in a sum of category: a morphism is either of the form
-`(inl_ _ _).map _` or of the form `(inr_ _ _).map _)`. -/
+/-- An induction principle for morphisms in a sum of categories: a morphism is either of the form
+`(inl_ _ _).map _` or of the form `(inr_ _ _).map _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
@@ -134,6 +132,7 @@ section Sum'
 
 variable (F : A ⥤ C) (G : B ⥤ C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum of two functors that land in a given category `C`. -/
 def sum' : A ⊕ B ⥤ C where
   obj
@@ -145,11 +144,13 @@ def sum' : A ⊕ B ⥤ C where
   map_id x := by
     cases x <;> (simp only [← map_id]; rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
 def inlCompSum' : Sum.inl_ A B ⋙ F.sum' G ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
 @[simps!]
 def inrCompSum' : Sum.inr_ A B ⋙ F.sum' G ≅ G :=
@@ -186,19 +187,21 @@ theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) 
 theorem sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) = inr (G.obj c) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : a ⟶ a') :
-    (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) :=
-  rfl
+    (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) := by
+  simp [sum]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
-    (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) :=
-  rfl
+    (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) := by
+  simp [sum]
 
 section
 
-variable {F G: A ⊕ B ⥤ C}
+variable {F G : A ⊕ B ⥤ C}
   (e₁ : Sum.inl_ A B ⋙ F ≅ Sum.inl_ A B ⋙ G)
   (e₂ : Sum.inr_ A B ⋙ F ≅ Sum.inr_ A B ⋙ G)
 
@@ -234,7 +237,7 @@ variable (F : A ⊕ B ⥤ C)
 
 /-- Any functor out of a sum is the sum of its precomposition with the inclusions. -/
 def isoSum : F ≅ (Sum.inl_ A B ⋙ F).sum' (Sum.inr_ A B ⋙ F) :=
-  sumIsoExt (Iso.refl _) (Iso.refl _)
+  sumIsoExt (inlCompSum' _ _).symm (inrCompSum' _ _).symm
 
 variable (a : A) (b : B)
 
@@ -259,6 +262,7 @@ namespace NatTrans
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
   [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum of two natural transformations, where all functors have the same target category. -/
 def sum' {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) : F.sum' H ⟶ G.sum' I where
   app X :=
@@ -278,6 +282,7 @@ theorem sum'_app_inr {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ 
     (sum' α β).app (inr b) = β.app b :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum of two natural transformations. -/
 def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where
   app X :=
@@ -324,11 +329,13 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 /-- Precomposing `swap` with the left inclusion gives the right inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C :=
+  Functor.inlCompSum' (inr_ _ _) (inl_ _ _)
 
-/-- Precomposing `swap` with the rightt inclusion gives the leftt inclusion. -/
+/-- Precomposing `swap` with the right inclusion gives the left inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C :=
+  Functor.inrCompSum' (inr_ _ _) (inl_ _ _)
 
 namespace Swap
 
@@ -337,8 +344,28 @@ namespace Swap
 def equivalence : C ⊕ D ≌ D ⊕ C where
   functor := swap C D
   inverse := swap D C
-  unitIso := Functor.sumIsoExt (swapCompInr D C).symm (swapCompInl D C).symm
-  counitIso := Functor.sumIsoExt (swapCompInr C D).symm (swapCompInl C D).symm
+  unitIso := Functor.sumIsoExt
+    (calc inl_ C D ⋙ 𝟭 (C ⊕ D)
+        ≅ inl_ C D := rightUnitor _
+      _ ≅ inr_ D C ⋙ swap D C := (swapCompInr D C).symm
+      _ ≅ (inl_ C D ⋙ swap C D) ⋙ swap D C := isoWhiskerRight (swapCompInl C D).symm _
+      _ ≅ inl_ C D ⋙ swap C D ⋙ swap D C := associator _ _ _)
+    (calc inr_ C D ⋙ 𝟭 (C ⊕ D)
+        ≅ inr_ C D := rightUnitor _
+      _ ≅ inl_ D C ⋙ swap D C := (swapCompInl D C).symm
+      _ ≅ (inr_ C D ⋙ swap C D) ⋙ swap D C := isoWhiskerRight (swapCompInr C D).symm _
+      _ ≅ inr_ C D ⋙ swap C D ⋙ swap D C := associator _ _ _)
+  counitIso := Functor.sumIsoExt
+    (calc inl_ D C ⋙ swap D C ⋙ swap C D
+        ≅ (inl_ D C ⋙ swap D C) ⋙ swap C D := (associator _ _ _).symm
+      _ ≅ inr_ C D ⋙ swap C D := isoWhiskerRight (swapCompInl D C) _
+      _ ≅ inl_ D C := swapCompInr C D
+      _ ≅ inl_ D C ⋙ 𝟭 (D ⊕ C) := (rightUnitor _).symm)
+    (calc inr_ D C ⋙ swap D C ⋙ swap C D
+        ≅ (inr_ D C ⋙ swap D C) ⋙ swap C D := (associator _ _ _).symm
+      _ ≅ inl_ C D ⋙ swap C D := isoWhiskerRight (swapCompInr D C) _
+      _ ≅ inr_ D C := swapCompInl C D
+      _ ≅ inr_ D C ⋙ 𝟭 (D ⊕ C) := (rightUnitor _).symm)
 
 instance isEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (equivalence C D).functor.IsEquivalence)

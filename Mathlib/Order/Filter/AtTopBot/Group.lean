@@ -3,15 +3,18 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.AtTopBot.Monoid
+module
+
+public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.AtTopBot.Monoid
 
 /-!
 # Convergence to ±infinity in ordered commutative groups
 -/
+
+public section
 
 variable {α G : Type*}
 open Set
@@ -20,7 +23,7 @@ namespace Filter
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup G] (l : Filter α) {f g : α → G}
+variable [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (l : Filter α) {f g : α → G}
 
 @[to_additive]
 theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
@@ -30,7 +33,7 @@ theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (h
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge' (C : G) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
-  @tendsto_atTop_mul_left_of_le' _ Gᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_mul_left_of_le' (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_left_of_le (C : G) (hf : ∀ x, C ≤ f x) (hg : Tendsto g l atTop) :
@@ -40,7 +43,7 @@ theorem tendsto_atTop_mul_left_of_le (C : G) (hf : ∀ x, C ≤ f x) (hg : Tends
 @[to_additive]
 theorem tendsto_atBot_mul_left_of_ge (C : G) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot :=
-  @tendsto_atTop_mul_left_of_le _ Gᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_mul_left_of_le (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_right_of_le' (C : G) (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, C ≤ g x) :
@@ -50,7 +53,7 @@ theorem tendsto_atTop_mul_right_of_le' (C : G) (hf : Tendsto f l atTop) (hg : �
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge' (C : G) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  @tendsto_atTop_mul_right_of_le' _ Gᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_mul_right_of_le' (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀ x, C ≤ g x) :
@@ -60,7 +63,7 @@ theorem tendsto_atTop_mul_right_of_le (C : G) (hf : Tendsto f l atTop) (hg : ∀
 @[to_additive]
 theorem tendsto_atBot_mul_right_of_ge (C : G) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x * g x) l atBot :=
-  @tendsto_atTop_mul_right_of_le _ Gᵒᵈ _ _ _ _ C hf hg
+  tendsto_atTop_mul_right_of_le (G := Gᵒᵈ) _ C hf hg
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
@@ -70,7 +73,7 @@ theorem tendsto_atTop_mul_const_left (C : G) (hf : Tendsto f l atTop) :
 @[to_additive]
 theorem tendsto_atBot_mul_const_left (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => C * f x) l atBot :=
-  @tendsto_atTop_mul_const_left _ Gᵒᵈ _ _ _ C hf
+  tendsto_atTop_mul_const_left (G := Gᵒᵈ) _ C hf
 
 @[to_additive]
 theorem tendsto_atTop_mul_const_right (C : G) (hf : Tendsto f l atTop) :
@@ -80,7 +83,7 @@ theorem tendsto_atTop_mul_const_right (C : G) (hf : Tendsto f l atTop) :
 @[to_additive]
 theorem tendsto_atBot_mul_const_right (C : G) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * C) l atBot :=
-  @tendsto_atTop_mul_const_right _ Gᵒᵈ _ _ _ C hf
+  tendsto_atTop_mul_const_right (G := Gᵒᵈ) _ C hf
 
 @[to_additive]
 theorem map_inv_atBot : map (Inv.inv : G → G) atBot = atTop :=
@@ -104,7 +107,7 @@ theorem tendsto_inv_atTop_atBot : Tendsto (Inv.inv : G → G) atTop atBot :=
 
 @[to_additive]
 theorem tendsto_inv_atBot_atTop : Tendsto (Inv.inv : G → G) atBot atTop :=
-  @tendsto_inv_atTop_atBot Gᵒᵈ _
+  tendsto_inv_atTop_atBot (G := Gᵒᵈ)
 
 variable {l}
 
@@ -116,24 +119,34 @@ theorem tendsto_inv_atTop_iff : Tendsto (fun x => (f x)⁻¹) l atTop ↔ Tendst
 theorem tendsto_inv_atBot_iff : Tendsto (fun x => (f x)⁻¹) l atBot ↔ Tendsto f l atTop :=
   (OrderIso.inv G).tendsto_atTop_iff
 
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atTop_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atTop l ↔ Tendsto f atBot l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atTop]
+
+@[to_additive (attr := simp)]
+theorem tendsto_comp_inv_atBot_iff {f : G → α} :
+    Tendsto (fun x ↦ f (x⁻¹)) atBot l ↔ Tendsto f atTop l := by
+  simp [← Function.comp_def, Tendsto, ← map_map, map_inv_atBot]
+
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup G]
+variable [CommGroup G] [LinearOrder G]
 
 /-- $\lim_{x\to+\infty}|x|_m=+\infty$ -/
-@[to_additive r"$\lim_{x\to+\infty}|x|=+\infty$"]
+@[to_additive /-- $\lim_{x\to+\infty}|x|=+\infty$ -/]
 theorem tendsto_mabs_atTop_atTop : Tendsto (mabs : G → G) atTop atTop :=
   tendsto_atTop_mono le_mabs_self tendsto_id
 
 /-- $\lim_{x\to\infty^{-1}|x|_m=+\infty$ -/
-@[to_additive r"$\lim_{x\to-\infty}|x|=+\infty$"]
-theorem tendsto_mabs_atBot_atTop : Tendsto (mabs : G → G) atBot atTop :=
+@[to_additive /-- $\lim_{x\to-\infty}|x|=+\infty$ -/]
+theorem tendsto_mabs_atBot_atTop [IsOrderedMonoid G] : Tendsto (mabs : G → G) atBot atTop :=
   tendsto_atTop_mono inv_le_mabs tendsto_inv_atBot_atTop
 
 @[to_additive (attr := simp)]
-theorem comap_mabs_atTop : comap (mabs : G → G) atTop = atBot ⊔ atTop := by
+theorem comap_mabs_atTop [IsOrderedMonoid G] : comap (mabs : G → G) atTop = atBot ⊔ atTop := by
   refine
     le_antisymm (((atTop_basis.comap _).le_basis_iff (atBot_basis.sup atTop_basis)).2 ?_)
       (sup_le tendsto_mabs_atBot_atTop.le_comap tendsto_mabs_atTop_atTop.le_comap)

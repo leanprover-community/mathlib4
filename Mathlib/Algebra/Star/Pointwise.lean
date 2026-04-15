@@ -3,11 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -21,6 +22,8 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 * `(s⁻¹)⋆ = (s⋆)⁻¹`
 -/
 
+@[expose] public section
+
 
 namespace Set
 
@@ -30,9 +33,10 @@ local postfix:max "⋆" => star
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the locale `Pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
+@[instance_reducible]
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
 
 scoped[Pointwise] attribute [instance] Set.star
@@ -50,7 +54,7 @@ theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Non
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
   nonempty_star.2 h
 
-@[simp]
+@[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
@@ -82,7 +86,6 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
 @[simp]
 instance [InvolutiveStar α] : InvolutiveStar (Set α) where
-  star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 
 @[simp]
@@ -100,12 +103,12 @@ theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β
   rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
 
 protected theorem star_mul [Mul α] [StarMul α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
- simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,
-   star_mul, image2_swap _ s t]
+  simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,
+    star_mul, image2_swap _ s t]
 
 protected theorem star_add [AddMonoid α] [StarAddMonoid α] (s t : Set α) : (s + t)⋆ = s⋆ + t⋆ := by
- simp_rw [← image_star, ← image2_add, image_image2, image2_image_left, image2_image_right,
-   star_add]
+  simp_rw [← image_star, ← image2_add, image_image2, image2_image_left, image2_image_right,
+    star_add]
 
 @[simp]
 instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
@@ -118,7 +121,7 @@ protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s�
   ext
   simp only [mem_star, mem_inv, star_inv]
 
-protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
+protected theorem star_inv' [GroupWithZero α] [StarMul α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv₀]
 
@@ -127,6 +130,5 @@ end Set
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
-  ext x
-  simp only [Set.mem_star, SetLike.mem_coe]
-  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  ext
+  simpa using star_mem_iff

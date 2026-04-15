@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Cast of integers into fields
@@ -13,8 +15,10 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 
 ## Main results
 
- * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
+* `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
+
+public section
 
 
 namespace Int
@@ -23,7 +27,7 @@ open Nat
 
 variable {α : Type*}
 
-/-- Auxiliary lemma for norm_cast to move the cast `-↑n` upwards to `↑-↑n`.
+/-- Auxiliary lemma for `norm_cast` to move the cast `-↑n` upwards to `↑-↑n`.
 
 (The restriction to `DivisionRing` is necessary, otherwise this would also apply in the case where
 `R = ℤ` and cause nontermination.)

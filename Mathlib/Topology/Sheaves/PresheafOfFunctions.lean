@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Presheaf
+module
+
+public import Mathlib.Topology.Sheaves.Presheaf
 /-!
 # Presheaves of functions
 
@@ -15,44 +17,35 @@ We construct some simple examples of presheaves of functions on a topological sp
 * `presheafToTop X T`, where `T : TopCat`,
   is the presheaf of continuous functions into a topological space `T`
 * `presheafToTopCommRing X R`, where `R : TopCommRingCat`
-  is the presheaf valued in `CommRing` of functions functions into a topological ring `R`
+  is the presheaf valued in `CommRing` of functions into a topological ring `R`
 * as an example of the previous construction,
   `presheafToTopCommRing X (TopCommRingCat.of ℂ)`
   is the presheaf of rings of continuous complex-valued functions on `X`.
 -/
 
+@[expose] public section
 
-universe v u
-
-open CategoryTheory
-
-open TopologicalSpace
-
-open Opposite
+open CategoryTheory TopologicalSpace Opposite
 
 namespace TopCat
 
-variable (X : TopCat.{v})
+variable (X : TopCat)
 
 /-- The presheaf of dependently typed functions on `X`, with fibres given by a type family `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
+def presheafToTypes (T : X → Type*) : X.Presheaf (Type _) where
   obj U := ∀ x : U.unop, T x
-  map {_ V} i g := fun x : V.unop => g (i.unop x)
-  map_id U := by
-    ext g
-    rfl
-  map_comp {_ _ _} _ _ := rfl
+  map {_ V} i := TypeCat.ofHom (fun (g) (x : V.unop) => g (i.unop x))
 
 @[simp]
-theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
+theorem presheafToTypes_obj {T : X → Type*} {U : (Opens X)ᵒᵖ} :
     (presheafToTypes X T).obj U = ∀ x : U.unop, T x :=
   rfl
 
 @[simp]
-theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
+theorem presheafToTypes_map {T : X → Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+    dsimp% (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
   rfl
 
 -- We don't just define this in terms of `presheafToTypes`,
@@ -64,31 +57,27 @@ theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U �
 /-- The presheaf of functions on `X` with values in a type `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToType (T : Type v) : X.Presheaf (Type v) where
+def presheafToType (T : Type*) : X.Presheaf (Type _) where
   obj U := U.unop → T
-  map {_ _} i g := g ∘ i.unop
-  map_id U := by
-    ext g
-    rfl
-  map_comp {_ _ _} _ _ := rfl
+  map {_ _} i := TypeCat.ofHom (fun g ↦ g ∘ i.unop)
 
 @[simp]
-theorem presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
+theorem presheafToType_obj {T : Type*} {U : (Opens X)ᵒᵖ} :
     (presheafToType X T).obj U = (U.unop → T) :=
   rfl
 
 @[simp]
-theorem presheafToType_map {T : Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToType X T).map i f = f ∘ i.unop :=
+theorem presheafToType_map {T : Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+    dsimp% (presheafToType X T).map i f = f ∘ i.unop :=
   rfl
 
 /-- The presheaf of continuous functions on `X` with values in fixed target topological space
 `T`. -/
-def presheafToTop (T : TopCat.{v}) : X.Presheaf (Type v) :=
+def presheafToTop (T : TopCat) : X.Presheaf (Type _) :=
   (Opens.toTopCat X).op ⋙ yoneda.obj T
 
 @[simp]
-theorem presheafToTop_obj (T : TopCat.{v}) (U : (Opens X)ᵒᵖ) :
+theorem presheafToTop_obj (T : TopCat) (U : (Opens X)ᵒᵖ) :
     (presheafToTop X T).obj U = ((Opens.toTopCat X).obj (unop U) ⟶ T) :=
   rfl
 

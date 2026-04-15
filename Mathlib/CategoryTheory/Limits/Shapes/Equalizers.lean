@@ -3,8 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Equalizers and coequalizers
@@ -18,7 +21,7 @@ A coequalizer is the dual concept.
 
 ## Main definitions
 
-* `WalkingParallelPair` is the indexing category used for (co)equalizer_diagrams
+* `WalkingParallelPair` is the indexing category used for (co)equalizer diagrams
 * `parallelPair` is a functor from `WalkingParallelPair` to our category `C`.
 * a `fork` is a cone over a parallel pair.
   * there is really only one interesting morphism in a fork: the arrow from the vertex of the fork
@@ -35,13 +38,15 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 section
 
@@ -75,14 +80,12 @@ open WalkingParallelPairHom
 
 /-- Composition of morphisms in the indexing diagram for (co)equalizers. -/
 def WalkingParallelPairHom.comp :
-    -- Porting note: changed X Y Z to implicit to match comp fields in precategory
     ∀ {X Y Z : WalkingParallelPair} (_ : WalkingParallelPairHom X Y)
       (_ : WalkingParallelPairHom Y Z), WalkingParallelPairHom X Z
   | _, _, _, id _, h => h
   | _, _, _, left, id one => left
   | _, _, _, right, id one => right
 
--- Porting note: adding these since they are simple and aesop couldn't directly prove them
 theorem WalkingParallelPairHom.id_comp
     {X Y : WalkingParallelPair} (g : WalkingParallelPairHom X Y) : comp (id X) g = g :=
   rfl
@@ -116,7 +119,7 @@ def walkingParallelPairOp : WalkingParallelPair ⥤ WalkingParallelPairᵒᵖ wh
   map f := by
     cases f <;> apply Quiver.Hom.op
     exacts [left, right, WalkingParallelPairHom.id _]
-  map_comp := by rintro _ _ _ (_|_|_) g <;> cases g <;> rfl
+  map_comp := by rintro _ _ _ (_ | _ | _) g <;> cases g <;> rfl
 
 @[simp]
 theorem walkingParallelPairOp_zero : walkingParallelPairOp.obj zero = op one := rfl
@@ -145,11 +148,11 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       (by rintro _ _ (_ | _ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
-            induction' j with X
+            induction j with | _ X
             cases X <;> rfl))
       (fun {i} {j} f => by
-      induction' i with i
-      induction' j with j
+      induction i with | _ i
+      induction j with | _ j
       let g := f.unop
       have : f = g.op := rfl
       rw [this]
@@ -173,11 +176,45 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
     walkingParallelPairOpEquiv.counitIso.app (op one) = Iso.refl (op one) :=
   rfl
 
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_zero :
+    walkingParallelPairOpEquiv.unitIso.hom.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_hom_app_one :
+    walkingParallelPairOpEquiv.unitIso.hom.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_zero :
+    walkingParallelPairOpEquiv.unitIso.inv.app zero = 𝟙 zero := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_unitIso_inv_app_one :
+    walkingParallelPairOpEquiv.unitIso.inv.app one = 𝟙 one := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_hom_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.hom.app (op one) = 𝟙 (op one) :=
+  rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_zero :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op zero) = 𝟙 (op zero) := rfl
+
+@[simp]
+theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
+    walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
+  rfl
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : C}
 
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
-    common domain and codomain. -/
+common domain and codomain. -/
 def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
   obj x :=
     match x with
@@ -190,7 +227,7 @@ def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
     | right => g
   -- `sorry` can cope with this, but it's too slow:
   map_comp := by
-    rintro _ _ _ ⟨⟩ g <;> cases g <;> {dsimp; simp}
+    rintro _ _ _ ⟨⟩ g <;> cases g <;> simp
 
 @[simp]
 theorem parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl
@@ -209,21 +246,41 @@ theorem parallelPair_functor_obj {F : WalkingParallelPair ⥤ C} (j : WalkingPar
     (parallelPair (F.map left) (F.map right)).obj j = F.obj j := by cases j <;> rfl
 
 /-- Every functor indexing a (co)equalizer is naturally isomorphic (actually, equal) to a
-    `parallelPair` -/
+`parallelPair` -/
 @[simps!]
 def diagramIsoParallelPair (F : WalkingParallelPair ⥤ C) :
     F ≅ parallelPair (F.map left) (F.map right) :=
-  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_|_|_) <;> simp)
+  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) (by rintro _ _ (_ | _ | _) <;> simp)
+
+/-- Constructor for natural transformations between parallel pairs. -/
+@[simps]
+def parallelPairHomMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ⟶ G.obj zero)
+    (q : F.obj one ⟶ G.obj one)
+    (hl : F.map left ≫ q = p ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q = p ≫ G.map right := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _); exacts [p, q]
+  naturality := by rintro _ _ (_ | _); all_goals cat_disch
+
+/-- Constructor for natural isomorphisms between parallel pairs. -/
+@[simps!]
+def parallelPairIsoMk {F G : WalkingParallelPair ⥤ C}
+    (p : F.obj zero ≅ G.obj zero)
+    (q : F.obj one ≅ G.obj one)
+    (hl : F.map left ≫ q.hom = p.hom ≫ G.map left := by cat_disch)
+    (hr : F.map right ≫ q.hom = p.hom ≫ G.map right := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _); exacts [p, q])
+    (by rintro _ _ (_ | _); all_goals cat_disch)
 
 /-- Construct a morphism between parallel pairs. -/
 def parallelPairHom {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X') (q : Y ⟶ Y')
-    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' where
-  app j :=
-    match j with
-    | zero => p
-    | one => q
-  naturality := by
-    rintro _ _ ⟨⟩ <;> {dsimp; simp [wf,wg]}
+    (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') : parallelPair f g ⟶ parallelPair f' g' :=
+  parallelPairHomMk p q
+
+/-- Construct a isomorphism between parallel pairs. -/
+def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
+    (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
+    parallelPair f g ≅ parallelPair f' g' := parallelPairIsoMk p q
 
 @[simp]
 theorem parallelPairHom_app_zero {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ⟶ X')
@@ -241,8 +298,9 @@ theorem parallelPairHom_app_one {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') 
 its components. -/
 @[simps!]
 def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.obj zero)
-    (one : F.obj one ≅ G.obj one) (left : F.map left ≫ one.hom = zero.hom ≫ G.map left)
-    (right : F.map right ≫ one.hom = zero.hom ≫ G.map right) : F ≅ G :=
+    (one : F.obj one ≅ G.obj one)
+    (left : F.map left ≫ one.hom = zero.hom ≫ G.map left := by cat_disch)
+    (right : F.map right ≫ one.hom = zero.hom ≫ G.map right := by cat_disch) : F ≅ G :=
   NatIso.ofComponents
     (by
       rintro ⟨j⟩
@@ -267,10 +325,9 @@ abbrev Cofork (f g : X ⟶ Y) :=
 variable {f g : X ⟶ Y}
 
 /-- A fork `t` on the parallel pair `f g : X ⟶ Y` consists of two morphisms
-    `t.π.app zero : t.pt ⟶ X`
-    and `t.π.app one : t.pt ⟶ Y`. Of these, only the first one is interesting, and we give it the
-    shorter name `Fork.ι t`. -/
-def Fork.ι (t : Fork f g) :=
+`t.π.app zero : t.pt ⟶ X` and `t.π.app one : t.pt ⟶ Y`. Of these,
+only the first one is interesting, and we give it the shorter name `Fork.ι t`. -/
+def Fork.ι (t : Fork f g) : t.pt ⟶ X :=
   t.π.app zero
 
 @[simp]
@@ -278,27 +335,31 @@ theorem Fork.app_zero_eq_ι (t : Fork f g) : t.π.app zero = t.ι :=
   rfl
 
 /-- A cofork `t` on the parallelPair `f g : X ⟶ Y` consists of two morphisms
-    `t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
-    interesting, and we give it the shorter name `Cofork.π t`. -/
-def Cofork.π (t : Cofork f g) :=
+`t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
+interesting, and we give it the shorter name `Cofork.π t`. -/
+def Cofork.π (t : Cofork f g) : Y ⟶ t.pt :=
   t.ι.app one
 
 @[simp]
 theorem Cofork.app_one_eq_π (t : Cofork f g) : t.ι.app one = t.π :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Fork.app_one_eq_ι_comp_left (s : Fork f g) : s.π.app one = s.ι ≫ f := by
   rw [← s.app_zero_eq_ι, ← s.w left, parallelPair_map_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Fork.app_one_eq_ι_comp_right (s : Fork f g) : s.π.app one = s.ι ≫ g := by
   rw [← s.app_zero_eq_ι, ← s.w right, parallelPair_map_right]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Cofork.app_zero_eq_comp_π_left (s : Cofork f g) : s.ι.app zero = f ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w left, parallelPair_map_left]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Cofork.app_zero_eq_comp_π_right (s : Cofork f g) : s.ι.app zero = g ≫ s.π := by
   rw [← s.app_one_eq_π, ← s.w right, parallelPair_map_right]
@@ -314,18 +375,17 @@ def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
         · exact ι
         · exact ι ≫ f
       naturality := fun {X} {Y} f =>
-        by cases X <;> cases Y <;> cases f <;> dsimp <;> simp; assumption }
+        by cases X <;> cases Y <;> cases f <;> simp [w] }
 
 /-- A cofork on `f g : X ⟶ Y` is determined by the morphism `π : Y ⟶ P` satisfying
-    `f ≫ π = g ≫ π`. -/
+`f ≫ π = g ≫ π`. -/
 @[simps]
 def Cofork.ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : Cofork f g where
   pt := P
   ι :=
     { app := fun X => WalkingParallelPair.casesOn X (f ≫ π) π
-      naturality := fun i j f => by cases f <;> dsimp <;> simp [w] }
+      naturality := fun i j f => by cases f <;> simp [w] }
 
--- See note [dsimp, simp]
 @[simp]
 theorem Fork.ι_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : (Fork.ofι ι w).ι = ι :=
   rfl
@@ -334,16 +394,17 @@ theorem Fork.ι_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : (Fork.of
 theorem Cofork.π_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫ π) : (Cofork.ofπ π w).π = π :=
   rfl
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Fork.condition (t : Fork f g) : t.ι ≫ f = t.ι ≫ g := by
   rw [← t.app_one_eq_ι_comp_left, ← t.app_one_eq_ι_comp_right]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Cofork.condition (t : Cofork f g) : f ≫ t.π = g ≫ t.π := by
   rw [← t.app_zero_eq_comp_π_left, ← t.app_zero_eq_comp_π_right]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two maps are equalized by both maps of a fork, it suffices to check it for the
-    first map -/
+first map -/
 theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ s.ι = l ≫ s.ι) :
     ∀ j : WalkingParallelPair, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
@@ -352,8 +413,9 @@ theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ 
       simp only [← Category.assoc]; exact congrArg (· ≫ f) h
     rw [s.app_one_eq_ι_comp_left, this]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two maps are coequalized by both maps of a cofork, it suffices to check it for
-    the second map -/
+the second map -/
 theorem Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
     (h : Cofork.π s ≫ k = Cofork.π s ≫ l) : ∀ j : WalkingParallelPair, s.ι.app j ≫ k = s.ι.app j ≫ l
   | zero => by simp only [s.app_zero_eq_comp_π_left, Category.assoc, h]
@@ -375,9 +437,8 @@ theorem Fork.IsLimit.lift_ι {s t : Fork f g} (hs : IsLimit s) : hs.lift t ≫ s
 theorem Cofork.IsColimit.π_desc {s t : Cofork f g} (hs : IsColimit s) : s.π ≫ hs.desc t = t.π :=
   hs.fac _ _
 
--- Porting note: `Fork.IsLimit.lift` was added in order to ease the port
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
-    `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
+`k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
 def Fork.IsLimit.lift {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     W ⟶ s.pt :=
   hs.lift (Fork.ofι _ h)
@@ -388,14 +449,16 @@ lemma Fork.IsLimit.lift_ι' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X
     hs.fac _ _
 
 /-- If `s` is a limit fork over `f` and `g`, then a morphism `k : W ⟶ X` satisfying
-    `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
+`k ≫ f = k ≫ g` induces a morphism `l : W ⟶ s.pt` such that `l ≫ fork.ι s = k`. -/
 def Fork.IsLimit.lift' {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨Fork.IsLimit.lift hs k h, by simp⟩
 
--- Porting note: `Cofork.IsColimit.desc` was added in order to ease the port
+lemma Fork.IsLimit.mono {s : Fork f g} (hs : IsLimit s) : Mono s.ι where
+  right_cancellation _ _ h := hom_ext hs h
+
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
-    `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
+`f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
 def Cofork.IsColimit.desc {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : s.pt ⟶ W :=
   hs.desc (Cofork.ofπ _ h)
@@ -406,10 +469,13 @@ lemma Cofork.IsColimit.π_desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k :
   hs.fac _ _
 
 /-- If `s` is a colimit cofork over `f` and `g`, then a morphism `k : Y ⟶ W` satisfying
-    `f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
+`f ≫ k = g ≫ k` induces a morphism `l : s.pt ⟶ W` such that `cofork.π s ≫ l = k`. -/
 def Cofork.IsColimit.desc' {s : Cofork f g} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = g ≫ k) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨Cofork.IsColimit.desc hs k h, by simp⟩
+
+lemma Cofork.IsColimit.epi {s : Cofork f g} (hs : IsColimit s) : Epi s.π where
+  left_cancellation _ _ h := hom_ext hs h
 
 theorem Fork.IsLimit.existsUnique {s : Fork f g} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = k ≫ g) : ∃! l : W ⟶ s.pt, l ≫ Fork.ι s = k :=
@@ -422,7 +488,7 @@ theorem Cofork.IsColimit.existsUnique {s : Cofork f g} (hs : IsColimit s) {W : C
     Cofork.IsColimit.hom_ext hs <| hm.symm ▸ (hs.fac (Cofork.ofπ _ h) WalkingParallelPair.one).symm⟩
 
 /-- This is a slightly more convenient method to verify that a fork is a limit cone. It
-    only asks for a proof of facts that carry any mathematical content -/
+only asks for a proof of facts that carry any mathematical content -/
 @[simps]
 def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ Fork.ι t = Fork.ι s)
@@ -430,30 +496,29 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
   { lift
     fac := fun s j =>
       WalkingParallelPair.casesOn j (fac s) <| by
-        erw [← s.w left, ← t.w left, ← Category.assoc, fac]; rfl
-    uniq := fun s m j => by aesop}
+        simp [← Category.assoc, fac]
+    uniq := fun s m j => by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
-    only asks for a proof of facts that carry any mathematical content, and allows access to the
-    same `s` for all parts. -/
+only asks for a proof of facts that carry any mathematical content, and allows access to the
+same `s` for all parts. -/
 def Fork.IsLimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Fork f g)
     (create : ∀ s : Fork f g, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) : IsLimit t :=
   Fork.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w => (create s).2.2 w
 
 /-- This is a slightly more convenient method to verify that a cofork is a colimit cocone. It
-    only asks for a proof of facts that carry any mathematical content -/
+only asks for a proof of facts that carry any mathematical content -/
 def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.pt)
     (fac : ∀ s : Cofork f g, Cofork.π t ≫ desc s = Cofork.π s)
     (uniq : ∀ (s : Cofork f g) (m : t.pt ⟶ s.pt) (_ : t.π ≫ m = s.π), m = desc s) : IsColimit t :=
   { desc
     fac := fun s j =>
-      WalkingParallelPair.casesOn j (by erw [← s.w left, ← t.w left, Category.assoc, fac]; rfl)
-        (fac s)
+      WalkingParallelPair.casesOn j (by simp_all) (fac s)
     uniq := by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
-    only asks for a proof of facts that carry any mathematical content, and allows access to the
-    same `s` for all parts. -/
+only asks for a proof of facts that carry any mathematical content, and allows access to the
+same `s` for all parts. -/
 def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
     (create : ∀ s : Cofork f g, { l : t.pt ⟶ s.pt // t.π ≫ l = s.π
                                     ∧ ∀ {m}, t.π ≫ m = s.π → m = l }) : IsColimit t :=
@@ -513,32 +578,32 @@ theorem Cofork.IsColimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Cofork f 
   (Category.assoc _ _ _).symm
 
 /-- This is a helper construction that can be useful when verifying that a category has all
-    equalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
-    `parallelPair (F.map left) (F.map right)`, and a fork on `F.map left` and `F.map right`,
-    we get a cone on `F`.
+equalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
+`parallelPair (F.map left) (F.map right)`, and a fork on `F.map left` and `F.map right`,
+we get a cone on `F`.
 
-    If you're thinking about using this, have a look at `hasEqualizers_of_hasLimit_parallelPair`,
-    which you may find to be an easier way of achieving your goal. -/
+If you're thinking about using this, have a look at `hasEqualizers_of_hasLimit_parallelPair`,
+which you may find to be an easier way of achieving your goal. -/
 def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) : Cone F where
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by simp)
-      naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition] }
 
 /-- This is a helper construction that can be useful when verifying that a category has all
-    coequalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
-    `parallelPair (F.map left) (F.map right)`, and a cofork on `F.map left` and `F.map right`,
-    we get a cocone on `F`.
+coequalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
+`parallelPair (F.map left) (F.map right)`, and a cofork on `F.map left` and `F.map right`,
+we get a cocone on `F`.
 
-    If you're thinking about using this, have a look at
-    `hasCoequalizers_of_hasColimit_parallelPair`, which you may find to be an easier way of
-    achieving your goal. -/
+If you're thinking about using this, have a look at
+`hasCoequalizers_of_hasColimit_parallelPair`, which you may find to be an easier way of
+achieving your goal. -/
 def Cocone.ofCofork {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map left) (F.map right)) :
     Cocone F where
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-      naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp [t.condition]}}
+      naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition] }
 
 @[simp]
 theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) (j) :
@@ -549,21 +614,21 @@ theorem Cocone.ofCofork_ι {F : WalkingParallelPair ⥤ C} (t : Cofork (F.map le
     (j) : (Cocone.ofCofork t).ι.app j = eqToHom (by simp) ≫ t.ι.app j := rfl
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
-    `parallelPair (F.map left) (F.map right)` and a cone on `F`, we get a fork on
-    `F.map left` and `F.map right`. -/
+`parallelPair (F.map left) (F.map right)` and a cone on `F`, we get a fork on
+`F.map left` and `F.map right`. -/
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
   π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
-         naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
 /-- Given `F : WalkingParallelPair ⥤ C`, which is really the same as
-    `parallelPair (F.map left) (F.map right)` and a cocone on `F`, we get a cofork on
-    `F.map left` and `F.map right`. -/
+`parallelPair (F.map left) (F.map right)` and a cocone on `F`, we get a cofork on
+`F.map left` and `F.map right`. -/
 def Cofork.ofCocone {F : WalkingParallelPair ⥤ C} (t : Cocone F) :
     Cofork (F.map left) (F.map right) where
   pt := t.pt
   ι := { app := fun X => eqToHom (by simp) ≫ t.ι.app X
-         naturality := by rintro _ _ (_|_|_) <;> {dsimp; simp}}
+         naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
 @[simp]
 theorem Fork.ofCone_π {F : WalkingParallelPair ⥤ C} (t : Cone F) (j) :
@@ -575,14 +640,15 @@ theorem Cofork.ofCocone_ι {F : WalkingParallelPair ⥤ C} (t : Cocone F) (j) :
 
 @[simp]
 theorem Fork.ι_postcompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Fork f g} : Fork.ι ((Cones.postcompose α).obj c) = c.ι ≫ α.app _ :=
+    {c : Fork f g} : Fork.ι ((Cone.postcompose α).obj c) = c.ι ≫ α.app .zero :=
   rfl
 
 @[simp]
 theorem Cofork.π_precompose {f' g' : X ⟶ Y} {α : parallelPair f g ⟶ parallelPair f' g'}
-    {c : Cofork f' g'} : Cofork.π ((Cocones.precompose α).obj c) = α.app _ ≫ c.π :=
-  rfl
+    {c : Cofork f' g'} :
+    Cofork.π ((Cocone.precompose α).obj c) = α.app .one ≫ c.π := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Helper function for constructing morphisms between equalizer forks.
 -/
 @[simps]
@@ -591,7 +657,7 @@ def Fork.mkHom {s t : Fork f g} (k : s.pt ⟶ t.pt) (w : k ≫ t.ι = s.ι) : s 
   w := by
     rintro ⟨_ | _⟩
     · exact w
-    · simp only [Fork.app_one_eq_ι_comp_left,← Category.assoc]
+    · simp only [Fork.app_one_eq_ι_comp_left, ← Category.assoc]
       congr
 
 /-- To construct an isomorphism between forks,
@@ -599,7 +665,7 @@ it suffices to give an isomorphism between the cone points
 and check that it commutes with the `ι` morphisms.
 -/
 @[simps]
-def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by aesop_cat) :
+def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := by cat_disch) :
     s ≅ t where
   hom := Fork.mkHom i.hom w
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
@@ -610,8 +676,52 @@ def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' 
   Fork.ext (Iso.refl _) (by simp [h])
 
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
+@[simps!]
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
-  Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
+  Fork.ext (Iso.refl _)
+
+/--
+If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
+`X ≅ X'` and `Y ≅ Y'`, the categories of forks are equivalent.
+-/
+def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) :
+    Fork f g ≌ Fork f' g' :=
+  Cone.postcomposeEquivalence <|
+    parallelPair.ext e₀ e₁ (by simp [comm₁]) (by simp [comm₂])
+
+@[simp]
+lemma Fork.equivOfIsos_functor_obj_ι {X Y : C} {f g : X ⟶ Y}
+    {X' Y' : C} {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) (c : Fork f g) :
+    ((Fork.equivOfIsos e₀ e₁ comm₁ comm₂).functor.obj c).ι = c.ι ≫ e₀.hom :=
+  rfl
+
+@[simp]
+lemma Fork.equivOfIsos_inverse_obj_ι {X Y : C} {f g : X ⟶ Y}
+    {X' Y' : C} {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch) (c : Fork f' g') :
+    ((Fork.equivOfIsos e₀ e₁ comm₁ comm₂).inverse.obj c).ι = c.ι ≫ e₀.inv :=
+  rfl
+
+/--
+Given two forks with isomorphic components in such a way that the natural diagrams commute, then
+one is a limit if and only if the other one is.
+-/
+def Fork.isLimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Fork f g)
+    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) :
+    IsLimit c ≃ IsLimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)
 
 /--
 Given two forks with isomorphic components in such a way that the natural diagrams commute, then if
@@ -620,11 +730,10 @@ one is a limit, then the other one is as well.
 def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     {f' g' : X' ⟶ Y'} (c' : Fork f' g')
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
-    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
-    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
-  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by cat_disch) : IsLimit c' :=
+  (Fork.isLimitEquivOfIsos c c' e₀ e₁ e) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
@@ -649,34 +758,65 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 @[simps]
-def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by aesop_cat) :
+def Cofork.ext {s t : Cofork f g} (i : s.pt ≅ t.pt) (w : s.π ≫ i.hom = t.π := by cat_disch) :
     s ≅ t where
   hom := Cofork.mkHom i.hom w
   inv := Cofork.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 
+/-- Two coforks of the form `ofπ` are isomorphic whenever their `π`'s are equal. -/
+def CoforkOfπ.ext {P : C} {π π' : Y ⟶ P} (w : f ≫ π = g ≫ π) (w' : f ≫ π' = g ≫ π') (h : π = π') :
+    Cofork.ofπ π w ≅ Cofork.ofπ π' w' :=
+  Cofork.ext (Iso.refl _) (by simp [h])
+
 /-- Every cofork is isomorphic to one of the form `Cofork.ofπ _ _`. -/
 def Cofork.isoCoforkOfπ (c : Cofork f g) : c ≅ Cofork.ofπ c.π c.condition :=
-  Cofork.ext (by simp only [Cofork.ofπ_pt, Functor.const_obj_obj]; rfl) (by dsimp; simp)
+  Cofork.ext (Iso.refl _)
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+one is a colimit if and only if the other one is.
+-/
+def Cofork.isColimitEquivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
+    (c : Cofork f g)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) :
+    IsColimit c ≃ IsColimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  IsColimit.equivOfNatIsoOfIso i c c' (Cofork.ext e (by rw [← comm₃, ← Category.assoc]; rfl))
+
+/--
+Given two coforks with isomorphic components in such a way that the natural diagrams commute, then
+if one is a colimit, then the other one is as well.
+-/
+def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
+    {f' g' : X' ⟶ Y'} (c' : Cofork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by cat_disch)
+    (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) : IsColimit c' :=
+  (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
 
 variable (f g)
 
 section
 
-/-- `HasEqualizer f g` represents a particular choice of limiting cone
-for the parallel pair of morphisms `f` and `g`.
--/
+/-- Two parallel morphisms `f` and `g` have an equalizer if the diagram `parallelPair f g` has a
+limit. -/
 abbrev HasEqualizer :=
   HasLimit (parallelPair f g)
 
 variable [HasEqualizer f g]
 
 /-- If an equalizer of `f` and `g` exists, we can access an arbitrary choice of such by
-    saying `equalizer f g`. -/
+saying `equalizer f g`. -/
 noncomputable abbrev equalizer : C :=
   limit (parallelPair f g)
 
 /-- If an equalizer of `f` and `g` exists, we can access the inclusion
-    `equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
+`equalizer f g ⟶ X` by saying `equalizer.ι f g`. -/
 noncomputable abbrev equalizer.ι : equalizer f g ⟶ X :=
   limit.π (parallelPair f g) zero
 
@@ -704,7 +844,7 @@ noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
 variable {f g}
 
 /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` factors through the equalizer of `f` and `g`
-    via `equalizer.lift : W ⟶ equalizer f g`. -/
+via `equalizer.lift : W ⟶ equalizer f g`. -/
 noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) : W ⟶ equalizer f g :=
   limit.lift (parallelPair f g) (Fork.ofι k h)
 
@@ -714,7 +854,7 @@ theorem equalizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
   limit.lift_π _ _
 
 /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` induces a morphism `l : W ⟶ equalizer f g`
-    satisfying `l ≫ equalizer.ι f g = k`. -/
+satisfying `l ≫ equalizer.ι f g = k`. -/
 noncomputable def equalizer.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     { l : W ⟶ equalizer f g // l ≫ equalizer.ι f g = k } :=
   ⟨equalizer.lift k h, equalizer.lift_ι _ _⟩
@@ -803,29 +943,88 @@ noncomputable def equalizer.isoSourceOfSelf : equalizer f f ≅ X :=
 theorem equalizer.isoSourceOfSelf_hom : (equalizer.isoSourceOfSelf f).hom = equalizer.ι f f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equalizer.isoSourceOfSelf_inv :
     (equalizer.isoSourceOfSelf f).inv = equalizer.lift (𝟙 X) (by simp) := by
   ext
   simp [equalizer.isoSourceOfSelf]
 
+
 section
 
-/-- `HasCoequalizer f g` represents a particular choice of colimiting cocone
-for the parallel pair of morphisms `f` and `g`.
+variable {f g : X ⟶ Y} {Z : C} (h : Z ⟶ X)
+
+/--
+Given a fork `s` on morphisms `f, g : X ⟶ Y` and a pullback cone `c` on `s.ι : s.pt ⟶ X` and a
+morphism `h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
+```
+c.pt → Z
+|      |
+v      v
+s.pt → X ⇉ Y
+```
 -/
+def precompFork (s : Fork f g) (c : PullbackCone s.ι h) : Fork (h ≫ f) (h ≫ g) :=
+  Fork.ofι c.snd <| by
+    rw [← c.condition_assoc, ← c.condition_assoc, s.condition]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Any fork on `h ≫ f` and `h ≫ g` lifts to a pullback along `h` of an equalizer of `f` and `g`.
+-/
+def liftPrecomp {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : IsLimit c)
+    (s' : Fork (h ≫ f) (h ≫ g)) :
+    s'.pt ⟶ (precompFork h s c).pt :=
+  hc.lift <| PullbackCone.mk
+    (hs.lift <| Fork.ofι (s'.ι ≫ h) (by simp [s'.condition])) s'.ι
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The pullback of an equalizer is an equalizer. -/
+def isLimitPrecompFork {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h} (hc : IsLimit c) :
+    IsLimit (precompFork h s c) :=
+  Fork.IsLimit.mk _
+    (fun s' ↦ liftPrecomp h hs hc s')
+    (by simp [liftPrecomp, precompFork])
+    (fun s' m h ↦ hc.hom_ext <| by
+      apply PullbackCone.equalizer_ext
+      · simp only [liftPrecomp, Fork.ofι_pt, IsLimit.fac, PullbackCone.mk_π_app]
+        apply hs.hom_ext
+        apply Fork.equalizer_ext
+        simp only [Fork.ι_ofι, precompFork] at h
+        simp [c.condition, reassoc_of% h]
+      · simpa [liftPrecomp] using h)
+
+lemma hasEqualizer_precomp_of_equalizer {s : Fork f g} (hs : IsLimit s)
+    {c : PullbackCone s.ι h} (hc : IsLimit c) :
+    HasEqualizer (h ≫ f) (h ≫ g) :=
+  HasLimit.mk
+    { cone := precompFork h s c
+      isLimit := isLimitPrecompFork h hs hc }
+
+instance hasEqualizer_precomp_of_hasEqualizer [HasEqualizer f g] [HasPullback (equalizer.ι f g) h] :
+    HasEqualizer (h ≫ f) (h ≫ g) :=
+  hasEqualizer_precomp_of_equalizer h
+    (equalizerIsEqualizer f g) (pullback.isLimit (equalizer.ι f g) h)
+
+end
+
+section
+
+/-- Two parallel morphisms `f` and `g` have a coequalizer if the diagram `parallelPair f g` has a
+colimit. -/
 abbrev HasCoequalizer :=
   HasColimit (parallelPair f g)
 
 variable [HasCoequalizer f g]
 
 /-- If a coequalizer of `f` and `g` exists, we can access an arbitrary choice of such by
-    saying `coequalizer f g`. -/
+saying `coequalizer f g`. -/
 noncomputable abbrev coequalizer : C :=
   colimit (parallelPair f g)
 
 /-- If a coequalizer of `f` and `g` exists, we can access the corresponding projection by
-    saying `coequalizer.π f g`. -/
+saying `coequalizer.π f g`. -/
 noncomputable abbrev coequalizer.π : Y ⟶ coequalizer f g :=
   colimit.ι (parallelPair f g) one
 
@@ -853,7 +1052,7 @@ noncomputable def coequalizerIsCoequalizer :
 variable {f g}
 
 /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` factors through the coequalizer of `f`
-    and `g` via `coequalizer.desc : coequalizer f g ⟶ W`. -/
+and `g` via `coequalizer.desc : coequalizer f g ⟶ W`. -/
 noncomputable abbrev coequalizer.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer f g ⟶ W :=
   colimit.desc (parallelPair f g) (Cofork.ofπ k h)
@@ -863,6 +1062,7 @@ theorem coequalizer.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer.π f g ≫ coequalizer.desc k h = k :=
   colimit.ι_desc _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coequalizer.π_colimMap_desc {X' Y' Z : C} (f' g' : X' ⟶ Y') [HasCoequalizer f' g']
     (p : X ⟶ X') (q : Y ⟶ Y') (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') (h : Y' ⟶ Z)
     (wh : f' ≫ h = g' ≫ h) :
@@ -871,13 +1071,13 @@ theorem coequalizer.π_colimMap_desc {X' Y' Z : C} (f' g' : X' ⟶ Y') [HasCoequ
   rw [ι_colimMap_assoc, parallelPairHom_app_one, coequalizer.π_desc]
 
 /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` induces a morphism
-    `l : coequalizer f g ⟶ W` satisfying `coequalizer.π ≫ g = l`. -/
+`l : coequalizer f g ⟶ W` satisfying `coequalizer.π ≫ g = l`. -/
 noncomputable def coequalizer.desc' {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     { l : coequalizer f g ⟶ W // coequalizer.π f g ≫ l = k } :=
   ⟨coequalizer.desc k h, coequalizer.π_desc _ _⟩
 
 /-- Two maps from a coequalizer are equal if they are equal when composed with the coequalizer
-    map -/
+map -/
 @[ext]
 theorem coequalizer.hom_ext {W : C} {k l : coequalizer f g ⟶ W}
     (h : coequalizer.π f g ≫ k = coequalizer.π f g ≫ l) : k = l :=
@@ -958,6 +1158,7 @@ instance coequalizer.π_of_self : IsIso (coequalizer.π f f) :=
 noncomputable def coequalizer.isoTargetOfSelf : coequalizer f f ≅ Y :=
   (asIso (coequalizer.π f f)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coequalizer.isoTargetOfSelf_hom :
     (coequalizer.isoTargetOfSelf f).hom = coequalizer.desc (𝟙 Y) (by simp) := by
@@ -974,7 +1175,7 @@ variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
 
 /-- The comparison morphism for the equalizer of `f,g`.
 This is an isomorphism iff `G` preserves the equalizer of `f,g`; see
-`CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
+`Mathlib/CategoryTheory/Limits/Preserves/Shapes/Equalizers.lean`
 -/
 noncomputable def equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] :
     G.obj (equalizer f g) ⟶ equalizer (G.map f) (G.map g) :=
@@ -986,6 +1187,7 @@ theorem equalizerComparison_comp_π [HasEqualizer f g] [HasEqualizer (G.map f) (
     equalizerComparison f g G ≫ equalizer.ι (G.map f) (G.map g) = G.map (equalizer.ι f g) :=
   equalizer.lift_ι _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem map_lift_equalizerComparison [HasEqualizer f g] [HasEqualizer (G.map f) (G.map g)] {Z : C}
     {h : Z ⟶ X} (w : h ≫ f = h ≫ g) :
@@ -1005,6 +1207,7 @@ theorem ι_comp_coequalizerComparison [HasCoequalizer f g] [HasCoequalizer (G.ma
     coequalizer.π _ _ ≫ coequalizerComparison f g G = G.map (coequalizer.π _ _) :=
   coequalizer.π_desc _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem coequalizerComparison_map_desc [HasCoequalizer f g] [HasCoequalizer (G.map f) (G.map g)]
     {Z : C} {h : Y ⟶ Z} (w : f ≫ h = g ≫ h) :
@@ -1017,11 +1220,13 @@ end Comparison
 
 variable (C)
 
-/-- `HasEqualizers` represents a choice of equalizer for every pair of morphisms -/
+/-- A category `HasEqualizers` if it has all limits of shape `WalkingParallelPair`, i.e. if it has
+an equalizer for every parallel pair of morphisms. -/
 abbrev HasEqualizers :=
   HasLimitsOfShape WalkingParallelPair C
 
-/-- `HasCoequalizers` represents a choice of coequalizer for every pair of morphisms -/
+/-- A category `HasCoequalizers` if it has all colimits of shape `WalkingParallelPair`, i.e. if it
+has a coequalizer for every parallel pair of morphisms. -/
 abbrev HasCoequalizers :=
   HasColimitsOfShape WalkingParallelPair C
 
@@ -1043,8 +1248,7 @@ variable {C} [IsSplitMono f]
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 Here we build the cone, and show in `isSplitMonoEqualizes` that it is a limit cone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
   Fork.ofι f (by simp)
 
@@ -1052,6 +1256,7 @@ noncomputable def coneOfIsSplitMono : Fork (𝟙 Y) (retraction f ≫ f) :=
 theorem coneOfIsSplitMono_ι : (coneOfIsSplitMono f).ι = f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A split mono `f` equalizes `(retraction f ≫ f)` and `(𝟙 Y)`.
 -/
 noncomputable def isSplitMonoEqualizes {X Y : C} (f : X ⟶ Y) [IsSplitMono f] :
@@ -1074,6 +1279,7 @@ def splitMonoOfEqualizer {X Y : C} {f : X ⟶ Y} {r : Y ⟶ X} (hr : f ≫ r ≫
 
 variable {C f g}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork obtained by postcomposing an equalizer fork with a monomorphism is an equalizer. -/
 def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm : Mono h] :
     have : Fork.ι c ≫ f ≫ h = Fork.ι c ≫ g ≫ h := by
@@ -1094,6 +1300,7 @@ theorem hasEqualizer_comp_mono [HasEqualizer f g] {Z : C} (h : Y ⟶ Z) [Mono h]
   ⟨⟨{   cone := _
         isLimit := isEqualizerCompMono (limit.isLimit _) h }⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equalizer of an idempotent morphism and the identity is split mono. -/
 @[simps]
 def splitMonoOfIdempotentOfIsLimitFork {X : C} {f : X ⟶ X} (hf : f ≫ f = f) {c : Fork (𝟙 X) f}
@@ -1117,8 +1324,7 @@ variable {C} [IsSplitEpi f]
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 Here we build the cocone, and show in `isSplitEpiCoequalizes` that it is a colimit cocone.
 -/
--- @[simps (config := { rhsMd := semireducible })] Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
   Cofork.ofπ f (by simp)
 
@@ -1126,6 +1332,7 @@ noncomputable def coconeOfIsSplitEpi : Cofork (𝟙 X) (f ≫ section_ f) :=
 theorem coconeOfIsSplitEpi_π : (coconeOfIsSplitEpi f).π = f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A split epi `f` coequalizes `(f ≫ section_ f)` and `(𝟙 X)`.
 -/
 noncomputable def isSplitEpiCoequalizes {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] :
@@ -1151,6 +1358,7 @@ def splitEpiOfCoequalizer {X Y : C} {f : X ⟶ Y} {s : Y ⟶ X} (hs : f ≫ s �
 
 variable {C f g}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork obtained by precomposing a coequalizer cofork with an epimorphism is
 a coequalizer. -/
 def isCoequalizerEpiComp {c : Cofork f g} (i : IsColimit c) {W : C} (h : W ⟶ X) [hm : Epi h] :
@@ -1172,6 +1380,7 @@ theorem hasCoequalizer_epi_comp [HasCoequalizer f g] {W : C} (h : W ⟶ X) [Epi 
 
 variable (C f g)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A coequalizer of an idempotent morphism and the identity is split epi. -/
 @[simps]
 def splitEpiOfIdempotentOfIsColimitCofork {X : C} {f : X ⟶ X} (hf : f ≫ f = f) {c : Cofork (𝟙 X) f}
