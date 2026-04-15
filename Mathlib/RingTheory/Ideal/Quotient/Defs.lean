@@ -40,10 +40,7 @@ variable {S : Type v}
 
 /-- The quotient `R/I` of a ring `R` by an ideal `I`,
 defined to equal the quotient of `I` as an `R`-submodule of `R`. -/
-instance instHasQuotient : HasQuotient R (Ideal R) := Submodule.hasQuotient
-
-/-- Shortcut instance for commutative rings. -/
-instance {R} [CommRing R] : HasQuotient R (Ideal R) := inferInstance
+example : HasQuotient R (Ideal R) := by infer_instance
 
 namespace Quotient
 
@@ -60,8 +57,9 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
-  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
+  __ := Submodule.Quotient.addCommGroup I
+  __ := (inferInstanceAs <| Ring (Quotient.ringCon I).Quotient : Ring (R ⧸ I))
 
 instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
 instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
@@ -73,7 +71,8 @@ instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
+  with_reducible_and_instances rfl
 
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
