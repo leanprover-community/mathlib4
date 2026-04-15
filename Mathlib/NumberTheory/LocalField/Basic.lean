@@ -168,6 +168,7 @@ instance : CompleteSpace 𝒪[K] :=
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
+open scoped Pointwise in
 instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
   haus' := (inferInstance : IsHausdorff 𝓂[K] 𝒪[K]).haus
   prec' f hf := by

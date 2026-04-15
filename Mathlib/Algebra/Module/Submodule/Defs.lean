@@ -168,9 +168,7 @@ noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.ty
 instance : HVAdd M (Submodule R M) (Set M) where
   hVAdd a p := (fun x ↦ a + x) '' p
 
-instance : HVAdd M (Set M) (Set M) where
-  hVAdd a p := (fun x ↦ a + x) '' p
-
+open scoped Pointwise in
 @[simp]
 lemma vadd_eq_vadd_left {a : M} {p : Submodule R M} : a +ᵥ p = a +ᵥ (p : Set M) := rfl
 
