@@ -7239,6 +7239,7 @@ public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import Mathlib.Tactic.Widget.StringDiagram
 public import Mathlib.Tactic.WithoutCDot
+public import Mathlib.Tactic.ZBMathAttribute
 public import Mathlib.Tactic.Zify
 public import Mathlib.Testing.Plausible.Functions
 public import Mathlib.Testing.Plausible.Sampleable
