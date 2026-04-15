@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Order.Concept
 
-import Mathlib.Order.UpperLower.CompleteLattice
-
+public import Mathlib.Order.UpperLower.CompleteLattice
+public import Mathlib.Topology.Order.Basic
 /-!
 # Dedekind-MacNeille completion
 
@@ -241,6 +241,45 @@ instance [DenselyOrdered α] : DenselyOrdered (DedekindCut α) where
     simp only [principal_lt_principal] at hdc
     obtain ⟨u, _, _⟩ := DenselyOrdered.dense d c hdc
     exact ⟨principal u, had.trans_lt (by simpa), hcb.trans_lt' (by simpa)⟩
+
+theorem principal_lt_iff {a : α} {c : DedekindCut α} :
+    principal a < c ↔ ∃ b ∈ c.left, a < b := by
+  rw [← not_le, le_principal_iff]
+  rw [not_iff_comm, not_exists, ← le_principal_iff]
+  simp_rw [← not_le, not_and, not_not]
+  rfl
+
+theorem lt_principal_iff {a : α} {c : DedekindCut α} :
+    c < principal a ↔ ∃ b ∈ c.right, b < a := by
+  rw [← not_le, principal_le_iff]
+  rw [not_iff_comm, not_exists, ← principal_le_iff]
+  rw [← intent_subset_intent_iff]
+  simp_rw [← not_le, not_and, not_not]
+  rfl
+
+theorem continuous_principal [TopologicalSpace α] [OrderTopology α]
+  [TopologicalSpace (DedekindCut α)] [OrderTopology (DedekindCut α)] :
+    Continuous (fun a : α ↦ principal a) := by
+  rw [OrderTopology.continuous_iff]
+  intro c
+  simp only [isOpen_iff_nhds]
+  refine ⟨fun a ↦ ?_, fun a ↦ ?_⟩
+  · simp only [mem_preimage, mem_Ioi, Filter.le_principal_iff]
+    rw [lt_principal_iff]
+    rintro ⟨b, hb, hba⟩
+    rw [mem_nhds_iff]
+    use Ioi b
+    refine ⟨fun x ↦ ?_, isOpen_Ioi, mem_Ioi.mpr hba⟩
+    simp only [mem_Ioi, mem_preimage, lt_principal_iff]
+    exact fun h ↦ ⟨b, ⟨hb, h⟩⟩
+  · simp only [mem_preimage, mem_Iio, Filter.le_principal_iff]
+    rw [principal_lt_iff]
+    rintro ⟨b, hb, hba⟩
+    rw [mem_nhds_iff]
+    use Iio b
+    refine ⟨fun x ↦ ?_, isOpen_Iio, mem_Iio.mpr hba⟩
+    simp only [mem_Iio, mem_preimage, principal_lt_iff]
+    refine fun h ↦ ⟨b, ⟨hb, h⟩⟩
 
 end LinearOrder
 end DedekindCut
