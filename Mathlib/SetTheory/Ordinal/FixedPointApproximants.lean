@@ -111,7 +111,7 @@ theorem lfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
   constructor
   · refine le_iSup_of_le ⟨0, ha.bot_lt⟩ (by simp [lfpApprox_zero])
   · exact fun b => iSup_mono' fun hab => ⟨⟨b + 1, ha.succ_lt hab⟩, (by
-    simpa using apply_lfpApprox_le_lfpApprox_of_lt f (lt_add_one b))⟩
+    simpa using apply_lfpApprox_le_lfpApprox_of_lt f (_root_.lt_add_one b))⟩
 
 theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
