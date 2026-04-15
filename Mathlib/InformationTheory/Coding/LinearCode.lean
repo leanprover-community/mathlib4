@@ -130,7 +130,7 @@ theorem disjoint_spheres {n k d t : ℕ} (C : LinearCodeWithDist F n k d)
   intro z hz₁ hz₂
   have h_dist_le_2t : hammingDist c₁ c₂ ≤ 2 * t :=
     calc hammingDist c₁ c₂
-      _ ≤ hammingDist c₁ z + hammingDist z c₂ := hammingDist_triangle c₁ z c₂
+        ≤ hammingDist c₁ z + hammingDist z c₂ := hammingDist_triangle c₁ z c₂
       _ = hammingDist c₁ z + hammingDist c₂ z := by rw [hammingDist_comm z c₂]
       _ ≤ t + t                               := add_le_add hz₁ hz₂
       _ = 2 * t                               := by omega
