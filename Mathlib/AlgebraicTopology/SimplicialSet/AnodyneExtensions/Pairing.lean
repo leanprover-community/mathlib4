@@ -134,15 +134,6 @@ lemma ne (x : P.I) (y : P.II) :
   have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
   simp [P.inter] at this
 
--- to be moved
-@[simps]
-def _root_.Equiv.restrict {α β : Type*} (e : α ≃ β) (S : Set β) :
-    e ⁻¹' S ≃ S where
-  toFun x := ⟨e x, x.property⟩
-  invFun y := ⟨e.symm y, by simp⟩
-  left_inv _ := by simp
-  right_inv _ := by simp
-
 variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B)
 
 @[simps I II]
@@ -151,8 +142,8 @@ def ofIso : B.Pairing where
   II := Subcomplex.N.equivOfIso e hA ⁻¹' P.II
   inter := by simp [← Set.preimage_inter, P.inter]
   union := by simp [← Set.preimage_union, P.union]
-  p := ((Subcomplex.N.equivOfIso e hA).restrict _).trans (P.p.trans
-      ((Subcomplex.N.equivOfIso e hA).restrict _).symm)
+  p := ((Subcomplex.N.equivOfIso e hA).subtypeEquiv (by simp)).trans
+    (P.p.trans ((Subcomplex.N.equivOfIso e hA).symm.subtypeEquiv (by simp)))
 
 @[simp]
 lemma ofIso_p (x : P.II) :
