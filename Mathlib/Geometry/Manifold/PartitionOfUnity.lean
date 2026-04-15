@@ -777,10 +777,10 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
       by_cases Hx : x ∈ tsupport (f c)
       · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
         rw [← notMem_support, g_supp, ← mem_preimage, preimage_inter]
-        contrapose! hx
+        contrapose hx
         simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
         exact hx.2
-      · have : x ∉ support (f c) := by contrapose! Hx; exact subset_tsupport _ Hx
+      · have : x ∉ support (f c) := by contrapose Hx; exact subset_tsupport _ Hx
         rw [notMem_support] at this
         simp [this]
   · apply SmoothPartitionOfUnity.contMDiff_finsum_smul
@@ -813,7 +813,7 @@ theorem exists_contMDiff_support_eq_eq_one_iff
         classical
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
-        contrapose! xs
+        contrapose xs
         exact h.trans f_supp.symm.subset (by simpa using xs)
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩

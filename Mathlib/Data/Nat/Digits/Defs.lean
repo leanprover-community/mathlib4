@@ -234,7 +234,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         left
         simpa using w₂
       · right
-        contrapose! w₂
+        contrapose w₂
         refine digits_zero_of_eq_zero h.ne_bot w₂ _ ?_
         rw [List.getLast_cons h']
         exact List.getLast_mem h'
