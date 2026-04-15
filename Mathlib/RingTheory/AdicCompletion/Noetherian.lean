@@ -5,9 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.KrullDimension.Basic
 
@@ -64,5 +66,10 @@ instance [IsNoetherianRing R] : IsNoetherianRing (AdicCompletion I R) :=
 
 lemma AdicCompletion.ringKrullDim_eq [IsNoetherianRing R] [IsLocalRing R] :
     ringKrullDim (AdicCompletion (maximalIdeal R) R) = ringKrullDim R := by
-  --!!!
-  sorry
+  have : Nontrivial (AdicCompletion (maximalIdeal R) R ⧸
+    (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R))) := by
+    simpa [← AdicCompletion.maximalIdeal_eq_map] using Ideal.IsPrime.ne_top'
+  have ht := (Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown
+    (maximalIdeal R) (maximalIdeal (AdicCompletion (maximalIdeal R) R))).symm
+  rw [Ideal.map_mk_eq_bot_of_le (le_of_eq AdicCompletion.maximalIdeal_eq_map)] at ht
+  simp [← maximalIdeal_height_eq_ringKrullDim, ← ht]
