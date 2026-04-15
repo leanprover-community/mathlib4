@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.KrullDimension.Basic
 
@@ -42,6 +43,17 @@ theorem IsHausdorff.of_isDomain [IsDomain R] (h : I ≠ ⊤) : IsHausdorff I R :
   .of_isTorsionFree I R h
 
 end
+
+instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalRing A] :
+    IsAdicComplete (IsLocalRing.maximalIdeal A) A where
+  prec' f hf := by
+    obtain ⟨n, hn⟩ := (isArtinianRing_iff_isNilpotent_maximalIdeal A).mp ‹_›
+    use f n; intro m
+    by_cases h : m ≤ n
+    · exact hf h
+    specialize hf (show n ≤ m by lia)
+    rw [hn, zero_smul, Ideal.zero_eq_bot, SModEq.bot] at hf
+    rw [hf]
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by

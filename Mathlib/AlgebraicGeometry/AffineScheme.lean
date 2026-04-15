@@ -724,6 +724,7 @@ def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
         Γ(X, X.basicOpen (f.app U r)) (f.app U).hom r)) :=
   Arrow.isoMk (Iso.refl _) (X.presheaf.mapIso (eqToIso (by simp)).op) <| by
     simp [hU.app_basicOpen_eq_away_map f h]
+    rfl
 
 include hU in
 theorem isLocalization_of_eq_basicOpen {V : X.Opens} (i : V ⟶ U) (e : V = X.basicOpen f) :
@@ -979,14 +980,14 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
         change _ =
           (f ≫ (Scheme.ΓSpecIso S).inv ≫ (Spec S).presheaf.map (homOfLE le_top).op)
         ext
-        simp only [Localization.awayMap, IsLocalization.Away.map, AlgEquiv.toRingEquiv_eq_coe,
+        simp only [Localization.awayMap, IsLocalization.Away.map,
           RingEquiv.toCommRingCatIso_hom, AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp,
           CommRingCat.hom_ofHom, RingHom.comp_apply, IsLocalization.map_eq, RingHom.coe_coe,
           AlgEquiv.commutes, IsAffineOpen.algebraMap_Spec_obj]
       · enter [2, 2, 1]; tactic =>
         change _ = (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op
         ext
-        simp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toCommRingCatIso_hom,
+        simp only [RingEquiv.toCommRingCatIso_hom,
           AlgEquiv.toRingEquiv_toRingHom, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
           RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes,
           IsAffineOpen.algebraMap_Spec_obj, homOfLE_leOfHom]
@@ -1231,7 +1232,7 @@ lemma Scheme.Hom.liftQuotient_comp (f : X.Hom (Spec A)) (I : Ideal A)
     Ideal.Quotient.lift_comp_mk]
   simp only [CommRingCat.hom_comp, CommRingCat.ofHom_comp, CommRingCat.ofHom_hom, Spec.map_comp, ←
     Scheme.toSpecΓ_naturality_assoc, ← SpecMap_ΓSpecIso_hom]
-  simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]
+  simp
 
 /-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `A ⧸ specTargetImage f`
 is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see

@@ -6,6 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 
