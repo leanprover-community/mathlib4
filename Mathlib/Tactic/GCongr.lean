@@ -15,10 +15,10 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 
 public meta section
 
-/-! We also use `assumption` to discharge side goals.
+/-! We also use `grind` to discharge side goals.
 In a further downstream file, `positivity` will also be registered as a discharger.
-From that point, `positivity` will be tried before `assumption` is: that is perfectly fine. -/
-macro_rules | `(tactic| gcongr_discharger) => `(tactic| assumption)
+From that point, `positivity` will be tried before `grind` is: that is intentional. -/
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| grind)
 
 /-!
 We register `gcongr` with the `hint` tactic.
