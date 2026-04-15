@@ -562,6 +562,9 @@ structure NewtonPolygon where
   support : WithTop ℕ
   slopes : ℕ → WithTopBot ℝ
   slopes_junk : ∀ n : ℕ, support ≤ n → slopes n = ⊥
+  -- could choose ⊤, then increasing could just be for all n
+  -- and the proof relies on seperating cases of n + 1 < support and not
+  -- when not its _ ≤ ⊤ so true
   lengths : ℕ → WithTop ℕ
   lengths_junk : ∀ n : ℕ, support ≤ n → lengths n = 0
   increasing : ∀ n : ℕ, n + 1 < support → slopes n ≤ slopes (n + 1)
@@ -607,11 +610,6 @@ def NP' : NewtonPolygon where
     · exact this
     · exact le_of_lt this
 
-/-
-  TODO:
-  * Create a class of finite newton polygons - to do this, we can use:
-      Stream'.IsSeq - if stream is eventually none then predicate
-      Stream'.Seq.toList - convert to a list
-
-    -- This allows us to work with finite number of slopes
--/
+variable (Γ) in
+def IsNewtonPolygon (NP : NewtonPolygon) : Prop :=
+  ∃ (v : ℕ → WithTop Γ), NP.slopes = newtonPolygon_slopes v ∧ NP.lengths = newtonPolygon_lengths v
