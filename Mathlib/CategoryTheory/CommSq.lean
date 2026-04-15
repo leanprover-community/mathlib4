@@ -49,6 +49,8 @@ structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y 
   /-- The square commutes. -/
   w : f ≫ h = g ≫ i := by cat_disch
 
+attribute [simp] CommSq.mk
+
 namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
