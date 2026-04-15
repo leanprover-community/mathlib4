@@ -78,6 +78,7 @@ class RenewalUpdateStrongAssumption (U : UncertainSpace) [AlgebraicUncertainSpac
   renewal_reward_expectation_axiom : renewal_reward_expectation_statement
 
 /-- One-line constructor template for `RenewalUpdateStrongAssumption`. -/
+@[implicit_reducible]
 def mkRenewalUpdateStrongAssumption (U : UncertainSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U]
     (distribution_stmt : UncertainRenewalProcess U → Prop)
@@ -100,6 +101,7 @@ def mkRenewalUpdateStrongAssumption (U : UncertainSpace)
   renewal_reward_expectation_axiom := reward_expectation_axiom_rule
 
 /-- Build `RenewalUpdateStrongAssumption` from `RenewalUpdateTheoryStructure`. -/
+@[implicit_reducible]
 def renewalUpdateStrong_of_structure
     (U : UncertainSpace) [AlgebraicUncertainSpace U] [ExpectationStructure U]
     [RenewalUpdateTheoryStructure U] :
@@ -326,6 +328,7 @@ class EulerSchemeStructure (U : UncertainSpace)
       Tendsto (fun n => terminalErrorMeasure ε n) atTop (𝓝 0)
 
 /-- Canonical Euler scheme instance induced by `eulerTraceVar`. -/
+@[implicit_reducible]
 noncomputable def mkEulerSchemeFromTrace (U : UncertainSpace)
     (de : UncertainDE) (P : UncertainProcess U) (dt : ℝ)
     (hMeas : ∀ n x, {ω | eulerTrace U de P dt n ω ≤ x} ∈ U.𝒜) :

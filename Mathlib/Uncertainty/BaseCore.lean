@@ -798,6 +798,7 @@ class MixedLLNStrongAssumption (U : UncertainSpace) (C : ChanceSpace)
       mixed_lln_statement η_seq τ_seq f
 
 /-- One-line constructor template for `MixedLLNStrongAssumption`. -/
+@[implicit_reducible]
 def mkMixedLLNStrongAssumption (U : UncertainSpace) (C : ChanceSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U]
     (statement : (η_seq : ℕ → ChanceVariable C) →
@@ -811,6 +812,7 @@ def mkMixedLLNStrongAssumption (U : UncertainSpace) (C : ChanceSpace)
   mixed_lln_axiom := axiom_rule
 
 /-- Build `MixedLLNStrongAssumption` from `MixedLLNStructure`. -/
+@[implicit_reducible]
 def mixedLLNStrong_of_structure
     (U : UncertainSpace) (C : ChanceSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U]
