@@ -204,19 +204,29 @@ lemma neg_apply {f : F.Point σ} : (-f).val = F.addInv f.val := rfl
 
 /-- For any multivariate power series `φ` with zero constant coefficient, then
 `φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
-theorem add_addInv_eq_zero {f : F.Point σ} (hf : f.val.constantCoeff = 0) : f + (-f) = 0 := by
+theorem add_neg_cancel (f : F.Point σ) : f + (-f) = 0 := by
   apply Subtype.ext
   calc
     _ = subst f.val (MvPowerSeries.subst ![PowerSeries.X, addInv_X F] F.toPowerSeries) := by
       rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
-        (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf), add_apply]
+        f.prop.const, add_apply]
       congr! 1
       funext s;
       fin_cases s
-      · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ hf]
+      · simp [X, MvPowerSeries.subst_X f.prop.const]
       · simp [neg_apply, subst]
     _ = _ := by
       rw [subst_addInv_eq_zero]; ext n
-      simp [coeff_subst <| HasSubst.of_constantCoeff_zero hf, zero_apply]
+      simp [← coe_substAlgHom f.prop]
+
+instance : AddSemigroup (F.Point σ) where
+  add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
+
+instance : AddGroup (F.Point σ) where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  neg_add_cancel x := by
+    rw [← _root_.add_zero (- x + x), ← F.add_neg_cancel (- x), ← _root_.add_assoc,
+      _root_.add_assoc (-x), F.add_neg_cancel, _root_.add_zero]
 
 end FormalGroup
