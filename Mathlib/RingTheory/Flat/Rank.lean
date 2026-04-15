@@ -164,8 +164,10 @@ lemma RingHom.finrank_comp_left_of_bijective {R S T : Type*} [CommRing R] [CommR
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma RingHom.finrank_comp_right_of_bijective {R S T : Type*} [CommRing R] [CommRing S]
     [CommRing T] (f : R →+* S) (g : S →+* T) (hg : Function.Bijective f) (h1 : g.Finite)
-    (h2 : g.Flat) (x : PrimeSpectrum S) :
-    (g.comp f).finrank (PrimeSpectrum.comap f x) = g.finrank x := by
+    (h2 : g.Flat) (y : PrimeSpectrum R) (x : PrimeSpectrum S)
+    (hy : y = PrimeSpectrum.comap f x) :
+    (g.comp f).finrank y = g.finrank x := by
+  subst hy
   algebraize [f, g, (g.comp f)]
   have : Module.Finite R T := h1.comp <| .of_surjective _ hg.2
   have : Module.Flat R T := (RingHom.Flat.of_bijective hg).comp h2

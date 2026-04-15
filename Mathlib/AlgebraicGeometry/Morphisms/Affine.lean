@@ -202,6 +202,20 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
+lemma IsAffine.of_isPullback {P : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    [IsAffine X] [IsAffineHom g] (h : IsPullback fst snd f g) :
+    IsAffine P :=
+  .of_isIso h.isoPullback.hom
+
+lemma isPushout_appTop_of_isPullback {P : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z}
+    {g : Y ⟶ Z} [IsAffine X] [IsAffine Y] [IsAffine Z] (h : IsPullback fst snd f g) :
+    IsPushout f.appTop g.appTop fst.appTop snd.appTop := by
+  have : IsAffine P := .of_isPullback h
+  have : IsPullback (AffineScheme.ofHom fst) (AffineScheme.ofHom snd) (AffineScheme.ofHom f)
+      (AffineScheme.ofHom g) :=
+    IsPullback.of_map_of_faithful AffineScheme.forgetToScheme.{u} h
+  exact (IsPullback.map AffineScheme.Γ.rightOp this).unop.flip
+
 set_option backward.isDefEq.respectTransparency false in
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
     IsAffineHom (coprod.desc f g) := by
