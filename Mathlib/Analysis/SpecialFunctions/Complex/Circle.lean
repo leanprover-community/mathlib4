@@ -134,11 +134,11 @@ lemma angleDiff_lt_two_pi (x y : Circle) : angleDiff x y < 2 * π := by
   grind [neg_pi_lt_arg x.val, arg_le_pi y.val]
 
 @[simp]
-lemma angleDiff_add_symm (h : x ≠ y) : angleDiff x y + angleDiff y x = 2 * π := by
+lemma angleDiff_add_angleDiff (h : x ≠ y) : angleDiff x y + angleDiff y x = 2 * π := by
   grind [arg_eq_arg, neg_pi_lt_arg x.val, arg_le_pi y.val]
 
 @[simp]
-lemma exp_angleDiff_add_symm : exp (angleDiff x y) * x = y := by
+lemma exp_angleDiff_mul : exp (angleDiff x y) * x = y := by
   rw [← exp_arg x, ← exp_add, angleDiff]
   split_ifs with hxy <;> simp
 
@@ -160,7 +160,7 @@ lemma Ioc_union_Ioc_angleDiff_add_arg (h : x ≠ y) :
 /-- Path from `x` to `y` on the circle traversing in anti-clockwise direction. -/
 noncomputable def path (x y : Circle) : Path x y :=
   (Path.segment x.val.arg <| angleDiff x y + x.val.arg).map exp.continuous
-  |>.cast (by simp) (by simp)
+    |>.cast (by simp) (by simp)
 
 @[simp]
 lemma path_apply (x y : Circle) (a : unitInterval) :
@@ -215,15 +215,17 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
   refine Set.disjoint_image_image fun a ha b hb ↦ ?_
   refine exp_injOn_Ioc (a := min x.val.arg y.val.arg) (b := min x.val.arg y.val.arg + 2 * π)
     (by simp) |>.ne ?_ ?_ <| hdisj.ne_of_mem ha hb
-    <;> rw [← Ioc_union_Ioc_angleDiff_add_arg h] <;> tauto
+  all_goals
+    rw [← Ioc_union_Ioc_angleDiff_add_arg h]
+    tauto
 
-lemma path_image_Ioc_compl (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
+lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
-  <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+    <| (disjoint_path_image_Ioc h.symm).subset_compl_right
 
-lemma range_path_compl (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
+lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
   rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
-    ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, path_image_Ioc_compl h,
+    ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, compl_path_image_Ioc h,
     ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
     insert_inter_of_notMem (by simp), inter_eq_left]
   rintro z ⟨t, ht, rfl⟩
@@ -233,7 +235,7 @@ lemma range_path_ssubset_univ (x y : Circle) : range (path x y) ⊂ univ := by
   rw [ssubset_univ_iff_nonempty_compl]
   obtain rfl | hne := eq_or_ne x y
   · use -x, by simp [neg_ne_self]
-  rw [range_path_compl hne]
+  rw [compl_range_path hne]
   use y.path x ⟨2⁻¹, by simp only [mem_Icc, inv_nonneg, Nat.ofNat_nonneg, true_and]; linarith⟩
   refine mem_image_of_mem _ ⟨by simp [← unitInterval.coe_pos], unitInterval.coe_lt_one.mp ?_⟩
   linarith
@@ -261,7 +263,7 @@ lemma isPathConnected_compl_singleton (x : Circle) : IsPathConnected {x}ᶜ := b
     simp [(neg_ne_self x).symm, hyx.symm] at h
   grind
 
-lemma not_isPreconnected_pair_compl (hxy : x ≠ y) : ¬ IsPreconnected {x, y}ᶜ := by
+lemma not_isPreconnected_compl_pair (hxy : x ≠ y) : ¬ IsPreconnected {x, y}ᶜ := by
   simp only [isPreconnected_iff_subset_of_disjoint_closed, not_forall, not_or, exists_and_left]
   refine ⟨range (path x y), ?_, range (path y x), (isCompact_range (path x y).continuous).isClosed,
     (isCompact_range (path y x).continuous).isClosed, ?_, ?_, ?_⟩

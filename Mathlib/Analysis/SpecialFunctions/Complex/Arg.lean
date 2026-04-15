@@ -160,7 +160,7 @@ theorem neg_pi_lt_arg (x : ℂ) : -π < arg x :=
 theorem arg_lt_arg_add_two_pi (x y : ℂ) : x.arg < y.arg + 2 * π := by
   grind [arg_le_pi x, neg_pi_lt_arg y]
 
-theorem norm_arg_sub_arg_lt (x y : ℂ) : |x.arg - y.arg| < 2 * π := by
+theorem abs_arg_sub_arg_lt (x y : ℂ) : |x.arg - y.arg| < 2 * π := by
   grind [arg_lt_arg_add_two_pi x y, arg_lt_arg_add_two_pi y x]
 
 theorem abs_arg_le_pi (z : ℂ) : |arg z| ≤ π :=
