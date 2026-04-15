@@ -578,8 +578,10 @@ lemma fst_inv_eq_snd_inv
   obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1
     ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv) x)
     ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv) x) (by
-      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, ← Hom.comp_apply,
-        Category.assoc, Hom.isoOpensRange_inv_comp]
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, Hom.comp_base, TopCat.hom_comp, ContinuousMap.comp_apply,
+        TypeCat.Fun.coe_mk]
+      simp only [← Hom.comp_apply]
       congr 5
       simpa using congr($(pullback.condition (f := (F.obj i).homOfLE h₁)
         (g := (F.obj i).homOfLE h₂)) ≫ Scheme.Opens.ι _))
@@ -598,7 +600,7 @@ lemma fst_inv_eq_snd_inv
       TopCat.hom_comp, ContinuousMap.comp_apply] at hy₁
     apply (pullback.fst ((F.obj i).homOfLE h₁) _).isOpenEmbedding.injective
     simp only [← Scheme.Hom.comp_apply, α, pullback.lift_fst]
-    simp [hy₁]
+    simp_all
   refine ⟨α.opensRange, ⟨y, this⟩, ?_⟩
   rw [← cancel_epi α.isoOpensRange.hom]
   simp [α, ← Functor.map_comp, Subsingleton.elim (hli ≫ k₁.2.2) (hlj ≫ k₂.2.2)]
