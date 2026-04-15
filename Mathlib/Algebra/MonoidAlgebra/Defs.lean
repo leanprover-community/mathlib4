@@ -156,6 +156,7 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| DecidableEq <| M →₀ R
 
 -- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
+@[to_additive (dont_translate := A)]
 instance {A : Type*} [SMulZeroClass A R] : SMul A R[M] where
   smul a x := x.mapRange (a • ·) (smul_zero _)
 

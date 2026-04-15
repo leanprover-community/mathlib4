@@ -51,59 +51,19 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zsmul := fun r α =>
         { f := r • α.f
           h := by rw [Functor.map_zsmul, zsmul_comp, Monad.Algebra.Hom.h, comp_zsmul] }
-      add_assoc := by
-        intros
-        ext
-        apply add_assoc
-      zero_add := by
-        intros
-        ext
-        apply zero_add
-      add_zero := by
-        intros
-        ext
-        apply add_zero
-      nsmul_zero := by
-        intros
-        ext
-        apply zero_smul
-      nsmul_succ := by
-        intros
-        ext
-        apply succ_nsmul
-      sub_eq_add_neg := by
-        intros
-        ext
-        apply sub_eq_add_neg
-      zsmul_zero' := by
-        intros
-        ext
-        apply zero_smul
-      zsmul_succ' := by
-        intros
-        ext
-        simp only [natCast_zsmul, succ_nsmul]
-        rfl
-      zsmul_neg' := by
-        intros
-        ext
-        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
-      neg_add_cancel := by
-        intros
-        ext
-        apply neg_add_cancel
-      add_comm := by
-        intros
-        ext
-        apply add_comm }
-  add_comp := by
-    intros
-    ext
-    apply add_comp
-  comp_add := by
-    intros
-    ext
-    apply comp_add
+      add_assoc _ _ _ := Algebra.Hom.ext <| add_assoc _ _ _
+      zero_add _ := Algebra.Hom.ext <| zero_add _
+      add_zero _ := Algebra.Hom.ext <| add_zero _
+      nsmul_zero _ := Algebra.Hom.ext <| zero_nsmul _
+      nsmul_succ _ _ := Algebra.Hom.ext <| succ_nsmul _ _
+      sub_eq_add_neg _ _ := Algebra.Hom.ext <| sub_eq_add_neg _ _
+      zsmul_zero' _ := Algebra.Hom.ext <| zero_zsmul _
+      zsmul_succ' _ _ := Algebra.Hom.ext <| SubNegMonoid.zsmul_succ' _ _
+      zsmul_neg' _ _ := Algebra.Hom.ext <| SubNegMonoid.zsmul_neg' _ _
+      neg_add_cancel _ := Algebra.Hom.ext <| neg_add_cancel _
+      add_comm _ _ := Algebra.Hom.ext <| add_comm _ _ }
+  add_comp _ _ _ _ _ _ := Algebra.Hom.ext <| add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := Algebra.Hom.ext <| comp_add _ _ _ _ _ _
 
 instance Monad.forget_additive : (Monad.forget T).Additive where
 
@@ -131,59 +91,19 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zsmul := fun r α =>
         { f := r • α.f
           h := by rw [Functor.map_zsmul, comp_zsmul, Comonad.Coalgebra.Hom.h, zsmul_comp] }
-      add_assoc := by
-        intros
-        ext
-        apply add_assoc
-      zero_add := by
-        intros
-        ext
-        apply zero_add
-      add_zero := by
-        intros
-        ext
-        apply add_zero
-      nsmul_zero := by
-        intros
-        ext
-        apply zero_smul
-      nsmul_succ := by
-        intros
-        ext
-        apply succ_nsmul
-      sub_eq_add_neg := by
-        intros
-        ext
-        apply sub_eq_add_neg
-      zsmul_zero' := by
-        intros
-        ext
-        apply zero_smul
-      zsmul_succ' := by
-        intros
-        ext
-        simp only [natCast_zsmul, succ_nsmul]
-        rfl
-      zsmul_neg' := by
-        intros
-        ext
-        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
-      neg_add_cancel := by
-        intros
-        ext
-        apply neg_add_cancel
-      add_comm := by
-        intros
-        ext
-        apply add_comm }
-  add_comp := by
-    intros
-    ext
-    apply add_comp
-  comp_add := by
-    intros
-    ext
-    apply comp_add
+      add_assoc _ _ _ := Coalgebra.Hom.ext <| add_assoc _ _ _
+      zero_add _ := Coalgebra.Hom.ext <| zero_add _
+      add_zero _ := Coalgebra.Hom.ext <| add_zero _
+      nsmul_zero _ := Coalgebra.Hom.ext <| zero_nsmul _
+      nsmul_succ _ _ := Coalgebra.Hom.ext <| succ_nsmul _ _
+      sub_eq_add_neg _ _ := Coalgebra.Hom.ext <| sub_eq_add_neg _ _
+      zsmul_zero' _ := Coalgebra.Hom.ext <| zero_zsmul _
+      zsmul_succ' _ _ := Coalgebra.Hom.ext <| SubNegMonoid.zsmul_succ' _ _
+      zsmul_neg' _ _ := Coalgebra.Hom.ext <| SubNegMonoid.zsmul_neg' _ _
+      neg_add_cancel _ := Coalgebra.Hom.ext <| neg_add_cancel _
+      add_comm _ _ := Coalgebra.Hom.ext <| add_comm _ _ }
+  add_comp _ _ _ _ _ _ := Coalgebra.Hom.ext <| add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := Coalgebra.Hom.ext <| comp_add _ _ _ _ _ _
 
 instance Comonad.forget_additive : (Comonad.forget U).Additive where
 
