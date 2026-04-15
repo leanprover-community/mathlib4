@@ -447,7 +447,7 @@ protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 
   · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
   refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
   gcongr
-  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
+  exact ENNReal.lt_add_right ha one_ne_zero
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
