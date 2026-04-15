@@ -649,8 +649,12 @@ protected def opObjEquiv {n : SimplexCategory} {d : SimplexCategoryᵒᵖ} :
   SSet.opObjEquiv.trans (objEquiv.trans
     (SimplexCategory.revEquivalence.fullyFaithfulFunctor.homEquiv.trans objEquiv.symm))
 
-protected lemma opObjEquiv_apply {d n : ℕ} (f : (Δ[n].op _⦋d⦌ : Type u)) (i : Fin (d + 1)) :
+protected lemma opObjEquiv_apply {d n : ℕ} (f : Δ[n].op _⦋d⦌) (i : Fin (d + 1)) :
     stdSimplex.opObjEquiv.{u} f i = (opObjEquiv f i.rev).rev := rfl
+
+lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
+    SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
+  rfl
 
 lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
     dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
