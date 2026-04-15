@@ -523,14 +523,6 @@ end Ideal
 
 end PrincipalOfPrime
 
-section PrincipalOfPrime_old
-
-variable (R) [CommRing R]
-
-variable {R}
-
-end PrincipalOfPrime_old
-
 open Ideal in
 lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :
     span {n} ⊓ span {m} = span {lcm n m} := by
