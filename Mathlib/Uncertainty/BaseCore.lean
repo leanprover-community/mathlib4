@@ -810,7 +810,8 @@ def mkMixedLLNStrongAssumption (U : UncertainSpace) (C : ChanceSpace)
   mixed_lln_statement := statement
   mixed_lln_axiom := axiom_rule
 
-instance (priority := 90) mixedLLNStrong_of_structure
+/-- Build `MixedLLNStrongAssumption` from `MixedLLNStructure`. -/
+def mixedLLNStrong_of_structure
     (U : UncertainSpace) (C : ChanceSpace)
     [AlgebraicUncertainSpace U] [ExpectationStructure U]
     [MixedLLNStructure U C] :
