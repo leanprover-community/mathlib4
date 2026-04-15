@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yi Song
 module
 
 public import Mathlib.RingTheory.Depth.Rees
+public import Mathlib.Tactic.ENatToNat
 
 /-!
 
