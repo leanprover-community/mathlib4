@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Maps on the unit circle
@@ -97,7 +98,7 @@ lemma exp_injOn_of_forall_sub_mem_Ioo {s : Set ℝ}
   intro t₁ ht₁ t₂ ht₂ heq
   obtain ⟨h1, h2⟩ := hs t₁ ht₁ t₂ ht₂
   rw [neg_mul] at h1
-  rw [← sub_eq_zero, ← Real.cos_eq_one_iff_of_lt_of_lt h1 h2, ← exp_ofReal_mul_I_re]
+  rw [← sub_eq_zero, ← cos_eq_one_iff_of_lt_of_lt h1 h2, ← exp_ofReal_mul_I_re]
   replace heq : cexp _ = cexp _ := congrArg Subtype.val heq
   rw [exp_eq_exp_iff_exp_sub_eq_one, ← sub_mul, ← ofReal_sub, Complex.ext_iff] at heq
   exact heq.1
@@ -113,6 +114,8 @@ lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ioc a b) :=
 
 lemma exp_surjective : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
 
+instance : PathConnectedSpace Circle := exp_surjective.pathConnectedSpace exp.continuous
+
 variable {x y : Circle}
 
 /-- Length of the anti-clockwise arc from `x` to `y`. -/
@@ -120,6 +123,7 @@ variable {x y : Circle}
 noncomputable def angleDiff (x y : Circle) : ℝ :=
   if x.val.arg ≤ y.val.arg then y.val.arg - x.val.arg else 2 * π + y.val.arg - x.val.arg
 
+@[simp]
 lemma angleDiff_nonneg (x y : Circle) : 0 ≤ angleDiff x y := by
   grind [neg_pi_lt_arg y.val, arg_le_pi x.val]
 
@@ -138,60 +142,36 @@ lemma exp_angleDiff_add_symm : exp (angleDiff x y) * x = y := by
   rw [← exp_arg x, ← exp_add, angleDiff]
   split_ifs with hxy <;> simp
 
-lemma Icc_angleDiff_union (h : x ≠ y) :
-    Icc x.val.arg (x.val.arg + angleDiff x y) ∪ Icc y.val.arg (y.val.arg + angleDiff y x) =
+lemma Icc_angleDiff_union_eq_Icc_min_add_two_pi (h : x ≠ y) :
+    Icc x.val.arg (angleDiff x y + x.val.arg) ∪ Icc y.val.arg (angleDiff y x + y.val.arg) =
     Icc (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
 
-lemma Ico_angleDiff_union (h : x ≠ y) :
-    Ico x.val.arg (x.val.arg + angleDiff x y) ∪ Ico y.val.arg (y.val.arg + angleDiff y x) =
+lemma Ico_angleDiff_union_eq_Ico_min_add_two_pi (h : x ≠ y) :
+    Ico x.val.arg (angleDiff x y + x.val.arg) ∪ Ico y.val.arg (angleDiff y x + y.val.arg) =
     Ico (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
 
-lemma Ioc_angleDiff_union (h : x ≠ y) :
-    Ioc x.val.arg (x.val.arg + angleDiff x y) ∪ Ioc y.val.arg (y.val.arg + angleDiff y x) =
+lemma Ioc_angleDiff_union_eq_Ioc_min_add_two_pi (h : x ≠ y) :
+    Ioc x.val.arg (angleDiff x y + x.val.arg) ∪ Ioc y.val.arg (angleDiff y x + y.val.arg) =
     Ioc (min x.val.arg y.val.arg) (min x.val.arg y.val.arg + 2 * π) := by
   grind [arg_eq_arg, arg_lt_arg_add_two_pi y x, arg_lt_arg_add_two_pi x y]
 
-private lemma angleDiff_add_arg_image_Icc (x y : Circle) :
-    (angleDiff x y * · + x.val.arg) '' Icc 0 1 = Icc x.val.arg (x.val.arg + angleDiff x y) := by
-  by_cases h : 0 < angleDiff x y
-  · simpa [add_comm] using image_affine_Icc' h x.val.arg 0 1
-  simp [(not_lt.mp h).antisymm (angleDiff_nonneg x y)]
-
-private lemma angleDiff_add_arg_image_Ico (h : x ≠ y) :
-    (angleDiff x y * · + x.val.arg) '' Ico 0 1 = Ico x.val.arg (x.val.arg + angleDiff x y) := by
-  simpa [add_comm] using (image_affine_Ico (angleDiff_pos h) x.val.arg 0 1)
-
-private lemma angleDiff_add_arg_image_Ioc (h : x ≠ y) :
-    (angleDiff x y * · + x.val.arg) '' Ioc 0 1 = Ioc x.val.arg (x.val.arg + angleDiff x y) := by
-  simpa [add_comm] using (image_affine_Ioc (angleDiff_pos h) x.val.arg 0 1)
-
 /-- Path from `x` to `y` on the circle traversing in anti-clockwise direction. -/
-noncomputable def path (x y : Circle) : Path x y where
-  toFun a := exp (angleDiff x y * a + x.val.arg)
-  source' := by simp
-  target' := Subtype.ext <| by simp
-  continuous_toFun :=
-    exp.continuous.comp ((continuous_const.mul continuous_subtype_val).add continuous_const)
-
-lemma joined (x y : Circle) : Joined x y := ⟨path x y⟩
-
-instance : PathConnectedSpace Circle where
-  nonempty := ⟨1, by simp⟩
-  joined x y := joined x y
+noncomputable def path (x y : Circle) : Path x y :=
+  (Path.segment x.val.arg <| angleDiff x y + x.val.arg).map exp.continuous
+  |>.cast (by simp) (by simp)
 
 @[simp]
 lemma path_apply (x y : Circle) (a : unitInterval) :
-    path x y a = exp (angleDiff x y * a + x.val.arg) := rfl
+    path x y a = exp (Path.segment x.val.arg (x.angleDiff y + x.val.arg) a) := by
+  simp [path]
 
-lemma path_apply_of_le (h : x.val.arg ≤ y.val.arg) (a : unitInterval) :
-    path x y a = exp ((y.val.arg - x.val.arg) * a.val + x.val.arg) := by
-  simp [path, angleDiff, h]
-
-lemma path_apply_of_lt (h : y.val.arg < x.val.arg) (a : unitInterval) :
-    path x y a = exp ((2 * π + y.val.arg - x.val.arg) * a.val + x.val.arg) := by
-  simp [path, angleDiff, not_le.mpr h]
+@[simp]
+lemma coe_path (x y : Circle) : (path x y : _ → _) =
+    exp ∘ ⇑(Path.segment x.val.arg (x.angleDiff y + x.val.arg)) := by
+  ext t
+  rw [path_apply, comp_apply]
 
 @[simp]
 lemma path_self (x : Circle) : path x x = Path.refl x := by
@@ -199,58 +179,65 @@ lemma path_self (x : Circle) : path x x = Path.refl x := by
   simp [path, angleDiff]
 
 lemma path_injective_of_ne (hne : x ≠ y) : Injective (path x y) := by
-  intro a b (heq : exp _ = exp _)
-  have hinj : Injective (angleDiff x y * · + x.val.arg) :=
-    fun a b h ↦ by nlinarith [angleDiff_pos hne]
-  refine Subtype.ext <| hinj ?_
-  suffices hIcc : ∀ c : unitInterval, angleDiff x y * c.val + x.val.arg ∈
-      Icc x.val.arg (x.val.arg + angleDiff x y) by
-    rwa [exp_injOn_Icc (by linarith [angleDiff_lt_two_pi x y]) |>.eq_iff (hIcc a) (hIcc b)] at heq
-  refine fun c ↦ ⟨?_, ?_⟩ <;> nlinarith [angleDiff_nonneg x y, c.prop.1, c.prop.2]
+  rw [coe_path]
+  refine (exp_injOn_Icc (a := x.val.arg) (b := angleDiff x y + x.val.arg)
+    <| by simp [angleDiff_lt_two_pi]).injective_iff _ ?_ |>.mpr
+    <| Path.segment_injective_of_ne <| by simp [angleDiff_pos hne |>.ne']
+  rw [Path.range_segment, segment_eq_Icc (by simp)]
 
 @[simp]
 lemma range_path (x y : Circle) :
-    range (path x y) = exp '' Icc x.val.arg (x.val.arg + angleDiff x y) := by
-  ext z
-  simp [← angleDiff_add_arg_image_Icc]
+    range (path x y) = exp '' Icc x.val.arg (angleDiff x y + x.val.arg) := by
+  rw [coe_path, range_comp, Path.range_segment, segment_eq_Icc (by simp)]
 
 lemma path_image_Ico_of_ne (h : x ≠ y) :
-    path x y '' Ico 0 1 = exp '' Ico x.val.arg (x.val.arg + angleDiff x y) := by
-  ext z
-  rw [path, Path.coe_mk', ContinuousMap.coe_mk, ← image_image, ← angleDiff_add_arg_image_Ico h,
-    ← image_image (angleDiff x y * · + x.val.arg)]
-  simp
+    path x y '' Ico 0 1 = exp '' Ico x.val.arg (angleDiff x y + x.val.arg) := by
+  rw [coe_path, image_comp, segment_image_Ico (by simp [angleDiff_pos h])]
 
 lemma path_image_Ioc_of_ne (h : x ≠ y) :
-    path x y '' Ioc 0 1 = exp '' Ioc x.val.arg (x.val.arg + angleDiff x y) := by
-  ext z
-  rw [path, Path.coe_mk', ContinuousMap.coe_mk, ← image_image, ← angleDiff_add_arg_image_Ioc h,
-    ← image_image (angleDiff x y * · + x.val.arg)]
-  simp
+    path x y '' Ioc 0 1 = exp '' Ioc x.val.arg (angleDiff x y + x.val.arg) := by
+  rw [coe_path, image_comp, segment_image_Ioc (by simp [angleDiff_pos h])]
 
 lemma range_path_union_range_path (h : x ≠ y) : range (path x y) ∪ range (path y x) = univ := by
-  rw [range_path, range_path, ← image_union, Icc_angleDiff_union h,
-    periodic_exp.image_Icc Real.two_pi_pos]
+  rw [range_path, range_path, ← image_union, Icc_angleDiff_union_eq_Icc_min_add_two_pi h,
+    periodic_exp.image_Icc two_pi_pos]
   exact exp_surjective.range_eq
 
 lemma path_image_Ioc_union (h : x ≠ y) : path x y '' Ioc 0 1 ∪ path y x '' Ioc 0 1 = univ := by
-  rw [path_image_Ioc_of_ne h, path_image_Ioc_of_ne h.symm, ← image_union, Ioc_angleDiff_union h,
-    periodic_exp.image_Ioc Real.two_pi_pos]
+  rw [path_image_Ioc_of_ne h, path_image_Ioc_of_ne h.symm, ← image_union,
+    Ioc_angleDiff_union_eq_Ioc_min_add_two_pi h, periodic_exp.image_Ioc two_pi_pos]
   exact exp_surjective.range_eq
 
-lemma disjoint_path_image_Ioc (h : x ≠ y) : Disjoint (path x y '' Ioc 0 1) (path y x '' Ioc 0 1) := by
-  rw [disjoint_iff_inter_eq_empty, Set.eq_empty_iff_forall_notMem]
-  rintro z ⟨⟨a, ha, rfl⟩, ⟨b, hb, heq⟩⟩
-  have hdisj : Disjoint (Ioc x.val.arg (x.val.arg + angleDiff x y))
-      (Ioc y.val.arg (y.val.arg + angleDiff y x)) := by grind
-  rw [← angleDiff_add_arg_image_Ioc h, ← angleDiff_add_arg_image_Ioc h.symm] at hdisj
-  refine hdisj.ne_of_mem ⟨a.val, ⟨ha.1, a.prop.2⟩, rfl⟩ ⟨b.val, ⟨hb.1, b.prop.2⟩, rfl⟩
-  <| exp_injOn_Ioc (a := min x.val.arg y.val.arg) (b := min x.val.arg y.val.arg + 2 * π)
-    (by simp) ?_ ?_ heq.symm
-  <;> rw [← Ioc_angleDiff_union h, ← angleDiff_add_arg_image_Ioc h,
-    ← angleDiff_add_arg_image_Ioc h.symm]
-  · exact Or.inl <| mem_image_of_mem _ ha
-  exact Or.inr <| mem_image_of_mem _ hb
+lemma disjoint_path_image_Ioc (h : x ≠ y) :
+    Disjoint (path x y '' Ioc 0 1) (path y x '' Ioc 0 1) := by
+  have hdisj : Disjoint (Ioc x.val.arg (angleDiff x y + x.val.arg))
+      (Ioc y.val.arg (angleDiff y x + y.val.arg)) := by grind [angleDiff]
+  rw [path_image_Ioc_of_ne h, path_image_Ioc_of_ne h.symm]
+  refine Set.disjoint_image_image fun a ha b hb ↦ ?_
+  refine exp_injOn_Ioc (a := min x.val.arg y.val.arg) (b := min x.val.arg y.val.arg + 2 * π)
+    (by simp) |>.ne ?_ ?_ <| hdisj.ne_of_mem ha hb
+    <;> rw [← Ioc_angleDiff_union_eq_Ioc_min_add_two_pi h] <;> tauto
+
+lemma path_image_Ioc_compl (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
+  (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
+  <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+
+lemma range_path_compl (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
+  rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
+    ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, path_image_Ioc_compl h,
+    ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
+    insert_inter_of_notMem (by simp), inter_eq_left]
+  rintro z ⟨t, ht, rfl⟩
+  exact (path_injective_of_ne h.symm).ne ht.2.ne |>.trans_eq (y.path x).target
+
+lemma range_path_ssubset_univ (x y : Circle) : range (path x y) ⊂ univ := by
+  rw [ssubset_univ_iff_nonempty_compl]
+  obtain rfl | hne := eq_or_ne x y
+  · use -x, by simp [neg_ne_self]
+  rw [range_path_compl hne]
+  use y.path x ⟨2⁻¹, by simp only [mem_Icc, inv_nonneg, Nat.ofNat_nonneg, true_and]; linarith⟩
+  refine mem_image_of_mem _ ⟨by simp [← unitInterval.coe_pos], unitInterval.coe_lt_one.mp ?_⟩
+  linarith
 
 lemma range_path_inter_range_path (h : x ≠ y) : range (path x y) ∩ range (path y x) = {x, y} := by
   rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← Ioc_insert_left (by simp),
@@ -275,6 +262,21 @@ lemma isPathConnected_compl_singleton (x : Circle) : IsPathConnected {x}ᶜ := b
     simp [(neg_ne_self x).symm, hyx.symm] at h
   grind
 
+lemma not_isPreconnected_pair_compl (hxy : x ≠ y) : ¬ IsPreconnected {x, y}ᶜ := by
+  simp only [isPreconnected_iff_subset_of_disjoint_closed, not_forall, not_or, exists_and_left]
+  refine ⟨range (path x y), ?_, range (path y x), (isCompact_range (path x y).continuous).isClosed,
+    (isCompact_range (path y x).continuous).isClosed, ?_, ?_, ?_⟩
+  · rw [compl_subset_iff_union, union_eq_right.mpr (by simp only [pair_subset_iff,
+      (path x y).source_mem_range, (path x y).target_mem_range, and_self])]
+    exact (range_path_ssubset_univ x y).ne
+  · rw [range_path_union_range_path hxy]
+    exact subset_univ _
+  · rw [range_path_inter_range_path hxy]
+    exact compl_inter_self {x, y}
+  rw [compl_subset_iff_union, union_eq_right.mpr (by simp only [pair_subset_iff,
+      (path y x).source_mem_range, (path y x).target_mem_range, and_self])]
+  exact (range_path_ssubset_univ y x).ne
+
 end Circle
 
 namespace Real.Angle
@@ -285,24 +287,24 @@ noncomputable def toCircle (θ : Angle) : Circle := Circle.periodic_exp.lift θ
 @[simp] lemma toCircle_coe (x : ℝ) : toCircle x = .exp x := rfl
 
 lemma coe_toCircle (θ : Angle) : (θ.toCircle : ℂ) = θ.cos + θ.sin * I := by
-  induction θ using Real.Angle.induction_on
+  induction θ using Angle.induction_on
   simp [exp_mul_I]
 
 @[simp] lemma toCircle_zero : toCircle 0 = 1 := by rw [← coe_zero, toCircle_coe, Circle.exp_zero]
 
 @[simp] lemma toCircle_neg (θ : Angle) : toCircle (-θ) = (toCircle θ)⁻¹ := by
-  induction θ using Real.Angle.induction_on
+  induction θ using Angle.induction_on
   simp_rw [← coe_neg, toCircle_coe, Circle.exp_neg]
 
 @[simp] lemma toCircle_add (θ₁ θ₂ : Angle) : toCircle (θ₁ + θ₂) = toCircle θ₁ * toCircle θ₂ := by
-  induction θ₁ using Real.Angle.induction_on
-  induction θ₂ using Real.Angle.induction_on
+  induction θ₁ using Angle.induction_on
+  induction θ₂ using Angle.induction_on
   exact Circle.exp_add _ _
 
-@[simp] lemma arg_toCircle (θ : Real.Angle) : (arg θ.toCircle : Angle) = θ := by
-  induction θ using Real.Angle.induction_on
+@[simp] lemma arg_toCircle (θ : Angle) : (arg θ.toCircle : Angle) = θ := by
+  induction θ using Angle.induction_on
   rw [toCircle_coe, Circle.coe_exp, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
-    Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
+    Angle.cos_coe, ← Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 
 end Real.Angle
 
@@ -362,9 +364,9 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
 @[simps] noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ Circle where
-  toFun := Real.Angle.toCircle
+  toFun := Angle.toCircle
   invFun := fun x ↦ arg x
-  left_inv := Real.Angle.arg_toCircle
+  left_inv := Angle.arg_toCircle
   right_inv := Circle.exp_arg
   continuous_toFun := continuous_coinduced_dom.mpr Circle.exp.continuous
   continuous_invFun := by
