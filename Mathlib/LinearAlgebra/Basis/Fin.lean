@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Bases indexed by `Fin`
