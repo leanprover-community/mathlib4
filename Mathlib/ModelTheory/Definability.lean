@@ -447,52 +447,58 @@ variable {α β : Type*} (A : Set M)
 namespace Function
 
 /-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
+@[fun_prop]
 def DefinableFun (f : (α → M) → M) : Prop :=
   A.Definable L f.tupleGraph
 
 /-- A family of functions is definable when each coordinate is definable. -/
 def DefinableMap (F : (α → M) → (β → M)) : Prop :=
-  ∀ i : β, DefinableFun L A fun x => F x i
+  ∀ i : β, (fun x => F x i).DefinableFun L A
 
 variable {L A} {f : (α → M) → M}
 
-theorem DefinableFun.mono {B : Set M} (hAs : DefinableFun L A f) (hAB : A ⊆ B) :
-    DefinableFun L B f :=
+@[fun_prop, gcongr]
+theorem DefinableFun.mono {B : Set M} (hAs : f.DefinableFun L A) (hAB : A ⊆ B) :
+    f.DefinableFun L B :=
   Set.Definable.mono hAs hAB
 
 theorem empty_definableFun_iff :
-    DefinableFun L (∅ : Set M) f ↔
-    ∃ φ : L.Formula (Option α), tupleGraph f = setOf φ.Realize := by
+    f.DefinableFun L ∅ ↔
+      ∃ φ : L.Formula (Option α), tupleGraph f = setOf φ.Realize := by
   simp [DefinableFun, Set.empty_definable_iff]
 
 theorem definableFun_iff_empty_definableFun_with_params :
-    DefinableFun L A f ↔ DefinableFun (L[[A]]) (∅ : Set M) f :=
+    f.DefinableFun L A ↔ f.DefinableFun (L[[A]]) ∅ :=
   empty_definable_iff.symm
 
 /-- A term is a definable function. -/
+@[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
-    DefinableFun L (∅ : Set M) (fun v => t.realize v) := by
+    (t.realize).DefinableFun L (∅ : Set M) := by
   rw [empty_definableFun_iff]
   refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
   ext v
   simp [Function.tupleGraph]
 
 /-- A function symbol is a definable function. -/
+@[fun_prop]
 theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
-    DefinableFun L (∅ : Set M) (fun x : Fin n → M => Structure.funMap f x) :=
+    (Structure.funMap f).DefinableFun L (∅ : Set M) :=
   (Term.func f Term.var).definableFun_realize
 
 variable (L)
 
 /-- A coordinate projection is a definable function. -/
+@[fun_prop]
 theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
-    DefinableFun L (∅ : Set M) (fun v => v i) :=
+    (fun v => v i).DefinableFun L (∅ : Set M) :=
   (Term.var i).definableFun_realize
 
 /-- A constant function is a definable function. -/
+@[fun_prop]
 theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
     (γ : Type*) (ha : a ∈ A) :
-    DefinableFun L A (fun _ : γ → M => a) := by
+    (fun _ : γ → M => a).DefinableFun L A := by
   rw [definableFun_iff_empty_definableFun_with_params]
   exact ((L.con (⟨a,ha⟩ : ↑A)).term).definableFun_realize
 
@@ -500,14 +506,14 @@ variable {L}
 
 /-- The preimage of a definable set under a definable map is definable. -/
 lemma _root_.Set.Definable.preimage_map
-    {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : DefinableMap L A F)
+    {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : F.DefinableMap L A)
     {S : Set (β → M)} (hS : A.Definable L S) :
     A.Definable L (F ⁻¹' S) := by
   have h_graph : A.Definable L { w : α ⊕ β → M | ∀ i, F (w ∘ Sum.inl) i = w (Sum.inr i) } := by
     rw [setOf_forall]
-    exact definable_iInter_of_finite fun i => by
-      simpa [Function.tupleGraph] using
-        (hF i).preimage_comp (fun oa : Option α => oa.elim (Sum.inr i) Sum.inl)
+    refine definable_iInter_of_finite fun i => ?_
+    simpa [Function.tupleGraph] using
+      (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
   convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
@@ -516,10 +522,10 @@ lemma _root_.Set.Definable.preimage_map
 
 /-- The set where two definable functions agree is definable. -/
 lemma DefinableFun.setOf_eq {f g : (α → M) → M}
-    (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
+    (hf : f.DefinableFun L A) (hg : g.DefinableFun L A) :
     A.Definable L {v : α → M | f v = g v} := by
   let F : (α → M) → Fin 2 → M := fun v => ![f v, g v]
-  have hF : DefinableMap L A F := by
+  have hF : F.DefinableMap L A := by
     intro i
     fin_cases i
     · exact hf
@@ -527,13 +533,9 @@ lemma DefinableFun.setOf_eq {f g : (α → M) → M}
   exact (Definable.diagonal L A).preimage_map hF
 
 /-- The preimage of a constant under a definable function is definable. -/
-lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : DefinableFun L A f) {a : M} (ha : a ∈ A) :
+lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : f.DefinableFun L A) {a : M} (ha : a ∈ A) :
     A.Definable L {v : α → M | f v = a} :=
   hf.setOf_eq (L.definableFun_const α ha)
-
-lemma DefinableFun.setOf_const_eq {f : (α → M) → M} (hf : DefinableFun L A f) {a : M} (ha : a ∈ A) :
-    A.Definable L {v : α → M | a = f v} :=
-  (L.definableFun_const α ha).setOf_eq hf
 
 end Function
 
