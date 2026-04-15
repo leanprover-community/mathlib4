@@ -116,6 +116,13 @@ lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
   simpa using ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
     fun h ↦ ⟨e.symm x, (e.apply_symm_apply x).symm ▸ h, e.apply_symm_apply x⟩⟩
 
+lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
+    IsRegularLocalRing R := by
+  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
+  let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
+    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
+  exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
+
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
   refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
   by_cases eqbot : p = ⊥
