@@ -373,8 +373,7 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   _ ≤ μ.real t := by
         simp only [measureReal_def]
         gcongr
-        · exact hμt
-        · apply withDensity_rnDeriv_le
+        apply withDensity_rnDeriv_le
   _ = μ.real s := by rw [measureReal_def, measureReal_def, measure_toMeasurable s]
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
