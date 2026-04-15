@@ -135,7 +135,9 @@ namespace Ring
 
 variable [Ring L]
 
-instance instLieAdmissibleRing : LieAdmissibleRing L where
+/-- Every ring is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def := by
     suffices ∀ a b c : L, associator a b c = 0 by simp
     simp
@@ -145,8 +147,11 @@ end Ring
 namespace Algebra
 
 variable [Ring L] [Algebra R L]
+attribute [local instance] Ring.instLieAdmissibleRing
 
-instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+/-- Every algebra is Lie-admissible.
+See note [reducible non-instances]. -/
+abbrev instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
   smul_comm := by simp
 
 end Algebra
