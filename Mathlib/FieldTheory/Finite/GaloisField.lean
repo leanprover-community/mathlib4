@@ -32,9 +32,6 @@ It is a finite field with `p ^ n` elements.
 
 -/
 
-@[expose] public section
-
-
 noncomputable section
 
 
@@ -42,7 +39,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
+public instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
@@ -55,7 +52,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 
-theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+public theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -67,18 +64,187 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
-def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
-deriving Inhabited, Field, CharP _ p,
-  Algebra (ZMod p),
-  Finite, FiniteDimensional (ZMod p),
-  IsSplittingField (ZMod p) _ (X ^ p ^ n - X)
+@[expose] public def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 
 namespace GaloisField
 
+@[implicit_reducible]
+def instFieldAux (p : ℕ) [Fact p.Prime] (n : ℕ) : Field (GaloisField p n) :=
+  inferInstanceAs (Field (delta% GaloisField p n))
+
+variable {p : ℕ} [h_prime : Fact p.Prime] {n : ℕ}
+
+/-- The encapsulated addition for `GaloisField p n`. Use `x + y` instead. -/
+public protected def add : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).add
+
+/-- The encapsulated zero for `GaloisField p n`. Use `0` instead. -/
+public protected def zero : GaloisField p n :=
+  (instFieldAux p n).zero
+
+/-- The encapsulated natural scalar multiplication for `GaloisField p n`. Use `m • x` instead. -/
+public protected def nsmul : (m : ℕ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).nsmul
+
+/-- The encapsulated multiplication for `GaloisField p n`. Use `x * y` instead. -/
+public protected def mul : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).mul
+
+/-- The encapsulated one for `GaloisField p n`. Use `1` instead. -/
+public protected def one : GaloisField p n :=
+  (instFieldAux p n).one
+
+/-- The encapsulated cast from natural for `GaloisField p n`. Use `↑m` instead. -/
+public protected def natCast : (m : ℕ) → GaloisField p n :=
+  (instFieldAux p n).natCast
+
+/-- The encapsulated natural power for `GaloisField p n`. Use `x ^ m` instead. -/
+public protected def npow : (m : ℕ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).npow
+
+/-- The encapsulated negation for `GaloisField p n`. Use `-x` instead. -/
+public protected def neg : (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).neg
+
+/-- The encapsulated subtraction for `GaloisField p n`. Use `x - y` instead. -/
+public protected def sub : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).sub
+
+/-- The encapsulated integer scalar multiplication for `GaloisField p n`. Use `m • x` instead. -/
+public protected def zsmul : (m : ℤ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).zsmul
+
+/-- The encapsulated cast from integer for `GaloisField p n`. Use `↑m` instead. -/
+public protected def intCast : (m : ℤ) → GaloisField p n :=
+  (instFieldAux p n).intCast
+
+/-- The encapsulated inverse for `GaloisField p n`. Use `x⁻¹` instead. -/
+public protected def inv : (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).inv
+
+/-- The encapsulated division for `GaloisField p n`. Use `x / y` instead. -/
+public protected def div : (x y : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).div
+
+/-- The encapsulated integer power for `GaloisField p n`. Use `x ^ m` instead. -/
+public protected def zpow : (m : ℤ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).zpow
+
+/-- The encapsulated cast from nonnegative rational for `GaloisField p n`. Use `↑q` instead. -/
+public protected def nnratCast : (q : ℚ≥0) → GaloisField p n :=
+  (instFieldAux p n).nnratCast
+
+/-- The encapsulated cast from rational for `GaloisField p n`. Use `↑q` instead. -/
+public protected def ratCast : (q : ℚ) → GaloisField p n :=
+  (instFieldAux p n).ratCast
+
+/-- The encapsulated nonnegative rational scalar multiplication for `GaloisField p n`.
+Use `q • x` instead. -/
+public protected def nnqsmul : (q : ℚ≥0) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).nnqsmul
+
+/-- The encapsulated rational scalar multiplication for `GaloisField p n`. Use `q • x` instead. -/
+public protected def qsmul : (q : ℚ) → (x : GaloisField p n) → GaloisField p n :=
+  (instFieldAux p n).qsmul
+
+public instance (p : ℕ) [Fact p.Prime] (n : ℕ) : Field (GaloisField p n) where
+  add := GaloisField.add
+  add_assoc := by exact (instFieldAux p n).add_assoc
+  zero := GaloisField.zero
+  zero_add := by exact (instFieldAux p n).zero_add
+  add_zero := by exact (instFieldAux p n).add_zero
+  nsmul := GaloisField.nsmul
+  nsmul_zero := by exact (instFieldAux p n).nsmul_zero
+  nsmul_succ := by exact (instFieldAux p n).nsmul_succ
+  add_comm := by exact (instFieldAux p n).add_comm
+  mul := GaloisField.mul
+  left_distrib := by exact (instFieldAux p n).left_distrib
+  right_distrib := by exact (instFieldAux p n).right_distrib
+  zero_mul := by exact (instFieldAux p n).zero_mul
+  mul_zero := by exact (instFieldAux p n).mul_zero
+  mul_assoc := by exact (instFieldAux p n).mul_assoc
+  one := GaloisField.one
+  one_mul := by exact (instFieldAux p n).one_mul
+  mul_one := by exact (instFieldAux p n).mul_one
+  natCast := GaloisField.natCast
+  natCast_zero := by exact (instFieldAux p n).natCast_zero
+  natCast_succ := by exact (instFieldAux p n).natCast_succ
+  npow := GaloisField.npow
+  npow_zero := by exact (instFieldAux p n).npow_zero
+  npow_succ := by exact (instFieldAux p n).npow_succ
+  neg := GaloisField.neg
+  sub := GaloisField.sub
+  sub_eq_add_neg := by exact (instFieldAux p n).sub_eq_add_neg
+  zsmul := GaloisField.zsmul
+  zsmul_zero' := by exact (instFieldAux p n).zsmul_zero'
+  zsmul_succ' := by exact (instFieldAux p n).zsmul_succ'
+  zsmul_neg' := by exact (instFieldAux p n).zsmul_neg'
+  neg_add_cancel := by exact (instFieldAux p n).neg_add_cancel
+  intCast := GaloisField.intCast
+  intCast_ofNat := by exact (instFieldAux p n).intCast_ofNat
+  intCast_negSucc := by exact (instFieldAux p n).intCast_negSucc
+  mul_comm := by exact (instFieldAux p n).mul_comm
+  inv := GaloisField.inv
+  div := GaloisField.div
+  div_eq_mul_inv := by exact (instFieldAux p n).div_eq_mul_inv
+  zpow := GaloisField.zpow
+  zpow_zero' := by exact (instFieldAux p n).zpow_zero'
+  zpow_succ' := by exact (instFieldAux p n).zpow_succ'
+  zpow_neg' := by exact (instFieldAux p n).zpow_neg'
+  exists_pair_ne := by exact (instFieldAux p n).exists_pair_ne
+  nnratCast := GaloisField.nnratCast
+  ratCast := GaloisField.ratCast
+  mul_inv_cancel := by exact (instFieldAux p n).mul_inv_cancel
+  inv_zero := by exact (instFieldAux p n).inv_zero
+  nnratCast_def := by exact (instFieldAux p n).nnratCast_def
+  nnqsmul := GaloisField.nnqsmul
+  nnqsmul_def := by exact (instFieldAux p n).nnqsmul_def
+  ratCast_def := by exact (instFieldAux p n).ratCast_def
+  qsmul := GaloisField.qsmul
+  qsmul_def := by exact (instFieldAux p n).qsmul_def
+
+@[implicit_reducible]
+def instAlgebraZModAux (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ) :
+    Algebra (ZMod p) (GaloisField p n) :=
+  inferInstanceAs (Algebra (ZMod p) (delta% GaloisField p n))
+
+/-- The encapsulated integers modulo `p` scalar multiplication for `GaloisField p n`.
+Use `m • x` instead. -/
+public protected def zmodsmul : (m : ZMod p) → (x : GaloisField p n) → GaloisField p n :=
+  (instAlgebraZModAux p n).smul
+
+/-- The encapsulated cast from integers modulo `p` for `GaloisField p n`. Use `↑m` instead. -/
+public protected def zmodCast : (m : ZMod p) → GaloisField p n :=
+  ⇑(instAlgebraZModAux p n).algebraMap
+
+public instance (p : ℕ) [Fact p.Prime] (n : ℕ) : Algebra (ZMod p) (GaloisField p n) where
+  smul := GaloisField.zmodsmul
+  algebraMap.toFun := GaloisField.zmodCast
+  algebraMap.map_one' := by exact (instAlgebraZModAux p n).algebraMap.map_one'
+  algebraMap.map_mul' := by exact (instAlgebraZModAux p n).algebraMap.map_mul'
+  algebraMap.map_zero' := by exact (instAlgebraZModAux p n).algebraMap.map_zero'
+  algebraMap.map_add' := by exact (instAlgebraZModAux p n).algebraMap.map_add'
+  commutes' := by exact (instAlgebraZModAux p n).commutes'
+  smul_def' := by exact (instAlgebraZModAux p n).smul_def'
+
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
+public instance : Inhabited (GaloisField p n) where
+  default := 0
+
+public instance : CharP (GaloisField p n) p :=
+  inferInstanceAs (CharP (delta% GaloisField p n) p)
+
+public instance : Finite (GaloisField p n) :=
+  inferInstanceAs (Finite (delta% GaloisField p n))
+
+public instance : FiniteDimensional (ZMod p) (GaloisField p n) :=
+  inferInstanceAs (FiniteDimensional (ZMod p) (delta% GaloisField p n))
+
+public instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
+  inferInstanceAs (IsSplittingField (ZMod p) (delta% GaloisField p n) (X ^ p ^ n - X))
+
+public theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
@@ -95,9 +261,9 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     rw [@Module.card_eq_pow_finrank (K := ZMod p), ZMod.card] at key
     exact Nat.pow_right_injective (Nat.Prime.one_lt' p).out key
   rw [Set.eq_univ_iff_forall]
-  suffices ∀ (x) (hx : x ∈ (⊤ : Subalgebra (ZMod p) (GaloisField p n))),
-      x ∈ (X ^ p ^ n - X : (ZMod p)[X]).rootSet (GaloisField p n)
-    by simpa
+  suffices ∀ (x) (hx : x ∈ (⊤ : Subalgebra (ZMod p) (X ^ p ^ n - X : (ZMod p)[X]).SplittingField)),
+      x ∈ (X ^ p ^ n - X : (ZMod p)[X]).rootSet (X ^ p ^ n - X : (ZMod p)[X]).SplittingField by
+    simpa
   rw [← SplittingField.adjoin_rootSet]
   simp_rw [Algebra.mem_adjoin_iff]
   intro x hx
@@ -109,8 +275,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   · rintro x (⟨r, rfl⟩ | hx)
     · simp only [map_sub, map_pow, aeval_X]
       rw [← map_pow, ZMod.pow_card_pow, sub_self]
-    · dsimp only [GaloisField] at hx
-      rwa [mem_rootSet_of_ne aux] at hx
+    · rwa [mem_rootSet_of_ne aux] at hx
   · rw [← coeff_zero_eq_aeval_zero']
     simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
@@ -128,13 +293,13 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
-theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
+public theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
+public theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -145,7 +310,7 @@ theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
-def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
+public def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
   have h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
   have inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
@@ -154,16 +319,17 @@ section Fintype
 
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
-theorem _root_.FiniteField.splits_X_pow_card_sub_X :
+public theorem _root_.FiniteField.splits_X_pow_card_sub_X :
     Splits (map (algebraMap (ZMod p) K) (X ^ Fintype.card K - X)) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
-theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
+public theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 
 /-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
-def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
+public def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) :
+    K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_card_eq _ _ h
   IsSplittingField.algEquiv _ _
 
@@ -173,20 +339,20 @@ section Finite
 
 variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
-theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
+public theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
     Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
   haveI : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
-theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
+public theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
   haveI : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
   haveI : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
 
-theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
+public theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
     Splits (X ^ (Nat.card K) - X : K[X]) := by
   cases fintypeOrInfinite K
   · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
@@ -194,7 +360,7 @@ theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
   · rw [← Polynomial.splits_neg_iff]
     simpa [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub] using Splits.X_sub_C (1 : K)
 
-instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
+public instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'
   obtain ⟨p, hp⟩ := CharP.exists K
@@ -206,7 +372,7 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
       hn.symm ▸ dvd_pow_self p n.ne_zero))
 
 /-- Any finite field is (possibly noncanonically) isomorphic to some Galois field. -/
-def algEquivGaloisField (h : Nat.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
+public def algEquivGaloisField (h : Nat.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
   haveI := FiniteField.isSplittingField_of_nat_card_eq _ _ h
   IsSplittingField.algEquiv _ _
 
@@ -222,7 +388,7 @@ section norm
 
 variable [Algebra K K'] [Finite K']
 
-theorem algebraMap_norm_eq_pow {x : K'} :
+public theorem algebraMap_norm_eq_pow {x : K'} :
     algebraMap K K' (Algebra.norm K x) = x ^ ((Nat.card K' - 1) / (Nat.card K - 1)) := by
   have := Finite.of_injective _ (algebraMap K K').injective
   have := Fintype.ofFinite K
@@ -234,7 +400,8 @@ theorem algebraMap_norm_eq_pow {x : K'} :
 
 variable (K K')
 
-theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
+public theorem unitsMap_norm_surjective :
+    Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
   have := Finite.of_injective_finite_range (algebraMap K K').injective
   MonoidHom.surjective_of_card_ker_le_div _ <| by
     simp_rw [Nat.card_units]
@@ -246,7 +413,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr 1; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 
-theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
+public theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
@@ -258,7 +425,8 @@ variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
-def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
+public def algEquivOfCardEq (p : ℕ)
+    [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
   have : CharP K' p := by rw [← Algebra.charP_iff (ZMod p) K' p]; exact ZMod.charP p
@@ -272,7 +440,7 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly noncanonically) isomorphic -/
-def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
+public def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'
   choose n hp hK using FiniteField.card K p
@@ -286,12 +454,12 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   letI : Algebra (ZMod p) K' := ZMod.algebra _ _
   exact ↑(algEquivOfCardEq p hKK')
 
-theorem pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
+public theorem pow_finrank_eq_natCard (p : ℕ) [Fact p.Prime]
     (k : Type*) [AddCommGroup k] [Finite k] [Module (ZMod p) k] :
     p ^ Module.finrank (ZMod p) k = Nat.card k := by
   rw [Module.natCard_eq_pow_finrank (K := ZMod p), Nat.card_zmod]
 
-theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
+public theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
     (k : Type*) [AddCommGroup k] [Fintype k] [Module (ZMod p) k] :
     p ^ Module.finrank (ZMod p) k = Fintype.card k := by
   rw [pow_finrank_eq_natCard, Fintype.card_eq_nat_card]
@@ -299,7 +467,7 @@ theorem pow_finrank_eq_card (p : ℕ) [Fact p.Prime]
 section
 variable {F K L : Type*} [Field F] [Field K] [Algebra F K] [Field L] [Algebra F L] [Finite L]
 
-theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
+public theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
     Nonempty (K →ₐ[F] L) := by
   have := Finite.of_injective _ (algebraMap F L).injective
   have := Fintype.ofFinite F
@@ -313,19 +481,19 @@ theorem nonempty_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finran
   · rw [Module.card_eq_pow_finrank (K := F), Module.card_eq_pow_finrank (K := F) (V := L)]
     exact (map_dvd_map' _).mpr (dvd_pow_pow_sub_self_of_dvd h)
 
-theorem natCard_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
+public theorem natCard_algHom_of_finrank_dvd (h : Module.finrank F K ∣ Module.finrank F L) :
     Nat.card (K →ₐ[F] L) = Module.finrank F K := by
   obtain ⟨f⟩ := nonempty_algHom_of_finrank_dvd h
   algebraize [f.toRingHom]
   have := Finite.of_injective _ (algebraMap K L).injective
   rw [Nat.card_congr (Normal.algHomEquivAut F L K), IsGalois.card_aut_eq_finrank]
 
-theorem card_algHom_of_finrank_dvd [Finite K]
+public theorem card_algHom_of_finrank_dvd [Finite K]
     (h : Module.finrank F K ∣ Module.finrank F L) :
     Fintype.card (K →ₐ[F] L) = Module.finrank F K := by
   rw [Fintype.card_eq_nat_card, natCard_algHom_of_finrank_dvd h]
 
-theorem nonempty_algHom_iff_finrank_dvd :
+public theorem nonempty_algHom_iff_finrank_dvd :
     Nonempty (K →ₐ[F] L) ↔ Module.finrank F K ∣ Module.finrank F L := by
   refine ⟨fun ⟨f⟩ ↦ ?_, nonempty_algHom_of_finrank_dvd⟩
   algebraize [f.toRingHom]
