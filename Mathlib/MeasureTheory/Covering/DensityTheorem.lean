@@ -94,8 +94,8 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
         apply closedBall_subset_closedBall'
         linarith
       have I2 : closedBall y ((4 * K + 3) * r) ⊆ closedBall y (max (4 * K + 3) 3 * r) := by
-        apply closedBall_subset_closedBall
-        exact mul_le_mul_of_nonneg_right (le_max_left _ _) rpos.le
+        gcongr
+        exact le_max_left ..
       apply (measure_mono (I1.trans I2)).trans
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
