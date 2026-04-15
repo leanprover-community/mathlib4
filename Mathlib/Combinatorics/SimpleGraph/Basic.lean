@@ -406,11 +406,17 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
+@[gcongr]
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
 
+theorem Adj.left_mem_support (hadj : G.Adj u v) : u ∈ G.support :=
+  ⟨v, hadj⟩
+
+theorem Adj.right_mem_support (hadj : G.Adj u v) : v ∈ G.support :=
+  hadj.symm.left_mem_support
+
 /-- All vertices are in the support of the complete graph if there is more than one vertex. -/
-@[simp]
 theorem support_top_of_nontrivial [Nontrivial V] : (⊤ : SimpleGraph V).support = Set.univ :=
   Set.eq_univ_of_forall fun v₁ => exists_ne v₁ |>.imp fun _v₂ h => h.symm
 
@@ -619,6 +625,9 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
+@[simp] lemma le_fromEdgeSet_iff : G ≤ fromEdgeSet s ↔ G.edgeSet ⊆ s := by
+  simp [← edgeSet_subset_edgeSet, Set.subset_def]; grind [not_isDiag_of_mem_edgeSet]
+
 @[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
     fromEdgeSet s ≤ G ↔ s \ Sym2.diagSet ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
@@ -659,7 +668,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 
 @[gcongr, mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
-  simpa using Set.diff_subset_diff h fun _ a ↦ a
+  simp only [le_fromEdgeSet_iff, edgeSet_fromEdgeSet]; grw [h]; exact sdiff_le
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
@@ -879,5 +888,22 @@ protected theorem nontrivial_iff : Nontrivial (SimpleGraph V) ↔ Nontrivial V :
   exact Unique.instSubsingleton
 
 end Subsingleton
+
+/-- A vertex in a graph is isolated if it's adjacent to no other vertex. -/
+def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
+
+@[simp] lemma neighborSet_eq_empty : G.neighborSet v = ∅ ↔ G.IsIsolated v := by
+  simp [neighborSet, IsIsolated, Set.ext_iff]
+
+@[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
+  simp [Set.nonempty_iff_ne_empty]
+
+protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
+  neighborSet_eq_empty
+
+attribute [simp] IsIsolated.neighborSet_eq_empty
+
+lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
+  simp [mem_support, IsIsolated]
 
 end SimpleGraph
