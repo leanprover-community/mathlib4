@@ -486,7 +486,7 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   congr with x
   simp only [mem_preimage, mem_singleton_iff, mem_inter_iff, iff_self_and]
   rintro rfl
-  contrapose! H
+  contrapose H
   simpa [H] using hg x
 
 @[simp]
