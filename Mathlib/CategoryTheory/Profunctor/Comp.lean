@@ -35,9 +35,8 @@ def coend.condition {j j' : J} (f : j ⟶ j') :
 def cowedge : Cowedge F := Cowedge.mk (coend F) (coend.ι F) (by intros; apply coend.condition F)
 
 def cowedgeIsColimit : IsColimit (cowedge F) where
-  desc := fun (s : Cowedge F) ↦ TypeCat.ofHom <| Quot.lift (fun x ↦ s.π x.fst x.snd) <| by
-    intro ⟨ja, ha⟩ ⟨jb, hb⟩ h
-    cases h with | mk f x => exact ConcreteCategory.congr_hom (s.condition f) _
+  desc s := TypeCat.ofHom <| Quot.lift (fun x ↦ Multicofork.π s x.fst x.snd) fun _ _ h ↦ by
+    cases h with | mk f x => exact ConcreteCategory.congr_hom (Cowedge.condition s f) _
   fac s := by rintro (_ | _) <;> cat_disch
   uniq s m h := by ext ⟨j⟩; exact ConcreteCategory.congr_hom (h (.right j.fst)) j.snd
 
