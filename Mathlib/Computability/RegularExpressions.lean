@@ -103,6 +103,8 @@ def matches' : RegularExpression α → Language α
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 
+attribute [nolint simpNF] matches'.eq_1 matches'.eq_2
+
 theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
 
@@ -337,6 +339,8 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
   | R + S => map f R + map f S
   | R * S => map f R * map f S
   | star R => star (map f R)
+
+attribute [nolint simpNF] map.eq_1 map.eq_2
 
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :

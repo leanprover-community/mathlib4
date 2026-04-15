@@ -419,6 +419,7 @@ end PartialOrder
 
 section Lattice
 
+/-- Supremum for `WithZero α`, defined via `Option.merge`. -/
 def withZeroSup [Max α] : WithZero α → WithZero α → WithZero α :=
   Option.merge (· ⊔ ·)
 
