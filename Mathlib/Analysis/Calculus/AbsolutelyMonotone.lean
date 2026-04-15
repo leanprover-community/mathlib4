@@ -23,7 +23,7 @@ iterated derivatives within `s` are nonnegative on `s`.
 
 ## References
 
-* Widder, D.V. (1941). *The Laplace Transform*.
+* [D. V. Widder, *The Laplace Transform*][widder1941]
 -/
 
 public section
@@ -39,8 +39,9 @@ structure AbsolutelyMonotoneOn (f : ℝ → ℝ) (s : Set ℝ) : Prop where
 
 namespace AbsolutelyMonotoneOn
 
-/-- Constructor from global `ContDiff` and global `iteratedDeriv`. Works for any `UniqueDiffOn`
-set (includes open sets, `Ici a`, convex sets with nonempty interior, etc.). -/
+/-- A globally smooth function all of whose iterated derivatives are nonnegative on a set `s`
+satisfying `UniqueDiffOn` is absolutely monotone on `s`. Such sets `s` include open sets,
+`Set.Ici`, and convex sets with nonempty interior. -/
 theorem of_contDiff {f : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ ∞ f)
     (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDeriv n f x) : AbsolutelyMonotoneOn f s where
   contDiffOn := hf.contDiffOn
