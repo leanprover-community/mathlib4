@@ -176,8 +176,7 @@ def equivOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.N ≃o Y.N where
   right_inv _ := by simp [N.ext_iff, S.ext_iff']
   map_rel_iff' {x y} := by
     dsimp
-    simp only [le_iff, Subcomplex.ofSimplex_le_iff,
-      Subcomplex.mem_ofSimplex_obj_iff]
+    simp only [le_iff, Subcomplex.ofSimplex_le_iff, Subcomplex.mem_ofSimplex_obj_iff]
     refine exists_congr (fun f ↦ ?_)
     dsimp at f ⊢
     rw [← NatTrans.naturality_apply e.hom f.op]
