@@ -136,6 +136,8 @@ lemma ne (x : P.I) (y : P.II) :
 
 variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B)
 
+/-- Given an isomorphism `Y ≅ X` of simplicial sets, a pairing `P` of a subcomplex
+`A` of `X`, this is a pairing for a subcomplex `B` of `Y` if `A.preimage e.hom = B`. -/
 @[simps I II]
 def ofIso : B.Pairing where
   I := Subcomplex.N.equivOfIso e hA ⁻¹' P.I
