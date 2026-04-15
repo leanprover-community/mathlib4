@@ -28,6 +28,7 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
@@ -46,8 +47,7 @@ instance [HasCoproducts.{w} C] (R : C) :
       fac s j := by
         dsimp
         ext k
-        simp [dsimp% hc.fac_apply, dsimp% Sigma.ι_desc (hc.desc (coconeTypes s)),
-          coconeTypes]
+        simp [dsimp% hc.fac_apply, dsimp% Sigma.ι_desc (hc.desc (coconeTypes s)), coconeTypes]
       uniq s m hm := by
         dsimp
         ext x
@@ -115,7 +115,7 @@ instance :
 
 end
 
-instance [HasCoproducts.{w} C] {α β : Type w} (f : α → β) :
+instance [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
     HasCokernel ((sigmaConst.obj R).map f) := by
   dsimp; infer_instance
 
