@@ -92,6 +92,7 @@ def def_no_doc' : True := .intro
 namespace Foo'
 
 example : True := .intro
+set_option linter.nonClassInstance false in
 instance : True := .intro
 
 end Foo'
