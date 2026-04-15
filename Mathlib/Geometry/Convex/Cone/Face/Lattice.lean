@@ -160,8 +160,8 @@ theorem snd_prod (F₁ : Face C₁) (F₂ : Face C₂) : (F₁.prod F₂).snd = 
 
 theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
   ext x
-  simp only [prod, fst, snd, ← mem_toPointedCone, toPointedCone, mem_prod, mem_map, LinearMap.fst_apply,
-    Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
+  simp only [prod, fst, snd, ← mem_toPointedCone, toPointedCone, mem_prod, mem_map,
+    LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right, LinearMap.snd_apply]
   constructor
   · simp only [and_imp, forall_exists_index]
     intro y yn z zm
