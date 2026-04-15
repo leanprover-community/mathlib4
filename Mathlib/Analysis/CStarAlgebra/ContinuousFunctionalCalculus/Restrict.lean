@@ -135,7 +135,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       simp only [SpectrumRestricts.starAlgHom_apply, ← @spectrum.preimage_algebraMap (R := R) S,
         cfcHom_map_spectrum, Set.ext_iff, Set.mem_preimage, Set.mem_range, ContinuousMap.comp_apply,
         ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.injective.eq_iff]
-      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun b ↦ Eq.congr_right rfl
+      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun _ ↦ Iff.rfl
     case predicate_hom =>
       intro g
       rw [h]
@@ -300,7 +300,7 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       simp only [nonUnitalStarAlgHom_apply, ← @quasispectrum.preimage_algebraMap (R := R) S,
         cfcₙHom_map_quasispectrum, Set.ext_iff, Set.mem_preimage, Set.mem_range, comp_apply, coe_mk,
         ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.injective.eq_iff]
-      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun b ↦ Eq.congr_right rfl
+      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun b ↦ Iff.rfl
     case predicate_hom =>
       intro g
       rw [h]
