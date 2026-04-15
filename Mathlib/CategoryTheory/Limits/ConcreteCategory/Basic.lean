@@ -28,30 +28,30 @@ namespace CategoryTheory.Types
 open Limits
 
 /-! The forgetful functor on `Type u` is the identity; copy the instances on `𝟭 (Type u)`
-over to `forget (Type u)`.
+over to `forget Type u`.
 
 Since instance synthesis only looks through reducible definitions, we need to help it out by copying
 over the instances that wouldn't be found otherwise.
 -/
 
-instance : (forget (Type u)).Full :=
+instance : (forget <| Type u).Full :=
   Functor.Full.id
 
-instance : PreservesLimitsOfSize (forget (Type u)) :=
+instance : PreservesLimitsOfSize (forget <| Type u) :=
   id_preservesLimitsOfSize
-instance : PreservesColimitsOfSize (forget (Type u)) :=
+instance : PreservesColimitsOfSize (forget <| Type u) :=
   id_preservesColimitsOfSize
 
-instance : ReflectsLimitsOfSize (forget (Type u)) :=
+instance : ReflectsLimitsOfSize (forget <| Type u) :=
   id_reflectsLimits
-instance : ReflectsColimitsOfSize (forget (Type u)) :=
+instance : ReflectsColimitsOfSize (forget <| Type u) :=
   id_reflectsColimits
 
-instance : (forget (Type u)).IsEquivalence :=
+instance : (forget <| Type u).IsEquivalence :=
   Functor.isEquivalence_refl
 
-instance : (forget (Type u)).IsCorepresentable :=
-  instIsCorepresentableIdType
+instance : (forget <| Type u).IsCorepresentable :=
+  inferInstanceAs (𝟭 <| Type u).IsCorepresentable
 
 end CategoryTheory.Types
 
@@ -138,6 +138,7 @@ theorem colimit_exists_rep [HasColimit F] (x : ToType (colimit F)) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
@@ -147,8 +148,8 @@ theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i
   let h1 : (F ⋙ forget C).map f ≫ E.ι.app k = E.ι.app i := E.ι.naturality f
   let h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
   change E.ι.app i x = E.ι.app j y
-  rw [← h1, types_comp_apply, hfg]
-  exact congrFun h2 y
+  rw [← h1, comp_apply, hfg]
+  exact ConcreteCategory.congr_hom h2 y
 
 theorem colimit_rep_eq_of_exists [HasColimit F] {i j : J} (x : ToType (F.obj i))
     (y : ToType (F.obj j))

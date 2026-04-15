@@ -228,12 +228,27 @@ theorem limsup_le_limsup_of_le {α β} [ConditionallyCompleteLattice β] {f g : 
     limsup u f ≤ limsup u g :=
   limsSup_le_limsSup_of_le (map_mono h) hf hg
 
+theorem Tendsto.limsup_comp_le_limsup {ι α β} [ConditionallyCompleteLattice β] {v : ι → α}
+    {u : α → β} {f : Filter ι} {g : Filter α} (hv : Tendsto v f g)
+    (hvf : (map v f).IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (hg : g.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
+    limsup (u ∘ v) f ≤ limsup u g := by
+  rw [limsup_comp]
+  exact limsup_le_limsup_of_le hv
+
 theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : Filter α} (h : g ≤ f)
     {u : α → β}
     (hf : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
     (hg : g.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ liminf u g :=
   limsInf_le_limsInf_of_le (map_mono h) hf hg
+
+theorem Tendsto.liminf_le_liminf_comp {ι α β} [ConditionallyCompleteLattice β] {v : ι → α}
+    {u : α → β} {f : Filter ι} {g : Filter α} (hv : Tendsto v f g)
+    (hvf : (map v f).IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (hg : g.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
+    liminf u g ≤ liminf (u ∘ v) f :=
+  hv.limsup_comp_le_limsup (β := βᵒᵈ)
 
 lemma limsSup_principal_eq_csSup (h : BddAbove s) (hs : s.Nonempty) : limsSup (𝓟 s) = sSup s := by
   simp only [limsSup, eventually_principal]; exact csInf_upperBounds_eq_csSup h hs
