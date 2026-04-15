@@ -40,7 +40,10 @@ variable {S : Type v}
 
 /-- The quotient `R/I` of a ring `R` by an ideal `I`,
 defined to equal the quotient of `I` as an `R`-submodule of `R`. -/
-example : HasQuotient R (Ideal R) := by infer_instance
+instance instHasQuotient : HasQuotient R (Ideal R) := Submodule.hasQuotient
+
+/-- Shortcut instance for commutative rings. -/
+instance {R} [CommRing R] : HasQuotient R (Ideal R) := inferInstance
 
 namespace Quotient
 
