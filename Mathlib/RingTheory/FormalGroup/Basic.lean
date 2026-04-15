@@ -192,6 +192,7 @@ lemma constantCoeff_Xzero : PowerSeries.constantCoeff F.Xzero = 0 := by
   simp [PowerSeries.constantCoeff, Xzero, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
     HasSubst.X_zero _ F.zero_constantCoeff]
 
+@[simp]
 lemma Xzero_subst_Xzero : F.Xzero.subst F.Xzero = F.Xzero := by
   calc
     _ = F.toPowerSeries.subst ![F.toPowerSeries.subst ![PowerSeries.X, 0], 0] := by
@@ -240,6 +241,7 @@ lemma constantCoeff_zeroX : PowerSeries.constantCoeff F.zeroX = 0 := by
   simp [PowerSeries.constantCoeff, zeroX, PowerSeries.X, MvPowerSeries.constantCoeff_subst_eq_zero
     HasSubst.zero_X _ F.zero_constantCoeff]
 
+@[simp]
 lemma zeroX_subst_zeroX : F.zeroX.subst F.zeroX = F.zeroX := by
   calc
     _ = F.toPowerSeries.subst ![0, F.toPowerSeries.subst ![0, PowerSeries.X]] := by
@@ -307,8 +309,6 @@ theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
       rw [zero_add_X_eq_X, PowerSeries.subst_X hf]
 
 instance : AddZeroClass (F.Point σ) where
-  zero := 0
-  add x y := x + y
   zero_add x := Subtype.ext (zero_add F x.prop)
   add_zero x := Subtype.ext (add_zero F x.prop)
 
