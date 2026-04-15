@@ -512,8 +512,7 @@ theorem cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_
     grind
   · cases tl
     · exact Seq.Pairwise_cons_nil
-    apply Seq.Pairwise.cons_cons_of_trans _ h_tl_tl
-    simpa [lt_iff_lt] using h_comp
+    · exact h_tl_tl.cons_cons_of_trans (by simpa [lt_iff_lt] using h_comp)
 
 /-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
 leading exponent of `tl` is less than `exp`. -/
@@ -522,22 +521,15 @@ theorem elim_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion b
     coef.Sorted ∧ leadingExp tl < exp ∧ tl.Sorted := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
-  · specialize h_coef (exp, coef) (by simp)
-    simpa using h_coef
+  · simpa using h_coef (exp, coef) (by simp)
   cases tl with
-  | nil =>
-    simp
+  | nil => simp
   | cons tl_exp tl_coef tl_tl =>
-  obtain ⟨h_all, h_Pairwise⟩ := Seq.Pairwise.cons_elim h_Pairwise
+  obtain ⟨h_all, h_Pairwise⟩ := h_Pairwise.cons_elim
   constructor
   · simp only [leadingExp_cons, WithBot.coe_lt_coe]
-    apply h_all (tl_exp, tl_coef) (by simp [Multiseries.cons])
-  constructor
-  · intro x hx
-    apply h_coef
-    simp at hx ⊢
-    grind
-  · assumption
+    exact h_all (tl_exp, tl_coef) (by simp [Multiseries.cons])
+  · exact Sorted.seq _ (fun x hx ↦ h_coef _ (by simp_all)) h_Pairwise
 
 theorem tail {ms : Multiseries basis_hd basis_tl} (h : ms.Sorted) :
     ms.tail.Sorted := by
@@ -561,8 +553,7 @@ theorem coind {s : Multiseries basis_hd basis_tl}
   · apply Seq.all_coind
     · exact h_base
     · intro (exp, coef) tl h
-      specialize h_step exp coef tl h
-      grind
+      grind [h_step exp coef tl h]
   · apply Seq.Pairwise.coind_trans
     · exact h_base
     · intro (exp, coef) tl h
@@ -572,8 +563,7 @@ theorem coind {s : Multiseries basis_hd basis_tl}
         replace h_step := (h_step exp coef tl h).right.left
         cases tl <;> simp [leadingExp, head] at h_tl h_step
         grind
-      · specialize h_step exp coef tl h
-        grind
+      · grind [h_step exp coef tl h]
 
 end Multiseries.Sorted
 
@@ -616,6 +606,7 @@ theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
 end Sorted
 
 end Sorted
+
 section Approximates
 
 open Tactic.ComputeAsymptotics
