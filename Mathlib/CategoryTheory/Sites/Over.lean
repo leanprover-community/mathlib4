@@ -278,8 +278,8 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
       dsimp [e, W', g₁', g₂']
-      rw [← FunctorToTypes.map_comp_apply]
-      apply congr_fun
+      rw [← Functor.map_comp_apply]
+      apply ConcreteCategory.congr_hom
       congr 1
       rw [← op_comp]
       congr 1
