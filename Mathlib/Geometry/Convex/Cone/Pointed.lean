@@ -1,24 +1,38 @@
 /-
 Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Apurva Nakade
+Authors: Apurva Nakade, Yury Kudryashov, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.Analysis.Convex.Hull
 
 
 /-!
 # Pointed cones
 
-A *pointed cone* is defined to be a submodule of a module where the scalars are restricted to be
-nonnegative. This is equivalent to saying that, as a set, a pointed cone is a convex cone which
-contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
-as it allows us to use the `Module` API to work with convex cones.
+In an `R`-module `M`, a *pointed cone* is a set `s` closed under conical combinations; that is,
+such that `a • x + b • y ∈ s` whenever `x, y ∈ s` and `a, b ≥ 0`.
 
+We define a pointed cone as a submodule of a module where the scalars are restricted to be
+nonnegative.  We choose this definition as it allows us to use the `Module` API to work with cones.
+
+## Main statements
+
+In `Mathlib/Analysis/Convex/Cone/Extension.lean` we prove
+the M. Riesz extension theorem and a form of the Hahn-Banach theorem.
+
+In `Mathlib/Analysis/Convex/Cone/Dual.lean` we prove
+a variant of the hyperplane separation theorem.
+
+## References
+
+* https://en.wikipedia.org/wiki/Convex_cone
+* [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
+* [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
 
 @[expose] public section
@@ -89,71 +103,21 @@ lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s,
 
 end Submodule
 
-section ConvexCone
+section PointedCone
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 variable {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
-/-- Every pointed cone is a convex cone. -/
-@[coe]
-def toConvexCone (C : PointedCone R E) : ConvexCone R E where
-  carrier := C
-  smul_mem' c hc _ hx := C.smul_mem ⟨c, le_of_lt hc⟩ hx
-  add_mem' _ hx _ hy := C.add_mem hx hy
-
-instance : Coe (PointedCone R E) (ConvexCone R E) where
-  coe := toConvexCone
-
-theorem toConvexCone_injective : Injective ((↑) : PointedCone R E → ConvexCone R E) :=
-  fun _ _ => by simp [toConvexCone]
-
-@[simp]
-theorem pointed_toConvexCone (C : PointedCone R E) : (C : ConvexCone R E).Pointed := by
-  simp [toConvexCone, ConvexCone.Pointed]
-
-@[simp] lemma mem_toConvexCone : x ∈ C.toConvexCone ↔ x ∈ C := .rfl
-
 @[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
-
-lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.convex
 
 @[aesop 90% (rule_sets := [SetLike])]
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
-set_option backward.isDefEq.respectTransparency false in
-/-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
-def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
-  carrier := C
-  add_mem' hx hy := C.add_mem hx hy
-  zero_mem' := hC
-  smul_mem' := fun ⟨c, hc⟩ x hx => by
-    simp_rw [SetLike.mem_coe]
-    rcases eq_or_lt_of_le hc with hzero | hpos
-    · unfold ConvexCone.Pointed at hC
-      convert hC
-      simp [← hzero]
-    · apply ConvexCone.smul_mem
-      · convert hpos
-      · exact hx
+lemma convex (C : PointedCone R E) : Convex R (C : Set E) :=
+  convex_iff_add_mem.2 fun _ hx _ hy _ _ ha hb _ ↦ add_mem (C.smul_mem ha hx) (C.smul_mem hb hy)
 
-@[simp]
-lemma _root_.ConvexCone.mem_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) (x : E) :
-    x ∈ C.toPointedCone hC ↔ x ∈ C :=
-  Iff.rfl
-
-@[simp, norm_cast]
-lemma _root_.ConvexCone.coe_toPointedCone (C : ConvexCone R E) (hC : C.Pointed) :
-    C.toPointedCone hC = C :=
-  rfl
-
-@[simp]
-lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone trivial = ⊤ := rfl
-
-instance : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
-  prf C hC := ⟨C.toPointedCone hC, rfl⟩
-
-end ConvexCone
+end PointedCone
 
 section Definitions
 
@@ -220,11 +184,6 @@ def map (f : E →ₗ[R] F) (C : PointedCone R E) : PointedCone R F :=
   Submodule.map (f : E →ₗ[R≥0] F) C
 
 @[simp, norm_cast]
-theorem toConvexCone_map (C : PointedCone R E) (f : E →ₗ[R] F) :
-    (C.map f : ConvexCone R F) = (C : ConvexCone R E).map f :=
-  rfl
-
-@[simp, norm_cast]
 theorem coe_map (C : PointedCone R E) (f : E →ₗ[R] F) : (C.map f : Set F) = f '' C :=
   rfl
 
@@ -263,6 +222,53 @@ theorem mem_comap {f : E →ₗ[R] F} {C : PointedCone R F} {x : E} : x ∈ C.co
 
 end Maps
 
+section LinearOrderedField
+
+variable {𝕜 M : Type} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+
+section AddCommMonoid
+
+variable [AddCommMonoid M] [Module 𝕜 M]
+
+lemma smul_mem_iff (C : PointedCone 𝕜 M)
+    {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc).le h, C.smul_mem hc.le⟩
+
+end AddCommMonoid
+
+section AddCommGroup
+
+open Pointwise
+
+variable [AddCommGroup M] [Module 𝕜 M] {C : PointedCone 𝕜 M} {s : Set M} {x : M}
+
+/-- The cone hull of a convex set is simply the union of the halflines through that set. -/
+lemma mem_hull_of_convex {hs : Convex 𝕜 s} {hs₂ : s.Nonempty} :
+    x ∈ hull 𝕜 s ↔ ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s where
+  mp hx := (Submodule.span_le (R := {c : 𝕜 // 0 ≤ c}) (p := {
+              carrier := {y | ∃ r : 𝕜, 0 ≤ r ∧ y ∈ r • s}
+              zero_mem' := ⟨0, by simp [hs₂]⟩
+              add_mem' := by
+                rintro y₁ y₂ ⟨r₁, hr₁, hy₁⟩ ⟨r₂, hr₂, hy₂⟩
+                refine ⟨r₁ + r₂, add_nonneg hr₁ hr₂, ?_⟩
+                rw [hs.add_smul hr₁ hr₂]
+                exact Set.add_mem_add hy₁ hy₂
+              smul_mem' := by
+                intro ⟨r₁, hr₁⟩ y ⟨r₂, hr₂, hy⟩
+                refine ⟨r₁ * r₂, mul_nonneg hr₁ hr₂, ?_⟩
+                rw [mul_smul]
+                exact Set.smul_mem_smul_set hy
+            })).mpr (fun y hy ↦ ⟨1, by simpa⟩) hx
+  mpr := by rintro ⟨r, hr, y, hy, rfl⟩; exact (hull 𝕜 s).smul_mem hr <| subset_hull hy
+
+/-- The cone hull of a convex set is simply the union of the halflines through that set. -/
+lemma coe_hull_of_convex (hs : Convex 𝕜 s) (hs₂ : s.Nonempty) :
+    hull 𝕜 s = {x | ∃ r : 𝕜, 0 ≤ r ∧ x ∈ r • s} := by ext; simp [mem_hull_of_convex, *]
+
+end AddCommGroup
+
+end LinearOrderedField
+
 section PositiveCone
 
 variable (R E)
@@ -271,16 +277,18 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
-def positive : PointedCone R E :=
-  (ConvexCone.positive R E).toPointedCone ConvexCone.pointed_positive
+@[simps!]
+def positive : PointedCone R E where
+  __ := AddSubmonoid.nonneg E
+  smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
-  rfl
+lemma positive.isPointed {G : Type*} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G]
+    [Module R G] [PosSMulMono R G] : (positive R G).IsPointed :=
+  AddSubmonoid.nonneg.isPointed G
 
 end PositiveCone
 
@@ -349,15 +357,7 @@ theorem lineal_eq_sSup (C : PointedCone R E) : C.lineal = sSup {S : Submodule R 
 
 end Lineal
 
-section Salient
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
-
-/-- A pointed cone is salient iff the intersection of the cone with its negative
-is the set `{0}`. -/
-lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
-    (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
-  simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
-
-end Salient
+@[deprecated (since := "2026-03-26")]
+alias salient_iff_inter_neg_eq_singleton := isPointed_iff_support_eq_bot
 
 end PointedCone

@@ -19,13 +19,6 @@ When the pairing is perfect, this gives us the algebraic dual of a cone. This is
 When the pairing is continuous and perfect (as a continuous pairing), this gives us the topological
 dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 
-## Implementation notes
-
-We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
-always contains `0`, i.e. is a pointed cone.
-Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
-`ConvexCone.dual`.
-
 -/
 
 @[expose] public section
