@@ -172,7 +172,7 @@ theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R)
         exact hn
     · rwa [ofPowerSeries_apply hq, ofPowerSeries_apply (one_lt_pow' hq hk),
         Function.extend_apply', Function.extend_apply']
-      contrapose! hn
+      contrapose hn
       obtain ⟨i, rfl⟩ := hn
       exact ⟨k * i, pow_mul q k i⟩
   · simp [ofPowerSeries, hq, hk]
@@ -198,14 +198,14 @@ theorem isMultiplicative_ofPowerSeries_of_isPrimePow
     · simp_rw [ofPowerSeries_apply hp.one_lt]
       rw [Function.extend_apply', Function.extend_apply' _ _ _ hn,
         Pi.zero_apply, Pi.zero_apply, mul_zero]
-      contrapose! hn
+      contrapose hn
       obtain ⟨j, hj⟩ := hn
       obtain ⟨v, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp (Dvd.intro_left _ hj.symm)
       exact ⟨v, rfl⟩
   · simp_rw [ofPowerSeries_apply hp.one_lt]
     rw [Function.extend_apply', Function.extend_apply' _ _ _ hm,
       Pi.zero_apply, Pi.zero_apply, zero_mul]
-    contrapose! hm
+    contrapose hm
     obtain ⟨i, hi⟩ := hm
     obtain ⟨j, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp ⟨n, hi⟩
     exact ⟨j, rfl⟩
