@@ -175,7 +175,7 @@ def extractDeepCoef (ms : MS) (h_trimmed : Q(MultiseriesExpansion.Trimmed $ms.va
       basis := q($basis_tl)
       logBasis := q(LogBasis.tail $ms.logBasis)
       val := q($coef)
-      h_approx := q((MultiseriesExpansion.Approximates_cons $ms.h_approx).left)
+      h_approx := q((MultiseriesExpansion.Approximates.elim_cons $ms.h_approx).left)
       h_sorted := q((MultiseriesExpansion.Sorted_cons $ms.h_sorted).left)
       h_basis := q(WellFormedBasis.tail $ms.h_basis)
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)

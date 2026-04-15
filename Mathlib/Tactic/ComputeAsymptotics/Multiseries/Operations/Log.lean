@@ -191,7 +191,7 @@ theorem log_Approximates {basis : Basis}
   cases ms with
   | nil f =>
     simp only [log, mk_seq, Multiseries.log, Multiseries.destruct_nil, mk_toFun,
-      Approximates_nil_iff]
+      Approximates.nil_iff]
     simp at h_approx
     apply h_approx.mono
     intro x hx
@@ -200,7 +200,7 @@ theorem log_Approximates {basis : Basis}
   | cons exp coef tl f =>
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-  obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   have h_f_pos : ∀ᶠ t in atTop, 0 < f t :=
     eventually_pos_of_coef_pos h_pos h_sorted h_approx h_trimmed h_basis
   cases basis_tl with
@@ -224,7 +224,7 @@ theorem log_Approximates {basis : Basis}
         apply mulConst_Approximates
         convert h_tl using 4
         simp
-    convert replaceFun_Approximates _ h
+    convert h.replaceFun _
     · ext g
       simp [ext_iff, ms]
     simp only [pow_zero, const_toFun, one_mul, add_toFun, const_toFun', powser_toFun,
@@ -302,7 +302,7 @@ theorem log_Approximates {basis : Basis}
           apply inv_Sorted h_coef_sorted
         apply mulMonomial_Approximates h_basis h_tl
         exact inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
-    convert replaceFun_Approximates _ h
+    convert h.replaceFun _
     · ext g
       simp [ext_iff, ms]
     have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis

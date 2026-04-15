@@ -60,8 +60,8 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ �
     (h_coef_fun : coef'.toFun = coef.toFun)
     (h_zero : coef'.IsZero) :
     (MultiseriesExpansion.mk tl f).Approximates := by
-  obtain ⟨h_coef, h_maj, h_tl⟩ := MultiseriesExpansion.Approximates_cons h_approx
-  convert MultiseriesExpansion.replaceFun_Approximates _ h_tl
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+  convert h_tl.replaceFun _
   replace h_zero := MultiseriesExpansion.IsZero_Approximates_zero h_zero h_coef'_approx
   rw [h_coef_fun] at h_zero
   simp only [MultiseriesExpansion.mk_toFun]
@@ -76,7 +76,7 @@ theorem approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ →
     (h_coef'_approx : coef'.Approximates)
     (h_coef_fun : coef'.toFun = coef.toFun) :
     (MultiseriesExpansion.mk (.cons exp coef' tl) f).Approximates := by
-  obtain ⟨h_coef, h_maj, h_tl⟩ := MultiseriesExpansion.Approximates_cons h_approx
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   apply MultiseriesExpansion.Approximates.cons h_coef'_approx h_maj
   convert h_tl
 
@@ -149,7 +149,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
       let h_tl_sorted : Q(($tl).Sorted) :=
         q((MultiseriesExpansion.Sorted_cons $h_extracted_sorted).right.right)
       let h_coef_approx : Q(MultiseriesExpansion.Approximates $coef) :=
-        q((MultiseriesExpansion.Approximates_cons ($h_eq_extracted ▸ $h_approx)).left)
+        q((MultiseriesExpansion.Approximates.elim_cons ($h_eq_extracted ▸ $h_approx)).left)
 
       let coef_trimmed ← trim q($coef) q($h_coef_sorted) q($h_coef_approx)
         q(WellFormedBasis.tail $h_basis) allZeroNew

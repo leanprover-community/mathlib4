@@ -286,7 +286,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   | cons basis_hd basis_tl =>
     cases ms with
     | nil f =>
-      apply Approximates_nil at h_approx
+      apply Approximates.elim_nil at h_approx
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_nil, ↓reduceIte, mk_toFun,
         Real.pi_rpow_zero]
       convert one_Approximates h_basis
@@ -296,7 +296,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-      obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_cons, mul_zero, mk_toFun,
         Real.pi_rpow_zero]
       let ms := (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser
@@ -316,7 +316,7 @@ theorem pow_zero_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
         · apply pow_zero_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
-      convert replaceFun_Approximates _ h
+      convert h.replaceFun _
       simp [ms, powSeries_zero_toFun_eq]
 
 theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : ℝ}
@@ -331,7 +331,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
   | cons basis_hd basis_tl =>
     cases ms with
     | nil f =>
-      apply Approximates_nil at h_approx
+      apply Approximates.elim_nil at h_approx
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_nil, mk_toFun]
       split_ifs
       apply Approximates.nil
@@ -344,7 +344,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
         eventually_pos_of_coef_pos h_pos h_sorted h_approx h_trimmed h_basis
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-      obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       simp only [pow, mk_seq, Multiseries.pow, Multiseries.destruct_cons, mk_toFun]
       let ms := (((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser
         (powSeries a)).mulMonomial (coef.pow a) (exp * a)
@@ -363,7 +363,7 @@ theorem pow_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} {a : 
           · apply mulMonomial_Approximates h_basis h_tl
             apply inv_Approximates h_basis.tail h_coef_sorted h_coef h_coef_trimmed
         · apply pow_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed h_pos
-      convert replaceFun_Approximates _ h
+      convert h.replaceFun _
       have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted
         h_approx h_trimmed
       simp only [mulMonomial_toFun, mk_toFun, inv_toFun, powser_toFun, pow_toFun,

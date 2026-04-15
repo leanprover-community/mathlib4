@@ -155,8 +155,8 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   cases ms with
   | nil f =>
     simp only [exp, mk_seq, Multiseries.exp, Multiseries.destruct_nil, mk_toFun]
-    apply Approximates_nil at h_approx
-    convert replaceFun_Approximates _ (one_Approximates h_basis)
+    apply Approximates.elim_nil at h_approx
+    convert (one_Approximates h_basis).replaceFun _
     · ext g
       simp [ext_iff]
     · apply h_approx.mono
@@ -174,7 +174,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   subst h_exp
   clear h_if
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-  obtain ⟨h_coef, h_majorized, h_tl⟩ := Approximates_cons h_approx
+  obtain ⟨h_coef, h_majorized, h_tl⟩ := h_approx.elim_cons
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
     simp only [pow_zero, one_mul, ms]
@@ -186,7 +186,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       contrapose! h_nonpos
       simp only [exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps]
       exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
-  apply replaceFun_Approximates _ h
+  apply h.replaceFun _
   simp only [pow_zero, one_mul, mulMonomial_toFun, powser_toFun, expSeries_toFun, mk_toFun,
     Real.pi_rpow_zero, mul_one, exp_toFun, ms]
   apply EventuallyEq.of_eq

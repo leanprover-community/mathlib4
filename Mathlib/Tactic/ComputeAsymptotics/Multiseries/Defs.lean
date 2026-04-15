@@ -31,7 +31,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `Multiseries.Sorted ms` means that at each level of `ms` as a nested tree all exponents are
   strictly decreasing.
 * `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
-  an asymptotical approximations of its attached function.
+  an asymptotical approximation of its attached function.
 
 ## Implementation details
 
@@ -973,7 +973,9 @@ variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 attribute [simp] Approximates.const
 
-theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+namespace Approximates
+
+theorem coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
     (h_base : motive ms)
     (h_step : ∀ ms, motive ms →
@@ -983,42 +985,34 @@ theorem Approximates.coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
         Majorized ms.toFun basis_hd exp ∧
         motive (mk (basis_hd := basis_hd) tl (ms.toFun - basis_hd ^ exp * coef.toFun)))) :
     ms.Approximates := by
-  apply Approximates.coinduct fun {basis} ms =>
-    Approximates ms ∨ ∃ (h_basis : basis = basis_hd :: basis_tl), (motive (h_basis ▸ ms))
+  apply coinduct fun {basis} ms =>
+    ms.Approximates ∨ ∃ (h_basis : basis = basis_hd :: basis_tl), (motive (h_basis ▸ ms))
   · rintro basis ms (h_ms | ⟨rfl, h_ms⟩)
     · cases h_ms <;> grind
     simp only [reduceCtorEq, List.cons.injEq, ↓existsAndEq, and_true, heq_eq_eq, ms_eq_mk_iff,
       true_and, exists_eq_right_right', exists_and_left, false_or] at h_ms ⊢
-    specialize h_step _ h_ms
-    rcases h_step with h_step | ⟨exp, coef, tl, h_seq, h_coef, h_maj, h_tl⟩
-    · left
-      grind
-    · right
-      use basis_hd, ms.toFun, basis_tl, exp, coef
-      constructorm* _ ∧ _
-      · simpa
-      · assumption
-      use tl
+    rcases h_step _ h_ms with h_step | ⟨exp, coef, tl, h_seq, h_coef, h_maj, h_tl⟩
+    · grind
+    · refine .inr ⟨basis_hd, ms.toFun, basis_tl, exp, coef, by simpa, ‹_›, tl, ?_⟩
       simp
       grind
   · grind
 
 /-- If `[]` approximates `f`, then `f = 0` eventually. -/
-theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
+theorem elim_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
     f =ᶠ[atTop] 0 := by
   generalize h_ms : (mk .nil f) = ms at h
   cases h <;> simp at h_ms; grind
 
 @[simp]
-theorem Approximates_nil_iff {f : ℝ → ℝ} :
-    (mk (basis_hd := basis_hd) (basis_tl := basis_tl) .nil f).Approximates ↔ f =ᶠ[atTop] 0 where
-  mp h := Approximates_nil h
-  mpr h := Approximates.nil h
+theorem nil_iff {f : ℝ → ℝ} :
+    (mk (basis_hd := basis_hd) (basis_tl := basis_tl) .nil f).Approximates ↔ f =ᶠ[atTop] 0 :=
+  ⟨elim_nil, nil⟩
 
 /-- If `cons (exp, coef) tl` approximates `f`, then `f` can be Majorized with exponent `exp`, and
 there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
 `f - fC * basis_hd ^ exp`. -/
-theorem Approximates_cons {exp : ℝ}
+theorem elim_cons {exp : ℝ}
     {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
     (h : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Approximates ∧
@@ -1028,41 +1022,34 @@ theorem Approximates_cons {exp : ℝ}
   cases h <;> simp at h_ms; grind
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
-theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
     (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
     (ms.replaceFun f).Approximates := by
   let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
       ∃ (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
       ms = ms'.replaceFun f' ∧ ms'.Approximates ∧ ms'.toFun =ᶠ[atTop] f'
-  apply Approximates.coind motive
-  · simp only [motive]
-    use ms, f
+  apply Approximates.coind motive ⟨ms, f, by grind⟩
   rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
   cases ms with
   | nil g =>
-    simp only [Approximates_nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,
+    simp only [nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,
       Multiseries.nil_ne_cons, false_and, exists_const, or_false] at h_approx h_eq ⊢
     grw [← h_eq, h_approx]
   | cons exp coef tl g =>
-    right
-    obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
-    use exp, coef, tl
+    obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+    refine .inr ⟨exp, coef, tl, ?_⟩
     simp only [mk_replaceFun, mk_seq, h_coef, mk_toFun, true_and]
     simp only [mk_toFun] at h_eq
-    constructor
-    · exact h_maj.of_eventuallyEq h_eq.symm
-    refine ⟨mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl, h_tl, ?_⟩
-    simp only [mk_toFun]
-    grw [h_eq]
+    refine ⟨h_maj.of_eventuallyEq h_eq.symm, mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl,
+      h_tl, ?_⟩
+    grw [mk_toFun, h_eq]
+
+end Approximates
 
 instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
     Setoid (MultiseriesExpansion (basis_hd :: basis_tl)) where
   r x y := x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun
-  iseqv := by
-    constructor
-    · simp
-    · grind [EventuallyEq.symm]
-    · grind [EventuallyEq.trans]
+  iseqv := ⟨by simp, by grind [EventuallyEq.symm], by grind [EventuallyEq.trans]⟩
 
 @[simp]
 theorem equiv_def {x y : MultiseriesExpansion (basis_hd :: basis_tl)} :

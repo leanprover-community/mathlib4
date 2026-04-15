@@ -216,7 +216,7 @@ mutual
       (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
       f ~[atTop] basis_hd ^ exp * coef.toFun := by
     obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-    obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+    obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
     have coef_ih := coef.IsEquivalent_leadingMonomial h_coef_sorted h_coef h_coef_trimmed
       (h_basis.tail)
     simp only [IsEquivalent]
@@ -224,11 +224,11 @@ mutual
     simp only [Pi.sub_apply]
     cases tl with
     | nil =>
-      apply Approximates_nil at h_tl
+      apply Approximates.elim_nil at h_tl
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     | cons tl_exp tl_coef tl_tl =>
-      obtain ⟨_, h_tl_maj, _⟩ := Approximates_cons h_tl
+      obtain ⟨_, h_tl_maj, _⟩ := h_tl.elim_cons
       simp only [Multiseries.leadingExp_cons, WithBot.coe_lt_coe] at h_comp
       let exp' := (exp + tl_exp) / 2
       specialize h_tl_maj exp' (by simp only [exp']; linarith)
@@ -291,13 +291,13 @@ mutual
     | cons basis_hd basis_tl =>
       cases ms with
       | nil =>
-        have hF := Approximates_nil h_approx
+        have hF := Approximates.elim_nil h_approx
         unfold leadingMonomial
         simp only [mk_toFun, realCoef, mk_seq, Multiseries.head_nil, exps_eq_Seq_exps,
           Multiseries.nil_exps, List.length_cons, Monomial.zero_coef_toFun']
         apply EventuallyEq.isEquivalent (by assumption)
       | cons exp coef tl f =>
-        obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
+        obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
         obtain ⟨h_coef_sorted, h_comp, _⟩ := Sorted_cons h_sorted
         have coef_ih := coef.IsEquivalent_leadingMonomial h_coef_sorted h_coef h_coef_trimmed
@@ -680,12 +680,12 @@ theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesE
     simp [h_eq.right] at h_exps
   cases ms with
   | nil =>
-    apply Approximates_nil at h_approx
+    apply Approximates.elim_nil at h_approx
     apply Tendsto.congr' h_approx.symm
     apply tendsto_const_nhds
   | cons exp coef tl f =>
     obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-    obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
+    obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := h_approx.elim_cons
     simp only [leadingMonomial, realCoef, mk_seq, Multiseries.head_cons, exps_eq_Seq_exps,
       Multiseries.cons_exps, Monomial.mk.injEq] at h_eq
     simp only [← h_eq.right, UnitMonomial.FirstNonzeroIsNeg.cons_iff] at h_exps

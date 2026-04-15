@@ -790,13 +790,13 @@ mutual
     cases B with
     | nil fB =>
       left
-      apply Approximates_nil at hB_approx
+      apply Approximates.elim_nil at hB_approx
       simp only [mulMonomial_toFun, mk_toFun] at hf_eq
       simp only [h_seq_eq, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_nil, true_and]
       grw [hf_eq, hB_approx]
       simp
     | cons B_exp B_coef B_tl fB =>
-    obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons hB_approx
+    obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := hB_approx.elim_cons
     right
     simp only [h_seq_eq, mulMonomial_seq, mk_seq, Multiseries.mulMonomial_cons,
       Multiseries.cons_eq_cons, equiv_def, mulMonomial_toFun, mk_toFun, ↓existsAndEq, and_true,
@@ -837,7 +837,7 @@ mutual
       rintro ms ⟨Y, ⟨h_seq_eq, hf_eq⟩, hY_approx⟩
       cases X with
       | nil fX =>
-        apply Approximates_nil at hX_approx
+        apply Approximates.elim_nil at hX_approx
         simp only [mul_toFun, mk_toFun] at hf_eq
         simp only [h_seq_eq, mul_seq, mk_seq, Multiseries.nil_mul, true_and, ↓existsAndEq,
           Multiseries.nil_ne_cons, false_and, exists_const, or_false]
@@ -847,15 +847,15 @@ mutual
       cases Y with
       | nil fY =>
         simp only [mul_toFun, mk_toFun] at hf_eq
-        apply Approximates_nil at hY_approx
+        apply Approximates.elim_nil at hY_approx
         simp only [h_seq_eq, mul_seq, mk_seq, Multiseries.mul_nil, true_and, ↓existsAndEq,
           Multiseries.nil_ne_cons, false_and, exists_const, or_false]
         grw [hf_eq, hY_approx]
         simp
       | cons Y_exp Y_coef Y_tl fY =>
       right
-      obtain ⟨hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
-      obtain ⟨hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
+      obtain ⟨hX_coef_approx, hX_maj, hX_tl_approx⟩ := hX_approx.elim_cons
+      obtain ⟨hY_coef_approx, hY_maj, hY_tl_approx⟩ := hY_approx.elim_cons
       simp only [mul_toFun, mk_toFun] at hf_eq
       simp only [↓existsAndEq, h_seq_eq, mul_seq, mk_seq, Multiseries.mul_cons_cons,
         Multiseries.cons_eq_cons, true_and, mul_toFun]
@@ -949,7 +949,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   rintro ms ⟨A, B, ⟨h_seq_eq, hf_eq⟩, hA, hB_sorted, hB⟩
   cases A with
   | nil fA =>
-    apply Approximates_nil at hA
+    apply Approximates.elim_nil at hA
     simp only [mul_toFun, mk_toFun] at hf_eq
     simp only [h_seq_eq, mul_seq, mk_seq, Multiseries.nil_mul, true_and, ↓existsAndEq,
       Multiseries.nil_ne_cons, false_and, exists_const, or_false]
@@ -968,7 +968,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp only [mul_toFun, mk_toFun] at hf_eq
   simp only [↓existsAndEq, h_seq_eq, mul_seq, mk_seq, hB_seq, Multiseries.mul_cons_cons,
     Multiseries.cons_eq_cons, true_and, mul_toFun]
-  obtain ⟨hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
+  obtain ⟨hA_coef, hA_maj, hA_tl⟩ := hA.elim_cons
   use (mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun)).mulMonomial B_coef B_exp,
     (Multiseries.cons A_exp A_coef A_tl).mul (X.seq.mul Y.seq)
   simp only [mulMonomial_seq, mk_seq, mulMonomial_toFun, mk_toFun, true_and]

@@ -289,7 +289,7 @@ def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter
   return {ms with
     val := q(MultiseriesExpansion.replaceFun $ms.val $f)
     h_sorted := q(MultiseriesExpansion.replaceFun_Sorted $ms.h_sorted)
-    h_approx := q(MultiseriesExpansion.replaceFun_Approximates $h $ms.h_approx)
+    h_approx := q(MultiseriesExpansion.Approximates.replaceFun $h $ms.h_approx)
   }
 
 /-- Given a multiseries `ms` and a function `f`, returns the multiseries `res` representing the same

@@ -24,7 +24,7 @@ open Filter Stream' Topology
 lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     (h : MultiseriesExpansion.Approximates (basis := basis_hd :: basis_tl) (mk .nil f)) :
     Tendsto f atTop (𝓝 0) := by
-  apply MultiseriesExpansion.Approximates_nil at h
+  simp only [Approximates.nil_iff] at h
   exact h.tendsto
 
 mutual
@@ -385,7 +385,7 @@ lemma map_id_Approximates {basis_hd basis_tl basis_tl'}
   | nil f => simpa using h_approx
   | cons exp coef tl g =>
   right
-  obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   simp only [mk_seq, Multiseries.map_cons, id_eq, mk_toFun, Multiseries.cons_eq_cons, ms_eq_mk_iff,
     ↓existsAndEq, and_true, hf_approx _ h_coef, hf_toFun, true_and, exists_eq_left', h_maj, motive]
   use mk tl (g - basis_hd ^ exp * coef.toFun)

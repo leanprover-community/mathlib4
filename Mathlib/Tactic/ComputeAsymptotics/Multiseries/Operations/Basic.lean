@@ -215,12 +215,12 @@ theorem mulConst_Approximates {basis : Basis} {ms : MultiseriesExpansion basis} 
     cases X with
     | nil =>
       left
-      apply Approximates_nil at hX_approx
+      apply Approximates.elim_nil at hX_approx
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_nil, mulConst_toFun, mk_toFun, true_and]
       grw [hX_approx]
       simp
     | cons X_exp X_coef X_tl fX =>
-      obtain ⟨hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+      obtain ⟨hX_coef, hX_maj, hX_tl⟩ := hX_approx.elim_cons
       right
       simp only [mulConst_seq, mk_seq, Multiseries.mulConst_cons, Multiseries.cons_eq_cons,
         mulConst_toFun, mk_toFun, ↓existsAndEq, and_true, mulConst_Approximates hX_coef,

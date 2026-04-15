@@ -203,11 +203,11 @@ theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ �
   | cons basis_tl_hd basis_tl_tl =>
     cases ms with
     | nil f =>
-      simp only [Approximates_nil_iff, mk_toFun] at h_approx ⊢
+      simp only [Approximates.nil_iff, mk_toFun] at h_approx ⊢
       apply Majorized.of_eventuallyEq h_approx
       apply Majorized.zero
     | cons exp coef tl f =>
-      obtain ⟨_, h_maj, _⟩ := Approximates_cons h_approx
+      obtain ⟨_, h_maj, _⟩ := h_approx.elim_cons
       simp only [mk_toFun]
       intro exp' h_exp
       apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)

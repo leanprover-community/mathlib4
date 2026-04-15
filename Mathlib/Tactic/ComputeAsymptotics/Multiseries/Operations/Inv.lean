@@ -204,7 +204,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
     (h_trimmed : Trimmed (mk (.cons exp coef tl) f)) :
     Tendsto ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial
       coef.inv (-exp)).toFun atTop (𝓝 0) := by
-  obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+  obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
   have := IsEquivalent_coef h_approx h_sorted h_coef_trimmed h_coef_ne_zero h_basis
@@ -231,9 +231,9 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
   | cons basis_hd basis_tl =>
     cases ms with
     | nil f =>
-      apply Approximates_nil at h_approx
+      apply Approximates.elim_nil at h_approx
       simp only [inv, mk_seq, Multiseries.inv, Multiseries.destruct_nil, mk_toFun,
-        Approximates_nil_iff]
+        Approximates.nil_iff]
       grw [h_approx]
       apply EventuallyEq.of_eq
       ext t
@@ -241,7 +241,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     | cons exp coef tl f =>
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
       obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
-      obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
+      obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=
         eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_sorted h_coef h_coef_trimmed
           (h_basis.tail)
@@ -266,7 +266,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           apply Multiseries.mulMonomial_Sorted h_tl_sorted (inv_Sorted h_coef_sorted)
         apply mulMonomial_Approximates h_basis h_tl
         apply inv_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed
-      convert replaceFun_Approximates _ h
+      convert h.replaceFun _
       have h_tendsto_zero : Tendsto ((f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) *
           coef.toFun⁻¹) atTop (𝓝 0) := by
         convert (tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_sorted h_approx

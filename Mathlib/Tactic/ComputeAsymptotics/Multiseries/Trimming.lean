@@ -239,18 +239,18 @@ theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → 
         · simp at h_trimmed
         simp [extendBasisMiddle]
 
--- -- TODO: Where should I put it? Trimming is not needed here.
--- /-- If `f` can be approximated by multiseries with negative leading exponent, then
--- it tends to zero. -/
+-- TODO: Where should I put it? Trimming is not needed here.
+/-- If `f` can be approximated by multiseries with negative leading exponent, then
+it tends to zero. -/
 theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     (h_neg : ms.leadingExp < 0) (h_approx : ms.Approximates) :
     Tendsto ms.toFun atTop (𝓝 0) := by
     cases ms
-    · apply Approximates_nil at h_approx
+    · apply Approximates.elim_nil at h_approx
       apply Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
-    · obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
+    · obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
       simp only [leadingExp_def, mk_seq, Multiseries.leadingExp_cons, WithBot.coe_lt_zero] at h_neg
       apply Majorized.tendsto_zero_of_neg h_neg h_maj
 

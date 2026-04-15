@@ -510,17 +510,17 @@ theorem add_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
   rintro ms ⟨X, Y, rfl, hX_approx, hY_approx⟩
   cases X with
   | nil fX =>
-    apply Approximates_nil at hX_approx
+    apply Approximates.elim_nil at hX_approx
     cases Y with
     | nil fY =>
-      apply Approximates_nil at hY_approx
+      apply Approximates.elim_nil at hY_approx
       left
       simp only [add_seq, mk_seq, Multiseries.add_nil, add_toFun, mk_toFun,
         true_and]
       grw [hX_approx, hY_approx]
       simp
     | cons Y_exp Y_coef Y_tl fY =>
-      obtain ⟨hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+      obtain ⟨hY_coef, hY_maj, hY_tl⟩ := hY_approx.elim_cons
       right
       simp only [add_seq, mk_seq, Multiseries.nil_add, Multiseries.cons_eq_cons,
         add_toFun, mk_toFun, ↓existsAndEq, and_true, hY_coef, true_and,
@@ -531,17 +531,17 @@ theorem add_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
         simp
       simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
       use mk .nil fX, mk Y_tl (fY - basis_hd ^ Y_exp * Y_coef.toFun)
-      simp only [mk_seq, Multiseries.nil_add, mk_toFun, true_and, Approximates_nil_iff,
+      simp only [mk_seq, Multiseries.nil_add, mk_toFun, true_and, Approximates.nil_iff,
         hX_approx, hY_tl, and_self, and_true]
       ext t
       simp
       ring
   | cons X_exp X_coef X_tl fX =>
-    obtain ⟨hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
+    obtain ⟨hX_coef, hX_maj, hX_tl⟩ := hX_approx.elim_cons
     right
     cases Y with
     | nil fY =>
-      apply Approximates_nil at hY_approx
+      apply Approximates.elim_nil at hY_approx
       simp only [add_seq, mk_seq, Multiseries.add_nil, Multiseries.cons_eq_cons,
         add_toFun, mk_toFun, ↓existsAndEq, and_true, hX_coef, true_and,
         exists_eq_left']
@@ -552,12 +552,12 @@ theorem add_Approximates {basis : Basis} {X Y : MultiseriesExpansion basis}
       simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
       use mk X_tl (fX - basis_hd ^ X_exp * X_coef.toFun), mk .nil fY
       simp only [mk_seq, Multiseries.add_nil, mk_toFun, true_and, hX_tl,
-        Approximates_nil_iff, hY_approx, and_self, and_true]
+        Approximates.nil_iff, hY_approx, and_self, and_true]
       ext t
       simp
       ring
     | cons Y_exp Y_coef Y_tl fY =>
-      obtain ⟨hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
+      obtain ⟨hY_coef, hY_maj, hY_tl⟩ := hY_approx.elim_cons
       simp only [add_seq, mk_seq, add_toFun, mk_toFun]
       rw [Multiseries.add_cons_cons]
       split_ifs with h1 h2
@@ -771,7 +771,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases A with
   | nil fA =>
     simp only [add_toFun, mk_toFun] at hf_eq
-    apply Approximates_nil at hA
+    apply Approximates.elim_nil at hA
     specialize h_step _ hB
     obtain ⟨hB_seq, hB_fun⟩ | ⟨exp, coef, tl, hB_seq, h_coef, h_maj, X, Y, h_tl, hX, hY⟩ := h_step
     · left
@@ -790,7 +790,7 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     simp
   | cons A_exp A_coef A_tl fA =>
     right
-    obtain ⟨hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
+    obtain ⟨hA_coef, hA_maj, hA_tl⟩ := hA.elim_cons
     specialize h_step _ hB
     simp only [add_toFun, mk_toFun] at hf_eq
     obtain ⟨hB_seq, hB_fun⟩ |
