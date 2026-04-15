@@ -5,11 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 /-!
 # Inertia degree
@@ -56,15 +52,6 @@ theorem inertiaDeg'_eq [h : q.LiesOver p] [q.IsPrime] :
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
   convert inertiaDeg'_def q R <;> exact LiesOver.over
 
-theorem inertiaDeg'_tower [r.LiesOver q] :
-    r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
-  by_cases hr : r.IsPrime
-  · have : q.IsPrime := isPrime_of_liesOver r q
-    have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
-    rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
-    apply Module.finrank_mul_finrank
-  · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
-
 theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     p.inertiaDeg q = q.inertiaDeg' R := by
   let : Field (R ⧸ p) := Quotient.field p
@@ -76,11 +63,19 @@ theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
   let : Algebra (R ⧸ p) q.ResidueField := f.toAlgebra
   have : IsScalarTower (R ⧸ p) (S ⧸ q) q.ResidueField := IsScalarTower.of_algebraMap_eq' rfl
   have : IsScalarTower (R ⧸ p) p.ResidueField q.ResidueField := IsScalarTower.of_algebraMap_eq' h
-  have hf := Module.finrank_mul_finrank (R ⧸ p) (S ⧸ q) q.ResidueField
-  have hg := Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField
-  rw [Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p)] at hg
-  rw [Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q)] at hf
-  grind
+  rw [← mul_one (Module.finrank (R ⧸ p) (S ⧸ q)),
+    ←  Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
+    Module.finrank_mul_finrank, ← Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField,
+    Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p), one_mul]
+
+theorem inertiaDeg'_tower [r.LiesOver q] :
+    r.inertiaDeg' R = q.inertiaDeg' R * r.inertiaDeg' S := by
+  by_cases hr : r.IsPrime
+  · have : q.IsPrime := isPrime_of_liesOver r q
+    have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+    rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
+    apply Module.finrank_mul_finrank
+  · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
 
 end
 
