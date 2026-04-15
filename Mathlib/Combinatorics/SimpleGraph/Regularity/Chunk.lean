@@ -108,7 +108,8 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     B ⊆ G.nonuniformWitness ε U V ∧ B.Nonempty, m
   · suffices ∀ B ∈ (atomise U <| P.nonuniformWitnesses G ε U).parts,
         #(B \ {A ∈ (chunk hP G ε hU).parts | A ⊆ B}.biUnion id) ≤ m by
-      exact sum_le_sum fun B hB => this B <| filter_subset _ _ hB
+      gcongr with B hB
+      exact this B <| filter_subset _ _ hB
     intro B hB
     unfold chunk
     split_ifs with h₁
