@@ -140,33 +140,33 @@ variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom 
 `A` of `X`, this is a pairing for a subcomplex `B` of `Y` if `A.preimage e.hom = B`. -/
 @[simps I II]
 def ofIso : B.Pairing where
-  I := Subcomplex.N.equivOfIso e hA ⁻¹' P.I
-  II := Subcomplex.N.equivOfIso e hA ⁻¹' P.II
+  I := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.I
+  II := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.II
   inter := by simp [← Set.preimage_inter, P.inter]
   union := by simp [← Set.preimage_union, P.union]
-  p := ((Subcomplex.N.equivOfIso e hA).subtypeEquiv (by simp)).trans
-    (P.p.trans ((Subcomplex.N.equivOfIso e hA).symm.subtypeEquiv (by simp)))
+  p := ((Subcomplex.N.orderIsoOfIso e hA).subtypeEquiv (by simp)).trans
+    (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
 
 @[simp]
 lemma ofIso_p (x : P.II) :
-    dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.equivOfIso e hA).symm x, by simp⟩ =
-    ⟨(Subcomplex.N.equivOfIso e hA).symm (P.p x), by simp⟩ := by
-  let e' := Subcomplex.N.equivOfIso e hA
+    dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩ =
+    ⟨(Subcomplex.N.orderIsoOfIso e hA).symm (P.p x), by simp⟩ := by
+  let e' := Subcomplex.N.orderIsoOfIso e hA
   ext
   change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
   simp
 
 lemma ofIso_ancestralRel_iff (x y : P.II) :
     (P.ofIso e hA).AncestralRel
-      ⟨(Subcomplex.N.equivOfIso e hA).symm x, by simp⟩
-      ⟨(Subcomplex.N.equivOfIso e hA).symm y, by simp⟩ ↔
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm y, by simp⟩ ↔
     P.AncestralRel x y :=
   and_congr (not_congr (by aesop)) (by simp)
 
 instance [P.IsProper] : (P.ofIso e hA).IsProper where
   isUniquelyCodimOneFace := by
     rintro ⟨x, hx⟩
-    obtain ⟨x, rfl⟩ := (N.equivOfIso e hA).symm.surjective x
+    obtain ⟨x, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective x
     simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hx
     simp only [ofIso_II, ofIso_I, dsimp% P.ofIso_p e hA ⟨x, hx⟩]
     exact (P.isUniquelyCodimOneFace ⟨x, hx⟩).of_iso e.symm

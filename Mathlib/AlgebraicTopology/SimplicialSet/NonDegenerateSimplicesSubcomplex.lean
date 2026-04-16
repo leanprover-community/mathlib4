@@ -104,13 +104,13 @@ simplicial sets which maps `A : X.Subcomplex` to `B : Y.Subcomplex`. -/
 @[simps -isSimp apply symm_apply]
 def orderIsoOfIso {Y : SSet.{u}} {B : Y.Subcomplex} (e : X ≅ Y)
     (hA : B.preimage e.hom = A) : A.N ≃o B.N where
-  toFun x := N.mk' (SSet.N.equivOfIso e x.toN) (by subst hA; exact x.notMem)
-  invFun y := N.mk' ((SSet.N.equivOfIso e).symm y.toN) (by
+  toFun x := N.mk' (SSet.N.orderIsoOfIso e x.toN) (by subst hA; exact x.notMem)
+  invFun y := N.mk' ((SSet.N.orderIsoOfIso e).symm y.toN) (by
     obtain rfl : A.preimage e.inv = B := by aesop
     exact y.notMem)
   left_inv _ := by aesop
   right_inv _ := by aesop
-  map_rel_iff' {_ _} := (SSet.N.equivOfIso e).map_rel_iff'
+  map_rel_iff' {_ _} := (SSet.N.orderIsoOfIso e).map_rel_iff'
 
 end N
 
