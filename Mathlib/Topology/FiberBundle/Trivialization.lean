@@ -592,16 +592,18 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
-/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous at any point in the base set -/
-theorem continuousAt_symm_prodMk_left {b : B} {v : F} (hb : b ∈ e.baseSet) :
-    ContinuousAt (e.symm ∘ (·, v)) b :=
-  ContinuousAt.comp (e.continuousOn_symm.continuousAt
-    (e.open_target.mem_nhds (e.mem_target.mpr hb))) (continuousAt_id.prodMk continuousAt_const)
+/-- The inverse of a trivialization is continuous at any point in the target. -/
+theorem continuousAt_symm {p : B × F} (hp : p ∈ e.target) : ContinuousAt e.symm p :=
+  e.continuousOn_symm.continuousAt (e.open_target.mem_nhds hp)
 
-/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous on `e.baseSet` -/
-theorem continuousOn_symm_prodMk_left {v : F} :
-    ContinuousOn (e.symm ∘ (·, v)) e.baseSet :=
-  fun _ hb => (e.continuousAt_symm_prodMk_left hb).continuousWithinAt
+/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous at any point in the base set. -/
+theorem continuousAt_symm_prodMk_left {b : B} {v : F} (hb : b ∈ e.baseSet) :
+    ContinuousAt (fun x ↦ e.symm (x, v)) b :=
+  (e.continuousAt_symm (e.mem_target.mpr hb)).comp (by fun_prop)
+
+/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous on `e.baseSet`. -/
+theorem continuousOn_symm_prodMk_left {v : F} : ContinuousOn (fun x ↦ e.symm (x, v)) e.baseSet :=
+  fun _ hb ↦ (e.continuousAt_symm_prodMk_left hb).continuousWithinAt
 
 /-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
