@@ -497,16 +497,11 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
 section
 
 /-- In a cartesian monoidal category, the monoidal structure is given by the product. -/
+@[simps -isSimp]
 noncomputable def tensorObjProdIso (X Y : C) : X ⊗ Y ≅ (X ⨯ Y) where
   hom := Limits.prod.lift (fst _ _) (snd _ _)
   inv := lift prod.fst prod.snd
   hom_inv_id := by apply hom_ext <;> simp [prod.lift_fst, prod.lift_snd]
-
-lemma tensorObjProdIso_hom (X Y : C) : (tensorObjProdIso X Y).hom =
-  prod.lift (fst _ _) (snd _ _) := rfl
-
-lemma tensorObjProdIso_inv (X Y : C) : (tensorObjProdIso X Y).inv =
-  lift prod.fst prod.snd := rfl
 
 @[reassoc (attr := simp)]
 lemma tensorObjProdIso_hom_fst {X Y : C} :
