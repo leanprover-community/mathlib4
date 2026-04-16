@@ -625,4 +625,5 @@ lemma Iso.colorable_iff (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
 lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
   le_antisymm f.toHom.chromaticNumber_le f.symm.toHom.chromaticNumber_le
 
+
 end SimpleGraph

@@ -208,8 +208,8 @@ theorem natFactorial_mul_dp_eq (n : ℕ) (x : M) :
 variable (R M) in
 /-- The canonical linear map `M →ₗ[R] DividedPowerAlgebra R M`. -/
 def embed : M →ₗ[R] DividedPowerAlgebra R M where
-  toFun m   := dp R 1 m
-  map_add' _ _  := by simp [dp_add, Nat.antidiagonal_succ, dp_zero, add_comm]
+  toFun m := dp R 1 m
+  map_add' _ _ := by simp [dp_add, Nat.antidiagonal_succ, dp_zero, add_comm]
   map_smul' _ _ := by simp [dp_smul, pow_one, RingHom.id_apply]
 
 theorem embed_def (m : M) : embed R M m = dp R 1 m := rfl

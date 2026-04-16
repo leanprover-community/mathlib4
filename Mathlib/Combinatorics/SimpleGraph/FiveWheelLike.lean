@@ -73,7 +73,7 @@ We will need to refer to this consistently and choose the following formulation:
 
 ## References
 
-* [B. Andrasfái, P Erdős, V. T. Sós
+* [B. Andrásfai, P Erdős, V. T. Sós
   **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
   https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
 
@@ -238,7 +238,7 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
   | r + 1 =>
     refine ⟨fun hc ↦ ?_, fun hc ↦ hc.colorable_of_cliqueFree h.1⟩
-    contrapose! hc
+    contrapose hc
     obtain ⟨_, _, _, _, _, hw⟩ :=
       exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hc
     exact hw.not_colorable_succ
@@ -409,7 +409,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
 
 end IsFiveWheelLike
 
-/-- **Andrasfái-Erdős-Sós** theorem
+/-- **Andrásfai-Erdős-Sós** theorem
 
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
 then `G` is `r + 1`-colorable, e.g. if `G` is `K₃`-free and `2 * n / 5 < G.minDegree` then `G`
