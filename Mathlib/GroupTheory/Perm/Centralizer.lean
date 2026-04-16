@@ -500,7 +500,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     rw [kerParam, MonoidHom.noncommCoprod_apply', mul_apply, ofSubtype_apply_of_not_mem u hx',
       noncommPiCoprod_apply, ← Finset.noncommProd_erase_mul _ (Finset.mem_univ ⟨g.cycleOf x, hx⟩),
       mul_apply, ← notMem_support]
-    contrapose! hx'
+    contrapose hx'
     obtain ⟨a, ha1, ha2⟩ := mem_support_of_mem_noncommProd_support hx'
     simp only [Finset.mem_erase, Finset.mem_univ, and_true, Ne, Subtype.ext_iff] at ha1
     have key := cycleFactorsFinset_pairwise_disjoint g a.2 hx ha1
@@ -512,7 +512,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
   · rw [cycleOf_mem_cycleFactorsFinset_iff] at hx
     rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq,
       ← notMem_support]
-    contrapose! hx
+    contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
       (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha

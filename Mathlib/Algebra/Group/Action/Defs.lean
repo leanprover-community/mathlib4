@@ -653,7 +653,7 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
     a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
-instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+instance [Mul G] [IsLeftCancelMul G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right.
