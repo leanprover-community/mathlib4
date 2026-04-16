@@ -433,6 +433,11 @@ noncomputable def b (j : ι) : f.sigmaStdSimplex j ⟶ f.filtration (Order.succ 
 lemma Cell.ι_b {j : ι} (c : f.Cell j) : c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by
   simp [b, Sigma.ι_desc]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma Cell.ι_b_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
+    c.ιSigmaStdSimplex.app x ≫ (f.b j).app x = c.mapToSucc.app x :=
+  NatTrans.congr_app c.ι_b x
+
 @[reassoc]
 lemma w (j : ι) :
     f.t j ≫ homOfLE (f.filtration_monotone (Order.le_succ j)) = f.m j ≫ f.b j := by
@@ -495,9 +500,7 @@ lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).v
   dsimp only [Cell.type₁, mapN]
   rw [← S.cast_eq_self _ (P.dim_p c.s)]
   dsimp
-  rw [S.ext_iff]
-  erw [← NatTrans.comp_app_apply]
-  rw [c.ι_b]
+  rw [S.ext_iff, c.ι_b_app_apply]
   apply yonedaEquiv_symm_app_id
 
 @[simp]
