@@ -7,15 +7,15 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "nightly-testing"
-require "leanprover-community" / "Qq" @ git "nightly-testing"
-require "leanprover-community" / "aesop" @ git "nightly-testing"
+require "leanprover-community" / "Qq" from git "https://github.com/sgraf812/quote4" @ "lean-pr-testing-13305"
+require "leanprover-community" / "aesop" from git "https://github.com/sgraf812/aesop" @ "lean-pr-testing-13305"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require "leanprover-community" / "plausible" from git "https://github.com/sgraf812/plausible" @ "lean-pr-testing-13305"
 
 
 /-!
