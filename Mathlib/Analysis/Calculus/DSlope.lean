@@ -152,8 +152,5 @@ lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
   induction n generalizing f with
   | zero => simp
   | succ n ih =>
-    rw [Function.iterate_succ_apply', pow_succ, mul_smul]
-    have hf_n : (Function.swap dslope a)^[n] f a = 0 := hf n (Nat.lt_succ_self n)
-    have hf_lt : ∀ k < n, (Function.swap dslope a)^[k] f a = 0 :=
-      fun k hk => hf k (Nat.lt_trans hk (Nat.lt_succ_self n))
-    rw [sub_smul_dslope_of_zero hf_n b, ih hf_lt]
+    rw [Function.iterate_succ_apply', pow_succ, mul_smul,
+      sub_smul_dslope_of_zero (hf n n.lt_succ_self), ih (by grind)]
