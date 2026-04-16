@@ -346,6 +346,8 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
 
+lemma forgetToTop_comp_forget : forgetToTop ⋙ CategoryTheory.forget TopCat = forget := rfl
+
 /-- forgetful functor to `Scheme` is the same as coercion -/
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
@@ -353,7 +355,8 @@ nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCa
 unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
-@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = f := rfl
+lemma forget_map' {X Y} (f : X ⟶ Y) : (forget.map f : _ → _) = f := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = TypeCat.ofHom f := rfl
 
 namespace Hom
 
@@ -429,10 +432,12 @@ instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHo
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
   NatIso.isIso_app_of_isIso f.c _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     (inv f).app U =
@@ -440,6 +445,7 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
         inv (f.app ((inv f) ⁻¹ᵁ U)) := by
   rw [IsIso.eq_comp_inv, ← comp_app, congr_app (IsIso.hom_inv_id f), id_app, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv f.appTop := by simp
 
@@ -876,6 +882,7 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
   convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
     (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
@@ -1028,7 +1035,7 @@ noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
   Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
       (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
-    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+    simp only [Arrow.mk_left, Arrow.mk_right, TopCat.Presheaf.stalkCongr_hom,
       Arrow.mk_hom]
     rw [stalkSpecializes_stalkMap]
 

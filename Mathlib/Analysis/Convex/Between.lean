@@ -1096,6 +1096,21 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     convert (one_smul R (y -ᵥ x)).symm
     field
 
+lemma wbtw_total_of_sameRay_vsub_left {x y z : P} (h : SameRay R (y -ᵥ x) (z -ᵥ x)) :
+    Wbtw R x y z ∨ Wbtw R x z y := by
+  rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
+  · simp_all
+  · simp_all
+  wlog hr : r₂ ≤ r₁ generalizing r₁ r₂ y z
+  · rw [or_comm]
+    apply this r₂ r₁ hr₂ hr₁ h.symm (Std.le_of_not_ge hr)
+  left
+  refine ⟨r₂ / r₁, ⟨div_nonneg hr₂.le hr₁.le, div_le_one_of_le₀ hr hr₁.le⟩, ?_⟩
+  have h' : y = r₁⁻¹ • r₂ • (z -ᵥ x) +ᵥ x := by simp [← h, hr₁.ne']
+  simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, eq_vadd_iff_vsub_eq, vsub_self,
+    add_zero]
+  ring_nf
+
 /-- If `T` is an affine independent family of points,
 then any 3 distinct points form a triangle. -/
 theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
@@ -1103,7 +1118,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
     ¬ Wbtw R (T i) (T j) (T k) := by
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
-  contrapose! hT
+  contrapose hT
   simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
 variable (R)

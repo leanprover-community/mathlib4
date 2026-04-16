@@ -177,12 +177,11 @@ with `-(2 * π * Complex.I) • innerSL ℝ`. -/
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) := by
   ext1 x
-  change fderiv ℝ (𝓕 ⇑f) x = _
-  calc
-    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x := by
-      rw [fderiv_fourier f.integrable]
-      simpa using f.integrable_pow_mul volume 1
+  change fderiv ℝ (𝓕 ⇑f) x = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x
+  rw [fderiv_fourier f.integrable]
+  simpa using f.integrable_pow_mul volume 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the derivative is given by multiplication of
 `(2 * π * Complex.I) • innerSL ℝ` with the Fourier transform. -/
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
@@ -194,6 +193,7 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
 
 open LineDeriv
 
+set_option backward.isDefEq.respectTransparency false in
 /- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
@@ -205,6 +205,7 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
   have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
   simp [this, innerSL_apply_apply ℝ]
 
+set_option backward.isDefEq.respectTransparency false in
 /- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
@@ -294,6 +295,28 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
   simpa using integral_sesq_fourier_eq f (𝓕 g) M
 
 end fubini
+
+section L1
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
+    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+  _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
+  _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
+  _ = _ := by simp [norm_toLp_one]
+
+theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
+  rw [BoundedContinuousFunction.norm_le (by positivity)]
+  simpa using norm_fourier_apply_le_toLp_one f
+
+theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
+    ‖(𝓕 f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
+  norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
+    (by simpa using norm_fourier_apply_le_toLp_one f))
+
+end L1
 
 section L2
 

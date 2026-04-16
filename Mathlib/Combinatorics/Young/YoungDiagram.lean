@@ -143,7 +143,7 @@ theorem coe_inf (μ ν : YoungDiagram) : ↑(μ ⊓ ν) = (μ ∩ ν : Set (ℕ 
 theorem mem_inf {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊓ ν ↔ x ∈ μ ∧ x ∈ ν :=
   Finset.mem_inter
 
-/-- The empty Young diagram is (⊥ : young_diagram). -/
+/-- The empty Young diagram is `(⊥ : YoungDiagram)`. -/
 instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
@@ -171,8 +171,8 @@ instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
 instance : DistribLattice YoungDiagram :=
-  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
-    (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
+    .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end DistribLattice
 
@@ -274,7 +274,7 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
 
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
-  push_neg
+  push Not
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 
 theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
@@ -441,13 +441,13 @@ theorem rowLen_ofRowLens {w : List ℕ} {hw : w.SortedGE} (i : Fin w.length) :
     (ofRowLens w hw).rowLen i = w[i] := by
   simp [rowLen, Nat.find_eq_iff, mem_ofRowLens]
 
-/-- The left_inv direction of the equivalence -/
+/-- The `leftInv` direction of the equivalence -/
 theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_sorted μ) = μ := by
   ext ⟨i, j⟩
   simp only [mem_cells, mem_ofRowLens, length_rowLens, get_rowLens]
   simpa [← mem_iff_lt_colLen, mem_iff_lt_rowLen] using j.zero_le.trans_lt
 
-/-- The right_inv direction of the equivalence -/
+/-- The `rightInv` direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.SortedGE} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w :=
   List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ =>

@@ -50,6 +50,7 @@ attribute [local simp] AffineTargetMorphismProperty.toProperty_apply
 
 variable {Q}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` respects isos, also `affineAnd P` respects isomorphisms. -/
 lemma affineAnd_respectsIso (hP : RingHom.RespectsIso Q) :
     (affineAnd Q).toProperty.RespectsIso := by
@@ -59,6 +60,7 @@ lemma affineAnd_respectsIso (hP : RingHom.RespectsIso Q) :
   · intro X Y Z e f ⟨hZ, hf⟩
     simpa [AffineTargetMorphismProperty.toProperty, IsAffine.of_isIso e.inv, hP.cancel_left_isIso]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `affineAnd P` is local if `P` is local on the (algebraic) source. -/
 lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationAwayPreserves Q)
     (hQs : RingHom.OfLocalizationSpan Q) : (affineAnd Q).IsLocal where
@@ -76,7 +78,6 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map f (isAffineOpen_top X),
         CommRingCat.hom_comp, hPi.cancel_right_isIso, ← Scheme.Hom.appTop]
       dsimp only [Opens.map_top]
-      haveI := (isAffineOpen_top X).isLocalization_basicOpen (f.appTop r)
       apply hQl
       exact hf
   of_basicOpenCover {X Y _} f s hs hf := by
@@ -113,6 +114,7 @@ lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
   intro X Y S _ _ f g ⟨hY, hg⟩
   exact ⟨inferInstance, hQb.pullback_fst_appTop _ hQi f _ hg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
     targetAffineLocally (affineAnd Q) f ↔ ∀ U : Y.Opens, IsAffineOpen U →
@@ -137,6 +139,7 @@ lemma targetAffineLocally_affineAnd_iff' (hQi : RingHom.RespectsIso Q)
   rw [targetAffineLocally_affineAnd_iff hQi, isAffineHom_iff]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLocal Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
     targetAffineLocally (affineAnd Q) f ↔ IsAffineHom f ∧ affineLocally Q f := by
@@ -235,7 +238,7 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
   simp_rw [isAffineHom_iff]
   refine ⟨fun h X Y f ↦ ?_, fun h ↦ ⟨affineAnd_isLocal hQi hQl hQs, ?_⟩⟩
   · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
-    aesop
+    lia
   · ext X Y f
     rw [targetAffineLocally_affineAnd_iff hQi, h f]
     aesop
@@ -276,6 +279,7 @@ lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{
     HasAffineProperty.eq_targetAffineLocally (P := P')]
   exact targetAffineLocally_affineAnd_le hQQ'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
     (hP : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
     (hQ : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] (f : R →+* S) (g : R →+* T),

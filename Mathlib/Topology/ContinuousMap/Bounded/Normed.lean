@@ -200,7 +200,7 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
     fun _ _ => coe_zsmul _ _
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
-  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm, sub_apply]
+  dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
@@ -303,6 +303,43 @@ instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) whe
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
+
+/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
+maximum of their norms. -/
+lemma norm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  have hfg : ∀ x, f x = 0 ∨ g x = 0 := by simpa [DFunLike.ext_iff, mul_eq_zero] using h
+  have hfg' x : ‖(f + g) x‖ = max ‖f x‖ ‖g x‖ := by obtain (h | h) := hfg x <;> simp [h]
+  have key (c : ℝ) (hc : 0 ≤ c) : ‖f + g‖ ≤ c ↔ max ‖f‖ ‖g‖ ≤ c := by
+    simp_rw [norm_le hc, hfg', max_le_iff, norm_le hc, forall_and]
+  exact le_antisymm (by rw [key]; positivity) (by rw [← key]; positivity)
+
+/-- If the product of bounded continuous functions is zero, then the norm of their sum is the
+maximum of their norms. -/
+lemma nnnorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
+
+lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnnorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
+open scoped Function in
+/-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
+sum is the maximum of their norms. -/
+lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)
+    (h : Pairwise ((· * · = 0) on f)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
 
 end Seminormed
 
@@ -527,13 +564,13 @@ instance instInf : Min (α →ᵇ β) where
 @[simp, norm_cast] lemma coe_inf (f g : α →ᵇ β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g := rfl
 
 instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeSup _ coe_sup
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.semilatticeInf _ coe_inf
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl coe_inf
 
 instance instLattice : Lattice (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+  DFunLike.coe_injective.lattice _ .rfl .rfl coe_sup coe_inf
 
 @[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
@@ -606,7 +643,7 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
   simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
-    const_apply, Pi.sub_apply, sub_nonneg]
+    const_apply, Pi.sub_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end

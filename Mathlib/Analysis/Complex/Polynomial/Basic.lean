@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # The fundamental theorem of algebra
@@ -198,10 +199,9 @@ lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree
   obtain ⟨z, hz⟩ : ∃ z : ℂ, aeval z p = 0 :=
     IsAlgClosed.exists_aeval_eq_zero _ p (degree_pos_of_irreducible hp).ne'
   rw [← finrank_real_complex]
-  convert minpoly.natDegree_le z using 1
-  · rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
-      natDegree_C, add_zero]
-  infer_instance
+  suffices p.natDegree = (minpoly ℝ z).natDegree from this ▸ minpoly.natDegree_le (R := ℝ) z
+  rw [← minpoly.eq_of_irreducible hp hz, natDegree_mul hp.ne_zero (by simpa using hp.ne_zero),
+    natDegree_C, add_zero]
 
 /-- An irreducible real polynomial has degree at most two. -/
 lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 :=

@@ -96,6 +96,7 @@ structure Imo2019q2Cfg where
   C_ne_Q₁ : C ≠ Q₁
 
 /-- A default choice of orientation, for lemmas that need to pick one. -/
+@[implicit_reducible]
 def someOrientation [hd2 : Fact (finrank ℝ V = 2)] : Module.Oriented ℝ V (Fin 2) :=
   ⟨Basis.orientation (finBasisOfFinrankEq _ _ hd2.out)⟩
 

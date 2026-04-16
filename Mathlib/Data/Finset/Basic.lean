@@ -150,6 +150,8 @@ lemma insert_erase_invOn :
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s := by grind
 
+theorem erase_union_eq (a : α) (s : Finset α) (h : a ∈ s) : (erase s a) ∪ {a} = s := by grind
+
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
   grind
 
@@ -591,9 +593,6 @@ theorem Finset.union_inr (h : Disjoint s t) (y : t) :
     Equiv.Finset.union s t h (Sum.inr y) = ⟨y, Finset.mem_union.mpr <| Or.inr y.2⟩ :=
   rfl
 
-@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inl := Finset.union_inl
-@[deprecated (since := "2024-06-07")] alias Finset.union_symm_inr := Finset.union_inr
-
 @[simp]
 theorem Finset.union_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
     (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
@@ -604,6 +603,33 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
     (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
 
+/-- The disjoint union of finsets is a sum -/
+def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
+    s ⊕ t ≃ s.disjUnion t h :=
+  Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+
+@[simp]
+theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
+  rfl
+
+@[simp]
+theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
+  rfl
+
+@[simp]
+theorem Finset.disjUnionEquiv_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
+    (hi' : i ∈ s.disjUnion t h) :
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+@[simp]
+theorem Finset.disjUnionEquiv_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
+    (hi' : i ∈ s.disjUnion t h) :
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
   type of pairs of functions on `s` and on `t`. This is similar to `Equiv.sumPiEquivProdPi`. -/
 def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h : Disjoint s t) :
@@ -611,6 +637,7 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
     (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
     piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
@@ -618,6 +645,7 @@ lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset
   rw! [Finset.union_symm_left h hi hi']
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
     (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
     Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by

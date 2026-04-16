@@ -129,8 +129,6 @@ theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[deprecated (since := "2025-08-26")] alias Disjoint.cycleType := Disjoint.cycleType_mul
-
 @[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
@@ -490,6 +488,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/

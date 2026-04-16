@@ -193,7 +193,7 @@ theorem mem_transvections_pow_of_notIsExceptional
       rw [this]
       apply transvections_pow_mono (zero_le _)
       simp
-    rw [← Subtype.coe_inj, coe_one, ← fixedSubmodule_eq_top_iff]
+    rw [← Subtype.coe_inj, coe_one, one_eq_refl, ← LinearEquiv.fixedSubmodule_eq_top_iff]
     apply Submodule.eq_top_of_finrank_eq
     rwa [← Nat.add_left_inj, Submodule.finrank_quotient_add_finrank, zero_add, eq_comm] at hV
   rw [← ne_eq, ← Nat.one_le_iff_ne_zero] at hV

@@ -91,6 +91,61 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
   use W_int.Δ
   rw [hW_int, map_Δ]
 
+lemma integralModel_a₁_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₁ = W.a₁ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₂ = W.a₂ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₃_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₃ = W.a₃ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₄ = W.a₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₆ = W.a₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₂ = W.b₂ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₄ = W.b₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₆ = W.b₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₈_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₈ = W.b₈ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_c₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).c₄ = W.c₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_c₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).c₆ = W.c₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
   conv_rhs => rw [← baseChange_integralModel_eq R W]
@@ -100,6 +155,7 @@ variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_isIntegral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
@@ -220,19 +276,84 @@ noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
 /-- A minimal Weierstrass equation has good reduction if and only if
 the valuation of its discriminant is 1. -/
 @[mk_iff]
-class IsGoodReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
+class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
-lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [IsMinimal R W] :
-    IsGoodReduction R W ↔ (W.reduction R).IsElliptic := by
+@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
+
+lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
+    HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
   simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff]
   have h :
       ¬(valuation K (maximalIdeal R) (algebraMap R K (integralModel R W).Δ) < 1)
       ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
-  refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
-  simpa using (valuation_le_one _ _).ge_iff_eq.symm
+  refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
+  simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
+
+@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
+  hasGoodReduction_iff_isElliptic_reduction
+
+/-- A minimal Weierstrass equation has multiplicative reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+@[mk_iff]
+class HasMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  multiplicativeReduction : valuation K (maximalIdeal R) W.c₄ = 1
+
+/-- A minimal Weierstrass equation has additive reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
+@[mk_iff]
+class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
+
+-- TODO: add characterization in terms of the discriminant when the characteristic is not 2
+open Polynomial in
+/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
+
+To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
+`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
+@[mk_iff]
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+    extends W.HasMultiplicativeReduction R where
+  splitMultiplicativeReduction : letI I := W.integralModel R
+    Splits <| .map (algebraMap R (ResidueField R)) <|
+      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X - C (54 * I.b₆ - 3 * I.b₂ * I.b₄ + I.a₂ * I.c₄)
+
+variable {W : WeierstrassCurve K}
+
+theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction [IsMinimal R W] :
+    W.HasGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
+  rw [hasGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
+    ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
+  grind [valuation_le_one]
+
+theorem HasGoodReduction.not_hasMultiplicativeReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasGoodReduction.not_hasAdditiveReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasGoodReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
+
+theorem HasAdditiveReduction.not_hasGoodReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasAdditiveReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.additiveReduction.ne hW.multiplicativeReduction
+
+theorem HasAdditiveReduction.not_hasMultiplicativeReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ hW.additiveReduction.ne h.multiplicativeReduction
 
 end Reduction
 

@@ -80,6 +80,7 @@ end ExpChar
 
 section Homomorphism
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
   rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
@@ -178,6 +179,7 @@ theorem mem_restrictTotalDegree (p : MvPolynomial σ R) :
   rw [totalDegree, Finset.sup_le_iff]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_restrictDegree (p : MvPolynomial σ R) (n : ℕ) :
     p ∈ restrictDegree σ R n ↔ ∀ s ∈ p.support, ∀ i, (s : σ →₀ ℕ) i ≤ n := by
   rw [restrictDegree, restrictSupport, Finsupp.mem_supported]
