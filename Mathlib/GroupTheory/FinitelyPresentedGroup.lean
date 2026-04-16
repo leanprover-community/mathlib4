@@ -70,7 +70,7 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
 instance : Subgroup.IsNormalClosureFG (⊥ : Subgroup G) :=
   ⟨∅, Finite.of_subsingleton, Subgroup.normalClosure_empty⟩
 
-/-- A free group (with a finite number of generators) is finitely generated. -/
+/-- A free group (with a finite number of generators) is finitely presented. -/
 instance {n : ℕ} : Group.IsFinitelyPresented (FreeGroup (Fin n)) := by
   use n, FreeGroup.map id
   constructor
