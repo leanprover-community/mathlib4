@@ -25,42 +25,8 @@ along the algebra map.
 
 open scoped nonZeroDivisors
 
-variable (A : Type*) [CommRing A] [IsDomain A]
-variable (B : Type*) [CommRing B] [IsDomain B]
-variable [Algebra A B] [Module.IsTorsionFree A B]
-
-namespace FractionalIdeal
-
-/-- The ring homomorphism on fraction rings induced by an extension
-`A → B`. -/
-noncomputable abbrev fractionRingMap : FractionRing A →+* FractionRing B :=
-  IsFractionRing.map (j := algebraMap A B) (FaithfulSMul.algebraMap_injective _ _)
-
-end FractionalIdeal
-
-/-- The fractional-ideal pushforward sends principal fractional ideals to
-principal fractional ideals — the key compatibility for the class-group
-descent. -/
-lemma FractionalIdeal.extendedHom_spanSingleton (x : FractionRing A) :
-    FractionalIdeal.extendedHom (FractionRing B) B (FractionalIdeal.spanSingleton A⁰ x) =
-      FractionalIdeal.spanSingleton B⁰ (FractionalIdeal.fractionRingMap A B x) := by
-  refine FractionalIdeal.ext fun y => ?_
-  rw [show (FractionalIdeal.extendedHom (A := A) (FractionRing B) B :
-        FractionalIdeal A⁰ (FractionRing A) →+* FractionalIdeal B⁰ (FractionRing B)) =
-        FractionalIdeal.extendedHom' (FractionRing B)
-          (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
-            (FaithfulSMul.algebraMap_injective A B)) from rfl,
-      FractionalIdeal.extendedHom'_apply, FractionalIdeal.mem_extended_iff,
-      FractionalIdeal.mem_spanSingleton, ← Submodule.mem_span_singleton]
-  refine ⟨fun hy => Submodule.span_le.2 ?_ hy, fun hy => Submodule.span_le.2 ?_ hy⟩
-  · rintro _ ⟨w, hw, rfl⟩
-    rw [SetLike.mem_coe, FractionalIdeal.mem_spanSingleton] at hw
-    obtain ⟨a, rfl⟩ := hw
-    rw [SetLike.mem_coe, Algebra.smul_def, map_mul, IsLocalization.map_eq, ← Algebra.smul_def]
-    exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
-  · rintro _ rfl
-    exact Submodule.subset_span
-      ⟨x, SetLike.mem_coe.mpr (FractionalIdeal.mem_spanSingleton_self _ x), rfl⟩
+variable (A B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
+  [Module.IsTorsionFree A B]
 
 namespace ClassGroup
 
@@ -75,10 +41,11 @@ noncomputable def extensionMap : ClassGroup A →* ClassGroup B :=
     (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom)
     (by
       rintro _ ⟨α, rfl⟩
-      refine ⟨Units.mk0 (FractionalIdeal.fractionRingMap A B
-        (α : FractionRing A)) (by simp [α.ne_zero]), ?_⟩
+      refine ⟨Units.mk0 (IsFractionRing.map (j := algebraMap A B)
+        (FaithfulSMul.algebraMap_injective _ _) (α : FractionRing A))
+        (by simp [α.ne_zero]), ?_⟩
       simpa [coe_toPrincipalIdeal, Units.coe_map, Units.val_mk0] using
-        (FractionalIdeal.extendedHom_spanSingleton A B _).symm)
+        (FractionalIdeal.extendedHom_spanSingleton (FractionRing B) B _).symm)
 
 /-- The class-group descent applied to `QuotientGroup.mk α` is
 `QuotientGroup.mk` of the unit-pushforward — by definition of

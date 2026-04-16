@@ -165,6 +165,18 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
     exact Submodule.subset_span
       ⟨algebraMap A K a, mem_coeIdeal_of_mem M ha, IsLocalization.map_eq hf a⟩
 
+/-- The extension of a principal fractional ideal is principal. -/
+theorem extended_spanSingleton (x : K) :
+    (spanSingleton M x).extended L hf = spanSingleton N (IsLocalization.map L f hf x) := by
+  ext
+  rw [mem_extended_iff, mem_spanSingleton, ← mem_span_singleton]
+  refine ⟨fun hy ↦ span_le.2 ?_ hy, fun hy ↦ span_le.2 (fun _ h ↦ ?_) hy⟩
+  · rintro _ ⟨w, hw, rfl⟩
+    obtain ⟨a, rfl⟩ := (mem_spanSingleton _).1 hw
+    rw [SetLike.mem_coe, Algebra.smul_def, map_mul, IsLocalization.map_eq, ← Algebra.smul_def]
+    exact smul_mem _ _ (mem_span_singleton_self _)
+  · exact subset_span ⟨x, SetLike.mem_coe.mpr (mem_spanSingleton_self _ x), h.symm⟩
+
 /--
 The ring homomorphism version of `FractionalIdeal.extended`.
 See `FractionalIdeal.extendedHom` for a more convient version that is often enough.
@@ -209,6 +221,10 @@ theorem extendedHom_coeIdeal_eq_map (I : Ideal A) :
 
 @[deprecated (since := "2026-04-16")]
 alias extendedHomₐ_coeIdeal_eq_map := extendedHom_coeIdeal_eq_map
+
+theorem extendedHom_spanSingleton (x : K) : extendedHom L B (spanSingleton A⁰ x) =
+    spanSingleton B⁰ (IsFractionRing.map (FaithfulSMul.algebraMap_injective A B) x) :=
+  extended_spanSingleton L _ x
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [Algebra.IsIntegral A B]
