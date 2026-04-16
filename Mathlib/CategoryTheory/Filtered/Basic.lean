@@ -259,7 +259,7 @@ theorem sup_exists :
       grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
-      contrapose! h
+      contrapose h
       obtain ⟨rfl, h⟩ := h
       trivial
 
@@ -334,6 +334,7 @@ section OfCocone
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If every finite diagram in `C` admits a cocone, then `C` is filtered. It is sufficient to verify
 this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
@@ -423,6 +424,7 @@ theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
   simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
@@ -680,7 +682,9 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ' i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
-  refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
+  refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;>
+    simp_rw [F.map_comp] <;>
+    convert Set.range_comp_subset_range _ _
 
 /-- Given a "bowtie" of morphisms
 ```
@@ -786,7 +790,7 @@ theorem inf_exists :
       grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
-      contrapose! h
+      contrapose h
       obtain ⟨rfl, h⟩ := h
       trivial
 
@@ -876,6 +880,7 @@ section OfCone
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If every finite diagram in `C` admits a cone, then `C` is cofiltered. It is sufficient to
 verify this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
@@ -1023,6 +1028,7 @@ section Prod
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency false in
 open IsFiltered in
 instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D) where
   cocone_objs k l := ⟨(max k.1 l.1, max k.2 l.2), (leftToMax k.1 l.1, leftToMax k.2 l.2),
@@ -1033,6 +1039,7 @@ instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D
 attribute [local instance] IsFiltered.nonempty in
 instance [IsFiltered C] [IsFiltered D] : IsFiltered (C × D) where
 
+set_option backward.isDefEq.respectTransparency false in
 open IsCofiltered in
 instance [IsCofilteredOrEmpty C] [IsCofilteredOrEmpty D] : IsCofilteredOrEmpty (C × D) where
   cone_objs k l := ⟨(min k.1 l.1, min k.2 l.2), (minToLeft k.1 l.1, minToLeft k.2 l.2),

@@ -227,8 +227,7 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
   apply induction_on f
   · intro r
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
-      RingHom.comp_apply]
+    simp
   · intro p q hp hq
     simp only [map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢

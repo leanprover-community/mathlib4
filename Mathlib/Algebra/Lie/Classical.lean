@@ -202,6 +202,7 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
     simp [Pso, h, hi, one_apply]
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
+@[implicit_reducible]
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
   invertibleOfRightInverse _ _ (pso_inv p q R hi)
 
@@ -228,11 +229,12 @@ noncomputable def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ
   apply LieEquiv.ofEq
   ext A; rw [indefiniteDiagonal_transform p q R hi]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  grind [skewAdjointMatricesLieSubalgebraEquiv_apply]
+  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 

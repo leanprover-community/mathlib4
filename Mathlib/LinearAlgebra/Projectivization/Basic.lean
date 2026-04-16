@@ -39,6 +39,7 @@ We have three ways to construct terms of `ℙ K V`:
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
+@[implicit_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -237,7 +238,7 @@ theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
     suffices a ≠ 0 by refine ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
     exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
 
-theorem linearIndependentOn_pair (D D' : ℙ K V) :
+theorem linearIndepOn_pair (D D' : ℙ K V) :
     LinearIndepOn K id {D.rep, D'.rep} := by
   by_cases h : D = D'
   · simpa [h] using D'.rep_nonzero

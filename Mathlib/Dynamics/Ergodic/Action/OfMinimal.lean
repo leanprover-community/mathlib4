@@ -212,11 +212,11 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 
 /-- Let `f : G →* G` be a group endomorphism of a topological group with second countable topology.
 If the preimages of `1` under the iterations of `f` are dense,
-then it is preergodic with respect to any finite inner regular left invariant measure. -/
+then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/
 @[to_additive /-- Let `f : G →+ G` be an additive group endomorphism
 of a topological additive group with second countable topology.
 If the preimages of `0` under the iterations of `f` are dense,
-then it is preergodic with respect to any finite inner regular left invariant measure. -/]
+then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) : PreErgodic f μ := by

@@ -132,34 +132,35 @@ instance : MorphismProperty.HasOfPostcompProperty @Etale @Etale := by
   intro X Y f hf
   constructor <;> infer_instance
 
+lemma iff_flat_and_formallyUnramified {f : X ⟶ Y} :
+    Etale f ↔ Flat f ∧ FormallyUnramified f ∧ LocallyOfFinitePresentation f := by
+  rw [etale_iff, flat_iff, formallyUnramified_iff, locallyOfFinitePresentation_iff]
+  grind [RingHom.Etale.iff_flat_and_formallyUnramified]
+
+lemma of_formallyUnramified_of_flat [Flat f] [FormallyUnramified f]
+    [LocallyOfFinitePresentation f] :
+    Etale f := by
+  rw [Etale.iff_flat_and_formallyUnramified]
+  exact ⟨inferInstance, inferInstance, inferInstance⟩
+
 end Etale
 
 namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
+deriving Category, HasPullbacks
 
 variable (X : Scheme.{u})
-
-instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
+deriving Functor.Full, Functor.Faithful
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
-
-instance : (Etale.forget X).Full :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
-instance : (Etale.forget X).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
-
-instance : HasPullbacks X.Etale := by
-  unfold Scheme.Etale
-  infer_instance
 
 end Scheme
 

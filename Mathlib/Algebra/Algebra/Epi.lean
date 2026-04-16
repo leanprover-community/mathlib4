@@ -62,7 +62,7 @@ end Semiring
 instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
     Algebra.IsEpi R A := by
   refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun x ↦ ?_
-  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective R x
   set f := algebraMap R A with hf
   replace hb : f b ≠ 0 := by aesop
   calc 1 ⊗ₜ[R] (f a / f b)

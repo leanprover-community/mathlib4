@@ -151,6 +151,13 @@ theorem isReduced_of_field :
     (A := Localization.AtPrime M)).toField
   exact hy.eq_zero
 
+theorem isRadical_map_isMaximal (B : Type*) [CommRing B] [Algebra A B]
+    [Algebra.EssFiniteType A B] [Algebra.FormallyUnramified A B] (p : Ideal A) [p.IsMaximal] :
+    (p.map (algebraMap A B)).IsRadical := by
+  let : Field (A ⧸ p) := Ideal.Quotient.field p
+  rw [Ideal.isRadical_iff_quotient_reduced]
+  exact Algebra.FormallyUnramified.isReduced_of_field (A ⧸ p) (B ⧸ p.map (algebraMap A B))
+
 theorem range_eq_top_of_isPurelyInseparable
     [IsPurelyInseparable K L] : (algebraMap K L).range = ⊤ := by
   classical

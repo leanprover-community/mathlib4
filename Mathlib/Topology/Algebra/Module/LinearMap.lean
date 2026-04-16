@@ -37,7 +37,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
@@ -118,6 +118,10 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 
+@[continuity, fun_prop]
+protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
+  f.2
+
 @[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
@@ -155,6 +159,10 @@ initialize_simps_projections ContinuousLinearMap (toFun → apply, toLinearMap �
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
+@[simp, norm_cast]
+theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁₂] M₂) = f :=
+  rfl
+
 /-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
@@ -178,6 +186,8 @@ theorem range_coeFn_eq :
   · rintro ⟨hfc, f, rfl⟩
     exact ⟨⟨f, hfc⟩, rfl⟩
 
+lemma range_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Set.range f.toLinearMap = Set.range f := by simp
+
 -- make some straightforward lemmas available to `simp`.
 protected theorem map_zero (f : M₁ →SL[σ₁₂] M₂) : f (0 : M₁) = 0 :=
   map_zero f
@@ -197,10 +207,6 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
     [Module S M₂] [LinearMap.CompatibleSMul M₁ M₂ R S] (f : M₁ →L[S] M₂) (c : R) (x : M₁) :
     f (c • x) = c • f x :=
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
-
-@[simp, norm_cast]
-theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁₂] M₂) = f :=
-  rfl
 
 @[ext]
 theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 = g 1) : f = g :=
@@ -229,6 +235,15 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
     s.topologicalClosure.map (f : M₁ →ₛₗ[σ₁₂] M₂) ≤
       (s.map (f : M₁ →ₛₗ[σ₁₂] M₂)).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
+
+/-- If a continuous linear map stabilizes a submodule, then it stabilizes its topological
+closure. -/
+theorem _root_.Submodule.topologicalClosure_mem_invtSubmodule [TopologicalSpace R₁]
+    [ContinuousSMul R₁ M₁] [ContinuousAdd M₁] {f : M₁ →L[R₁] M₁} {s : Submodule R₁ M₁}
+    (hs : s ∈ Module.End.invtSubmodule f) :
+    s.topologicalClosure ∈ Module.End.invtSubmodule f := by
+  rw [Module.End.mem_invtSubmodule_iff_map_le] at hs ⊢
+  exact (s.topologicalClosure_map f).trans (Submodule.topologicalClosure_mono hs)
 
 /-- Under a dense continuous linear map, a submodule whose `TopologicalClosure` is `⊤` is sent to
 another such submodule.  That is, the image of a dense set under a map with dense range is dense.
@@ -350,6 +365,10 @@ theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
   rfl
 
 @[simp, norm_cast]
+theorem coe_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
+  rfl
+
+@[simp, norm_cast]
 theorem toContinuousAddMonoidHom_id :
     (ContinuousLinearMap.id R₁ M₁ : ContinuousAddMonoidHom M₁ M₁) = .id _ := rfl
 
@@ -386,16 +405,13 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
-    intros
-    ext
-    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  add_comm := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
@@ -410,6 +426,12 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   nsmul_succ n f := by
     ext
     simp [add_smul]
+
+instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+  add_comm := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
@@ -529,8 +551,12 @@ instance instMul : Mul (M₁ →L[R₁] M₁) :=
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
   rfl
 
-@[simp]
-theorem coe_mul (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
+@[simp, norm_cast]
+theorem coe_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_mul' (f g : M₁ →L[R₁] M₁) : ⇑(f * g) = f ∘ g :=
   rfl
 
 theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) :=
@@ -543,8 +569,13 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   one_mul _ := ext fun _ => rfl
   mul_assoc _ _ _ := ext fun _ => rfl
 
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+@[simp, norm_cast]
+theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+@[simp, norm_cast]
+theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+  DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
@@ -575,6 +606,18 @@ theorem natCast_apply [ContinuousAdd M₁] (n : ℕ) (m : M₁) : (↑n : M₁ �
 theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
+
+/-- Construct a homeomorphism from an invertible continuous linear map. -/
+@[simps]
+def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
+  toFun := T.1
+  invFun := T⁻¹.1
+  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+
+theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
+  obtain ⟨T, rfl⟩ := hT
+  exact (homeomorphOfUnit T).isHomeomorph
 
 section ApplyAction
 
@@ -697,6 +740,12 @@ theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
     (smulRight c f : M₁ → M₂) x = c x • f :=
   rfl
 
+@[simp]
+lemma smulRight_zero (f : M₁ →L[R] S) : f.smulRight (0 : M₂) = 0 := by ext; simp
+
+@[simp]
+theorem zero_smulRight {x : M₂} : (0 : M₁ →L[R] S).smulRight x = 0 := by ext; simp
+
 end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
@@ -752,8 +801,6 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
     [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
   coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
-
-@[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
@@ -1181,17 +1228,34 @@ open ContinuousLinearMap
 def ClosedComplemented (p : Submodule R M) : Prop :=
   ∃ f : M →L[R] p, ∀ x : p, f x = x
 
-theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space p]
-    (h : ClosedComplemented p) :
+variable {p : Submodule R M}
+
+namespace ClosedComplemented
+
+variable [T1Space p]
+
+theorem exists_isClosed_isCompl (h : ClosedComplemented p) :
     ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
   Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
 
-protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space M]
+/-- An arbitrary choice of closed complement of a closed complemented submodule. -/
+noncomputable def complement (h : ClosedComplemented p) : Submodule R M :=
+  Classical.choose h.exists_isClosed_isCompl
+
+theorem isClosed_complement (h : ClosedComplemented p) : IsClosed (h.complement : Set M) :=
+  Classical.choose_spec (h.exists_isClosed_isCompl) |>.1
+
+theorem isCompl_complement (h : ClosedComplemented p) : IsCompl p h.complement :=
+  Classical.choose_spec (h.exists_isClosed_isCompl) |>.2
+
+protected theorem isClosed [IsTopologicalAddGroup M] [T1Space M]
     {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
   rcases h with ⟨f, hf⟩
   have : (ContinuousLinearMap.id R M - p.subtypeL.comp f).ker = p :=
     LinearMap.ker_id_sub_eq_of_proj hf
   exact this ▸ isClosed_ker _
+
+end ClosedComplemented
 
 @[simp]
 theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
@@ -1295,17 +1359,9 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
-
-@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
-
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
-
-@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 
 end topDualPairing

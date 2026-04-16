@@ -111,7 +111,8 @@ into a `ContinuousMonoidHom`. This is declared as the default coercion from `F` 
 `AddMonoidHomClass F A B` and `ContinuousMapClass F A B` into a `ContinuousAddMonoidHom`.
 This is declared as the default coercion from `F` to `ContinuousAddMonoidHom A B`. -/]
 def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : A →ₜ* B :=
-  { MonoidHomClass.toMonoidHom f with }
+  { MonoidHomClass.toMonoidHom f with
+    continuous_toFun := by dsimp; fun_prop }
 
 /-- Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
@@ -553,8 +554,6 @@ section unique
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N where
   __ := MulEquiv.ofUnique
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with

@@ -187,6 +187,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   simp only [mul_zero, ofReal_zero, zero_pow, Ne,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add, reduceCtorEq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The *square* of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`. -/
 theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 = π / b := by
@@ -245,6 +246,7 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
   exact continuousAt_of_dominated (Eventually.of_forall (by fun_prop)) f_le_bd
     (integrable_exp_neg_mul_sq hd) (ae_of_all _ (by fun_prop))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   have nv : ∀ {b : ℂ}, 0 < re b → b ≠ 0 := by intro b hb; contrapose! hb; rw [hb]; simp

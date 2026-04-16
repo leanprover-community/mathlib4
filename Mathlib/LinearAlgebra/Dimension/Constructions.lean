@@ -104,6 +104,12 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
 
+theorem LinearMap.finrank_le_finrank_of_surjective
+    [Module R M'] [StrongRankCondition R] [Module.Finite R M]
+    {f : M →ₗ[R] M'} (h : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M := by
+  rw [← f.quotKerEquivOfSurjective h |>.finrank_eq]
+  exact Submodule.finrank_quotient_le _
+
 end Quotient
 
 variable [Semiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
@@ -493,6 +499,15 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
   classical
   rw [← finrank_top, ← hv]
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
+
+@[simp]
+lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+    Module.finrank R (Pi.spanSubset R s) = s.ncard := by
+  classical
+  have := Fintype.ofFinite ι
+  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
+    Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
+  exact Set.ncard_image_of_injective s <| (Pi.basisFun R ι).injective
 
 end Span
 

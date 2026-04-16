@@ -120,7 +120,7 @@ theorem iInf_fixedSubmodule_le_fixedSubmodule_prod
     intro x hx
     simp only [mem_iInf] at hx
     simp only [finRange_succ, map_cons, map_map, prod_cons]
-    apply inf_fixedSubmodule_le_fixedSubmodule_mul
+    apply fixedSubmodule_inf_fixedSubmodule_le_comp
     simp only [mem_inf, hx 0, true_and]
     apply hind
     simp_all
@@ -138,7 +138,12 @@ theorem finrank_quotient_inf_le_finrank_quotient_add_finrank_quotient'
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   intro x
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
-  simp [mem_ker, mem_bot]
+  simp only [mem_ker, mem_bot]
+  simp only [mkQ_apply, prod_apply, Pi.prod, mapQ_apply, id_coe, id_eq, Prod.mk_eq_zero, and_imp]
+  simp only [← mkQ_apply, ← mem_ker, ker_mkQ, mem_inf]
+  intro hP hQ
+  exact ⟨hP, hQ⟩
+
 
 variable {K : Type*} [DivisionRing K]
     {V : Type*} [AddCommGroup V] [Module K V] [Module.Finite K V]
@@ -178,7 +183,7 @@ theorem finrank_fixedSubmodule_add_le :
     finrank K e.fixedSubmodule + finrank K f.fixedSubmodule ≤
       finrank K ↥(e.fixedSubmodule ⊔ f.fixedSubmodule) +
         finrank K (e * f).fixedSubmodule := by
-  have := finrank_mono (inf_fixedSubmodule_le_fixedSubmodule_mul e f)
+  have := finrank_mono (fixedSubmodule_inf_fixedSubmodule_le_comp e.toLinearMap f.toLinearMap)
   rwa [← Nat.add_le_add_iff_left, finrank_sup_add_finrank_inf_eq] at this
 
 theorem finrank_le_one_add_finrank_fixedSubmodule_dilatransvection
@@ -229,7 +234,7 @@ theorem finrank_quotient_fixedSubmodule_of_mem_dilatransvections_pow
     finrank K (V ⧸ e.fixedSubmodule) ≤ n := by
   induction n generalizing e with
   | zero =>
-    simp only [pow_zero, Set.mem_one, ← fixedSubmodule_eq_top_iff] at he
+    simp only [pow_zero, Set.mem_one, LinearEquiv.one_eq_refl, ← fixedSubmodule_eq_top_iff] at he
     rw [← Nat.add_le_add_iff_right, finrank_quotient_add_finrank, zero_add]
     rw [he, finrank_top]
   | succ n hind =>
@@ -263,15 +268,15 @@ theorem fixedSubmodule_transvection_mul
   constructor
   · -- e.fixedSubmodule ≤ e'.fixedSubmodule
     intro x hx
-    simp only [mem_fixedSubmodule_iff, LinearEquiv.mul_apply]
+    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, LinearEquiv.mul_apply]
     suffices transvection hfv x = x by
-      simp only [mem_fixedSubmodule_iff] at hx
+      simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap] at hx
       simp only [hx, this]
-    rw [← mem_fixedSubmodule_iff]
+    rw [← LinearEquiv.coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact ht hx
   · -- u ∈ e.fixedSubmodule
-    simp only [mem_fixedSubmodule_iff, LinearEquiv.mul_apply,
-      transvection.apply]
+    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap,
+      LinearEquiv.mul_apply, transvection.apply]
     simp [hfv']
 
 /- ## Generation of non-exceptional linear equivalences. -/
@@ -293,7 +298,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
   induction h : finrank K (V ⧸ e.fixedSubmodule) generalizing e he with
   | zero =>
     simp only [zero_tsub, pow_zero, one_mul]
-    suffices e = 1 by
+    suffices e = refl K V by
       rw [this]; exact one_mem_dilatransvections
     rw [← fixedSubmodule_eq_top_iff]
     apply Submodule.eq_top_of_finrank_eq
@@ -322,14 +327,15 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
           map_sub, sub_eq_zero]
         simp [← fixedReduce_mk, he]
       have hv'' : v - e v ≠ 0 := by
-        rwa [ne_eq, sub_eq_zero, eq_comm, ← mem_fixedSubmodule_iff]
+        rwa [ne_eq, sub_eq_zero, eq_comm, ← LinearEquiv.coe_toLinearMap, ← mem_fixedSubmodule_iff]
       have hfv : f (v - e v) = 0 := by
         rw [← LinearMap.le_ker_iff_map] at hf
         rw [← LinearMap.mem_ker, ← neg_mem_iff, neg_sub]
         exact hf hv'
       set t := LinearEquiv.transvection hfv with ht
       have ht_fixed : e.fixedSubmodule ≤ t.fixedSubmodule := fun x hx ↦ by
-        simp only [mem_fixedSubmodule_iff, ht, transvection.apply, add_eq_left, smul_eq_zero]
+        simp only [mem_fixedSubmodule_iff, ht, LinearEquiv.coe_toLinearMap,
+          transvection.apply, add_eq_left, smul_eq_zero]
         rw [← LinearMap.le_ker_iff_map] at hf
         exact Or.inl (hf hx)
       set e' := t * e with he'
@@ -373,7 +379,7 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
   | zero =>
     -- this part is identical, makes a lemma ?
     simp only [zero_tsub, pow_zero, one_mul]
-    suffices e = 1 by
+    suffices e = refl K V by
       rw [this]; exact one_mem_dilatransvections
     rw [← fixedSubmodule_eq_top_iff]
     apply Submodule.eq_top_of_finrank_eq
@@ -405,7 +411,9 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_ne_smul_id
       have ht_fixed {f : Dual K V} {u : V}
           (hf : e.fixedSubmodule ⊔ K ∙ (e u - u) ≤ LinearMap.ker f) :
           e.fixedSubmodule ≤ (t hf).fixedSubmodule := fun x hx ↦ by
-        simp only [mem_fixedSubmodule_iff, t, transvection.apply, add_eq_left, smul_eq_zero]
+        simp only [mem_fixedSubmodule_iff, t]
+        simp only [transvection.coe_toLinearMap]
+        simp only [LinearMap.transvection.apply, add_eq_left, smul_eq_zero]
         left
         rw [← LinearMap.mem_ker]
         apply hf
@@ -698,8 +706,9 @@ theorem mem_transvections_pow_mul_dilatransvections :
     simp [sub_eq_add_neg]
   have he_fixed : e.fixedSubmodule ≤ e'.fixedSubmodule := by
     intro x hx
-    rw [mem_fixedSubmodule_iff, he'_apply]
-    suffices f x = 0 by simp [mem_fixedSubmodule_iff.mp hx, this]
+    rw [mem_fixedSubmodule_iff, coe_coe, he'_apply]
+    simp only [mem_fixedSubmodule_iff, coe_coe] at hx
+    suffices f x = 0 by simp [hx, this]
     rw [← Submodule.mem_bot K, ← hfker]
     exact mem_map_of_mem (mem_sup_left hx)
   obtain ⟨a, hea⟩ := he.2.2
@@ -722,7 +731,7 @@ theorem mem_transvections_pow_mul_dilatransvections :
   have he'_fixed : e'.fixedSubmodule = e.fixedSubmodule := by
     apply le_antisymm _ he_fixed
     intro x hx'
-    simp only [mem_fixedSubmodule_iff, he'_apply] at hx'
+    simp only [mem_fixedSubmodule_iff, coe_coe, he'_apply] at hx'
     suffices f (e x) = 0 by simpa [this] using hx'
     rw [← Submodule.mem_bot K, ← hfker]
     apply mem_map_of_mem
@@ -778,7 +787,7 @@ theorem reduce_mem_transvections {W : Submodule K V}
     simp [he1]
   have hf : W ≤ ker f := fun x hx ↦ by
     replace hx := hW hx
-    simp only [he, mem_fixedSubmodule_iff, transvection.coe_apply, LinearMap.transvection.apply,
+    simp only [he, mem_fixedSubmodule_iff, coe_coe, transvection.apply,
       add_eq_left, smul_eq_zero, ← mem_ker] at hx
     apply Or.resolve_right hx
     contrapose he1
@@ -854,7 +863,7 @@ theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
     apply Submodule.eq_of_le_of_finrank_le
     · simp_rw [← hfg, ← hf, List.ofFn_eq_map]
       apply le_trans (inf_le_inf_right _ _)
-        (inf_fixedSubmodule_le_fixedSubmodule_mul _ _)
+        (fixedSubmodule_inf_fixedSubmodule_le_comp _ _)
       apply iInf_fixedSubmodule_le_fixedSubmodule_prod
     · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
       rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
@@ -892,8 +901,7 @@ theorem fixedReduce_mem_transvections_pow_mul_dilatransvections
       simp only [← iInf_eq, inf_le_right]
   simp only [fixedReduce, ← hfg, ← hf, List.ofFn_eq_map, List.prod_map_hom, ← map_mul]
   apply congr_arg
-  rw [← Subtype.coe_inj]
-  aesop
+  simp [← Subtype.coe_inj, Function.comp_def]
 
 theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
     (hV : 1 ≤ finrank K (V ⧸ e.fixedSubmodule))
@@ -909,7 +917,7 @@ theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
     apply Submodule.eq_of_le_of_finrank_le
     · simp_rw [← hfg, ← hg, List.ofFn_eq_map]
       apply le_trans (inf_le_inf_left _ _)
-        (inf_fixedSubmodule_le_fixedSubmodule_mul _ _)
+        (fixedSubmodule_inf_fixedSubmodule_le_comp _ _)
       apply iInf_fixedSubmodule_le_fixedSubmodule_prod
     · rw [← Nat.add_le_add_iff_left, finrank_quotient_add_finrank]
       rw [← finrank_quotient_add_finrank, Nat.add_le_add_iff_right]
@@ -947,8 +955,7 @@ theorem fixedReduce_mem_transvections_mul_dilatransvections_pow
       exact le_trans inf_le_right (iInf_le _ _)
   simp only [fixedReduce, ← hfg, ← hg, List.ofFn_eq_map, List.prod_map_hom, ← map_mul]
   apply congr_arg
-  rw [← Subtype.coe_inj]
-  aesop
+  simp [← Subtype.coe_inj, Function.comp_def]
 
 theorem notMem_transvections_mul_dilatransvections_pow
   (hV : 1 ≤ finrank K V) (a : K) (ha : a ≠ 1) (hea : ∀ x, e x = a • x) :
@@ -964,7 +971,7 @@ theorem notMem_transvections_mul_dilatransvections_pow
   rw [eq_bot_iff]
   intro x hx
   simp only [mem_bot]
-  simp only [mem_fixedSubmodule_iff] at hx
+  simp only [mem_fixedSubmodule_iff, coe_coe] at hx
   obtain ⟨l, v, hlv, hf⟩ := hf
   rw [← eq_inv_mul_iff_mul_eq, LinearEquiv.ext_iff] at he
   specialize he x
@@ -1058,7 +1065,7 @@ theorem mem_dilatransvections_pow :
   induction hn : finrank K (V ⧸ e.fixedSubmodule) generalizing e with
   | zero =>
     suffices e = 1 by simp [this]
-    rw [← fixedSubmodule_eq_top_iff]
+    rw [one_eq_refl, ← fixedSubmodule_eq_top_iff]
     apply eq_top_of_finrank_eq
     rw [← finrank_quotient_add_finrank e.fixedSubmodule]
     simpa only [Nat.right_eq_add]
@@ -1094,7 +1101,7 @@ theorem mem_dilatransvections_pow :
       have hc : c ≠ 0 := by
         contrapose hv
         simp only [hv, zero_smul, add_zero] at hxcv
-        simp only [mem_fixedSubmodule_iff] at hx ⊢
+        simp only [mem_fixedSubmodule_iff, coe_coe] at hx ⊢
         apply e.injective
         rwa [← hxcv]
       obtain ⟨l, hlv, hle⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hv inferInstance
@@ -1111,7 +1118,7 @@ theorem mem_dilatransvections_pow :
         use LinearEquiv.dilatransvection this
         refine ⟨dilatransvection_mem_dilatransvections, ?_, ?_⟩
         · intro x hx
-          simp [dilatransvection.apply, hle x hx]
+          simp [LinearMap.transvection.apply, hle x hx]
         · rw [← hxcv, dilatransvection.apply, map_add, hle x hx, zero_add, LinearMap.map_smul]
           simp only [y, smul_eq_mul, ← mul_smul]
           rw [mul_inv_cancel₀ (by simp_all), one_smul]
@@ -1129,7 +1136,7 @@ theorem mem_dilatransvections_pow :
         have hlw : l w = 0 := by simp [w, hlv]
         refine ⟨LinearEquiv.transvection hlw, ?_, fun x hx ↦ ?_, ?_⟩
         · exact transvection_mem_dilatransvections hlw
-        · rw [mem_fixedSubmodule_iff, transvection.apply, add_eq_left]
+        · rw [mem_fixedSubmodule_iff, coe_coe, transvection.apply, add_eq_left]
           convert zero_smul K _
           rw [← Submodule.mem_bot K, ← hle]
           exact mem_map_of_mem hx

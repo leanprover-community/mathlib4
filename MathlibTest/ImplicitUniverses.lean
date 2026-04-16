@@ -1,4 +1,4 @@
-import Mathlib.Tactic.TypeStar
+module
 import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /--

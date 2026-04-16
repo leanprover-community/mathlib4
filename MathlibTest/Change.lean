@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Change
 
 set_option linter.style.setOption false
