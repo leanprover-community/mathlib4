@@ -30,16 +30,15 @@ jobs:
       with:
         ref: master
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Configure Lean
       uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0

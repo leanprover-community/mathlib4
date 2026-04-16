@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou
 -/
 module
 
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
@@ -114,6 +115,14 @@ theorem HasFiniteIntegral.mono {f : α → β} {g : α → γ} (hg : HasFiniteIn
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : HasFiniteIntegral f μ :=
   hg.mono_enorm <| h.mono fun _x hx ↦ enorm_le_iff_norm_le.mpr hx
 
+theorem HasFiniteIntegral.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
+    (hg : HasFiniteIntegral g μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    HasFiniteIntegral f μ := by
+  refine HasFiniteIntegral.mono hg ?_
+  filter_upwards [hnonneg, h] with a hn ha
+  apply norm_le_norm_of_abs_le_abs
+  rwa [abs_of_nonneg hn, abs_of_nonneg (hn.trans ha)]
+
 theorem HasFiniteIntegral.mono'_enorm {f : α → ε} {g : α → ℝ≥0∞} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ g a) : HasFiniteIntegral f μ :=
   hg.mono_enorm <| h.mono fun _x hx ↦ le_trans hx le_rfl
@@ -173,7 +182,6 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
@@ -427,13 +435,11 @@ section PosPart
 
 /-! Lemmas used for defining the positive part of an `L¹` function -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => max (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=

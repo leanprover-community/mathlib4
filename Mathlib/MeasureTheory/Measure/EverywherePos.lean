@@ -265,7 +265,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     apply inter_mem_nhdsWithin k
     apply IsOpen.mem_nhds (by simpa using h'k.smul _)
     push _ ∈ _
-    contrapose! H
+    contrapose H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
   exact lt_irrefl _ (C.le.trans_lt this)

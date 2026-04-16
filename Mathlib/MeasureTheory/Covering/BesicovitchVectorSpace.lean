@@ -166,7 +166,6 @@ theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
 
 variable (E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `δ` is small enough, a `(1-δ)`-separated set in the ball of radius `2` also has cardinality
 at most `multiplicity E`. -/
 theorem exists_goodδ :
@@ -341,7 +340,6 @@ theorem exists_normalized_aux1 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 
 variable [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
@@ -378,7 +376,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         gcongr _ - ?_
         exact mul_le_of_le_one_left δnonneg (by linarith only [C])
       _ = (1 - δ / 4) * a.r j := by ring
-      _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
+      _ ≤ (1 - δ / 4) * (τ * a.r i) := by gcongr; exact H.2
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
       _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
   set d := (2 / ‖a.c j‖) • a.c j with hd
@@ -437,14 +435,14 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
           calc
             a.r j - ‖a.c j - a.c i‖ ≤ τ * a.r i - a.r i := sub_le_sub H.2 H.1
             _ = a.r i * (τ - 1) := by ring
-            _ ≤ s * (τ - 1) := mul_le_mul_of_nonneg_right A (sub_nonneg.2 hτ)
-      _ ≤ s * (δ / 2) := (mul_le_mul_of_nonneg_left (by linarith only [δnonneg, hδ1]) spos.le)
+            _ ≤ s * (τ - 1) := by gcongr; exact sub_nonneg.2 hτ
+      _ ≤ s * (δ / 2) := by gcongr; linarith only [δnonneg, hδ1]
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)
   calc
     1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field
-    _ ≤ 2 / s * ‖d - a.c i‖ :=
-      (mul_le_mul_of_nonneg_left (by linarith only [hcrj, I, J, hi]) invs_nonneg)
+    _ ≤ 2 / s * ‖d - a.c i‖ := by
+      gcongr; linarith only [hcrj, I, J, hi]
     _ = ‖(2 / s) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
       conv_lhs => rw [norm_sub_rev, ← abs_of_nonneg invs_nonneg]
       rw [← Real.norm_eq_abs, ← norm_smul, smul_sub, hd, smul_smul]

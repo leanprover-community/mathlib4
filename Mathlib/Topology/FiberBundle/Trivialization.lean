@@ -91,7 +91,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- TODO: move `ext` here?
+-- TODO: tag this lemma with the `ext` attribute instead?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -122,9 +122,11 @@ theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
 
 protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
 
+@[simp]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
+@[simp]
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
 
@@ -148,17 +150,19 @@ theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
+@[simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialEquiv.symm x) = x :=
   e.toPartialEquiv.right_inv hx
 
+@[simp, mfld_simps]
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toPartialEquiv.symm (b, x)) = (b, x) :=
   e.apply_symm_apply (e.mem_target.2 hx)
 
+@[simp, mfld_simps]
 theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toPartialEquiv.symm (e x) = x :=
   e.toPartialEquiv.left_inv hx
 
-@[simp, mfld_simps]
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toPartialEquiv.symm (proj x, (e x).2) = x := by
   rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
@@ -214,6 +218,7 @@ theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
 
+@[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
@@ -246,15 +251,17 @@ theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
   simp only [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
 
+@[simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
+@[simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
-@[simp]
+@[simp, mfld_simps]
 theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
@@ -420,6 +427,7 @@ protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.c
 
 theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 
+@[simp, mfld_simps]
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
 
@@ -455,10 +463,12 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
 theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   e.toPretrivialization.proj_surjOn_baseSet
 
+@[simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) :
     e (e.toOpenPartialHomeomorph.symm x) = x :=
   e.toOpenPartialHomeomorph.right_inv hx
 
+@[simp, mfld_simps]
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toOpenPartialHomeomorph.symm (b, x)) = (b, x) :=
   e.toPretrivialization.apply_symm_apply' hx
@@ -633,13 +643,13 @@ protected theorem continuousOn : ContinuousOn e' e'.source :=
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
   e'.coe_fst (e'.mem_source.2 hb)
 
 theorem mk_mem_target {y : F} : (b, y) ∈ e'.target ↔ b ∈ e'.baseSet :=
   e'.toPretrivialization.mem_target
 
+@[simp, mfld_simps]
 theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
     e'.toOpenPartialHomeomorph.symm (e' x) = x :=
   e'.toPartialEquiv.left_inv hx
@@ -671,10 +681,12 @@ theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=
   e.toPretrivialization.mk_symm hb y
 
+@[simp, mfld_simps]
 theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
   e.toPretrivialization.symm_proj_apply z hz
 
+@[simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : E b) :
     e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
@@ -731,6 +743,7 @@ theorem coordChange_apply_snd (e₁ e₂ : Trivialization F proj) {p : Z} (h : p
     e₁.coordChange e₂ (proj p) (e₁ p).snd = (e₂ p).snd := by
   rw [coordChange, e₁.symm_apply_mk_proj (e₁.mem_source.2 h)]
 
+@[simp, mfld_simps]
 theorem coordChange_same_apply (e : Trivialization F proj) {b : B} (h : b ∈ e.baseSet) (x : F) :
     e.coordChange e b x = x := by rw [coordChange, e.apply_symm_apply' h]
 
@@ -888,7 +901,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
   e.piecewiseLeOfEq (e'.transFiberHomeomorph (e'.coordChangeHomeomorph e He' He)) a He He' <| by
     rintro p rfl
     ext1
-    · simp [e.coe_fst', e'.coe_fst', *]
+    · simp [*]
     · simp [coordChange_apply_snd, *]
 
 open Classical in

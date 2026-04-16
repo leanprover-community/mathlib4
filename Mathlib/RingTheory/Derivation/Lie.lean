@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Lie Algebra Structure on Derivations
@@ -70,6 +71,51 @@ instance : LieModule R (Derivation R A A) A where
 
 @[simp]
 lemma bracket_eq_fun (X : Derivation R A A) (a : A) : ⁅X, a⁆ = X a := rfl
+
+section CompatibleDerivations
+variable {A' : Type*} [CommRing A'] [Algebra R A'] [Algebra A A'] [IsScalarTower R A A']
+
+variable (R A A') in
+/-- Let `σ : A → A'` be a an homomorphism. A derivation `d : A → A` and a derivation
+`d' : A' → A'` are called compatible if `d' ∘ σ = σ ∘ d`. Couples of derivations
+with this property form a Lie subalgebra of all couples of derivations. -/
+def couple : LieSubalgebra R (Derivation R A' A' × Derivation R A A) where
+  carrier := { x | x.fst.compAlgebraMapL R A A' A' = (Algebra.ofId A A').toLinearMap.compDer x.snd }
+  add_mem' := by simp_all
+  zero_mem' := by simp
+  smul_mem' := by simp_all
+  lie_mem' {x y} hx hy := by
+    have hxx (a : A) := congrArg (fun f => f a) hx
+    have hyy (a : A) := congrArg (fun f => f a) hy
+    ext z
+    simp at hxx hyy
+    simp [Derivation.commutator_apply, hxx, hyy]
+
+namespace Compatible
+lemma mem (x : (Derivation R A' A') × (Derivation R A A)) :
+    x ∈ couple R A A' ↔ x.1 ∘ Algebra.ofId A A' = Algebra.ofId A A' ∘ x.2 := by
+  constructor
+  · intro hx; ext a; exact congrArg (· a) hx
+  · intro hx; ext a; exact congrArg (· a) hx
+
+/-- Generate an element of `couple` from `x y` satisfying the compatibility equation. -/
+def mk (x : Derivation R A' A') (y : Derivation R A A)
+  (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : couple R A A' :=
+⟨(x, y), (Compatible.mem _).mpr h⟩
+
+lemma mk_left (x : Derivation R A' A') (y : Derivation R A A)
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.1 = x := rfl
+
+lemma mk_right (x : Derivation R A' A') (y : Derivation R A A)
+    (h : x ∘ (Algebra.ofId A A') = (Algebra.ofId A A') ∘ y) : (mk x y h).1.2 = y := rfl
+
+lemma apply (x : couple R A A') (a : A) :
+    x.1.1 (Algebra.ofId A A' a) = (Algebra.ofId A A') (x.1.2 a) := by
+  exact congrArg (· a) x.2
+
+end Compatible
+
+end CompatibleDerivations
 
 end LieStructures
 

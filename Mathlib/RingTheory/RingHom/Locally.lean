@@ -198,7 +198,6 @@ lemma locally_holdsForLocalizationAway (hPa : HoldsForLocalizationAway P) :
   rw [← IsScalarTower.algebraMap_eq]
   apply hPa _ r
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` preserves localizations, then `Locally P` is stable under composition if `P` is. -/
 lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPreserves P)
     (hPc : StableUnderComposition P) :
@@ -337,7 +336,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
     inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
-    convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
+    convert (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by

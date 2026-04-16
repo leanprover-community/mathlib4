@@ -79,7 +79,7 @@ These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
   is one guess correct more often than the other?
 * alternatively, can the elaborator generate two `Try this` suggestions, corresponding to the
   possible options?
-* add delaborators for these elaborators
+* not all those elaborators have corresponding delaborators yet, this should be fixed
 * add elaborators for more notation
 * make the model finding extensible, by converting it to an environment extension
 
@@ -121,6 +121,40 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
+/-- Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
+by searching in local context for either a `FiberBundle F E` or
+`TopologicalSpace (TotalSpace F E)` instance.
+
+We could try a more systematic search of `TotalSpace F E` anywhere in the local context,
+but the current heuristic is faster and sufficient so far. -/
+private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
+  withTraceNode `Elab.DiffGeo.TotalSpaceMk
+    (fun _ ↦ do return m!"Searching for a model fiber for {← ppExpr V}") do
+  trace[Elab.DiffGeo.TotalSpaceMk] "Searching for relevant `FiberBundle` instance in context"
+  let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦ do
+    /- Note: we do not use `match_expr` here since that would require importing
+    `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
+    match declType with
+    | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
+      if ← withReducible (pureIsDefEq E V) then
+        trace[Elab.DiffGeo.TotalSpaceMk] "found `FiberBundle` instance for model fiber {← ppExpr F}"
+        return some F
+      else return none
+    | _ => return none
+  if f?.isSome then
+    return f?
+  else
+    trace[Elab.DiffGeo.TotalSpaceMk] "Could not find a relevant `FiberBundle` instance in context"
+    trace[Elab.DiffGeo.TotalSpaceMk] "Searching for a relevant \
+      `TopologicalSpace (Bundle.TotalSpace _ _)` instance in context"
+    return ← findSomeLocalInstanceOf? `TopologicalSpace fun _ declType ↦ do
+      match declType with
+      | mkApp (.const `TopologicalSpace _) (mkApp3 (.const `Bundle.TotalSpace _) _ F E) => do
+        if ← withReducible (pureIsDefEq E V) then
+          trace[Elab.DiffGeo.TotalSpaceMk] "It worked! model fiber is {← ppExpr F}"
+          return some F
+        else return none
+      | _ => return none
 /--
 Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
@@ -162,17 +196,16 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
     | _ => match (← instantiateMVars tgt).cleanupAnnotations with
       | .app V _ =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-        let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
-          /- Note: we do not use `match_expr` here since that would require importing
-          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
-          match declType with
-          | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
-            if ← withReducible (pureIsDefEq E V) then
+        match ← findModelFiber? V with
+        | some F =>
               let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
-              some <$> mkLambdaFVars #[x] body
-            else return none
-          | _ => return none
-        return f?.getD e.headBeta
+              return (← mkLambdaFVars #[x] body).headBeta
+        | none =>
+          -- future: special-case `Bundle.TotalSpace` for V;
+          -- if so, say "there is no need to apply T% twice"
+          throwError "could not find a `FiberBundle` instance on `{V}`:\n\
+          `{e}` is a function into `{V}`\n\n\
+          hint: you may be missing suitable typeclass assumptions"
       | tgt =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
@@ -273,7 +306,7 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelRe
     TermElabM (Option FindModelResult) := do
   let s ← saveState
   try
-    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+    withTraceNode `Elab.DiffGeo.MDiff (fun _ => pure m!"{strategyDescr}") do
       let e ←
         try
           Term.withoutErrToSorry <| Term.withSynthesize x
@@ -659,8 +692,8 @@ where
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
-TODO not yet: This supports all `ModelWithCorners`
-instances that are currently defined in mathlib. Further cases can be added as necessary.
+This supports all `ModelWithCorners` instances that are currently defined in mathlib.
+Further cases can be added as necessary.
 
 Return an expression describing the found model with corners.
 
@@ -939,3 +972,135 @@ Trace class for the `MDiff` elaborator and friends, which infer a model with cor
 initialize registerTraceClass `Elab.DiffGeo.MDiff (inherited := true)
 
 end trace
+
+section delaborators
+
+/-!
+### Delaborators
+
+In this section we make sure the infoview also uses those notations.
+Not all notations are supported yet.
+-/
+open Bundle PrettyPrinter Delaborator SubExpr
+
+/-- Delaborator for `Bundle.TotalSpace.mk` using anonymous constructor notation. -/
+@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+/-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
+@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
+  `(⟨$bd, $vd⟩)
+
+/-- Delaborator for `mfderiv` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab mfderiv] meta def delab_mfderiv : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv% ($Tσs)) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(mfderiv% $fs) >>= annotateGoToSyntaxDef
+
+-- TODO: add a delaborator for mfderivWithin (with a test)
+
+/-- Delaborator for `MDifferentiable` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiable] meta def delabMDifferentiable : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiff $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 21 do
+  try
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiffAt $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableOn` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiff[$ss] $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 <| delab
+    `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
+
+/-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
+arguments that can use the `T%` elaborator. -/
+@[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
+    let .lam n _ b _ := f | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let s := b.getAppArgs[4]!.getAppFn
+    guard <| s.isFVar
+    let Tσs ← withNaryArg 20 do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt[$ss] $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withNaryArg 20 <| delab
+    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
+
+-- TODO: add more delaborators (and tests) for
+-- ContMDiff, ContMDiffOn, ContMDiffAt, ContMDiffWithinAt, HasMFDerivAt, HasMFDerivWithinAt
+
+-- TODO: when adding more elaborators, also add the corresponding delaborators
+
+end delaborators

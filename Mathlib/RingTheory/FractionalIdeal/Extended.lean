@@ -187,8 +187,8 @@ variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsD
   [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
 /--
-The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
-`A ⊆ B` an extension of domains.
+The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
+an extension of domains `A ⊆ B`.
 -/
 abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom L <|
@@ -212,14 +212,14 @@ theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
   rfl
 
 theorem le_one_of_extendedHomₐ_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
-  (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
-  contrapose! hI
+    (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
+  contrapose hI
   rw [SetLike.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
       using subset_span <| Set.mem_image_of_mem _ hx₁
-  · contrapose! hx₂
+  · contrapose hx₂
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
 

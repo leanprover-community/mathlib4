@@ -22,7 +22,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
   `A` is an `R`-algebra.
 * `spectrum a : Set R`: the spectrum of an element `a : A` where
   `A` is an `R`-algebra.
-* `resolvent : R → A`: the resolvent function is `fun r ↦ Ring.inverse (↑ₐ r - a)`, and hence
+* `resolvent : R → A`: the resolvent function is `fun r ↦ (↑ₐ r - a)⁻¹ʳ`, and hence
   when `r ∈ resolvent R A`, it is actually the inverse of the unit `(↑ₐ r - a)`.
 
 ## Main statements
@@ -45,7 +45,7 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 open Set
 
-open scoped Pointwise
+open scoped Pointwise Ring
 
 universe u v
 
@@ -76,8 +76,7 @@ variable {R}
 /-- Given an `a : A` where `A` is an `R`-algebra, the *resolvent* is
     a map `R → A` which sends `r : R` to `(algebraMap R A r - a)⁻¹` when
     `r ∈ resolvent R A` and `0` when `r ∈ spectrum R A`. -/
-noncomputable def resolvent (a : A) (r : R) : A :=
-  Ring.inverse (↑ₐ r - a)
+noncomputable def resolvent (a : A) (r : R) : A := (↑ₐ r - a)⁻¹ʳ
 
 /-- The unit `1 - r⁻¹ • a` constructed from `r • 1 - a` when the latter is a unit. -/
 @[simps]
@@ -314,7 +313,7 @@ variable {R : Type u} {A : Type v} [Semifield R] [Ring A] [Algebra R A]
 lemma inv₀_mem_iff {r : R} {a : Aˣ} :
     r⁻¹ ∈ spectrum R (a : A) ↔ r ∈ spectrum R (↑a⁻¹ : A) := by
   obtain (rfl | hr) := eq_or_ne r 0
-  · simp [zero_mem_iff]
+  · simp
   · lift r to Rˣ using hr.isUnit
     simp [inv_mem_iff]
 
@@ -425,7 +424,7 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
-      AlgHom.spectrum_apply_subset (f : A ≃ₐ[R] B).symm (f a)
+      AlgHom.spectrum_apply_subset (AlgEquivClass.toAlgEquiv f : A ≃ₐ[R] B).symm (f a)
 
 section ConjugateUnits
 
@@ -441,7 +440,7 @@ lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
     simp [mul_assoc]
   intro a u μ hμ
   rw [spectrum.mem_iff] at hμ ⊢
-  contrapose! hμ
+  contrapose hμ
   simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
 
 /-- Conjugation by a unit preserves the spectrum, inverse on left. -/

@@ -112,7 +112,6 @@ def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
   ⟨StructuredArrow.mk (Y := single V.index) (ObjectProperty.homMk V.homToIndex)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is a case bash: for each pair of types of objects in `Pairwise ι`,
 -- we have to explicitly construct a zigzag.
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
@@ -227,9 +226,9 @@ after appropriate whiskering and postcomposition.
 -/
 def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
-      (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
+      (Cone.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
-  Cones.ext (Iso.refl _) (by cat_disch)
+  Cone.ext (Iso.refl _) (by cat_disch)
 
 end SheafCondition
 
@@ -249,17 +248,17 @@ def isLimitOpensLeCoverEquivPairwise :
       (IsLimit.equivIsoLimit F.mapConeWhisker.symm)
     _ ≃
         IsLimit
-          ((Cones.postcomposeEquivalence _).functor.obj
+          ((Cone.postcomposeEquivalence _).functor.obj
             (F.mapCone ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
       (IsLimit.postcomposeHomEquiv _ _).symm
     _ ≃
         IsLimit
           (F.mapCone
-            ((Cones.postcomposeEquivalence _).functor.obj
+            ((Cone.postcomposeEquivalence _).functor.obj
               ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
       (IsLimit.equivIsoLimit (Functor.mapConePostcomposeEquivalenceFunctor _).symm)
     _ ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
-      IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
+      IsLimit.equivIsoLimit ((Cone.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
 
 /-- The sheaf condition
 in terms of a limit diagram over all `{ V : Opens X // ∃ i, V ≤ U i }`
@@ -287,7 +286,6 @@ theorem IsSheaf.isSheafPreservesLimitPairwiseIntersections (h : F.IsSheaf) :
   preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op
     (h.isSheafPairwiseIntersections U).some
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of the presheaf preserving the limit of the diagram
 consisting of the `U i` and `U i ⊓ U j`.
@@ -334,7 +332,6 @@ variable
   (s :
     PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/

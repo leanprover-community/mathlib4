@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.RingTheory.TensorProduct.Basic
@@ -321,7 +320,6 @@ theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [Decidab
     (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
   (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
     A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
   kronecker_diagonal _ _ |>.trans <| by
@@ -329,7 +327,6 @@ theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m 
     ext
     simp [(Nat.cast_commute b _).eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
     (a : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=

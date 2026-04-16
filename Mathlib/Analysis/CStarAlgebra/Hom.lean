@@ -19,7 +19,6 @@ Here we collect properties of C⋆-algebra homomorphisms.
 
 public section
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra in
 lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]
@@ -52,7 +51,6 @@ namespace NonUnitalStarAlgHom
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
-set_option backward.isDefEq.respectTransparency false in
 open CStarAlgebra Unitization in
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
 lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖a‖ := by

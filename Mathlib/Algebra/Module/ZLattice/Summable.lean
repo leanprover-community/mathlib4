@@ -158,8 +158,6 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
@@ -189,7 +187,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
-      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by simp; positivity
+      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by rw [sup_eq_left]; positivity
       have := hr' hx
       simp only [Metric.mem_closedBall, dist_zero_right, pi_norm_le_iff_of_nonneg hr.le,
         Int.norm_eq_abs, ← Int.cast_abs, ← Int.le_floor] at this
@@ -205,7 +203,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     exact mul_le_of_le_one_left (mul_nonneg (by positivity) (by positivity)) hA'
   · refine ⟨A⁻¹ * B, mul_pos (inv_pos.mpr hA) hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [Real.mul_rpow (inv_pos.mpr hA).le hB.le, mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (by positivity))
+    gcongr
     rw [← Real.rpow_neg_one, ← Real.rpow_mul hA.le]
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]

@@ -321,10 +321,6 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-@[deprecated divp_assoc (since := "2025-08-25")]
-theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
-  (divp_assoc _ _ _).symm
-
 @[simp]
 theorem divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
   rfl
@@ -538,6 +534,18 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 
+theorem mul_left_iff {a b : M} (ha : IsUnit a) :
+    IsUnit (a * b) ↔ IsUnit b :=
+  show IsUnit (ha.unit * b) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_left_iff => IsUnit a, IsUnit (a * b)
+
+theorem mul_right_iff {a b : M} (hb : IsUnit b) :
+    IsUnit (a * b) ↔ IsUnit a :=
+  show IsUnit (a * hb.unit) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_right_iff => IsUnit b, IsUnit (a * b)
+
 end Monoid
 
 section DivisionMonoid
@@ -634,10 +642,12 @@ section NoncomputableDefs
 variable {M : Type*}
 
 /-- Constructs an inv operation for a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a => ↑(h a).unit⁻¹
 
 /-- Constructs a `Group` structure on a `Monoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
@@ -646,6 +656,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
 /-- Constructs a `CommGroup` structure on a `CommMonoid` consisting only of units. -/
+@[implicit_reducible]
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,

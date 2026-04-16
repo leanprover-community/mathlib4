@@ -54,7 +54,7 @@ structure DiagramOfCones where
   /-- For each object, a cone. -/
   obj : ∀ j : J, Cone (F.obj j)
   /-- For each map, a map of cones. -/
-  map : ∀ {j j' : J} (f : j ⟶ j'), (Cones.postcompose (F.map f)).obj (obj j) ⟶ obj j'
+  map : ∀ {j j' : J} (f : j ⟶ j'), (Cone.postcompose (F.map f)).obj (obj j) ⟶ obj j'
   id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
     (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
@@ -65,7 +65,7 @@ structure DiagramOfCocones where
   /-- For each object, a cocone. -/
   obj : ∀ j : J, Cocone (F.obj j)
   /-- For each map, a map of cocones. -/
-  map : ∀ {j j' : J} (f : j ⟶ j'), (obj j) ⟶ (Cocones.precompose (F.map f)).obj (obj j')
+  map : ∀ {j j' : J} (f : j ⟶ j'), (obj j) ⟶ (Cocone.precompose (F.map f)).obj (obj j')
   id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
     (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
@@ -153,7 +153,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
           (by
             dsimp
             intro k
-            simp only [Limits.CoconeMorphism.w_assoc, Limits.Cocones.precompose_obj_ι,
+            simp only [Limits.CoconeMorphism.w_assoc, Limits.Cocone.precompose_obj_ι,
               Limits.IsColimit.fac, NatTrans.comp_app, Category.comp_id,
               Category.assoc]
             have := @NatTrans.naturality _ _ _ _ _ _ c.ι (j, k) (j', k) (f, 𝟙 k)
@@ -227,22 +227,22 @@ def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.ob
     { pt := s.pt
       π :=
         { app j := (Q j).lift <|
-            (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
+            (Cone.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
           naturality {j' j} f := (Q j).hom_ext <|
             fun k ↦ by simpa [E] using s.π.naturality ((Prod.sectL J k).map f) } }
   { lift s := P.lift (S s)
     fac s p := by
-      have h1 := (Q p.1).fac ((Cones.postcompose (E p.1).hom).obj <|
+      have h1 := (Q p.1).fac ((Cone.postcompose (E p.1).hom).obj <|
         s.whisker (Prod.sectR p.1 K)) p.2
       simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
-        Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
+        Cone.postcompose_obj_pt, Cone.whisker_pt, Cone.postcompose_obj_π,
         Cone.whisker_π, NatTrans.comp_app, Functor.const_obj_obj, whiskerLeft_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, E] at h1
       have h2 := (P.fac (S s) p.1)
       dsimp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
         Functor.const_obj_obj, DiagramOfCones.conePoints_obj, DiagramOfCones.conePoints_map,
-        Functor.const_obj_map, id_eq, Cones.postcompose_obj_pt, Cone.whisker_pt,
-        Cones.postcompose_obj_π, Cone.whisker_π, NatTrans.comp_app, whiskerLeft_app,
+        Functor.const_obj_map, id_eq, Cone.postcompose_obj_pt, Cone.whisker_pt,
+        Cone.postcompose_obj_π, Cone.whisker_π, NatTrans.comp_app, whiskerLeft_app,
         NatIso.ofComponents_hom_app, Iso.refl_hom, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
         eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
       simp [← h1, ← h2]
@@ -301,22 +301,22 @@ def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
     { pt := s.pt
       ι :=
         { app j := (Q j).desc <|
-            (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
+            (Cocone.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
           naturality {j j'} f := (Q j).hom_ext <|
             fun k ↦ by simpa [E] using s.ι.naturality ((Prod.sectL J k).map f) } }
   { desc s := P.desc (S s)
     fac s p := by
-      have h1 := (Q p.1).fac ((Cocones.precompose (E p.1).inv).obj <|
+      have h1 := (Q p.1).fac ((Cocone.precompose (E p.1).inv).obj <|
         s.whisker (Prod.sectR p.1 K)) p.2
       simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj,
-        Cocones.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj,
-        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Cocone.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj,
+        Cocone.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
         Iso.refl_inv, whiskerLeft_app, Category.id_comp, E] at h1
       have h2 := (P.fac (S s) p.1)
       dsimp only [DiagramOfCocones.coconePoints_obj, Functor.comp_obj, Prod.sectR_obj,
         uncurry_obj_obj, NatTrans.id_app, Functor.const_obj_obj, DiagramOfCocones.coconePoints_map,
-        Functor.const_obj_map, id_eq, Cocones.precompose_obj_pt, Cocone.whisker_pt,
-        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Functor.const_obj_map, id_eq, Cocone.precompose_obj_pt, Cocone.whisker_pt,
+        Cocone.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
         Iso.refl_inv, whiskerLeft_app, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
         eq_mpr_eq_cast, coconeOfCoconeUncurry_pt, coconeOfCoconeUncurry_ι_app, S, E] at h2 ⊢
       simp [← h1, ← h2]

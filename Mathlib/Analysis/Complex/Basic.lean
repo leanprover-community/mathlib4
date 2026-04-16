@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -245,17 +246,36 @@ theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous
     f = RingHom.id ℂ ∨ f = conj := by
   simpa only [DFunLike.ext_iff] using real_algHom_eq_id_or_conj (AlgHom.mk' f (map_real_smul f hf))
 
-/-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`. -/
-def conjCLE : ℂ ≃L[ℝ] ℂ :=
-  conjLIE
+/-- The complex-conjugation function from `ℂ` to itself is a continuous `ℝ`-algebra isomorphism. -/
+def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
+
+/-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
+
+This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
+abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
+
+@[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl
 
 @[simp]
-theorem conjCLE_coe : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
+  rfl
+
+@[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+  rfl
+
+@[simp] lemma conjCLE_coe_toLinearMap :
+    (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap :=
   rfl
 
 @[simp]
+theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
+  rfl
+
+-- simp tag not needed because conjCLE is `abbrev`
 theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
+
+@[simp] lemma conjCAE_toLinearMap : conjCAE.toLinearMap = conjAe.toLinearMap := rfl
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
@@ -416,11 +436,13 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
     Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
 
-theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
 
+@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
+
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
-  Complex.closedEmbedding_intCast.isClosed_range
+  Complex.isClosedEmbedding_intCast.isClosed_range
 
 lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
   Complex.isClosed_range_intCast.isOpen_compl
@@ -435,8 +457,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
-lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := OrderClosedTopology.isClosed_le'
+lemma orderClosedTopology : OrderClosedTopology ℂ := RCLike.instOrderClosedTopology
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
@@ -612,13 +633,12 @@ def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-set_option backward.isDefEq.respectTransparency false in
 /- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]
   rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
+  push Not at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
@@ -631,7 +651,6 @@ lemma isOpen_slitPlane : IsOpen slitPlane :=
 @[simp]
 lemma ofReal_mem_slitPlane {x : ℝ} : ↑x ∈ slitPlane ↔ 0 < x := by simp [mem_slitPlane_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
   simpa using ofReal_mem_slitPlane (x := -x)

@@ -17,14 +17,20 @@ jobs:
   bump-and-merge:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - name: Generate app token
       id: app-token
-      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
         app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
-        private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
-    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nightly-testing-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+    # This token is masked by the token minting action and will not be logged accidentally.
 
     - name: Checkout nightly-testing branch
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -33,16 +39,16 @@ jobs:
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Get mathlib-ci
+      id: get_mathlib_ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Set up Git
       run: |
@@ -331,10 +337,13 @@ jobs:
             IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
             MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
-            MESSAGE+=$'tmp=$(mktemp)\n'
-            MESSAGE+=$'wget -qO "$tmp" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/7c2dcf950607e48029aec2a614e840f2a14ae7e1/scripts/nightly/merge-lean-testing-pr.sh\n'
-            MESSAGE+=$'chmod +x "$tmp"\n'
-            MESSAGE+="\"\$tmp\" ${PR_NUMBER}"$'\n'
+            MESSAGE+=$'tmpscript=$(mktemp)\n'
+            MESSAGE+=$'wget -qO "$tmpscript" https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/merge-lean-testing-pr.sh\n'
+            MESSAGE+=$'chmod +x "$tmpscript"\n'
+            MESSAGE+=$'tmpdir=$(mktemp -d)\n'
+            MESSAGE+=$'git clone --depth=1 --filter=blob:none https://github.com/leanprover-community/mathlib4 "$tmpdir"\n'
+            MESSAGE+=$'cd "$tmpdir"\n'
+            MESSAGE+="\"\$tmpscript\" ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
           done
         else

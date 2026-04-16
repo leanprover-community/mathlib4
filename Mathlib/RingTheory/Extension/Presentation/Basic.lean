@@ -245,7 +245,6 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -258,7 +257,7 @@ private lemma span_range_relation_eq_ker_baseChange :
     rw [map_zero] at Z
     simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy,
       TensorProduct.includeRight_apply]
-    erw [aeval_map_algebraMap T (P.baseChange T).val (P.relation y)]
+    rw [aeval_map_algebraMap T (P.baseChange T).val (P.relation y)]
     change _ = TensorProduct.includeRight.toRingHom _
     rw [map_aeval, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
       TensorProduct.includeRight.comp_algebraMap]
@@ -404,7 +403,6 @@ private lemma aux_eq_comp : Q.aux P =
   ext i : 1
   cases i <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma aux_ker :
     RingHom.ker (Q.aux P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
   rw [aux_eq_comp, ← AlgHom.comap_ker, MvPolynomial.ker_mapAlgHom]
