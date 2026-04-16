@@ -92,7 +92,7 @@ instance generalLinearGroup_is_two_pretransitive :
     map_smul' e D := by
       simp only [id_eq]
       rw [← mk_rep D, smul_mk, smul_mk]
-      congr }
+      dsimp }
   exact IsPretransitive.of_embedding (f := f) Function.surjective_id
 
 end transitivity

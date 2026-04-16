@@ -86,9 +86,8 @@ theorem _root_.Submodule.exists_linearEquiv_restrict_eq
   let eQ := W.prodEquivOfIsCompl Q hQ
   obtain ⟨Q', hQ'⟩ := Submodule.exists_isCompl W'
   let eQ' := W'.prodEquivOfIsCompl Q' hQ'
-  suffices Nonempty (Q ≃ₗ[K] Q') by
-    let ⟨h⟩ := this
-    refine ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f h) ≪≫ₗ eQ', by aesop⟩
+  suffices Nonempty (Q ≃ₗ[K] Q') from
+    ⟨eQ.symm ≪≫ₗ (LinearEquiv.prodCongr f this.some) ≪≫ₗ eQ', by aesop⟩
   refine LinearEquiv.nonempty_equiv_iff_rank_eq.mpr ?_
   rw [← Cardinal.add_right_inj_of_lt_aleph0 (γ := Module.rank K W),
     add_comm, ← rank_prod', LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨eQ⟩,
