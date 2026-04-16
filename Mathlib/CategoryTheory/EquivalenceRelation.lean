@@ -38,6 +38,8 @@ namespace CategoryTheory
 
 open Limits
 
+open scoped TypeCat
+
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 variable {R X : C} {p₁ p₂ : R ⟶ X}
 
@@ -46,12 +48,12 @@ class JointlyMono₂ {R X₁ X₂ : C} (p₁ : R ⟶ X₁) (p₂ : R ⟶ X₂) :
   right_cancellation : ∀ ⦃Y : C⦄ (f g : Y ⟶ R), f ≫ p₁ = g ≫ p₁ → f ≫ p₂ = g ≫ p₂ → f = g
 
 lemma Types.jointlyMono₂ {X : Type w} (φ : X → X → Prop) :
-    JointlyMono₂ (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
-      (_root_.Prod.snd ∘ Subtype.val) where
+    JointlyMono₂ (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
+      (↾(_root_.Prod.snd ∘ Subtype.val)) where
   right_cancellation Y f g h₁ h₂ := by
     ext y
-    · exact congrFun h₁ y
-    · exact congrFun h₂ y
+    · exact congr($h₁ y)
+    · exact congr($h₂ y)
 
 /-- A reflexive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a section `r : X ⟶ R` of both `p₁` and `p₂`. -/
@@ -63,15 +65,15 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
-def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Reflexive φ) :
-    ReflexiveRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
-      (_root_.Prod.snd ∘ Subtype.val) where
+def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : Std.Refl φ) :
+    ReflexiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
+      (↾(_root_.Prod.snd ∘ Subtype.val)) where
   __ := Types.jointlyMono₂ φ
-  r x := ⟨⟨x, x⟩, hφ x⟩
+  r := (↾(fun x => ⟨⟨x, x⟩, hφ.refl x⟩))
 
 lemma Types.of_reflexiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : ReflexiveRelation p₁ p₂) :
-    _root_.Reflexive (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) :=
-  fun x => ⟨e.r x, congrFun e.reflexivity₁ x, congrFun e.reflexivity₂ x⟩
+    Std.Refl (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
+  refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
 
 /-- A symmetric relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X` together
 with a morphism `s : R ⟶ R` which interchanges `p₁` and `p₂`. -/
@@ -84,16 +86,16 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
 
 def Types.symmetricRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Symmetric φ) :
-    SymmetricRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
-      (_root_.Prod.snd ∘ Subtype.val) where
+    SymmetricRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
+      (↾(_root_.Prod.snd ∘ Subtype.val)) where
   __ := Types.jointlyMono₂ φ
-  s := fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩
+  s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩)
 
 lemma Types.of_symmetricRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : SymmetricRelation p₁ p₂) :
     _root_.Symmetric (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) := by
   refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
   rw [← hr₁, ← hr₂]
-  exact ⟨congrFun e.symmetry₁ r, congrFun e.symmetry₂ r⟩
+  exact ⟨congr($e.symmetry₁ r), congr($e.symmetry₂ r)⟩
 
 /-- A transitive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a limiting pullback cone `c` for `p₁` and `p₂` and a map `c.pt ⟶ R` which factors the two
@@ -110,26 +112,29 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
 
 attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
-def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Transitive φ) :
-    TransitiveRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
-      (_root_.Prod.snd ∘ Subtype.val) where
+def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : IsTrans _ φ) :
+    TransitiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
+      (↾(_root_.Prod.snd ∘ Subtype.val)) where
   __ := Types.jointlyMono₂ φ
   c := Types.pullbackCone _ _
   isLimit := (Types.pullbackLimitCone _ _).isLimit
-  t := fun ⟨⟨⟨⟨x₁, _⟩, h⟩, ⟨⟨_, x₂'⟩, h'⟩⟩, h₁₂⟩ => by
+  t := ↾(fun ⟨⟨⟨⟨x₁, _⟩, h⟩, ⟨⟨_, x₂'⟩, h'⟩⟩, h₁₂⟩ => by
     dsimp at h₁₂
     rw [← h₁₂] at h'
-    refine ⟨⟨x₁, x₂'⟩, hφ h h'⟩
+    refine ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
 
 lemma Types.of_transitiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : TransitiveRelation p₁ p₂) :
-    _root_.Transitive (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) := by
-  refine fun x₁ x₂ x₃ ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
-    ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
-      ⟨?_, ?_⟩⟩
-  · simpa [← hr₁] using congrFun e.transitivity₁
-      ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩)
-  · simpa [← hr₂'] using congrFun e.transitivity₂
-      ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩)
+    IsTrans _ (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
+  trans x₁ x₂ x₃ := by
+    refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
+      ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
+        ⟨?_, ?_⟩⟩
+    · simpa only [comp_apply, hr₁, PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst] using
+        congr($e.transitivity₁
+          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
+    · simpa only [comp_apply, hr₂', PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd] using
+        congr($e.transitivity₂
+          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
 
 /-- An equivalence relation is a reflexive, symmetric and transitive relation. -/
 structure EquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) extends ReflexiveRelation p₁ p₂,
@@ -166,17 +171,17 @@ noncomputable def IsKernelPair.equivalenceRelation {X Y : C} (f : X ⟶ Y) {R : 
 
 /-- Equivalences relations on types are internal equivalence relations in the category of types. -/
 def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
-    EquivalenceRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
-      (_root_.Prod.snd ∘ Subtype.val) where
-  __ := Types.reflexiveRelation hφ.reflexive
+    EquivalenceRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
+      (↾(_root_.Prod.snd ∘ Subtype.val)) where
+  __ := Types.reflexiveRelation hφ.stdRefl
   __ := Types.symmetricRelation hφ.symmetric
-  __ := Types.transitiveRelation hφ.transitive
+  __ := Types.transitiveRelation hφ.isTrans
 
 lemma Types.of_equivalenceRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : EquivalenceRelation p₁ p₂) :
     _root_.Equivalence (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
-  refl := Types.of_reflexiveRelation e.toReflexiveRelation
+  refl := (Types.of_reflexiveRelation e.toReflexiveRelation).refl
   symm h := Types.of_symmetricRelation e.toSymmetricRelation h
-  trans h₁ h₂ := Types.of_transitiveRelation e.toTransitiveRelation h₁ h₂
+  trans := (Types.of_transitiveRelation e.toTransitiveRelation).trans _ _ _
 
 /-- Given a functor `F : C ⥤ D`, if `F.map p₁` and `F.map p₂` form a jointly monic pair of
 morphisms, then `F` preserves reflexive relations. -/
