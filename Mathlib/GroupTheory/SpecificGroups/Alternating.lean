@@ -157,33 +157,8 @@ theorem isMulCommutative_of_card_le_three (hα : Nat.card α ≤ 3) :
     IsMulCommutative (alternatingGroup α) :=
   (isCyclic_of_card_le_three hα).isMulCommutative
 
-theorem isMulCommutative_iff_card_le_three :
-    IsMulCommutative (alternatingGroup α) ↔ Nat.card α ≤ 3 := by
-  refine ⟨fun ⟨⟨H⟩⟩ ↦ ?_, fun h ↦ (isCyclic_of_card_le_three h).isMulCommutative⟩
-  rw [← not_lt, ← Set.ncard_univ, Set.three_lt_ncard_iff]
-  push Not
-  intro a b c d _ _ _ _ hab hac had hbc hbd
-  by_contra hcd
-  apply Ne.symm hcd
-  let g : alternatingGroup α := ⟨swap a b * swap a c, by
-    rw [mem_alternatingGroup]
-    exact (isThreeCycle_swap_mul_swap_same hab hac hbc).sign⟩
-  let h : alternatingGroup α := ⟨swap a b * swap a d, by
-    rw [mem_alternatingGroup]
-    exact (isThreeCycle_swap_mul_swap_same hab had hbd).sign⟩
-  specialize H g h
-  simp only [MulMemClass.mk_mul_mk, Subtype.mk.injEq, Perm.ext_iff, Perm.coe_mul,
-    Function.comp_apply, EmbeddingLike.apply_eq_iff_eq, g, h] at H
-  simpa only [swap_apply_left,
-    swap_apply_of_ne_of_ne (Ne.symm had) (Ne.symm hbd),
-    swap_apply_of_ne_of_ne (Ne.symm hac) (Ne.symm hbc),
-    swap_apply_of_ne_of_ne (Ne.symm hac) hcd,
-    swap_apply_of_ne_of_ne (Ne.symm had) (Ne.symm hcd)] using H a
-
-theorem isCyclic_iff_card_le_three :
-    IsCyclic (alternatingGroup α) ↔ Nat.card α ≤ 3 :=
-  ⟨fun _ ↦ by rw [← isMulCommutative_iff_card_le_three]; exact IsCyclic.isMulCommutative,
-   isCyclic_of_card_le_three⟩
+/- The converse assertions will be shown later, after it is proved
+that the center of `alternatingGroup α` is trivial when  `4 ≤ Nat.card α` -/
 
 open Equiv.Perm
 
@@ -507,6 +482,23 @@ theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
   suffices k ∈ alternatingGroup α by
     simp only [← Subgroup.mk_smul k this, ← mul_smul, hg']
   simp [k, hc.2.symm, hd.2.symm]
+
+theorem isMulCommutative_iff_card_le_three :
+    IsMulCommutative (alternatingGroup α) ↔ Nat.card α ≤ 3 := by
+  refine ⟨fun H ↦ ?_, fun h ↦ (isCyclic_of_card_le_three h).isMulCommutative⟩
+  rw [← not_lt]
+  intro h
+  suffices Subsingleton (alternatingGroup α) by
+    rw [Nat.card_eq_fintype_card] at h
+    rw [← not_nontrivial_iff_subsingleton] at this
+    apply this
+    exact nontrivial_of_three_le_card h.le
+  simpa [center_eq_top_iff.mpr H, eq_comm, subsingleton_iff_bot_eq_top] using center_eq_bot h
+
+theorem isCyclic_iff_card_le_three :
+    IsCyclic (alternatingGroup α) ↔ Nat.card α ≤ 3 :=
+  ⟨fun _ ↦ by rw [← isMulCommutative_iff_card_le_three]; exact IsCyclic.isMulCommutative,
+   isCyclic_of_card_le_three⟩
 
 /-- The element of `alternatingGroup α` induced by an element
 of `alternatingGroup s`, when `s : Finset α`. -/
