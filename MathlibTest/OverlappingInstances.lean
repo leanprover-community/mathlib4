@@ -30,9 +30,9 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: Declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo` has overlapping instances:
 
-`[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
+There are 4 `[Add Nat]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -45,9 +45,9 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 /--
 @ +3:68...+4:12
-warning: Declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₁` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
 
 Consider choosing different instance hypotheses.
 
@@ -60,10 +60,10 @@ set_option linter.overlappingInstances true in
   exact true
 
 /--
-warning: Declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₂` has overlapping instances:
 
-• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
+• There are 2 `[FooBarBaz Nat]` instances
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
 
 Consider choosing different instance hypotheses.
 
@@ -73,10 +73,9 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: Declaration `foo₃` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₃` has overlapping instances:
 
-• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
-• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `SubBar Nat`.
+There are 2 `[FooBarBaz Nat]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -86,10 +85,10 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-warning: Declaration `foo₄` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₄` has overlapping instances:
 
-• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` provide conflicting instances of `SubBar Nat`.
+• There are 2 `[FooBarBaz Nat]` instances
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `SubBar Nat`.
 
 Consider choosing different instance hypotheses.
 
@@ -100,10 +99,9 @@ theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 
 -- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
-warning: Declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₅` has overlapping instances:
 
-• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `Baz Nat`.
-• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `Baz Nat` and `SubBar Nat`.
 
 Consider choosing different instance hypotheses.
 
@@ -117,9 +115,9 @@ namespace Foo
 /-! Test unresolving name (`foo`, not `Foo.foo` or `_private...foo`) -/
 
 /--
-warning: Declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo` has overlapping instances:
 
-`[Add Nat]` and `[Add Nat]` provide conflicting instances of `Add Nat`.
+There are 2 `[Add Nat]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -139,9 +137,9 @@ class inductive IndFoo where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
 /--
-warning: Declaration `indFoo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `indFoo` has overlapping instances:
 
-`[IndFoo]` and `[IndFoo]` provide conflicting instances of `IndFoo`.
+There are 2 `[IndFoo]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -155,9 +153,9 @@ class inductive IndFooProp : Prop where
 
 -- We also warn when there are duplicate `Prop` clases
 /--
-warning: Declaration `indFooProp` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `indFooProp` has overlapping instances:
 
-`[IndFooProp]` and `[IndFooProp]` provide conflicting instances of `IndFooProp`.
+There are 2 `[IndFooProp]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -173,9 +171,9 @@ section instantiateMVars
 variable {α : Type*} [Repr α]
 
 /--
-warning: Declaration `needsInstantiateMVars` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `needsInstantiateMVars` has overlapping instances:
 
-`[Repr α]` and `[Repr α]` provide conflicting instances of `Repr α`.
+There are 2 `[Repr α]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -194,9 +192,9 @@ def fooNothing [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
 set_option linter.overlappingInstances false
 
 /--
-warning: Declaration `fooSomething` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `fooSomething` has overlapping instances:
 
-`[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
+There are 4 `[Add Nat]` instances
 
 Consider choosing different instance hypotheses.
 
@@ -215,9 +213,9 @@ class A (α : Sort u) where
 class B (α : Type u) extends A α
 
 /--
-warning: Declaration `_example` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `_example` has overlapping instances:
 
-`[B α]` and `[A α]` provide conflicting instances of `A α`.
+`[B α]` and `[A α]` give conflicting instances of `A α`.
 
 Consider choosing different instance hypotheses.
 
@@ -239,9 +237,9 @@ class B (α β : Type*) [A α] where
 class B' (α β : Type*) [A' α] extends B α β where
 
 /--
-warning: Declaration `_example` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `_example` has overlapping instances:
 
-`[B α β]` and `[B' α β]` provide conflicting instances of `B α β`.
+`[B α β]` and `[B' α β]` give conflicting instances of `B α β`.
 
 Consider choosing different instance hypotheses.
 

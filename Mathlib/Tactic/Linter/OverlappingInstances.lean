@@ -124,7 +124,7 @@ partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId
       let projClasses ← forallTelescopeReducing (whnfType := true) type fun xs type ↦ do
         type.withApp fun f args ↦ do
         let .const cls us := f |
-          throwError "`{decl.toExpr}` has an instance implicit binder, but it is not an instance"
+          return #[] -- This happens when using `set_option checkBinderAnnotations false`
         let info ← getConstInfo cls
         let projs ← getAbstractDataProjectionsCached cls
         projs.mapM fun proj ↦
@@ -146,20 +146,25 @@ register_option linter.overlappingInstances : Bool := {
 /-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/
 def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInfo) :
     MetaM MessageData := do
+  let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
+    overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
+  let mut msgs := #[]
+  for (fvars, overlaps) in sortedOverlaps do
+    let parents ← fvars.mapM (do instantiateMVars <| ← ·.getType)
+    if parents.all (· == parents[0]!) then
+      msgs := msgs.push <| m!"There are {parents.size} `{.sbracket parents[0]!}` instances"
+    else
+      let parents := parents.map (m!"`{.sbracket ·}`")
+      let children := overlaps.map fun overlap => m!"`{overlap}`"
+      msgs := msgs.push <|
+        m!"{.andList parents.toList} give conflicting instances of {.andList children.toList}."
+  -- Create a bulleted list if there are multiple messages, otherwise just a single line
   let declDescr ←
     if let some decl := ctx.parentDecl? then
-      pure m!"Declaration `{.ofConstName (← unresolveNameGlobal decl)}`"
+      pure m!"Declaration `{← unresolveNameGlobal decl}`"
     else
       pure "The current declaration"
-  let mut msg := m!"{declDescr} \
-    has instance hypotheses which provide conflicting versions of the same data. Specifically:"
-  let mut msgs := #[]
-  for (overlap, fvars) in overlaps do
-    let parents ← fvars.mapM fun fvarId ↦ return m!"`{.sbracket (← fvarId.getType)}`"
-    -- let overlap := MessageData.ofInstanceBinderType overlap
-    msgs := msgs.push <|
-      m!"{.andList parents.toList} provide conflicting instances of `{overlap}`."
-  -- Create a bulleted list if there are multiple messages, otherwise just a single line
+  let mut msg := m!"{declDescr} has overlapping instances:"
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
   msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
