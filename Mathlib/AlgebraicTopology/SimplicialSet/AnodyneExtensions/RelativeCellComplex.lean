@@ -209,7 +209,7 @@ lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
   refine le_antisymm (by simp) ?_
   rw [N.subcomplex_le_iff]
   intro s _
-  induction s using SSet.Subcomplex.N.cases A with
+  cases s using SSet.Subcomplex.N.cases A with
   | mem s hs => exact hs.trans (le_trans (by simp) (le_iSup _ ⊥))
   | notMem s =>
     obtain ⟨t, ht⟩ := P.exists_or s
@@ -316,7 +316,7 @@ lemma Cell.preimage_filtration_map {j : ι} (c : f.Cell j) :
       Cell.image_face_index_compl] using c.subcomplex_not_le_filtration
   · rw [← Subcomplex.image_le_iff, N.subcomplex_le_iff]
     intro s hs
-    induction s using N.cases A with
+    cases s using N.cases A with
     | mem s hs' => exact hs'.trans (by simp)
     | notMem s =>
       obtain ⟨t, ht⟩ := P.exists_or s
