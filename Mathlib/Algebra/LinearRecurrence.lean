@@ -157,8 +157,8 @@ theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n =
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Two solutions are equal iff they are equal on `range E.order`. -/
-theorem sol_eq_of_eq_init (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
+/-- Two solutions are equal iff their initial conditions are equal. -/
+theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
   rw [← Subtype.mk.injEq u hu v hv, ← E.basis.repr.injective.eq_iff]
   constructor
