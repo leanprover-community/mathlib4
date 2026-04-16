@@ -3,10 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Typeclasses for algebraic operations
@@ -31,6 +31,8 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
+@[expose] public section
+
 assert_not_exists Function.Bijective
 
 universe u v w
@@ -45,9 +47,9 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hVAdd : α → β → γ
 
-attribute [notation_class  smul Simps.copySecond] HSMul
-attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
-attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
+attribute [notation_class smul Simps.copySecond] HSMul
+attribute [notation_class nsmul Simps.nsmulArgs] HSMul
+attribute [notation_class zsmul Simps.zsmulArgs] HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
@@ -61,28 +63,18 @@ class VSub (G : outParam Type*) (P : Type*) where
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
 
-attribute [to_additive] SMul
+attribute [to_additive existing] SMul HSMul
+attribute [to_additive (attr := default_instance)] instHSMul
+
 attribute [ext] SMul VAdd
 
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 
-attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1 2) SMul] Pow
-attribute [to_additive (reorder := 1 2)] HPow
-attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
-
-attribute [to_additive (attr := default_instance)] instHSMul
-
-@[to_additive]
-theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
-
-attribute [to_additive existing (reorder := 1 2)] instHPow
+recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
+recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 
 variable {G : Type*}
-
-attribute [to_additive, notation_class] Inv
 
 section Star
 
@@ -168,7 +160,7 @@ end ite
 
 variable {α : Type u}
 
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
+@[to_additive]
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 
 @[to_additive]

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Comap
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.Data.Set.Card
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -19,6 +21,8 @@ pullback), and on sets (inclusion, union, Union).
 We also study the relationship between the restriction of a measure to a subtype (given by the
 pullback under `Subtype.val`) and the restriction to a set as above.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
@@ -35,6 +39,7 @@ namespace Measure
 /-! ### Restricting a measure -/
 
 /-- Restrict a measure `μ` to a set `s` as an `ℝ≥0∞`-linear map. -/
+@[irreducible]
 noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure α →ₗ[ℝ≥0∞] Measure α :=
   liftLinear (OuterMeasure.restrict s) fun μ s' hs' t => by
     suffices μ (s ∩ t) = μ (s ∩ t ∩ s') + μ ((s ∩ t) \ s') by
@@ -58,6 +63,7 @@ theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s)
     toMeasure_toOuterMeasure, OuterMeasure.restrict_trim h, μ.trimmed]
 
 theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) := by
+  rw [restrict, restrictₗ] at ht
   rw [← restrictₗ_apply, restrictₗ, liftLinear_apply₀ _ ht, OuterMeasure.restrict_apply,
     coe_toOuterMeasure]
 
@@ -105,6 +111,25 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
   rw [← toOuterMeasure_apply,
     Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
+
+theorem _root_.IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
+    μ s = 0 := by
+  obtain ⟨t, ht1, ht2⟩ := hC
+  rw [show s = ⋃ n, s ∩ t n by rw [← inter_iUnion, ht2, inter_univ], measure_iUnion_null_iff]
+  exact fun i => ht (t i) (ht1 i)
+
+theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
+    (hC : IsCountablySpanning C) : (∀ t ∈ C, μ (s ∩ t) = 0) ↔ μ s = 0 where
+  mp := hC.null_of_forall_inter_null
+  mpr h t _ := measure_inter_null_of_null_left t h
+
+theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    μ s = 0 := by
+  rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
+  refine fun t htc => ?_
+  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
@@ -294,10 +319,16 @@ theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : Meas
     (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
   ext fun t ht => by simp [*, hf ht]
 
-theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s :=
-  ext fun t ht => by
-    rw [restrict_apply ht, restrict_apply ht, inter_comm, measure_toMeasurable_inter ht h,
-      inter_comm]
+theorem restrict_inter_toMeasurable (h : μ s ≠ ∞) (ht : MeasurableSet t) (hst : s ⊆ t) :
+    μ.restrict (t ∩ toMeasurable μ s) = μ.restrict s := by
+  ext u hu
+  rw [restrict_apply hu, restrict_apply hu, inter_comm t, inter_comm, inter_assoc,
+    measure_toMeasurable_inter (ht.inter hu) h]
+  congr 1
+  grind
+
+theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s := by
+  simpa using restrict_inter_toMeasurable h MeasurableSet.univ (subset_univ _)
 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
@@ -348,9 +379,6 @@ theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
   | insert i s _ hs =>
     simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
     rw [restrict_union_congr, ← hs]
-
-@[deprecated (since := "2025-08-28")]
-alias restrict_finset_biUnion_congr := restrict_biUnion_finset_congr
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
@@ -500,9 +528,9 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
   exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
 theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
-    (hd : T.toSet.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) :=
-  restrict_biUnion (T := T.toSet) Finite.to_countable hd hm
+  restrict_biUnion (T := (T : Set ι)) Finite.to_countable hd hm
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
@@ -613,6 +641,10 @@ theorem ae_restrict_of_forall_mem {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x :=
   (ae_restrict_mem hs).mono h
 
+lemma _root_.Set.EqOn.aeEq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
+  ae_restrict_of_forall_mem hs h
+
 theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
   h.filter_mono (ae_mono Measure.restrict_le_self)
 
@@ -634,9 +666,14 @@ theorem mem_map_restrict_ae_iff {β} {s : Set α} {t : Set β} {f : α → β} (
     t ∈ Filter.map f (ae (μ.restrict s)) ↔ μ ((f ⁻¹' t)ᶜ ∩ s) = 0 := by
   rw [mem_map, mem_ae_iff, Measure.restrict_apply' hs]
 
-theorem ae_add_measure_iff {p : α → Prop} {ν} :
+@[simp] theorem ae_add_measure_iff {p : α → Prop} {ν} :
     (∀ᵐ x ∂μ + ν, p x) ↔ (∀ᵐ x ∂μ, p x) ∧ ∀ᵐ x ∂ν, p x :=
   add_eq_zero
+
+/-- See also `Measure.ae_sum_iff`. -/
+@[simp] lemma ae_finsetSum_measure_iff {p : α → Prop} {s : Finset ι} {μ : ι → Measure α} :
+    (∀ᵐ x ∂∑ i ∈ s, μ i, p x) ↔ ∀ i ∈ s, ∀ᵐ x ∂μ i, p x := by
+  induction s using Finset.cons_induction <;> simp [*]
 
 theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
     (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
@@ -686,12 +723,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
   simp only [ae_restrict_eq hs, mem_principal, mem_inf_iff]
   exact ⟨_, univ_mem, s, Subset.rfl, (univ_inter s).symm⟩
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=
@@ -805,6 +842,7 @@ variable {u : Set δ} [MeasureSpace δ] {p : δ → Prop}
 Not registered as an instance, as there are other natural choices such as the normalized restriction
 for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
 locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+@[instance_reducible]
 noncomputable def Subtype.measureSpace : MeasureSpace (Subtype p) where
   volume := Measure.comap Subtype.val volume
 
@@ -889,7 +927,20 @@ theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α)
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=
   e.measurableEmbedding.restrict_map _ _
 
+lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s : Set α) :
+    comap e μ s = μ (e.symm ⁻¹' s) := by
+  rw [e.measurableEmbedding.comap_apply, e.image_eq_preimage_symm]
+
 end MeasurableEmbedding
+
+lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
+    (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
+  ext s hs
+  rw [map_apply hf hs, hg.comap_apply, ← measure_diff_null hμg]
+  congr
+  simp
+  grind
 
 section Subtype
 
@@ -980,9 +1031,6 @@ theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
   simp only [ht, if_false, Set.compl_empty, Set.empty_diff, Set.inter_univ, Set.preimage_const]
 
-@[deprecated (since := "2025-05-24")]
-alias mem_map_indicator_ae_iff_of_zero_nmem := mem_map_indicator_ae_iff_of_zero_notMem
-
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by
   intro t
@@ -1058,10 +1106,10 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
   have P_cover {i : ι} (hi : i ∈ F) : s i ⊆ ⋃ C ∈ G i, P C := by
     refine fun x hx ↦ Set.mem_biUnion (x := F.filter (x ∈ s ·)) ?_ ?_
     · exact ⟨Finset.mem_powerset.mpr (filter_subset _ F), mem_filter.mpr ⟨hi, hx⟩⟩
-    · simp_rw [P, mem_inter_iff, mem_iInter, mem_sdiff, mem_filter]; tauto
+    · simp_rw [P, mem_inter_iff, mem_iInter, Finset.mem_sdiff, mem_filter]; tauto
   have iUnion_P : ⋃ C ∈ Cs, P C ⊆ ⋃ i, s i := by
     intro x hx
-    simp_rw [Cs, toFinset_diff, mem_sdiff, mem_iUnion] at hx
+    simp_rw [Cs, toFinset_diff, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
     have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩
@@ -1083,7 +1131,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
-    _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
+    _ = ∑ C ∈ Cs, ∑ i ∈ F, (C : Set ι).indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
       rw [sum_eq_tsum_indicator]
       congr with C
       by_cases hC : C ∈ F.powerset <;> by_cases hC' : C = ∅ <;>
@@ -1093,12 +1141,12 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       by_cases hPC : P C = ∅
       · simp [hPC]
-      have hCM : C.toSet.encard ≤ M :=
+      have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
-        _ = C.toSet.ncard := (ncard_coe_finset C).symm
+        _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
       rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]

@@ -3,13 +3,15 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Linear locally finite orders
@@ -52,6 +54,8 @@ About `toZ`:
   `OrderIso` between `ι` and `Finset.range ((toZ ⊥ ⊤).toNat + 1)`.
 
 -/
+
+@[expose] public section
 
 
 open Order
@@ -145,6 +149,7 @@ variable (ι) in
 /-- A locally finite order is a `SuccOrder`.
 This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
@@ -155,6 +160,7 @@ variable (ι) in
 /-- A locally finite order is a `PredOrder`.
 This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
@@ -234,7 +240,7 @@ lemma toZ_nonneg (hi : i0 ≤ i) : 0 ≤ toZ i0 i := by rw [toZ_of_ge hi]; exact
 theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   refine lt_of_le_of_ne ?_ ?_
   · rw [toZ_of_lt hi]
-    cutsat
+    lia
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
@@ -249,7 +255,7 @@ theorem toZ_iterate_pred_ge (n : ℕ) : -(n : ℤ) ≤ toZ i0 (pred^[n] i0) := b
   rcases le_or_gt i0 (pred^[n] i0) with h | h
   · have h_eq : pred^[n] i0 = i0 := le_antisymm (pred_iterate_le _ _) h
     rw [h_eq, toZ_of_eq]
-    cutsat
+    lia
   · rw [toZ_of_lt h]
     refine Int.neg_le_neg ?_
     norm_cast
@@ -309,15 +315,14 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rw [Function.iterate_add]
       rfl
     by_contra h
-    by_cases hm0 : m = 0
+    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
     · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine hi_max (max_of_succ_le (le_trans ?_ (@le_of_toZ_le _ _ _ _ _ i0 j i ?_)))
     · have h_succ_le : succ^[(toZ i0 i).toNat + 1] i0 ≤ j := by
         rw [hj_eq]
-        refine Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (add_le_add_left ?_ _)
-        exact Nat.one_le_iff_ne_zero.mpr hm0
+        exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (by gcongr)
       rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
     · exact le_of_not_ge h
   · exact absurd h_le (not_le.mpr (hj.trans_le hi))
@@ -330,7 +335,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rw [Function.iterate_add]
       rfl
     by_contra h
-    by_cases hm0 : m = 0
+    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
     · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
@@ -339,8 +344,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
     · exact le_of_not_ge h
     · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by
         rw [hj_eq]
-        refine Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (add_le_add_left ?_ _)
-        exact Nat.one_le_iff_ne_zero.mpr hm0
+        exact Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (by gcongr)
       rwa [Function.iterate_succ', Function.comp_apply, iterate_pred_toZ j hj] at h_le_pred
 
 theorem toZ_le_iff (i j : ι) : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=

@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals against peak functions
@@ -32,6 +34,8 @@ functions are also called approximations of unity, or approximations of identity
 Note that there are related results about convolution with respect to peak functions in the file
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
+
+public section
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
@@ -192,8 +196,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     apply tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux hs ht hts h'ts
         hnφ hlφ hiφ h'iφ
     · apply hmg.sub
-      simp only [integrable_indicator_iff ht, integrableOn_const_iff (C := a), ht,
-        Measure.restrict_apply]
+      simp only [integrableOn_indicator_iff ht, integrableOn_const_iff (C := a)]
       right
       exact lt_of_le_of_lt (measure_mono inter_subset_left) (h't.lt_top)
     · rw [← sub_self a]

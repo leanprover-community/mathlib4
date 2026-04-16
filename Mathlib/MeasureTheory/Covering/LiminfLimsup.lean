@@ -3,7 +3,9 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Covering.DensityTheorem
+module
+
+public import Mathlib.MeasureTheory.Covering.DensityTheorem
 
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
@@ -22,6 +24,8 @@ carrying a uniformly locally doubling measure.
   rather than closed thickenings.
 
 -/
+
+public section
 
 
 open Set Filter Metric MeasureTheory TopologicalSpace
@@ -265,16 +269,10 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
     (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
-  have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
-      blimsup (fun i => thickening (r i) (s i)) atTop q := by
-    refine blimsup_congr' (Eventually.of_forall fun i h => ?_)
-    replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
-    simp only [q, hi, iff_self_and, imp_true_iff]
-  have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
-      blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
-    refine blimsup_congr' (Eventually.of_forall fun i h ↦ ?_)
-    replace h : 0 < r i := by
-      rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
-    simp only [q, h, iff_self_and, imp_true_iff]
-  rw [h₁, h₂]
+  have hq {u : ℕ → Set α} (hu : ∀ i, u i ≠ ∅ → 0 < r i) :
+      blimsup u atTop p = blimsup u atTop q :=
+    blimsup_congr' <| Eventually.of_forall fun i hi ↦ by simp [q, hu i hi]
+  rw [hq fun i hi ↦ (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1,
+    hq fun i hi ↦ (mul_pos_iff_of_pos_left hM).1 <|
+      (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)

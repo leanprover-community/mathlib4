@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Hom
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs  -- shake: keep (`example` dependency)
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
@@ -43,6 +45,8 @@ be satisfied by itself and all stricter types.
 centroid
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Function
@@ -51,9 +55,9 @@ variable {F M N R α : Type*}
 
 /-- The type of centroid homomorphisms from `α` to `α`. -/
 structure CentroidHom (α : Type*) [NonUnitalNonAssocSemiring α] extends α →+ α where
-  /-- Commutativity of centroid homomorphims with left multiplication. -/
+  /-- Commutativity of centroid homomorphisms with left multiplication. -/
   map_mul_left' (a b : α) : toFun (a * b) = a * toFun b
-  /-- Commutativity of centroid homomorphims with right multiplication. -/
+  /-- Commutativity of centroid homomorphisms with right multiplication. -/
   map_mul_right' (a b : α) : toFun (a * b) = toFun a * b
 
 attribute [nolint docBlame] CentroidHom.toAddMonoidHom
@@ -63,9 +67,9 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 You should extend this class when you extend `CentroidHom`. -/
 class CentroidHomClass (F : Type*) (α : outParam Type*)
     [NonUnitalNonAssocSemiring α] [FunLike F α α] : Prop extends AddMonoidHomClass F α α where
-  /-- Commutativity of centroid homomorphims with left multiplication. -/
+  /-- Commutativity of centroid homomorphisms with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
-  /-- Commutativity of centroid homomorphims with right multiplication. -/
+  /-- Commutativity of centroid homomorphisms with right multiplication. -/
   map_mul_right (f : F) (a b : α) : f (a * b) = f a * b
 
 

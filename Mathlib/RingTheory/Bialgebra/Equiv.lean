@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Equiv
-import Mathlib.RingTheory.Bialgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Equiv
+public import Mathlib.RingTheory.Bialgebra.Hom
 
 /-!
 # Isomorphisms of `R`-bialgebras
@@ -20,6 +22,8 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁
 
@@ -129,6 +133,8 @@ instance : BialgEquivClass (A ≃ₐc[R] B) R A B where
   map_comp_comul := (·.map_comp_comul)
   map_mul := (·.map_mul')
 
+instance : CoeOut (A ≃ₐc[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
+
 @[simp, norm_cast]
 theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B) = e₂ ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
@@ -156,7 +162,7 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[simp]
+@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
 theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
   rfl
 
@@ -281,7 +287,7 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofBialgHom (f : A →ₐc[R] B) (g : B →ₐc[R] A) (h₁ : f.comp g = BialgHom.id R B)
     (h₂ : g.comp f = BialgHom.id R A) : A ≃ₐc[R] B where
   __ := f

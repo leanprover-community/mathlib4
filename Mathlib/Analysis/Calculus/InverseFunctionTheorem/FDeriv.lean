@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 
 /-!
 # Inverse function theorem
@@ -13,12 +15,12 @@ In this file we prove the inverse function theorem. It says that if a map `f : E
 has an invertible strict derivative `f'` at `a`, then it is locally invertible,
 and the inverse function has derivative `f' ⁻¹`.
 
-We define `HasStrictFDerivAt.toPartialHomeomorph` that repacks a function `f`
-with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `PartialHomeomorph`.
-The `toFun` of this `PartialHomeomorph` is defeq to `f`, so one can apply theorems
-about `PartialHomeomorph` to `hf.toPartialHomeomorph f`, and get statements about `f`.
+We define `HasStrictFDerivAt.toOpenPartialHomeomorph` that repacks a function `f`
+with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into an `OpenPartialHomeomorph`.
+The `toFun` of this `OpenPartialHomeomorph` is defeq to `f`, so one can apply theorems
+about `OpenPartialHomeomorph` to `hf.toOpenPartialHomeomorph f`, and get statements about `f`.
 
-Then we define `HasStrictFDerivAt.localInverse` to be the `invFun` of this `PartialHomeomorph`,
+Then we define `HasStrictFDerivAt.localInverse` to be the `invFun` of this `OpenPartialHomeomorph`,
 and prove two versions of the inverse function theorem:
 
 * `HasStrictFDerivAt.to_localInverse`: if `f` has an invertible derivative `f'` at `a` in the
@@ -37,6 +39,8 @@ folders, and in `ContDiff.lean`.
 
 derivative, strictly differentiable, continuously differentiable, smooth, inverse function
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 
@@ -59,7 +63,7 @@ open ContinuousLinearMap (id)
 Let `f : E → F` be a map defined on a complete vector
 space `E`. Assume that `f` has an invertible derivative `f' : E ≃L[𝕜] F` at `a : E` in the strict
 sense. Then `f` approximates `f'` in the sense of `ApproximatesLinearOn` on an open neighborhood
-of `a`, and we can apply `ApproximatesLinearOn.toPartialHomeomorph` to construct the inverse
+of `a`, and we can apply `ApproximatesLinearOn.toOpenPartialHomeomorph` to construct the inverse
 function. -/
 
 namespace HasStrictFDerivAt
@@ -78,7 +82,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
   exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
 
 theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
+    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : f'.range = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
   set c : ℝ≥0 := f'symm.nnnorm⁻¹ / 2 with hc
@@ -103,12 +107,14 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
 variable (f)
 variable [CompleteSpace E]
 
-/-- Given a function with an invertible strict derivative at `a`, returns a `PartialHomeomorph`
+/-- Given a function with an invertible strict derivative at `a`, returns an `OpenPartialHomeomorph`
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
 The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
-of this `PartialHomeomorph` has derivative `f'.symm`. -/
-def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : PartialHomeomorph E F :=
-  ApproximatesLinearOn.toPartialHomeomorph f (Classical.choose hf.approximates_deriv_on_open_nhds)
+of this `OpenPartialHomeomorph` has derivative `f'.symm`. -/
+def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+  OpenPartialHomeomorph E F :=
+    ApproximatesLinearOn.toOpenPartialHomeomorph f
+    (Classical.choose hf.approximates_deriv_on_open_nhds)
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.2
     (f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' =>
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
@@ -117,38 +123,38 @@ def toPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : Par
 variable {f}
 
 @[simp]
-theorem toPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
-    (hf.toPartialHomeomorph f : E → F) = f :=
+theorem toOpenPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+    (hf.toOpenPartialHomeomorph f : E → F) = f :=
   rfl
 
-theorem mem_toPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
-    a ∈ (hf.toPartialHomeomorph f).source :=
+theorem mem_toOpenPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+    a ∈ (hf.toOpenPartialHomeomorph f).source :=
   (Classical.choose_spec hf.approximates_deriv_on_open_nhds).1
 
-theorem image_mem_toPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
-    f a ∈ (hf.toPartialHomeomorph f).target :=
-  (hf.toPartialHomeomorph f).map_source hf.mem_toPartialHomeomorph_source
+theorem image_mem_toOpenPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
+    f a ∈ (hf.toOpenPartialHomeomorph f).target :=
+  (hf.toOpenPartialHomeomorph f).map_source hf.mem_toOpenPartialHomeomorph_source
 
 theorem map_nhds_eq_of_equiv (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     map f (𝓝 a) = 𝓝 (f a) :=
-  (hf.toPartialHomeomorph f).map_nhds_eq hf.mem_toPartialHomeomorph_source
+  (hf.toOpenPartialHomeomorph f).map_nhds_eq hf.mem_toOpenPartialHomeomorph_source
 
 variable (f f' a)
 
 /-- Given a function `f` with an invertible derivative, returns a function that is locally inverse
 to `f`. -/
 def localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) : F → E :=
-  (hf.toPartialHomeomorph f).symm
+  (hf.toOpenPartialHomeomorph f).symm
 
 variable {f f' a}
 
 theorem localInverse_def (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
-    hf.localInverse f _ _ = (hf.toPartialHomeomorph f).symm :=
+    hf.localInverse f _ _ = (hf.toOpenPartialHomeomorph f).symm :=
   rfl
 
 theorem eventually_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∀ᶠ x in 𝓝 a, hf.localInverse f f' a (f x) = x :=
-  (hf.toPartialHomeomorph f).eventually_left_inverse hf.mem_toPartialHomeomorph_source
+  (hf.toOpenPartialHomeomorph f).eventually_left_inverse hf.mem_toOpenPartialHomeomorph_source
 
 @[simp]
 theorem localInverse_apply_image (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
@@ -157,26 +163,27 @@ theorem localInverse_apply_image (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F)
 
 theorem eventually_right_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∀ᶠ y in 𝓝 (f a), f (hf.localInverse f f' a y) = y :=
-  (hf.toPartialHomeomorph f).eventually_right_inverse' hf.mem_toPartialHomeomorph_source
+  (hf.toOpenPartialHomeomorph f).eventually_right_inverse' hf.mem_toOpenPartialHomeomorph_source
 
 theorem localInverse_continuousAt (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ContinuousAt (hf.localInverse f f' a) (f a) :=
-  (hf.toPartialHomeomorph f).continuousAt_symm hf.image_mem_toPartialHomeomorph_target
+  (hf.toOpenPartialHomeomorph f).continuousAt_symm hf.image_mem_toOpenPartialHomeomorph_target
 
 theorem localInverse_tendsto (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     Tendsto (hf.localInverse f f' a) (𝓝 <| f a) (𝓝 a) :=
-  (hf.toPartialHomeomorph f).tendsto_symm hf.mem_toPartialHomeomorph_source
+  (hf.toOpenPartialHomeomorph f).tendsto_symm hf.mem_toOpenPartialHomeomorph_source
 
 theorem localInverse_unique (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : ∀ᶠ y in 𝓝 (f a), g y = localInverse f f' a hf y :=
   eventuallyEq_of_left_inv_of_right_inv hg hf.eventually_right_inverse <|
-    (hf.toPartialHomeomorph f).tendsto_symm hf.mem_toPartialHomeomorph_source
+    (hf.toOpenPartialHomeomorph f).tendsto_symm hf.mem_toOpenPartialHomeomorph_source
 
 /-- If `f` has an invertible derivative `f'` at `a` in the sense of strict differentiability `(hf)`,
 then the inverse function `hf.localInverse f` has derivative `f'.symm` at `f a`. -/
 theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     HasStrictFDerivAt (hf.localInverse f f' a) (f'.symm : F →L[𝕜] E) (f a) :=
-  (hf.toPartialHomeomorph f).hasStrictFDerivAt_symm hf.image_mem_toPartialHomeomorph_target <| by
+  (hf.toOpenPartialHomeomorph f).hasStrictFDerivAt_symm
+    hf.image_mem_toOpenPartialHomeomorph_target <| by
     simpa [← localInverse_def] using hf
 
 /-- If `f : E → F` has an invertible derivative `f'` at `a` in the sense of strict differentiability

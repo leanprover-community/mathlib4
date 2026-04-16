@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+module
+
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 
@@ -25,6 +27,8 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 
@@ -99,6 +103,12 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   by_cases h : IsSFiniteKernel κ
   · ext; simp [parallelComp_apply]
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
+
+@[simp]
+lemma id_parallelComp_id :
+    Kernel.id ∥ₖ Kernel.id = (Kernel.id : Kernel (α × β) (α × β)) := by
+  ext : 1
+  simp [parallelComp_apply, id_apply, Measure.dirac_prod_dirac]
 
 lemma deterministic_parallelComp_deterministic
     {f : α → γ} {g : β → δ} (hf : Measurable f) (hg : Measurable g) :

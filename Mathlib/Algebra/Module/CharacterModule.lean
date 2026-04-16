@@ -3,11 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle.Defs
-import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Injective
+public import Mathlib.Topology.Instances.AddCircle.Defs
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Character module of a module
@@ -20,13 +21,15 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 ## Main results
 
 - `CharacterModuleFunctor` : the contravariant functor of `R`-modules where `M ↦ M⋆` and
-an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
+  an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
 - `LinearMap.dual_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.homEquiv` : there is a bijection between linear map `Hom(N, M⋆)` and
   `(N ⊗ M)⋆` given by `curry` and `uncurry`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -48,6 +51,7 @@ instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective' _ _ _ := by simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
   map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
@@ -61,8 +65,9 @@ section module
 
 variable [Module R A] [Module R A'] [Module R B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  fast_instance% Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
@@ -184,7 +189,7 @@ For an abelian group `A` and an element `a ∈ A`, there is a character `c : ℤ
 does not exist, `c` is defined by `m • a ↦ m / 2`.
 -/
 noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
-  let l :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let l : ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
     Submodule.liftQSpanSingleton _
       (CharacterModule.int.divByNat <|
         if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
@@ -197,7 +202,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
   erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
      intSpanEquivQuotAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
-    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_apply_one,
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
@@ -227,6 +232,7 @@ theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
     Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]

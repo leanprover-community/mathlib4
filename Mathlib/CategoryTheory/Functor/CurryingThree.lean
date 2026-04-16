@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Functor.Trifunctor
-import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Currying of functors in three variables
@@ -16,13 +17,15 @@ We study the equivalence of categories
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Functor
 
 variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃]
-  [Category D₁] [Category D₂] [Category D₃] [Category E]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₁₂] [Category* C₂₃]
+  [Category* D₁] [Category* D₂] [Category* D₃] [Category* E]
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`
 given by the curryfication of functors in three variables. -/
@@ -39,6 +42,23 @@ abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E 
 def fullyFaithfulUncurry₃ :
     (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ × C₂ × C₃ ⥤ E)).FullyFaithful :=
   currying₃.fullyFaithfulFunctor
+
+/-- Currying functors in three variables gives a fully faithful functor. -/
+def fullyFaithfulCurry₃ :
+    (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).FullyFaithful :=
+  currying₃.fullyFaithfulInverse
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Full :=
+  fullyFaithfulUncurry₃.full
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Faithful :=
+  fullyFaithfulUncurry₃.faithful
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Full :=
+  fullyFaithfulCurry₃.full
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Faithful :=
+  fullyFaithfulCurry₃.faithful
 
 @[simp]
 lemma curry₃_obj_map_app_app (F : C₁ × C₂ × C₃ ⥤ E)
@@ -72,6 +92,7 @@ lemma currying₃_unitIso_inv_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (((currying₃.unitIso.inv.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
   simp [currying₃, Equivalence.unitInv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`
 and `G : D₁ × D₂ × D₃ ⥤ E`, this is the isomorphism between
 `curry₃.obj (F₁.prod (F₂.prod F₃) ⋙ G) : C₁ ⥤ C₂ ⥤ C₃ ⥤ E`

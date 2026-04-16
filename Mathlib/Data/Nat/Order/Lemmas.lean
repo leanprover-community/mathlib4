@@ -3,8 +3,11 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.ByContra
 
 /-!
 # Further lemmas about the natural numbers
@@ -13,6 +16,8 @@ The distinction between this file and `Mathlib/Algebra/Order/Ring/Nat.lean` is n
 clear. They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -26,7 +31,7 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
   bot_le x := Nat.find_min' _ x.2
 
 instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
-  { Subtype.instLinearOrder s, LinearOrder.toLattice with }
+  { Subtype.instLinearOrder (· ∈ s), LinearOrder.toLattice with }
 
 theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s] :
     ((⊥ : s) : ℕ) = Nat.find (nonempty_subtype.1 h) :=

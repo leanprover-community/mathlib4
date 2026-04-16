@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -39,6 +41,8 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
+
+@[expose] public section
 
 open Finsupp Module Polynomial
 
@@ -75,8 +79,8 @@ theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 /--
 Construct a power basis from a basis consisting of powers of an element.
 -/
-def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
-    (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+protected noncomputable def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S)
+    {x : S} (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
     PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
 
 @[simp]
@@ -108,13 +112,12 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
   constructor <;>
-    · rintro ⟨f, h, hy⟩
-      refine ⟨f, ?_, hy⟩
-      by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
-        first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
-      simp_all only [degree_eq_natDegree hf]
-      · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
+  · rintro ⟨f, h, hy⟩
+    refine ⟨f, ?_, hy⟩
+    by_cases hf : f = 0
+    · simp only [hf, natDegree_zero, degree_zero] at h ⊢
+      first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
+    simpa [degree_eq_natDegree hf] using h
 
 theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty
@@ -251,8 +254,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     (f : A[X]) : pb.basis.constr A (fun i => y ^ (i : ℕ)) (aeval pb.gen f) = aeval y f := by
   cases subsingleton_or_nontrivial A
   · rw [(Subsingleton.elim _ _ : f = 0), aeval_zero, map_zero, aeval_zero]
-  rw [← aeval_modByMonic_eq_self_of_root (minpoly.monic pb.isIntegral_gen) (minpoly.aeval _ _), ←
-    @aeval_modByMonic_eq_self_of_root _ _ _ _ _ f _ (minpoly.monic pb.isIntegral_gen) y hy]
+  rw [← aeval_modByMonic_eq_self_of_root (minpoly.aeval _ _), ← aeval_modByMonic_eq_self_of_root hy]
   by_cases hf : f %ₘ minpoly A pb.gen = 0
   · simp only [hf, map_zero]
   have : (f %ₘ minpoly A pb.gen).natDegree < pb.dim := by
@@ -262,7 +264,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   congr
   rw [← Fin.val_mk hi, ← pb.basis_eq_pow ⟨i, hi⟩, Basis.constr_basis]
 
@@ -289,8 +291,8 @@ See `PowerBasis.liftEquiv` for a bundled equiv sending `⟨y, hy⟩` to the alge
 noncomputable def lift (pb : PowerBasis A S) (y : S') (hy : aeval y (minpoly A pb.gen) = 0) :
     S →ₐ[A] S' :=
   { pb.basis.constr A fun i => y ^ (i : ℕ) with
-    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [RingHom.map_one]
-    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [RingHom.map_zero]
+    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [map_one]
+    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [map_zero]
     map_mul' := pb.constr_pow_mul hy
     commutes' := pb.constr_pow_algebraMap hy }
 
@@ -331,6 +333,7 @@ noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
+@[implicit_reducible]
 noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
   Fintype.ofEquiv _ pb.liftEquiv'.symm
@@ -431,7 +434,7 @@ theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)
   apply mem_span_pow'.mpr _
   have := minpoly.monic hx
   refine ⟨f %ₘ minpoly R x, (degree_modByMonic_lt _ this).trans_le degree_le_natDegree, ?_⟩
-  conv_lhs => rw [← modByMonic_add_div f this]
+  conv_lhs => rw [← modByMonic_add_div f (minpoly R x)]
   simp only [add_zero, zero_mul, minpoly.aeval, aeval_add, map_mul]
 
 namespace PowerBasis

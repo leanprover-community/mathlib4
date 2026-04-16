@@ -3,15 +3,16 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.LinearAlgebra.FreeModule.Determinant
-import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Ideal.Basis
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+module
+
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.FreeModule.Determinant
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Ideal.Basis
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 
@@ -36,6 +37,8 @@ the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
 -/
+
+@[expose] public section
 
 open Module
 open scoped nonZeroDivisors
@@ -122,7 +125,7 @@ theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] (hP : P ≠ ⊥)
   refine (Ideal.eq_prime_pow_of_succ_lt_of_le hP (lt_of_le_of_ne le_sup_right ?_)
     (sup_le (Ideal.span_le.mpr (Set.singleton_subset_iff.mpr a_mem))
       (Ideal.pow_succ_lt_pow hP i).le)).symm
-  contrapose! a_notMem with this
+  contrapose a_notMem with this
   rw [this]
   exact mem_sup.mpr ⟨a, mem_span_singleton_self a, 0, by simp, by simp⟩
 
@@ -168,7 +171,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
-    refine Quotient.inductionOn' d' fun d => ?_
+    induction d' using Quotient.inductionOn with | _ d
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq]
@@ -296,7 +299,6 @@ theorem absNorm_span_singleton (r : S) :
   by_cases hr : r = 0
   · simp only [hr, Ideal.span_zero, Ideal.absNorm_bot,
       LinearMap.det_zero'', Set.singleton_zero, map_zero, Int.natAbs_zero]
-  letI := Ideal.finiteQuotientOfFreeOfNeBot (span {r}) (mt span_singleton_eq_bot.mp hr)
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr
@@ -411,6 +413,7 @@ section Int
 
 open Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Int.ideal_span_absNorm_eq_self (J : Ideal ℤ) :
     span {(absNorm J : ℤ)} = J := by

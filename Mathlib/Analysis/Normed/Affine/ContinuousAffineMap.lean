@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Norm on the continuous affine maps between normed vector spaces.
@@ -33,10 +35,12 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 -/
 
+@[expose] public section
+
 
 namespace ContinuousAffineMap
 
-variable {𝕜 V W W₂ : Type*}
+variable {𝕜 R V W W₂ : Type*}
 variable [NormedAddCommGroup V] [NormedAddCommGroup W] [NormedAddCommGroup W₂]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
@@ -100,41 +104,56 @@ theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * �
   · calc
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
       _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
-      _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ :=
-        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_opNorm _) _))
-      _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
-        add_le_add_right
-          (mul_le_mul f.norm_contLinear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
+      _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ := by grw [norm_add_le, f.contLinear.le_opNorm]
+      _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by grw [f.norm_contLinear_le, g.norm_image_zero_le]
   · calc
       ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
         (g.comp_contLinear f).symm ▸ f.contLinear.opNorm_comp_le _
-      _ ≤ ‖f‖ * ‖g‖ :=
-        (mul_le_mul f.norm_contLinear_le g.norm_contLinear_le (norm_nonneg _) (norm_nonneg _))
+      _ ≤ ‖f‖ * ‖g‖ := by grw [f.norm_contLinear_le, g.norm_contLinear_le]
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg
 
-variable (𝕜 V W)
+variable (𝕜 R V W) [Ring R] [Module R W] [ContinuousConstSMul R W] [SMulCommClass 𝕜 R W]
 
 /-- The space of affine maps between two normed spaces is linearly isometric to the product of the
 codomain with the space of linear maps, by taking the value of the affine map at `(0 : V)` and the
 linear part. -/
-noncomputable def toConstProdContinuousLinearMap : (V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W) where
-  toFun f := ⟨f 0, f.contLinear⟩
-  invFun p := p.2.toContinuousAffineMap + const 𝕜 V p.1
-  left_inv f := by
-    ext
-    rw [f.decomp]
-    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply, coe_const]
-  right_inv := by rintro ⟨v, f⟩; ext <;> simp
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+def decompLinearIsometryEquiv : (V →ᴬ[𝕜] W) ≃ₗᵢ[R] W × (V →L[𝕜] W) where
+  __ := decompLinearEquiv 𝕜 R V W
   norm_map' _ := rfl
 
 @[simp]
+theorem fst_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
+    (decompLinearIsometryEquiv 𝕜 R V W f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompLinearIsometryEquiv (f : V →ᴬ[𝕜] W) :
+    (decompLinearIsometryEquiv 𝕜 R V W f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompLinearIsometryEquiv_symm_apply (p : W × (V →L[𝕜] W)) (x : V) :
+    (decompLinearIsometryEquiv 𝕜 R V W).symm p x = p.2 x + p.1 :=
+  rfl
+
+@[simp]
+theorem decompLinearIsometryEquiv_symm_contLinear (p : W × (V →L[𝕜] W)) :
+    ((decompLinearIsometryEquiv 𝕜 R V W).symm p).contLinear = p.2 := by
+  rw [decompLinearIsometryEquiv, ← LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    decompLinearEquiv_symm_contLinear]
+
+@[deprecated decompLinearIsometryEquiv (since := "2026-03-03"),
+  inherit_doc decompLinearIsometryEquiv]
+abbrev toConstProdContinuousLinearMap := decompLinearIsometryEquiv 𝕜 𝕜 V W
+
+set_option linter.deprecated false in
+@[deprecated fst_decompLinearIsometryEquiv (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).fst = f 0 :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated snd_decompLinearIsometryEquiv (since := "2026-03-03")]
 theorem toConstProdContinuousLinearMap_snd (f : V →ᴬ[𝕜] W) :
     (toConstProdContinuousLinearMap 𝕜 V W f).snd = f.contLinear :=
   rfl

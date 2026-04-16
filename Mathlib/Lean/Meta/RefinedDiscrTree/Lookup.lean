@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 /-!
 # Matching with a RefinedDiscrTree
@@ -28,6 +30,8 @@ and when it is attempted to be assigned again, we check that it is the same assi
 
 -/
 
+public section
+
 namespace Lean.Meta.RefinedDiscrTree
 
 variable {α β : Type}
@@ -37,9 +41,9 @@ private abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
 /-- Run a `TreeM` computation using `d : RefinedDiscrTree`, without losing the reference to `d`. -/
 @[inline] private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
-    MetaM (Except Exception β × RefinedDiscrTree α) := do
+    MetaM (β × RefinedDiscrTree α) := do
   let { tries, root } := d
-  let (result, tries) ← (try Except.ok <$> m catch ex => pure (.error ex)).run tries
+  let (result, tries) ← m.run tries
   pure (result, { tries, root })
 
 private def setTrie (i : TrieIndex) (v : Trie α) : TreeM α Unit :=
@@ -53,21 +57,48 @@ private def newTrie (e : LazyEntry × α) : TreeM α TrieIndex := do
 private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry × α) : TreeM α Unit :=
   modify (·.modify i fun node => { node with pending := node.pending.push e })
 
+/-- Process a specified range of pending entries.
+returns the computed values and pending nodes. -/
+private def processPending (pending : Array (LazyEntry × α)) (start stop : Nat) :
+    MetaM (Array α × Array (Key × LazyEntry × α)) := do
+  Core.checkInterrupted
+  let mut values := #[]
+  let mut newEntries := #[]
+  for (entry, value) in pending[start...stop] do
+    match ← evalLazyEntry entry true with
+    | some entries =>
+      for (key, entry) in entries do
+        newEntries := newEntries.push (key, entry, value)
+    | none =>
+      values := values.push value
+  return (values, newEntries)
+
 /--
 Evaluate the `Trie α` at index `trie`,
 replacing it with the evaluated value,
 and returning the `Trie α`.
+
+Performance note: In the `apply` search discrimination tree, after root node `⟨Eq, 3⟩`,
+there are about `150,000` entries in the `pending` array.
+To deal with this smoothly, we parallellize the computation into chunks of `5000` entries.
 -/
 private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let node := (← get)[trie]!
   if node.pending.isEmpty then
     return node
+  let numTasks := node.pending.size / 5000 + 1
+  Core.checkInterrupted
+  let tasks ← numTasks.foldM (init := #[]) fun i _ tasks ↦ do
+    return tasks.push <| ← EIO.asTask <|
+      Core.withCurrHeartbeats (processPending node.pending (i * 5000) ((i + 1) * 5000))
+        |>.run' (← readThe _) (← getThe _)
+        |>.run' (← readThe _) (← getThe _)
   setTrie trie default -- reduce the reference count to `node` to be 1
-  let mut { values, star, labelledStars, children, pending } := node
-  for (entry, value) in pending do
-    let some newEntries ← evalLazyEntry entry true | values := values.push value
+  let mut { values, star, labelledStars, children, .. } := node
+  for task in tasks do
+    let (values', newEntries) ← MonadExcept.ofExcept task.get
+    values := values ++ values'
     for (key, entry) in newEntries do
-      let entry := (entry, value)
       match key with
       | .labelledStar label =>
         if let some trie := labelledStars[label]? then
@@ -265,12 +296,9 @@ Find values that match `e` in `d`.
 * If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.
-
-Note: to preserve the reference to `d`, `getMatch` will never throw an error,
-and instead it returns an `Except Exception (MatchResult α)`.
 -/
 def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
-    MetaM (Except Exception (MatchResult α) × RefinedDiscrTree α) := do
+    MetaM (MatchResult α × RefinedDiscrTree α) := do
   withReducible do runTreeM d do
     let (key, keys) ← encodeExpr e (labelledStars := false)
     let pMatch : PartialMatch := { keys, score := 0, trie := default }

@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Category.CompHausLike.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.Category.CompHausLike.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -30,6 +32,8 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 `CompHausLike.Basic` for more information.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -75,6 +79,7 @@ compact Hausdorff spaces.
 def stoneCechObj (X : TopCat) : CompHaus :=
   CompHaus.of (StoneCech X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of compact
 Hausdorff spaces in topological spaces.
 -/
@@ -82,12 +87,12 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
   toFun f := TopCat.ofHom
     { toFun := f ∘ stoneCechUnit
-      continuous_toFun := f.hom.2.comp (@continuous_stoneCechUnit X _) }
+      continuous_toFun := f.hom.hom.2.comp (@continuous_stoneCechUnit X _) }
   invFun f := CompHausLike.ofHom _
     { toFun := stoneCechExtend f.hom.2
       continuous_toFun := continuous_stoneCechExtend f.hom.2 }
   left_inv := by
-    rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
@@ -95,7 +100,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
       apply continuous_stoneCechUnit
   right_inv := by
-    rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
+    rintro ⟨f, hf : Continuous f⟩
     ext
     exact congr_fun (stoneCechExtend_extends hf) _
 
@@ -148,14 +153,14 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         apply isClosed_iInter
         intro f
         apply isClosed_eq
-        · exact ((F.map f).hom.continuous).comp (continuous_apply i)
+        · exact ((F.map f).hom.hom.continuous).comp (continuous_apply i)
         · exact continuous_apply j
       is_hausdorff :=
         show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => (TopCat.limitCone FF).π.app j
+      app := fun j => InducedCategory.homMk ((TopCat.limitCone FF).π.app j)
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
@@ -164,11 +169,14 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 
 /-- The limit cone `CompHaus.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
-    Limits.IsLimit.{v} (limitCone.{v,u} F) :=
+    Limits.IsLimit.{v} (limitCone.{v, u} F) :=
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
-  { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
-    fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
-    uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
+  { lift := fun S => InducedCategory.homMk
+      ((TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S))
+    uniq := fun S m hm => InducedCategory.hom_ext
+      ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _ (fun j ↦ by
+        simp [← hm]
+        rfl)) }
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -176,7 +184,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.hom.continuous).isClosed
     let D := ({y} : Set Y)
     have hD : IsClosed D := isClosed_singleton
     have hCD : Disjoint C D := by
@@ -200,7 +208,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     dsimp [g, h, Z] at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget CompHaus).epi_of_epi_map
 
 end CompHaus

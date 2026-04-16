@@ -3,11 +3,14 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Exact
-import Batteries.Tactic.Init
-import Mathlib.Logic.Basic
-import Mathlib.Util.AtomM
-import Qq
+module
+
+public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
+public meta import Mathlib.Util.AtomM
+public meta import Qq
+public import Batteries.Tactic.Exact
+public import Batteries.Tactic.Init
+public import Mathlib.Util.AtomM
 
 /-!
 
@@ -79,6 +82,8 @@ grammar if it matters.)
 propositional logic, intuitionistic logic, decision procedure
 -/
 
+public meta section
+
 
 open Std (TreeMap TreeSet)
 
@@ -99,22 +104,22 @@ inductive IProp : Type
   | and' : AndKind → IProp → IProp → IProp -- p ∧ q, p ↔ q, p = q
   | or : IProp → IProp → IProp   -- p ∨ q
   | imp : IProp → IProp → IProp  -- p → q
-  deriving Lean.ToExpr, DecidableEq
+  deriving Lean.ToExpr
 
 /-- Constructor for `p ∧ q`. -/
-@[match_pattern] def IProp.and : IProp → IProp → IProp := .and' .and
+@[match_pattern, expose] def IProp.and : IProp → IProp → IProp := .and' .and
 
 /-- Constructor for `p ↔ q`. -/
-@[match_pattern] def IProp.iff : IProp → IProp → IProp := .and' .iff
+@[match_pattern, expose] def IProp.iff : IProp → IProp → IProp := .and' .iff
 
 /-- Constructor for `p = q`. -/
-@[match_pattern] def IProp.eq : IProp → IProp → IProp := .and' .eq
+@[match_pattern, expose] def IProp.eq : IProp → IProp → IProp := .and' .eq
 
 /-- Constructor for `¬ p`. -/
-@[match_pattern] def IProp.not (a : IProp) : IProp := a.imp .false
+@[match_pattern, expose] def IProp.not (a : IProp) : IProp := a.imp .false
 
 /-- Constructor for `xor p q`. -/
-@[match_pattern] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
+@[match_pattern, expose] def IProp.xor (a b : IProp) : IProp := (a.and b.not).or (b.and a.not)
 
 instance : Inhabited IProp := ⟨IProp.true⟩
 
@@ -694,19 +699,23 @@ def itautoCore (g : MVarId)
 
 open Elab Tactic
 
-/-- A decision procedure for intuitionistic propositional logic. Unlike `finish` and `tauto!` this
-tactic never uses the law of excluded middle (without the `!` option), and the proof search is
-tailored for this use case. (`itauto!` will work as a classical SAT solver, but the algorithm is
-not very good in this situation.)
+/-- `itauto` solves the main goal when it is a tautology of intuitionistic propositional logic.
+Unlike `grind` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
+option), and the proof search is tailored for this use case. `itauto` is complete for intuitionistic
+propositional logic: it will solve any goal that is provable in this logic.
 
+* `itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
+  `Decidable a` and `Decidable b`.
+* `itauto *` will case on all decidable propositions that it can find among the atomic propositions.
+* `itauto!` will work as a classical SAT solver, but the algorithm is not very good in this
+  situation.
+* `itauto! *` will case on all propositional atoms. *Warning:* This can blow up the proof search, so
+  it should be used sparingly.
+
+Example:
 ```lean
 example (p : Prop) : ¬ (p ↔ ¬ p) := by itauto
 ```
-
-`itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
-`Decidable a` and `Decidable b`. `itauto *` will case on all decidable propositions that it can
-find among the atomic propositions, and `itauto! *` will case on all propositional atoms.
-*Warning:* This can blow up the proof search, so it should be used sparingly.
 -/
 syntax (name := itauto) "itauto" "!"? (" *" <|> (" [" term,* "]"))? : tactic
 
@@ -717,7 +726,7 @@ elab_rules : tactic
     let hs ← hs.getElems.mapM (Term.elabTermAndSynthesize · none)
     liftMetaTactic (itautoCore · true cl.isSome hs *> pure [])
 
-@[inherit_doc itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
+@[tactic_alt itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
 
 macro_rules
   | `(tactic| itauto!) => `(tactic| itauto !)

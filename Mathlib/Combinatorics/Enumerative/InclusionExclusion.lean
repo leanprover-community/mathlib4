@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle
@@ -41,6 +43,8 @@ See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with i
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
+public section
+
 assert_not_exists Field
 
 namespace Finset
@@ -71,7 +75,7 @@ lemma indicator_biUnion_eq_sum_powerset (s : Finset ι) (S : ι → Set α) (f :
     intro t hts ht
     rw [Set.indicator_of_notMem]
     · simp
-    · contrapose! ha
+    · contrapose ha
       simp only [Set.mem_iInter] at ha
       rcases ht with ⟨i, hi⟩
       simp only [Set.mem_iUnion, exists_prop]

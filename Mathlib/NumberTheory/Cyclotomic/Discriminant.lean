@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
@@ -18,6 +20,8 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
   `hζ : IsPrimitiveRoot ζ p`.
 
 -/
+
+public section
 
 
 universe u v
@@ -98,7 +102,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       by_cases hp : p = 2
       · exact mod_cast hζ.norm_pow_sub_one_eq_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
       · exact mod_cast hζ.norm_pow_sub_one_of_prime_ne_two hirr le_rfl hp
-    rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
+    rw [map_mul, hnorm, map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr, ← succ_eq_add_one,
       totient_prime_pow hp.out (succ_pos k), Nat.sub_one, Nat.pred_succ] at H
     rw [← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_pow, hζ.norm_eq_one hk hirr, one_pow,
@@ -108,8 +112,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := (mul_left_inj' fun h => ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
-      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by cutsat)] at this
-      exact absurd (pow_eq_zero h) this
+      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by lia)] at this
+      exact absurd (eq_zero_of_pow_eq_zero h) this
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`
@@ -120,6 +124,7 @@ theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : 
       (-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1))`
 if `Irreducible (cyclotomic (p ^ k) K))`. Beware that in the cases `p ^ k = 1` and `p ^ k = 2`
@@ -152,7 +157,10 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (FaithfulSMul.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
-      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]; norm_num
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]
+      simp only [powerBasis_dim,
+        zero_add, pow_one, totient_two, reduceDiv, pow_zero, cast_ofNat, tsub_self,
+        Nat.add_one_sub_one, mul_one, mul_zero]
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]
       convert_to (discr K fun i : Fin 1 ↦ (algebraMap K L) (-1) ^ ↑i) = _
       · congr 1

@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 
@@ -17,12 +19,14 @@ We define limit versions of the yoneda and coyoneda lemmas.
 
 Notation: categories `C`, `I` and functors `D : Iᵒᵖ ⥤ C`, `F : C ⥤ Type`.
 
-- `colimitCoyonedaHomIsoLimit`: pro-coyoneda lemma: homorphisms from colimit of coyoneda of
+- `colimitCoyonedaHomIsoLimit`: pro-coyoneda lemma: morphisms from colimit of coyoneda of
   diagram `D` to `F` is limit of `F` evaluated at `D`.
 - `colimitCoyonedaHomIsoLimit'`: a variant of `colimitCoyonedaHomIsoLimit` for a covariant
   diagram.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ v₁ v₂
 
@@ -44,6 +48,7 @@ noncomputable def coyonedaOpColimitIsoLimitCoyoneda :
     coyoneda.obj (op <| colimit F) ≅ limit (F.op ⋙ coyoneda) :=
   coyoneda.mapIso (limitOpIsoOpColimit F).symm ≪≫ (preservesLimitIso coyoneda F.op)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ limit.π (F.op.comp coyoneda) ⟨i⟩
@@ -52,6 +57,7 @@ lemma coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π (i : I) :
     Iso.trans_hom, Iso.symm_hom, Functor.mapIso_inv, Category.assoc, preservesLimitIso_hom_π,
     ← Functor.map_comp, limitOpIsoOpColimit_inv_comp_π]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda_inv_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda F).inv ≫ coyoneda.map (colimit.ι F i).op =
@@ -68,17 +74,17 @@ noncomputable def colimitHomIsoLimitYoneda
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda F A).hom ≫ limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ =
-      (coyoneda.map (colimit.ι F i).op).app A := by
+      (yoneda.obj A).map (colimit.ι F i).op := by
   simp only [colimitHomIsoLimitYoneda, Iso.trans_hom, Iso.app_hom, Category.assoc]
   erw [limitObjIsoLimitCompEvaluation_hom_π]
   change ((coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π]
+  rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π, Functor.flip_map_app]
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_inv_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
-    (colimitHomIsoLimitYoneda F A).inv ≫ (coyoneda.map (colimit.ι F i).op).app A =
+    dsimp% (colimitHomIsoLimitYoneda F A).inv ≫ (yoneda.obj A).map (colimit.ι F i).op =
       limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ := by
-  rw [← colimitHomIsoLimitYoneda_hom_comp_π, ← Category.assoc,
+  rw [← dsimp% colimitHomIsoLimitYoneda_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
 end HomCocontinuousCovariant
@@ -92,6 +98,7 @@ noncomputable def coyonedaOpColimitIsoLimitCoyoneda' :
     coyoneda.obj (op <| colimit F) ≅ limit (F.rightOp ⋙ coyoneda) :=
   coyoneda.mapIso (limitRightOpIsoOpColimit F).symm ≪≫ preservesLimitIso coyoneda F.rightOp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ limit.π (F.rightOp ⋙ coyoneda) i =
@@ -100,6 +107,7 @@ lemma coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π (i : I) :
     Functor.mapIso_inv, Category.assoc, preservesLimitIso_hom_π, ← Functor.map_comp,
     limitRightOpIsoOpColimit_inv_comp_π]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coyonedaOpColimitIsoLimitCoyoneda'_inv_comp_π (i : I) :
     (coyonedaOpColimitIsoLimitCoyoneda' F).inv ≫ coyoneda.map (colimit.ι F ⟨i⟩).op =
@@ -115,18 +123,18 @@ noncomputable def colimitHomIsoLimitYoneda' [HasLimitsOfShape I (Type u₂)] (A 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_hom_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda' F A).hom ≫ limit.π (F.rightOp ⋙ yoneda.obj A) i =
-      (coyoneda.map (colimit.ι F ⟨i⟩).op).app A := by
+      (yoneda.obj A).map (colimit.ι F ⟨i⟩).op := by
   simp only [colimitHomIsoLimitYoneda', Iso.trans_hom,
     Iso.app_hom, Category.assoc]
   erw [limitObjIsoLimitCompEvaluation_hom_π]
   change ((coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ _).app A = _
-  rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π]
+  rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π, Functor.flip_map_app]
 
 @[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_inv_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
-    (colimitHomIsoLimitYoneda' F A).inv ≫ (coyoneda.map (colimit.ι F ⟨i⟩).op).app A =
+    dsimp% (colimitHomIsoLimitYoneda' F A).inv ≫ (yoneda.obj A).map (colimit.ι F ⟨i⟩).op =
       limit.π (F.rightOp ⋙ yoneda.obj A) i := by
-  rw [← colimitHomIsoLimitYoneda'_hom_comp_π, ← Category.assoc,
+  rw [← dsimp% colimitHomIsoLimitYoneda'_hom_comp_π, ← Category.assoc,
     Iso.inv_hom_id, Category.id_comp]
 
 end HomCocontinuousContravariant
@@ -146,14 +154,14 @@ noncomputable def colimitCoyonedaHomIsoLimit :
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit_π_apply (f : colimit (D.rightOp ⋙ coyoneda) ⟶ F) (i : I) :
-    limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) (op i) ((colimitCoyonedaHomIsoLimit D F).hom f) =
+    dsimp% limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) (op i) ((colimitCoyonedaHomIsoLimit D F).hom f) =
       ⟨f.app (D.obj (op i)) ((colimit.ι (D.rightOp ⋙ coyoneda) i).app (D.obj (op i))
           (𝟙 (D.obj (op i))))⟩ := by
   change ((colimitCoyonedaHomIsoLimit D F).hom ≫ (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) (op i))) f = _
   simp only [colimitCoyonedaHomIsoLimit, Iso.trans_hom, Category.assoc,
     HasLimit.isoOfNatIso_hom_π]
   rw [← Category.assoc, colimitHomIsoLimitYoneda_hom_comp_π]
-  dsimp [coyonedaLemma, types_comp_apply]
+  simp only [coyonedaLemma, comp_apply]
   rfl
 
 end ProCoyonedaContravariant
@@ -174,7 +182,7 @@ noncomputable def colimitCoyonedaHomIsoLimitLeftOp :
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimitLeftOp_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
-    limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i)
+    dsimp% limit.π (D.leftOp ⋙ F ⋙ uliftFunctor.{u₁}) (op i)
         ((colimitCoyonedaHomIsoLimitLeftOp D F).hom f) =
       ⟨f.app (D.obj i).unop ((colimit.ι (D ⋙ coyoneda) i).app (D.obj i).unop
           (𝟙 (D.obj i).unop))⟩ :=
@@ -199,7 +207,7 @@ noncomputable def colimitYonedaHomIsoLimit :
 
 @[simp]
 lemma colimitYonedaHomIsoLimit_π_apply (f : colimit (D.unop ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
-    limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimit D F).hom f) =
+    dsimp% limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimit D F).hom f) =
       ⟨f.app (D.obj i)
         ((colimit.ι (D.unop ⋙ yoneda) i.unop).app (D.obj i) (𝟙 (D.obj i).unop))⟩ := by
   change ((colimitYonedaHomIsoLimit D F).hom ≫ (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
@@ -219,14 +227,14 @@ variable [HasColimit (D ⋙ yoneda)] [HasLimitsOfShape Iᵒᵖ (Type (max u₁ u
 evaluated at `D`. This version is for covariant diagrams, see `colimitYonedaHomIsoLimit'` for a
 contravariant version. -/
 noncomputable def colimitYonedaHomIsoLimitOp :
-      (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.op ⋙ F ⋙ uliftFunctor.{u₁}) :=
+    (colimit (D ⋙ yoneda) ⟶ F) ≅ limit (D.op ⋙ F ⋙ uliftFunctor.{u₁}) :=
   haveI : HasColimit (D.op.unop ⋙ yoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ yoneda)
   colimitYonedaHomIsoLimit D.op F
 
 @[simp]
 lemma colimitYonedaHomIsoLimitOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
-    limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitOp D F).hom f) =
+    dsimp% limit.π (D.op ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitOp D F).hom f) =
       ⟨f.app (op (D.obj i.unop))
         ((colimit.ι (D ⋙ yoneda) i.unop).app (op (D.obj i.unop)) (𝟙 (D.obj i.unop)))⟩ :=
   haveI : HasColimit (D.op.unop ⋙ yoneda) :=
@@ -250,7 +258,7 @@ noncomputable def colimitCoyonedaHomIsoLimit' :
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit'_π_apply (f : colimit (D.op ⋙ coyoneda) ⟶ F) (i : I) :
-    limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimit' D F).hom f) =
+    dsimp% limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimit' D F).hom f) =
       ⟨f.app (D.obj i) ((colimit.ι (D.op ⋙ coyoneda) ⟨i⟩).app (D.obj i) (𝟙 (D.obj i)))⟩ := by
   change ((colimitCoyonedaHomIsoLimit' D F).hom ≫ (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
   simp only [colimitCoyonedaHomIsoLimit', Iso.trans_hom, Category.assoc, HasLimit.isoOfNatIso_hom_π]
@@ -276,7 +284,7 @@ noncomputable def colimitCoyonedaHomIsoLimitUnop :
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimitUnop_π_apply (f : colimit (D ⋙ coyoneda) ⟶ F) (i : I) :
-    limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimitUnop D F).hom f) =
+    dsimp% limit.π (D.unop ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitCoyonedaHomIsoLimitUnop D F).hom f) =
       ⟨f.app (D.obj (op i)).unop
           ((colimit.ι (D ⋙ coyoneda) ⟨i⟩).app (D.obj (op i)).unop (𝟙 (D.obj (op i)).unop))⟩ :=
   haveI : HasColimit (D.unop.op ⋙ coyoneda) :=
@@ -300,7 +308,7 @@ noncomputable def colimitYonedaHomIsoLimit' :
 
 @[simp]
 lemma colimitYonedaHomIsoLimit'_π_apply (f : colimit (D.leftOp ⋙ yoneda) ⟶ F) (i : I) :
-    limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimit' D F).hom f) =
+    dsimp% limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimit' D F).hom f) =
       ⟨f.app (D.obj i)
         ((colimit.ι (D.leftOp ⋙ yoneda) (op i)).app (D.obj i) (𝟙 (D.obj i).unop))⟩ := by
   change ((colimitYonedaHomIsoLimit' D F).hom ≫ (limit.π (D ⋙ F ⋙ uliftFunctor.{u₁}) i)) f = _
@@ -327,8 +335,8 @@ noncomputable def colimitYonedaHomIsoLimitRightOp :
 
 @[simp]
 lemma colimitYonedaHomIsoLimitRightOp_π_apply (f : colimit (D ⋙ yoneda) ⟶ F) (i : I) :
-    limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i ((colimitYonedaHomIsoLimitRightOp D F).hom f) =
-      ⟨f.app (op (D.obj (op i)))
+    dsimp% limit.π (D.rightOp ⋙ F ⋙ uliftFunctor.{u₁}) i
+      ((colimitYonedaHomIsoLimitRightOp D F).hom f) = ⟨f.app (op (D.obj (op i)))
         ((colimit.ι (D ⋙ yoneda) (op i)).app (op (D.obj (op i))) (𝟙 (D.obj (op i))))⟩ :=
   haveI : HasColimit (D.rightOp.leftOp ⋙ yoneda) :=
     inferInstanceAs <| HasColimit (D ⋙ yoneda)

@@ -3,9 +3,12 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+meta import Mathlib.Tactic.GRewrite
 
 /-!
 # Lucas's theorem
@@ -21,13 +24,15 @@ respectively.
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
+public section
+
 open Finset hiding choose
 
 open Nat Polynomial
 
 namespace Choose
 
-variable {n k p : ℕ} [Fact p.Prime]
+variable {n k a b p : ℕ} [Fact p.Prime]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
 modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div_nat` for the version with `MOD`. -/
@@ -56,7 +61,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
   split_ifs with h
   · simp
-  · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
+  · rw [mem_product, mem_range, mem_range, not_and_or, Nat.lt_succ_iff, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
@@ -96,5 +101,35 @@ theorem choose_modEq_prod_range_choose_nat {a : ℕ} (ha₁ : n < p ^ a) (ha₂ 
 
 alias lucas_theorem := choose_modEq_prod_range_choose
 alias lucas_theorem_nat := choose_modEq_prod_range_choose_nat
+
+/-- For primes `p`, `choose (p * a) (p * b)` is congruent to `choose a b` modulo `p`.
+Also see `choose_mul_mul_modEq_choose_nat` for the version with `MOD`. -/
+theorem choose_mul_mul_modEq_choose :
+    choose (p * a) (p * b) ≡ choose a b [ZMOD p] := by
+  grw [choose_modEq_choose_mod_mul_choose_div]
+  simp [NeZero.pos, Int.ModEq.refl]
+
+/-- For primes `p`, `choose (p * a) (p * b)` is congruent to `choose a b` modulo `p`.
+Also see `choose_mul_mul_modEq_choose` for the version with `ZMOD`. -/
+theorem choose_mul_mul_modEq_choose_nat :
+    choose (p * a) (p * b) ≡ choose a b [MOD p] := by
+  rw [← Int.natCast_modEq_iff]
+  exact_mod_cast choose_mul_mul_modEq_choose
+
+/-- For primes `p`, `choose (p ^ k * a) (p ^ k * b)` is congruent to `choose a b` modulo `p`.
+Also see `choose_pow_mul_pow_mul_modEq_choose_nat` for the version with `MOD`. -/
+theorem choose_pow_mul_pow_mul_modEq_choose :
+    choose (p ^ k * a) (p ^ k * b) ≡ choose a b [ZMOD p] := by
+  induction k with
+  | zero => simp [Int.ModEq.refl]
+  | succ k ih =>
+    grw [Nat.pow_succ', mul_assoc, mul_assoc, choose_mul_mul_modEq_choose, ih]
+
+/-- For primes `p`, `choose (p ^ k * a) (p ^ k * b)` is congruent to `choose a b` modulo `p`.
+Also see `choose_pow_mul_pow_mul_modEq_choose` for the version with `ZMOD`. -/
+theorem choose_pow_mul_pow_mul_modEq_choose_nat :
+    choose (p ^ k * a) (p ^ k * b) ≡ choose a b [MOD p] := by
+  rw [← Int.natCast_modEq_iff]
+  exact_mod_cast choose_pow_mul_pow_mul_modEq_choose
 
 end Choose

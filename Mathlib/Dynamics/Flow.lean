@@ -3,10 +3,13 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Submonoid
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Flows and invariant sets
@@ -27,6 +30,8 @@ Additionally, we define such constructions as the (forward) orbit, a
 semiconjugacy between flows, a factor of a flow, the restriction of a
 flow onto an invariant subset, and the time-reversal of a flow by a group.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter
@@ -94,18 +99,27 @@ structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd 
   map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
   map_zero' : ∀ x, toFun 0 x = x
 
+
 namespace Flow
 
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
-instance : Inhabited (Flow τ α) :=
-  ⟨{  toFun := fun _ x => x
-      cont' := continuous_snd
-      map_add' := fun _ _ _ => rfl
-      map_zero' := fun _ => rfl }⟩
-
 instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+
+variable (τ α) in
+/-- The identity map as a constant flow. -/
+protected def id : Flow τ α where
+  toFun _ := id
+  cont' := continuous_snd
+  map_add' _ _ _ := rfl
+  map_zero' _ := rfl
+
+@[simp]
+theorem id_apply (t : τ) : Flow.id τ α t = id := rfl
+
+instance : Inhabited (Flow τ α) :=
+  ⟨Flow.id τ α⟩
 
 @[ext]
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂
@@ -139,7 +153,7 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
   toFun t := (h t).restrict _ _ _
-  cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
+  cont' := Continuous.subtype_mk (by fun_prop) _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 
@@ -147,7 +161,9 @@ def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
 theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) :
     restrict ϕ h t x = ϕ t x := rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Convert a flow to an additive monoid action. -/
+@[implicit_reducible]
 def toAddAction : AddAction τ α where
   vadd      := ϕ
   add_vadd  := ϕ.map_add'
@@ -166,14 +182,14 @@ theorem restrictAddSubmonoid_apply (S : AddSubmonoid τ) (t : S) (x : α) :
 section Orbit
 
 /-- The orbit of a point under a flow. -/
-def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
+def orbit (x : α) : Set α := @AddAction.orbit _ _ ϕ.toAddAction.toVAdd x
 
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
-theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
-  ϕ.toAddAction.mem_orbit_iff
+theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := Iff.rfl
 
-theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit ..
+theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x :=
+  @AddAction.mem_orbit _ _ ϕ.toAddAction.toVAdd x t
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
@@ -278,7 +294,7 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
 
-theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
-  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
+  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s
 
 end Flow

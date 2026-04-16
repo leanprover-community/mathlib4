@@ -69,11 +69,11 @@ theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 -- theorems about function in the environment --
 ------------------------------------------------
 @[fun_prop]
-theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
-  : Con fun x => (fst x, snd x) := silentSorry
+theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd) :
+    Con fun x => (fst x, snd x) := silentSorry
 @[fun_prop]
-theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd)
-  : Lin fun x => (fst x, snd x) := silentSorry
+theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd) :
+    Lin fun x => (fst x, snd x) := silentSorry
 
 
 
@@ -132,7 +132,7 @@ instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
--- this is some form of Cartesian-closedness with homs `α ->> β`
+-- this is some form of Cartesian closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 @[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
@@ -316,13 +316,12 @@ example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
-noncomputable
-def foo : α ->> α ->> α := silentSorry
-noncomputable
-def bar : α ->> α ->> α := silentSorry
+noncomputable def foo : α ->> α ->> α := silentSorry
+noncomputable def bar : α ->> α ->> α := silentSorry
 
 @[fun_prop]
 theorem foo_lin : Lin fun x : α => foo x := silentSorry
+
 @[fun_prop]
 theorem bar_lin (y) : Lin fun x : α => bar x y := silentSorry
 
@@ -371,7 +370,7 @@ theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
 
 example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
 
-
+-- Test for unfolding names using the `fun_prop [foo]` syntax.
 def foo3 [Add α] (x : α) := x + x
 example [Add α] : Con (fun x : α => foo3 x) := by fun_prop [foo3]
 
@@ -379,7 +378,8 @@ def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
 def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
-  fun_prop [diag,myUncurry]
+  fun_prop [diag, myUncurry]
+
 namespace MultipleLambdaTheorems
 
 opaque A : Prop
@@ -396,6 +396,11 @@ end MultipleLambdaTheorems
 /-- info: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
 #check_failure ((by fun_prop) : ?m)
+
+/-- error: `Injective Nat.succ` is not a `fun_prop` goal!
+Consider marking `Function.Injective` with `@[fun_prop]`. -/
+#guard_msgs in
+example : Nat.succ.Injective := by fun_prop
 
 -- todo: warning should not have mvar id in it
 -- /-- warning: `?m.71721` is not a `fun_prop` goal! -/
@@ -536,16 +541,16 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-trace: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
-  [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+trace: [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
+  [Meta.Tactic.fun_prop] ✅️ Con fun x => f x y
     [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
     [Meta.Tactic.fun_prop] removing argument to later use this : Con f
-    [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
-      [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
-        [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
-      [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+    [Meta.Tactic.fun_prop] ✅️ applying: Con_comp
+      [Meta.Tactic.fun_prop] ✅️ Con fun f => f y
+        [Meta.Tactic.fun_prop] ✅️ applying: Con_apply
+      [Meta.Tactic.fun_prop] ✅️ Con fun x => f x
         [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
-        [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+        [Meta.Tactic.fun_prop] ✅️ applying: this : Con f
 -/
 #guard_msgs in
 example [Add α] (y : α):
@@ -558,8 +563,8 @@ example [Add α] (y : α):
 
 
 
---- pefromance tests - mainly testing fast failure ---
-------------------------------------------------------
+--- performance tests - mainly testing fast failure ---
+-------------------------------------------------------
 
 
 section PerformanceTests
@@ -579,8 +584,8 @@ example (f : R → R) (hf : Con f) :
     Con (fun x ↦ (f (x + 3)) + 2 + f (x + 1) + x + 1) := by fun_prop -- succeeds in 11ms
 
 -- This used to fail in exponentially increasing time, up to 6s for the last example
--- We set maxHearthbeats to 1000 such that the last three examples should fail if the exponential
--- blow happen again.
+-- We set maxHeartbeats to 1000 such that the last three examples should fail if the exponential
+-- blowup happens again.
 set_option maxHeartbeats 1000 in
 example (f : R → R) :
     Con (fun x ↦ f (x + 3)) := by
@@ -629,3 +634,68 @@ def snd (x : α×β) := x.2
 example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
   fail_if_success fun_prop
   apply silentSorry
+
+-- In the following example, `fun_prop` used to panic with a "loose bvar in expression" error.
+
+@[fun_prop]
+opaque AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
+
+opaque foo4 : Bool → Bool
+
+@[fun_prop]
+theorem aemeas_foo4 (μ : Bool) : AEMeas foo4 μ := silentSorry
+
+@[fun_prop]
+theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
+
+example : Con foo4 := by fun_prop
+
+/-!
+  Some tests to ensure state changes made by the discharger (to their goals' contexts) are not
+  reverted by `fun_prop`, which is necessary for correct functionality of `disch := grind`.
+-/
+section StateReversionBug
+
+@[fun_prop] theorem div_Con' [Zero β] [Div β] (f g : α → β) (hf : Con f) (hg : Con g)
+    (h : ∀ x, g x ≠ 0) : Con (fun x => f x / g x) := silentSorry
+
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  fun_prop (disch := grind)
+
+-- In case the behaviour of `grind` changes, here's a more explicit test.
+open Lean Elab Tactic Meta in
+example (f g : α → Rat) (hf : Con f) (hg : Con g) (h : ∀ x, 0 < g x) :
+    Con (fun x => f x / g x) := by
+  have : ∀ x, g x ≠ 0 := by grind
+  fun_prop (disch := run_tac
+    let goal ← getMainGoal
+    let ty ← goal.getType
+    let mvar ← mkFreshExprSyntheticOpaqueMVar ty
+    let _ ← mvar.mvarId!.assumption
+    goal.assign <| ← mkAuxTheorem ty (← instantiateMVars mvar))
+
+end StateReversionBug
+
+section MVarBug
+
+opaque Lin' (f : α → β) : Prop
+
+theorem Lin'.lin {f : α → β} (h : Lin' f) : Lin f := silentSorry
+
+variable {Ω ι R : Type*} {X : ι → Ω → R}
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  fail_if_success fun_prop -- fails, ok
+  exact silentSorry
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have : ∀ i, Lin (X i) := fun i ↦ (hX i).lin
+  fun_prop -- succeeds, ok
+
+example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
+  have := fun i ↦ (hX i).lin
+  fun_prop -- now succeeds
+  -- failed in https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Weird.20behavior.20of.20fun_prop
+
+end MVarBug

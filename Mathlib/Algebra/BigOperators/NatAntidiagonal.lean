@@ -3,14 +3,18 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Big operators for `NatAntidiagonal`
 
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
+
+public section
 
 variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 

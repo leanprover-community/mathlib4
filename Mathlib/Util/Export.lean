@@ -3,15 +3,19 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.CoreM
-import Lean.Util.FoldConsts
+module
+
+public import Mathlib.Init
+public meta import Lean.CoreM
+public meta import Lean.Util.FoldConsts
 
 /-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for Lean 4 kernel primitives.
 -/
+
+public meta section
 
 open Lean
 open Std (HashMap HashSet)
@@ -43,7 +47,7 @@ deriving Inhabited
 
 structure State where
   names : Alloc Name := ⟨(∅ : Std.HashMap Name Nat).insert Name.anonymous 0, 1⟩
-  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert levelZero 0, 1⟩
+  levels : Alloc Level := ⟨(∅ : Std.HashMap Level Nat).insert .zero 0, 1⟩
   exprs : Alloc Expr
   defs : Std.HashSet Name
   stk : Array (Bool × Entry)

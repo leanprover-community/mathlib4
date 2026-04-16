@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -18,6 +20,8 @@ Note that a sigma-compactness assumption is necessary. Indeed, let `G` be the re
 the discrete topology, and `H` the real line with the usual topology. Both are locally compact
 groups, and the identity from `G` to `H` is continuous but not open.
 -/
+
+public section
 
 open scoped Topology Pointwise
 
@@ -57,9 +61,8 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
       apply IsCompact.isClosed
       suffices H : IsCompact ((fun (g : G) ↦ g • x) '' (K n ∩ g • V)) by
         simpa only [F, smul_singleton] using H
-      apply IsCompact.image
-      · exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
-      · exact continuous_id.smul continuous_const
+      apply IsCompact.image ?_ (by fun_prop)
+      exact (isCompact_compactCovering G n).inter_right (V_closed.smul g)
     · apply eq_univ_iff_forall.2 (fun y ↦ ?_)
       obtain ⟨h, rfl⟩ : ∃ h, h • x = y := exists_smul_eq G x y
       obtain ⟨n, hn⟩ : ∃ n, h ∈ K n := exists_mem_compactCovering h

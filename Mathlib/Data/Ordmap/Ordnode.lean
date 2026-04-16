@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Compare
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Order.Compare
+public import Mathlib.Data.Nat.PSub
+public import Batteries.Data.List.Lemmas
 
 /-!
 # Ordered sets
@@ -59,6 +61,8 @@ Ported from Haskell's `Data.Set`.
 ordered map, ordered set, data structure
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -334,8 +338,8 @@ of the tree.
 def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 
-instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
-  dsimp [Emem]; infer_instance
+instance Emem.decidable (x : α) [DecidableEq α] (t : Ordnode α) : Decidable (Emem x t) :=
+  inferInstanceAs <| Decidable (Any _ t)
 
 /-- O(n). Approximate membership in the set, that is, whether some element in the
 set is equivalent to this one in the preorder. This is useful primarily for stating
@@ -357,8 +361,8 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
-  dsimp [Amem]; infer_instance
+instance Amem.decidable [LE α] [DecidableLE α] (x : α) (t : Ordnode α) : Decidable (Amem x t) :=
+  inferInstanceAs <| Decidable (Any _ t)
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
 

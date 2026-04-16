@@ -3,14 +3,12 @@ Copyright (c) 2022 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory
@@ -27,6 +25,8 @@ This file contains results in number theory relating to multiplicity.
 * [Wikipedia, *Lifting-the-exponent lemma*]
   (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
+
+public section
 
 
 open Ideal Ideal.Quotient Finset
@@ -55,9 +55,9 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   rcases n with - | n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
-  · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
-      Nat.choose_self, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
-      mul_one, Nat.cast_zero, zero_add, add_tsub_cancel_left]
+  · simp only [add_pow, sum_range_succ, add_tsub_cancel_left, pow_one, Nat.choose_succ_self_right,
+      Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
+      Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
@@ -85,7 +85,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       _ ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) := by
         simp only [sq_dvd_add_pow_sub_sub (↑p * b) a i, ← sub_sub]
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
-  let s : R := (p : R)^2
+  let s : R := (p : R) ^ 2
   calc
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
@@ -200,7 +200,7 @@ theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : �
   rw [emultiplicity_pow_sub_pow_of_prime hp,
     emultiplicity_pow_prime_pow_sub_pow_prime_pow hp hp1 hxy hx, h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
-    exact dvd_mul_of_dvd_right hxy _
+    exact dvd_mul_of_dvd_right hxy
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
@@ -263,7 +263,7 @@ lemma Int.eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 :
 
 lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
   rcases hk with ⟨m, rfl⟩
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring_nf; grind
+  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by grind
   simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
@@ -307,7 +307,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
   norm_cast
-  contrapose! hpn
+  contrapose hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn
@@ -321,15 +321,14 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
     convert Even.add_odd hxy hx
     abel
-  obtain ⟨d, hd⟩ := hn
-  subst hd
+  obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
       Int.sq_mod_four_eq_one_of_odd hy]
     · simp
     · simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
-  rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_out,
+  rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_ofNat,
     emultiplicity_mul Int.prime_two, emultiplicity_mul Int.prime_two]
   · suffices emultiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm 1, ← add_assoc]
     norm_cast
@@ -369,8 +368,22 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
-  · cutsat
+  · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
+
+theorem pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+    padicValNat 2 (x ^ n - 1) + 1 = padicValNat 2 (x + 1) +
+    padicValNat 2 (x - 1) + padicValNat 2 n := by
+  simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
+
+lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+    padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
+  have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
+    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
+    simp [← Nat.pow_two_sub_pow_two x 1]
+    grind [Nat.eight_dvd_sq_sub_one_of_odd]
+  have := pow_two_sub_one h1x hx hn hneven
+  grind [← padicValNat.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1

@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 # Reflection
@@ -11,6 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` in constructed, by choosing
 for each `u : E`, `K.reflection u = 2 • K.starProjection u - u`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -116,7 +120,7 @@ theorem reflection_map_apply {E E' : Type*} [NormedAddCommGroup E] [NormedAddCom
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [K.HasOrthogonalProjection] (x : E') :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x = f (K.reflection (f.symm x)) := by
-  simp [two_smul, reflection_apply, starProjection_map_apply f K x]
+  simp [reflection_apply, starProjection_map_apply f K x]
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
 theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
@@ -146,7 +150,7 @@ theorem reflection_orthogonalComplement_singleton_eq_neg (v : E) : reflection (�
   reflection_mem_subspace_orthogonal_precomplement_eq_neg (Submodule.mem_span_singleton_self v)
 
 theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (v - w))ᗮ v = w := by
-  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ v - w)ᗮ
+  set R : F ≃ₗᵢ[ℝ] F := reflection (ℝ ∙ (v - w))ᗮ
   suffices R v + R v = w + w by
     apply smul_right_injective F (by simp : (2 : ℝ) ≠ 0)
     simpa [two_smul] using this

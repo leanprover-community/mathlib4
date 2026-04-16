@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.Int.Basic
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Prime numbers in the naturals and the integers
 
 TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
+
+public section
 
 
 namespace Nat
@@ -35,6 +39,14 @@ lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
   have H := dvd_antisymm (Prime.dvd_of_dvd_pow hp <| h ▸ dvd_pow_self p (succ_ne_zero m))
     (Prime.dvd_of_dvd_pow hq <| h.symm ▸ dvd_pow_self q (succ_ne_zero n))
   exact ⟨H, succ_inj.mp <| Nat.pow_right_injective hq.two_le (H ▸ h)⟩
+
+/-- Version of `Nat.Prime.pow_inj` with an explicit nonzero assumption on the exponents. -/
+lemma Prime.pow_inj'
+    {p q m n : ℕ} (hp : Nat.Prime p) (hq : Nat.Prime q) (hm : m ≠ 0) (hn : n ≠ 0)
+    (h : p ^ m = q ^ n) : p = q ∧ m = n := by
+  obtain ⟨m, rfl⟩ := exists_eq_add_one_of_ne_zero hm
+  obtain ⟨n, rfl⟩ := exists_eq_add_one_of_ne_zero hn
+  simpa using hp.pow_inj hq h
 
 end Nat
 

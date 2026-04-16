@@ -3,7 +3,9 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.ConvergenceRadius
+module
+
+public import Mathlib.Analysis.Analytic.ConvergenceRadius
 
 /-!
 # Scalar series
@@ -20,6 +22,8 @@ This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in ter
   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
+@[expose] public section
+
 namespace FormalMultilinearSeries
 
 section Field
@@ -35,7 +39,7 @@ def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
 
 @[simp]
 theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
-  rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
+  rw [ofScalars, smul_eq_zero]
   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
   use fun _ ↦ 1
   simp
@@ -64,7 +68,7 @@ theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalar
   refine Function.mtr fun h ↦ ?_
   simp_rw [FormalMultilinearSeries.ext_iff, ofScalars, ContinuousMultilinearMap.ext_iff,
     ContinuousMultilinearMap.smul_apply]
-  push_neg
+  push Not
   obtain ⟨n, hn⟩ := Function.ne_iff.1 h
   refine ⟨n, fun _ ↦ 1, ?_⟩
   simp only [mkPiAlgebraFin_apply, List.ofFn_const, List.prod_replicate, one_pow, ne_eq]
@@ -87,11 +91,16 @@ lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ →
     (FormalMultilinearSeries.ofScalars 𝕜 p).coeff n = p n := by
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
   unfold ofScalars
   simp_rw [Pi.add_apply, Pi.add_def _ _]
   exact funext fun n ↦ Module.add_smul (c n) (c' n) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)
 
+lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
+  ext; simp [ofScalars, sub_smul]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
   unfold ofScalars
   simp [Pi.smul_def x _, smul_smul]
@@ -166,6 +175,7 @@ open scoped Topology NNReal
 variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
+@[simp]
 theorem ofScalars_norm_eq_mul :
     ‖ofScalars E c n‖ = ‖c n‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E‖ := by
   rw [ofScalars, norm_smul]
@@ -175,9 +185,8 @@ theorem ofScalars_norm_le (hn : n > 0) : ‖ofScalars E c n‖ ≤ ‖c n‖ := 
   exact (mul_le_of_le_one_right (norm_nonneg _)
     (ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos hn))
 
-@[simp]
 theorem ofScalars_norm [NormOneClass E] : ‖ofScalars E c n‖ = ‖c n‖ := by
-  simp [ofScalars_norm_eq_mul]
+  simp
 
 end Seminormed
 
@@ -197,9 +206,9 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
-theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
+theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
-      (ofScalars E c).radius ≥ ofNNReal r⁻¹ := by
+      ofNNReal r⁻¹ ≤ (ofScalars E c).radius := by
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_lt_coe, NNReal.lt_inv_iff_mul_lt hr] at hr'
   by_cases hrz : r' = 0
@@ -216,12 +225,15 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     gcongr
     exact ofScalars_norm_le E c n (Nat.pos_iff_ne_zero.mpr hn)
 
+@[deprecated (since := "2025-11-21")]
+alias ofScalars_radius_ge_inv_of_tendsto := inv_le_ofScalars_radius_of_tendsto
+
 /-- The radius of convergence of a scalar series is the inverse of the non-zero limit
 `fun n ↦ ‖c n.succ‖ / ‖c n‖`. -/
 theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ofNNReal r⁻¹ := by
-  refine le_antisymm ?_ (ofScalars_radius_ge_inv_of_tendsto E c hr hc)
+  refine le_antisymm ?_ (inv_le_ofScalars_radius_of_tendsto E c hr hc)
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_le_coe, NNReal.le_inv_iff_mul_le hr]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr'
@@ -250,7 +262,6 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   by_cases hrz : r' = 0
   · apply Summable.comp_nat_add (k := 1)
     simp [hrz]
-    exact (summable_const_iff 0).mpr rfl
   · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
@@ -269,15 +280,14 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   rw [← coe_zero, coe_le_coe]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
   contrapose! this
-  apply not_summable_of_ratio_norm_eventually_ge one_lt_two
+  refine not_summable_of_ratio_norm_eventually_ge (r := 2) (by simp) ?_ ?_
   · contrapose! hc
-    apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
-    rw [not_frequently] at hc
+    apply not_tendsto_atTop_of_tendsto_nhds (a := 0)
     apply Tendsto.congr' ?_ tendsto_const_nhds
     filter_upwards [hc] with n hc'
-    rw [ofScalars_norm, norm_mul, norm_norm, not_ne_iff, mul_eq_zero] at hc'
+    rw [ofScalars_norm, norm_mul, norm_norm, mul_eq_zero] at hc'
     cases hc' <;> aesop
-  · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
+  · filter_upwards [hc.eventually_ge_atTop (2 * r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
     rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
     · convert hc

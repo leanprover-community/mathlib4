@@ -3,10 +3,12 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.NeZero
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -26,6 +28,8 @@ With `open scoped RightActions`, this provides:
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -73,6 +77,9 @@ reversed.
 open MulOpposite
 
 /-- `Monoid.toOppositeMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-instance CancelMonoidWithZero.toFaithfulSMul_opposite [CancelMonoidWithZero α]
-    [Nontrivial α] : FaithfulSMul αᵐᵒᵖ α :=
-  ⟨fun h => unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)⟩
+instance IsLeftCancelMulZero.toFaithfulSMul_opposite [MonoidWithZero α] [IsLeftCancelMulZero α] :
+    FaithfulSMul αᵐᵒᵖ α where
+  eq_of_smul_eq_smul h := by
+    cases subsingleton_or_nontrivial α
+    · exact Subsingleton.elim ..
+    · exact unop_injective <| mul_left_cancel₀ one_ne_zero (h 1)

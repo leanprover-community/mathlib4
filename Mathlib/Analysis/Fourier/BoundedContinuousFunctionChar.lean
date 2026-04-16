@@ -3,10 +3,12 @@ Copyright (c) 2025 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Star
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # Definition of BoundedContinuousFunction.char
@@ -34,6 +36,8 @@ measure.
 - `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
 
 -/
+
+@[expose] public section
 
 open Filter BoundedContinuousFunction Complex
 
@@ -73,6 +77,7 @@ lemma char_add_eq_mul (x y : W) :
 lemma char_neg (w : W) :
     char he hL (-w) = star (char he hL w) := by ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `e` and `L` are non-trivial, then `char he hL w, w : W` separates points in `V`. -/
 theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V}
@@ -85,19 +90,15 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
   rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← Metric.unitSphere.coe_inv,
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
-  calc e (- L v' ((a / (L v w - L v' w)) • w) + L v ((a / (L v w - L v' w)) • w))
-  _ = e (- (a / (L v w - L v' w)) • L v' w + (a / (L v w - L v' w)) • L v w) := by
-    congr
-    · rw [neg_smul, ← LinearMap.map_smul (L v')]
-    · rw [← LinearMap.map_smul (L v)]
-  _ = e ((a / (L (v - v') w)) • (L (v - v') w)) := by
-    simp only [map_sub, LinearMap.sub_apply]
-    congr
-    module
-  _ = e a := by
-    congr
-    exact div_mul_cancel₀ a hw
-  _ ≠ 1 := ha
+  simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, AddChar.one_apply,
+    map_smul, smul_eq_mul] at ha hw ⊢
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  ring_nf
+  field_simp
+  assumption
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
@@ -114,7 +115,7 @@ lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
 noncomputable
 def charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     AddMonoidAlgebra ℂ W →ₐ[ℂ] (V →ᵇ ℂ) :=
-  AddMonoidAlgebra.lift ℂ W (V →ᵇ ℂ) (charMonoidHom he hL)
+  AddMonoidAlgebra.lift ℂ (V →ᵇ ℂ) W (charMonoidHom he hL)
 
 @[simp]
 lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
@@ -136,7 +137,7 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   refine ⟨z.embDomain f, ?_⟩
   ext1 u
   simp only [charAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
-    Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
+    Finsupp.embDomain_apply_self, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
   simp [z, f]
 

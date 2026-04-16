@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Ring.Associator
+module
+
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -69,8 +71,10 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 
 ## Tags
 
-graded ring, filtered ring, direct sum, add_submonoid
+graded ring, filtered ring, direct sum, additive submonoid
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} [DecidableEq ι]
@@ -185,13 +189,12 @@ def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
 instance instMul : Mul (⨁ i, A i) where
   mul := fun a b => mulHom A a b
 
-instance : NonUnitalNonAssocSemiring (⨁ i, A i) :=
-  { (inferInstance : AddCommMonoid _) with
-    zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-    mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_zero]
-    left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add]
-    right_distrib := fun _ _ _ => by
-      simp only [Mul.mul, HMul.hMul, AddMonoidHom.map_add, AddMonoidHom.add_apply] }
+instance : NonUnitalNonAssocSemiring (⨁ i, A i) where
+  zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+  mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero]
+  left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, map_add]
+  right_distrib := fun _ _ _ => by
+    simp only [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply]
 
 variable {A}
 
@@ -242,17 +245,16 @@ instance instNatCast : NatCast (⨁ i, A i) where
   natCast := fun n => of _ _ (GSemiring.natCast n)
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
-instance semiring : Semiring (⨁ i, A i) :=
-  { (inferInstance : NonUnitalNonAssocSemiring _) with
-    one_mul := one_mul A
-    mul_one := mul_one A
-    mul_assoc := mul_assoc A
-    toNatCast := instNatCast _
-    natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
-    natCast_succ := fun n => by
-      simp_rw [NatCast.natCast, GSemiring.natCast_succ]
-      rw [map_add]
-      rfl }
+instance semiring : Semiring (⨁ i, A i) where
+  one_mul := private one_mul A
+  mul_one := private mul_one A
+  mul_assoc := private mul_assoc A
+  toNatCast := instNatCast _
+  natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
+  natCast_succ := fun n => by
+    simp_rw [NatCast.natCast, GSemiring.natCast_succ]
+    rw [map_add]
+    rfl
 
 theorem ofPow {i} (a : A i) (n : ℕ) :
     of _ i a ^ n = of _ (n • i) (GradedMonoid.GMonoid.gnpow _ a) := by
@@ -276,6 +278,7 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
     (List.ofFn fun a => of A (fι a) (fA a)).prod = of A _ ((List.finRange n).dProd fι fA) := by
   rw [List.ofFn_eq_map, ofList_dProd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun _ ai => a'.sum fun _ aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by
@@ -287,14 +290,8 @@ theorem mul_eq_dfinsuppSum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' :
   dsimp only [DirectSum]
   rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsuppSum_apply]
   apply congrArg _
-  simp_rw [flip_apply]
   funext x
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [DFinsupp.sumAddHom_apply]
-  simp only [gMulHom, AddMonoidHom.dfinsuppSum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
-
-@[deprecated (since := "2025-04-06")] alias mul_eq_dfinsupp_sum := mul_eq_dfinsuppSum
+  simp [AddMonoidHom.dfinsuppSum_apply, DFinsupp.sumAddHom_apply, DirectSum.toAddMonoid]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
@@ -317,9 +314,8 @@ private theorem mul_comm (a b : ⨁ i, A i) : a * b = b * a := by
   exact of_eq_of_gradedMonoid_eq (GCommSemiring.mul_comm ⟨ai, ax⟩ ⟨bi, bx⟩)
 
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
-instance commSemiring : CommSemiring (⨁ i, A i) :=
-  { DirectSum.semiring A with
-    mul_comm := mul_comm A }
+instance commSemiring : CommSemiring (⨁ i, A i) where
+  mul_comm := private mul_comm A
 
 end CommSemiring
 
@@ -328,9 +324,7 @@ section NonUnitalNonAssocRing
 variable [∀ i, AddCommGroup (A i)] [Add ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `Ring` derived from `GSemiring A`. -/
-instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) :=
-  { (inferInstance : NonUnitalNonAssocSemiring (⨁ i, A i)),
-    (inferInstance : AddCommGroup (⨁ i, A i)) with }
+instance nonAssocRing : NonUnitalNonAssocRing (⨁ i, A i) where
 
 end NonUnitalNonAssocRing
 
@@ -340,13 +334,11 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
 -- Porting note: overspecified fields in ml4
 /-- The `Ring` derived from `GSemiring A`. -/
-instance ring : Ring (⨁ i, A i) :=
-  { DirectSum.semiring A,
-    (inferInstance : AddCommGroup (⨁ i, A i)) with
-    toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
-    intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
-    intCast_negSucc := fun _ =>
-      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
+instance ring : Ring (⨁ i, A i) where
+  toIntCast.intCast z := of A 0 <| (GRing.intCast z)
+  intCast_ofNat _ := congrArg (of A 0) <| GRing.intCast_ofNat _
+  intCast_negSucc _ :=
+    (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _
 
 end Ring
 
@@ -355,9 +347,7 @@ section CommRing
 variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `CommRing` derived from `GCommSemiring A`. -/
-instance commRing : CommRing (⨁ i, A i) :=
-  { DirectSum.ring A,
-    DirectSum.commSemiring A with }
+instance commRing : CommRing (⨁ i, A i) where
 
 end CommRing
 
@@ -392,7 +382,7 @@ theorem of_zero_smul {i} (a : A 0) (b : A i) : of _ _ (a • b) = of _ _ a * of 
 theorem of_zero_mul (a b : A 0) : of _ 0 (a * b) = of _ 0 a * of _ 0 b :=
   of_zero_smul A a b
 
-instance GradeZero.nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A 0) :=
+instance (priority := 900) GradeZero.nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A 0) :=
   Function.Injective.nonUnitalNonAssocSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (map_nsmul _)
 
@@ -413,7 +403,7 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
   -- Porting note: Lean doesn't think this terminates if we only use `of_zero_pow` alone
   | n + 1 => by rw [pow_succ, pow_succ, of_zero_mul, of_zero_pow _ n]
 
-instance : NatCast (A 0) :=
+instance (priority := 900) : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
 
 
@@ -428,7 +418,7 @@ theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
-instance GradeZero.semiring : Semiring (A 0) :=
+instance (priority := 900) GradeZero.semiring : Semiring (A 0) :=
   Function.Injective.semiring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ (of A 0).map_nsmul _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
@@ -453,7 +443,7 @@ section CommSemiring
 variable [∀ i, AddCommMonoid (A i)] [AddCommMonoid ι] [GCommSemiring A]
 
 /-- The `CommSemiring` structure derived from `GCommSemiring A`. -/
-instance GradeZero.commSemiring : CommSemiring (A 0) :=
+instance (priority := 900) GradeZero.commSemiring : CommSemiring (A 0) :=
   Function.Injective.commSemiring (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of_zero_one A) (of A 0).map_add (of_zero_mul A) (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ => of_zero_pow _ _ _) (of_natCast A)
@@ -465,7 +455,7 @@ section Ring
 variable [∀ i, AddCommGroup (A i)] [AddZeroClass ι] [GNonUnitalNonAssocSemiring A]
 
 /-- The `NonUnitalNonAssocRing` derived from `GNonUnitalNonAssocSemiring A`. -/
-instance GradeZero.nonUnitalNonAssocRing : NonUnitalNonAssocRing (A 0) :=
+instance (priority := 900) GradeZero.nonUnitalNonAssocRing : NonUnitalNonAssocRing (A 0) :=
   Function.Injective.nonUnitalNonAssocRing (of A 0) DFinsupp.single_injective (of A 0).map_zero
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _)
@@ -476,7 +466,7 @@ section Ring
 
 variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 
-instance : IntCast (A 0) :=
+instance (priority := 900) : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
 @[simp]
@@ -484,7 +474,7 @@ theorem of_intCast (n : ℤ) : of A 0 n = n := by
   rfl
 
 /-- The `Ring` derived from `GSemiring A`. -/
-instance GradeZero.ring : Ring (A 0) :=
+instance (priority := 900) GradeZero.ring : Ring (A 0) :=
   Function.Injective.ring (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
@@ -496,7 +486,7 @@ section CommRing
 variable [∀ i, AddCommGroup (A i)] [AddCommMonoid ι] [GCommRing A]
 
 /-- The `CommRing` derived from `GCommSemiring A`. -/
-instance GradeZero.commRing : CommRing (A 0) :=
+instance (priority := 900) GradeZero.commRing : CommRing (A 0) :=
   Function.Injective.commRing (of A 0) DFinsupp.single_injective (of A 0).map_zero (of_zero_one A)
     (of A 0).map_add (of_zero_mul A) (of A 0).map_neg (of A 0).map_sub (fun _ _ ↦ map_nsmul _ _ _)
     (fun _ _ ↦ map_zsmul _ _ _) (fun _ _ => of_zero_pow _ _ _) (of_natCast A) (of_intCast A)
@@ -601,18 +591,15 @@ variable (ι)
 /-- A direct sum of copies of a `NonUnitalNonAssocSemiring` inherits the multiplication structure.
 -/
 instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type*} [AddMonoid ι]
-    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
-  { -- Porting note: removed Mul.gMul ι with and we seem ok
-    mul_zero := mul_zero
-    zero_mul := zero_mul
-    mul_add := mul_add
-    add_mul := add_mul }
+    [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R where
+  mul_zero := mul_zero
+  zero_mul := zero_mul
+  mul_add := mul_add
+  add_mul := add_mul
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
 instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
     DirectSum.GSemiring fun _ : ι => R where
-  __ := NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι
-  __ := Monoid.gMonoid ι
   natCast n := n
   natCast_zero := Nat.cast_zero
   natCast_succ := Nat.cast_succ
@@ -620,7 +607,6 @@ instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
 /-- A direct sum of copies of a `Ring` inherits the multiplication structure. -/
 instance Ring.directSumGRing {R : Type*} [AddMonoid ι] [Ring R] :
     DirectSum.GRing fun _ : ι => R where
-  __ := Semiring.directSumGSemiring ι
   intCast z := z
   intCast_ofNat := Int.cast_natCast
   intCast_negSucc_ofNat := Int.cast_negSucc
@@ -635,13 +621,9 @@ example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
 /-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure. -/
 instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
     DirectSum.GCommSemiring fun _ : ι => R where
-  __ := Semiring.directSumGSemiring ι
-  __ := CommMonoid.gCommMonoid ι
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
 instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
     DirectSum.GCommRing fun _ : ι => R where
-  __ := Ring.directSumGRing ι
-  __ := CommMonoid.gCommMonoid ι
 
 end Uniform

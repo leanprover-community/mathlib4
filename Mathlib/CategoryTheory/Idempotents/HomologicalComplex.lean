@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and homological complexes
@@ -18,12 +20,14 @@ When the category `C` is idempotent complete, it is shown that
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category* C] [Preadditive C] {ι : Type*} {c : ComplexShape ι}
 
 namespace Idempotents
 

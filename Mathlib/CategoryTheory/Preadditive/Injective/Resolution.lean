@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+module
+
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Injective resolutions
@@ -23,6 +25,8 @@ v       v                 v
 I⁰ ---> I¹ ---> ... ----> Iⁿ ---> ...
 ```
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -90,6 +94,7 @@ lemma exact_succ (n : ℕ) :
 theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
@@ -105,6 +110,7 @@ theorem complex_d_comp (n : ℕ) :
 def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
   KernelFork.ofι _ I.ι_f_zero_comp_complex_d
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Z` is the kernel of `I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
 def isLimitKernelFork : IsLimit (I.kernelFork) := by
   refine IsLimit.ofIsoLimit (I.cocomplex.cyclesIsKernel 0 1 (by simp)) (Iso.symm ?_)
@@ -115,6 +121,7 @@ def isLimitKernelFork : IsLimit (I.kernelFork) := by
     ← cancel_epi (singleObjCyclesSelfIso (ComplexShape.up ℕ) _ _).inv]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Mono (I.ι.f n) := by
   cases n
   · exact mono_of_isLimit_fork I.isLimitKernelFork
@@ -133,6 +140,28 @@ def self [Injective Z] : InjectiveResolution Z where
     · apply IsZero.injective
       apply HomologicalComplex.isZero_single_obj_X
       simp
+
+variable {Z} {Z' : C} (I' : InjectiveResolution Z')
+
+/-- Given injective resolutions `I` and `I'` of two objects `Z` and `Z'`,
+and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
+`I.cocomplex ⟶ I'.cocomplex` which is compatible with `f` -/
+structure Hom (f : Z ⟶ Z') where
+  /-- A morphism between the cocomplexes -/
+  hom : I.cocomplex ⟶ I'.cocomplex
+  ι_f_zero_comp_hom_f_zero : I.ι.f 0 ≫ hom.f 0 = ((single₀ C).map f).f 0 ≫ I'.ι.f 0
+
+namespace Hom
+
+attribute [reassoc (attr := simp)] ι_f_zero_comp_hom_f_zero
+
+set_option backward.isDefEq.respectTransparency false in
+variable {I I'} in
+@[reassoc (attr := simp)]
+lemma ι_comp_hom {f : Z ⟶ Z'} (φ : Hom I I' f) :
+    I.ι ≫ φ.hom = (single₀ C).map f ≫ I'.ι := by cat_disch
+
+end Hom
 
 end InjectiveResolution
 

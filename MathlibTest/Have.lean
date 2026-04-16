@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
+module
 import Mathlib.Tactic.Have
 
 example : Nat := by
@@ -33,9 +34,9 @@ example : True := by
   have _h : Nat
   · exact this
   have _h' x : x < x + 1
-  · exact Nat.lt.base x
+  · exact Nat.lt_add_one x
   have _h'' (x : Nat) : x < x + 1
-  · exact Nat.lt.base x
+  · exact Nat.lt_add_one x
   let _m
   · exact 6
   let _m' x (y : Nat) : x + y = y + x

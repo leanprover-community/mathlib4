@@ -3,11 +3,13 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Nonneg.Lattice
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
@@ -33,6 +35,8 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -79,9 +83,8 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
   · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.commSemiring, Nonneg.isOrderedRing with
-    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
+    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
+  zero_le a := a.2
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
@@ -94,7 +97,7 @@ instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZe
     NoZeroDivisors { x : α // 0 ≤ x } :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
+      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
 
 instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub { x : α // 0 ≤ x } :=

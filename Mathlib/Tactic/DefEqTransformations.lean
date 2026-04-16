@@ -3,7 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Conv.Basic
 
 /-! # Tactics that transform types into definitionally equal types
 
@@ -12,6 +15,8 @@ change hypotheses and the goal to things that are definitionally equal.
 
 It then provides a number of tactics that transform local hypotheses and/or the target.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -220,23 +225,44 @@ elab "eta_reduce" : conv => runDefEqConvTactic etaReduceAll
 
 As a side-effect, beta reduces any pre-existing instances of eta expanded terms. -/
 partial def etaExpandAll (e : Expr) : MetaM Expr := do
-  let betaOrApp (f : Expr) (args : Array Expr) : Expr :=
-    if f.etaExpanded?.isSome then f.beta args else mkAppN f args
-  let expand (e : Expr) : MetaM Expr := do
-    if e.isLambda then
-      return e
+  if e.isLambda then
+    expandSubterms e
+  else
+    forallTelescopeReducing (← inferType e) fun xs _ => do
+      let e := mkAppN (e.instantiate xs) xs
+      mkLambdaFVars xs (← expandSubterms e)
+where
+  expandSubterms
+  | .forallE n t b bi =>
+    return .forallE n
+      (← etaExpandAll t)
+      (← withLocalDecl n bi t fun x => (·.abstract #[x]) <$> etaExpandAll (b.instantiate1 x))
+      bi
+  | .lam n t b bi =>
+    return .lam n
+      (← etaExpandAll t)
+      (← withLocalDecl n bi t fun x => (·.abstract #[x]) <$> etaExpandAll (b.instantiate1 x))
+      bi
+  | .letE n t v b ndep =>
+    return .letE n
+      (← etaExpandAll t)
+      (← etaExpandAll v)
+      (← withLetDecl n t v (nondep := ndep) fun x =>
+        (·.abstract #[x]) <$> etaExpandAll (b.instantiate1 x))
+      ndep
+  | e@(.app ..) =>
+    let f := e.getAppFn
+    let args := e.getAppArgs
+    if f.etaExpandedStrict?.isSome then
+      expandSubterms (f.beta args)
     else
-      forallTelescopeReducing (← inferType e) fun xs _ => do
-        mkLambdaFVars xs (betaOrApp e xs)
-  transform e
-    (pre := fun node => do
-      if node.isApp then
-        let f ← etaExpandAll node.getAppFn
-        let args ← node.getAppArgs.mapM etaExpandAll
-        .done <$> expand (betaOrApp f args)
-      else
-        pure .continue)
-    (post := (.done <$> expand ·))
+      -- We use `expandSubterms` for `f` to avoid creating a beta-redex
+      return mkAppN (← expandSubterms f) (← args.mapM etaExpandAll)
+  | .mdata d e =>
+    return .mdata d (← etaExpandAll e)
+  | .proj n i e =>
+    return .proj n i (← etaExpandAll e)
+  | e => return e
 
 /--
 `eta_expand at loc` eta expands all sub-expressions at the given location.
@@ -283,7 +309,7 @@ def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   let .const f _ := e.getAppFn | return none
   let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none
   unless 0 < fVal.numFields && e.getAppNumArgs == fVal.numParams + fVal.numFields do return none
-  unless isStructureLike (← getEnv) fVal.induct do return none
+  unless isNonRecStructure (← getEnv) fVal.induct do return none
   let args := e.getAppArgs
   let mut x? ← findProj fVal args pure
   if tryWhnfR then

@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.MorphismProperty.Concrete
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Epi and mono in concrete categories
@@ -20,6 +22,8 @@ functorial manner as a composition of a surjective morphism followed
 by an injective morphism.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -34,13 +38,25 @@ namespace ConcreteCategory
 
 section
 
+instance [(forget C).PreservesMonomorphisms] {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Mono (TypeCat.ofHom f) := Functor.map_mono (forget C) f
+
+instance [(forget C).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Epi (TypeCat.ofHom f) := Functor.map_epi (forget C) f
+
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
   (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
+    [Category.{v} C] [Category.{v'} D]
+    {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC]
+    {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
@@ -49,7 +65,13 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
+    [Category.{v} C] [Category.{v'} D]
+    {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC]
+    {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
@@ -156,15 +178,17 @@ theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
 
 theorem bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     Function.Bijective f := by
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   infer_instance
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
-  rw [← CategoryTheory.isIso_iff_bijective]
-  exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
+  rw [bijective_iff_isIso_ofHom]
+  refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
+  have : IsIso ((forget C).map f) := h
+  exact isIso_of_reflects_iso f (forget C)
 
 end
 

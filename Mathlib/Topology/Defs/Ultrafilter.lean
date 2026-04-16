@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Ultrafilter.Defs
-import Mathlib.Topology.Defs.Basic
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 # Limit of an ultrafilter.
@@ -16,6 +18,8 @@ import Mathlib.Topology.Defs.Filter
   with a proof of `Nonempty X` deduced from existence of an ultrafilter on `X`.
 
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
 

@@ -3,18 +3,8 @@ Copyright (c) 2024 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Algebra.Order.CompleteField
-import Mathlib.Data.Real.Sqrt
+module
 
-/-!
-# The reals are a conditionally complete linearly ordered field
--/
+public import Mathlib.Data.Real.Hom
 
-/-- The reals are a conditionally complete linearly ordered field. -/
-noncomputable instance : ConditionallyCompleteLinearOrderedField ℝ := { }
-
-/-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
-instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
-  default := RingHom.id ℝ
-  uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
+deprecated_module (since := "2026-03-05")

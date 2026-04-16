@@ -3,8 +3,11 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Coherence
-import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+module
+
+public meta import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories
@@ -18,6 +21,8 @@ This file mainly deals with the type class setup for the coherence tactic. The a
 tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
+
+public meta section
 
 noncomputable section
 
@@ -126,10 +131,6 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
     | exception g "congrArg failed in coherence"
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
-
-/-- Coherence tactic for bicategories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "bicategory_coherence" : tactic => do bicategory_coherence (← getMainGoal)
 
 open Lean.Parser.Tactic
 

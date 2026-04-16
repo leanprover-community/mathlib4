@@ -3,9 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.Coverage
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property
@@ -19,11 +22,15 @@ this construction by intersecting with the pretopology of surjective families.
 
 -/
 
+@[expose] public section
+
+universe w
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace MorphismProperty
 
@@ -32,7 +39,7 @@ variable {P Q : MorphismProperty C}
 /-- This is the precoverage on `C` where covering presieves are those where every
 morphism satisfies `P`. -/
 def precoverage (P : MorphismProperty C) : Precoverage C where
-  coverings X S := ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f
+  coverings X := {S | ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f}
 
 @[simp]
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
@@ -52,6 +59,12 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
 
+instance : Precoverage.Small.{w} P.precoverage where
+  zeroHypercoverSmall E := by
+    constructor
+    use PEmpty, PEmpty.elim
+    simp
+
 lemma precoverage_monotone (hPQ : P ≤ Q) : precoverage P ≤ precoverage Q :=
   fun _ _ hR _ _ hg ↦ hPQ _ (hR hg)
 
@@ -60,6 +73,15 @@ lemma precoverage_inf : precoverage (P ⊓ Q) = precoverage P ⊓ precoverage Q 
   ext X R
   exact ⟨fun hS ↦ ⟨fun _ _ hf ↦ (hS hf).left, fun _ _ hf ↦ (hS hf).right⟩,
     fun h ↦ fun _ _ hf ↦ ⟨h.left hf, h.right hf⟩⟩
+
+@[simp, grind .]
+lemma bot_mem_precoverage (X : C) : ⊥ ∈ precoverage P X := fun _ _ h ↦ h.elim
+
+lemma comap_precoverage {D : Type*} [Category* D] (P : MorphismProperty D) (F : C ⥤ D) :
+    P.precoverage.comap F = (P.inverseImage F).precoverage := by
+  ext X R
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  simp
 
 /-- If `P` is stable under base change, this is the coverage on `C` where covering presieves
 are those where every morphism satisfies `P`. -/
@@ -111,9 +133,6 @@ variable {P Q : MorphismProperty C}
 
 lemma pretopology_monotone (hPQ : P ≤ Q) : P.pretopology ≤ Q.pretopology :=
   precoverage_monotone hPQ
-
-@[deprecated (since := "2025-08-28")]
-alias pretopology_le := pretopology_monotone
 
 variable (P Q) in
 lemma pretopology_inf : (P ⊓ Q).pretopology = P.pretopology ⊓ Q.pretopology := by

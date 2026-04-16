@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Torsors of additive group actions
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lean` to avoid
 increasing imports there.
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -163,6 +167,7 @@ instance instAddTorsor : AddTorsor (∀ i, fg i) (∀ i, fp i) where
 theorem vsub_apply (p q : ∀ i, fp i) (i : I) : (p -ᵥ q) i = p i -ᵥ q i :=
   rfl
 
+@[push ←]
 theorem vsub_def (p q : ∀ i, fp i) : p -ᵥ q = fun i => p i -ᵥ q i :=
   rfl
 
@@ -222,3 +227,24 @@ lemma pointReflection_eq_subLeft {G : Type*} [AddCommGroup G] (x : G) :
   ext; simp [pointReflection, sub_add_eq_add_sub, two_nsmul]
 
 end Equiv
+
+/-- Pullback of an add torsor along an injective map. -/
+abbrev Function.Injective.addTorsor {G P Q : Type*}
+    [AddGroup G] [AddTorsor G P] [VAdd G Q] [VSub G Q] [Nonempty Q] (f : Q → P)
+    (hf : Function.Injective f)
+    (vadd : ∀ (c : G) (x : Q), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : Q), x -ᵥ y = f x -ᵥ f y) : AddTorsor G Q where
+  __ := hf.addAction f vadd
+  vsub_vadd' x y := hf <| by simp only [vsub, vadd, vsub_vadd]
+  vadd_vsub' c x := by simp [vsub, vadd]
+
+/-- Pushforward of an add torsor along a surjective map. -/
+abbrev Function.Surjective.addTorsor {G P Q : Type*}
+    [AddGroup G] [AddTorsor G P] [VAdd G Q] [VSub G Q]
+    (f : P → Q) (hf : Surjective f)
+    (vadd : ∀ (c : G) (x : P), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : P), x -ᵥ y = f x -ᵥ f y) : AddTorsor G Q where
+  __ := hf.addAction f vadd
+  nonempty := AddTorsor.nonempty.map f
+  vsub_vadd' := by simp [hf.forall, ← vadd, ← vsub]
+  vadd_vsub' := by simp [hf.forall, ← vadd, ← vsub]
