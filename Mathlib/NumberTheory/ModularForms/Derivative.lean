@@ -235,9 +235,8 @@ lemma normalizedDerivOfComplex_slash (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) 
 Serre derivative is equivariant under the slash action. More precisely,
 $\partial_k (F ∣[k] γ) = (\partial_k F) ∣[k + 2] \gamma$ for all $\gamma \in SL(2, \mathbb{Z})$.
 -/
-theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) :
-    ∀ γ : SL(2, ℤ), serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
-  intro γ
+theorem serreDerivative_slash_equivariant (k : ℤ) (F : ℍ → ℂ) (hF : MDiff F) (γ : SL(2, ℤ)) :
+    serreDerivative k F ∣[k + 2] γ = serreDerivative k (F ∣[k] γ) := by
   ext z
   simp only [serreDerivative_apply]
   -- Rewrite LHS using mul_slash and serreDerivative definition
