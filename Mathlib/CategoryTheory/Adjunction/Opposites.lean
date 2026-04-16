@@ -41,7 +41,6 @@ def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.u
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
 def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
@@ -79,12 +78,14 @@ set_option backward.isDefEq.respectTransparency false in
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
 -/
+@[deprecated "No replacement" (since := "2026-04-11")]
 def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) :
     F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda :=
   NatIso.ofComponents fun X =>
     NatIso.ofComponents fun Y =>
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
+set_option linter.deprecated false in
 /-- Deprecated: prefer `(Adjunction.conjugateIsoEquiv adj1 adj2).symm`. -/
 @[deprecated "Use `(Adjunction.conjugateIsoEquiv adj1 adj2).symm` \
   (requires `import Mathlib.CategoryTheory.Adjunction.Mates`)." (since := "2026-01-31")]

@@ -277,7 +277,7 @@ lemma HasMFDerivAt.smul
     letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
-    letI gx :  𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by

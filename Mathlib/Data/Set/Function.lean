@@ -881,7 +881,7 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
   let ⟨x, hx, heq⟩ := hf hy
   rw [← heq, hf' hx]
 
-theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → α} {s : Set α}
+theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s : Set α}
     (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : f '' s = g ⁻¹' s := by
   ext x
   constructor
@@ -891,6 +891,9 @@ theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → 
     refine ⟨g x, hx, Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) ?_ hx⟩
     intro y hy
     simpa [hgf hy] using hy
+
+@[deprecated (since := "2026-03-27")]
+alias image_eq_preimage_of_leftInvOn_injOn_mapsTo := image_eq_preimage_of_leftInvOn_injOn
 
 end RightInvOn
 

@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
@@ -35,13 +34,18 @@ assert_not_exists TopologicalSpace Real Cardinal
 open Function LinearMap Pointwise Set
 
 namespace PointedCone
-variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M]
-  [AddCommGroup N] [Module R M] [Module R N] {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
 set_option backward.isDefEq.respectTransparency false in
-variable (p s) in
+variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
 def dual (s : Set M) : PointedCone R N where
@@ -56,11 +60,6 @@ def dual (s : Set M) : PointedCone R N where
 @[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
 @[simp] lemma dual_singleton_zero : dual p {0} = ⊤ := dual_zero
 @[simp] lemma dual_ker : dual p (ker p) = ⊤ := by ext; simp +contextual
-
-lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
-  refine le_antisymm (fun y hy ↦ (_root_.map_eq_zero_iff p.flip hp).1 ?_) (by simp)
-  ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
 
 @[gcongr] lemma dual_anti (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
 
@@ -117,7 +116,7 @@ alias dual_span := dual_hull
 @[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
   := by simp [← dual_hull]
 
-variable {M' : Type*} [AddCommGroup M'] [Module R M']
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
 @[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
   by ext; simp
@@ -136,6 +135,25 @@ lemma dual_eq_comap_dual_eval (s : Set M) :
     dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
   ext; simp
 
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R}
+
+lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
+  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip hp).1 ?_) (by simp)
+  ext x
+  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+
+variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R}
+
 @[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp
+
+end CommRing
 
 end PointedCone

@@ -86,12 +86,6 @@ theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     IsCompl s t ↔ Disjoint s t :=
   ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
-theorem eq_top_iff_finrank_eq [Module.Finite K V] {W : Submodule K V} :
-    W = ⊤ ↔ finrank K W = finrank K V := by
-  refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
-  apply eq_of_le_of_finrank_eq le_top
-  rw [finrank_top, h]
-
 theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v : V} (hv : v ∉ W) :
     W ⊔ span K {v} = ⊤ ↔ finrank K (V ⧸ W) = 1 := by
   refine ⟨fun hW ↦ ?_, fun hW ↦ ?_⟩
@@ -123,6 +117,12 @@ theorem finrank_sup_span_singleton [Module.Finite K V] {p : Submodule K V} {v : 
   suffices a = 0 by simp [← hx', this]
   contrapose hv
   simpa [smul_mem_iff p hv] using hx
+
+theorem eq_top_iff_finrank_eq [Module.Finite K V] {W : Submodule K V} :
+    W = ⊤ ↔ finrank K W = finrank K V := by
+  refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
+  apply eq_of_le_of_finrank_eq le_top
+  rw [finrank_top, h]
 
 end DivisionRing
 

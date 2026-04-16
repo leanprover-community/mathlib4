@@ -33,6 +33,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -75,7 +76,6 @@ variable (K)
 
 open scoped Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
@@ -189,7 +189,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     (hRS : RingHom.ker (algebraMap R S) ≠ ⊤) (F : V'' →ₗ[R] V) (hf : Function.Injective F)
     (f' : V'' →ₗ[R] V') {ι : Type*} {b : ι → V''} (hb' : LinearIndependent S (f' ∘ b)) :
     LinearIndependent K (F ∘ b) := by
-  contrapose! hb' with hb
+  contrapose hb' with hb
   -- Informally, if we have a nontrivial linear dependence with coefficients `g` in `K`,
   -- then we can find a linear dependence with coefficients `I.Quotient.mk g'` in `R/I`,
   -- where `I = ker (algebraMap R S)`.

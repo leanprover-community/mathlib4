@@ -90,7 +90,6 @@ theorem absNorm_under_eq_sInf :
     rw [← cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast] at h₂
     exact lt_iff_not_ge.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
-set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
@@ -125,7 +124,7 @@ theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
   · infer_instance
   · refine Int.natCast_ne_zero.mpr <| absNorm_eq_zero_iff.not.mpr ?_
     have : P ≠ ⊥ := NeZero.ne _
-    contrapose! this
+    contrapose this
     exact eq_bot_of_comap_eq_bot this
 
 end CommRing
