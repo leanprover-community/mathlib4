@@ -45,8 +45,8 @@ open Bornology
 theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
     (· ^ p) =o[cobounded R] (· ^ q) := by
   rw [← Nat.add_sub_of_le hpq.le]
-  simpa [pow_add] using (isBigO_refl (fun x ↦ x ^ p) (cobounded R)).mul_isLittleO
-    ((isLittleO_const_id_cobounded (1 : R)).pow (Nat.sub_pos_of_lt hpq))
+  simpa [pow_add] using (isBigO_refl (· ^ p) (cobounded R)).mul_isLittleO
+    ((isLittleO_const_id_cobounded 1).pow (Nat.sub_pos_of_lt hpq))
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
     (· ^ p) =O[cobounded R] (· ^ q) := by
