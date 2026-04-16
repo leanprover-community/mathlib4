@@ -51,10 +51,12 @@ class InfSet (α : Type*) where
   /-- Infimum of a set -/
   protected sInf : Set α → α
 
-@[to_dual]
+/-- Supremum of a set -/
+@[to_dual /-- Infimum of a set -/]
 def sSup : ∀ {α : Type*} [SupSet α], Set α → α := @SupSet.sSup
 
-@[to_dual]
+/-- Use the `sSup` projection for `@[simps]` lemmas. -/
+@[to_dual /-- Use the `sInf` projection for `@[simps]` lemmas. -/]
 def SupSet.Simps.sSup {α : Type*} [SupSet α] : Set α → α := _root_.sSup
 
 /-- Indexed supremum -/
