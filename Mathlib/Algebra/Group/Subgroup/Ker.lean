@@ -83,6 +83,12 @@ instance range_isMulCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] 
     IsMulCommutative f.range :=
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
 
+@[to_additive]
+instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G]
+    {N : Type*} [Group N] (f : G →* N) :
+    IsMulCommutative f.range :=
+  range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
+
 @[to_additive (attr := simp)]
 theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
   simp_rw [SetLike.ext_iff, mem_range, mem_map, restrict_apply, SetLike.exists,
