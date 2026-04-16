@@ -30,8 +30,6 @@ open Limits MonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
-section IsPushout
-
 namespace IsPushout
 
 variable {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
@@ -107,8 +105,6 @@ lemma inl_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
 lemma inr_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
     inr ▷ Q ≫ hP.isoPushout.hom ▷ Q = pushout.inr _ _ ▷ Q := by
   simp [← comp_whiskerRight]
-
-end IsPushout
 
 end IsPushout
 

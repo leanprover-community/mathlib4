@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
+public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
+public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.

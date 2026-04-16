@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Geometry.Euclidean.Basic
+public import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Spheres
@@ -177,11 +178,33 @@ theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by
   use p
   simp
 
+/-- If `ps` is cospherical, then any of its isometric images is cospherical. -/
+theorem _root_.Isometry.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F] {f : E → F}
+    (hf : Isometry f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
+  rcases hps with ⟨c, r, hc⟩
+  refine ⟨f c, r, ?_⟩
+  rintro _ ⟨p, hp, rfl⟩
+  rw [hf.dist_eq, hc p hp]
+
 end MetricSpace
 
 section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+/-- If a set of points is cospherical, then its image under the inclusion of any affine subspace
+containing it is cospherical. -/
+theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
+    Cospherical (AffineSubspace.inclusion hS '' ps) := by
+  refine Isometry.cospherical ?_ hps
+  exact S₁.subtypeₐᵢ.isometry
+
+/-- If a set of points in an affine subspace is cospherical, then its image under the coercion
+to the ambient space is cospherical. -/
+theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
+    (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
+  Isometry.cospherical S.subtypeₐᵢ.isometry hps
 
 lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
@@ -322,6 +345,32 @@ end NormedSpace
 section EuclideanSpace
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+
+/-- A set of points in an affine subspace is cospherical if and only if its image in the ambient
+space is cospherical. -/
+@[simp]
+theorem Cospherical.subtype_val_iff {S : AffineSubspace ℝ P} [Nonempty S]
+    [S.direction.HasOrthogonalProjection] {ps : Set S} :
+    Cospherical (Subtype.val '' ps) ↔ Cospherical ps := by
+  refine ⟨fun h => ?_, Cospherical.subtype_val⟩
+  rcases ps.eq_empty_or_nonempty with rfl | ⟨p₀, hp₀⟩
+  · exact cospherical_empty
+  · rcases h with ⟨c, r, hr⟩
+    let c' : S := orthogonalProjection S c
+    refine ⟨c', dist p₀ c', fun p hp => ?_⟩
+    have hp_dist : dist (p : P) c = r := by grind
+    have hp₀_dist : dist (p₀ : P) c = r := by grind
+    have hpp₀ : dist (p : P) (c : P) = dist (p₀ : P) (c : P) := hp_dist.trans hp₀_dist.symm
+    exact (dist_eq_iff_dist_orthogonalProjection_eq (s := S) (p₃ := c) p.2 p₀.2).1 hpp₀
+
+/-- A set of points is cospherical in an affine subspace `S₁` if and only if its image under the
+inclusion into a larger affine subspace `S₂` is cospherical. -/
+theorem Cospherical.inclusion_iff {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+    [S₁.direction.HasOrthogonalProjection] [S₂.direction.HasOrthogonalProjection] (hS : S₁ ≤ S₂) :
+    Cospherical (AffineSubspace.inclusion hS '' ps) ↔ Cospherical ps := by
+  haveI : Nonempty S₂ := by obtain ⟨p⟩ := ‹Nonempty S₁›; exact ⟨⟨p, hS p.property⟩⟩
+  simp [(Cospherical.subtype_val_iff (S := S₂) (ps := AffineSubspace.inclusion hS '' ps)).symm,
+    Set.image_image]
 
 /-- Any three points in a cospherical set are affinely independent. -/
 theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 3 → P}

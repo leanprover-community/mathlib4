@@ -92,8 +92,6 @@ variable {J} in
 theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun _ S hS => (h S hS).isSeparatedFor
 
-@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
-
 variable {J} in
 /-- If `P` is separated and every compatible family of elements of `P` for a covering
 sieve has an amalgamation, `P` is a sheaf. -/
@@ -187,12 +185,9 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
-          Functor.const_obj_map, comp_id]
-        rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
-        apply hx
-        simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
+        dsimp
+        rw [comp_id, ← id_comp (x g₁.obj.hom g₁.property)]
+        exact hx _ _ _ _ (by simp) }
 
 /-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
