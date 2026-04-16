@@ -102,7 +102,7 @@ end
 to a certain subcomplex that is induced by an isomorphism `X ≅ Y` of
 simplicial sets which maps `A : X.Subcomplex` to `B : Y.Subcomplex`. -/
 @[simps -isSimp apply symm_apply]
-def equivOfIso {Y : SSet.{u}} {B : Y.Subcomplex} (e : X ≅ Y)
+def orderIsoOfIso {Y : SSet.{u}} {B : Y.Subcomplex} (e : X ≅ Y)
     (hA : B.preimage e.hom = A) : A.N ≃o B.N where
   toFun x := N.mk' (SSet.N.equivOfIso e x.toN) (by subst hA; exact x.notMem)
   invFun y := N.mk' ((SSet.N.equivOfIso e).symm y.toN) (by
