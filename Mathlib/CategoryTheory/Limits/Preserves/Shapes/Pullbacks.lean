@@ -340,7 +340,7 @@ def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
         ((IsLimit.postcomposeHomEquiv
           (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
             (Equiv.trans (IsLimit.equivIsoLimit
-              (by exact Cone.ext (Iso.refl _) (by rintro (_ | _ | _) <;> simp)))
+              (by exact Cone.ext (Iso.refl _) (by rintro (_ | _ | _) <;> cat_disch)))
                 (c.op.isLimitMapConeEquiv (yoneda.obj X))))))
 
 end Pushout

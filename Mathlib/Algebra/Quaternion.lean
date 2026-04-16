@@ -710,9 +710,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
   rfl
 
 instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  (inferInstance : Subsingleton <| ℍ[R,-1,0,-1])
+  inferInstanceAs <| Subsingleton <| ℍ[R,-1,0,-1]
 instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  (inferInstance : Nontrivial <| ℍ[R,-1,0,-1])
+  inferInstanceAs <| Nontrivial <| ℍ[R,-1,0,-1]
 
 namespace Quaternion
 
@@ -747,8 +747,8 @@ instance [Semiring S] [Module S R] : Module S ℍ[R] :=
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
 
-instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
-instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
+instance : Star ℍ[R] := inferInstanceAs <| Star ℍ[R,-1,0,-1]
+instance : StarRing ℍ[R] := inferInstanceAs <| StarRing ℍ[R,-1,0,-1]
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]

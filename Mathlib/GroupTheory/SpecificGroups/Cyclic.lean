@@ -127,7 +127,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
     _ ≤ ∑ m ∈ c.divisors.erase d, φ m := by
-      refine sum_le_sum fun m hm => ?_
+      gcongr with m hm
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
         tauto
@@ -247,15 +247,14 @@ end CommSimpleGroup
 
 end IsSimpleGroup
 
+open scoped IsMulCommutative in
 @[to_additive]
 theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
-    IsSimpleGroup α ↔ (Nat.card α).Prime :=
-  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+theorem CommGroup.is_simple_iff_prime_card [CommGroup α] : IsSimpleGroup α ↔ (Nat.card α).Prime :=
   Group.is_simple_iff_prime_card
 
 @[deprecated (since := "2025-11-19")]

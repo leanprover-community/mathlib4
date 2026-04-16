@@ -167,31 +167,29 @@ theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
 theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
   Quotient.exact
 
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ (· ∈ ·) fun _ _ _ _ hx hy =>
-    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
+def toSet (x : ZFSet) : Set ZFSet :=
+  {y | Quotient.lift₂ (· ∈ ·) (fun _ _ _ _ hx hy =>
+    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))) y x}
 
-instance : Membership ZFSet ZFSet where
-  mem t s := ZFSet.Mem s t
+private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+
+instance : SetLike ZFSet.{u} ZFSet.{u} where
+  coe := toSet
+  coe_injective' x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
+
+/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
+@[deprecated "use `∈` notation" (since := "2026-03-16")]
+protected def Mem : ZFSet → ZFSet → Prop := (· ∈ ·)
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 
-@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
-
-instance : SetLike ZFSet.{u} ZFSet.{u} where
-  coe x := {y | y ∈ x}
-  coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
+@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
 instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
-
-/-- Convert a ZFC set into a `Set` of ZFC sets -/
-@[deprecated SetLike.coe (since := "2025-11-05")]
-def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
-  { x | x ∈ u }
 
 @[deprecated SetLike.mem_coe (since := "2025-11-05")]
 theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=
@@ -279,7 +277,6 @@ instance : Inhabited ZFSet :=
 theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
   Quotient.inductionOn x PSet.notMem_empty
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma coe_empty : ((∅ : ZFSet.{u}) : Set ZFSet.{u}) = ∅ := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_empty := coe_empty
@@ -341,7 +338,6 @@ theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
 theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
   mem_insert_iff.2 <| Or.inr h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_insert (x y : ZFSet) : ↑(insert x y) = (insert x ↑y : Set ZFSet) := by ext; simp
 
@@ -354,7 +350,6 @@ theorem mem_singleton {x y : ZFSet.{u}} : x ∈ ({y} : ZFSet.{u}) ↔ x = y :=
 theorem notMem_singleton {x y : ZFSet.{u}} : x ∉ ({y} : ZFSet.{u}) ↔ x ≠ y :=
   mem_singleton.not
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_singleton (x : ZFSet) : (({x} : ZFSet) : Set ZFSet) = {x} := by ext; simp
 
@@ -432,7 +427,6 @@ theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
 theorem sep_subset {x p} : ZFSet.sep p x ⊆ x :=
   fun _ h => (mem_sep.1 h).1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sep (a : ZFSet) (p : ZFSet → Prop) : (ZFSet.sep p a : Set ZFSet) = {x ∈ a | p x} := by
   ext
@@ -534,7 +528,6 @@ theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
 theorem sInter_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sUnion (x : ZFSet.{u}) : (⋃₀ x : Set ZFSet) = ⋃₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
@@ -542,7 +535,6 @@ lemma coe_sUnion (x : ZFSet.{u}) : (⋃₀ x : Set ZFSet) = ⋃₀ (SetLike.coe 
 
 @[deprecated (since := "2025-11-05")] alias toSet_sUnion := coe_sUnion
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
@@ -590,19 +582,16 @@ instance : SDiff ZFSet :=
 
 @[deprecated (since := "2025-11-06")] alias mem_diff := mem_sdiff
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_union (x y : ZFSet.{u}) : ↑(x ∪ y) = (↑x ∪ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_union := coe_union
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_inter (x y : ZFSet.{u}) : ↑(x ∩ y) = (↑x ∩ ↑y : Set ZFSet) := by ext; simp
 
 @[deprecated (since := "2025-11-05")] alias toSet_inter := coe_inter
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by ext; simp
 
@@ -611,7 +600,6 @@ lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by
 @[simp] lemma inter_eq_left_of_subset (hxy : x ⊆ y) : x ∩ y = x := by ext; simpa using @hxy _
 @[simp] lemma inter_eq_right_of_subset (hyx : y ⊆ x) : x ∩ y = y := by ext; simpa using @hyx _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
 def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
   toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
@@ -681,7 +669,6 @@ theorem mem_image {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u
     ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, ((Quotient.sound ya).trans Definable₁.mk_out).symm⟩,
       fun ⟨_, hz, e⟩ => e ▸ image.mk _ _ hz⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
     (image f x : Set ZFSet) = f '' x := by ext; simp
@@ -706,7 +693,6 @@ theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃
       use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_range (f : α → ZFSet.{u}) : (range f : Set ZFSet) = .range f := by ext; simp
 
@@ -724,7 +710,6 @@ noncomputable def iUnion (f : α → ZFSet.{u}) : ZFSet.{u} :=
 theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by
   simp [iUnion]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iUnion (f : α → ZFSet.{u}) : ↑(⋃ i, f i) = ⋃ i, (f i : Set ZFSet) := by
   ext
