@@ -606,6 +606,10 @@ theorem subsingleton_iff [TopologicalSpace α] :
 instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
   subsingleton_iff.2 ‹_›
 
+instance [TopologicalSpace α] [IndiscreteTopology α] {p : α → Prop} :
+    IndiscreteTopology (Subtype p) := by
+  simp [TopologicalSpace.indiscrete_iff_forall_inseparable, subtype_inseparable_iff]
+
 theorem nontrivial_iff [TopologicalSpace α] :
     Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
   simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not

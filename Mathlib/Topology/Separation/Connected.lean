@@ -42,6 +42,10 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 
+theorem discrete_and_indiscrete_iff_subsingleton :
+    DiscreteTopology X ∧ IndiscreteTopology X ↔ Subsingleton X :=
+  ⟨fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete, fun _ ↦ ⟨inferInstance, inferInstance⟩⟩
+
 /-- A non-trivial connected T1 space has no isolated points. -/
 instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
     [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :

@@ -92,11 +92,23 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
     ContractibleSpace X ↔ ContractibleSpace Y :=
   e.toHomotopyEquiv.contractibleSpace_iff
 
+lemma homotopic_of_indiscrete [IndiscreteTopology Y] (f g : C(X, Y)) : f.Homotopic g :=
+  ⟨⟨fun (t, a) ↦ if t = 0 then f a else g a, continuous_of_indiscreteTopology⟩, by simp, by simp⟩
+
+lemma nullhomotopic_of_indiscrete [Nonempty Y] [IndiscreteTopology Y] (f : C(X, Y)) :
+    f.Nullhomotopic := by
+  obtain ⟨b, _⟩ := Classical.exists_true_of_nonempty (by assumption)
+  use b
+  exact homotopic_of_indiscrete _ _
+
 namespace ContractibleSpace
 
 instance [Nonempty Y] [Subsingleton Y] : ContractibleSpace Y :=
   let ⟨_⟩ := nonempty_unique Y
   ⟨⟨(Homeomorph.homeomorphOfUnique Y Unit).toHomotopyEquiv⟩⟩
+
+instance [Nonempty Y] [IndiscreteTopology Y] : ContractibleSpace Y :=
+  (contractible_iff_id_nullhomotopic Y).mpr (nullhomotopic_of_indiscrete _)
 
 variable (X Y) in
 theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :
