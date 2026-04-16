@@ -356,6 +356,7 @@ theorem isConj_of_mem_transvections {g g' : SpecialLinearGroup K V}
   · rw [symm_apply_eq, he', ← LinearEquiv.coe_coe]
     simp [hv, LinearMap.transvection.apply, Finsupp.single_eq_of_ne hki]
 
+open scoped commutatorElement in
 /-- Unless `finrank K V = 2` or `K` has at most 4 elements,
 any transvection is a commutator of two elements in the special linear group. -/
 theorem transvections_subset_commutatorSet
