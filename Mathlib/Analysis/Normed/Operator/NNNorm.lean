@@ -181,14 +181,9 @@ theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
 theorem exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x : E, ‖x‖₊ = 1 ∧ r < ‖f x‖₊ := by
-  obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNNNorm f hr
-  obtain rfl | hx0 := eq_zero_or_nnnorm_pos x
-  · simp at hr
-  use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
-  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnnorm_smul, inv_mul_cancel₀ hx0.ne'] using this
-  calc
-    r < 1⁻¹ * ‖f x‖₊ := by simpa
-    _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact (zero_le r).trans_lt hr
+  by_contra h
+  push Not at h
+  exact not_lt_of_ge (opNNNorm_le_of_unit_nnnorm h) hr
 
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnnorm` can
 be tightened to take the supremum over only the `Metric.sphere`. -/

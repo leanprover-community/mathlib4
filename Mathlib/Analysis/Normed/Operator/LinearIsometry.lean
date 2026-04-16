@@ -486,13 +486,7 @@ theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEqui
 instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨f', _⟩ := f
-    obtain ⟨g', _⟩ := g
-    cases f'
-    cases g'
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, DFunLike.coe_fn_eq] at h₁
-    congr
+  coe_injective' _ _ h _ := toLinearEquiv_injective <| DFunLike.ext' h
   left_inv e := e.left_inv
   right_inv e := e.right_inv
 
