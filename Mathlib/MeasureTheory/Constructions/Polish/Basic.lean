@@ -840,7 +840,7 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
     f_meas.exists_continuous
   have hs' := (borel_anti t't s) <| by rwa [← eq_borel_upgradeStandardBorel γ]
   letI : MeasurableSpace γ := @borel γ t'
-  letI : BorelSpace γ := ⟨rfl⟩
+  haveI : BorelSpace γ := ⟨rfl⟩
   exact hs'.image_of_continuousOn_injOn f_cont.continuousOn f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
