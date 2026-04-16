@@ -5,12 +5,9 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.ReflQuiver
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Topology.LocallyFinsupp
-public import Mathlib.Algebra.GradedMonoid
-public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Topology.Spectral.ConstructibleTopology
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Pushforward of functions with locally finite support
@@ -24,7 +21,7 @@ than usual.
 
 @[expose] public section
 
-open Set Order Topology TopologicalSpace CategoryTheory
+open Set Order Topology TopologicalSpace
 
 universe u v
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
@@ -38,8 +35,8 @@ variable [Zero R]
 
 variable (f) in
 /--
-Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
-of a point z : Y along a morphism `f : X ⟶ Y`.
+Implementation detail for the pushforward; the support of a locally finsupp function on `X`
+intersected with the preimage of a point `z : Y` along a function `f : X ⟶ Y`.
 -/
 def preimageSupport (c : X → R) (z : Y) : Set X :=
   f ⁻¹' {z} ∩ c.support
@@ -59,7 +56,7 @@ lemma _root_.IsProperMap.preimageSupportFinite (c : locallyFinsupp X R)
     (f : X → Y) (hf : IsProperMap f) : PreimageSupportFinite c f := by
   intro z
   exact LocallyFiniteSupport.finite_inter_support_of_isCompact
-    c.locallyFiniteSupport  <| hf.isCompact_preimage isCompact_singleton
+    c.locallyFiniteSupport <| hf.isCompact_preimage isCompact_singleton
 
 end Zero
 
@@ -85,9 +82,6 @@ lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompa
 
 variable {N : Type*} [PrespectralSpace Y]
 
-/--
-The pushforward of an algebraic cycle has locally finite support.
--/
 lemma map_locally_finite (hf : IsSpectralMap f)
     (hf' : PreimageSupportFinite c f) (y : Y) :
     ∃ t ∈ 𝓝 y, (t ∩ Function.support fun z ↦
@@ -111,15 +105,13 @@ variable (f) in
 /--
 The pushforward of a function `c` of locally finite support
 by a spectral map whose fibers intersect `c` in finitely many places
-with respect to a weight function `w`. This is mainly used when interpretting locally fin supp
+with respect to a weight function `w`. This is mainly used when interpreting locally finsupp
 functions as algebraic cycles (in this case the weight function corresponds to a dimension or
 codimension function).
 -/
 @[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : PreimageSupportFinite c f) :
-    Function.locallyFinsupp Y R
-    where
+def map (hf : IsSpectralMap f) (hf' : PreimageSupportFinite c f) : Function.locallyFinsupp Y R where
   toFun z := (∑ x ∈ (hf' z).toFinset, (c x) * w x)
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' z _ := map_locally_finite w c hf hf' z
@@ -127,10 +119,10 @@ def map (hf : IsSpectralMap f) (hf' : PreimageSupportFinite c f) :
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
-lemma map_homogeneneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
+lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
     (hf' : PreimageSupportFinite c f)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
-    (map f w c hf hf').support ⊆ t:= by
+    (map f w c hf hf').support ⊆ t := by
   intro y hy
   simp only [map, preimageSupport, Function.mem_support, ne_eq] at hy
   obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero hy
@@ -138,9 +130,6 @@ lemma map_homogeneneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
     Function.mem_support, ne_eq] at hx
   specialize h x (hc hx.1.2)
   grind
-
-lemma preimageSupport_id (z : X) : (preimageSupport id c z).Finite := by
-  simp [preimageSupport, toFinite ({z} ∩ locallyFinsuppWithin.support c)]
 
 lemma preimageSupportFinite_id : PreimageSupportFinite c id := by
   intro z
@@ -152,12 +141,12 @@ The pushforward of `c` along the identity morphism is `c`.
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
     map id w c isSpectralMap_id (preimageSupportFinite_id c) = c := by
-   ext z
-   obtain h | h : (c z ≠ 0 ∧ (preimageSupport_id c z).toFinset = {z}) ∨
-          (c z = 0 ∧ (preimageSupport_id c z).toFinset = ∅) := by
-     grind [Finite.toFinset, preimageSupport, Function.mem_support]
-   · simp_all
-   · simp_all
+  ext z
+  obtain h | h : (c z ≠ 0 ∧ (preimageSupportFinite_id c z).toFinset = {z}) ∨
+        (c z = 0 ∧ (preimageSupportFinite_id c z).toFinset = ∅) := by
+    grind [Finite.toFinset, preimageSupport, Function.mem_support]
+  · simp_all
+  · simp_all
 
 end map
 end locallyFinsupp
