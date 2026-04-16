@@ -717,8 +717,7 @@ instance [HasPullbacks C] {X U Y : C} (m : U ⟶ X) [IsIso m] (f : U ⟶ Y) [Mon
 
 open Bicategory
 variable (C) in
-
-/-- The coyoneda 1-functor for FOO. -/
+/-- The coyoneda 1-functor for the bicategory of partial maps in some category. -/
 noncomputable def coyoneda [HasPullbacks C] :
     (WithPartialMaps C)ᵒᵖ ⥤ (WithPartialMaps C) ⥤ Cat where
   obj X := {
@@ -791,4 +790,3 @@ lemma _root_.CategoryTheory.partialMapsFrom_map [HasPullbacks C] (X : C) {Y Z : 
 
 
 end CategoryTheory.WithPartialMaps
-#lint
