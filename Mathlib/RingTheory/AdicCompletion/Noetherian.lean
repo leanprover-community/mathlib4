@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.Filtration
+public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
@@ -56,6 +57,16 @@ instance (priority := 100) {A : Type*} [CommRing A] [IsArtinianRing A] [IsLocalR
     specialize hf (show n ≤ m by lia)
     rw [hn, zero_smul, Ideal.zero_eq_bot, SModEq.bot] at hf
     rw [hf]
+
+lemma tensorProduct_reesAlgebra_isNoetherian_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
+    IsNoetherianRing (TensorProduct R (R ⧸ I) (reesAlgebra I)) := by
+  have : Algebra.FiniteType R (reesAlgebra I) := ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg fg)⟩
+  have := this.baseChange (R ⧸ I)
+  exact Algebra.FiniteType.isNoetherianRing (R ⧸ I) _
+
+lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
+    f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
+  sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
