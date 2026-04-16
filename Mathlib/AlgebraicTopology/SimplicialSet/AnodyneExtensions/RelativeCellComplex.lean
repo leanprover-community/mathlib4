@@ -549,9 +549,7 @@ lemma isPushout (j : ι) :
       dsimp
       rw [S.eq_iff_ofSimplex_eq, ← Subcomplex.ofSimplex_map_of_epi g₁,
         ← Subcomplex.ofSimplex_map_of_epi g₂]
-      · erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
-        dsimp at h ⊢
-        rw [hg₁, hg₂, h]
+      · simp [← dsimp% (f.b j).naturality_apply, hg₁, hg₂, dsimp% h]
       all_goals
       · rw [Subcomplex.mem_nonDegenerate_iff]
         apply f.isPushout_aux₁)
