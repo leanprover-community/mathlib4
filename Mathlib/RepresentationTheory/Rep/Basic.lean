@@ -559,7 +559,9 @@ end Action
 
 end ring
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+section commsemiring
+
+variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
 
 instance {M N : Rep k G} : SMul k (M ⟶ N) where
   smul r f := ofHom (r • f.hom)
@@ -587,8 +589,13 @@ instance : Linear k (Rep k G) where
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
+end commsemiring
+
+variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+
 set_option backward.isDefEq.respectTransparency false in
-instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
+instance : Functor.Linear k (forget₂ (Rep.{w} k G)
+    (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
     simp [smul_hom]
