@@ -323,14 +323,14 @@ theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
 /-- Characterization of continuous sections within a set at a point of a vector bundle. -/
 theorem continuousWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
     ContinuousWithinAt (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
-      ContinuousWithinAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ :=
+      ContinuousWithinAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [continuousWithinAt_totalSpace, and_iff_right_iff_imp]
   intro; exact continuousWithinAt_id
 
 /-- Characterization of continuous sections of a vector bundle. -/
 theorem continuousAt_section {s : ∀ x, E x} (x₀ : B) :
     ContinuousAt (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
-      ContinuousAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ :=
+      ContinuousAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [← continuousWithinAt_univ]; exact continuousWithinAt_section F
 
 end FiberBundle
