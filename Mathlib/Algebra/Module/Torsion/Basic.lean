@@ -916,7 +916,7 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
     rw [← h, ← mk_eq_mk, ← Quotient.mk_smul, smul_eq_mul, mk_eq_mk]
   · obtain ⟨c, h⟩ := h
     rw [← h, smul_comm, ← mk_eq_mk, ← Quotient.mk_smul,
-      (Quotient.mk_eq_zero _).mpr <| mem_span_singleton_self _, smul_zero]
+      (Quotient.mk_eq_zero _).mpr <| (by exact mem_span_singleton_self _), smul_zero]
 
 end Ideal.Quotient
 

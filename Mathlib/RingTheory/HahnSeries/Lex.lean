@@ -389,6 +389,7 @@ instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) wh
     · rwa [leadingCoeff_nonneg_iff]
     · simpa
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsDomain R] [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
 
 end OrderedRing

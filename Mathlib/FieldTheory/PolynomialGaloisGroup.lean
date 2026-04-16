@@ -284,12 +284,12 @@ theorem mul_splits_in_splittingField_of_mul {p₁ q₁ p₂ q₂ : F[X]} (hq₁ 
   apply Splits.mul
   · rw [←
       (SplittingField.lift q₁
-          ((SplittingField.splits _).of_dvd (map_ne_zero (mul_ne_zero hq₁ hq₂))
+          ((SplittingField.splits _).of_dvd (by exact map_ne_zero (mul_ne_zero hq₁ hq₂))
              ((map_dvd_map' _).mpr (dvd_mul_right q₁ q₂)))).comp_algebraMap, ← map_map]
     exact h₁.map _
   · rw [←
       (SplittingField.lift q₂
-          ((SplittingField.splits _).of_dvd (map_ne_zero (mul_ne_zero hq₁ hq₂))
+          ((SplittingField.splits _).of_dvd (by exact map_ne_zero (mul_ne_zero hq₁ hq₂))
              ((map_dvd_map' _).mpr (dvd_mul_left q₂ q₁)))).comp_algebraMap, ← map_map]
     exact h₂.map _
 

@@ -383,7 +383,8 @@ theorem resultant_C_left (r : R) :
   · obtain ⟨s, rfl⟩ := natDegree_eq_zero.mp hg
     simp
   conv_lhs => rw [← g.modByMonic_add_div (X - C r)]
-  rw [resultant_add_mul_right _ _ _ _ _ _ (natDegree_X_sub_C_le _), modByMonic_X_sub_C_eq_C_eval]
+  rw [resultant_add_mul_right _ _ _ _ _ _ (by exact natDegree_X_sub_C_le _),
+    modByMonic_X_sub_C_eq_C_eval]
   · simp
   · rw [natDegree_divByMonic g (monic_X_sub_C r), natDegree_sub_C, natDegree_X]
     lia

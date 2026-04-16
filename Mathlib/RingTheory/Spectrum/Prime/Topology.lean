@@ -437,7 +437,7 @@ theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Su
 lemma comap_quotientMk_bijective_of_le_nilradical {I : Ideal R} (hle : I ≤ nilradical R) :
     Function.Bijective (comap <| Ideal.Quotient.mk I) := by
   refine ⟨comap_injective_of_surjective _ Ideal.Quotient.mk_surjective, ?_⟩
-  simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+  simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ (Ideal.Quotient.mk_surjective (I := I)),
     zeroLocus_eq_univ_iff]
 
 theorem isClosed_range_comap_of_surjective (hf : Surjective f) :

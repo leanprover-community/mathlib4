@@ -36,12 +36,17 @@ variable {G₀ : Type u} {M₀ : Type*}
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   /-- Zero is a left absorbing element for multiplication -/
-  zero_mul : ∀ a : M₀, 0 * a = 0
+  protected zero_mul : ∀ a : M₀, 0 * a = 0
   /-- Zero is a right absorbing element for multiplication -/
-  mul_zero : ∀ a : M₀, a * 0 = 0
+  protected mul_zero : ∀ a : M₀, a * 0 = 0
 
-export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
+@[simp]
+theorem zero_mul [MulZeroClass M₀] (a : M₀) : 0 * a = 0 :=
+  MulZeroClass.zero_mul a
+
+@[simp]
+theorem mul_zero [MulZeroClass M₀] (a : M₀) : a * 0 = 0 :=
+  MulZeroClass.mul_zero a
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 @[mk_iff] class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
