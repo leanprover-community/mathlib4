@@ -176,6 +176,8 @@ def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   map_mul' := extended_mul L hf
   map_add' := extended_add L hf
 
+@[deprecated (since := "2026-04-16")] alias extendedHom := extendedHom'
+
 end RingHom
 
 section Algebra
@@ -194,13 +196,20 @@ abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom' L <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ := extendedHom
+
 theorem extendedHom_eq_zero_iff {I : FractionalIdeal A⁰ K} :
     extendedHom L B I = 0 ↔ I = 0 :=
   extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _) zero_notMem_nonZeroDivisors
 
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_eq_zero_iff := extendedHom_eq_zero_iff
+
 theorem extendedHom_coeIdeal_eq_map (I : Ideal A) :
     (I : FractionalIdeal A⁰ K).extendedHom L B =
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
+
+@[deprecated (since := "2026-04-16")]
+alias extendedHomₐ_coeIdeal_eq_map := extendedHom_coeIdeal_eq_map
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [Algebra.IsIntegral A B]
@@ -210,6 +219,8 @@ theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
   rw [extendedHom'_apply, coe_extended_eq_span,
     IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
   rfl
+
+@[deprecated (since := "2026-04-16")] alias coe_extendedHomₐ_eq_span := coe_extendedHom_eq_span
 
 theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
     (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
@@ -223,9 +234,14 @@ theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed 
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
 
+@[deprecated (since := "2026-04-16")]
+alias le_one_of_extendedHomₐ_le_one := le_one_of_extendedHom_le_one
+
 theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
     extendedHom L B I ≤ 1 ↔ I ≤ 1 :=
   ⟨fun h ↦ le_one_of_extendedHom_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_le_one_iff := extendedHom_le_one_iff
 
 section IsDedekindDomain
 
@@ -235,8 +251,12 @@ theorem one_le_extendedHom_iff (hI : I ≠ 0) : 1 ≤ extendedHom L B I ↔ 1 �
   rw [← inv_le_inv_iff ((extendedHom_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
     extendedHom_le_one_iff, inv_le_comm hI (by simp), inv_one]
 
+@[deprecated (since := "2026-04-16")] alias one_le_extendedHomₐ_iff := one_le_extendedHom_iff
+
 theorem extendedHom_eq_one_iff (hI : I ≠ 0) : extendedHom L B I = 1 ↔ I = 1 := by
   rw [le_antisymm_iff, extendedHom_le_one_iff, one_le_extendedHom_iff _ _ hI, ← le_antisymm_iff]
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_eq_one_iff := extendedHom_eq_one_iff
 
 variable (A K) in
 theorem extendedHom_injective :
@@ -249,6 +269,8 @@ theorem extendedHom_injective :
   · rwa [hJ, map_zero, extendedHom_eq_zero_iff L B, ← hJ] at h
   rwa [← mul_inv_eq_one₀ ((extendedHom_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
     extendedHom_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_injective := extendedHom_injective
 
 end IsDedekindDomain
 
