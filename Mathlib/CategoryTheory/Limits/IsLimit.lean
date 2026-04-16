@@ -49,9 +49,7 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable {C : Type u₃} [Category.{v₃} C]
 variable {F : J ⥤ C}
 
-/-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
-cone morphism to `t`. -/
-@[stacks 002E]
+/-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique cone morphism to `t`. -/
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -60,6 +58,8 @@ structure IsLimit (t : Cone F) where
   /-- It is the unique such map to do this -/
   uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
     cat_disch
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 002E] IsLimit
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
@@ -525,7 +525,6 @@ end IsLimit
 
 /-- A cocone `t` on `F` is a colimit cocone if each cocone on `F` admits a unique
 cocone morphism from `t`. -/
-@[stacks 002F]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
@@ -535,6 +534,8 @@ structure IsColimit (t : Cocone F) where
   uniq :
     ∀ (s : Cocone F) (m : t.pt ⟶ s.pt) (_ : ∀ j : J, t.ι.app j ≫ m = s.ι.app j), m = desc s := by
     cat_disch
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 002F] IsColimit
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 

@@ -36,7 +36,6 @@ To apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map 
 
 The axiom `map_id` expresses preservation of identities, and
 `map_comp` expresses functoriality. -/
-@[stacks 001B]
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] :
     Type max v₁ v₂ u₁ u₂ where
   /-- The action of a functor on objects. -/
@@ -47,6 +46,8 @@ structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.
   map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   /-- A functor preserves composition. -/
   map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g := by cat_disch
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 001B] Functor
 
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).

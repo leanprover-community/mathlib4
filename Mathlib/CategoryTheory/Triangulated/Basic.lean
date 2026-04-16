@@ -40,7 +40,6 @@ variable (C : Type u) [Category.{v} C] [HasShift C ℤ]
 
 /-- A triangle in `C` is a sextuple `(X,Y,Z,f,g,h)` where `X,Y,Z` are objects of `C`,
 and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`. -/
-@[stacks 0144]
 structure Triangle where mk' ::
   /-- the first object of a triangle -/
   obj₁ : C
@@ -54,6 +53,8 @@ structure Triangle where mk' ::
   mor₂ : obj₂ ⟶ obj₃
   /-- the third morphism of a triangle -/
   mor₃ : obj₃ ⟶ obj₁⟦(1 : ℤ)⟧
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 0144] Triangle
 
 variable {C}
 

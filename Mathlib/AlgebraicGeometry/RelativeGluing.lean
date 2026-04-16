@@ -70,13 +70,14 @@ transformation.
 The `Xᵢ` then glue to a scheme over `S`
 (see `AlgebraicGeometry.Scheme.Cover.RelativeGluingData.glued`).
 -/
-@[stacks 01LH]
 structure RelativeGluingData where
   /-- The schemes `Xᵢ`. -/
   functor : 𝒰.I₀ ⥤ Scheme.{u}
   /-- The natural maps `Xᵢ ⟶ Uᵢ`. -/
   natTrans : functor ⟶ 𝒰.functorOfLocallyDirected
   equifibered : natTrans.Equifibered
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 01LH] RelativeGluingData
 
 variable {𝒰} (d : RelativeGluingData 𝒰)
 

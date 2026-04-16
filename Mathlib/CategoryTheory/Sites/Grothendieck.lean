@@ -72,7 +72,6 @@ three axioms:
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
 See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
-@[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
   which satisfy some axioms. -/
@@ -86,6 +85,8 @@ structure GrothendieckTopology where
   transitive' :
     ∀ ⦃X⦄ ⦃S : Sieve X⦄ (_ : S ∈ sieves X) (R : Sieve X),
       (∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ sieves Y) → R ∈ sieves X
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 00Z4] GrothendieckTopology
 
 namespace GrothendieckTopology
 

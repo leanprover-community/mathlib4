@@ -34,10 +34,11 @@ variable {R : Type*} [CommSemiring R]
 /-- A predicate `P : Ideal R → Prop` over the ideals of a ring `R` is said to be Oka if R satisfies
 it (`P ⊤`) and whenever we have `I : Ideal R`, `P (I.colon (span {a})` and `P (I ⊔ span {a})` for
 some `a : R` then `P I`. -/
-@[stacks 05K9]
 structure IsOka (P : Ideal R → Prop) : Prop where
   top : P ⊤
   oka {I : Ideal R} {a : R} : P (I ⊔ span {a}) → P (I.colon (span {a})) → P I
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 05K9] IsOka
 
 namespace IsOka
 
