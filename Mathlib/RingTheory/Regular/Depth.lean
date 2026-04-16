@@ -43,7 +43,6 @@ lemma linearMap_subsingleton_of_mem_annihilator {r : R} (reg : IsSMulRegular M r
     rw [smul_zero, ← map_smul, Module.mem_annihilator.mp mem_ann x, map_zero]
   simpa using reg this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Module.Finite R N] :
     Subsingleton (N →ₗ[R] M) ↔ ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
   refine ⟨fun hom0 ↦ ?_, fun ⟨r, mem_ann, reg⟩ ↦
@@ -104,7 +103,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       simp [eq0]
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N
-    contrapose! f_ne0
+    contrapose f_ne0
     exact (Module.FinitePresentation.linearEquivMapExtendScalars
       p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 

@@ -200,16 +200,15 @@ lemma isNormalMonoCategory : IsNormalMonoCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
-          ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
-            = Fork.ι s := ?_
+        have aux (s : KernelFork (cokernel.π f)) :
+            (limit.lift (parallelPair (cokernel.π f) 0) s ≫ inv (imageMonoFactorisation f).e) ≫
+            Fork.ι (KernelFork.ofι _ (cokernel.condition f)) = Fork.ι s := ?_
         · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
           intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
-        · intro A
-          simp only [KernelFork.ι_ofι, Category.assoc]
-          convert limit.lift_π A WalkingParallelPair.zero using 2
+        · simp only [KernelFork.ι_ofι, Category.assoc]
+          convert limit.lift_π s WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -226,17 +225,17 @@ lemma isNormalEpiCategory : IsNormalEpiCategory C where
         haveI : Limits.HasImages C := hasImages
         haveI : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
         haveI : HasZeroObject C := Limits.hasZeroObject_of_hasFiniteBiproducts _
-        have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
-          inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
-          colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
+        have aux (s : CokernelCofork (kernel.ι f)) :
+            Cofork.π (CokernelCofork.ofπ _ (kernel.condition f)) ≫
+              inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
+                colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
         · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
                   inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
           intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
-        · intro A
-          simp only [CokernelCofork.π_ofπ, ← Category.assoc]
-          convert colimit.ι_desc A WalkingParallelPair.one using 2
+        · simp only [CokernelCofork.π_ofπ, ← Category.assoc]
+          convert colimit.ι_desc s WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
           exact (imageMonoFactorisation f).fac }⟩
 
@@ -422,7 +421,6 @@ variable {Z : C} (g : Y ⟶ Z)
 @[simp] lemma coimage.comp_π_eq_zero : f ≫ coimage.π g = 0 ↔ f ≫ g = 0 := by
   simp [← cancel_mono (Abelian.factorThruCoimage _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Abelian.image` as a functor from the arrow category. -/
 @[simps]
 def im : Arrow C ⥤ C where
@@ -431,7 +429,6 @@ def im : Arrow C ⥤ C where
 
 @[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coim : Arrow C ⥤ C where
@@ -441,7 +438,6 @@ def coim : Arrow C ⥤ C where
 
 @[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=

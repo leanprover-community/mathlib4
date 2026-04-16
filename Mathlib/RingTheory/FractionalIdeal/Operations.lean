@@ -297,7 +297,7 @@ theorem exists_ne_zero_mem_isInteger [Nontrivial R] (hI : I ≠ 0) :
 
 theorem map_ne_zero [Nontrivial R] (hI : I ≠ 0) : I.map h ≠ 0 := by
   obtain ⟨x, x_ne_zero, hx⟩ := exists_ne_zero_mem_isInteger hI
-  contrapose! x_ne_zero with map_eq_zero
+  contrapose x_ne_zero with map_eq_zero
   refine IsFractionRing.to_map_eq_zero_iff.mp (eq_zero_iff.mp map_eq_zero _ (mem_map.mpr ?_))
   exact ⟨algebraMap R K x, hx, h.commutes x⟩
 
