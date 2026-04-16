@@ -112,17 +112,20 @@ theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
   nontriviality R using Module.subsingleton R M
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
-theorem add_mem_iff (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
+theorem add_mem_iff_mem (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
     x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ ↦ F.add_mem hx hy⟩
   exact fun h ↦ ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
 
-theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
-    (hsC : ∀ i, f i ∈ C) : ∑ i, f i ∈ F ↔ ∀ i, f i ∈ F := by
-  classical
-  refine ⟨fun hs i ↦ ?_, fun a ↦ Submodule.sum_mem F fun c _ ↦ a c⟩
+/-- If the sum of points of a cone is in a face, then all the points are in the face. -/
+theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
+    (hsC : ∀ i : ι, f i ∈ C) (hs : ∑ i : ι, f i ∈ F) (i : ι) : f i ∈ F := by classical
   refine hF.mem_of_add_mem (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) ↦ hsC j)) ?_
   simp [hs]
+
+theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
+    (hsC : ∀ i, f i ∈ C) : ∑ i, f i ∈ F ↔ ∀ i, f i ∈ F :=
+  ⟨mem_of_sum_mem hF hsC, fun a ↦ Submodule.sum_mem F fun c _ ↦ a c⟩
 
 /-- If the positive combination of points of a cone is in a face, then all the points are
 in the face. -/
@@ -153,6 +156,17 @@ protected theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.Is
 theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
     (F.map (e : M →ₗ[R] N)).IsFaceOf (C.map e) := hF.map _ e.injective
 
+theorem of_map_injective {f : M →ₗ[R] N} (hf : Function.Injective f)
+    (hc : (map f F).IsFaceOf (map f C)) : F.IsFaceOf C := by
+  obtain ⟨sub, hF⟩ := hc
+  refine ⟨fun x xf ↦ ?_, fun hx hy ha h ↦ ?_⟩
+  · obtain ⟨y, yC, hy⟩ := mem_map.mp <| sub (mem_map_of_mem xf)
+    rwa [hf hy] at yC
+  · simp only [mem_map, forall_exists_index, and_imp] at hF
+    obtain ⟨_, ⟨hx', hhx'⟩⟩ := hF _ hx rfl _ hy rfl ha _ h (by simp)
+    convert hx'
+    exact hf hhx'.symm
+
 /-- The comap of a face of a cone under a linear map is a face of the comap of the cone. -/
 protected theorem comap (f : N →ₗ[R] M) (hF : F.IsFaceOf C) : (F.comap f).IsFaceOf (C.comap f) := by
   refine ⟨comap_mono hF.le, ?_⟩
@@ -175,21 +189,13 @@ end IsFaceOf
 /-- The image of a cone `F` under an injective linear map is a face of the
 image of another cone `C` if and only if `F` is a face of `C`. -/
 theorem isFaceOf_map_iff [AddCommGroup N] [Module R N] {f : M →ₗ[R] N} (hf : Function.Injective f) :
-    (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C := by
-  refine ⟨?_, IsFaceOf.map _ hf⟩
-  · intro ⟨sub, hF⟩
-    refine ⟨fun x xf ↦ ?_, fun hx hy ha h ↦ ?_⟩
-    · obtain ⟨y, yC, hy⟩ := mem_map.mp <| sub (mem_map_of_mem xf)
-      rwa [hf hy] at yC
-    · simp only [mem_map, forall_exists_index, and_imp] at hF
-      obtain ⟨_, ⟨hx', hhx'⟩⟩ := hF _ hx rfl _ hy rfl ha _ h (by simp)
-      convert hx'
-      exact hf hhx'.symm
+    (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C :=
+  ⟨IsFaceOf.of_map_injective hf, IsFaceOf.map _ hf⟩
 
 /-- The comap of a cone `F` under a surjective linear map is a face of the
 comap of another cone `F` if and only if `F` is a face of `C`. -/
-theorem isFaceOf_comap_iff [AddCommGroup N] [Module R N] {f : N →ₗ[R] M} (hf : Function.Surjective f) :
-    (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C := by
+theorem isFaceOf_comap_iff [AddCommGroup N] [Module R N] {f : N →ₗ[R] M}
+    (hf : Function.Surjective f) : (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C := by
   refine ⟨IsFaceOf.of_comap_surjective hf, IsFaceOf.comap _⟩
 
 end Semiring
