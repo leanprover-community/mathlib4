@@ -331,7 +331,7 @@ theorem continuousWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
 theorem continuousAt_section {s : ∀ x, E x} (x₀ : B) :
     ContinuousAt (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContinuousAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ :=
-  continuousAt_totalSpace (F := F) _ |>.trans (and_iff_right continuousAt_id)
+  simp_rw [← continuousWithinAt_univ]; exact continuousWithinAt_section F
 
 end FiberBundle
 
