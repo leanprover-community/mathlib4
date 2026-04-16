@@ -689,6 +689,14 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
+instance isIso_iCycles₀ : IsIso (K.iCycles 0) :=
+  K.isIso_iCycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.cycles 0 ≅ K.X 0` for a chain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev cycles₀Iso : K.cycles 0 ≅ K.X 0 :=
+  K.iCyclesIso 0 0 (by simp) (by simp)
+
 instance isIso_homologyι₀ :
     IsIso (K.homologyι 0) :=
   K.isIso_homologyι 0 _ rfl (by simp)
@@ -714,6 +722,14 @@ namespace CochainComplex
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
+
+instance isIso_pOpcycles₀ : IsIso (K.pOpcycles 0) :=
+  K.isIso_pOpcycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.X 0 ≅ K.opcycles 0` for a cochain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev opcycles₀Iso : K.X 0 ≅ K.opcycles 0 :=
+  K.pOpcyclesIso 0 0 (by simp) (by simp)
 
 instance isIso_homologyπ₀ :
     IsIso (K.homologyπ 0) :=

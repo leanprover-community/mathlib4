@@ -69,10 +69,25 @@ noncomputable def isColimitCokernelCoforkChainComplexDOneZero :
 /-- A homology data saying that the singular homology in degree `0`
 of a simplicial set with coefficients in `R` identify to a coproduct
 of copies of `X` indexed by `π₀ X`. -/
+@[simps! left_K left_H right_Q right_H]
 noncomputable def homologyData₀ :
     ((X.chainComplex R).sc' 1 0 0).HomologyData :=
   ShortComplex.HomologyData.ofIsColimitCokernelCofork _ (by cat_disch) _
     (isColimitCokernelCoforkChainComplexDOneZero X R)
+
+@[simp]
+lemma homologyData₀_left_π :
+    dsimp% (X.homologyData₀ R).left.π = π₀.fromChainComplexXZero X R := rfl
+
+@[simp]
+lemma homologyData₀_left_i :
+    dsimp% (X.homologyData₀ R).left.i = 𝟙 _ := rfl
+
+@[simp]
+lemma homologyData₀_left_liftK {T : C} (f : T ⟶ (X.chainComplex R).X 0) :
+    (X.homologyData₀ R).left.liftK f (by cat_disch) = f := by
+  rw [← cancel_mono (X.homologyData₀ R).left.i, (X.homologyData₀ R).left.liftK_i]
+  simp
 
 variable [CategoryWithHomology C]
 
@@ -83,9 +98,25 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
+    (X.chainComplex R).liftCycles (k := X.ιChainComplex x) 0 (by simp) (by simp) ≫
+      (X.chainComplex R).homologyπ 0 ≫ (X.homology₀Iso R).hom =
+    Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
+  simp [homology₀Iso, HomologicalComplex.homologyπ, SSet.homology,
+    HomologicalComplex.liftCycles]
+
 /-- The augmentation map `X.homology R 0 ⟶ R`. -/
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
   (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma liftCycles_ιChainComplex_homologyπ_homology₀ε (x : X _⦋0⦌) :
+    (X.chainComplex R).liftCycles (X.ιChainComplex x) 0 (by simp) (by simp) ≫
+      (X.chainComplex R).homologyπ 0 ≫ X.homology₀ε R = 𝟙 R := by
+  simp [homology₀ε]
 
 set_option backward.isDefEq.respectTransparency false in
 instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
