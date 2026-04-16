@@ -25,7 +25,7 @@ in `F` are also in `F`.
 * We do not use `IsExtreme` as a definition because this is an affine notion and does not allow the
   flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
   no proper subset that are extreme. We prove that every face is an extreme set of its cone.
-* Most results proven over a division rin hold more generally over an Archimedean ring. In
+* Most results proven over a division ring hold more generally over an Archimedean ring. In
   particular, `iff_mem_of_add_mem` holds whenever for every `x ∈ R` there is a `y ∈ R` with
   `1 ≤ x * y`.
 
@@ -46,6 +46,7 @@ variable [AddCommGroup M] [Module R M]
 
 /-- A sub-cone `F` of a pointed cone `C` is a face of `C` if any two points of `C` with a strictly
 positive combination in `F` are also in `F`. -/
+@[mk_iff]
 structure IsFaceOf (F C : PointedCone R M) : Prop where
   le : F ≤ C
   mem_of_smul_add_mem {x y : M} {a : R} :
@@ -54,7 +55,7 @@ variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
 theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
     F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F where
-  mp h := ⟨h.1, fun xC yC a0 b0 hab ↦ h.2 xC (Submodule.smul_mem C ⟨_, b0.le⟩ yC) a0 hab⟩
+  mp h := ⟨h.1, fun xC yC a0 b0 hab ↦ h.2 xC (smul_mem _ b0.le yC) a0 hab⟩
   mpr h := by
     refine ⟨h.1, ?_⟩
     by_cases hc : 0 < (1 : R)
@@ -67,7 +68,7 @@ namespace IsFaceOf
 @[refl, simp]
 protected theorem refl (C : PointedCone R M) : C.IsFaceOf C := ⟨fun _ a ↦ a, fun hx _ _ _ ↦ hx⟩
 
-protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := ⟨fun _ a ↦ a, fun hx _ _ _ ↦ hx⟩
+protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := .refl _
 
 /-- The face of a face of a cone is also a face of the cone. -/
 @[trans]
@@ -78,10 +79,8 @@ protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F
 
 /-- A face of a cone is a face of another if and only if they are contained in each other. -/
 theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
-    F₁.IsFaceOf F₂ ↔ F₁ ≤ F₂ := by
-  refine ⟨IsFaceOf.le, fun h ↦ ?_⟩
-  rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at ⊢ h₁
-  exact ⟨h, fun hx hy ↦ h₁.2 (h₂.le hx) (h₂.le hy)⟩
+    F₁.IsFaceOf F₂ ↔ F₁ ≤ F₂ :=
+  ⟨IsFaceOf.le, fun h ↦ ⟨h, fun hx hy ha hxy ↦ h₁.2 (h₂.le hx) (h₂.le hy) ha hxy⟩⟩
 
 /-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
@@ -142,15 +141,13 @@ variable [AddCommGroup N] [Module R N]
 /-- The image of a face of a cone under an injective linear map is a face of the
 image of the cone. -/
 protected theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.IsFaceOf C) :
-    (F.map f).IsFaceOf (C.map f) := by
-  refine ⟨map_mono hF.le, ?_⟩
-  simp only [mem_map, forall_exists_index, and_imp]
-  intro _ _ a b bC fbx _ cC fcy ha _ x'F h
-  refine ⟨b, ?_, fbx⟩
-  apply hF.mem_of_smul_add_mem bC cC ha
-  convert x'F
-  apply hf
-  simp [h, fbx, fcy]
+    (F.map f).IsFaceOf (C.map f) where
+  le := map_mono hF.le
+  mem_of_smul_add_mem := by
+    rintro _ _ a ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩ ha ⟨z, hz₁, hz₂⟩
+    dsimp at hz₂
+    rw [← map_smul, ← map_add] at hz₂
+    exact ⟨x, hF.mem_of_smul_add_mem hx hy ha (hf hz₂ ▸ hz₁), rfl⟩
 
 /-- The image of a face of a cone under an equivalence is a face of the image of the cone. -/
 theorem map_equiv (e : M ≃ₗ[R] N) (hF : F.IsFaceOf C) :
@@ -175,10 +172,9 @@ end Map
 
 end IsFaceOf
 
-variable [AddCommGroup N] [Module R N] in
 /-- The image of a cone `F` under an injective linear map is a face of the
 image of another cone `C` if and only if `F` is a face of `C`. -/
-theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
+theorem isFaceOf_map_iff [AddCommGroup N] [Module R N] {f : M →ₗ[R] N} (hf : Function.Injective f) :
     (F.map f).IsFaceOf (C.map f) ↔ F.IsFaceOf C := by
   refine ⟨?_, IsFaceOf.map _ hf⟩
   · intro ⟨sub, hF⟩
@@ -190,10 +186,9 @@ theorem isFaceOf_map_iff {f : M →ₗ[R] N} (hf : Function.Injective f) :
       convert hx'
       exact hf hhx'.symm
 
-variable [AddCommGroup N] [Module R N] in
 /-- The comap of a cone `F` under a surjective linear map is a face of the
 comap of another cone `F` if and only if `F` is a face of `C`. -/
-theorem isFaceOf_comap_iff {f : N →ₗ[R] M} (hf : Function.Surjective f) :
+theorem isFaceOf_comap_iff [AddCommGroup N] [Module R N] {f : N →ₗ[R] M} (hf : Function.Surjective f) :
     (F.comap f).IsFaceOf (C.comap f) ↔ F.IsFaceOf C := by
   refine ⟨IsFaceOf.of_comap_surjective hf, IsFaceOf.comap _⟩
 
