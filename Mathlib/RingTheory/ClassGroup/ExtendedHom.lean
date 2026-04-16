@@ -13,12 +13,12 @@ public import Mathlib.RingTheory.ClassGroup.Basic
 
 For an extension `A → B` of commutative domains with injective algebra map (equivalently
 `Module.IsTorsionFree A B`), we construct the monoid homomorphism
-`ClassGroup.extensionMap : ClassGroup A →* ClassGroup B` given by pushing fractional ideals forward
+`ClassGroup.extendedHom : ClassGroup A →* ClassGroup B` given by pushing fractional ideals forward
 along the algebra map.
 
 ## Main definitions
 
-- `ClassGroup.extensionMap A B`: the induced map between the class groups.
+- `ClassGroup.extendedHom A B`: the induced map between the class groups.
 -/
 
 @[expose] public section
@@ -32,7 +32,7 @@ namespace ClassGroup
 
 /-- The monoid homomorphism `ClassGroup A → ClassGroup B` induced by an
 extension of domains `A → B`. -/
-noncomputable def extensionMap : ClassGroup A →* ClassGroup B :=
+noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
   QuotientGroup.map _ _
     (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom)
     (by
@@ -44,17 +44,17 @@ noncomputable def extensionMap : ClassGroup A →* ClassGroup B :=
         (FractionalIdeal.extendedHom_spanSingleton (FractionRing B) B _).symm)
 
 @[simp]
-lemma extensionMap_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
-    extensionMap A B (QuotientGroup.mk α) = QuotientGroup.mk
+lemma extendedHom_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
+    extendedHom A B (QuotientGroup.mk α) = QuotientGroup.mk
       (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom α) :=
   rfl
 
 @[simp]
-theorem extensionMap_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
-    extensionMap A B (ClassGroup.mk I) = ClassGroup.mk
+theorem extendedHom_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
+    extendedHom A B (ClassGroup.mk I) = ClassGroup.mk
         (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom I) := by
   rw [← ClassGroup.Quot_mk_eq_mk, ← ClassGroup.Quot_mk_eq_mk]
-  exact extensionMap_quotientMk A B I
+  exact extendedHom_quotientMk A B I
 
 variable [IsDedekindDomain A]
 
@@ -65,21 +65,21 @@ lemma mk0_eq_quotientMk (I : (Ideal A)⁰) :
       QuotientGroup.mk (FractionalIdeal.mk0 (FractionRing A) I) :=
   (ClassGroup.mk_mk0 (K := FractionRing A) I).symm.trans (ClassGroup.Quot_mk_eq_mk _).symm
 
-lemma extensionMap_mk0 [IsDedekindDomain B] (I : (Ideal A)⁰) :
-    extensionMap A B (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map (algebraMap A B),
+lemma extendedHom_mk0 [IsDedekindDomain B] (I : (Ideal A)⁰) :
+    extendedHom A B (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map (algebraMap A B),
       mem_nonZeroDivisors_iff_ne_zero.mpr <|
         (Ideal.map_eq_bot_iff_of_injective
           (FaithfulSMul.algebraMap_injective A B)).not.mpr
         (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
-  rw [mk0_eq_quotientMk, mk0_eq_quotientMk, extensionMap_quotientMk]
+  rw [mk0_eq_quotientMk, mk0_eq_quotientMk, extendedHom_quotientMk]
   congr; ext : 1
   exact FractionalIdeal.extendedHom_coeIdeal_eq_map (L := FractionRing B) (B := B) _
 
-theorem extensionMap_mk0' (I : (Ideal A)⁰) :
-    extensionMap A B (ClassGroup.mk0 I) =
+theorem extendedHom_mk0' (I : (Ideal A)⁰) :
+    extendedHom A B (ClassGroup.mk0 I) =
       ClassGroup.mk (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom
         (FractionalIdeal.mk0 (FractionRing A) I)) := by
-  rw [← ClassGroup.mk_mk0 (FractionRing A), extensionMap_mk]
+  rw [← ClassGroup.mk_mk0 (FractionRing A), extendedHom_mk]
 
 end ClassGroup
 
