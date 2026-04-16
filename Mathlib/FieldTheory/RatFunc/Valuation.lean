@@ -147,10 +147,11 @@ scoped instance : UniformSpace (RatFunc F) := (inftyValued F).toUniformSpace
 def _root_.RatFunc.CompletionAtInfty := UniformSpace.Completion (RatFunc F)
 deriving Field, Algebra (RatFunc F), Coe (RatFunc F), Inhabited
 
-end CompletionAtInfty
-
 /-- The valuation at infinity on `k(t)` extends to a valuation on `CompletionAtInfty`. -/
-instance : Valued (CompletionAtInfty F) ℤᵐ⁰ := (inftyValued F).valuedCompletion
+instance : Valued (CompletionAtInfty F) ℤᵐ⁰ :=
+  inferInstanceAs <| Valued (UniformSpace.Completion (RatFunc F)) ℤᵐ⁰
+
+end CompletionAtInfty
 
 theorem valuedCompletionAtInfty.def {x : CompletionAtInfty F} :
   Valued.v x = (inftyValued F).extensionValuation x := rfl

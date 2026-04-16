@@ -66,6 +66,8 @@ class EnoughInjectives : Prop where
 
 attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
+attribute [instance low] EnoughInjectives.presentation
+
 end
 
 namespace Injective
