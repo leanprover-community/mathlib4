@@ -74,10 +74,6 @@ theorem topologicalKrullDim_zero_of_discreteTopology
   obtain ⟨z, hz⟩ := Z.2.nonempty
   rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
 
-variable {α : Type*} [TopologicalSpace α]
-
-open TopologicalSpace Topology Order Set IrreducibleCloseds
-
 lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds X) :
     Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
@@ -86,14 +82,11 @@ lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding 
   intro a b hlt
   exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
 
-attribute [local instance] specializationOrder
-
-lemma Topology.IsOpenEmbedding.coheight_eq {U X : Type*} [TopologicalSpace U] [TopologicalSpace X]
-    [QuasiSober X] [T0Space X] [QuasiSober U] [T0Space U]
-    {x : U} (f : U → X) (hf : IsOpenEmbedding f) :
-    coheight (f x) = coheight x := by
-  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f x),
-    ← coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm x,
+attribute [local instance] specializationOrder in
+lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSober X] [T0Space X]
+    {x : X} (f : X → Y) (hf : IsOpenEmbedding f) : coheight (f x) = coheight x := by
+  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := Y)).symm (f x),
+    ← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm x,
     ← Topology.IsOpenEmbedding.coheight_map hf]
   congr
   ext : 1
