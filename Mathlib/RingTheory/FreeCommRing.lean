@@ -409,8 +409,12 @@ def freeCommRingPEmptyEquivInt : FreeCommRing PEmpty.{u + 1} ≃+* ℤ :=
 noncomputable alias freeCommRingPemptyEquivInt := freeCommRingPEmptyEquivInt
 
 /-- The free commutative ring on a type with one term is isomorphic to `ℤ[X]`. -/
+def freeCommRingUniqueEquivPolynomialInt [Unique α] : FreeCommRing α ≃+* ℤ[X] :=
+  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.uniqueAlgEquiv ℤ α).toRingEquiv
+
+@[deprecated freeCommRingUniqueEquivPolynomialInt (since := "2026-04-15")]
 def freeCommRingPUnitEquivPolynomialInt : FreeCommRing PUnit.{u + 1} ≃+* ℤ[X] :=
-  (freeCommRingEquivMvPolynomialInt _).trans (MvPolynomial.uniqueAlgEquiv ℤ PUnit).toRingEquiv
+  freeCommRingUniqueEquivPolynomialInt _
 
 @[deprecated (since := "2026-02-08")]
 noncomputable alias freeCommRingPunitEquivPolynomialInt := freeCommRingPUnitEquivPolynomialInt
