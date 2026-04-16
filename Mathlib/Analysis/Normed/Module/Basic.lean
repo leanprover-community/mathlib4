@@ -332,12 +332,9 @@ open Filter Bornology in
 @[simp]
 theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] :
-    Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') := by
-  intro c hc
-  rw [mem_map]
-  rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
-  obtain ⟨s, hs⟩ := hc
-  exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
+    Tendsto (algebraMap 𝕜 𝕜') (cobounded 𝕜) (cobounded 𝕜') :=
+  ((AddMonoidHomClass.isometry_of_norm (algebraMap 𝕜 𝕜')
+    (norm_algebraMap' (𝕜' := 𝕜'))).antilipschitz).tendsto_cobounded
 
 @[deprecated (since := "2025-11-04")] alias
   algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded

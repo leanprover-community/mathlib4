@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.Int
 public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Topology.MetricSpace.Dilation
 
@@ -157,22 +158,7 @@ end NormedCommRing
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
-  ⟨continuous_iff_continuousAt.2 fun x =>
-      tendsto_iff_norm_sub_tendsto_zero.2 <| by
-        have : ∀ e : α × α,
-            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ := by
-          intro e
-          calc
-            ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
-              rw [mul_sub, sub_mul, sub_add_sub_cancel]
-            _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
-              norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert
-          ((continuous_fst.tendsto x).norm.mul
-                ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
-            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
-        simp⟩
+  ⟨show Continuous fun p : α × α => p.1 • p.2 from continuous_smul⟩
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/

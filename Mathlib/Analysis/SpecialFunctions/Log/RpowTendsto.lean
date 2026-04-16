@@ -50,43 +50,32 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
   intro s hs hs'
   rw [Metric.uniformity_basis_dist_le.tendstoUniformlyOn_iff_of_uniformity]
   intro ε hε
-  let pbound : ℝ := ε / (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1)
-  have hxs : ∀ x ∈ s, x ≠ 0 := by grind
-  have sSup_nonneg : 0 ≤ sSup ((fun x => ‖log x‖ ^ 2) '' s) := by
-    refine Real.sSup_nonneg ?_
-    grind [← sq_nonneg]
-  have sSup_nonneg' : 0 ≤ sSup ((fun x => ‖log x‖) '' s) := by
-    refine Real.sSup_nonneg ?_
-    grind [← sq_nonneg]
+  obtain ⟨logbound, hlogbound⟩ := hs'.exists_bound_of_continuousOn (f := Real.log)
+    (Real.continuousOn_log.mono fun _ hx => ne_of_gt (hs hx))
+  let logbound : ℝ := max logbound 0
+  let pbound : ℝ := ε / (logbound ^ 2 + 1)
   have pbound_pos : 0 < pbound := by positivity
   have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p ∧ p < pbound := nhdsGT_basis 0 |>.mem_of_mem pbound_pos
-  have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=
+  have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (logbound + 1) :=
     Eventually.filter_mono nhdsWithin_le_nhds <| eventually_le_nhds (by positivity)
-  have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by
-    fun_prop (disch := assumption)
-  have hcont' : ContinuousOn (fun x => ‖log x‖) s := by
-    fun_prop (disch := assumption)
   filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
   intro x hx
+  have hxlog : ‖log x‖ ≤ logbound := (hlogbound x hx).trans (le_max_left _ _)
   have hx' : ‖p * log x‖ ≤ 1 := calc
     _ = p * ‖log x‖ := by grind [norm_mul, Real.norm_of_nonneg]
-    _ ≤ 1 / (sSup ((fun y => ‖log y‖) '' s) + 1) * ‖log x‖ := by gcongr
+    _ ≤ 1 / (logbound + 1) * ‖log x‖ := by gcongr
     _ ≤ 1 / (‖log x‖ + 1) * ‖log x‖ := by
         gcongr
-        refine le_csSup ?_ (by grind)
-        grind [IsCompact.bddAbove, ← IsCompact.image_of_continuousOn]
     _ = ‖log x‖ / (‖log x‖ + 1) := by grind
     _ ≤ 1 := by rw [div_le_one₀] <;> grind [norm_nonneg]
-  have pinv_nonneg : 0 ≤ p⁻¹ := by grind [_root_.inv_nonneg]
   rw [dist_eq_norm']
   calc
     _ ≤ p * ‖log x‖ ^ 2 := Real.norm_inv_mul_rpow_sub_one_sub_log_le hp₁ (hs hx) hx'
-    _ ≤ p * sSup ((fun x => ‖log x‖ ^ 2) '' s) := by
-          gcongr
-          refine le_csSup ?_ (by grind)
-          grind [IsCompact.bddAbove, ← IsCompact.image_of_continuousOn]
-    _ ≤ pbound * (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1) := by gcongr; grind
-    _ = ε := by grind
+    _ ≤ p * logbound ^ 2 := by gcongr
+    _ ≤ pbound * (logbound ^ 2 + 1) := by gcongr; grind
+    _ = ε := by
+      dsimp [pbound]
+      field_simp
 
 lemma tendsto_rpow_sub_one_log {x : ℝ} (hx : 0 < x) :
     Tendsto (fun p => p⁻¹ * (x ^ p - 1)) (𝓝[>] 0) (𝓝 (log x)) :=

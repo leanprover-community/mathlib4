@@ -65,21 +65,14 @@ def LinearMap.mkContinuousOfExistsBound (h : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖
 
 theorem continuous_of_linear_of_boundₛₗ {f : E → F} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = σ c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
-    Continuous f :=
-  let φ : E →ₛₗ[σ] F :=
-    { toFun := f
-      map_add' := h_add
-      map_smul' := h_smul }
-  AddMonoidHomClass.continuous_of_bound φ C h_bound
+    Continuous f := by
+  let φ : E →ₛₗ[σ] F := LinearMap.mk ⟨f, h_add⟩ h_smul
+  exact (φ.mkContinuous C h_bound).continuous
 
 theorem continuous_of_linear_of_bound {f : E → G} (h_add : ∀ x y, f (x + y) = f x + f y)
     (h_smul : ∀ (c : 𝕜) (x), f (c • x) = c • f x) {C : ℝ} (h_bound : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
-    Continuous f :=
-  let φ : E →ₗ[𝕜] G :=
-    { toFun := f
-      map_add' := h_add
-      map_smul' := h_smul }
-  AddMonoidHomClass.continuous_of_bound φ C h_bound
+    Continuous f := by
+  simpa using (continuous_of_linear_of_boundₛₗ (σ := RingHom.id 𝕜) h_add h_smul h_bound)
 
 @[simp, norm_cast]
 theorem LinearMap.mkContinuous_coe (C : ℝ) (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
@@ -186,11 +179,7 @@ variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ σ₂₁] [RingHomIn
 theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E ≃ₛₗ[σ] F) :
     (∀ x : E, ‖f x‖ = a * ‖x‖) → ∀ y : F, ‖f.symm y‖ = a⁻¹ * ‖y‖ := by
   intro hf y
-  calc
-    ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := by
-      rw [← mul_assoc, inv_mul_cancel₀ (ne_of_lt ha).symm, one_mul]
-    _ = a⁻¹ * ‖f (f.symm y)‖ := by rw [hf]
-    _ = a⁻¹ * ‖y‖ := by simp
+  simpa [eq_inv_mul_iff_mul_eq₀ (ne_of_gt ha)] using (hf (f.symm y)).symm
 
 /-- A linear equivalence which is a homothety is a continuous linear equivalence. -/
 noncomputable def ContinuousLinearEquiv.ofHomothety (f : E ≃ₛₗ[σ] F) (a : ℝ) (ha : 0 < a)
