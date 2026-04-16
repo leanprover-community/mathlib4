@@ -247,7 +247,7 @@ lemma hom_ext {S S' : CatCommSqOver F G X} {f g : S ⟶ S'}
     (h₁ : f.fst = g.fst) (h₂ : f.snd = g.snd) : f = g :=
   Hom.ext h₁ h₂
 
-/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
+/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps]
 instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
   iso := S.iso

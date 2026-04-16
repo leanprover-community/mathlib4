@@ -86,8 +86,8 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
   f.map_mul_iff.2 (by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := RestrictScalars.algebra R S C
-    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
+    letI : Algebra R C := .restrictScalars R S C
+    letI : IsScalarTower R S C := .restrictScalars R S C
     ext
     dsimp
     exact hf _ _ _ _) x y
@@ -804,6 +804,13 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
         baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
+
+/-- If `R →+* S` is surjective, the multiplication map `S ⊗[R] S →+* S` is an isomorphism. This
+is the algebraic version of closed immersions are monomorphisms. -/
+lemma mul'_bijective_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Function.Bijective (LinearMap.mul' R A) :=
+  have : TensorProduct.CompatibleSMul R A A A := .of_algebraMap_surjective _ _ h
+  (Algebra.TensorProduct.lmulEquiv R A).bijective
 
 end LinearMap
 

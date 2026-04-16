@@ -121,7 +121,6 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
         (AlgHom.id R (integralClosure R B))).toLinearMap)
       (φ r).toLinearMap (toIntegralClosure R S B).toLinearMap (1 ⊗ₜ x)).1)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] MvPolynomial.algebraMvPolynomial in
 /-- Base changing to `MvPolynomial σ R` preserves integral closure. -/
 lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
@@ -150,8 +149,7 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
       (Algebra.TensorProduct.map (AlgHom.id R (MvPolynomial σ R)) (integralClosure R B).val) =
       (MvPolynomial.mapAlgHom (integralClosure R B).val).comp
       MvPolynomial.scalarRTensorAlgEquiv.toAlgHom := by
-    ext <;> simp [e₀, -MvPolynomial.mapAlgHom_apply, MvPolynomial.mapAlgHom, MvPolynomial.coeff_map,
-      MvPolynomial.scalarRTensorAlgEquiv]
+    ext <;> simp [e₀, MvPolynomial.coeff_map, MvPolynomial.scalarRTensorAlgEquiv]
   exact congr($this y)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
@@ -374,7 +372,6 @@ private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
 
 end IsStandardEtale
 
-set_option backward.isDefEq.respectTransparency false in
 theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S] :
     Function.Bijective (toIntegralClosure R S B) := by
   have (m : PrimeSpectrum S) : ∃ f ∉ m.asIdeal,
