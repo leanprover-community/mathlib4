@@ -5555,6 +5555,7 @@ public import Mathlib.NumberTheory.Height.MvPolynomial
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.Height.NumberField
 public import Mathlib.NumberTheory.Height.Projectivization
+public import Mathlib.NumberTheory.Height.Rat
 public import Mathlib.NumberTheory.JacobiSum.Basic
 public import Mathlib.NumberTheory.KummerDedekind
 public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
