@@ -892,7 +892,7 @@ instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : Pseud
   topology_le := by rw [uniformSpace_edist]
   topology_eq_on_restrict _ _ := Metric.isOpen_eball.preimage_val
 
-/-- WeakPseudoEMetricSpace can be induced backwards. -/
+/-- `WeakPseudoEMetricSpace` can be induced backwards. -/
 abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
   [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
     WeakPseudoEMetricSpace α where
@@ -950,7 +950,7 @@ abbrev WeakEMetricSpace.induced
   {f : α → β} (hf : Function.Injective f) (m : WeakEMetricSpace β) :
     @WeakEMetricSpace α (TopologicalSpace.induced f n) :=
   letI := TopologicalSpace.induced f n
-  { WeakPseudoEMetricSpace.induced f m.toWeakPseudoEMetricSpace with
+  { WeakPseudoEMetricSpace.IsInducing (f := f) {eq_induced := rfl} m.toWeakPseudoEMetricSpace with
     eq_of_edist_eq_zero := fun h => hf (m.eq_of_edist_eq_zero h) }
 
 /-- Weak EMetric space instance on subsets of emetric spaces -/
