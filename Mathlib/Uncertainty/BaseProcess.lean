@@ -591,12 +591,16 @@ theorem e2e_centered_affine_zero (U : UncertainSpace) [AlgebraicUncertainSpace U
   exact E_centered U (linearComb_uncertain U c d X Y)
 
 /-- Stage 5 end-to-end concrete check on the linear-distribution branch. -/
-theorem e2e_exampleLinear_pipeline :
-    (createLinearVariable exampleLinearParams).cdf 2 = linearDistribution exampleLinearParams 2 ∧
-    uncertainExpectedValue exampleLinearParams = 2 := by
+example :
+    let params : LinearParams := { a := 1, b := 3, h_lt := by norm_num }
+    (createLinearVariable params).cdf 2 = linearDistribution params 2 ∧
+    uncertainExpectedValue params = 2 := by
+  dsimp
   constructor
   · rfl
-  · exact exampleExpectation
+  · have h := linearExpectedValue ({ a := 1, b := 3, h_lt := by norm_num } : LinearParams)
+    norm_num at h ⊢
+    exact h
 
 
 end Uncertainty

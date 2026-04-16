@@ -220,6 +220,10 @@ theorem normalUncertainDistributionBook_mem_Icc (params : NormalParams) (x : ℝ
   exact ⟨normalUncertainDistributionBook_nonneg params x,
     normalUncertainDistributionBook_le_one params x⟩
 
+/-- Inverse of the legacy normal uncertain distribution. -/
+noncomputable def normalInverseLegacy (params : NormalParams) (α : ℝ) : ℝ :=
+  params.e + params.σ * Real.log (α / (1 - α))
+
 /-- Inverse of book-scaled normal uncertain distribution. -/
 noncomputable def normalInverseBook (params : NormalParams) (α : ℝ) : ℝ :=
   params.e + (Real.sqrt 3 * params.σ / Real.pi) * Real.log (α / (1 - α))
@@ -643,7 +647,7 @@ instance [NormalDistributionRegularityStructure] :
   cdf_strictMonoOn := fun d => normalUncertainDistribution_strictMonoOn_core d
   cdf_tendsto_atBot := normalUncertainDistribution_tendsto_atBot
   cdf_tendsto_atTop := normalUncertainDistribution_tendsto_atTop
-  inverse := normalInverseBook
+  inverse := normalInverseLegacy
 
 instance [ZigzagDistributionRegularityStructure] : RegularDistributionLike ZigzagParams where
   cdf_continuous := fun d => zigzagDistribution_continuous d
@@ -843,19 +847,19 @@ theorem createLinearVariable_has_linear_distribution (params : LinearParams) (x 
   rfl
 
 /-- Stage 2 example parameters. -/
-def exampleLinearParams : LinearParams where
+example : LinearParams where
   a := 1
   b := 3
   h_lt := by norm_num
 
 /-- Stage 2 example linear constructor instance. -/
-noncomputable def exampleLinear : CreatedLinearVariable :=
-  createLinearVariable exampleLinearParams
+noncomputable example : CreatedLinearVariable :=
+  createLinearVariable ({ a := 1, b := 3, h_lt := by norm_num } : LinearParams)
 
 /-- Stage 2 example expectation check. -/
-theorem exampleExpectation : uncertainExpectedValue exampleLinearParams = 2 := by
-  have h := linearExpectedValue exampleLinearParams
-  norm_num [exampleLinearParams] at h ⊢
+example : uncertainExpectedValue ({ a := 1, b := 3, h_lt := by norm_num } : LinearParams) = 2 := by
+  have h := linearExpectedValue ({ a := 1, b := 3, h_lt := by norm_num } : LinearParams)
+  norm_num at h ⊢
   exact h
 
 end Uncertainty
