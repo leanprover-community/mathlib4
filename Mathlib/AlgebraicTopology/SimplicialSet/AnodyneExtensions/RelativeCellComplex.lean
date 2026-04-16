@@ -362,6 +362,11 @@ noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
 lemma Cell.ι_t {j : ι} (c : f.Cell j) : c.ιSigmaHorn ≫ f.t j = c.mapHorn := by
   simp [t, Sigma.ι_desc]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma Cell.ι_t_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
+    c.ιSigmaHorn.app x ≫ (f.t j).app x = c.mapHorn.app x :=
+  NatTrans.congr_app c.ι_t x
+
 /-- Given a rank `j` cell `c` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is
 the nondegenerate simplex in `f.sigmaStdSimplex j`
@@ -465,8 +470,8 @@ lemma isPullback (j : ι) :
       subst h
       rwa [x.ι_b_app_apply] at hy
     refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, ?_⟩
-    · erw [← NatTrans.comp_app_apply] at h ⊢
-      simpa only [Subtype.ext_iff, x.ι_t, x.ι_b] using h.symm
+    · simpa only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
+        x.ι_b_app_apply, x.ι_t_app_apply] using h.symm
     · rw [← NatTrans.comp_app_apply]
       simp)⟩
 
