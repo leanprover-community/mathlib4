@@ -45,7 +45,7 @@ variable {R X : C} {p₁ p₂ : R ⟶ X}
 class JointlyMono₂ {R X₁ X₂ : C} (p₁ : R ⟶ X₁) (p₂ : R ⟶ X₂) : Prop where
   right_cancellation : ∀ ⦃Y : C⦄ (f g : Y ⟶ R), f ≫ p₁ = g ≫ p₁ → f ≫ p₂ = g ≫ p₂ → f = g
 
-lemma Types.jointlyMono₂ {X : Type*} (φ : X → X → Prop) :
+lemma Types.jointlyMono₂ {X : Type w} (φ : X → X → Prop) :
     JointlyMono₂ (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
       (_root_.Prod.snd ∘ Subtype.val) where
   right_cancellation Y f g h₁ h₂ := by
@@ -63,7 +63,7 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
-def Types.reflexiveRelation {X : Type*} {φ : X → X → Prop} (hφ : _root_.Reflexive φ) :
+def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Reflexive φ) :
     ReflexiveRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
       (_root_.Prod.snd ∘ Subtype.val) where
   __ := Types.jointlyMono₂ φ
@@ -83,7 +83,7 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
 
-def Types.symmetricRelation {X : Type*} {φ : X → X → Prop} (hφ : _root_.Symmetric φ) :
+def Types.symmetricRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Symmetric φ) :
     SymmetricRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
       (_root_.Prod.snd ∘ Subtype.val) where
   __ := Types.jointlyMono₂ φ
@@ -110,7 +110,7 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
 
 attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
-def Types.transitiveRelation {X : Type*} {φ : X → X → Prop} (hφ : _root_.Transitive φ) :
+def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Transitive φ) :
     TransitiveRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
       (_root_.Prod.snd ∘ Subtype.val) where
   __ := Types.jointlyMono₂ φ
@@ -165,7 +165,7 @@ noncomputable def IsKernelPair.equivalenceRelation {X Y : C} (f : X ⟶ Y) {R : 
     (by simp [h.w, pullback.condition_assoc])
 
 /-- Equivalences relations on types are internal equivalence relations in the category of types. -/
-def Types.equivalenceRelation {X : Type*} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
+def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
     EquivalenceRelation (R := Subtype φ.uncurry) (_root_.Prod.fst ∘ Subtype.val)
       (_root_.Prod.snd ∘ Subtype.val) where
   __ := Types.reflexiveRelation hφ.reflexive
