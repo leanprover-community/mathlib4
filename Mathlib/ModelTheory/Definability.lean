@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Rel
 public import Mathlib.ModelTheory.Semantics
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.FunProp
 
 /-!
