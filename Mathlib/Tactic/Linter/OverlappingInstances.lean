@@ -59,7 +59,8 @@ meta section
 
 namespace Mathlib.Linter.OverlappingInstances
 
-/-- Clear the instances from the given application. -/
+/-- Clear the instances from the given application.
+This is used to deal with classes that have instance parameters. -/
 def eraseInstances (e : Expr) : MetaM Expr := do
   e.withApp fun f args ↦ do
   let finfo ← getFunInfo f
@@ -72,7 +73,7 @@ def eraseInstances (e : Expr) : MetaM Expr := do
 /-- Compute the data projections of the class `cls`.
 If `cls` is a `Prop` or a non-structure class, then return singleton array with just `cls`.
 The results contain bound variables corresponding to the parameters of `cls`. -/
-partial def abstractDataProjections (cls : Name) : CoreM (Array Expr) := do
+partial def getAbstractDataProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
   MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
     withLocalDeclD `self (mkAppN (.const cls (cinfo.levelParams.map .param)) xs) fun inst ↦ do
@@ -97,19 +98,23 @@ where
       acc := acc.push (← eraseInstances (type.abstract xs))
     return acc
 
-initialize dataProjectionCache : EnvExtension (NameMap (Array Expr)) ←
-  registerEnvExtension (pure {})
+/-- A cache for the result of `getAbstractDataProjections`. -/
+initialize dataProjectionCache : IO.Ref (NameMap (Array Expr)) ← IO.mkRef {}
 
-def abstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
-  if let some result := (dataProjectionCache.getState (← getEnv)).find? cls then
+/-- Return the result of `getAbstractDataProjections` while using a cache.
+To ensure soundness, we only use the cache for imported classes. -/
+def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
+  if (← getEnv).isImportedConst cls then
+    if let some result := (← dataProjectionCache.get).find? cls then
+      return result
+    else
+    let result ← getAbstractDataProjections cls
+    dataProjectionCache.modify (·.insert cls result)
     return result
-  let result ← abstractDataProjections cls
-  modifyEnv (dataProjectionCache.modifyState · (·.insert cls result))
-  return result
+  else
+    getAbstractDataProjections cls
 
-/--
-Find classes that for which multiple different instances can be synthesized in the local context.
--/
+/-- Find classes for which multiple different instances can be synthesized in the local context. -/
 partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId)) := do
   let mut overlaps : Std.HashMap Expr (Array FVarId) := {}
   let mut encountered : Std.HashMap Expr FVarId := {}
@@ -121,15 +126,15 @@ partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId
         let .const cls us := f |
           throwError "`{decl.toExpr}` has an instance implicit binder, but it is not an instance"
         let info ← getConstInfo cls
-        let projs ← abstractDataProjectionsCached cls
+        let projs ← getAbstractDataProjectionsCached cls
         projs.mapM fun proj ↦
           mkForallFVars xs <|
-            (proj.instantiateLevelParams info.levelParams us).instantiate args
-      for cls in projClasses do
-        if let some fvarId' := encountered[cls]? then
-          overlaps := overlaps.alter cls (·.getD #[fvarId'] |>.push decl.fvarId)
+            (proj.instantiateLevelParams info.levelParams us).instantiateRev args
+      for projCls in projClasses do
+        if let some fvarId' := encountered[projCls]? then
+          overlaps := overlaps.alter projCls (·.getD #[fvarId'] |>.push decl.fvarId)
         else
-          encountered := encountered.insert cls decl.fvarId
+          encountered := encountered.insert projCls decl.fvarId
   return overlaps
 
 /-- Lints against data-carrying overlaps between instances in the local contexts of declarations. -/
@@ -143,10 +148,10 @@ def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInf
     MetaM MessageData := do
   let declDescr ←
     if let some decl := ctx.parentDecl? then
-      pure m!"declaration `{.ofConstName (← unresolveNameGlobal decl)}`"
+      pure m!"Declaration `{.ofConstName (← unresolveNameGlobal decl)}`"
     else
-      pure "current declaration"
-  let mut msg := m!"The {declDescr} \
+      pure "The current declaration"
+  let mut msg := m!"{declDescr} \
     has instance hypotheses which provide conflicting versions of the same data. Specifically:"
   let mut msgs := #[]
   for (overlap, fvars) in overlaps do
@@ -155,11 +160,9 @@ def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInf
     msgs := msgs.push <|
       m!"{.andList parents.toList} provide conflicting instances of `{overlap}`."
   -- Create a bulleted list if there are multiple messages, otherwise just a single line
-  msg := if h : msgs.size = 1 then msg ++ "\n\n" ++ msgs[0] else
+  msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
-  msg := msg ++ m!"\n\n\
-    There should only be a single instance of these data-carrying typeclasses in the local context \
-    at a time. Consider choosing different instance hypotheses for the {declDescr}."
+  msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
   addMessageContextFull msg
 
 open Linter in
@@ -175,11 +178,11 @@ def overlappingInstances : Linter where
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
         let some (lctx, remainingType?) := info.getLCtx? | continue
-        ctx.runMetaMWithMessages lctx do withRef ref do
+        ctx.runMetaMWithMessages lctx do
         remainingType?.elim id (forallTelescope · fun _ _ => ·) do
           let overlaps ← findOverlappingDataInstances
           unless overlaps.isEmpty do
-            logWarning (← overlapsToMsg overlaps ctx)
+            logLint linter.overlappingInstances ref (← overlapsToMsg overlaps ctx)
 
 initialize addLinter overlappingInstances
 

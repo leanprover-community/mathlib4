@@ -30,11 +30,13 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
@@ -43,11 +45,13 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 /--
 @ +3:68...+4:12
-warning: The declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[FooBarBaz Nat]` and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₁`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs (positions := true) in
 set_option linter.overlappingInstances true in
@@ -56,60 +60,70 @@ set_option linter.overlappingInstances true in
   exact true
 
 /--
-warning: The declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
 • `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₂`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: The declaration `foo₃` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₃` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
 • `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `SubBar Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₃`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-warning: The declaration `foo₄` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₄` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
 • `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` provide conflicting instances of `SubBar Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₄`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
-def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
+theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 
 -- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
-warning: The declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `Baz Nat`.
 • `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `SubBar Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₅`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
-def foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : Bool := true
+lemma foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : True := trivial
 
 namespace Foo
 
 /-! Test unresolving name (`foo`, not `Foo.foo` or `_private...foo`) -/
 
 /--
-warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Add Nat]` and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 private def foo [Add Nat] [Add Nat] : Bool := true
@@ -125,11 +139,13 @@ class inductive IndFoo where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
 /--
-warning: The declaration `indFoo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `indFoo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[IndFoo]` and `[IndFoo]` provide conflicting instances of `IndFoo`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `indFoo`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def indFoo [IndFoo] [IndFoo] : Bool := true
@@ -139,11 +155,13 @@ class inductive IndFooProp : Prop where
 
 -- We also warn when there are duplicate `Prop` clases
 /--
-warning: The declaration `indFooProp` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `indFooProp` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[IndFooProp]` and `[IndFooProp]` provide conflicting instances of `IndFooProp`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `indFooProp`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def indFooProp [IndFooProp] [IndFooProp] : Bool := true
@@ -155,11 +173,13 @@ section instantiateMVars
 variable {α : Type*} [Repr α]
 
 /--
-warning: The declaration `needsInstantiateMVars` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `needsInstantiateMVars` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Repr α]` and `[Repr α]` provide conflicting instances of `Repr α`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `needsInstantiateMVars`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 def needsInstantiateMVars [Repr α] : Bool := true
@@ -174,14 +194,60 @@ def fooNothing [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
 set_option linter.overlappingInstances false
 
 /--
-warning: The declaration `fooSomething` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+warning: Declaration `fooSomething` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
-There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `fooSomething`.
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
 set_option linter.overlappingInstances true in
 def fooSomething [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
 
 end setOptionIn
+
+namespace universes
+
+class A (α : Sort u) where
+
+class B (α : Type u) extends A α
+
+/--
+warning: Declaration `_example` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+`[B α]` and `[A α]` provide conflicting instances of `A α`.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example (α : Type 4) [B α] [A α] : True := trivial
+
+end universes
+
+namespace parameters
+
+class A (α : Type*) where
+class A' (α : Type*) extends A α where
+
+instance {α} : A α where
+
+class B (α β : Type*) [A α] where
+class B' (α β : Type*) [A' α] extends B α β where
+
+/--
+warning: Declaration `_example` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+`[B α β]` and `[B' α β]` provide conflicting instances of `B α β`.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+example {α β} [B α β] [A' α] [B' α β] : True := trivial
+
+end parameters
