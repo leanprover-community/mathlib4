@@ -134,9 +134,8 @@ partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId
 
 /-- Lints against data-carrying overlaps between instances in the local contexts of declarations. -/
 register_option linter.overlappingInstances : Bool := {
-  defValue := false
-  descr := "enable the overlapping instances linter. This only lints against data-carrying \
-    overlaps and on declaration bodies."
+  defValue := true
+  descr := "enable the overlapping instances linter."
 }
 
 /-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/

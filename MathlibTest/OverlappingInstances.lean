@@ -3,8 +3,6 @@ module
 import Mathlib.Tactic.Linter.OverlappingInstances
 import Mathlib.Init
 
-set_option linter.overlappingInstances true
-
 namespace Lean
 
 public section
