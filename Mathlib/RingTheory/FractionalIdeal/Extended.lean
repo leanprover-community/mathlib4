@@ -167,6 +167,7 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
 
 /--
 The ring homomorphism version of `FractionalIdeal.extended`.
+See `FractionalIdeal.extendedHom` for a more convient version that is often enough.
 -/
 @[simps]
 def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
