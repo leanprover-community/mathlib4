@@ -7,9 +7,9 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" from git "https://github.com/MoritzBeroRoos/batteries" @ "convert_linter"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.93" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "Qq" @ git "v4.30.0-rc1"
+require "leanprover-community" / "aesop" @ git "v4.30.0-rc1"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.97" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
