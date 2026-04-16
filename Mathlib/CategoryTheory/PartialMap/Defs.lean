@@ -22,7 +22,7 @@ order of partial maps from `X` to `Y` as well as the category of partial map dia
 
 ## Short explanation
 
-A partial map (in usual parlance, i.e. say set theory) from `X` to `Y` is a function from some
+A partial map (in usual parlance, i.e. set theory) from `X` to `Y` is a function from some
 subset of X to Y. In category theory, when interpreting morphisms as functions between sets/types,
 this corresponds to an object `U` and two morphisms `m : U ⟶ X` and `f : U ⟶ Y` with `m` mono
 (making `U` a literal subobject of `X`, and `f` the function from the subobject to `Y`).
@@ -43,7 +43,10 @@ objects `U`) which transform the respective maps `m` and `f` into eachother.
   In the file we also introduce the notation `X ⇀ Y` for this type.
 
 - `WithPrePartialMaps C` is the bicategory with objects in `C` where morphisms are partial
-  map diagrams
+  map diagrams in `C`.
+
+- `WithPartialMaps C` is the strict bicategory with objects in `C` where morphisms are partial maps
+  in `C`.
 
 
 -/
@@ -56,27 +59,36 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A (concrete) partial map diagram in a category `C` from `X` to `Y` is a binary fan into `X` and
   `Y` such that the map into `X` is mono. -/
-def ObjectProperty.IsPartialMap (X Y : C) : ObjectProperty (Limits.BinaryFan X Y) :=
+def ObjectProperty.IsPrePartialMap (X Y : C) : ObjectProperty (Limits.BinaryFan X Y) :=
   (Mono ·.fst)
 
 /-- The category of concrete partial map diagrams in the category `C` with domain `X` and
   codomain `X` -/
 @[ext]
-structure PrePartialMap (X Y : C) where
-  mk' :: (out : (ObjectProperty.IsPartialMap X Y).FullSubcategory)
+structure PrePartialMap (X Y : C) where mk' ::
+  /-- interpret a partial map diagram as an actual diagram -/
+  out : (ObjectProperty.IsPrePartialMap X Y).FullSubcategory
 
-def PrePartialMap.domain {X Y : C} (f : PrePartialMap X Y) : C := f.out.obj.pt
+/-- The support of definition of a partial map diagram -/
+def PrePartialMap.support {X Y : C} (f : PrePartialMap X Y) : C := f.out.obj.pt
 
-def PrePartialMap.fst {X Y : C} (f : PrePartialMap X Y) : f.domain ⟶ X := f.out.obj.fst
+/-- The inclusion of the support into the domain of a partial map diagram -/
+def PrePartialMap.fst {X Y : C} (f : PrePartialMap X Y) : f.support ⟶ X := f.out.obj.fst
 
-def PrePartialMap.hom {X Y : C} (f : PrePartialMap X Y) : f.domain ⟶ Y := f.out.obj.snd
+/-- The underlying (total) map of a partial map diagram -/
+def PrePartialMap.hom {X Y : C} (f : PrePartialMap X Y) : f.support ⟶ Y := f.out.obj.snd
 
 variable (C) in
-structure WithPrePartialMaps where
-  mk :: (out : C)
+/-- The bicategory `WithPrePartialMaps C` has all objects in `C` as objects,
+1-morphisms between `X` and `Y` are partial map diagrams from `X` to `Y`, and 2-morphisms are
+given by expanding the support (and therefore unique). -/
+structure WithPrePartialMaps where mk ::
+  /-- Interpret an object in `WithPrePartialMaps C` as an object in `C` -/
+  out : C
 
 attribute [pp_nodot] WithPrePartialMaps.mk
 
+/-- We want to see `WithPrePartialMaps.mk X` instead of `{out := X}` -/
 @[app_unexpander WithPrePartialMaps.mk]
 protected meta def WithPrePartialMaps.unexpander_mk : Lean.PrettyPrinter.Unexpander
   | s => pure s
@@ -114,8 +126,8 @@ lemma mk_obj {X Y : C} (x : X ⇀' Y) :
   | .mk .right => simp
 
 @[simp]
-lemma mk_domain {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
-  (mk m f).domain = U := rfl
+lemma mk_support {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
+  (mk m f).support = U := rfl
 
 @[simp]
 lemma mk_fst {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
@@ -125,10 +137,13 @@ lemma mk_fst {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
 lemma mk_hom {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
   (mk m f).hom = f := rfl
 
+/-- A morphism in `C` naturally lifts to a partial map diagram -/
 def mkOfHom {X Y : C} (f : X ⟶ Y) : X ⇀' Y := mk (𝟙 X) f
 
+lemma mkOfHom_def {X Y : C} (f : X ⟶ Y) : mkOfHom f = mk (𝟙 X) f := rfl
+
 @[simp]
-lemma mkOfHom_domain {X Y : C} (f : X ⟶ Y) : (mkOfHom f).domain = X := rfl
+lemma mkOfHom_support {X Y : C} (f : X ⟶ Y) : (mkOfHom f).support = X := rfl
 
 @[simp]
 lemma mkOfHom_fst {X Y : C} (f : X ⟶ Y) : (mkOfHom f).fst = 𝟙 X := rfl
@@ -136,10 +151,13 @@ lemma mkOfHom_fst {X Y : C} (f : X ⟶ Y) : (mkOfHom f).fst = 𝟙 X := rfl
 @[simp]
 lemma mkOfHom_hom {X Y : C} (f : X ⟶ Y) : (mkOfHom f).hom = f := rfl
 
+/-- Any monomorphism `Y ⟶ X` induces a partial map diagram `X ⇀' Y` with support `Y` -/
 def mkOfMono {X Y : C} (m : Y ⟶ X) [Mono m] : X ⇀' Y := mk m (𝟙 Y)
 
+lemma mkOfMono_def {X Y : C} (m : Y ⟶ X) [Mono m] : mkOfMono m = mk m (𝟙 Y) := rfl
+
 @[simp]
-lemma mkOfMono_domain {X Y : C} (m : Y ⟶ X) [Mono m] : (mkOfMono m).domain = Y := rfl
+lemma mkOfMono_support {X Y : C} (m : Y ⟶ X) [Mono m] : (mkOfMono m).support = Y := rfl
 
 @[simp]
 lemma mkOfMono_fst {X Y : C} (m : Y ⟶ X) [Mono m] : (mkOfMono m).fst = m := rfl
@@ -147,9 +165,12 @@ lemma mkOfMono_fst {X Y : C} (m : Y ⟶ X) [Mono m] : (mkOfMono m).fst = m := rf
 @[simp]
 lemma mkOfMono_hom {X Y : C} (m : Y ⟶ X) [Mono m] : (mkOfMono m).hom = 𝟙 Y := rfl
 
-structure Hom {X Y : C} (f g : X ⇀' Y) where
-
-  mk :: (hom' : f.out ⟶ g.out)
+/--
+given `f g : X ⇀' Y`, a morphism `f ⟶ g` is a witness that `g` is a functional extension of `f`.
+-/
+structure Hom {X Y : C} (f g : X ⇀' Y) where mk ::
+  /-- the morphism of cones underlying an extension of partial map diagrams -/
+  hom' : f.out ⟶ g.out
 
 instance {X Y : WithPrePartialMaps C} : Category (X ⟶ Y) where
   Hom := Hom
@@ -163,19 +184,20 @@ instance {X Y : WithPrePartialMaps C} : Quiver.IsThin (X ⟶ Y) := fun
       b.out.property.right_cancellation f₁.hom'.hom.hom f₂.hom'.hom.hom (by
         simp [dsimp% f₁.hom'.hom.w ⟨.left⟩, dsimp% f₂.hom'.hom.w ⟨.left⟩])}
 
-def Hom.hom {X Y : WithPrePartialMaps C} {f g : X ⟶ Y} (h : f ⟶ g) : f.domain ⟶ g.domain :=
+/-- The morphism in `C` underlying a morphism `f ⟶ g` -/
+def Hom.hom {X Y : WithPrePartialMaps C} {f g : X ⟶ Y} (h : f ⟶ g) : f.support ⟶ g.support :=
   h.hom'.hom.hom
 
-@[reassoc (attr := simp)]
-lemma id_hom {X Y : WithPrePartialMaps C} (f : X ⟶ Y) : (𝟙 f : f ⟶ f).hom = 𝟙 (f.domain) := rfl
+@[simp, reassoc]
+lemma id_hom {X Y : WithPrePartialMaps C} (f : X ⟶ Y) : (𝟙 f : f ⟶ f).hom = 𝟙 (f.support) := rfl
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma comp_hom {X Y : WithPrePartialMaps C} {f g h : X ⟶ Y} (x : f ⟶ g) (y : g ⟶ h) :
     (x ≫ y).hom = x.hom ≫ y.hom := rfl
 
 /-- Create a morphism between partial map diagrams by providing a morphism `g : U₁ ⟶ U₂`
   which makes the obvious triangles commute -/
-def homMk {X Y : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y} (g : f₁.domain ⟶ f₂.domain)
+def homMk {X Y : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y} (g : f₁.support ⟶ f₂.support)
     (hgm : g ≫ f₂.fst = f₁.fst := by cat_disch)
     (hgf : g ≫ f₂.hom = f₁.hom := by cat_disch) :
     f₁ ⟶ f₂ := .mk <| ObjectProperty.homMk
@@ -186,7 +208,7 @@ def homMk {X Y : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y} (g : f₁.domain �
       | .mk .right => exact hgf }
 
 @[simp]
-lemma homMk_hom {X Y : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y} (g : f₁.domain ⟶ f₂.domain)
+lemma homMk_hom {X Y : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y} (g : f₁.support ⟶ f₂.support)
     (hgm : g ≫ f₂.fst = f₁.fst) (hgf : g ≫ f₂.hom = f₁.hom) :
     (homMk g hgm hgf).hom = g := rfl
 
@@ -209,7 +231,7 @@ lemma hom_ext {X Y : WithPrePartialMaps C} {f g : X ⟶ Y} (h₁ h₂ : f ⟶ g)
 
 @[simp]
 lemma eqToHom_hom {X Y : WithPrePartialMaps C} {f g : X ⟶ Y} (h : f = g) :
-    (eqToHom h).hom = eqToHom ((congr(($h).domain))) := by
+    (eqToHom h).hom = eqToHom ((congr(($h).support))) := by
   cases h; rfl
 
 @[simp]
@@ -223,13 +245,13 @@ lemma homMk_id {X Y U₁ : C} {m₁ : U₁ ⟶ X} [Mono m₁] {f₁ : U₁ ⟶ Y
   homMk (𝟙 U₁) = 𝟙 (mk m₁ f₁) := rfl
 
 @[simp]
-lemma homMk_id_domain {X Y : C} (f : X ⇀' Y) :
-  homMk (𝟙 f.domain) = 𝟙 f := rfl
+lemma homMk_id_support {X Y : C} (f : X ⇀' Y) :
+  homMk (𝟙 f.support) = 𝟙 f := rfl
 
 @[reassoc (attr := simp)]
-lemma homMk_comp {X Y : WithPrePartialMaps C} {f₁ f₂ f₃ : X ⟶ Y} (g₁ : f₁.domain ⟶ f₂.domain)
+lemma homMk_comp {X Y : C} {f₁ f₂ f₃ : X ⇀' Y} (g₁ : f₁.support ⟶ f₂.support)
     (hgm₁ : g₁ ≫ f₂.fst = f₁.fst) (hgf₁ : g₁ ≫ f₂.hom = f₁.hom)
-    (g₂ : f₂.domain ⟶ f₃.domain) (hgm₂ : g₂ ≫ f₃.fst = f₂.fst)
+    (g₂ : f₂.support ⟶ f₃.support) (hgm₂ : g₂ ≫ f₃.fst = f₂.fst)
     (hgf₂ : g₂ ≫ f₃.hom = f₂.hom) :
     homMk g₁ hgm₁ hgf₁ ≫ homMk g₂ hgm₂ hgf₂ = homMk (g₁ ≫ g₂) := rfl
 
@@ -249,6 +271,8 @@ variable [HasPullbacks C]
 noncomputable def comp {X Y Z : C} (f : X ⇀' Y) (g : Y ⇀' Z) : X ⇀' Z :=
   PrePartialMap.mk (pullback.fst f.hom g.fst ≫ f.fst) (pullback.snd _ _ ≫ g.hom)
 
+/-- in the category of partial map diagrams, `mk m₁ f₁ ≫ mk m₂ f₂` is isomorphic to
+  `mk (m₃ ≫ m₁) (f₃ ≫ f₂)` when we have `IsPullback m₃ f₃ f₁ m₂`. -/
 noncomputable def mkCompMkIso {X Y Z : C} {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m₁] (f₁ : U₁ ⟶ Y)
     {U₂ : C} (m₂ : U₂ ⟶ Y) [Mono m₂] (f₂ : U₂ ⟶ Z) {U₃ : C} {m₃ : U₃ ⟶ U₁} {f₃ : U₃ ⟶ U₂}
     (h : IsPullback m₃ f₃ f₁ m₂) :
@@ -259,22 +283,30 @@ noncomputable def mkCompMkIso {X Y Z : C} {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m
   hom_inv_id := by ext
   inv_hom_id := by ext
 
+/-- Given total morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, we have an isomorphism of partial map
+  diagrams between `↑(f ≫ g)` and `↑f ≫ ↑g` -/
 noncomputable def mkOfHomCompIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     mkOfHom (f ≫ g) ≅ comp (mkOfHom f) (mkOfHom g) :=
   eqToIso (by simpa using refl (mkOfHom (f ≫ g))) ≪≫
     (mkCompMkIso (𝟙 X) f (𝟙 Y) g (IsPullback.id_horiz f)).symm
 
+/-- Given monomorphisms `m₁ : Y ⟶ X` and `m₂ : Z ⟶ Y`, there is an isomorphism of partial map
+  diagrams between `↑(m₂ ≫ m₁)` and `↑m₁ ≫ ↑m₂`, where the coersion `↑(m : X ⟶ Y)` is taking the
+  partial map diagram given by inclusion `m` and map `𝟙 X` -/
 noncomputable def mkOfMonoCompIso {X Y Z : C} (m₁ : Y ⟶ X) [Mono m₁] (m₂ : Z ⟶ Y) [Mono m₂] :
     mkOfMono (m₂ ≫ m₁) ≅ comp (mkOfMono m₁) (mkOfMono m₂) :=
-  eqToIso (by simpa using refl (mkOfMono (m₂ ≫ m₁))) ≪≫
+  eqToIso (by simp [mkOfMono_def]) ≪≫
     (mkCompMkIso m₁ (𝟙 Y) m₂ (𝟙 Z) (IsPullback.id_vert m₂)).symm
 
+/-- Given a monomorphism `m : U ⟶ X` and morphism `f : U ⟶ Y`, the composition of the
+  "support" partial map diagram induced by `m` and the "total map" partial map diagram induced by
+  `f` is isomorophic to the partial map diagram given by `m` and `f`. -/
 noncomputable def mkOfMonoCompMkOfHomIso {X Y U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
     comp (mkOfMono m) (mkOfHom f) ≅ mk m f :=
   mkCompMkIso m (𝟙 U) (𝟙 U) f (IsPullback.id_vert (𝟙 U)) ≪≫
     eqToIso (by simp)
 
-/-- The associator iso in the bicategory of partial map diagrams -/
+/-- The associator isomorphism in the bicategory of partial map diagrams -/
 noncomputable def associator {W X Y Z : WithPrePartialMaps C}
     (f₁ : W ⟶ X) (f₂ : X ⟶ Y) (f₃ : Y ⟶ Z) :
     comp (comp f₁ f₂) f₃ ≅ comp f₁ (comp f₂ f₃) where
@@ -288,21 +320,19 @@ noncomputable def associator {W X Y Z : WithPrePartialMaps C}
 /-- left whiskering in the bicategory of partial map diagrams -/
 noncomputable def whiskerLeft {X Y Z : WithPrePartialMaps C} (f : X ⟶ Y) {g₁ g₂ : Y ⟶ Z}
     (h : g₁ ⟶ g₂) : comp f g₁ ⟶ comp f g₂ :=
-  homMk (pullback.map (f.hom) g₁.fst f.hom g₂.fst (𝟙 f.domain) h.hom (𝟙 Y.out) (by simp) (by simp))
+  homMk (pullback.map (f.hom) g₁.fst f.hom g₂.fst (𝟙 f.support) h.hom (𝟙 Y.out) (by simp) (by simp))
     (by simp [comp, pullback.lift_fst_assoc]) (by simp [comp,pullback.lift_snd_assoc])
 
--- set_option backward.isDefEq.respectTransparency false in
 /-- right whiskering in the bicategory of partial map diagrams -/
 noncomputable def whiskerRight {X Y Z : WithPrePartialMaps C} {f₁ f₂ : X ⟶ Y}
     (h : f₁ ⟶ f₂) (g : Y ⟶ Z) : comp f₁ g ⟶ comp f₂ g :=
-  homMk (pullback.map f₁.hom g.fst f₂.hom g.fst h.hom (𝟙 g.domain) (𝟙 Y.out) (by simp) (by simp))
+  homMk (pullback.map f₁.hom g.fst f₂.hom g.fst h.hom (𝟙 g.support) (𝟙 Y.out) (by simp) (by simp))
     (by simp [comp, pullback.lift_fst_assoc]) (by simp [comp, pullback.lift_snd_assoc])
 
--- set_option backward.isDefEq.respectTransparency false in
 /-- the left unitor in the bicategory of partial map diagrams. -/
 noncomputable def leftUnitor {X Y : C} (f : X ⇀' Y) : comp (mkOfHom (𝟙 X)) f ≅ f where
   hom := homMk (pullback.snd _ _) (pullback.condition.symm) rfl
-  inv := homMk (pullback.lift f.fst (𝟙 f.domain) (by simp))
+  inv := homMk (pullback.lift f.fst (𝟙 f.support) (by simp))
     (by simp [comp, pullback.lift_fst]) (by simp [comp, pullback.lift_snd_assoc])
   hom_inv_id := by ext
   inv_hom_id := by ext
@@ -310,110 +340,51 @@ noncomputable def leftUnitor {X Y : C} (f : X ⇀' Y) : comp (mkOfHom (𝟙 X)) 
 /-- the right unitor in the bicategory of partial map diagrams. -/
 noncomputable def rightUnitor {X Y : C} (f : X ⇀' Y) : comp f (mkOfHom (𝟙 Y)) ≅ f where
   hom := homMk (pullback.fst _ _) (rfl) (pullback.condition)
-  inv := homMk (pullback.lift (𝟙 f.domain) f.hom)
+  inv := homMk (pullback.lift (𝟙 f.support) f.hom)
     (by simp [comp, pullback.lift_fst_assoc]) (by simp [comp, pullback.lift_snd])
   hom_inv_id := by ext
   inv_hom_id := by ext
 
-@[simp]
-lemma id_whiskerLeft {X Y : C} {f₁ f₂ : X ⇀' Y} (h : f₁ ⟶ f₂) :
-    whiskerLeft (mkOfHom (𝟙 X)) h = (leftUnitor f₁).hom ≫ h ≫ (leftUnitor f₂).inv := by
-  ext
-
-@[simp]
-lemma whiskerLeft_id {X Y Z : C} (f : X ⇀' Y) (g : Y ⇀' Z) :
-    whiskerLeft f (𝟙 g) = 𝟙 (comp f g) := by
-  ext
-
-@[simp]
-lemma whiskerLeft_comp {X Y Z : C} (f : X ⇀' Y) {g₁ g₂ g₃ : Y ⇀' Z}
-    (h₁ : g₁ ⟶ g₂) (h₂ : g₂ ⟶ g₃) :
-    whiskerLeft f (h₁ ≫ h₂) = whiskerLeft f h₁ ≫ whiskerLeft f h₂ := by
-  ext
-
-@[simp]
-lemma comp_whiskerLeft {W X Y Z : C} (f₁ : W ⇀' X) (f₂ : X ⇀' Y) {g₁ g₂ : Y ⇀' Z}
-    (h : g₁ ⟶ g₂) : whiskerLeft (comp f₁ f₂) h = (associator f₁ f₂ g₁).hom ≫
-      whiskerLeft f₁ (whiskerLeft f₂ h) ≫ (associator f₁ f₂ g₂).inv := by
-  ext
-
-lemma whiskerRight_id {X Y : C} {f₁ f₂ : X ⇀' Y} (h : f₁ ⟶ f₂) :
-    whiskerRight h (mkOfHom (𝟙 Y)) = (rightUnitor f₁).hom ≫ h ≫ (rightUnitor f₂).inv := by
-  ext
-
-@[simp]
-lemma id_whiskerRight {X Y Z : C} (f : X ⇀' Y) (g : Y ⇀' Z) :
-    whiskerRight (𝟙 f) g = 𝟙 (comp f g) := by
-  ext
-
-@[simp]
-lemma comp_whiskerRight {X Y Z : C} {f₁ f₂ f₃ : X ⇀' Y} (h₁ : f₁ ⟶ f₂) (h₂ : f₂ ⟶ f₃)
-    (g : Y ⇀' Z) : whiskerRight (h₁ ≫ h₂) g = whiskerRight h₁ g ≫ whiskerRight h₂ g := by
-  ext
-
-@[simp]
-lemma whiskerRight_comp {W X Y Z : C} {f₁ f₂ : W ⇀' X} (h : f₁ ⟶ f₂) (g₁ : X ⇀' Y)
-    (g₂ : Y ⇀' Z) : whiskerRight h (comp g₁ g₂) = (associator f₁ g₁ g₂).inv ≫
-      whiskerRight (whiskerRight h g₁) g₂ ≫ (associator f₂ g₁ g₂).hom := by
-  ext
-
-lemma whisker_assoc {W X Y Z : C} (f₁ : W ⇀' X) {g₁ g₂ : X ⇀' Y} (h : g₁ ⟶ g₂)
-    (f₂ : Y ⇀' Z) : whiskerRight (whiskerLeft f₁ h) f₂ = (associator f₁ g₁ f₂).hom ≫
-    whiskerLeft f₁ (whiskerRight h f₂) ≫ (associator f₁ g₂ f₂).inv := by
-  ext
-
-lemma whisker_exchange {X Y Z : C} {f₁ f₂ : X ⇀' Y} (f : f₁ ⟶ f₂)
-    {g₁ g₂ : Y ⇀' Z} (g : g₁ ⟶ g₂) : whiskerLeft f₁ g ≫ (whiskerRight f g₂) =
-    whiskerRight f g₁ ≫ whiskerLeft f₂ g := by
-  ext
-
-lemma pentagon {A B D E F : C} (f : A ⇀' B) (g : B ⇀' D) (h : D ⇀' E) (i : E ⇀' F) :
-    whiskerRight (associator f g h).hom i ≫ (associator f (comp g h) i).hom ≫
-      whiskerLeft f (associator g h i).hom =
-      (associator (comp f g) h i).hom ≫ (associator f g (comp h i)).hom := by
-  ext
-
-lemma triangle {X Y Z : C} (f : X ⇀' Y) (g : Y ⇀' Z) :
-    (associator f (mkOfHom (𝟙 Y)) g).hom ≫ whiskerLeft f (leftUnitor g).hom =
-      whiskerRight (rightUnitor f).hom g := by
-  ext
-
-noncomputable instance : Bicategory (WithPrePartialMaps C) where
-  id X := mkOfHom (𝟙 X.out)
-  comp {X Y Z} f g := comp f g
-  whiskerLeft {X Y Z} f g₁ g₂ h := whiskerLeft f h
-  whiskerRight {X Y Z} f₁ f₂ h g := whiskerRight h g
-  associator {W X Y Z} f g h := associator f g h
-  leftUnitor {X Y} f := leftUnitor f
-  rightUnitor {X Y} f := rightUnitor f
-  whiskerLeft_id := whiskerLeft_id
-  whiskerLeft_comp := whiskerLeft_comp
-  id_whiskerLeft := id_whiskerLeft
-  comp_whiskerLeft := comp_whiskerLeft
-  id_whiskerRight := id_whiskerRight
-  comp_whiskerRight := comp_whiskerRight
-  whiskerRight_id := whiskerRight_id
-  whiskerRight_comp := whiskerRight_comp
-  whisker_assoc := whisker_assoc
-  whisker_exchange {X Y Z} f₁ f₂ g₁ g₂ f g := whisker_exchange f g
-  pentagon := pentagon
-  triangle := triangle
+noncomputable instance : Bicategory (WithPrePartialMaps C) := by
+  refine {
+    id X := mkOfHom (𝟙 X.out)
+    comp {X Y Z} f g := comp f g
+    whiskerLeft {X Y Z} f g₁ g₂ h := whiskerLeft f h
+    whiskerRight {X Y Z} f₁ f₂ h g := whiskerRight h g
+    associator {W X Y Z} f g h := associator f g h
+    leftUnitor {X Y} f := leftUnitor f
+    rightUnitor {X Y} f := rightUnitor f
+    whiskerLeft_id := ?_
+    whiskerLeft_comp := ?_
+    id_whiskerLeft := ?_
+    comp_whiskerLeft := ?_
+    id_whiskerRight := ?_
+    comp_whiskerRight := ?_
+    whiskerRight_id := ?_
+    whiskerRight_comp := ?_
+    whisker_assoc := ?_
+    whisker_exchange := ?_
+    pentagon := ?_
+    triangle := ?_ } <;> intros <;> ext
 
 end PrePartialMap
 
 /-- The skeleton category of partially defined maps, where given `f g : X ⇀ Y`,
   the map `f ⟶ g` exists iff the support of `g` contains the support of `f` and
   the maps agree on the support of `f` -/
-def PartialMap (X Y : C) := ThinSkeleton (X ⇀' Y)
+abbrev PartialMap (X Y : C) := ThinSkeleton (X ⇀' Y)
 namespace PartialMap
 
 variable (C) in
 /-- The 2-category `C` with partial maps in `C` as morphisms. -/
 structure _root_.CategoryTheory.WithPartialMaps : Type u where
-  mk :: (out : C)
+  mk ::
+  /-- interpret an object in `WithPartialMaps C` as an object in `C` -/
+  out : C
 
 attribute [pp_nodot] WithPartialMaps.mk
 
+/-- We want to see `WithPartialMaps.mk X` instead of `{out := X}` -/
 @[app_unexpander WithPartialMaps.mk]
 protected meta def WithPartialMaps.unexpander_mk : Lean.PrettyPrinter.Unexpander
   | s => pure s
@@ -423,8 +394,12 @@ instance : Quiver (WithPartialMaps C) where
 
 -- not sure if this is the right precedence yet. it should be more than 40, in order to parse
 -- correctly w/r/t "=". see also the notation "⇀'"
+/-- A partial map between objects `X Y : C` is an object `U : C` with a monomorphism `m : U ⟶ X` and
+a morphism `f : U ⟶ Y`, up to isomorphism `U ≅ U'` -/
 notation:40 X:41 " ⇀ " Y:41 => WithPartialMaps.mk X ⟶ WithPartialMaps.mk Y
 
+/-- An object `U : C` with a monomorphism `m : U ⟶ X` and a morphism `f : U ⟶ Y` induces a partial
+map `X ⇀ Y` by taking the equivalence class of the partial map diagram -/
 def mk {U X Y : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) : X ⇀ Y :=
   ThinSkeleton.mk (.mk m f)
 
@@ -470,6 +445,8 @@ lemma mk_eq {U₁ U₂ X Y : C} (m₁ : U₁ ⟶ X) [Mono m₁] (f₁ : U₁ ⟶
     constructor
     exact Iso.mk (PrePartialMap.homMk e.hom) (PrePartialMap.homMk e.inv)
 
+/-- a general recursion principle for partial maps: Every partial map is induced by some
+partial map diagram. -/
 def rec {X Y : C} {motive : X ⇀ Y → Sort*}
     (ofMk : ∀ {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y), motive (.mk m f))
     (ofMk_sound : ∀ {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m₁] (f₁ : U₁ ⟶ Y),
@@ -485,27 +462,19 @@ def rec {X Y : C} {motive : X ⇀ Y → Sort*}
     · simp only [heq_cast_iff_heq, eqRec_heq_iff_heq, heq_eq_eq]
     · exact proof_irrel_heq hab h₂)
 
-    -- convert rfl <;> simp_all)
-
-def rec' {X Y : C} {motive : X ⇀ Y → Sort*}
+/-- a recursion principle for partial maps: Every partial map is induced by some
+partial map diagram. If the motive is always subsingleton, we don't need to prove coherence. -/
+def recSubsingleton {X Y : C} {motive : X ⇀ Y → Sort*}
     (ofMk : ∀ {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y), motive (.mk m f))
     [∀ (f : X ⇀ Y), Subsingleton (motive f)] :
     ∀ (f : X ⇀ Y), motive f := PartialMap.rec ofMk (by intros; apply Subsingleton.elim)
 
-lemma rec'_mk {X Y : C} {motive : X ⇀ Y → Sort*}
+@[simp]
+lemma recSubsingleton_mk {X Y : C} {motive : X ⇀ Y → Sort*}
     (ofMk : ∀ {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y), motive (.mk m f))
     [∀ (f : X ⇀ Y), Subsingleton (motive f)]
     {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
-  PartialMap.rec' ofMk (mk m f) = ofMk m f := rfl
-
-def lift {X Y : C} {motive : Sort*}
-    (ofMk : ∀ {U : C} (m : U ⟶ X) [Mono m] (_f : U ⟶ Y), motive)
-    (ofMk_sound : ∀ {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m₁] (f₁ : U₁ ⟶ Y),
-      ∀ {U₂ : C} (m₂ : U₂ ⟶ X) [Mono m₂] (f₂ : U₂ ⟶ Y),
-      (h : mk m₁ f₁ = mk m₂ f₂) → ofMk m₁ f₁ = ofMk m₂ f₂) :
-    X ⇀ Y → motive :=
-  PartialMap.rec ofMk (fun {U₁} m₁ _ f₁ {U₂} m₂ _ f₂ h =>
-    (by simp [ofMk_sound m₁ f₁ m₂ f₂ h]))
+  recSubsingleton ofMk (mk m f) = ofMk m f := rfl
 
 @[simp]
 lemma rec_mk {X Y : C} {motive : X ⇀ Y → Sort*}
@@ -516,16 +485,7 @@ lemma rec_mk {X Y : C} {motive : X ⇀ Y → Sort*}
     {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
     PartialMap.rec ofMk ofMk_sound (mk m f) = ofMk m f := rfl
 
-@[simp]
-lemma lift_mk {X Y : C} {motive : Sort*}
-    (ofMk : ∀ {U : C} (m : U ⟶ X) [Mono m] (_f : U ⟶ Y), motive)
-    (ofMk_sound : ∀ {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m₁] (f₁ : U₁ ⟶ Y),
-      ∀ {U₂ : C} (m₂ : U₂ ⟶ X) [Mono m₂] (f₂ : U₂ ⟶ Y),
-      (h : mk m₁ f₁ = mk m₂ f₂) → ofMk m₁ f₁ = ofMk m₂ f₂)
-    {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
-    PartialMap.lift ofMk ofMk_sound (mk m f) = ofMk m f :=
-  rfl
-
+/-- induction on partial maps -/
 @[cases_eliminator, induction_eliminator]
 lemma induction {X Y : C} {motive : (X ⇀ Y) → Prop}
     (h_mk : ∀ {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y), motive (.mk m f)) :
@@ -544,7 +504,7 @@ lemma induction₂ {X Y : C} {motive : (X ⇀ Y) → (X ⇀ Y) → Prop}
     | h_mk m₂ f₂ =>
       exact h_mk m₁ f₁ m₂ f₂
 
-/-- The domain of a partial map -/
+/-- The support of a partial map. -/
 protected def support {X Y : C} : X ⇀ Y ⥤ Subobject X :=
   ThinSkeleton.map PrePartialMap.overMono
 
@@ -552,23 +512,25 @@ lemma support.obj_mk {X Y : C} {U : C} (m : U ⟶ X) [Mono m] (f : U ⟶ Y) :
   PartialMap.support.obj (mk m f) = Subobject.mk m := rfl
 
 variable [HasPullbacks C]
-
+/-- The composition of partial maps -/
 noncomputable def comp {X Y Z : C} : X ⇀ Y ⥤ Y ⇀ Z ⥤ X ⇀ Z :=
   ThinSkeleton.map₂ (Bicategory.precomposing
     (WithPrePartialMaps.mk X) (WithPrePartialMaps.mk Y) (WithPrePartialMaps.mk Z))
 
+/-- any map in `C` induces a total partial map -/
 def ofHom {X Y : C} (f : X ⟶ Y) : X ⇀ Y := mk (𝟙 _) f
 
 omit [HasPullbacks C] in
 lemma ofHom_eq_mk {X Y : C} (f : X ⟶ Y) : ofHom f = mk (𝟙 _) f := rfl
 
-
+/-- A monomorphism `m : Y ⟶ X` induces a partial map `X ⇀ Y` which acts as the identity on
+its support `Y` -/
 def ofMono {X Y : C} (m : Y ⟶ X) [Mono m] : X ⇀ Y := mk m (𝟙 _)
 
 omit [HasPullbacks C] in
 lemma ofMono_eq_mk {X Y : C} (m : Y ⟶ X) [Mono m] : ofMono m = mk m (𝟙 _) := rfl
 
-
+/-- The identity partial map -/
 def id (X : C) : X ⇀ X := ofHom (𝟙 X)
 
 omit [HasPullbacks C] in
@@ -584,18 +546,18 @@ noncomputable instance [HasPullbacks C] : Bicategory (WithPartialMaps C) where
   comp {X Y Z} f g := (PartialMap.comp.obj f).obj g
   whiskerLeft {X Y Z} f {g₁ g₂} h := (PartialMap.comp.obj f).map h
   whiskerRight {X Y Z} {f₁ f₂} h g := (PartialMap.comp.map h).app g
-  associator {W X Y Z} := PartialMap.rec'
-    (fun m₁ _ f₁ => PartialMap.rec'
-      (fun m₂ _ f₂ => PartialMap.rec'
+  associator {W X Y Z} := PartialMap.recSubsingleton
+    (fun m₁ _ f₁ => PartialMap.recSubsingleton
+      (fun m₂ _ f₂ => PartialMap.recSubsingleton
         (fun m₃ _ f₃ =>
           eqToIso (Quotient.sound ⟨
             (PrePartialMap.associator
             (PrePartialMap.mk m₁ f₁)
             (PrePartialMap.mk m₂ f₂)
             (PrePartialMap.mk m₃ f₃))⟩))))
-  leftUnitor {X Y} := PartialMap.rec'
+  leftUnitor {X Y} := PartialMap.recSubsingleton
     (fun m₁ _ f₁ => eqToIso (Quotient.sound ⟨PrePartialMap.leftUnitor (PrePartialMap.mk m₁ f₁)⟩))
-  rightUnitor {X Y} := PartialMap.rec'
+  rightUnitor {X Y} := PartialMap.recSubsingleton
     (fun m₁ _ f₁ => eqToIso (Quotient.sound ⟨PrePartialMap.rightUnitor (PrePartialMap.mk m₁ f₁)⟩))
 
 instance [HasPullbacks C] : Bicategory.Strict (WithPartialMaps C) where
@@ -652,6 +614,7 @@ end PartialMap
 namespace WithPartialMaps
 
 variable (C) in
+/-- The essential data of the embedding of a category into its category of partial maps. -/
 noncomputable abbrev withPartialMapsPreCore [HasPullbacks C] : StrictPseudofunctorPreCore
     (LocallyDiscrete C) (WithPartialMaps C) where
   obj X := .mk X.as
@@ -661,7 +624,7 @@ noncomputable abbrev withPartialMapsPreCore [HasPullbacks C] : StrictPseudofunct
 
 
 variable (C) in
--- @[simp]
+/-- The embedding of a category into its category of partial maps. -/
 noncomputable def _root_.CategoryTheory.withPartialMaps [HasPullbacks C] :
     StrictPseudofunctor (LocallyDiscrete C) (WithPartialMaps C) :=
   .mk'' (withPartialMapsPreCore C)
@@ -671,19 +634,6 @@ variable (C) in
 def toLocallyDiscrete : C ⥤ LocallyDiscrete C where
   obj X := .mk X
   map f := f.toLoc
-
-variable (C) in
-@[simps]
-def ofLocallyDiscrete : LocallyDiscrete C ⥤ C where
-  obj X := X.as
-  map f := f.as
-
-@[simps]
-def locallyDiscreteEquivalence : LocallyDiscrete C ≌ C where
-  functor := ofLocallyDiscrete C
-  inverse := toLocallyDiscrete C
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
 
 @[simp]
 lemma _root_.CategoryTheory.withPartialMaps_obj [HasPullbacks C] (X : LocallyDiscrete C) :
@@ -709,7 +659,7 @@ instance [HasPullbacks C] : (toLocallyDiscrete C ⋙ (withPartialMaps C).toFunct
 lemma mono_of_mono_ofHom [HasPullbacks C] {X Y : C} {f : X ⟶ Y} :
     Mono (PartialMap.ofHom f) → Mono f := by
   intro h
-  change Mono ((toLocallyDiscrete C ⋙ ((withPartialMaps C).toFunctor)).map f) at h
+  change Mono ((toLocallyDiscrete C ⋙ (withPartialMaps C).toFunctor).map f) at h
   exact Functor.ReflectsMonomorphisms.reflects _ h
 
 lemma eq_ofHom_of_mono [HasPullbacks C] {X Y : C} (f : X ⇀ Y) [Mono f] :
@@ -737,7 +687,6 @@ lemma eq_ofHom_of_mono [HasPullbacks C] {X Y : C} (f : X ⇀ Y) [Mono f] :
       rwa [← this]
     exact mono_of_mono_ofHom this
 
-
 instance mono_ofHom [HasPullbacks C] {X Y : C} (f : X ⟶ Y) [Mono f] :
     Mono (C := WithPartialMaps C) (PartialMap.ofHom f) where
   right_cancellation {Z} g₁ g₂ h := by
@@ -759,13 +708,12 @@ theorem mono_iff_exists_eq_ofHom_and_mono [HasPullbacks C] {X Y : C} (f : X ⇀ 
     rintro ⟨f,rfl,h⟩
     infer_instance⟩
 
--- variable (C) in
--- @[simps]
--- def _root_.CategoryTheory.withPartialMaps [HasPullbacks C] : C ⥤ (WithPartialMaps C) where
---   obj X := .mk X
---   map f := PartialMap.ofHom f
---   map_id _ := rfl
---   map_comp f₁ f₂ := Quotient.sound ⟨PrePartialMap.mkOfHomCompIso f₁ f₂⟩
+instance [HasPullbacks C] {X U Y : C} (m : U ⟶ X) [IsIso m] (f : U ⟶ Y) [Mono f] :
+    Mono (PartialMap.mk m f) := by
+  rw [mono_iff_exists_eq_ofHom_and_mono]
+  use (inv m ≫ f), Quotient.sound
+    ⟨⟨PrePartialMap.homMk m, PrePartialMap.homMk (inv m : X ⟶ U), by ext, by ext⟩⟩
+  infer_instance
 
 open Bicategory
 variable (C) in
@@ -840,3 +788,4 @@ lemma _root_.CategoryTheory.partialMapsFrom_map [HasPullbacks C] (X : C) {Y Z : 
 
 
 end CategoryTheory.WithPartialMaps
+#lint
