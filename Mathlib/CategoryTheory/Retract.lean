@@ -143,12 +143,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[simps]
 def op : RetractArrow f.op g.op where
-  i.left := h.r.right.op
-  i.right := h.r.left.op
-  i.w := by simp [← op_comp]
-  r.left := h.i.right.op
-  r.right := h.i.left.op
-  r.w := by simp [← op_comp]
+  i := Arrow.homMk (h.r.right.op) (h.r.left.op) (by simp [← op_comp])
+  r := Arrow.homMk (h.i.right.op) (h.i.left.op) (by simp [← op_comp])
   retract := by ext <;> simp [← op_comp]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -157,12 +153,8 @@ then `f.unop` is a retract of `g.unop`. -/
 @[simps]
 def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) :
     RetractArrow f.unop g.unop where
-  i.left := h.r.right.unop
-  i.right := h.r.left.unop
-  i.w := by simp [← unop_comp]
-  r.left := h.i.right.unop
-  r.right := h.i.left.unop
-  r.w := by simp [← unop_comp]
+  i := Arrow.homMk (h.r.right.unop) (h.r.left.unop) (by simp [← unop_comp])
+  r := Arrow.homMk (h.i.right.unop) (h.i.left.unop) (by simp [← unop_comp])
   retract := by ext <;> simp [← unop_comp]
 
 end RetractArrow
