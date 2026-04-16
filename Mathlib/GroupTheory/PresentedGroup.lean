@@ -76,8 +76,6 @@ of the set of generators equals `⊤`. -/
 @[simp]
 theorem closure_range_of (rels : Set (FreeGroup α)) :
     Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
-  have : (PresentedGroup.of : α → PresentedGroup rels) =
-    QuotientGroup.mk' (Subgroup.normalClosure rels) ∘ FreeGroup.of := rfl
   have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
   rw [this, Set.range_comp, ← MonoidHom.map_closure
     (QuotientGroup.mk' (Subgroup.normalClosure rels)),
