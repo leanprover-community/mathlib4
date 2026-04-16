@@ -56,12 +56,6 @@ open Mathlib.ZBMathTag
 
 namespace Mathlib.ZBMathTag
 
-/-- The syntax category for the database name. -/
-declare_syntax_cat zbMathTagDB
-
-/-- The syntax for a "zbmath" database identifier in a `@[zbmath]` attribute. -/
-syntax "zbMath" : zbMathTagDB
-
 /-- The `zbMathTag` attribute. Use it as `@[zbMath "concept" "Optional comment"]` -/
 syntax (name := zbMathTag) "zbmath" ppSpace str (ppSpace str)? : attr
 
