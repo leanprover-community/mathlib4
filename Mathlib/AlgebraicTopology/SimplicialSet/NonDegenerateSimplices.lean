@@ -167,7 +167,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
 that is induced by an isomorphism `X ≅ Y`. -/
 @[simps -isSimp apply symm_apply]
-def equivOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.N ≃o Y.N where
+def orderIsoOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.N ≃o Y.N where
   toFun x := N.mk (e.hom.app _ x.simplex)
     ((nonDegenerate_iff_of_isIso e.hom x.simplex).mpr x.nonDegenerate)
   invFun y := N.mk (e.inv.app _ y.simplex)
