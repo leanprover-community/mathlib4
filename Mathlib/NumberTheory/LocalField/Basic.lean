@@ -169,27 +169,31 @@ instance : CompleteSpace 𝒪[K] :=
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
 open scoped Pointwise in
+@[simp]
+theorem _root_.Submodule.vadd_set_subset_vadd_set_iff
+    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M} {x y : M} :
+    x +ᵥ (S : Set M) ⊆ y +ᵥ (S : Set M) ↔ x ≡ y [SMOD S] := by
+  rw [SModEq.sub_mem]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub] at h
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h S.zero_mem
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub]
+    intro z hz
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using S.add_mem h hz
+
+open scoped Pointwise in
 instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
-  haus' := (inferInstance : IsHausdorff 𝓂[K] 𝒪[K]).haus
   prec' f hf := by
-    obtain ⟨L, hL⟩ : (⋂ n, (f n +ᵥ (𝓂[K] ^ n))).Nonempty := by
-      have hc (n : ℕ) : IsClosed (f n +ᵥ (𝓂[K] ^ n)) := by
-        convert (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)) |>.preimage
-          (show Continuous fun x ↦ - f n + x from by fun_prop) using 1
-        ext x
-        grind [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, vadd_eq_add]
-      refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _ ?_
-        (by simp [Submodule.nonempty]) (hc 0).isCompact hc
-      intro n x ⟨y, hy1, hy2⟩
-      simp only [Submodule.vadd_eq_vadd_left, Set.mem_vadd_set, smul_eq_mul, Ideal.mul_top,
-        Submodule.vadd_eq_vadd_left, SetLike.mem_coe, ← hy2, vadd_eq_add] at *
-      exact ⟨f (n + 1) - f n + y, Ideal.add_mem _ ((Submodule.Quotient.eq _).mp
-        (hf (Nat.le_succ _)).symm) (Ideal.pow_le_pow_right (Nat.le_succ _) hy1), by ring⟩
+    let S n : Set 𝒪[K] := f n +ᵥ ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K])
+    have hS n : S (n + 1) ⊆ S n := by
+      apply (Set.vadd_set_subset_vadd_set_iff.mpr (Ideal.pow_le_pow_right n.le_succ)).trans
+      simpa [S] using (hf n.le_succ).symm
+    have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
+    obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
+      (by simp [S, Submodule.nonempty]) h
     refine ⟨L, fun n ↦ ?_⟩
-    obtain ⟨y, hy, hfy⟩ := Set.mem_iInter.mp hL n
-    rw [smul_eq_mul, Ideal.mul_top, SModEq.sub_mem, ← hfy]
-    convert (𝓂[K] ^ n).neg_mem hy using 1
-    ring
+    obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
+    simpa [SModEq.sub_mem] using hy
 
 end UniformSpace
 
