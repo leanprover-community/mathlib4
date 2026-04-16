@@ -170,8 +170,7 @@ lemma IsPullback.comp_lift_diag_tensorHom {X₁ X₂ X₃ X₄ : C}
     (by
       simp only [CartesianMonoidalCategory.hom_ext_iff]
       introv _
-      use hf.lift (b ≫ fst _ _) (b ≫ snd _ _) (by cat_disch)
-      cat_disch)
+      exact ⟨hf.lift (b ≫ fst _ _) (b ≫ snd _ _) (by cat_disch),by cat_disch⟩)
 
 /--
 In a cartesian monoidal category, if we have that the following square is a pullback square,
