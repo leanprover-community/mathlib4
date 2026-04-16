@@ -1,10 +1,9 @@
 module
 
 import Mathlib.Tactic.Linter.OverlappingInstances
-import Mathlib.Tactic.TypeStar
+import Mathlib.Init
 
 set_option linter.overlappingInstances true
-set_option linter.overlappingInstances.onlyInServer false
 
 namespace Lean
 
@@ -35,7 +34,7 @@ inst✝¹ inst✝ : Add Nat
 ---
 warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 4 instances of `[Add Nat]`.
+`[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
 -/
@@ -45,10 +44,10 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-@ +3:17...+4:12
+@ +3:68...+4:12
 warning: The declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-`[Bar Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaq Nat]`.
+`[FooBarBaz Nat]` and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₁`.
 -/
@@ -61,8 +60,8 @@ set_option linter.overlappingInstances true in
 /--
 warning: The declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-• There are 2 instances of `[FooBarBaz Nat]`.
-• `[Bar Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaq Nat]`.
+• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` provide conflicting instances of `SubBar Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₂`.
 -/
@@ -72,7 +71,8 @@ def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 /--
 warning: The declaration `foo₃` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 2 instances of `[FooBarBaz Nat]`.
+• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
+• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `SubBar Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₃`.
 -/
@@ -82,8 +82,8 @@ def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 /--
 warning: The declaration `foo₄` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-• There are 2 instances of `[FooBarBaz Nat]`.
-• There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[FooBarBaz Nat]`.
+• `[FooBarBaz Nat]` and `[FooBarBaz Nat]` provide conflicting instances of `Baz Nat`.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` provide conflicting instances of `SubBar Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₄`.
 -/
@@ -94,8 +94,8 @@ def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
 /--
 warning: The declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-• `[Bar Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
-• `[Baz Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `Baz Nat`.
+• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` provide conflicting instances of `SubBar Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₅`.
 -/
@@ -109,7 +109,7 @@ namespace Foo
 /--
 warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 2 instances of `[Add Nat]`.
+`[Add Nat]` and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
 -/
@@ -129,7 +129,7 @@ class inductive IndFoo where
 /--
 warning: The declaration `indFoo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 2 instances of `[IndFoo]`.
+`[IndFoo]` and `[IndFoo]` provide conflicting instances of `IndFoo`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `indFoo`.
 -/
@@ -139,7 +139,15 @@ def indFoo [IndFoo] [IndFoo] : Bool := true
 class inductive IndFooProp : Prop where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
--- Should not warn, these are props
+-- We also warn when there are duplicate `Prop` clases
+/--
+warning: The declaration `indFooProp` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+`[IndFooProp]` and `[IndFooProp]` provide conflicting instances of `IndFooProp`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `indFooProp`.
+-/
+#guard_msgs in
 def indFooProp [IndFooProp] [IndFooProp] : Bool := true
 
 end classInductive
@@ -151,7 +159,7 @@ variable {α : Type*} [Repr α]
 /--
 warning: The declaration `needsInstantiateMVars` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 2 instances of `[Repr α]`.
+`[Repr α]` and `[Repr α]` provide conflicting instances of `Repr α`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `needsInstantiateMVars`.
 -/
@@ -170,7 +178,7 @@ set_option linter.overlappingInstances false
 /--
 warning: The declaration `fooSomething` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-There are 4 instances of `[Add Nat]`.
+`[Add Nat]`, `[Add Nat]`, `[Add Nat]`, and `[Add Nat]` provide conflicting instances of `Add Nat`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `fooSomething`.
 -/

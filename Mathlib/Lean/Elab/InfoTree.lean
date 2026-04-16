@@ -133,7 +133,7 @@ def getDeclsByBody (t : InfoTree) : List Name :=
 /-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
 should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
 either of these conditions. -/
-def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
+def getDeclBodyInfos (t : InfoTree) : List (Syntax × ContextInfo × Info) :=
   t.foldInfoTree (init := []) fun ctx t acc =>
     match t with
     | .node (.ofCustomInfo i) body => Id.run do
@@ -142,7 +142,7 @@ def getDeclBodyInfos (t : InfoTree) : List (ContextInfo × Info) :=
           -- See through `.context`s instead of just matching on `.node`:
           let result? := body[0].getHighestInfo? ctx
           if let some result := result? then
-            return result :: acc
+            return (i.stx, result) :: acc
       return acc
     | _ => acc
 
@@ -158,17 +158,17 @@ end InfoTree
 
 namespace Info
 
-/-- Gets the local context, the local instances if available, and the expected type just before
-`Expr`. Handles `TacticInfo`s (looking at the first goal), `TermInfo`s, and `PartialTermInfo`s.
+/-- Gets the local context, and the expected type of the `Info`.
+Handles `TacticInfo`s (looking at the first goal), `TermInfo`s, and `PartialTermInfo`s.
 Does not get the metavariable context; assumes that the caller has accumulated an ambient
 `ContextInfo` at this point which is sufficient. -/
-def getLCtxBefore? : Info → Option (LocalContext × Option LocalInstances × Option Expr)
+def getLCtx? : Info → Option (LocalContext × Option Expr)
   | .ofTacticInfo i => do
     let g ← i.goalsBefore.head?
     let decl ← i.mctxBefore.findDecl? g
-    some (decl.lctx, decl.localInstances, decl.type)
+    some (decl.lctx, decl.type)
   | .ofTermInfo i
-  | .ofPartialTermInfo i => some (i.lctx, none, i.expectedType?)
+  | .ofPartialTermInfo i => some (i.lctx, i.expectedType?)
   | _ => none
 
 end Lean.Elab.Info
