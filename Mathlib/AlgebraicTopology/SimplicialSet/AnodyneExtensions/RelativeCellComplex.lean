@@ -31,13 +31,10 @@ universe v u
 
 open CategoryTheory HomotopicalAlgebra Simplicial Limits Opposite
 
-namespace SSet.Subcomplex.Pairing
+namespace SSet.Subcomplex.Pairing.RankFunction
 
 variable {X : SSet.{u}} {A : X.Subcomplex} {P : A.Pairing}
-
-namespace RankFunction
-
-variable {ι : Type v} [LinearOrder ι] (f : P.RankFunction ι)
+  {ι : Type v} [LinearOrder ι] (f : P.RankFunction ι)
 
 /-- Given a rank function `f : P.RankFunction ι` for a
 pairing `P` of a subcomplex `A` of `X : SSet`, and `i : ι`,
@@ -604,6 +601,4 @@ noncomputable def relativeCellComplex :
       g₂ := f.b j
       isPushout := f.isPushout j }
 
-end RankFunction
-
-end SSet.Subcomplex.Pairing
+end SSet.Subcomplex.Pairing.RankFunction
