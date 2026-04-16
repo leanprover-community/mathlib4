@@ -27,9 +27,9 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     npow := ⟨fun a n => a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
-    add_zero := by simp [add_zero]
-    mul_one := by simp [mul_one]
-    zero_mul := by simp [zero_mul]
+    add_zero := by simp
+    mul_one := by simp
+    zero_mul := by simp
     pow_zero a := by simp
     pow_succ a n := by simp [pow_succ]
     ofNat_eq_natCast
@@ -37,7 +37,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     | 1 => Nat.cast_one.symm
     | n + 2 => rfl
     ofNat_succ
-    | 0 => by simp [zero_add]
+    | 0 => by simp
     | 1 => by
       change Nat.cast 2 = 1 + 1
       rw [one_add_one_eq_two]

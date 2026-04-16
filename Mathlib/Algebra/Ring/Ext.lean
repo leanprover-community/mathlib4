@@ -81,7 +81,7 @@ namespace NonUnitalSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ _ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -146,6 +146,10 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
+  have : inst₁.toMulOneClass = inst₂.toMulOneClass := by
+    ext : 1 <;> assumption
+  have : inst₁.toAddCommMonoid = inst₂.toAddCommMonoid := by
+    ext : 1 <;> assumption
   have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne := by
     ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
@@ -189,7 +193,9 @@ namespace NonUnitalRing
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
-  have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
+  have : inst₁.toAddCommGroup = inst₂.toAddCommGroup := by
+    ext : 1 <;> assumption
+  have : inst₁.toSemigroup = inst₂.toSemigroup := by
     ext : 1 <;> assumption
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
@@ -289,7 +295,7 @@ namespace Semiring
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
@@ -319,14 +325,9 @@ namespace Ring
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocRing = inst₂.toNonAssocRing := by
     ext : 1 <;> assumption
-  /- We prove that the `SubNegMonoid`s are equal because they are one
-  field away from `Sub` and `Neg`, enabling use of `injection`. -/
-  have h₃ : (inst₁.toAddCommGroup).toAddGroup.toSubNegMonoid
-            = (inst₂.toAddCommGroup).toAddGroup.toSubNegMonoid :=
-    congrArg (@AddGroup.toSubNegMonoid R) <| by ext : 1; exact h_add
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂
 
 theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
@@ -354,7 +355,7 @@ namespace NonUnitalNonAssocCommSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -370,7 +371,7 @@ namespace NonUnitalCommSemiring
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -388,7 +389,7 @@ namespace NonUnitalNonAssocCommRing
 
 theorem toNonUnitalNonAssocRing_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalNonAssocCommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -404,7 +405,7 @@ namespace NonUnitalCommRing
 
 theorem toNonUnitalRing_injective :
     Function.Injective (@toNonUnitalRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalCommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -422,7 +423,7 @@ namespace CommSemiring
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro ⟨⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : CommSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -437,7 +438,7 @@ end CommSemiring
 namespace CommRing
 
 theorem toRing_injective : Function.Injective (@toRing R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro @⟨_, ⟨⟩⟩ ⟨⟩ h; injection h; congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : CommRing R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
