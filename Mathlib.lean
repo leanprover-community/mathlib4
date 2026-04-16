@@ -2816,6 +2816,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
 public import Mathlib.CategoryTheory.Limits.Presheaf
