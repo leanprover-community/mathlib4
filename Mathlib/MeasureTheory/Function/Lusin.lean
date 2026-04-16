@@ -22,6 +22,8 @@ with `μ(A \ K) < ε` such that `f` is continuous on `K`.
 
 * `MeasureTheory.Measurable.exists_measurableSet_continuousOn`: measurable-set version, producing
   a measurable set on which `f` is continuous. Only requires `OuterRegular μ`.
+* `MeasureTheory.Measurable.exists_isClosed_continuousOn`: closed-set version (the standard
+  textbook statement), producing a closed set on which `f` is continuous. Requires `WeaklyRegular μ`.
 
 ## References
 
@@ -81,5 +83,29 @@ theorem Measurable.exists_measurableSet_continuousOn
       _ ≤ ∑' b, μ (U b \ (f ⁻¹' ↑b ∩ A)) := measure_iUnion_le _
       _ ≤ ∑' b, δ b := ENNReal.tsum_le_tsum fun b ↦ (hU_diff b).le
       _ < ε := hδ_sum
+
+/-- **Lusin's theorem** (closed set version). For a measurable function `f` into a second-countable
+space with a weakly regular measure, any measurable set of finite measure contains a closed subset
+on which `f` is continuous, with arbitrarily small complement. -/
+theorem Measurable.exists_isClosed_continuousOn
+    [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+    [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [SecondCountableTopology Y]
+    {μ : Measure X} [μ.OuterRegular] [μ.WeaklyRegular]
+    {f : X → Y} (hf : Measurable f)
+    {A : Set X} (hA : MeasurableSet A) (hAμ : μ A ≠ ⊤)
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ K ⊆ A, IsClosed K ∧ ContinuousOn f K ∧ μ (A \ K) < ε := by
+  have hε2 : (0 : ℝ≥0∞) < ε / 2 := ENNReal.div_pos hε.ne' ofNat_ne_top
+  obtain ⟨K₀, hK₀A, hK₀_meas, hK₀_cont, hK₀_diff⟩ :=
+    hf.exists_measurableSet_continuousOn hA hAμ hε2
+  obtain ⟨K, hKK₀, hK_closed, hK_diff⟩ :=
+    hK₀_meas.exists_isClosed_diff_lt
+      (ne_top_of_le_ne_top hAμ (measure_mono hK₀A)) hε2.ne'
+  refine ⟨K, hKK₀.trans hK₀A, hK_closed, hK₀_cont.mono hKK₀, ?_⟩
+  calc μ (A \ K)
+      ≤ μ (A \ K₀) + μ (K₀ \ K) :=
+        (measure_mono (sdiff_triangle A K₀ K)).trans (measure_union_le _ _)
+    _ < ε / 2 + ε / 2 := ENNReal.add_lt_add hK₀_diff hK_diff
+    _ = ε := ENNReal.add_halves ε
 
 end MeasureTheory
