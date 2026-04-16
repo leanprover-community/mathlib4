@@ -283,7 +283,8 @@ variable [SMul M α]
 
 /-- Auxiliary definition for `SMul.comp`, `MulAction.compHom`,
 `DistribMulAction.compHom`, `Module.compHom`, etc. -/
-@[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
+@[to_additive (attr := simp, implicit_reducible)
+/-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
 def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
 
 variable (α)
