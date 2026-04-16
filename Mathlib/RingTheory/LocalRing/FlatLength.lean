@@ -73,7 +73,7 @@ variable [Module B M] [IsScalarTower A B M]
 
 variable (A) in
 theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
-    length A q = Module.length A p + (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+    length A q = Module.length A p + Module.length (ResidueField A) (ResidueField B) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   let f : p →ₗ[B] q := inclusion h.le
   have key : IsSimpleModule B (q ⧸ f.range) := by
@@ -90,12 +90,12 @@ theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
 
 variable (A B M) in
 theorem IsLocalRing.length_restrictScalars :
-    length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+    length A M = length B M * Module.length (ResidueField A) (ResidueField B) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength B M
   · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
     rw [← length_compositionSeries s hs_bot hs_top]
-    suffices ∀ k, length A (s k) = k * (Module.rank (ResidueField A) (ResidueField B)).toENat by
+    suffices ∀ k, length A (s k) = k * Module.length (ResidueField A) (ResidueField B) by
       rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top]
       exact length_top.symm
     intro k
@@ -108,5 +108,5 @@ theorem IsLocalRing.length_restrictScalars :
       exact h.imp (isNoetherian_of_tower A) (isArtinian_of_tower A)
     rw [← length_ne_top_iff, not_ne_iff] at h this
     rw [h, this, ENat.top_mul]
-    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq, Cardinal.toENat_eq_zero]
-    exact Module.rank_pos_of_free.ne'
+    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq]
+    exact Module.length_pos.ne'
