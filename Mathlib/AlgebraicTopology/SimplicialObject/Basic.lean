@@ -253,8 +253,9 @@ scoped syntax:max (name := mkNotation)
 open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
+    -- try `decide` before `get_elem_tactic` because it is faster for goals with literals.
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | decide | get_elem_tactic |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
@@ -394,9 +395,8 @@ def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 
@@ -691,10 +691,7 @@ def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C �
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
-
-instance {n : ℕ} : Category (Truncated C n) := by
-  dsimp [Truncated]
-  infer_instance
+deriving Category
 
 variable {C}
 
@@ -771,9 +768,8 @@ def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
 
 @[simps!]
-instance : Category (Augmented C) := by
-  dsimp only [Augmented]
-  infer_instance
+instance : Category (Augmented C) :=
+  inferInstanceAs <| Category (Comma _ _)
 
 variable {C}
 

@@ -60,9 +60,9 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
   exact DFunLike.congr_fun h i
 
-theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by
+theorem support_indicator_subset : (indicator s f).support ⊆ s := by
   intro i hi
-  rw [mem_coe, mem_support_iff] at hi
+  rw [mem_support_iff] at hi
   by_contra h
   exact hi (indicator_of_notMem h _)
 
@@ -74,19 +74,18 @@ lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :
 theorem indicator_indicator [DecidableEq ι] :
     indicator t (fun i _ ↦ indicator s f i) =
       indicator (s ∩ t) (fun i hi ↦ f i (Finset.mem_of_mem_inter_left hi)) := by
-  ext i
   grind [indicator_apply]
 
 theorem eq_indicator_iff {g : ι → α} :
     g = indicator s f ↔ g.support ⊆ s ∧ ∀ ⦃i⦄ (hi : i ∈ s), f i hi = g i := by
   classical
   suffices g.support ⊆ s ∧ (∀ i (hi : i ∈ s), f i hi = g i) ↔
-      (∀ i , if hi : i ∈ s then f i hi = g i else g i = 0) by
+      (∀ i, if hi : i ∈ s then f i hi = g i else g i = 0) by
     simp only [this, funext_iff, indicator_apply]
     grind
   rw [Set.subset_def, and_comm]
   have : (∀ (i : ι), if hi : i ∈ s then f i hi = g i else g i = 0) ↔
-      ((∀ (i : ι) (hi : i ∈ s),  f i hi = g i) ∧ ∀ i (hi : i ∉ s), g i = 0) := by grind
+      ((∀ (i : ι) (hi : i ∈ s), f i hi = g i) ∧ ∀ i (hi : i ∉ s), g i = 0) := by grind
   simp [this, not_imp_comm]
 
 theorem eq_indicator_self_iff {d : ι →₀ α} : (d = indicator s fun i _ ↦ d i) ↔ d.support ⊆ s := by

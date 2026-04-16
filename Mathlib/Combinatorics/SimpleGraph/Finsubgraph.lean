@@ -105,12 +105,10 @@ lemma coe_sSup (s : Set G.Finsubgraph) : sSup s = (⨆ G ∈ s, G : G.Subgraph) 
 @[simp, norm_cast]
 lemma coe_sInf (s : Set G.Finsubgraph) : sInf s = (⨅ G ∈ s, G : G.Subgraph) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iSup {ι : Sort*} (f : ι → G.Finsubgraph) : ⨆ i, f i = (⨆ i, f i : G.Subgraph) := by
   rw [iSup, coe_sSup, iSup_range]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f i : G.Subgraph) := by
   rw [iInf, coe_sInf, iInf_range]
@@ -147,9 +145,9 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 
 /-- The inverse system of finite homomorphisms. -/
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
-    G.Finsubgraphᵒᵖ ⥤ Type max u v where
+    G.Finsubgraphᵒᵖ ⥤ Type (max u v) where
   obj G' := G'.unop →fg F
-  map g f := f.restrict (CategoryTheory.leOfHom g.unop)
+  map g := TypeCat.ofHom (fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/

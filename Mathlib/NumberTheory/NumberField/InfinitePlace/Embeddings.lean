@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Embeddings of number fields
@@ -308,7 +309,14 @@ variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra
 /-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
 `φ` to `K` is `ψ`. -/
 protected class LiesOver (φ : L →+* ℂ) (ψ : K →+* ℂ) : Prop where
-  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+  over (φ ψ) : φ.comp (algebraMap K L) = ψ
+
+theorem LiesOver.over_apply (φ : L →+* ℂ) (ψ : K →+* ℂ) [ComplexEmbedding.LiesOver φ ψ] {x : K} :
+    φ (algebraMap K L x) = ψ x := RingHom.ext_iff.1 (LiesOver.over φ ψ) _
+
+theorem liesOver_iff {φ : L →+* ℂ} {ψ : K →+* ℂ} :
+    ComplexEmbedding.LiesOver φ ψ ↔ φ.comp (algebraMap K L) = ψ :=
+  ⟨fun _ ↦ LiesOver.over φ ψ, fun h ↦ ⟨h⟩⟩
 
 variable (L)
 

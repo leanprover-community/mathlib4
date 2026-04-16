@@ -35,7 +35,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 /-!## Quantitative bounds -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
 assuming all spaces live in the same universe, to enable an induction. Use instead
@@ -308,8 +307,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp +instances only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
-    refine Finset.sum_le_sum ?_
-    intro m _
+    gcongr with m _
     specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
     grw [IH]
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
@@ -341,7 +339,6 @@ theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Fins
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the derivatives within a set of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 within a set of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.
@@ -392,13 +389,9 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   -- reformulate `hD` as a bound for the derivatives of `f'`.
   have J : ∀ i, ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ ≤ D ^ (n - i + 1) := by
     intro i
-    have : ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ =
-        ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖ := by
-      rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
-    rw [this]
-    apply hD
-    · simp only [le_add_iff_nonneg_left, zero_le']
-    · apply Nat.succ_le_succ tsub_le_self
+    have : ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖ ≤ D ^ (n - i + 1) :=
+      hD (n - i + 1) (by simp) (Nat.succ_le_succ tsub_le_self)
+    simpa [iteratedFDerivWithin_succ_eq_comp_right hs hx]
   -- Now put these together: first, notice that we have to bound `D^n (g' ∘ f ⬝ f')`.
   calc
     ‖iteratedFDerivWithin 𝕜 (n + 1) (g ∘ f) s x‖ =
@@ -417,15 +410,9 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     _ ≤ ∑ i ∈ Finset.range (n + 1),
         (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ *
           ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ := by
-      have A : ContDiffOn 𝕜 n (fderivWithin 𝕜 g t ∘ f) s := by
-        apply ContDiffOn.comp _ (hf.of_le M.le) hst
-        apply hg.fderivWithin ht
-        simp only [Nat.cast_succ, le_refl]
-      have B : ContDiffOn 𝕜 n (fderivWithin 𝕜 f s) s := by
-        apply hf.fderivWithin hs
-        simp only [Nat.cast_succ, le_refl]
       exact (ContinuousLinearMap.compL 𝕜 E Fu Gu).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
-        A B hs hx le_rfl (ContinuousLinearMap.norm_compL_le 𝕜 E Fu Gu)
+        ((hg.fderivWithin ht (by simp)).comp (hf.of_le M.le) hst) (hf.fderivWithin hs (by simp))
+        hs hx le_rfl (ContinuousLinearMap.norm_compL_le 𝕜 E Fu Gu)
     -- bound each of the terms using the estimates on previous derivatives (that use the inductive
     -- assumption for `g' ∘ f`).
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by

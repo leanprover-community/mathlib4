@@ -524,7 +524,7 @@ instance isIso_toBasicOpenₗ (f : R) :
 set_option backward.isDefEq.respectTransparency false in
 public lemma toOpenₗ_top_bijective : Function.Bijective (toOpenₗ R M ⊤) := by
   have : IsLocalizedModule ⊥ (toOpenₗ R M ⊤) := by
-    convert inferInstanceAs (IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
+    convert (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
     rw [PrimeSpectrum.basicOpen_one, Submonoid.powers_one]
   refine ⟨fun x y e ↦ by simpa using (IsLocalizedModule.eq_iff_exists ⊥ _).mp e, fun x ↦ ?_⟩
   obtain ⟨⟨x, _, rfl⟩, rfl⟩ := IsLocalizedModule.mk'_surjective ⊥ (toOpenₗ R M ⊤) x
@@ -534,6 +534,7 @@ public lemma algebraMap_obj_top_bijective :
     Function.Bijective (algebraMap R Γ(R, (⊤ : Opens (PrimeSpectrum.Top R)))) :=
   toOpenₗ_top_bijective
 
+set_option backward.isDefEq.respectTransparency false in
 public instance (f : R) : IsLocalization.Away f Γ(R, basicOpen f) :=
   (isLocalizedModule_iff_isLocalization' _ _).mp <|
     inferInstanceAs (IsLocalizedModule (.powers f) (toOpenₗ R R (basicOpen f)))
@@ -549,7 +550,6 @@ the stalk of `structureSheaf R` at `x`. -/
     CommRingCat.of R ⟶ (structurePresheafInCommRingCat R).stalk x :=
   CommRingCat.ofHom (algebraMap _ _) ≫ (structurePresheafInCommRingCat R).germ ⊤ x trivial
 
-set_option backward.isDefEq.respectTransparency false in
 @[elementwise, reassoc]
 public lemma algebraMap_germ
     (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hxU : x ∈ U) :
@@ -641,7 +641,6 @@ theorem toOpenₗ_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top 
   rw [toStalkₗ', ← Presheaf.germ_res _ (homOfLE le_top) _ hx, ← Category.assoc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOpen f) :
     IsUnit (toStalk R x f) := by
   convert (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
@@ -811,7 +810,6 @@ instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toS
     Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
   exact congr($this _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The stalk of `Spec R` at `x` is isomorphic to the stalk of `R^~` at `x`. -/
 @[expose] public
