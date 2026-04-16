@@ -833,6 +833,76 @@ example {α β γ δ : Type _} (x : α) (e₁ : α ≃ β) (e₂ : γ ≃ δ) (z
 
 end PrefixProjectionNames
 
+namespace DsimpLhs
+
+structure Functor where
+  obj : Type → Type
+  map {X Y : Type} (f : X → Y) : obj X → obj Y
+
+structure NatIso (F G : Functor) where
+  app (X : Type) : Equiv (F.obj X) (G.obj X)
+  naturality {X Y : Type} (f : X → Y) : G.map f ∘ app X = app Y ∘ F.map f
+
+def NatIso.refl (F : Functor) : NatIso F F where
+  app X := Equiv.refl _
+  naturality := by simp
+
+abbrev Functor.const (X : Type) : Functor where
+  obj _ := X
+  map _ := id
+
+abbrev Functor.id : Functor where
+  obj X := X
+  map f := f
+
+abbrev Functor.comp (F G : Functor) : Functor where
+  obj X := G.obj (F.obj X)
+  map f := G.map (F.map f)
+
+@[simps!]
+def iso (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
+    (@DFunLike.coe (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+      ((Functor.id.comp (Functor.const X)).obj X✝) (fun x => (Functor.id.comp (Functor.const X)).obj X✝)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso X) X✝) a)
+    a -/
+#guard_msgs in
+#check iso_app_apply
+
+@[simps! +dsimpLhs]
+def iso' (X : Type) : NatIso (Functor.id.comp (.const X)) (.const X) := NatIso.refl _
+
+set_option pp.explicit true in
+/-- info: DsimpLhs.iso'_app_apply (X X✝ : Type) (a : (Functor.id.comp (Functor.const X)).obj X✝) :
+  @Eq ((Functor.id.comp (Functor.const X)).obj X✝)
+    (@DFunLike.coe (Equiv X X) X (fun x => X)
+      (@EquivLike.toFunLike
+        (Equiv ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝))
+        ((Functor.id.comp (Functor.const X)).obj X✝) ((Functor.id.comp (Functor.const X)).obj X✝)
+        (@Equiv.instEquivLike ((Functor.id.comp (Functor.const X)).obj X✝)
+          ((Functor.id.comp (Functor.const X)).obj X✝)))
+      (@NatIso.app (Functor.id.comp (Functor.const X)) (Functor.const X) (iso' X) X✝) a)
+    a -/
+#guard_msgs in
+#check iso'_app_apply
+
+example (n : Nat) : (iso Nat).app Nat n = n := by
+  dsimp only
+  fail_if_success simp
+  rfl
+
+example (n : Nat) : (iso' Nat).app Nat n = n := by
+  simp
+
+end DsimpLhs
 
 -- test transparency setting
 structure SetPlus (α : Type) where
@@ -1272,3 +1342,20 @@ example : foo.1 = 2 := by
   rfl
 
 end Grind
+
+def MyNat := Nat
+
+def MyNat.zero : MyNat := Nat.zero
+
+structure MyNatStruct where
+  n : MyNat
+
+@[simps]
+def zero : MyNatStruct where
+  n := MyNat.zero
+
+-- Verify that the equality type is not reduced from `MyNat` to `Nat`:
+set_option pp.explicit true in
+/-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
+#guard_msgs in
+#check zero_n

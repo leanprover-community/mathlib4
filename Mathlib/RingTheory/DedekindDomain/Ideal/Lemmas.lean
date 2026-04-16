@@ -395,7 +395,6 @@ theorem irreducible_pow_sup (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emultiplicity J I) :
     J ^ n ⊔ I = J ^ n := by
   classical
@@ -405,7 +404,6 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
   rw [emultiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J] at hn
   exact_mod_cast hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
   classical
@@ -469,6 +467,9 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+instance : Coe (HeightOneSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
+
 /--
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
 to an element of type `HeightOneSpectrum R`.
@@ -500,6 +501,14 @@ theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
     exact ⟨(equivMaximalSpectrum hR).symm ⟨M, hMmax⟩, hIM⟩
   · rintro ⟨P, hP⟩
     exact ⟨((equivMaximalSpectrum hR) P).asIdeal, ((equivMaximalSpectrum hR) P).isMaximal, hP⟩
+
+theorem isCoprime_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) : IsCoprime P.asIdeal Q.asIdeal :=
+  Ideal.isCoprime_iff_sup_eq.mpr (Ideal.IsMaximal.coprime_of_ne P.isMaximal Q.isMaximal
+    (by simpa [HeightOneSpectrum.ext_iff] using hPQ))
+
+theorem isCoprime_pow_of_ne (P Q : HeightOneSpectrum R) (hPQ : P ≠ Q) (n m : ℕ) :
+    IsCoprime (P.asIdeal ^ n) (Q.asIdeal ^ m) :=
+  Ideal.isCoprime_iff_sup_eq.mpr (Ideal.pow_sup_pow_eq_top (P.isCoprime_of_ne Q hPQ).sup_eq)
 
 variable (R)
 
@@ -680,11 +689,11 @@ theorem normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity (hI : I
 
 end
 
-section ChineseRemainder
+noncomputable section ChineseRemainder
 
 open Ideal UniqueFactorizationMonoid
 
-variable {R}
+variable {R ι}
 
 theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q : Ideal R}
     [hP : P.IsPrime] [hQ : Q.IsPrime] (hP0 : P ≠ ⊥) : P ≤ Q ↔ P = Q :=
@@ -694,17 +703,15 @@ section DedekindDomain
 
 variable [IsDedekindDomain R]
 
+/-- See also `Ideal.IsMaximal.mul_mem_pow` for maximal ideal. -/
 theorem Ideal.IsPrime.mul_mem_pow (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ∨ b ∈ I ^ n := by
   cases n; · simp
   by_cases hI0 : I = ⊥; · simpa [pow_succ, hI0] using h
-  simp only [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq, ← Ideal.dvd_iff_le, ←
-    Ideal.span_singleton_mul_span_singleton] at h ⊢
-  by_cases ha : I ∣ span {a}
-  · exact Or.inl ha
-  rw [mul_comm] at h
-  exact Or.inr (Prime.pow_dvd_of_dvd_mul_right ((Ideal.prime_iff_isPrime hI0).mpr hI) _ ha h)
+  have : I.IsMaximal := hI.isMaximal hI0
+  exact IsMaximal.mul_mem_pow I h
 
+/-- See also `Ideal.IsMaximal.mem_pow_mul` for maximal ideal. -/
 theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ^ n ∨ b ∈ I := by
   rw [mul_comm] at h
@@ -757,7 +764,7 @@ theorem Ideal.count_associates_eq'
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
   apply Ideal.count_associates_eq hx _ hq
-  contrapose! hlt with hdvd
+  contrapose hlt with hdvd
   obtain ⟨q', hq'⟩ := hdvd
   use q'
   rw [hq, hq']
@@ -777,55 +784,55 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
   exact fun hPJ hPK => mt Ideal.isPrime_of_prime (coprime _ hPJ hPK)
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
+prime powers.
+See `IsDedekindDomain.inf_pow_eq_prod_of_prime` for the version in terms of `Ideal R`. -/
+theorem IsDedekindDomain.HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
+    (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+    (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
+  rw [prod_eq_iInf_of_pairwise_isCoprime]
+  · rw [Finset.inf_eq_iInf s fun i ↦ (f i).asIdeal ^ e i]
+  · intro i hi j hj hij
+    exact HeightOneSpectrum.isCoprime_pow_of_ne _ _ (coprime i hi j hj hij) _ _
+
+/-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
-theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
-    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i))
-    (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
+theorem IsDedekindDomain.inf_pow_eq_prod_of_prime (s : Finset ι) (f : ι → Ideal R)
+    (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i)) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
-  letI := Classical.decEq ι
-  revert prime coprime
-  refine s.induction ?_ ?_
-  · simp
-  intro a s ha ih prime coprime
-  specialize
-    ih (fun i hi => prime i (Finset.mem_insert_of_mem hi)) fun i hi j hj =>
-      coprime i (Finset.mem_insert_of_mem hi) j (Finset.mem_insert_of_mem hj)
-  rw [Finset.inf_insert, Finset.prod_insert ha, ih]
-  refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
-  intro P hPa hPs hPp
-  obtain ⟨b, hb, hPb⟩ := hPp.prod_le.mp hPs
-  haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))
-  haveI := Ideal.isPrime_of_prime (prime b (Finset.mem_insert_of_mem hb))
-  refine coprime a (Finset.mem_insert_self a s) b (Finset.mem_insert_of_mem hb) ?_ ?_
-  · exact (ne_of_mem_of_not_mem hb ha).symm
-  · refine ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPa)).trans
-      ((Ring.DimensionLeOne.prime_le_prime_iff_eq ?_).mp (hPp.le_of_pow_le hPb)).symm
-    · exact (prime a (Finset.mem_insert_self a s)).ne_zero
-    · exact (prime b (Finset.mem_insert_of_mem hb)).ne_zero
+  rw [prod_eq_iInf_of_pairwise_isCoprime, Finset.inf_eq_iInf s fun i ↦ (f i) ^ e i]
+  intro i hi j hj hij
+  exact Ideal.isCoprime_iff_sup_eq.mpr (pow_sup_pow_eq_top (IsMaximal.coprime_of_ne
+    (IsPrime.isMaximal (isPrime_of_prime (prime i hi)) (prime i hi).ne_zero)
+    (IsPrime.isMaximal (isPrime_of_prime (prime j hj)) (prime j hj).ne_zero)
+    (coprime i hi j hj hij)))
+
+@[deprecated (since := "2026-03-10")] alias IsDedekindDomain.inf_prime_pow_eq_prod :=
+  IsDedekindDomain.inf_pow_eq_prod_of_prime
+
+/-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
+`∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`.
+See `IsDedekindDomain.quotientEquivPiOfProdEq` for the version in terms of `Ideal R`. -/
+def IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I : Ideal R)
+    (P : ι → HeightOneSpectrum R) (e : ι → ℕ) (coprime : Pairwise fun i j => P i ≠ P j)
+    (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
+  (Ideal.quotEquivOfEq
+    (by simp [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ,
+      ← HeightOneSpectrum.inf_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
+    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij =>
+      HeightOneSpectrum.isCoprime_pow_of_ne _ _ (coprime hij) _ _
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R)
-    (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i))
-    (coprime : Pairwise fun i j => P i ≠ P j)
+def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype ι] (I : Ideal R) (P : ι → Ideal R)
+    (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : Pairwise fun i j => P i ≠ P j)
     (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
-  (Ideal.quotEquivOfEq
-    (by
-      simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
-        ← IsDedekindDomain.inf_prime_pow_eq_prod _ _ _ (fun i _ => prime i)
-        (coprime.set_pairwise _)])).trans <|
-    Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => Ideal.coprime_of_no_prime_ge <| by
-      intro P hPi hPj hPp
-      haveI := Ideal.isPrime_of_prime (prime i)
-      haveI := Ideal.isPrime_of_prime (prime j)
-      exact coprime hij <| ((Ring.DimensionLeOne.prime_le_prime_iff_eq (prime i).ne_zero).mp
-        (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
-          (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
+  IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq I
+    (fun i ↦ ⟨P i, (isPrime_of_prime (prime i)), (prime i).ne_zero⟩) e (by grind) prod_eq
 
 open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
-noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
+def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
     R ⧸ I ≃+* ∀ P : (factors I).toFinset, R ⧸ (P : Ideal R) ^ (Multiset.count ↑P (factors I)) :=
   IsDedekindDomain.quotientEquivPiOfProdEq _ _ _
     (fun P : (factors I).toFinset => prime_of_factor _ (Multiset.mem_toFinset.mp P.prop))
@@ -849,7 +856,7 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
 This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict
 the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 -/
-noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
+def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
@@ -992,7 +999,6 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emulti
 
 variable [DecidableEq R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
   of `r` preserves `count` of the corresponding multisets. See
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
@@ -1065,6 +1071,14 @@ noncomputable def equivPrimesOver (hp : p ≠ 0) :
 theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
     equivPrimesOver B hp v = v.1.asIdeal := rfl
+
+variable (A) {B} in
+/-- The pullback of a height one prime in `B` to `A`. -/
+@[simps]
+def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
+  asIdeal := w.asIdeal.under A
+  isPrime := .under A w.asIdeal
+  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
 
 end IsDedekindDomain.HeightOneSpectrum
 

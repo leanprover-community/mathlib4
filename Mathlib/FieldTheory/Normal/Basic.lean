@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Normal.Defs
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Normal field extensions
@@ -59,7 +60,6 @@ variable {E F}
 
 open IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 09HU "Normal part"]
 theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : Normal F E := by
   rcases eq_or_ne p 0 with (rfl | hp)
@@ -137,7 +137,6 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_ | _) <;> infer_instance)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An intersection of normal extensions is normal. -/
 @[stacks 09HP]
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
@@ -172,7 +171,6 @@ section Restrict
 variable (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] [Algebra E K₃]
   [IsScalarTower F E K₁] [IsScalarTower F E K₂] [IsScalarTower F E K₃]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
   let g := f.restrictNormal' E
@@ -267,7 +265,6 @@ variable {K L : Type _} [Field K] [Field L] [Algebra K L]
 
 open AlgEquiv IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x : L` is a root of `minpoly K y`, then we can find `(σ : Gal(L/K))` with `σ x = y`.
   That is, `x` and `y` are Galois conjugates. -/
 theorem exists_algEquiv_of_root [Normal K L] {x y : L} (hy : IsAlgebraic K y)

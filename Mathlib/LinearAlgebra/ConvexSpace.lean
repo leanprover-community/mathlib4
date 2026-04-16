@@ -64,8 +64,11 @@ grind_pattern StdSimplex.total => self.weights
 
 namespace StdSimplex
 
-variable {R : Type u} [PartialOrder R] [Semiring R]
-  {M : Type v}
+variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*}
+
+lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
+  by_contra!
+  simpa [Subsingleton.elim f.weights 0, -total] using f.total
 
 @[ext]
 theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
@@ -74,12 +77,12 @@ theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
+@[simps weights]
 def single (x : M) : StdSimplex R M where
   weights := Finsupp.single x 1
   nonneg := by simp
   total := by simp
 
-@[simp]
 theorem mk_single (x : M) {nonneg total} :
     (StdSimplex.mk (Finsupp.single x (1 : R)) nonneg total) = single x := rfl
 
@@ -99,6 +102,37 @@ def map {M : Type v} {N : Type w} (g : M → N) (f : StdSimplex R M) : StdSimple
   weights := f.weights.mapDomain g
   nonneg := f.mapDomain_nonneg f.nonneg
   total := by simp [Finsupp.sum_mapDomain_index]
+
+@[simp]
+lemma map_const (f : StdSimplex R M) (x : N) : f.map (fun _ ↦ x) = .single x := by
+  classical
+  ext a
+  suffices f.sum (fun a₁ b ↦ if x = a then b else 0) = if x = a then 1 else 0 by
+    simpa [map, Finsupp.mapDomain, ← mk_single, Finsupp.single_apply]
+  split_ifs <;> simp
+
+@[simp]
+lemma map_single (x : M) (f : M → N) : (single (R := R) x).map f = .single (f x) := by
+  ext a
+  simp [map, ← mk_single]
+
+@[simp]
+lemma map_duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) (f : M → N) :
+    (duple x y hs ht h).map f = duple (f x) (f y) hs ht h := by
+  ext a
+  simp [map, duple, Finsupp.mapDomain_add]
+
+@[simp]
+lemma map_id (f : StdSimplex R M) : f.map id = f := by
+  ext; simp [map]
+
+lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
+    f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
+  ext; simp [map, Finsupp.mapDomain_comp]
+
+lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
+    (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
+  (map_comp ..).symm
 
 /--
 Join operation for standard simplices (monadic join).
@@ -139,18 +173,28 @@ def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y
   convexCombination (.duple x y hs ht h)
 
 /-- A binary convex combination with weight 0 on the first point returns the second point. -/
+@[simp]
 theorem convexComboPair_zero {x y : M} :
     convexComboPair (0 : R) 1 (by simp) (by simp) (by simp) x y = y := by
-  simp [convexComboPair, StdSimplex.duple]
+  simp [convexComboPair, StdSimplex.duple, StdSimplex.mk_single]
 
 /-- A binary convex combination with weight 1 on the first point returns the first point. -/
+@[simp]
 theorem convexComboPair_one {x y : M} :
     convexComboPair (1 : R) 0 (by simp) (by simp) (by simp) x y = x := by
-  simp [convexComboPair, StdSimplex.duple]
+  simp [convexComboPair, StdSimplex.duple, StdSimplex.mk_single]
 
 /-- A convex combination of a point with itself is that point. -/
+@[simp]
 theorem convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
     convexComboPair s t hs ht h x x = x := by
   unfold convexComboPair
   convert ConvexSpace.single x
   simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
+
+theorem convexComboPair_symm {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x y : M} :
+    convexComboPair s t hs ht h x y = convexComboPair t s ht hs ((add_comm _ _).trans h) y x := by
+  unfold convexComboPair
+  congr 1
+  ext1
+  simp [StdSimplex.duple, add_comm]

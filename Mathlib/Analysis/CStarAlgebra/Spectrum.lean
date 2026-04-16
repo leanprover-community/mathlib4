@@ -45,7 +45,7 @@ we can still establish a form of spectral permanence.
 + `IsSelfAdjoint.mem_spectrum_eq_re`: Any element of the spectrum of a selfadjoint element is real.
 * `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
   if and only if `x` is a unit.
-* `StarSubalgebra.spectrum_eq`: **spectral_permanence** for `x : S`, where `S` is a C⋆-Subalgebra
+* `StarSubalgebra.spectrum_eq`: **spectral permanence** for `x : S`, where `S` is a C⋆-Subalgebra
   of `A`, `spectrum ℂ x = spectrum ℂ (x : A)`.
 
 ## TODO
@@ -248,7 +248,6 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
@@ -314,12 +313,8 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
       rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
     intro s
-    have := AlgHom.apply_mem_spectrum φ (s : A)
-    rw [selfAdjoint.val_re_map_spectrum s] at this
-    rcases this with ⟨⟨_, _⟩, _, heq⟩
-    simp only [Function.comp_apply] at heq
-    rw [← heq, RCLike.star_def]
-    exact RCLike.conj_ofReal _
+    rw [selfAdjoint.mem_spectrum_eq_re s (AlgHom.apply_mem_spectrum φ (s : A))]
+    simp
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/

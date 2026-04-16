@@ -104,6 +104,12 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
 
+theorem LinearMap.finrank_le_finrank_of_surjective
+    [Module R M'] [StrongRankCondition R] [Module.Finite R M]
+    {f : M →ₗ[R] M'} (h : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M := by
+  rw [← f.quotKerEquivOfSurjective h |>.finrank_eq]
+  exact Submodule.finrank_quotient_le _
+
 end Quotient
 
 variable [Semiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
@@ -544,7 +550,6 @@ section Ring
 variable {F E : Type*} [CommRing F] [IsDomain F] [Ring E] [Algebra F E]
 variable [StrongRankCondition F] [IsTorsionFree F E] [Nontrivial E]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
@@ -552,7 +557,6 @@ theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
     have := Module.nontrivial F E
     exact .singleton one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
   finrank_eq_of_rank_eq (by simp)

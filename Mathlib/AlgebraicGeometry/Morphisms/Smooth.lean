@@ -86,7 +86,7 @@ lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
       ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
         (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
   have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
-    convert (inferInstanceAs <| HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    convert (inferInstance : HasRingHomProperty @Smooth.{u} RingHom.Smooth)
     ext f
     rw [RingHom.smooth_iff_locally_isStandardSmooth]
   rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
@@ -302,7 +302,6 @@ def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Ope
 lemma Scheme.Hom.mem_smoothLocus {f : X ⟶ Y} [LocallyOfFinitePresentation f] {x : X} :
     x ∈ f.smoothLocus ↔ (f.stalkMap x).hom.FormallySmooth := .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]
