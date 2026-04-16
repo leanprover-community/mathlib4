@@ -205,14 +205,9 @@ variable (𝕜 E Fₗ Gₗ)
 /-- Flip the order of arguments of a continuous bilinear map.
 This is a version bundled as a `LinearIsometryEquiv`.
 For an unbundled version see `ContinuousLinearMap.flip`. -/
-def flipₗᵢ : (E →L[𝕜] Fₗ →L[𝕜] Gₗ) ≃ₗᵢ[𝕜] Fₗ →L[𝕜] E →L[𝕜] Gₗ where
-  toFun := flip
-  invFun := flip
-  map_add' := flip_add
-  map_smul' := flip_smul
-  left_inv := flip_flip
-  right_inv := flip_flip
-  norm_map' := opNorm_flip
+def flipₗᵢ : (E →L[𝕜] Fₗ →L[𝕜] Gₗ) ≃ₗᵢ[𝕜] Fₗ →L[𝕜] E →L[𝕜] Gₗ :=
+  (flipₗᵢ' E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜) :
+    (E →L[𝕜] Fₗ →L[𝕜] Gₗ) ≃ₗᵢ[𝕜] Fₗ →L[𝕜] E →L[𝕜] Gₗ)
 
 variable {𝕜 E Fₗ Gₗ}
 

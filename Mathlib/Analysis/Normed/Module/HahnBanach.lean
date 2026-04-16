@@ -94,15 +94,11 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     rw [g.extendRCLike_apply, ← Submodule.coe_smul,
       hextends, hextends]
     simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I, RCLike.re_add_im]
-  -- And we derive the equality of the norms by bounding on both sides.
-  refine ⟨h, le_antisymm ?_ ?_⟩
-  · calc
-      ‖g.extendRCLike‖ = ‖g‖ := g.norm_extendRCLike
-      _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
-      _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound (g.extendRCLike (𝕜 := 𝕜)).opNorm_nonneg
-      fun x ↦ h x ▸ (g.extendRCLike (𝕜 := 𝕜) |>.le_opNorm x)
+  -- `StrongDual.extendRCLikeₗᵢ` is an isometric equivalence, so the norm is preserved outright.
+  refine ⟨h, by
+    rw [g.norm_extendRCLike, hnormeq]
+    change ‖reCLM.comp (f.restrictScalars ℝ)‖ = ‖f‖
+    exact (StrongDual.extendRCLikeₗᵢ (𝕜 := 𝕜)).symm.norm_map f⟩
 
 open Module
 

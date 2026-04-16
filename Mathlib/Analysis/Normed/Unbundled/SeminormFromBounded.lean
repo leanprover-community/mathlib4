@@ -212,13 +212,9 @@ theorem seminormFromBounded_one (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     · rw [hx, div_zero]; exact zero_le_one
     · rw [div_self hx]
   · rw [← div_self (map_one_ne_zero f_ne_zero f_nonneg f_mul)]
-    have h_bdd : BddAbove (Set.range fun y ↦ f y / f y) := by
-      use (1 : ℝ)
-      rintro r ⟨y, rfl⟩
-      by_cases hy : f y = 0
-      · simp only [hy, div_zero, zero_le_one]
-      · simp only [div_self hy, le_refl]
-    exact le_ciSup h_bdd (1 : R)
+    exact le_ciSup
+      (by simpa [one_mul] using seminormFromBounded_bddAbove_range f_nonneg f_mul (1 : R))
+      (1 : R)
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f 1 ≤ 1`. -/
@@ -332,11 +328,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
 theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f ≠ 0 := by
-  obtain ⟨x, hx⟩ := Function.ne_iff.mp f_ne_zero
-  rw [Function.ne_iff]
-  use x
-  rw [ne_eq, Pi.zero_apply, seminormFromBounded_eq_zero_iff f_nonneg f_mul x]
-  exact hx
+  simpa [Function.ne_iff, seminormFromBounded_eq_zero_iff f_nonneg f_mul] using f_ne_zero
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
   `seminormFromBounded' f` equals the kernel of `f`. -/

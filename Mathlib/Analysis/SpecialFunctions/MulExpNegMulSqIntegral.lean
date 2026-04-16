@@ -175,18 +175,13 @@ theorem dist_integral_mulExpNegMulSq_comp_le (f : E →ᵇ ℝ)
         (toReal_pos ((Measure.measure_univ_ne_zero).mpr hP'0) (by finiteness))
   -- obtain K, a compact and closed set, which covers E up to a small area of measure at most ε
   -- w.r.t. both P and P'
-  obtain ⟨KP, _, hKPco, hKPcl, hKP⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P Set.univ) (ofReal_pos.mpr hε).ne'
-  obtain ⟨KP', _, hKP'co, hKP'cl, hKP'⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
-    (MeasurableSet.univ) (measure_ne_top P' Set.univ) (ofReal_pos.mpr hε).ne'
-  let K := KP ∪ KP'
-  have hKco := IsCompact.union hKPco hKP'co
-  have hKcl := IsClosed.union hKPcl hKP'cl
-  simp only [← Set.compl_eq_univ_diff] at hKP hKP'
-  have hKPbound : P (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
-        (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_left))) hKP
-  have hKP'bound : P' (KP ∪ KP')ᶜ < ε.toNNReal := lt_of_le_of_lt
-        (measure_mono (Set.compl_subset_compl_of_subset (Set.subset_union_right))) hKP'
+  obtain ⟨K, _, hKco, hKcl, hK⟩ := MeasurableSet.exists_isCompact_isClosed_diff_lt
+    (μ := P + P') (MeasurableSet.univ) (measure_ne_top (P + P') Set.univ) (ofReal_pos.mpr hε).ne'
+  simp only [← Set.compl_eq_univ_diff] at hK
+  have hKPbound : P Kᶜ < ε.toNNReal :=
+    lt_of_le_of_lt ((Measure.le_add_right (ν := P) (ν' := P') le_rfl) _) hK
+  have hKP'bound : P' Kᶜ < ε.toNNReal :=
+    lt_of_le_of_lt ((Measure.le_add_left (ν := P') (ν' := P) le_rfl) _) hK
   -- Stone-Weierstrass approximation of f on K
   obtain ⟨g', hg'A, hg'approx⟩ :=
       ContinuousMap.exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints

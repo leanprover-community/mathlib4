@@ -61,13 +61,9 @@ lemma hasProdUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i
     (hg : BddAbove <| (fun x ↦ (∑' i, log (f i x)).re) '' s) :
     HasProdUniformlyOn f (fun x ↦ ∏' i, f i x) s := by
   simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-  obtain ⟨r, hr⟩ := hf.exists
-  suffices H : TendstoUniformlyOn (fun s x ↦ ∏ i ∈ s, f i x) (cexp ∘ r) atTop s by
-    refine H.congr_right (hr.tsum_eqOn.comp_left.symm.trans ?_)
-    exact fun x hx ↦ (cexp_tsum_eq_tprod (hfn x hx) (hf.summable hx))
-  refine (hr.tendstoUniformlyOn.comp_cexp ?_).congr ?_
-  · simpa +contextual [← hr.tsum_eqOn _] using hg
-  · filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn i hi y)]
+  refine ((hf.hasSumUniformlyOn.tendstoUniformlyOn.comp_cexp hg).congr ?_).congr_right ?_
+  · filter_upwards with t x hx using by simp [exp_sum, fun y ↦ exp_log (hfn x hx y)]
+  · exact fun x hx ↦ cexp_tsum_eq_tprod (hfn x hx) (hf.summable hx)
 
 lemma multipliableUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) s)
     (hfn : ∀ x ∈ s, ∀ i, f i x ≠ 0)

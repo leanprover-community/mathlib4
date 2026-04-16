@@ -203,19 +203,10 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     set A := ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
     set B := ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)
     set C := ∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n)
-    have aux' : 2 * n.succ = 2 * n + 2 := by rw [Nat.succ_eq_add_one, mul_add, mul_one]
     have : (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n.succ)) = (2 * (n : ℝ) + 1) / (2 * n + 2) * C := by
-      rw [integral_cos_pow_eq]
-      dsimp only [C]
-      rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ',
-        zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
-        zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_ofNat]
+      simpa [C, Nat.cast_mul, Nat.cast_ofNat, cos_pi_div_two, sin_zero] using
+        (integral_cos_pow (a := (0 : ℝ)) (b := π / 2) (n := 2 * n))
     rw [this]
-    change
-      π * z * A * B / C =
-        (π * z * (A * ((1 : ℂ) - z ^ 2 / ((n : ℂ) + 1) ^ 2)) *
-            ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n.succ)) /
-          ((2 * n + 1) / (2 * n + 2) * C : ℝ)
     have :
       (π * z * (A * ((1 : ℂ) - z ^ 2 / ((n : ℂ) + 1) ^ 2)) *
           ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n.succ)) =
