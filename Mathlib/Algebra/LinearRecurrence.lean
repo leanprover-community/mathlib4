@@ -152,8 +152,8 @@ theorem repr_basis_eq (u : E.solSpace) :
   rfl
 
 /-- The nth coordinate of a solution in the basis equals its nth value -/
-theorem coord_basis_eq (u : E.solSpace) (n : Fin E.order) :
-    E.basis.coord n u = u.val n :=
+@[simp]
+theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n = u.val n :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
