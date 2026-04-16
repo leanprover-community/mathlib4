@@ -78,9 +78,10 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
     Subgroup.closure (Set.range (PresentedGroup.of : α → PresentedGroup rels)) = ⊤ := by
   have : (PresentedGroup.of : α → PresentedGroup rels) =
     QuotientGroup.mk' (Subgroup.normalClosure rels) ∘ FreeGroup.of := rfl
-  rw [this, Set.range_comp]
-  apply ((MonoidHom.map_closure (QuotientGroup.mk' (Subgroup.normalClosure rels))) _).symm.trans
-  rw [FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
+  have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
+  rw [this, Set.range_comp, ← MonoidHom.map_closure
+    (QuotientGroup.mk' (Subgroup.normalClosure rels)),
+    FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
   exact MonoidHom.range_eq_top.2 (QuotientGroup.mk'_surjective _)
 
 @[induction_eliminator]
