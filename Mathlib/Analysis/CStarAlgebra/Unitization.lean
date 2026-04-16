@@ -169,6 +169,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     rw [h₂, h₃]
     /- use the definition of the norm, and split into cases based on whether the norm in the first
     coordinate is bigger or smaller than the norm in the second coordinate. -/
+    -- `grind` works here but is much slower
     by_cases! h : ‖(Unitization.splitMul 𝕜 E x).fst‖ ≤ ‖(Unitization.splitMul 𝕜 E x).snd‖
     · rw [sq, sq, sup_eq_right.mpr h, sup_eq_right.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
     · replace h := h.le
