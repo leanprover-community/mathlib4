@@ -201,6 +201,26 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
     card (powersetCard n s) = Nat.choose (card s) n :=
   (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
 
+/-- The number of `n`-element subsets of `t` containing `s` equals
+`Nat.choose (t.card - s.card) (n - s.card)`. -/
+lemma card_powersetCard_filter [DecidableEq α] (s t : Finset α) (n : ℕ)
+    (hst : s ⊆ t) (hsn : s.card ≤ n) :
+    ((t.powersetCard n).filter (s ⊆ ·)).card =
+    Nat.choose (t.card - s.card) (n - s.card) := by
+  rw [← card_sdiff_of_subset hst, ← card_powersetCard]
+  refine card_nbij' (· \ s) (· ∪ s) ?_ ?_ ?_ ?_ <;>
+    intro x hx <;>
+    simp only [mem_coe, mem_filter, mem_powersetCard] at hx ⊢
+  · refine ⟨fun y hy => mem_sdiff.mpr ⟨hx.1.1 (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩, ?_⟩
+    rw [card_sdiff_of_subset hx.2, hx.1.2]
+  · refine ⟨⟨?_, ?_⟩, ?_⟩
+    · exact union_subset (hx.1.trans sdiff_subset) hst
+    · rw [card_union_of_disjoint (disjoint_of_subset_left hx.1 disjoint_sdiff_self_left), hx.2]
+      omega
+    · exact subset_union_right
+  · exact sdiff_union_of_subset hx.2
+  · exact union_sdiff_cancel_right (disjoint_of_subset_left hx.1 disjoint_sdiff_self_left)
+
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   grind
