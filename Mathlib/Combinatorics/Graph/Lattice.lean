@@ -161,8 +161,6 @@ lemma inf_isLoopAt_iff : (G ⊓ H).IsLoopAt e x ↔ G.IsLoopAt e x ∧ H.IsLoopA
 lemma inf_isNonloopAt_iff : (G ⊓ H).IsNonloopAt e x ↔ ∃ y ≠ x, G.IsLink e x y ∧ H.IsLink e x y := by
   simp [IsNonloopAt]
 
-@[simp] protected lemma sInf_pair (G H : Graph α β) : sInf {G, H} = G ⊓ H := by ext <;> simp
-
 @[simp] protected lemma sInf_insert (G : Graph α β) {Hs : Set (Graph α β)} (hHs : Hs.Nonempty) :
     sInf (insert G Hs) = G ⊓ sInf Hs := by
   ext <;> simp [hHs]
