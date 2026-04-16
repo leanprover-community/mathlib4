@@ -169,19 +169,6 @@ instance : CompleteSpace 𝒪[K] :=
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
 open scoped Pointwise in
-@[simp]
-theorem _root_.Submodule.vadd_set_subset_vadd_set_iff
-    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M} {x y : M} :
-    x +ᵥ (S : Set M) ⊆ y +ᵥ (S : Set M) ↔ x ≡ y [SMOD S] := by
-  rw [SModEq.sub_mem]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub] at h
-    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h S.zero_mem
-  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub]
-    intro z hz
-    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using S.add_mem h hz
-
-open scoped Pointwise in
 instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
   prec' f hf := by
     let S n : Set 𝒪[K] := f n +ᵥ ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K])

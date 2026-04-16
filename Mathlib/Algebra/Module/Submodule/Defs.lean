@@ -165,16 +165,6 @@ equality, coming from the choice axiom, so that we don't have to provide
 `[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
 noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
 
-/-- Pointwise addition of a element in `M` and a submodule of `p`. -/
-scoped instance hVAddSet : HVAdd M (Submodule R M) (Set M) where
-  hVAdd a p := (fun x ↦ a + x) '' p
-
-scoped[Pointwise] attribute [instance] Submodule.hVAddSet
-
-open scoped Pointwise in
-@[simp]
-lemma vadd_eq_vadd_left {a : M} {p : Submodule R M} : a +ᵥ p = a +ᵥ (p : Set M) := rfl
-
 end Submodule
 
 namespace SMulMemClass
