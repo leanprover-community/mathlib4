@@ -109,8 +109,7 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
 protected def Group : Type _ := PresentedGroup M.relationsSet
-
-instance : Group M.Group := QuotientGroup.Quotient.group _
+deriving Group
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
@@ -508,10 +507,7 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
     rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
       (by ring : 2 * k + 1 = 1 + k * 2)]
     repeat rw [Int.add_mul_ediv_right _ _ (by simp)]
-    norm_num
-    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
-      ← inv_zpow]
-    simp [← mul_assoc]
+    simp [zpow_add, simple_mul_simple_pow', ← inv_zpow, ← mul_assoc]
 
 /-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
 This is known as the "braid relation" or "Artin-Tits relation". -/
