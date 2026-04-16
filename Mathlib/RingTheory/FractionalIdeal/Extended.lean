@@ -176,8 +176,6 @@ def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   map_mul' := extended_mul L hf
   map_add' := extended_add L hf
 
-@[deprecated (since := "2026-04-16")] alias extendedHom := extendedHom'
-
 end RingHom
 
 section Algebra
