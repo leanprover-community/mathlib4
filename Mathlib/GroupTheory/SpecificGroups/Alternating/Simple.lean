@@ -13,35 +13,31 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 /-! # The alternating group is simple
 
 * `Equiv.Perm.iwasawaStructure_two`:
-  the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`
-  Its commutative subgroups consist of the permutations with support
-  in a given element of `Set.powersetCard α 2`.
-  They are cyclic of order 2.
+  the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`.
+  Its commutative subgroups consist of the permutations with support in a given element
+  of `Set.powersetCard α 2`. They are cyclic of order 2.
 
 * `alternatingGroup_of_le_of_normal`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup
   of `Equiv.Perm α` contains the alternating group.
 
 * `alternatingGroup.iwasawaStructure_three`:
-  the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 3`
+  the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 3`.
 
   Its commutative subgroups consist of the permutations with support
-  in a given element of `Set.powersetCard α 2`.
-  They are cyclic of order 3.
+  in a given element of `Set.powersetCard α 2`. They are cyclic of order 3.
 
 * `alternatingGroup.iwasawaStructure_three`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 4`
 
-  Its commutative subgroups consist of the permutations of
-  cycleType (2, 2) with support in a given element of `Set.powersetCard α 2`.
-  They have order 4 and exponent 2 (`IsKleinFour`).
+  Its commutative subgroups consist of the permutations of cycleType (2, 2) with support
+  in a given element of `Set.powersetCard α 2`. They have order 4 and exponent 2 (`IsKleinFour`).
 
 * `alternatingGroup.normal_subgroup_eq_bot_or_eq_top`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup of `alternatingGroup` is `⊤`.
 
 * `alternatingGroup.isSimpleGroup`:
-  If `α` has at least 5 elements, then `alternatingGroup α`
-  is a simple group.
+  If `α` has at least 5 elements, then `alternatingGroup α` is a simple group.
 
 -/
 
@@ -112,8 +108,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 6)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
-  classical
-  rw [or_iff_not_imp_left]
+  rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 3) := by
     refine Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
@@ -121,7 +116,6 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
   exact fixedPoints_ne_univ_of_faithfulSMul 3 (by norm_num) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
@@ -185,14 +179,12 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 8)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
-  classical
-  rw [or_iff_not_imp_left]
+  rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 4) := by
     apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
-  rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot] at hN
   exact fixedPoints_ne_univ_of_faithfulSMul 4 (by norm_num) (by grind)
 
 /- If `α` has at least 5 elements,
@@ -203,9 +195,7 @@ theorem normal_subgroup_eq_bot_or_eq_top
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
   by_cases hα' : Nat.card α = 6
-  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα _ hnN
-    rw [hα']
-    simp
+  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα (by grind) hnN
   · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα' hnN
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
