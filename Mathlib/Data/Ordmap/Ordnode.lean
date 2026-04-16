@@ -903,7 +903,7 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
 ```
 (1, 1) ∈ {(0, 1), (1, 2)} = true
-(3, 1) ∈ {(0, 1), (1, 2)} = false 
+(3, 1) ∈ {(0, 1), (1, 2)} = false
 ``` -/
 def mem (x : α) : Ordnode α → Bool
   | nil => false
@@ -977,7 +977,7 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
 ```
 adjustWith f (1, 1) {(0, 1), (1, 2)} = {(0, 1), f (1, 2)}
-adjustWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} 
+adjustWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)}
 ``` -/
 def adjustWith (f : α → α) (x : α) : Ordnode α → Ordnode α
   | nil => nil
