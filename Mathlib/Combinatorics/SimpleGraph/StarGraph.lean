@@ -6,7 +6,6 @@ Authors: Justin Lai
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 
@@ -62,17 +61,15 @@ lemma isAcyclic_starGraph (r : V) : (starGraph r).IsAcyclic := by
   refine isAcyclic_iff_forall_adj_isBridge.mpr fun v w hadj ↦ isBridge_iff.mpr ⟨hadj, ?_⟩
   rw [starGraph_adj] at hadj
   wlog! h : v = r
-  · have hw : w = r := hadj.2.resolve_left h
-    replace hadj : w ≠ v ∧ (w = r ∨ v = r) := ⟨hadj.1.symm, hadj.2.symm⟩
-    rw [reachable_comm, Sym2.eq_swap]
-    exact this r w v hadj hw
+  · rw [reachable_comm, Sym2.eq_swap]
+    exact this r w v ⟨hadj.1.symm, hadj.2.symm⟩ (hadj.2.resolve_left h)
   · subst h
     apply not_reachable_of_neighborSet_right_eq_empty hadj.1
-    ext x; aesop
+    ext x
+    aesop
 
-/-- A star graph is a tree. -/
-lemma isTree_starGraph (r : V) : (starGraph r).IsTree := by
-  refine ⟨connected_starGraph r, isAcyclic_starGraph r⟩
+lemma isTree_starGraph (r : V) : (starGraph r).IsTree :=
+  ⟨connected_starGraph r, isAcyclic_starGraph r⟩
 
 /-- Every non-center vertex of a starGraph has degree one. -/
 lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v ≠ r) :
@@ -82,10 +79,6 @@ lemma degree_starGraph_of_ne_center [Fintype V] [DecidableEq V] {r v : V} (h : v
 /-- The center vertex of a starGraph has degree (card V) - 1. -/
 lemma degree_starGraph_center [Fintype V] [DecidableEq V] {r : V} :
     (starGraph r).degree r = Fintype.card V - 1 := by
-  rw [degree, neighborFinset_eq_filter (starGraph r)]
-  simp only [starGraph_adj, ne_eq, true_or, and_true]
-  have : ({w | ¬r = w} : Finset V) = Finset.univ.erase r := by
-    ext v; simp [eq_comm]
-  rw [this, Finset.card_erase_of_mem (Finset.mem_univ r), Finset.card_univ]
+  simp [degree, neighborFinset_eq_filter (starGraph r), starGraph_adj, Finset.univ.filter_ne r]
 
 end SimpleGraph
