@@ -24,6 +24,8 @@ with `μ(A \ K) < ε` such that `f` is continuous on `K`.
   a measurable set on which `f` is continuous. Only requires `OuterRegular μ`.
 * `MeasureTheory.Measurable.exists_isClosed_continuousOn`: closed-set version (the standard
   textbook statement), producing a closed set on which `f` is continuous. Requires `WeaklyRegular μ`.
+* `MeasureTheory.Measurable.exists_isCompact_continuousOn`: compact-set version, producing a
+  compact set on which `f` is continuous. Requires `InnerRegularCompactLTTop μ` and `T2Space X`.
 
 ## References
 
@@ -102,6 +104,30 @@ theorem Measurable.exists_isClosed_continuousOn
     hK₀_meas.exists_isClosed_diff_lt
       (ne_top_of_le_ne_top hAμ (measure_mono hK₀A)) hε2.ne'
   refine ⟨K, hKK₀.trans hK₀A, hK_closed, hK₀_cont.mono hKK₀, ?_⟩
+  calc μ (A \ K)
+      ≤ μ (A \ K₀) + μ (K₀ \ K) :=
+        (measure_mono (sdiff_triangle A K₀ K)).trans (measure_union_le _ _)
+    _ < ε / 2 + ε / 2 := ENNReal.add_lt_add hK₀_diff hK_diff
+    _ = ε := ENNReal.add_halves ε
+
+/-- **Lusin's theorem** (compact set version). For a measurable function `f` into a second-countable
+space, any measurable set of finite measure contains a compact subset on which `f` is continuous,
+with arbitrarily small complement. -/
+theorem Measurable.exists_isCompact_continuousOn
+    [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X] [T2Space X]
+    [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [SecondCountableTopology Y]
+    {μ : Measure X} [μ.OuterRegular] [μ.InnerRegularCompactLTTop]
+    {f : X → Y} (hf : Measurable f)
+    {A : Set X} (hA : MeasurableSet A) (hAμ : μ A ≠ ⊤)
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ K ⊆ A, IsCompact K ∧ ContinuousOn f K ∧ μ (A \ K) < ε := by
+  have hε2 : (0 : ℝ≥0∞) < ε / 2 := ENNReal.div_pos hε.ne' ofNat_ne_top
+  obtain ⟨K₀, hK₀A, hK₀_meas, hK₀_cont, hK₀_diff⟩ :=
+    hf.exists_measurableSet_continuousOn hA hAμ hε2
+  obtain ⟨K, hKK₀, hK_compact, hK_diff⟩ :=
+    hK₀_meas.exists_isCompact_diff_lt
+      (ne_top_of_le_ne_top hAμ (measure_mono hK₀A)) hε2.ne'
+  refine ⟨K, hKK₀.trans hK₀A, hK_compact, hK₀_cont.mono hKK₀, ?_⟩
   calc μ (A \ K)
       ≤ μ (A \ K₀) + μ (K₀ \ K) :=
         (measure_mono (sdiff_triangle A K₀ K)).trans (measure_union_le _ _)
