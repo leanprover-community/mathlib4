@@ -36,9 +36,6 @@ namespace IsPreordering
 variable [P.IsPreordering]
 
 variable {P} in
-theorem of_le {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) : Q.IsPreordering where
-
-variable {P} in
 @[aesop 90% (rule_sets := [SetLike])]
 theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
@@ -52,7 +49,6 @@ theorem one_notMem_support [P.HasIdealSupport] : 1 ∉ P.support := by
 
 theorem toAddSubmonoid_support_ne_top : P.toAddSubmonoid.support ≠ ⊤ :=
   fun h => one_notMem_toAddSubmonoid_support P (by simp [h])
-
 theorem support_ne_top [P.HasIdealSupport] : P.support ≠ ⊤ := by
   apply_fun Submodule.toAddSubgroup
   simpa using toAddSubmonoid_support_ne_top P
@@ -95,20 +91,6 @@ theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport w
 instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_two P h.out
 
 end IsPreordering
-
-variable {P} in
-theorem IsPreordering.of_isSpanning_of_isPointed [Nontrivial R]
-    (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsPreordering :=
-  .of_support_ne_top hP₁ (by simp [*])
-
-variable {P} in
-instance IsOrdering.of_isSpanning_of_isPointed [IsDomain R]
-    (hP₁ : P.IsSpanning) (hP₂ : P.IsPointed) : P.IsOrdering := .mk' hP₁ <| by
-  simpa [*] using Ideal.isPrime_bot
-
-variable {P} in
-theorem IsPreordering.of_isPointed [Nontrivial R]
-    (hP : P.IsPointed) (h : .sumSq R ≤ P) : P.IsPreordering where
 
 end CommRing
 

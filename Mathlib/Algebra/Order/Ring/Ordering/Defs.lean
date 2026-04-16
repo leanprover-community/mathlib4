@@ -81,9 +81,6 @@ protected theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ S := by
   | zero => simp
   | sq_add => aesop (add unsafe mem_of_isSquare)
 
-theorem sumSq_le {R : Type*} [CommRing R] (S : Subsemiring R) [IsPreordering S] :
-    Subsemiring.sumSq R ≤ S := fun _ ↦ by aesop
-
 @[simp]
 protected theorem mul_self_mem (x : R) : x * x ∈ S := by aesop
 
@@ -152,7 +149,7 @@ instance : SubsemiringClass (RingPreordering R) R where
 variable {R}
 
 set_option linter.deprecated false in
-@[deprecated Subsemiring.mem_of_isSumSq (since := "2026-04-15"),
+@[deprecated Subsemiring.mem_of_isSquare (since := "2026-04-15"),
   aesop unsafe 80% (rule_sets := [SetLike])]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx

@@ -101,9 +101,4 @@ theorem support_eq_bot (hS : S.IsPointed) :
   apply_fun Submodule.toAddSubgroup using Submodule.toAddSubgroup_injective
   rw [← toAddSubmonoid_support, hS.support_eq_bot, Submodule.bot_toAddSubgroup]
 
-@[aesop simp, aesop safe forward]
-theorem _root_.AddSubmonoid.IsPointed.neg_one_notMem [Nontrivial R]
-    (hS : S.IsPointed) : -1 ∉ S := fun hc ↦ by
-  simpa [S.eq_zero_of_mem_of_neg_mem hS (by simp) hc] using zero_ne_one' R
-
 end Subsemiring
