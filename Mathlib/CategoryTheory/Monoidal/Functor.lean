@@ -1220,7 +1220,7 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm [e.IsMonoidal] : e.symm.IsMonoidal where
+instance isMonoidal_symm : e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction]
     dsimp [symm]

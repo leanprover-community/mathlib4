@@ -619,10 +619,10 @@ but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
 export MulDistribMulAction (smul_one)
 

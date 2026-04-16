@@ -1004,6 +1004,7 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
   funext x y
   exact h x y
 
+set_option linter.overlappingInstances false in
 theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
