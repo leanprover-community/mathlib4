@@ -47,7 +47,7 @@ set_option backward.isDefEq.respectTransparency false in
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
+def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
     { obj X := Kleisli.mk _ X
       map f := ⟨TypeCat.ofHom f⟩
