@@ -18,8 +18,9 @@ aggregating core concepts, distributions, and processes.
 
 ## Main definitions
 
-* All definitions from `Uncertainty.base_core`, `Uncertainty.base_distribution`,
-  and `Uncertainty.base_process` are exported here.
+ * All definitions from `Mathlib.Uncertainty.BaseCore`,
+   `Mathlib.Uncertainty.BaseDistribution`, and
+   `Mathlib.Uncertainty.BaseProcess` are exported here.
 
 ## References
 

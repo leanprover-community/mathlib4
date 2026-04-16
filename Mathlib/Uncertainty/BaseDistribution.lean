@@ -715,13 +715,13 @@ theorem normal_variance_positive_interface [SpecialDistributionStatsStructure]
   SpecialDistributionStatsStructure.normal_variance_positive params
 
 /--
-An engineering cutoff used to truncate improper integrals over `ℝ`.
+A fixed cutoff parameter used in the distribution-formula interface.
 
-In particular, `engineeringCutoff` is used in `expectedValue_via_cdf` to
-approximate the mathematically natural improper integral over the whole real
-line by integrating only over `[-engineeringCutoff, engineeringCutoff]`.
-This is an engineering/approximation choice, not an exact theorem about the
-underlying distributions.
+In particular, `engineeringCutoff` appears in
+`DistributionFormulaStructure.expectedValue_via_cdf`, where the truncated
+integral over `[-engineeringCutoff, engineeringCutoff]` is taken as part of the
+axiomatized formula layer in this file. This definition does not assert that
+the truncated expression is a theorem for all uncertain distributions.
 -/
 def engineeringCutoff : ℝ := Real.exp 20
 
