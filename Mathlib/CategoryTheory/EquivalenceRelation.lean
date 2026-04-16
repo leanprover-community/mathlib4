@@ -276,7 +276,7 @@ class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) 
 variable (C) in
 /-- A category `C` is a universally exact category if all equivalence relations in `C` are
 universally effective equivalence relations. -/
-class IsUniversallyExactCategory where
+class IsUniversallyEffectiveEquivalenceRelationCategory where
   isUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
     [IsEquivalenceRelation p₁ p₂] : IsUniversallyEffectiveEquivalenceRelation p₁ p₂
 
