@@ -80,9 +80,7 @@ theorem rEVariationOn_ne_zero_ne_top {r : ℝ≥0∞} (hr : r ≠ 0) (hr' : r �
 /-- The `r`-variation with `r = 1` is the usual `r`-variation of a function. -/
 theorem eVariationOn' (f : α → E) (s : Set α) :
     rEVariationOn 1 f s = eVariationOn f s := by
-
-  simp only [rEVariationOn, eVariationOn, one_ne_zero, ENNReal.one_ne_top, ↓reduceIte, ENNReal.toReal_one,
-    inv_one, ENNReal.rpow_one]
+  simp [rEVariationOn, eVariationOn]
 
 --TODO: redefine `eVariationOn` with above equalility
 
