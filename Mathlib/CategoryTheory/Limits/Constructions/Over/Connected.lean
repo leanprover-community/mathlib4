@@ -124,7 +124,6 @@ instance [IsConnected J] {B : D} : CreatesColimitsOfShape J (StructuredArrow.pro
       (structuredArrowOpEquivalence K B).functor ⋙ CostructuredArrow.proj K.op (.op B)
   createsColimitsOfShapeOfOp _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `StructuredArrow K B` preserves any connected colimit. -/
 instance [IsConnected J] {B : D} : PreservesColimitsOfShape J (StructuredArrow.proj B K) := by
   have : PreservesLimitsOfShape Jᵒᵖ (proj B K).op :=
