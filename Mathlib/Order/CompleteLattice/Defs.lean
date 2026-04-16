@@ -59,7 +59,7 @@ Nevertheless it is sometimes a useful intermediate step in constructions.
 -/
 class CompleteSemilatticeSup (α : Type*) extends PartialOrder α, SupSet α where
   /-- Every set has a least upper bound. -/
-  isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)
+  isLUB_sSup : ∀ s : Set α, IsLUB s (_root_.sSup s)
 
 /-- Note that we rarely use `CompleteSemilatticeInf`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -69,7 +69,7 @@ Nevertheless it is sometimes a useful intermediate step in constructions.
 @[to_dual]
 class CompleteSemilatticeInf (α : Type*) extends PartialOrder α, InfSet α where
   /-- Every set has a greatest lower bound. -/
-  isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)
+  isGLB_sInf : ∀ s : Set α, IsGLB s (_root_.sInf s)
 
 section
 

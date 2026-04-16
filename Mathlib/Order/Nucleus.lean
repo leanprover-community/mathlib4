@@ -255,7 +255,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance range.instFrameMinimalAxioms : Frame.MinimalAxioms (range n) where
   inf_sSup_le_iSup_inf a s := by
-    simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, n.giAux.gc.u_inf]
+    simp_rw [← Subtype.coe_le_coe, iSup_subtype', iSup, sSup, SupSet.sSup, n.giAux.gc.u_inf]
     rw [rangeFactorization_coe, ← mem_range.1 a.prop, ← map_inf]
     apply n.monotone
     simp_rw [inf_sSup_eq, sSup_image, iSup_range, iSup_image, iSup_subtype', n.giAux.gc.u_inf,

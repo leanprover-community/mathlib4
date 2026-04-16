@@ -156,7 +156,7 @@ def restrict (S : Sublocale X) : FrameHom X S where
     refine le_antisymm le_top ?_
     change _ ≤ restrictAux S ⊤
     rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
-    simp [restrictAux, sInf]
+    simp [restrictAux]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

@@ -276,12 +276,12 @@ noncomputable instance : SupSet (GroupSeminorm E) where
 @[to_additive]
 lemma sSup_of_not_bddAbove {s : Set (GroupSeminorm E)} (hs : ¬BddAbove s) :
     sSup s = 0 := by
-  simp [SupSet.sSup, hs]
+  simp [sSup, SupSet.sSup, hs]
 
 @[to_additive]
 lemma coe_sSup_apply {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
     ⇑(sSup s) x = ⨆ p : s, (p : GroupSeminorm E) x := by
-  simp [SupSet.sSup, hs]
+  simp [sSup, SupSet.sSup, hs]
   rfl
 
 @[to_additive]
@@ -550,11 +550,11 @@ noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
 
 lemma sSup_of_not_bddAbove {s : Set (NonarchAddGroupSeminorm E)} (hs : ¬BddAbove s) :
     sSup s = 0 := by
-  simp [SupSet.sSup, hs]
+  simp [sSup, SupSet.sSup, hs]
 
 lemma coe_sSup_apply {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
     ⇑(sSup s) x = ⨆ p : s, (p : NonarchAddGroupSeminorm E) x := by
-  simp [SupSet.sSup, hs]
+  simp [sSup, SupSet.sSup, hs]
   rfl
 
 lemma coe_sSup_apply' {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :

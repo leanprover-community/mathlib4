@@ -35,20 +35,22 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
   isLUB_csSup _ hn hb := by
+    simp only [sSup]
     rw [dif_pos ⟨hn, hb⟩]
     exact (isGreatest_coe_greatestOfBdd ..).isLUB
   isGLB_csInf _ hn hb := by
+    simp only [sInf]
     rw [dif_pos ⟨hn, hb⟩]
     exact (isLeast_coe_leastOfBdd ..).isGLB
-  csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
-  csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
+  csSup_of_not_bddAbove := fun s hs ↦ by simp [sSup, hs]
+  csInf_of_not_bddBelow := fun s hs ↦ by simp [sInf, hs]
 
 namespace Int
 
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
     (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
-  simp only [sSup, dif_pos this]
+  simp only [sSup, SupSet.sSup, dif_pos this]
   convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
 
 @[deprecated (since := "2025-12-24")] alias csSup_eq_greatest_of_bdd := csSup_eq_greatestOfBdd
@@ -65,7 +67,7 @@ theorem csSup_of_not_bddAbove {s : Set ℤ} (h : ¬BddAbove s) : sSup s = 0 :=
 theorem csInf_eq_leastOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, b ≤ z)
     (Hinh : ∃ z : ℤ, z ∈ s) : sInf s = leastOfBdd b Hb Hinh := by
   have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
-  simp only [sInf, dif_pos this]
+  simp only [sInf, InfSet.sInf, dif_pos this]
   convert (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
 
 @[deprecated (since := "2025-12-24")] alias csInf_eq_least_of_bdd := csInf_eq_leastOfBdd

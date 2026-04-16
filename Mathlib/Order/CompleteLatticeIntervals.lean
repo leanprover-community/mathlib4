@@ -62,11 +62,11 @@ theorem subset_sSup_of_within [Inhabited s] {t : Set s}
 
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
-  simp [sSup]
+  simp [sSup, SupSet.sSup]
 
 theorem subset_sSup_of_not_bddAbove [Inhabited s] {t : Set s} (ht : ¬BddAbove t) :
     sSup t = default := by
-  simp [sSup, ht]
+  simp [sSup, SupSet.sSup, ht]
 
 end SupSet
 
@@ -102,11 +102,11 @@ theorem subset_sInf_of_within [Inhabited s] {t : Set s}
 
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
-  simp [sInf]
+  simp [sInf, InfSet.sInf]
 
 theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t) :
     sInf t = default := by
-  simp [sInf, ht]
+  simp [sInf, InfSet.sInf, ht]
 
 end InfSet
 
@@ -179,6 +179,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
   isLUB_sSup S := by
+    simp only [sSup]
     split_ifs with hS
     · subst hS; simp only [isLUB_empty_iff, isBot_iff_eq_bot]; rfl
     · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.nonempty_iff_ne_empty.mpr hS).image _)
@@ -189,6 +190,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
   isGLB_sInf S := by
+    simp only [sInf]
     split_ifs with hS
     · subst hS; simp only [isGLB_empty_iff, isTop_iff_eq_top]; rfl
     · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image _)

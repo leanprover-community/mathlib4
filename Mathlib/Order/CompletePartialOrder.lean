@@ -106,5 +106,4 @@ end CompletePartialOrder
 /-- A complete lattice is a complete partial order. -/
 instance (priority := 100) CompleteLattice.toCompletePartialOrder [CompleteLattice α] :
     CompletePartialOrder α where
-  sSup := sSup
   lubOfDirected _ _ := isLUB_sSup _

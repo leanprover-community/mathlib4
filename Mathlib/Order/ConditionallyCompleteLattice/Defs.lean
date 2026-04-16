@@ -45,9 +45,9 @@ hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, InfSet α where
   /-- Every nonempty subset which is bounded above has a least upper bound. -/
-  isLUB_csSup : ∀ s : Set α, s.Nonempty → BddAbove s → IsLUB s (sSup s)
+  isLUB_csSup : ∀ s : Set α, s.Nonempty → BddAbove s → IsLUB s (_root_.sSup s)
   /-- Every nonempty subset which is bounded below has a greatest lower bound. -/
-  isGLB_csInf : ∀ s : Set α, s.Nonempty → BddBelow s → IsGLB s (sInf s)
+  isGLB_csInf : ∀ s : Set α, s.Nonempty → BddBelow s → IsGLB s (_root_.sInf s)
 
 attribute [to_dual self (reorder := 3 4, 5 6)] ConditionallyCompleteLattice.mk
 attribute [to_dual existing] ConditionallyCompleteLattice.toSupSet
@@ -73,9 +73,9 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
   /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
-  csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
+  csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → _root_.sSup s = _root_.sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
-  csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
+  csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → _root_.sInf s = _root_.sInf (∅ : Set α)
   compare a b := compareOfLessAndEq a b
   /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
@@ -92,7 +92,7 @@ boundedness. -/
 class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,
     OrderBot α where
   /-- The supremum of the empty set is special-cased to `⊥` -/
-  csSup_empty : sSup ∅ = ⊥
+  csSup_empty : (_root_.sSup ∅ : α) = ⊥
 
 -- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
@@ -169,10 +169,10 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ :=
     letI : InfSet α := ⟨fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
-      simp only [dif_pos hn]
+      simp only [sInf, dif_pos hn]
       exact IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx⟩
-  csSup_empty := by simp [sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
+  csSup_empty := by simp [sInf, sSup, SupSet.sSup, bot_unique (WellFounded.min_le _ (mem_univ _))]
   csSup_of_not_bddAbove s H := by
     rw [BddAbove] at H
-    simp [sSup, H, bot_unique (WellFounded.min_le _ (mem_univ _))]
+    simp [sInf, sSup, SupSet.sSup, H, bot_unique (WellFounded.min_le _ (mem_univ _))]
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim

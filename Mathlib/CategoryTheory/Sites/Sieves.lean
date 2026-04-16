@@ -590,7 +590,7 @@ theorem sInf_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
 @[simp]
 theorem sSup_apply {Ss : Set (Sieve X)} {Y} (f : Y ⟶ X) :
     sSup Ss f ↔ ∃ (S : Sieve X) (_ : S ∈ Ss), S f := by
-  simp [sSup, Sieve.sup]
+  simp [sSup, SupSet.sSup, Sieve.sup]
 
 @[simp]
 theorem inter_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊓ S) f ↔ R f ∧ S f :=

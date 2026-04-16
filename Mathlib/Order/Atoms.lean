@@ -900,6 +900,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
     sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
     isLUB_sSup s := by
+      simp only [sSup]
       refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · exact bot_le
@@ -910,6 +911,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
           exact bot_ne_top (eq_top_iff.2 (h con))
         · exact le_top
     isGLB_sInf s := by
+      simp only [sInf]
       refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
         · rw [if_pos h]

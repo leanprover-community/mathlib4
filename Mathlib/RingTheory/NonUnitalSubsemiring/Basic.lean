@@ -193,13 +193,15 @@ theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
 
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
-    (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t :=
-  mk'_toSubsemigroup _ _
+    (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t := by
+  simp only [sInf]
+  exact mk'_toSubsemigroup _ _
 
 @[simp]
 theorem sInf_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
-    (sInf s).toAddSubmonoid = ⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t :=
-  mk'_toAddSubmonoid _ _
+    (sInf s).toAddSubmonoid = ⨅ t ∈ s, NonUnitalSubsemiring.toAddSubmonoid t := by
+  simp only [sInf]
+  exact mk'_toAddSubmonoid _ _
 
 /-- Non-unital subsemirings of a non-unital semiring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubsemiring R) :=

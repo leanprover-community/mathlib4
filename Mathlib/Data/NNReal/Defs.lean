@@ -826,7 +826,7 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y.toNNReal :=
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
-nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
+nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : sSup s = 0 := by
   grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=

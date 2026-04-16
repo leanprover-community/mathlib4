@@ -639,7 +639,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp [sSup]
+  · simp_rw [sSup, SupSet.sSup]; simp
   · exact isLUB_sSup' hs
 
 /-- The `sInf` of a bounded-below set is its greatest lower bound for a conditionally

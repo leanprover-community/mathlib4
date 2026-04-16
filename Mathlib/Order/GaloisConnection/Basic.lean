@@ -392,6 +392,7 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
     isGLB_sInf _ := by
+      simp only [sInf]
       rw [gi.choice_eq]
       exact gi.isGLB_of_u_image (isGLB_sInf _) }
 

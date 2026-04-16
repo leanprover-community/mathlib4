@@ -613,6 +613,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           lift s to NonemptyInterval α using ha
           exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
   isLUB_sSup _ := by
+    simp only [sSup]
     constructor
     · intro s ha
       split_ifs with h
@@ -647,6 +648,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
     else ⊥
   isGLB_sInf s₁ := by
+    simp only [sInf]
     constructor
     · intro s ha
       split_ifs with h

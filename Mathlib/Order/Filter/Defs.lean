@@ -203,7 +203,7 @@ instance instInfSet : InfSet (Filter α) where
   sInf := Filter.sInf
 
 protected theorem sSup_lowerBounds (s : Set (Filter α)) : sSup (lowerBounds s) = sInf s := by
-  simp [sInf, Filter.sInf]
+  with_unfolding_all rfl
 
 instance : Top (Filter α) where
   top := .copy (sSup (Set.range pure)) {s | ∀ x, x ∈ s} <| by simp

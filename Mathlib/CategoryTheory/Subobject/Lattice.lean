@@ -625,7 +625,6 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
-  sInf := sInf
   isGLB_sInf _ := ⟨sInf_le _, le_sInf _⟩
 
 end Inf
@@ -677,7 +676,6 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
-  sSup := sSup
   isLUB_sSup _ := ⟨le_sSup _, sSup_le _⟩
 
 end Sup

@@ -64,7 +64,7 @@ except for implementing `Order.Frame` via `Order.Frame.ofMinimalAxioms`.
 This structure omits the `himp`, `compl` fields, which can be recovered using
 `Order.Frame.ofMinimalAxioms`. -/
 class Order.Frame.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
+  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ _root_.sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
 /-- Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
 use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`.
@@ -72,7 +72,7 @@ use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`
 This structure omits the `sdiff`, `hnot` fields, which can be recovered using
 `Order.Coframe.ofMinimalAxioms`. -/
 class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ _root_.sInf s
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where

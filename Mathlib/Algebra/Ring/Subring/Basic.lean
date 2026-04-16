@@ -336,13 +336,15 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : x ∈ ⨅ i, S i 
 
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subring R)) :
-    (sInf s).toSubmonoid = ⨅ t ∈ s, t.toSubmonoid :=
-  mk'_toSubmonoid _ _
+    (sInf s).toSubmonoid = ⨅ t ∈ s, t.toSubmonoid := by
+  simp only [sInf]
+  exact mk'_toSubmonoid _ _
 
 @[simp]
 theorem sInf_toAddSubgroup (s : Set (Subring R)) :
-    (sInf s).toAddSubgroup = ⨅ t ∈ s, Subring.toAddSubgroup t :=
-  mk'_toAddSubgroup _ _
+    (sInf s).toAddSubgroup = ⨅ t ∈ s, Subring.toAddSubgroup t := by
+  simp only [sInf]
+  exact mk'_toAddSubgroup _ _
 
 /-- Subrings of a ring form a complete lattice. -/
 instance : CompleteLattice (Subring R) :=

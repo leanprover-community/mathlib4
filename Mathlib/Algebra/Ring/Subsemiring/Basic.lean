@@ -225,13 +225,15 @@ theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : x ∈ ⨅ i, 
 
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subsemiring R)) :
-    (sInf s).toSubmonoid = ⨅ t ∈ s, Subsemiring.toSubmonoid t :=
-  mk'_toSubmonoid _ _
+    (sInf s).toSubmonoid = ⨅ t ∈ s, Subsemiring.toSubmonoid t := by
+  simp only [sInf]
+  exact mk'_toSubmonoid _ _
 
 @[simp]
 theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
-    (sInf s).toAddSubmonoid = ⨅ t ∈ s, Subsemiring.toAddSubmonoid t :=
-  mk'_toAddSubmonoid _ _
+    (sInf s).toAddSubmonoid = ⨅ t ∈ s, Subsemiring.toAddSubmonoid t := by
+  simp only [sInf]
+  exact mk'_toAddSubmonoid _ _
 
 /-- Subsemirings of a semiring form a complete lattice. -/
 instance : CompleteLattice (Subsemiring R) :=
