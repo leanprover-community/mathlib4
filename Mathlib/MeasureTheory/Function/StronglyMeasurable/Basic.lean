@@ -977,19 +977,13 @@ theorem stronglyMeasurable_in_set {m : MeasurableSpace α} [TopologicalSpace β]
     (hf_zero : ∀ x, x ∉ s → f x = 0) :
     ∃ fs : ℕ → α →ₛ β,
       (∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) ∧ ∀ x ∉ s, ∀ n, fs n x = 0 := by
-  let g_seq_s : ℕ → @SimpleFunc α m β := fun n => (hf.approx n).restrict s
-  have hg_eq : ∀ x ∈ s, ∀ n, g_seq_s n x = hf.approx n x := by
-    intro x hx n
-    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_mem hx]
-  have hg_zero : ∀ x ∉ s, ∀ n, g_seq_s n x = 0 := by
-    intro x hx n
-    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_notMem hx]
-  refine ⟨g_seq_s, fun x => ?_, hg_zero⟩
-  by_cases hx : x ∈ s
-  · simp_rw [hg_eq x hx]
-    exact hf.tendsto_approx x
-  · simp_rw [hg_zero x hx, hf_zero x hx]
-    exact tendsto_const_nhds
+  refine ⟨fun n => (hf.approx n).restrict s, ?_, ?_⟩
+  · intro x
+    by_cases hx : x ∈ s
+    · simpa [SimpleFunc.coe_restrict, hs, hx] using hf.tendsto_approx x
+    · simpa [SimpleFunc.coe_restrict, hs, hx, hf_zero x hx] using tendsto_const_nhds
+  · intro x hx n
+    simp [SimpleFunc.coe_restrict, hs, hx]
 
 /-- If the restriction to a set `s` of a σ-algebra `m` is included in the restriction to `s` of
 another σ-algebra `m₂` (hypothesis `hs`), the set `s` is `m` measurable and a function `f` supported

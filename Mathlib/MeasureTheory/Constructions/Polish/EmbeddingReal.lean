@@ -39,14 +39,9 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
   · cases finite_or_infinite α
     · obtain ⟨n, h_nonempty_equiv⟩ := exists_nat_measurableEquiv_range_coe_fin_of_finite α
       refine ⟨_, ?_, h_nonempty_equiv⟩
-      letI : MeasurableSpace (Fin n) := borel (Fin n)
-      haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
-      exact continuous_of_discreteTopology.measurableEmbedding
-        (Nat.cast_injective.comp Fin.val_injective)
+      exact (Set.finite_range ((↑) : Fin n → ℝ)).measurableSet
     · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
-      exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
+      exact Nat.isClosedEmbedding_coe_real.isClosed_range.measurableSet
   · refine
       ⟨univ, MeasurableSet.univ,
         ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩
