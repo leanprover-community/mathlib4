@@ -93,37 +93,29 @@ def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] w
 theorem uniqueAlgEquiv_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R σ) (MvPolynomial.monomial d r)
       = Polynomial.monomial (d default) r := by
-  simp only [uniqueAlgEquiv_apply, eval₂_monomial]
-  rw [Finsupp.unique_single d, Finsupp.prod_single_index]
-  · simp [Polynomial.C_mul_X_pow_eq_monomial]
-  · simp [pow_zero]
+  simp [Polynomial.C_mul_X_pow_eq_monomial]
 
 theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
     (MvPolynomial.uniqueAlgEquiv R σ).symm (Polynomial.monomial (d default) r)
       = MvPolynomial.monomial d r := by
-  rw [← uniqueAlgEquiv_monomial, AlgEquiv.symm_apply_apply]
+  simp [MvPolynomial.monomial_eq]
 
 theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
-    ((MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n) =
+    (MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n =
       coeff (Finsupp.single default n) P := by
   induction P using MvPolynomial.induction_on' with
   | monomial d r =>
-      rw [uniqueAlgEquiv_monomial]
-      by_cases hsingle : d = Finsupp.single default n
-      · subst hsingle
-        simp
-      · have hd : d default ≠ n := by
-          intro hd
-          apply hsingle
-          simpa [hd] using (Finsupp.unique_single d)
-        simp [Polynomial.coeff_monomial, hd, MvPolynomial.coeff_monomial, hsingle]
+    rw [uniqueAlgEquiv_monomial]
+    by_cases hsingle : d = Finsupp.single default n
+    · subst hsingle
+      simp
+    · have hd : d default ≠ n := by
+        intro hd
+        apply hsingle
+        simpa [hd] using (Finsupp.unique_single d)
+      simp [Polynomial.coeff_monomial, hd, MvPolynomial.coeff_monomial, hsingle]
   | add P Q hP hQ =>
-      simpa [MvPolynomial.uniqueAlgEquiv_apply] using congrArg₂ HAdd.hAdd hP hQ
-
-theorem coeff_pUnitAlgEquiv (P : MvPolynomial PUnit R) (n : ℕ) :
-    ((MvPolynomial.uniqueAlgEquiv R PUnit P : Polynomial R).coeff n) =
-      coeff (Finsupp.single default n) P :=
-  coeff_uniqueAlgEquiv R P n
+    simpa [MvPolynomial.uniqueAlgEquiv_apply] using congrArg₂ HAdd.hAdd hP hQ
 
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
 abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
