@@ -66,4 +66,12 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
+/-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
+is surjective and the kernel is finitely generated as a normal subgroup. -/
+theorem iff_hom_surj_set_G :
+    IsFinitelyPresented G ↔ ∃ (S : Set G) (_ : S.Finite),
+      Function.Surjective (FreeGroup.lift ((↑) : S → G)) ∧
+      IsNormalClosureFG (FreeGroup.lift ((↑) : S → G)).ker := by
+  sorry
+
 end Group.IsFinitelyPresented
