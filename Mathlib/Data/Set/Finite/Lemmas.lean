@@ -10,6 +10,7 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Logic.Embedding.Set
+import Mathlib.Data.Fintype.Perm
 
 /-!
 # Lemmas on finiteness of sets
@@ -63,8 +64,22 @@ theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
     (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
   finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
 
-theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ :=
+theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {s : Set X | Set.Finite s} = Set.univ :=
   sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩
+
+theorem Finite.exists_iterate_eqOn_id {f : α → α} {s : Set α} (hfs : Set.BijOn f s s)
+    (hs : s.Finite) : ∃ m, 0 < m ∧ Set.EqOn f^[m] id s := by
+  lift s to Finset α using hs
+  grind [Finset.exists_iterate_eqOn_id]
+
+theorem Finite.stabilises_periodic_bounded {f : α → α} {s : Set α} (hfs : Set.MapsTo f s s)
+    (hs : s.Finite) :
+    ∃ n m, 0 < m ∧ ∀ k ≥ n, Set.EqOn f^[m + k] f^[k] s := by
+  lift s to Finset α using hs
+  obtain rfl | hne := s.eq_empty_or_nonempty
+  · exact ⟨1, 1, by simp⟩
+  obtain ⟨n, -, m, -, h⟩ := Finset.stabilises_periodic_bounded hfs hne
+  exact ⟨n, m, h⟩
 
 /-! ### Infinite sets -/
 

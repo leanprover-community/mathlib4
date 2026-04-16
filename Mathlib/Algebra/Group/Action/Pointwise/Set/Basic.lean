@@ -125,6 +125,17 @@ theorem pairwiseDisjoint_smul_iff :
 
 end IsLeftCancelMul
 
+section IsLeftCancelSMul
+
+variable [SMul α β] [IsLeftCancelSMul α β] {s : Set α} {t : Set β}
+
+@[to_additive]
+theorem pairwiseDisjoint_smul_iff' :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t).InjOn fun p ↦ p.1 • p.2 :=
+  pairwiseDisjoint_image_right_iff fun a _ _ _ h ↦ IsLeftCancelSMul.left_cancel a _ _ h
+
+end IsLeftCancelSMul
+
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Set γ) :=

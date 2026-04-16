@@ -16,6 +16,8 @@ public import Mathlib.Data.Finset.Max
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 import Mathlib.Tactic.Rify
 import Mathlib.Algebra.Order.Ring.Abs
@@ -368,66 +370,45 @@ lemma add_min'_add {α : Type*} [LinearOrder α] [Add α] [AddLeftMono α] [AddR
     (A + B).min' (hA.add hB) = A.min' hA + B.min' hB :=
   add_max'_add (α := αᵒᵈ) hA hB
 
--- @[to_additive]
--- lemma powers_nonempty {α : Type*} [Monoid α] {a : α} :
---     Set.Nonempty (Submonoid.powers a : Set α) := ⟨a, by simp⟩
+@[to_additive]
+lemma exists_fixed_of_smul_subset {M α : Type*} [Monoid M] [MulAction M α] {A : Set α} {m : M}
+    (h : m • A ⊆ A) (hAfin : A.Finite) (hA : A.Nonempty) :
+    ∃ a ∈ A, ∃ n : ℕ, n ≠ 0 ∧ m ^ n • a = a := by
+  obtain ⟨a, ha⟩ := hA
+  let f (n : ℕ) : α := m ^ n • a
+  replace h (n : ℕ) : f n ∈ A := by
+    induction n with
+    | zero => simpa [f]
+    | succ n hn => simpa [f, pow_succ', mul_smul] using h (Set.smul_mem_smul_set hn)
+  by_contra! h'
+  replace h' : Function.Injective f := Function.Injective.of_lt_imp_ne fun n₁ n₂ hn ↦ by
+    have := h' (m ^ n₁ • a) (h n₁) (n₂ - n₁) (by grind)
+    rw [smul_smul, ← pow_add] at this
+    grind
+  exact Set.infinite_of_injective_forall_mem h' h hAfin
 
 @[to_additive]
-lemma smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    [IsMulTorsionFree α] {A : Finset α} {b : α} :
-    b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
-  constructor
-  case mpr => rintro (rfl | rfl) <;> simp
-  case mp =>
-    intro hbA
-    have hfin : (Submonoid.powers b : Set α) * A ⊆ A := by
-      simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
-        exists_exists_eq_and, forall_exists_index, and_imp]
-      rintro _ n a ha rfl
-      induction n with
-      | zero => simpa
-      | succ n hn =>
-          rw [pow_succ', mul_assoc]
-          exact hbA (smul_mem_smul_finset hn)
-    have : Set.Finite ((Submonoid.powers b : Set α) * (A : Set α)) :=
-      (finite_toSet A).subset hfin
-    rw [Set.finite_mul, finite_powers] at this
-    cases this with
-    | inl hl =>
-        right
-        exact hl.1.eq_one'
-    | inr hr =>
-        simp only [coe_eq_empty] at hr
-        exact Or.inl (hr.resolve_left Submonoid.powers_nonempty.ne_empty)
+lemma smul_set_subset_self_iff {α : Type*} [Monoid α] [IsRightCancelMul α] [IsMulTorsionFree α]
+    {A : Set α} (hAfin : A.Finite) {b : α} :
+    b • A ⊆ A ↔ A = ∅ ∨ b = 1 where
+  mpr := by simp +contextual [or_imp]
+  mp := by
+    by_contra! ⟨h, hA, hb⟩
+    obtain ⟨a, ha, n, hn₀, h⟩ := exists_fixed_of_smul_subset h hAfin hA
+    simp [*] at h
 
 open MulOpposite in
 @[to_additive]
-lemma op_smul_finset_subset_self_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
-    [IsMulTorsionFree α] {A : Finset α} {b : α} :
-    op b • A ⊆ A ↔ A = ∅ ∨ b = 1 := by
-  constructor
-  case mpr => rintro (rfl | rfl) <;> simp
-  case mp =>
-    intro hbA
-    have hfin : A * (Submonoid.powers b : Set α) ⊆ A := by
-      simp only [Set.subset_def, Set.mem_mul, SetLike.mem_coe, Submonoid.mem_powers_iff,
-        exists_exists_eq_and, forall_exists_index, and_imp]
-      rintro _ a ha n rfl
-      induction n with
-      | zero => simpa
-      | succ n hn =>
-          rw [pow_succ, ← mul_assoc]
-          exact hbA (smul_mem_smul_finset hn)
-    have : Set.Finite ((A : Set α) * (Submonoid.powers b : Set α)) :=
-      (finite_toSet A).subset hfin
-    rw [Set.finite_mul, finite_powers] at this
-    cases this with
-    | inl hl =>
-        right
-        exact hl.2.eq_one'
-    | inr hr =>
-        simp only [coe_eq_empty] at hr
-        exact Or.inl (hr.resolve_right Submonoid.powers_nonempty.ne_empty)
+lemma op_smul_set_subset_self_iff {α : Type*} [Monoid α] [IsLeftCancelMul α] [IsMulTorsionFree α]
+    {A : Set α} (hAfin : A.Finite) {b : α} :
+    op b • A ⊆ A ↔ A = ∅ ∨ b = 1 where
+  mpr := by simp +contextual [or_imp]
+  mp := by
+    by_contra! ⟨h, hA, hb⟩
+    obtain ⟨a, ha, n, hn₀, h⟩ := exists_fixed_of_smul_subset h hAfin hA
+    simp [*] at h
+
+#exit
 
 @[to_additive]
 lemma mul_subset_right_iff {α : Type*} [CancelMonoid α] [DecidableEq α]
