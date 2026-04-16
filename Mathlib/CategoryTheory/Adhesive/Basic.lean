@@ -74,7 +74,7 @@ lemma IsPushout.IsVanKampen.exists_cube_filling {H : IsPushout f g h i} (H' : H.
   · refine IsPullback.of_right' ?_ hi
     rw [← H.w]
     exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
-  · refine (H' (pullback.fst αX f) l  h' i' (pullback.snd αX f) αX αY αZ
+  · refine (H' (pullback.fst αX f) l h' i' (pullback.snd αX f) αX αY αZ
       (IsPullback.of_hasPullback αX f) ?_
         hh.toCommSq hi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
     · refine IsPullback.of_right' ?_ hi
