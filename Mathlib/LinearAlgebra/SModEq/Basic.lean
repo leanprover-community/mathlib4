@@ -173,24 +173,22 @@ theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
 
 section Pointwise
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M} {x y : M}
-
 open scoped Pointwise
 
 @[simp]
 theorem _root_.Submodule.vadd_set_subset_vadd_set_iff :
-    x +ᵥ (S : Set M) ⊆ y +ᵥ (S : Set M) ↔ x ≡ y [SMOD S] := by
+    x +ᵥ (U : Set M) ⊆ y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] := by
   rw [SModEq.sub_mem]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub] at h
-    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h S.zero_mem
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h U.zero_mem
   · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub]
     intro z hz
-    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using S.add_mem h hz
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using U.add_mem h hz
 
 @[simp]
 theorem _root_.Submodule.vadd_set_eq_vadd_set_iff :
-    x +ᵥ (S : Set M) = y +ᵥ (S : Set M) ↔ x ≡ y [SMOD S] :=
+    x +ᵥ (U : Set M) = y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] :=
   ⟨fun h ↦ Submodule.vadd_set_subset_vadd_set_iff.mp h.subset,
     fun h ↦ Set.Subset.antisymm (Submodule.vadd_set_subset_vadd_set_iff.mpr h)
       (Submodule.vadd_set_subset_vadd_set_iff.mpr h.symm)⟩
