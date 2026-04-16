@@ -183,7 +183,7 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
   have : IsAddTorsionFree M := .of_isTorsionFree R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
-  contrapose! h
+  contrapose h
   have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
   rw [LinearIndependent.pair_symm_iff] at h
   have h₂ := P.pairing_smul_root_eq_of_not_linearIndependent h
