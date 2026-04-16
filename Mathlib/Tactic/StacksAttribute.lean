@@ -9,11 +9,14 @@ public meta import Lean.Elab.Command
 public import Mathlib.Init
 
 /-!
-# The `stacks` and `kerodon` attributes
+# The `stacks`, `kerodon` and `zbmath` attributes
 
-This allows tagging of mathlib results with the corresponding
-tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
+This allows tagging of mathlib results with a natural language concept name,
+or the corresponding tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
 [Kerodon](https://kerodon.net/tag/).
+
+The `zbmath` attribute allows annotating a declaration as corresponding to a natural language
+mathematics concept (such as "linear map", "smooth manifold" or "Faltings' theorem").
 
 While the Stacks Project is the main focus, because the tag format at Kerodon is
 compatible, the attribute can be used to tag results with Kerodon tags as well.
@@ -29,6 +32,7 @@ namespace Mathlib.StacksTag
 inductive Database where
   | kerodon
   | stacks
+  | zbmath
   deriving BEq, Hashable
 
 /-- `Tag` is the structure that carries the data of a project tag and a corresponding
@@ -53,9 +57,10 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   }
 
 /--
-`addTagEntry declName tag comment` takes as input the `Name` `declName` of a declaration and
+`addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
+whether it is a Kerodon, Stacks tag or natural language concept (`db`) and
 the `String`s `tag` and `comment` of the `stacks` attribute.
-It extends the `Tag` environment extension with the data `declName, tag, comment`.
+It extends the `Tag` environment extension with the data `declName, db, tag, comment`.
 -/
 def addTagEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) (db : Database) (tag comment : String) : m Unit :=
@@ -133,6 +138,9 @@ syntax "kerodon" : stacksTagDB
 /-- The syntax for a "stacks" database identifier in a `@[stacks]` attribute. -/
 syntax "stacks" : stacksTagDB
 
+/-- The `zbMathTag` attribute. Use it as `@[zbMath "concept" "Optional comment"]` -/
+syntax (name := zbMathTag) "zbmath" ppSpace str (ppSpace str)? : attr
+
 /-- The `stacksTag` attribute.
 Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
 depending on the database you are referencing.
@@ -149,17 +157,19 @@ initialize Lean.registerBuiltinAttribute {
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => do
     let oldDoc := (← findDocString? (← getEnv) decl).getD ""
-    let (SorK, database, url, tag, comment) := ← match stx with
+    let (SorK, database, url, tagStr, comment) := ← match stx with
       | `(attr| stacks $tag $[$comment]?) =>
-        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", tag, comment)
+        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", ← tag.getStacksTag, comment)
       | `(attr| kerodon $tag $[$comment]?) =>
-        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", tag, comment)
+        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", ← tag.getStacksTag, comment)
+      | `(attr | zbmath $tag $[$comment]?) =>
+        return ("zbmath", Database.zbmath, "http://zbmath.org/", tag.getString, comment)
       | _ => throwUnsupportedSyntax
-    let tagStr ← tag.getStacksTag
     let comment := (comment.map (·.getString)).getD ""
-    let commentInDoc := if comment = "" then "" else s!" ({comment})"
-    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
-    addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
+    if database != Database.zbmath then
+      let commentInDoc := if comment = "" then "" else s!" ({comment})"
+      let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
+      addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
     addTagEntry decl database tagStr <| comment
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
@@ -189,6 +199,7 @@ private def databaseURL (db : Database) : String :=
   match db with
   | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
+  | .zbmath => "http://zbmath.org/"
 
 /--
 `traceStacksTags db verbose` prints the tags of the database `db` to the user and
@@ -234,5 +245,17 @@ The variant `#kerodon_tags!` also adds the theorem statement after each summary 
 -/
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
   traceStacksTags .kerodon (tk.isSome)
+
+/--
+`#zbmath_concepts` retrieves all declarations that have the `zbmath` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#zbmath_concepts!` also adds the theorem statement after each summary line.
+-/
+elab (name := zbmathConcepts) "#zbmath_concepts" tk:("!")?: command =>
+  traceStacksTags .zbmath (tk.isSome)
 
 end Mathlib.StacksTag
