@@ -5,6 +5,7 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
@@ -428,5 +429,69 @@ theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 @[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
 
 end SLModularAction
+
+section Derivatives
+
+variable (γ : SL(2, ℤ))
+
+/-- Derivative of the denominator function: $\frac{d}{dz}(cz + d) = c$. -/
+lemma deriv_denom (z : ℂ) :
+    deriv (fun w => denom γ w) z = ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) := by
+  simp only [denom]
+  rw [deriv_add_const, deriv_const_mul _ differentiableAt_id, deriv_id'', mul_one]
+  simp
+
+/-- Derivative of the numerator function: $\frac{d}{dz}(az + b) = a$. -/
+lemma deriv_num (z : ℂ) :
+    deriv (fun w => num γ w) z = ((γ : Matrix (Fin 2) (Fin 2) ℤ) 0 0 : ℂ) := by
+  simp only [num]
+  rw [deriv_add_const, deriv_const_mul _ differentiableAt_id, deriv_id'', mul_one]
+  simp
+
+/-- Differentiability of denom. -/
+lemma differentiableAt_denom (z : ℂ) : DifferentiableAt ℂ (fun w ↦ denom γ w) z := by
+  simp only [denom]
+  fun_prop
+
+/-- Differentiability of num. -/
+lemma differentiableAt_num (z : ℂ) : DifferentiableAt ℂ (fun w ↦ num γ w) z := by
+  simp only [num]
+  fun_prop
+
+/-- Differentiability of the Möbius transformation. -/
+lemma differentiableAt_moebius (z : ℍ) : DifferentiableAt ℂ (fun w ↦ num γ w / denom γ w) z :=
+  (differentiableAt_num γ z).div (differentiableAt_denom γ z) (denom_ne_zero γ z)
+
+/-- Derivative of the Möbius transformation:
+$\frac{d}{dz}\left(\frac{az+b}{cz+d}\right) = \frac{1}{(cz+d)^2}$.
+-/
+lemma deriv_moebius (z : ℍ) : deriv (fun w ↦ num γ w / denom γ w) z = 1 / (denom γ z) ^ 2 := by
+  have hz : denom γ z ≠ 0 := denom_ne_zero γ z
+  have hnum_eq : ((γ 0 0 : ℤ) : ℂ) * ((γ 1 0 : ℤ) * z + (γ 1 1 : ℤ)) -
+      ((γ 0 0 : ℤ) * z + (γ 0 1 : ℤ)) * (γ 1 0 : ℤ) = 1 := by
+    have := γ.det_coe
+    rw [Matrix.det_fin_two] at this
+    apply_fun ((↑) : ℤ → ℂ) at this
+    push_cast at this
+    linear_combination this
+  rw [deriv_fun_div (differentiableAt_num γ z) (differentiableAt_denom γ z) hz,
+      deriv_num, deriv_denom]
+  simp [denom_apply, num, hnum_eq]
+
+/-- Derivative of `denom^(-k)`: $\frac{d}{dz}[(cz+d)^{-k}] = -k * c * (cz+d)^{-k-1}$. -/
+lemma deriv_denom_neg_zpow (k : ℤ) (z : ℍ) :
+    deriv (fun w ↦ (denom γ w) ^ (-k)) z =
+      (-k) * ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) * (denom γ z) ^ (-k - 1) := by
+  have hz : denom γ z ≠ 0 := denom_ne_zero γ z
+  have hd : HasDerivAt (fun w ↦ denom γ w)
+      ((γ : Matrix (Fin 2) (Fin 2) ℤ) 1 0 : ℂ) (z : ℂ) := by
+    rw [← deriv_denom]
+    exact (differentiableAt_denom γ (z : ℂ)).hasDerivAt
+  rw [show (fun w => (denom γ w) ^ (-k)) = (· ^ (-k)) ∘ (denom γ ·) from rfl,
+    ((hasDerivAt_zpow (-k) _ (Or.inl hz)).comp _ hd).deriv]
+  simp only [Int.cast_neg]
+  ring
+
+end Derivatives
 
 end ModularGroup
