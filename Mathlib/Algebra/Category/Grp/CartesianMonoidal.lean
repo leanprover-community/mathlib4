@@ -119,8 +119,6 @@ noncomputable def cartesianMonoidalCategory : CartesianMonoidalCategory AddCommG
   .ofChosenFiniteProducts ⟨_, (isZero_of_subsingleton (AddCommGrpCat.of PUnit.{u + 1})).isTerminal⟩
     fun G H ↦ binaryProductLimitCone G H
 
--- This is deprecated, but still used as a `local instance` in
--- Mathlib.Algebra.Category.Grp.LeftExactFunctor
 attribute [local instance] cartesianMonoidalCategory
 
 noncomputable instance : BraidedCategory AddCommGrpCat.{u} := .ofCartesianMonoidalCategory
