@@ -483,7 +483,7 @@ theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
   exact hμν t ht2
 
 /-- Outer regular measures are determined by values on bounded open sets. -/
-theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α]
+theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] {mα : MeasurableSpace α}
     {μ ν : Measure α} [OuterRegular μ] [OuterRegular ν]
     (hμν : ∀ U, IsOpen U → Bornology.IsBounded U → μ U = ν U) : μ = ν := by
   refine ext_isOpen fun U hU ↦ ?_
