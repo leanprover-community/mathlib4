@@ -72,14 +72,14 @@ theorem Module.finrank_div_finrank (F K A : Type*) [Semiring F] [Ring K] [AddCom
     [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
     [Module.Finite K A] [NoZeroSMulDivisors K A] :
     Module.finrank F A / Module.finrank K A = Module.finrank F K :=
-  Nat.div_eq_of_eq_mul_left ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..)
+  Nat.div_eq_of_eq_mul_left ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..).symm
 
 theorem Module.finrank_div_finrank_left (F K A : Type*) [Ring F] [Ring K] [AddCommMonoid A]
     [Module F K] [Module K A] [Module F A] [IsScalarTower F K A] [Nontrivial K]
     [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
     [Module.Finite F K] [NoZeroSMulDivisors F K] :
     Module.finrank F A / Module.finrank F K = Module.finrank K A :=
-  Nat.div_eq_of_eq_mul_right ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..)
+  Nat.div_eq_of_eq_mul_right ((finrank_pos_iff_of_free ..).mpr ‹_›) (finrank_mul_finrank ..).symm
 
 end Tower
 
