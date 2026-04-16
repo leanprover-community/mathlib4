@@ -432,7 +432,7 @@ lemma setInterior_map (I : Set k) {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k]
     simp [Affine.Simplex.affineCombination_mem_setInterior_iff hw1]
   · apply iff_of_false
     · exact fun h ↦ hp (Set.mem_of_mem_of_subset h (s.map f hf).setInterior_subset_affineSpan)
-    · contrapose! hp
+    · contrapose hp
       obtain ⟨q, hq, hqp⟩ := hp
       rw [s.map_points, Set.range_comp, ← AffineSubspace.map_span, AffineSubspace.mem_map]
       exact ⟨q, (Set.mem_of_mem_of_subset hq s.setInterior_subset_affineSpan), hqp⟩

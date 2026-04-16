@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Batteries.Data.List
+public import Batteries.Data.List.Pairwise
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM
@@ -60,7 +60,7 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   · contrapose! h
     exact lt_of_le_of_ne (by simpa using (this hj.choose hi.choose (by simpa)))
       (fun h ↦ h_eq (h.symm))
-  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose! h_eq; simp [h_eq])
+  · simpa using this hi.choose hj.choose (by apply lt_of_le_of_ne h; contrapose h_eq; simp [h_eq])
 
 /-- Auxiliary definition used by the `order` tactic to transfer facts in a linear order to `ℤ`. -/
 noncomputable def toInt (k : Fin n) : ℤ :=

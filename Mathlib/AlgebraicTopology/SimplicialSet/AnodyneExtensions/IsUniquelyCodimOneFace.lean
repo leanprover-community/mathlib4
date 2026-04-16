@@ -89,6 +89,20 @@ lemma δ_eq_iff (i : Fin (d + 2)) :
 
 end
 
+include hxy in
+lemma of_iso {Y : SSet.{u}} (e : X ≅ Y) :
+    (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) := by
+  obtain ⟨d, x, rfl⟩ := x.mk_surjective
+  obtain ⟨d', y, rfl⟩ := y.mk_surjective
+  obtain rfl : d' = d + 1 := hxy.dim_eq
+  rw [iff] at hxy ⊢
+  simpa [← SSet.δ_naturality_apply, dsimp% (e.app (Opposite.op ⦋d⦌)).toEquiv.apply_eq_iff_eq]
+
+lemma iff_of_iso {Y : SSet.{u}} (e : X ≅ Y) (x y : X.S) :
+    (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) ↔
+      x.IsUniquelyCodimOneFace y :=
+  ⟨fun hxy' ↦ by simpa using hxy'.of_iso e.symm, fun hxy ↦ hxy.of_iso e⟩
+
 end IsUniquelyCodimOneFace
 
 end SSet.S

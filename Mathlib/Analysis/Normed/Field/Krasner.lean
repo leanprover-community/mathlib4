@@ -55,7 +55,7 @@ of the conclusion of Krasner's lemma. That is, `IsKrasner K L` means that given 
 -/
 class IsKrasner [Field K] [Algebra K L] : Prop where
   krasner' {x y : L} : IsSeparable K x → ((minpoly K x).map (algebraMap K L)).Splits →
-    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖) → x ∈ K⟮y⟯
 
 namespace IsKrasner
 
@@ -109,7 +109,6 @@ theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
         _ = ‖z - z'‖ := by congr 1; ring
     simp [lt_self_iff_false] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a complete nontrivially normed field and `L` is an algebraic extension of `K`
 such that the norm of `L` extends the norm on `K`, then `IsKrasner K L` holds.

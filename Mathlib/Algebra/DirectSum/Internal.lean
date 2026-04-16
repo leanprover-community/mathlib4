@@ -358,7 +358,7 @@ variable (A : ι → σ) [SetLike.GradedMonoid A]
 instance instCommSemiring : CommSemiring (A 0) := inferInstanceAs <| CommSemiring (subsemiring A)
 
 instance : Algebra (A 0) R :=
-  Algebra.ofSubsemiring <| SetLike.GradeZero.subsemiring A
+  inferInstanceAs <| Algebra (SetLike.GradeZero.subsemiring A) R
 
 @[simp] lemma algebraMap_apply (x : A 0) : algebraMap (A 0) R x = x := rfl
 
