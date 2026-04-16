@@ -71,7 +71,7 @@ instance : Subgroup.IsNormalClosureFG (⊥ : Subgroup G) :=
   ⟨∅, Finite.of_subsingleton, Subgroup.normalClosure_empty⟩
 
 /-- A free group (with a finite number of generators) is finitely generated. -/
-instance {n : Nat} : Group.IsFinitelyPresented (FreeGroup (Fin n)) := by
+instance {n : ℕ} : Group.IsFinitelyPresented (FreeGroup (Fin n)) := by
   use n, FreeGroup.map id
   constructor
   · exact FreeGroup.map_surjective Function.surjective_id
