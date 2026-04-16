@@ -247,7 +247,7 @@ which states that there is a pushout square:
                |                                   |
          f.m j |                                   |
                v                      f.b j        v
-∐ fun (i : f.Cell j) ↦ Δ[i.dim + 1]  -------> f.filtration (Order.succ j)
+∐ fun (c : f.Cell j) ↦ Δ[c.dim + 1]  -------> f.filtration (Order.succ j)
 ```
 The map on the left is a coproduct of horn inclusions (the source and target
 of the morphism `f.m j` are denoted `f.sigmaHorn j` and `f.sigmaStdSimplex j`).
