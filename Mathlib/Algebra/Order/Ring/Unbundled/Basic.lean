@@ -711,7 +711,7 @@ alias pow_two_nonneg := sq_nonneg
 lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
-instance [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] : ZeroLEOneClass R :=
+instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] : ZeroLEOneClass R :=
   ⟨by simpa only [one_mul] using mul_self_nonneg (R := R) 1⟩
 
 /-- The sum of two squares is zero iff both elements are zero. -/
