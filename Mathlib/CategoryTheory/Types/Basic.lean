@@ -315,16 +315,7 @@ Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 @[pp_with_univ, simps obj map]
 def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
-  map {X} {_} f := fun x : ULift.{v} X => ULift.up.{v} (f x.down)
-
-@[simp]
-theorem uliftFunctor_obj {X : Type u} : uliftFunctor.{v}.obj X = ULift.{v} X :=
-  rfl
-
-@[simp]
-theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
-    uliftFunctor.map f x = ULift.up (f x.down) :=
-  rfl
+  map {X} {_} f := TypeCat.ofHom fun x : ULift.{v} X => ULift.up.{v} (f x.down)
 
 /-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
 def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
