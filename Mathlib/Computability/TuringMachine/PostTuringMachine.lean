@@ -134,9 +134,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
-
-instance Machine.inhabited [Inhabited Λ] : Inhabited (Machine Γ Λ) := by
-  unfold Machine; infer_instance
+deriving Inhabited
 
 /-- The configuration state of a Turing machine during operation
   consists of a label (machine state), and a tape.
@@ -826,8 +824,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
       (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
-  intro i f L' R' l₁ l₂ _
-  subst i
+  rintro _ f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
   | nil => rfl
   | cons a l₂ IH =>
@@ -1011,16 +1008,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
         | TM0.Stmt.write a => T.write a⟩ := by
       cases s <;> rfl
     intro e
-    refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux, tr]
-      rw [e]
-      rfl
-    cases e' : M q' _
-    · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux, tr]
-      rw [e']
-      rfl
-    · rfl
+    refine TransGen.head ?_ (TransGen.head' this ?_) <;> grind [TM1.step, TM1.stepAux, tr]
 
 end TM0to1
 

@@ -677,17 +677,18 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
+deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance : Field (CyclotomicField n K) :=
-  inferInstanceAs <| Field (cyclotomic n K).SplittingField
+variable [Algebra A K] in
+deriving instance Algebra A, IsScalarTower A K for CyclotomicField n K
 
-instance algebra : Algebra K (CyclotomicField n K) :=
-  inferInstanceAs <| Algebra K (cyclotomic n K).SplittingField
+instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
-instance : Inhabited (CyclotomicField n K) :=
-  inferInstanceAs <| Inhabited (cyclotomic n K).SplittingField
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
+
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -739,17 +740,6 @@ variable [Algebra A K]
 
 section CyclotomicRing
 
-/-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
--/
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.instAlgebra (cyclotomic n K)
-
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
-
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.instIsScalarTower _
-
 instance [IsDomain A] [IsFractionRing A K] : Module.IsTorsionFree A (CyclotomicField n K) := by
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
     IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
@@ -763,17 +753,9 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
+deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
-
-instance : CommRing (CyclotomicRing n A K) :=
-  inferInstanceAs <| CommRing (adjoin A _)
-
-instance : IsDomain (CyclotomicRing n A K) :=
-  inferInstanceAs <| IsDomain (adjoin A _)
-
-instance : Inhabited (CyclotomicRing n A K) :=
-  inferInstanceAs <| Inhabited (adjoin A _)
 
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
@@ -832,7 +814,6 @@ instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : �
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units := fun ⟨x, hx⟩ => by
