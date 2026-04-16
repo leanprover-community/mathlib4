@@ -94,7 +94,7 @@ lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := b
       Finset.card_singleton, add_le_add_iff_right] at this
     have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
     lia
-  have : ∃ j, ¬j = i ∧ ∀ (i : Fin (m + 1)), ¬(stdSimplex.objEquiv.symm.{u} f) i = j :=
+  have : ∃ j, ¬j = i ∧ ∀ (i : Fin (m + 1)), ¬(stdSimplex.objEquiv.{u}.symm f) i = j :=
     ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
   simpa [horn_eq_iSup] using this
 
@@ -140,7 +140,7 @@ lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
 
 lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
     {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
-    stdSimplex.objEquiv.symm.{u} f ∉ Λ[n, i].obj (op d) := by
+    stdSimplex.objEquiv.{u}.symm f ∉ Λ[n, i].obj (op d) := by
   rw [mem_horn_iff, ne_eq, not_not]
   ext i
   simpa using Or.inr ⟨inv f i, by simp [stdSimplex.coe_asOrderHom_objEquiv_symm.{u}]⟩
