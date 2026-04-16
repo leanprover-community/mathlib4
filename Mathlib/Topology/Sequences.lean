@@ -258,7 +258,7 @@ open FirstCountableTopology
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (Eventually.of_forall x_in))
-  ⟨a, a_in, tendsto_subseq ha⟩
+  ⟨a, a_in, MapClusterPt.tendsto_subseq ha⟩
 
 theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :

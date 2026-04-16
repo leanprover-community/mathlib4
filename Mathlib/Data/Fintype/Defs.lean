@@ -260,18 +260,16 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
 
 instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
+@[implicit_reducible]
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Fintype { x // p x } :=
   ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- Construct a fintype from a finset with the same elements. -/
+@[implicit_reducible]
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H
 

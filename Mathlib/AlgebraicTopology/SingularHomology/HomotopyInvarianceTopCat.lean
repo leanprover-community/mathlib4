@@ -5,7 +5,8 @@ Authors: Joël Riou, Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
 /-!
@@ -48,7 +49,7 @@ an object of the category of abelian groups). -/
 noncomputable def singularChainComplexFunctorObjMap (H : TopCat.Homotopy f g) (R : C) :
     _root_.Homotopy (((singularChainComplexFunctor C).obj R).map f)
       (((singularChainComplexFunctor C).obj R).map g) :=
-  H.toSSet.singularChainComplexFunctorObjMap R
+  H.toSSet.chainComplexMap R
 
 open HomologicalComplex in
 /-- Two homotopic morphisms in `TopCat` induce equal morphisms on the

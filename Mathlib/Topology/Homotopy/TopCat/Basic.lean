@@ -27,7 +27,7 @@ namespace TopCat
 variable {X Y : TopCat.{u}}
 
 /-- An homotopy between morphisms in `TopCat` is a homotopy between
-the corresponding continous maps. -/
+the corresponding continuous maps. -/
 abbrev Homotopy (f g : X ⟶ Y) := ContinuousMap.Homotopy f.hom g.hom
 
 namespace Homotopy
