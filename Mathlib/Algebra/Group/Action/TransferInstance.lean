@@ -28,10 +28,11 @@ variable (M) [Monoid M] in
 set_option backward.proofsInPublic true in
 /-- Transfer `MulAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
-protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
-  __ := e.smul M
-  one_smul := by simp [smul_def]
-  mul_smul := by simp [smul_def, mul_smul]
+protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α :=
+  reduceProj% zeta% unfoldReducible%
+  { __ := e.smul M
+    one_smul := by simp [smul_def]
+    mul_smul := by simp [smul_def, mul_smul] }
 
 variable (M N) [SMul M β] [SMul N β] in
 /-- Transfer `SMulCommClass` across an `Equiv` -/
@@ -70,7 +71,7 @@ variable (M) [Monoid M] [Monoid O] in
 /-- Transfer `MulDistribMulAction` across an `Equiv` -/
 protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
     letI := e.monoid
-    MulDistribMulAction M N :=
+    MulDistribMulAction M N := reduceProj% zeta% unfoldReducible%
   letI := e.monoid
   { e.mulAction M with
     smul_one := by simp [one_def, smul_def, smul_one]

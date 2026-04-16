@@ -49,7 +49,7 @@ lemma ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
 
 /-- Transfer `NonUnitalNonAssocSemiring` across an `Equiv` -/
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
-    NonUnitalNonAssocSemiring α := by
+    NonUnitalNonAssocSemiring α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
@@ -57,44 +57,63 @@ protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] :
   apply e.injective.nonUnitalNonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonUnitalSemiring` across an `Equiv` -/
-protected abbrev nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α := by
+protected abbrev nonUnitalSemiring [NonUnitalSemiring β] :
+    NonUnitalSemiring α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
   let nsmul := e.smul ℕ
   apply e.injective.nonUnitalSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
+/-- Transfer `NatCast` across an `Equiv` -/
+protected abbrev natCast [NatCast β] : NatCast α :=
+  { natCast := fun n => e.symm n }
+
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
 protected abbrev addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
-  { e.addMonoid, e.one with
-    natCast := fun n => e.symm n
-    natCast_zero := e.injective (by simp [zero_def])
-    natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
+  reduceProj% zeta% unfoldReducible%
+  { e.addMonoid, e.one, e.natCast with
+    natCast_zero := e.injective (by simp +instances [Equiv.natCast, zero_def])
+    natCast_succ := fun n => e.injective (by simp +instances [Equiv.natCast, add_def, one_def]) }
+
+/-- Transfer `IntCast` across an `Equiv` -/
+protected abbrev intCast [IntCast β] : IntCast α :=
+  { intCast := fun n => e.symm n }
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
 protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
+  reduceProj% zeta% unfoldReducible%
   { e.addMonoidWithOne,
-    e.addGroup with
-    intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
+    e.addGroup, e.intCast with
+    intCast_ofNat := fun n => by simp +instances only [Equiv.intCast, Int.cast_natCast]; rfl
     intCast_negSucc := fun _ =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 
 /-- Transfer `NonAssocSemiring` across an `Equiv` -/
-protected abbrev nonAssocSemiring [NonAssocSemiring β] : NonAssocSemiring α := by
+protected abbrev nonAssocSemiring [NonAssocSemiring β] :
+    NonAssocSemiring α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
-  let add_monoid_with_one := e.addMonoidWithOne
+  let nsmul := e.smul ℕ
+  let natCast := e.natCast
   apply e.injective.nonAssocSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Semiring` across an `Equiv` -/
-protected abbrev semiring [Semiring β] : Semiring α := by
+protected abbrev semiring [Semiring β] : Semiring α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
-  let add_monoid_with_one := e.addMonoidWithOne
+  let nsmul := e.smul ℕ
+  let natCast := e.natCast
   let npow := e.pow ℕ
   apply e.injective.semiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonUnitalCommSemiring` across an `Equiv` -/
-protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] : NonUnitalCommSemiring α := by
+protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] :
+    NonUnitalCommSemiring α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
@@ -102,14 +121,20 @@ protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] : NonUnitalCom
   apply e.injective.nonUnitalCommSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommSemiring` across an `Equiv` -/
-protected abbrev commSemiring [CommSemiring β] : CommSemiring α := by
+protected abbrev commSemiring [CommSemiring β] :
+    CommSemiring α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
-  let add_monoid_with_one := e.addMonoidWithOne
+  let nsmul := e.smul ℕ
+  let natCast := e.natCast
   let npow := e.pow ℕ
   apply e.injective.commSemiring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonUnitalNonAssocRing` across an `Equiv` -/
-protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing α := by
+protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] :
+    NonUnitalNonAssocRing α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
@@ -120,7 +145,8 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] : NonUnitalNon
   apply e.injective.nonUnitalNonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonUnitalRing` across an `Equiv` -/
-protected abbrev nonUnitalRing [NonUnitalRing β] : NonUnitalRing α := by
+protected abbrev nonUnitalRing [NonUnitalRing β] :
+    NonUnitalRing α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
@@ -131,20 +157,38 @@ protected abbrev nonUnitalRing [NonUnitalRing β] : NonUnitalRing α := by
   apply e.injective.nonUnitalRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonAssocRing` across an `Equiv` -/
-protected abbrev nonAssocRing [NonAssocRing β] : NonAssocRing α := by
-  let add_group_with_one := e.addGroupWithOne
+protected abbrev nonAssocRing [NonAssocRing β] :
+    NonAssocRing α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
+  let neg := e.Neg
+  let sub := e.sub
+  let nsmul := e.smul ℕ
+  let zsmul := e.smul ℤ
+  let natCast := e.natCast
+  let intCast := e.intCast
   apply e.injective.nonAssocRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Ring` across an `Equiv` -/
-protected abbrev ring [Ring β] : Ring α := by
+protected abbrev ring [Ring β] : Ring α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
-  let add_group_with_one := e.addGroupWithOne
+  let neg := e.Neg
+  let sub := e.sub
+  let nsmul := e.smul ℕ
+  let zsmul := e.smul ℤ
+  let natCast := e.natCast
+  let intCast := e.intCast
   let npow := e.pow ℕ
   apply e.injective.ring _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `NonUnitalCommRing` across an `Equiv` -/
-protected abbrev nonUnitalCommRing [NonUnitalCommRing β] : NonUnitalCommRing α := by
+protected abbrev nonUnitalCommRing [NonUnitalCommRing β] :
+    NonUnitalCommRing α := reduceProj% zeta% unfoldReducible% by
   let zero := e.zero
   let add := e.add
   let mul := e.mul
@@ -155,9 +199,17 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing β] : NonUnitalCommRing α
   apply e.injective.nonUnitalCommRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommRing` across an `Equiv` -/
-protected abbrev commRing [CommRing β] : CommRing α := by
+protected abbrev commRing [CommRing β] : CommRing α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
   let mul := e.mul
-  let add_group_with_one := e.addGroupWithOne
+  let neg := e.Neg
+  let sub := e.sub
+  let nsmul := e.smul ℕ
+  let zsmul := e.smul ℤ
+  let natCast := e.natCast
+  let intCast := e.intCast
   let npow := e.pow ℕ
   apply e.injective.commRing _ <;> intros <;> exact e.apply_symm_apply _
 

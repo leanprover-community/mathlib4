@@ -69,7 +69,7 @@ preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -
 an injective map that preserves `+` to an additive commutative semigroup. -/]
 protected abbrev commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemigroup := hf.semigroup f mul
     __ := hf.commMagma f mul }
 
@@ -104,7 +104,7 @@ preserves `*` to a left cancel semigroup.  See note [reducible non-instances]. -
 injective map that preserves `+` to an additive left cancel semigroup. -/]
 protected abbrev leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.semigroup f mul, hf.isLeftCancelMul f mul with }
 
 /-- A type endowed with `*` is a right cancel semigroup, if it admits an injective map that
@@ -114,7 +114,7 @@ cancel semigroup, if it admits an injective map that preserves `+` to an additiv
 semigroup. -/]
 protected abbrev rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.semigroup f mul, hf.isRightCancelMul f mul with }
 
 variable [One M₁]
@@ -139,7 +139,7 @@ injective map that preserves `0` and `+` to an additive monoid. See note
 [reducible non-instances]. -/]
 protected abbrev monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
     npow_zero := fun x => hf <| by rw [npow, one, pow_zero],
@@ -153,7 +153,7 @@ admits an injective map that preserves `0` and `+` to an additive left cancel mo
 protected abbrev leftCancelMonoid [LeftCancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : LeftCancelMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow, hf.leftCancelSemigroup f mul with }
 
 /-- A type endowed with `1` and `*` is a right cancel monoid, if it admits an injective map that
@@ -164,7 +164,7 @@ admits an injective map that preserves `0` and `+` to an additive left cancel mo
 protected abbrev rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : RightCancelMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow, hf.rightCancelSemigroup f mul with }
 
 /-- A type endowed with `1` and `*` is a cancel monoid, if it admits an injective map that preserves
@@ -175,7 +175,7 @@ admits an injective map that preserves `0` and `+` to an additive left cancel mo
 protected abbrev cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CancelMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.leftCancelMonoid f one mul npow, hf.rightCancelMonoid f one mul npow with }
 
 /-- A type endowed with `1` and `*` is a commutative monoid, if it admits an injective map that
@@ -186,7 +186,7 @@ admits an injective map that preserves `0` and `+` to an additive commutative mo
 protected abbrev commMonoid [CommMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid if it admits an injective map
@@ -196,7 +196,7 @@ admits an injective map that preserves `0` and `+` to an additive cancel commuta
 protected abbrev cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : CancelCommMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.commMonoid f one mul npow, hf.leftCancelSemigroup f mul with }
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
@@ -232,7 +232,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Inje
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by rw [zpow, zpow_zero, one],
@@ -252,7 +252,7 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf 
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvOneMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.divInvMonoid f one mul inv div npow zpow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
@@ -266,7 +266,7 @@ protected abbrev divisionMonoid [DivisionMonoid M₂] (f : M₁ → M₂) (hf : 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.divInvMonoid f one mul inv div npow zpow, hf.involutiveInv f inv with
     mul_inv_rev := fun x y => hf <| by rw [inv, mul, mul_inv_rev, mul, inv, inv],
     inv_eq_of_mul := fun x y h => hf <| by
@@ -284,7 +284,7 @@ protected abbrev divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionCommMonoid M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.divisionMonoid f one mul inv div npow zpow, hf.commSemigroup f mul with }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits an injective map that preserves
@@ -296,7 +296,7 @@ protected abbrev group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.divInvMonoid f one mul inv div npow zpow with
     inv_mul_cancel := fun x => hf <| by rw [mul, inv, inv_mul_cancel, one] }
 
@@ -310,7 +310,7 @@ protected abbrev commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective 
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₁ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.group f one mul inv div npow zpow, hf.commMonoid f one mul npow with }
 
 end Injective
@@ -349,7 +349,7 @@ protected abbrev commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective
 a surjective map that preserves `+` from an additive commutative semigroup. -/]
 protected abbrev commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemigroup := hf.semigroup f mul
     __ := hf.commMagma f mul }
 
@@ -375,7 +375,7 @@ surjective map that preserves `0` and `+` to an additive monoid. This version ta
 as a `[SMul ℕ M₂]` argument. -/]
 protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
     npow_zero := hf.forall.2 fun x => by rw [← npow, pow_zero, ← one],
@@ -391,7 +391,7 @@ admits a surjective map that preserves `0` and `+` to an additive commutative mo
 protected abbrev commMonoid [CommMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CommMonoid M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow, hf.commSemigroup f mul with }
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
@@ -415,7 +415,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.monoid f one mul npow with
     zpow := fun n x => x ^ n,
     zpow_zero' := hf.forall.2 fun x => by rw [← zpow, zpow_zero, ← one],
@@ -434,7 +434,7 @@ protected abbrev group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.divInvMonoid f one mul inv div npow zpow with
     inv_mul_cancel := hf.forall.2 fun x => by rw [← inv, ← mul, inv_mul_cancel, one] }
 
@@ -448,7 +448,7 @@ protected abbrev commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.group f one mul inv div npow zpow, hf.commMonoid f one mul npow with }
 
 end Surjective

@@ -51,7 +51,7 @@ variable [Zero S] [One S] [Neg S] [Sub S] [SMul ℕ S] [SMul ℤ S]
 -- See note [reducible non-instances]
 protected abbrev distrib [Distrib R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { __ := hf.leftDistribClass f add mul
     __ := hf.rightDistribClass f add mul }
 
@@ -61,7 +61,7 @@ preserves `-` and `*` to a type which has distributive negation. -/
 protected abbrev hasDistribNeg (f : S → R) (hf : Injective f) [Mul R] [HasDistribNeg R]
     (neg : ∀ a, f (-a) = -f a)
     (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.involutiveNeg _ neg, ‹Mul S› with
     neg_mul := fun x y => hf <| by rw [neg, mul, neg, neg_mul, mul],
     mul_neg := fun x y => hf <| by rw [neg, mul, neg, mul_neg, mul] }
@@ -73,7 +73,7 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R]
     (f : S → R) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
@@ -86,7 +86,7 @@ protected abbrev addCommMonoidWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] 
     [AddCommMonoidWithOne R] (f : S → R) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { __ := hf.addMonoidWithOne f zero one add nsmul natCast
     __ := hf.addCommMonoid _ zero add (swap nsmul) }
 
@@ -99,7 +99,7 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add nsmul natCast with
     intCast := Int.cast,
@@ -115,7 +115,7 @@ protected abbrev addCommGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid _ zero add (swap nsmul) with }
 
@@ -124,7 +124,7 @@ protected abbrev addCommGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toAddCommMonoid := hf.addCommMonoid f zero add (swap nsmul)
     __ := hf.distrib f add mul
     __ := hf.mulZeroClass f zero mul }
@@ -135,7 +135,7 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
     NonUnitalSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.semigroupWithZero f zero mul }
 
@@ -145,7 +145,7 @@ protected abbrev nonAssocSemiring [NonAssocSemiring R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.mulZeroOneClass f zero one mul
     __ := hf.addMonoidWithOne f zero one add nsmul natCast }
@@ -156,7 +156,7 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
     __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.monoidWithZero f zero one mul npow }
@@ -168,7 +168,7 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (f : S → R)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalNonAssocRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toAddCommGroup := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
     __ := hf.nonUnitalNonAssocSemiring f zero add mul nsmul }
 
@@ -179,7 +179,7 @@ protected abbrev nonUnitalRing [NonUnitalRing R]
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalSemiring f zero add mul nsmul }
 
@@ -191,7 +191,7 @@ protected abbrev nonAssocRing [NonAssocRing R]
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : NonAssocRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast }
@@ -204,7 +204,7 @@ protected abbrev ring [Ring R] (zero : f 0 = 0)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemiring := hf.semiring f zero one add mul nsmul npow natCast
     -- zsmul included here explicitly to make sure it's picked correctly by `fast_instance%`.
     zsmul := fun n x ↦ n • x
@@ -217,7 +217,7 @@ protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
     (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
     NonUnitalNonAssocCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.commMagma f mul }
 
@@ -227,7 +227,7 @@ protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) :
     NonUnitalCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
     __ := hf.commSemigroup f mul }
 
@@ -237,7 +237,7 @@ protected abbrev nonAssocCommSemiring [NonAssocCommSemiring R] (f : S → R)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.commMagma f mul }
 
@@ -248,7 +248,7 @@ protected abbrev commSemiring [CommSemiring R]
     (mul : ∀ x y, f (x * y) = f x * f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n) :
     CommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemiring := hf.semiring f zero one add mul nsmul npow natCast
     __ := hf.commSemigroup f mul }
 
@@ -259,7 +259,7 @@ protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R] (f : S 
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalNonAssocCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalNonAssocCommSemiring f zero add mul nsmul }
 
@@ -270,7 +270,7 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (f : S → R)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalRing := hf.nonUnitalRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalNonAssocCommRing f zero add mul neg sub nsmul zsmul }
 
@@ -282,7 +282,7 @@ protected abbrev nonAssocCommRing [NonAssocCommRing R] (f : S → R)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : NonAssocCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonAssocRing := hf.nonAssocRing f zero one add mul neg sub nsmul zsmul natCast intCast
     __ := hf.nonUnitalNonAssocCommRing f zero add mul neg sub nsmul zsmul }
 
@@ -294,7 +294,7 @@ protected abbrev commRing [CommRing R]
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : CommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
     __ := hf.commMonoid f one mul npow }
 
@@ -320,7 +320,7 @@ theorem rightDistribClass [Mul R] [Add R] [RightDistribClass R] (add : ∀ x y, 
 -- See note [reducible non-instances]
 protected abbrev distrib [Distrib R] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { __ := hf.leftDistribClass f add mul
     __ := hf.rightDistribClass f add mul }
 
@@ -332,7 +332,7 @@ preserves `-` and `*` from a type which has distributive negation. -/
 -- See note [reducible non-instances]
 protected abbrev hasDistribNeg [Mul R] [HasDistribNeg R]
     (neg : ∀ a, f (-a) = -f a) (mul : ∀ a b, f (a * b) = f a * f b) : HasDistribNeg S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.involutiveNeg _ neg, ‹Mul S› with
     neg_mul := hf.forall₂.2 fun x y => by rw [← neg, ← mul, neg_mul, neg, mul]
     mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
@@ -344,7 +344,7 @@ map that preserves `0`, `1` and `*` from an additive monoid with one. See note
 protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
@@ -356,7 +356,7 @@ See note [reducible non-instances]. -/
 protected abbrev addCommMonoidWithOne [AddCommMonoidWithOne R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { __ := hf.addMonoidWithOne f zero one add nsmul natCast
     __ := hf.addCommMonoid _ zero add (swap nsmul) }
 
@@ -368,7 +368,7 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : AddGroupWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
@@ -384,7 +384,7 @@ protected abbrev addCommGroupWithOne [AddCommGroupWithOne R]
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid _ zero add (swap nsmul) with }
 
@@ -393,7 +393,7 @@ See note [reducible non-instances]. -/
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toAddCommMonoid := hf.addCommMonoid f zero add (swap nsmul)
     __ := hf.distrib f add mul
     __ := hf.mulZeroClass f zero mul }
@@ -403,7 +403,7 @@ protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero :
 protected abbrev nonUnitalSemiring [NonUnitalSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.semigroupWithZero f zero mul }
 
@@ -413,7 +413,7 @@ protected abbrev nonAssocSemiring [NonAssocSemiring R] (zero : f 0 = 0) (one : f
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.mulZeroOneClass f zero one mul
     __ := hf.addMonoidWithOne f zero one add nsmul natCast }
@@ -424,7 +424,7 @@ protected abbrev semiring [Semiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n) : Semiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
     __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.monoidWithZero f zero one mul npow }
@@ -436,7 +436,7 @@ protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing R] (zero : f 0 = 0
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalNonAssocRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toAddCommGroup := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
     __ := hf.nonUnitalNonAssocSemiring f zero add mul nsmul }
 
@@ -447,7 +447,7 @@ protected abbrev nonUnitalRing [NonUnitalRing R] (zero : f 0 = 0)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalSemiring f zero add mul nsmul }
 
@@ -458,7 +458,7 @@ protected abbrev nonAssocRing [NonAssocRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : NonAssocRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.addCommGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast }
@@ -471,7 +471,7 @@ protected abbrev ring [Ring R] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, 
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemiring := hf.semiring f zero one add mul nsmul npow natCast
     __ := hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
     __ := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul) }
@@ -481,7 +481,7 @@ protected abbrev ring [Ring R] (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, 
 protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocSemiring := hf.nonUnitalNonAssocSemiring f zero add mul nsmul
     __ := hf.commMagma f mul }
 
@@ -490,7 +490,7 @@ protected abbrev nonUnitalNonAssocCommSemiring [NonUnitalNonAssocCommSemiring R]
 protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
     __ := hf.commSemigroup f mul }
 
@@ -500,7 +500,7 @@ protected abbrev nonAssocCommSemiring [NonAssocCommSemiring R] (zero : f 0 = 0) 
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : NonAssocCommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
     __ := hf.commMagma f mul }
 
@@ -510,7 +510,7 @@ protected abbrev commSemiring [CommSemiring R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : CommSemiring S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toSemiring := hf.semiring f zero one add mul nsmul npow natCast
     __ := hf.commSemigroup f mul }
 
@@ -521,7 +521,7 @@ protected abbrev nonUnitalNonAssocCommRing [NonUnitalNonAssocCommRing R]
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) : NonUnitalNonAssocCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalNonAssocRing := hf.nonUnitalNonAssocRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalNonAssocCommSemiring f zero add mul nsmul }
 
@@ -532,7 +532,7 @@ protected abbrev nonUnitalCommRing [NonUnitalCommRing R] (zero : f 0 = 0)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) :
     NonUnitalCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonUnitalRing := hf.nonUnitalRing f zero add mul neg sub nsmul zsmul
     __ := hf.nonUnitalNonAssocCommRing f zero add mul neg sub nsmul zsmul }
 
@@ -543,7 +543,7 @@ protected abbrev nonAssocCommRing [NonAssocCommRing R] (zero : f 0 = 0) (one : f
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : NonAssocCommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toNonAssocRing := hf.nonAssocRing f zero one add mul neg sub nsmul zsmul natCast intCast
     __ := hf.nonAssocCommSemiring f zero one add mul nsmul natCast }
 
@@ -555,7 +555,7 @@ protected abbrev commRing [CommRing R] (zero : f 0 = 0) (one : f 1 = 1)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) : CommRing S :=
-  reduceProj% unfoldReducible% zeta%
+  reduceProj% zeta% unfoldReducible%
   { toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
     __ := hf.commMonoid f one mul npow }
 
