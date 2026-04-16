@@ -104,13 +104,11 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
   | .isNegNat rA lit p => do
     let some crR := cR.rα | none
     let some crA := cA.rα | none
-    -- let some rR := cR.rα | none
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q(inferInstance) lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
     assumeInstancesCommute
     pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, (q(isInt_negOfNat_eq $p))⟩
   | .isNNRat rA q n d p => do
-    -- TODO: use semifields here.
     let some dsR := cR.dsα | none
     let some dsA := cA.dsα | none
     assumeInstancesCommute
@@ -344,7 +342,10 @@ def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result :=
   pure <| ←
     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
-/-- Collect all scalar rings from scalar multiplications using a state monad for performance. -/
+/-- Collect all scalar rings from scalar multiplications using a state monad for performance.
+
+Note: The match in this definition should be kept up to date with the `Common.eval` function.
+-/
 partial def collectScalarRingsAux (e : Expr) : StateT (List Expr) MetaM Unit  := do
   match_expr e with
   | SMul.smul R _ _ _ a =>
@@ -422,9 +423,7 @@ def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Typ
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "algebra failed: not an equality"
-  let .sort u ← whnf (← inferType α) | unreachable!
-  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
-  have A : Q(Type v) := α
+  let ⟨v, A⟩ ← getLevelQ' α
   let sA ← synthInstanceQ q(CommSemiring $A)
   let cA ← Algebra.mkCache sA
   let ⟨u, R⟩ ←
