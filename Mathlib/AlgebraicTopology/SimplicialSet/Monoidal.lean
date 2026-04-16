@@ -8,9 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Monoidal.Arrow
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!
 # The monoidal category structure on simplicial sets
@@ -313,123 +313,6 @@ noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) wh
   hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
   inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
 
-end unionProd
-
-end Subcomplex
-
-end
-
-section
-
-variable (X Y : SSet.{u})
-
-section
-
-variable {m n : SimplexCategoryᵒᵖ} (f : m ⟶ n) (z : (X ⊗ Y).obj m)
-@[simp high, grind =] lemma prod_map_fst : ((X ⊗ Y).map f z).1 = X.map f z.1 := rfl
-@[simp high, grind =] lemma prod_map_snd : ((X ⊗ Y).map f z).2 = Y.map f z.2 := rfl
-
-end
-
-@[simp, grind =] lemma prod_δ_fst {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
-    ((X ⊗ Y).δ i z).1 = X.δ i z.1 := rfl
-
-@[simp, grind =] lemma prod_δ_snd {n : ℕ} (i : Fin (n + 2)) (z : (X ⊗ Y : SSet.{u}) _⦋n + 1⦌) :
-    ((X ⊗ Y).δ i z).2 = Y.δ i z.2 := rfl
-
-@[simp, grind =] lemma prod_σ_fst {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
-    ((X ⊗ Y).σ i z).1 = X.σ i z.1 := rfl
-
-@[simp, grind =] lemma prod_σ_snd {n : ℕ} (i : Fin (n + 1)) (z : (X ⊗ Y : SSet.{u}) _⦋n⦌) :
-    ((X ⊗ Y).σ i z).2 = Y.σ i z.2 := rfl
-
-end
-
-section
-
-namespace Subcomplex
-
-variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
-
-/-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
-def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
-
-lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
-    x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
-  dsimp [unionProd, Set.prod]
-  simp only [Set.mem_univ, true_and, and_true]
-  exact Set.mem_union _ _ _
-
-lemma top_prod_le_unionProd : (⊤ : X.Subcomplex).prod T ≤ S.unionProd T := le_sup_left
-
-lemma prod_top_le_unionProd : (S.prod ⊤) ≤ S.unionProd T := le_sup_right
-
-lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
-  (prod_le_prod_top S T).trans (prod_top_le_unionProd S T)
-
-namespace unionProd
-
-/-- The inclusion `X ⊗ T ⟶ S.unionProd T` as simplicial sets. -/
-@[simps!]
-def ι₁ : X ⊗ T ⟶ S.unionProd T :=
-  lift (X ◁ T.ι) (by
-    rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
-    exact Or.inl ⟨Set.mem_univ _, Subtype.coe_prop _⟩)
-
-/-- The inclusion `S ⊗ Y ⟶ S.unionProd T` as simplicial sets -/
-@[simps!]
-def ι₂ : (S : SSet.{u}) ⊗ Y ⟶ (unionProd S T : SSet.{u}) :=
-  lift (S.ι ▷ Y) (by
-    rintro m _ ⟨⟨y₁, y₂⟩, ⟨⟩⟩
-    exact Or.inr ⟨Subtype.coe_prop _, Set.mem_univ _⟩)
-
-@[reassoc (attr := simp)]
-lemma ι₁_ι : ι₁ S T ≫ (unionProd S T).ι = X ◁ T.ι := rfl
-
-@[reassoc (attr := simp)]
-lemma ι₂_ι : ι₂ S T ≫ (unionProd S T).ι = S.ι ▷ Y := rfl
-
-lemma bicartSq : BicartSq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) (unionProd S T) where
-  sup_eq := rfl
-  inf_eq := by
-    ext n ⟨x, y⟩
-    change _ ∧ _ ↔ _
-    simp [prod, Set.prod, Membership.mem, Set.Mem, setOf]
-    tauto
-
-lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
-    (unionProd.ι₁ S T) (unionProd.ι₂ S T) :=
-  (bicartSq S T).isPushout.of_iso (S.prodIso T)
-    (prodIso _ _ ≪≫ whiskerRightIso (topIso X) _)
-    (prodIso _ _ ≪≫ whiskerLeftIso _ (topIso Y))
-    (Iso.refl _) rfl rfl rfl rfl
-
-@[simp]
-lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
-  ext n ⟨x, y⟩
-  simp only [mem_unionProd_iff, preimage_obj, Set.mem_preimage]
-  tauto
-
-@[simp]
-lemma preimage_β_inv : (unionProd S T).preimage (β_ _ _).inv = unionProd T S := by
-  apply preimage_β_hom
-
-@[simp]
-lemma image_β_hom : (unionProd S T).image (β_ _ _).hom = unionProd T S := by
-  rw [← preimage_β_hom, preimage_image_of_isIso]
-
-@[simp]
-lemma image_β_inv : (unionProd S T).image (β_ _ _).inv = unionProd T S := by
-  apply image_β_hom
-
-/-- The isomorphism `unionProd S T ≅ unionProd T S` as simplicial sets. -/
-@[simps]
-def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) where
-  hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
-  inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
-
-end unionProd
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
 `S.ι □ T.ι`. -/
@@ -437,9 +320,9 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
   Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _)
-    ((unionProd.isPushout S T).hom_ext
-    (by simp [Functor.PushoutObjObj.ofHasPushout_ι])
-    (by simp [Functor.PushoutObjObj.ofHasPushout_ι]))
+    (by apply (unionProd.isPushout S T).hom_ext <;> simp [Functor.PushoutObjObj.ofHasPushout_ι])
+
+end unionProd
 
 end Subcomplex
 
