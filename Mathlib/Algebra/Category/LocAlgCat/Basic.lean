@@ -55,6 +55,9 @@ instance [IsLocalRing Λ] [IsLocalHom (algebraMap Λ k)] :
   Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal A).ne_top <|
     ((local_hom_TFAE (algebraMap Λ A)).out 0 2).mp (by infer_instance)
 
+instance (f : A ⟶ B) : Nontrivial (A ⧸ RingHom.ker (f.toAlgHom)) :=
+  Ideal.Quotient.nontrivial_iff.mpr <| RingHom.ker_ne_top f.toAlgHom
+
 section ofQuot
 
 variable {I : Ideal A}
@@ -138,6 +141,31 @@ theorem toOfQuot_comp_mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I
 lemma toAlgHom_mapOfQuot_apply (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)]
     (hf : I ≤ J.comap f.toAlgHom) (a : A) : (mapOfQuot f hf).toAlgHom (Ideal.Quotient.mk I a) =
       Ideal.Quotient.mk J (f.toAlgHom a) := rfl
+
+/-- The isomorphism between `A.ofQuot (RingHom.ker f.toAlgHom)` and the codomain `B`
+when the underlying `AlgHom` of a morphism `f : A ⟶ B` is surjective.
+This is the categorical counterpart to `Ideal.quotientKerAlgEquivOfSurjective`. -/
+noncomputable def ofQuotKerIsoOfSurjective (f : A ⟶ B) (h : Surjective f.toAlgHom) :
+    A.ofQuot (RingHom.ker f.toAlgHom) ≅ B := isoMk (Ideal.quotientKerAlgEquivOfSurjective h) (by
+  ext x
+  rcases Ideal.Quotient.mk_surjective x with ⟨x, rfl⟩
+  change _ = (A.ofQuot (RingHom.ker f.toAlgHom)).residue _
+  simp [← AlgHom.comp_apply, f.residue_comp])
+
+@[simp]
+lemma toAlgHom_ofQuotKerIsoOfSurjective_hom_apply {f : A ⟶ B} (h : Surjective f.toAlgHom) (a : A) :
+    (ofQuotKerIsoOfSurjective f h).hom.toAlgHom (Ideal.Quotient.mk (RingHom.ker f.toAlgHom) a) =
+      f.toAlgHom a := rfl
+
+@[simp]
+lemma toAlgHom_ofQuotKerIsoOfSurjective_inv_apply {f : A ⟶ B} (h : Surjective f.toAlgHom) (a : A) :
+    (ofQuotKerIsoOfSurjective f h).inv.toAlgHom (f.toAlgHom a) =
+      Ideal.Quotient.mk (RingHom.ker f.toAlgHom) a :=
+  (Ideal.quotientKerAlgEquivOfSurjective h).symm_apply_apply a
+
+@[simp, reassoc]
+lemma toOfQuot_comp_ofQuotKerIsoOfSurjective_hom {f : A ⟶ B} (h : Surjective f.toAlgHom) :
+    A.toOfQuot (RingHom.ker f.toAlgHom) ≫ (ofQuotKerIsoOfSurjective f h).hom = f := Hom.ext rfl
 
 /-- The quotient of a local algebra by the `n`-th power of its maximal ideal.
 Geometrically, this represents an infinitesimal neighborhood of the closed point. -/
