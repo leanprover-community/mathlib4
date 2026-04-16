@@ -335,11 +335,9 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
   refine ⟨fun h _ ↦ ?_, fun h ↦ ?_⟩
   · exact subset_closure_inter_of_isPreirreducible_of_isOpen h
   · intro a b ha hb aS bS
-    have ha' := h a ha aS
-    have hb' := h b hb bS
     by_contra! h0
     obtain ⟨p, pS, pa⟩ := aS
-    suffices p ∉ closure (S ∩ b) from this <| hb' pS
+    suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
     simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
     refine ⟨aᶜ, by simpa, ?_, ?_⟩
     · apply subset_compl_iff_disjoint_left.mpr
