@@ -296,10 +296,8 @@ section AddCommGroup
 variable [AddCommGroup M] [Module R M] (C : PointedCone R M)
 
 set_option backward.isDefEq.respectTransparency false in
-lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+lemma neg_ofSubmodule (S : Submodule R M) :  -(ofSubmodule S) = ofSubmodule (-S) :=
   neg_restrictScalars S
-
-end Submodule
 
 /-- A pointed cone is salient iff the intersection of the cone with its negative
 is the set `{0}`. -/
