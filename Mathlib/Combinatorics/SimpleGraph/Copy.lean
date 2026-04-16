@@ -1,12 +1,15 @@
 /-
 Copyright (c) 2023 Yaël Dillies, Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Mitchell Horner
+Authors: Yaël Dillies, Mitchell Horner, Christoph Spiegel
 -/
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Containment of graphs
@@ -45,6 +48,11 @@ Containment:
 Induced containment:
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
 * `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
+* `SimpleGraph.autCount H`: Number of automorphisms of `H`, i.e., `|Aut(H)| = |H ≃g H|`.
+* `SimpleGraph.indLabelledCopyCount G H`: Number of induced labelled copies of `H` in `G`, i.e.
+  number of graph embeddings `H ↪g G`.
+* `SimpleGraph.indCopyCount G H`: Number of induced unlabelled copies of `H` in `G`, i.e. number
+  of induced subgraphs of `G` isomorphic to `H`.
 
 ## Notation
 
@@ -52,10 +60,16 @@ The following notation is declared in scope `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
+## Main results
+
+* `SimpleGraph.labelledCopyCount_eq_copyCount_mul_autCount`:
+  `G.labelledCopyCount H = G.copyCount H * autCount H`
+* `SimpleGraph.indLabelledCopyCount_eq_indCopyCount_mul_autCount`:
+  `G.indLabelledCopyCount H = G.indCopyCount H * autCount H`
+
 ## TODO
 
 * Relate `⊥ ⊴ H` to there being an independent set in `H`.
-* Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
 
@@ -525,10 +539,431 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 end CopyCount
 
 /-!
+#### Automorphism count
+-/
+
+section AutCount
+variable [Fintype W] [DecidableEq W]
+
+/-- `Fintype` instance for graph automorphisms, obtained by injecting into the type of
+equivalences `W ≃ W` which is finite when `W` is. -/
+noncomputable instance instFintypeIsoSelf : Fintype (H ≃g H) :=
+  Fintype.ofInjective (fun f => (f.toEquiv : W ≃ W))
+    (fun _ _ h => RelIso.ext (Equiv.ext_iff.mp h))
+
+/-- `autCount H` is the number of automorphisms of `H`, i.e., `|Aut(H)| = |H ≃g H|`.
+
+This counts the graph isomorphisms from `H` to itself, which form the automorphism group. -/
+noncomputable def autCount (H : SimpleGraph W) : ℕ := card (H ≃g H)
+
+@[simp] lemma autCount_pos : 0 < autCount H :=
+  Fintype.card_pos_iff.mpr ⟨Iso.refl⟩
+
+lemma one_le_autCount : 1 ≤ autCount H := autCount_pos
+
+end AutCount
+
+/-!
 #### Induced copies
+-/
 
-TODO
+section IndLabelledCopyCount
+variable [Fintype W]
 
+/-- `G.indLabelledCopyCount H` is the number of induced labelled copies of `H` in `G`,
+i.e., the number of graph embeddings from `H` to `G`.
+
+This is the induced analogue of `SimpleGraph.labelledCopyCount`. -/
+noncomputable def indLabelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
+  classical exact card (H ↪g G)
+
+@[simp] lemma indLabelledCopyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
+    G.indLabelledCopyCount H = 1 := by
+  classical
+  simp only [indLabelledCopyCount]
+  convert Fintype.card_unique
+  exact { default := RelEmbedding.ofIsEmpty H.Adj G.Adj
+          uniq := fun f => RelEmbedding.ext fun a => isEmptyElim a }
+
+@[simp] lemma indLabelledCopyCount_eq_zero : G.indLabelledCopyCount H = 0 ↔ ¬(H ⊴ G) := by
+  simp [indLabelledCopyCount, Fintype.card_eq_zero_iff, IsIndContained]
+
+@[simp] lemma indLabelledCopyCount_pos : 0 < G.indLabelledCopyCount H ↔ H ⊴ G := by
+  simp [indLabelledCopyCount, IsIndContained, Fintype.card_pos_iff]
+
+end IndLabelledCopyCount
+
+section IndCopyCount
+variable [Fintype V]
+
+/-- `G.indCopyCount H` is the number of induced unlabelled copies of `H` in `G`,
+i.e., the number of induced subgraphs of `G` isomorphic to `H`.
+
+This is the induced analogue of `SimpleGraph.copyCount`. -/
+noncomputable def indCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
+  classical exact #{G' : G.Subgraph | G'.IsInduced ∧ Nonempty (H ≃g G'.coe)}
+
+@[simp] lemma indCopyCount_pos : 0 < G.indCopyCount H ↔ H ⊴ G := by
+  classical
+  simp only [indCopyCount, card_pos, filter_nonempty_iff, mem_univ, true_and]
+  rw [isIndContained_iff_exists_iso_subgraph]
+  constructor
+  · rintro ⟨G', hInd, hIso⟩
+    exact ⟨G', hIso.some, hInd⟩
+  · rintro ⟨G', hIso, hInd⟩
+    exact ⟨G', hInd, ⟨hIso⟩⟩
+
+@[simp] lemma indCopyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
+    G.indCopyCount H = 1 := by
+  have hle : G.indCopyCount H ≤ 1 := by
+    classical
+    simp only [indCopyCount]
+    apply card_le_one.mpr
+    intro G₁ hG₁ G₂ hG₂
+    simp only [mem_filter, mem_univ, true_and] at hG₁ hG₂
+    have h1 : G₁.verts = ∅ := Set.eq_empty_of_forall_notMem fun v hv =>
+      isEmptyElim (hG₁.2.some.symm ⟨v, hv⟩)
+    have h2 : G₂.verts = ∅ := Set.eq_empty_of_forall_notMem fun v hv =>
+      isEmptyElim (hG₂.2.some.symm ⟨v, hv⟩)
+    ext v
+    · simp [h1, h2]
+    · simp only [Set.eq_empty_iff_forall_notMem] at h1 h2
+      constructor <;> intro h
+      · exact (h1 _ (Subgraph.edge_vert G₁ h)).elim
+      · exact (h2 _ (Subgraph.edge_vert G₂ h)).elim
+  have hpos : 0 < G.indCopyCount H := (indCopyCount_pos G H).mpr IsIndContained.of_isEmpty
+  omega
+
+/-- Every induced labelled copy is a (non-induced) labelled copy. -/
+lemma indLabelledCopyCount_le_labelledCopyCount [Fintype W] :
+    G.indLabelledCopyCount H ≤ G.labelledCopyCount H := by
+  classical
+  simp only [indLabelledCopyCount, labelledCopyCount]
+  exact card_le_of_injective Embedding.toCopy fun f g h => by
+    ext w
+    exact congrArg (Copy.toEmbedding · w) h
+
+/-- Every induced unlabelled copy is a (non-induced) unlabelled copy. -/
+lemma indCopyCount_le_copyCount : G.indCopyCount H ≤ G.copyCount H := by
+  classical
+  simp only [indCopyCount, copyCount]
+  apply card_le_card
+  intro G' hG'
+  simp only [mem_filter, mem_univ, true_and] at hG' ⊢
+  exact hG'.2
+
+end IndCopyCount
+
+/-!
+#### Multiplicative relations via automorphisms
+
+The key insight is double counting via fibers:
+- Each labelled copy maps to an unlabelled copy (its image subgraph).
+- Each unlabelled copy has exactly `|Aut(H)|` labelled copies mapping to it.
+- Therefore: `labelledCount = unlabelledCount × |Aut(H)|`.
+
+The fiber equivalence: for a fixed copy `f₀` with image `S`, the fiber over `S` is equivalent
+to `Aut(H)` via the map `σ ↦ f₀ ∘ σ` (precomposition with automorphism).
+-/
+
+section Multiplicative
+variable [Fintype V] [Fintype W] [DecidableEq W]
+
+omit [Fintype V] [Fintype W] [DecidableEq W] in
+/-- Composing a copy with an automorphism preserves the image subgraph. -/
+lemma copy_toSubgraph_comp_iso (f : Copy H G) (σ : H ≃g H) :
+    (f.comp σ.toCopy).toSubgraph = f.toSubgraph := by
+  ext v
+  · simp only [Copy.toSubgraph, Subgraph.map, Set.mem_image, Subgraph.verts_top]
+    constructor
+    · rintro ⟨w, _, rfl⟩
+      exact ⟨σ w, trivial, rfl⟩
+    · rintro ⟨w, _, rfl⟩
+      exact ⟨σ.symm w, trivial, by simp⟩
+  · simp only [Copy.toSubgraph, Subgraph.map, Relation.Map]
+    constructor
+    · rintro ⟨a, b, hab, rfl, rfl⟩
+      exact ⟨σ a, σ b, σ.map_rel_iff.mpr hab, rfl, rfl⟩
+    · rintro ⟨a, b, hab, rfl, rfl⟩
+      exact ⟨σ.symm a, σ.symm b, σ.symm.map_rel_iff.mpr hab, by simp, by simp⟩
+
+omit [Fintype V] [Fintype W] [DecidableEq W] in
+/-- Precomposition with automorphisms is injective on copies. -/
+lemma Copy.comp_toCopy_injective (f : Copy H G) :
+    Function.Injective fun σ : H ≃g H => f.comp σ.toCopy := fun σ₁ σ₂ h => by
+  ext w
+  have : f (σ₁ w) = f (σ₂ w) := congrFun (congrArg DFunLike.coe h) w
+  exact f.injective this
+
+omit [Fintype V] [Fintype W] [DecidableEq W] in
+/-- For copies with the same image subgraph, construct the automorphism relating them.
+
+Given `f` and `f₀` with `f.toSubgraph = f₀.toSubgraph`, construct `σ : H ≃g H` such that
+`f = f₀ ∘ σ`. -/
+noncomputable def Copy.fiberAut (f₀ f : Copy H G) (h : f.toSubgraph = f₀.toSubgraph) :
+    H ≃g H := by
+  classical
+  have h_verts : f.toSubgraph.verts = f₀.toSubgraph.verts := congrArg Subgraph.verts h
+  have h_adj : f.toSubgraph.Adj = f₀.toSubgraph.Adj := congrArg Subgraph.Adj h
+  have f_verts : f.toSubgraph.verts = Set.range (f : W → V) := by
+    simp only [Copy.toSubgraph, Subgraph.map, Subgraph.verts_top, Set.image_univ, Copy.coe_toHom]
+  have f₀_verts : f₀.toSubgraph.verts = Set.range (f₀ : W → V) := by
+    simp only [Copy.toSubgraph, Subgraph.map, Subgraph.verts_top, Set.image_univ, Copy.coe_toHom]
+  have mem_range : ∀ w, f w ∈ Set.range (f₀ : W → V) := fun w => by
+    rw [← f₀_verts, ← h_verts, f_verts]; exact ⟨w, rfl⟩
+  let σ_fun : W → W := fun w => (mem_range w).choose
+  have σ_spec : ∀ w, f₀ (σ_fun w) = f w := fun w => (mem_range w).choose_spec
+  have σ_inj : Function.Injective σ_fun := fun w₁ w₂ hσ => by
+    have : f w₁ = f w₂ := by rw [← σ_spec w₁, ← σ_spec w₂, hσ]
+    exact f.injective this
+  have σ_surj : Function.Surjective σ_fun := fun w' => by
+    have : f₀ w' ∈ Set.range f := by rw [← f_verts, h_verts, f₀_verts]; exact ⟨w', rfl⟩
+    obtain ⟨w, hw⟩ := this
+    exact ⟨w, f₀.injective (σ_spec w ▸ hw)⟩
+  let σ_equiv : W ≃ W := Equiv.ofBijective σ_fun ⟨σ_inj, σ_surj⟩
+  have σ_adj : ∀ a b, H.Adj a b ↔ H.Adj (σ_equiv a) (σ_equiv b) := fun a b => by
+    constructor
+    · intro hab
+      have h1 : f.toSubgraph.Adj (f a) (f b) := by
+        simp only [Copy.toSubgraph, Subgraph.map_adj, Relation.Map]
+        exact ⟨a, b, hab, rfl, rfl⟩
+      rw [h_adj] at h1
+      simp only [Copy.toSubgraph, Subgraph.map_adj, Relation.Map] at h1
+      obtain ⟨c, d, hcd, hc, hd⟩ := h1
+      have hc' : c = σ_fun a := f₀.injective (hc.trans (σ_spec a).symm)
+      have hd' : d = σ_fun b := f₀.injective (hd.trans (σ_spec b).symm)
+      rwa [hc', hd'] at hcd
+    · intro hab
+      have mem_range' : ∀ w, f₀ w ∈ Set.range f := fun w => by
+        rw [← f_verts, h_verts, f₀_verts]; exact ⟨w, rfl⟩
+      have h1 : f₀.toSubgraph.Adj (f₀ (σ_fun a)) (f₀ (σ_fun b)) := by
+        simp only [Copy.toSubgraph, Subgraph.map_adj, Relation.Map]
+        exact ⟨σ_fun a, σ_fun b, hab, rfl, rfl⟩
+      rw [σ_spec, σ_spec] at h1
+      rw [← h_adj] at h1
+      simp only [Copy.toSubgraph, Subgraph.map_adj, Relation.Map] at h1
+      obtain ⟨c, d, hcd, hc, hd⟩ := h1
+      have hc' : c = a := f.injective hc
+      have hd' : d = b := f.injective hd
+      rwa [hc', hd'] at hcd
+  exact ⟨σ_equiv, fun {a} {b} => (σ_adj a b).symm⟩
+
+omit [Fintype V] [Fintype W] [DecidableEq W] in
+/-- The automorphism from `fiberAut` satisfies `f = f₀ ∘ σ`. -/
+lemma fiberAut_spec (f₀ f : Copy H G) (h : f.toSubgraph = f₀.toSubgraph) :
+    f = f₀.comp (Copy.fiberAut G H f₀ f h).toCopy := by
+  classical
+  ext w
+  simp only [Copy.comp_apply]
+  unfold Copy.fiberAut
+  have h_verts : f.toSubgraph.verts = f₀.toSubgraph.verts := congrArg Subgraph.verts h
+  have f_verts : f.toSubgraph.verts = Set.range (f : W → V) := by
+    simp only [Copy.toSubgraph, Subgraph.map, Subgraph.verts_top, Set.image_univ, Copy.coe_toHom]
+  have f₀_verts : f₀.toSubgraph.verts = Set.range (f₀ : W → V) := by
+    simp only [Copy.toSubgraph, Subgraph.map, Subgraph.verts_top, Set.image_univ, Copy.coe_toHom]
+  have mem_range : f w ∈ Set.range (f₀ : W → V) := by
+    rw [← f₀_verts, ← h_verts, f_verts]; exact ⟨w, rfl⟩
+  exact mem_range.choose_spec.symm
+
+omit [Fintype V] [Fintype W] [DecidableEq W] in
+/-- Every copy in the fiber over `f₀.toSubgraph` is of the form `f₀ ∘ σ` for some automorphism. -/
+lemma exists_aut_of_fiber (f₀ f : Copy H G) (h : f.toSubgraph = f₀.toSubgraph) :
+    ∃ σ : H ≃g H, f = f₀.comp σ.toCopy :=
+  ⟨Copy.fiberAut G H f₀ f h, fiberAut_spec G H f₀ f h⟩
+
+/-- The fiber of copies over a fixed subgraph is equivalent to `Aut(H)`.
+
+Given a representative `f₀`, the fiber `{f : Copy H G | f.toSubgraph = f₀.toSubgraph}`
+is equivalent to `H ≃g H`. -/
+noncomputable def fiberEquiv (f₀ : Copy H G) :
+    {f : Copy H G // f.toSubgraph = f₀.toSubgraph} ≃ (H ≃g H) := by
+  classical
+  let φ : (H ≃g H) → Copy H G := fun σ => f₀.comp σ.toCopy
+  have φ_mem : ∀ σ, (φ σ).toSubgraph = f₀.toSubgraph := fun σ =>
+    copy_toSubgraph_comp_iso G H f₀ σ
+  have φ_inj : Function.Injective φ := Copy.comp_toCopy_injective G H f₀
+  have φ_range : Set.range φ = {f | f.toSubgraph = f₀.toSubgraph} := by
+    ext f
+    constructor
+    · rintro ⟨σ, rfl⟩; exact φ_mem σ
+    · intro hf
+      obtain ⟨σ, hσ⟩ := exists_aut_of_fiber G H f₀ f hf
+      exact ⟨σ, hσ.symm⟩
+  have bij : Function.Bijective (fun σ : H ≃g H =>
+      (⟨φ σ, φ_mem σ⟩ : {f : Copy H G // f.toSubgraph = f₀.toSubgraph})) := by
+    constructor
+    · intro σ₁ σ₂ h; exact φ_inj (congrArg Subtype.val h)
+    · intro ⟨f, hf⟩
+      have : f ∈ Set.range φ := φ_range ▸ hf
+      obtain ⟨σ, hσ⟩ := this
+      exact ⟨σ, Subtype.ext hσ⟩
+  exact (Equiv.ofBijective _ bij).symm
+
+/-- Equivalence between `Copy H G` and the sigma type over fibers.
+
+Each labelled copy belongs to exactly one fiber (determined by its image subgraph),
+and each fiber has size `autCount H`. -/
+noncomputable def copyEquivSigma :
+    Copy H G ≃ Σ S : {S : G.Subgraph // Nonempty (H ≃g S.coe)},
+      {f : Copy H G // f.toSubgraph = S.val} := by
+  classical
+  let toFun : Copy H G → Σ S : {S : G.Subgraph // Nonempty (H ≃g S.coe)},
+      {f : Copy H G // f.toSubgraph = S.val} := fun f =>
+    ⟨⟨f.toSubgraph, ⟨f.isoToSubgraph⟩⟩, ⟨f, rfl⟩⟩
+  let invFun : (Σ S : {S : G.Subgraph // Nonempty (H ≃g S.coe)},
+      {f : Copy H G // f.toSubgraph = S.val}) → Copy H G := fun ⟨_, ⟨f, _⟩⟩ => f
+  have left_inv : Function.LeftInverse invFun toFun := fun _ => rfl
+  have right_inv : Function.RightInverse invFun toFun := fun ⟨⟨S, hS⟩, ⟨f, hf⟩⟩ => by
+    simp only [toFun, invFun]
+    refine Sigma.ext (Subtype.ext hf) ?_
+    have heq_pred : ∀ x : Copy H G, (x.toSubgraph = f.toSubgraph) ↔ (x.toSubgraph = S) :=
+      fun x => ⟨fun h => h.trans hf, fun h => h.trans hf.symm⟩
+    exact (Subtype.heq_iff_coe_eq heq_pred).mpr rfl
+  exact ⟨toFun, invFun, left_inv, right_inv⟩
+
+/-- Fintype instance for fibers of `Copy.toSubgraph`. -/
+noncomputable instance instFintypeFiber (S : G.Subgraph) :
+    Fintype {f : Copy H G // f.toSubgraph = S} := by
+  classical exact Fintype.subtype (Finset.univ.filter fun f => f.toSubgraph = S) (by simp)
+
+/-- Each fiber has cardinality `autCount H`. -/
+lemma card_fiber_eq_autCount (S : {S : G.Subgraph // Nonempty (H ≃g S.coe)}) :
+    Fintype.card {f : Copy H G // f.toSubgraph = S.val} = autCount H := by
+  classical
+  have h_mem : S.val ∈ Set.range (Copy.toSubgraph : Copy H G → G.Subgraph) := by
+    rw [Copy.range_toSubgraph]; exact S.property
+  let f₀ : Copy H G := h_mem.choose
+  have hf₀ : f₀.toSubgraph = S.val := h_mem.choose_spec
+  let fiber_equiv : {f : Copy H G // f.toSubgraph = S.val} ≃
+      {f : Copy H G // f.toSubgraph = f₀.toSubgraph} :=
+    Equiv.subtypeEquivProp (by simp only [hf₀])
+  calc Fintype.card {f : Copy H G // f.toSubgraph = S.val}
+      = Fintype.card {f : Copy H G // f.toSubgraph = f₀.toSubgraph} :=
+        Fintype.card_congr fiber_equiv
+    _ = Fintype.card (H ≃g H) := Fintype.card_congr (fiberEquiv G H f₀)
+    _ = autCount H := rfl
+
+/-- The multiplicative relation for non-induced copies:
+`G.labelledCopyCount H = G.copyCount H * autCount H`. -/
+theorem labelledCopyCount_eq_copyCount_mul_autCount :
+    G.labelledCopyCount H = G.copyCount H * autCount H := by
+  classical
+  simp [SimpleGraph.labelledCopyCount]
+  rw [Fintype.card_eq_nat_card]
+  let α := {S : G.Subgraph // Nonempty (H ≃g S.coe)}
+  let β := fun S : α => {f : Copy H G // f.toSubgraph = S.val}
+  have hEquiv : Copy H G ≃ Sigma β := by
+    simpa [α, β] using (copyEquivSigma (G := G) (H := H))
+  have hβ : ∀ S : α, Nat.card (β S) = autCount H := by
+    intro S
+    have h := card_fiber_eq_autCount (G := G) (H := H) S
+    have : Nat.card {f : Copy H G // f.toSubgraph = S.val} = autCount H := by
+      have h' := h
+      rw [Fintype.card_eq_nat_card] at h'
+      exact h'
+    simpa [β] using this
+  calc
+    Nat.card (Copy H G)
+        = Nat.card (Sigma β) := Nat.card_congr hEquiv
+    _ = ∑ S : α, Nat.card (β S) := Nat.card_sigma
+    _ = ∑ _S : α, autCount H := by
+          simpa using Fintype.sum_congr (fun S : α => Nat.card (β S)) (fun _S : α => autCount H) hβ
+    _ = Fintype.card α * autCount H := by simp
+    _ = G.copyCount H * autCount H := by
+          simp [α, SimpleGraph.copyCount, Fintype.card_subtype]
+
+private noncomputable def Copy.toEmbeddingOfToSubgraphIsInduced (f : Copy H G)
+    (hInd : f.toSubgraph.IsInduced) : H ↪g G := by
+  classical
+  refine { toFun := f, inj' := f.injective, map_rel_iff' := ?_ }
+  intro a b
+  constructor
+  · intro hab
+    have ha : f a ∈ f.toSubgraph.verts := by simp [Copy.toSubgraph, Subgraph.map_verts]
+    have hb : f b ∈ f.toSubgraph.verts := by simp [Copy.toSubgraph, Subgraph.map_verts]
+    have hab' : f.toSubgraph.Adj (f a) (f b) := hInd ha hb hab
+    simp [Copy.toSubgraph, Subgraph.map_adj, Relation.Map] at hab'
+    obtain ⟨c, d, hcd, hc, hd⟩ := hab'
+    have hc' : c = a := f.injective hc
+    have hd' : d = b := f.injective hd
+    simpa [hc', hd'] using hcd
+  · intro hab; exact f.toHom.map_adj hab
+
+@[simp] private lemma toCopy_toEmbeddingOfToSubgraphIsInduced (f : Copy H G)
+    (hInd : f.toSubgraph.IsInduced) :
+    (Copy.toEmbeddingOfToSubgraphIsInduced (G := G) (H := H) f hInd).toCopy = f := by
+  ext w; rfl
+
+private noncomputable def embFiberEquivCopyFiber
+    (S : {S : G.Subgraph // S.IsInduced ∧ Nonempty (H ≃g S.coe)}) :
+    {f : H ↪g G // f.toCopy.toSubgraph = S.val} ≃ {f : Copy H G // f.toSubgraph = S.val} := by
+  classical
+  let toFun : {f : H ↪g G // f.toCopy.toSubgraph = S.val} →
+      {f : Copy H G // f.toSubgraph = S.val} := fun f =>
+    ⟨f.1.toCopy, by simpa using f.2⟩
+  let invFun : {f : Copy H G // f.toSubgraph = S.val} →
+      {f : H ↪g G // f.toCopy.toSubgraph = S.val} := fun f => by
+    have hInd : f.1.toSubgraph.IsInduced := by simpa [f.2] using S.property.1
+    refine ⟨Copy.toEmbeddingOfToSubgraphIsInduced (G := G) (H := H) f.1 hInd, ?_⟩
+    simpa [toCopy_toEmbeddingOfToSubgraphIsInduced (G := G) (H := H) f.1 hInd] using f.2
+  exact ⟨toFun, invFun, fun f => by ext w; rfl, fun f => by ext w; rfl⟩
+
+/-- The multiplicative relation for induced copies:
+`G.indLabelledCopyCount H = G.indCopyCount H * autCount H`. -/
+theorem indLabelledCopyCount_eq_indCopyCount_mul_autCount :
+    G.indLabelledCopyCount H = G.indCopyCount H * autCount H := by
+  classical
+  simp [indLabelledCopyCount]
+  rw [Fintype.card_eq_nat_card]
+  let α := {S : G.Subgraph // S.IsInduced ∧ Nonempty (H ≃g S.coe)}
+  let β := fun S : α => {f : H ↪g G // f.toCopy.toSubgraph = S.val}
+  have hEquiv : (H ↪g G) ≃ Sigma β := by
+    classical
+    let toFun : (H ↪g G) → Sigma β := fun f =>
+      ⟨⟨f.toCopy.toSubgraph,
+          ⟨by simp [Copy.toSubgraph, Subgraph.IsInduced, Relation.map_apply_apply, f.injective],
+           ⟨f.toCopy.isoToSubgraph⟩⟩⟩,
+        ⟨f, rfl⟩⟩
+    let invFun : (Sigma β) → (H ↪g G) := fun ⟨_, ⟨f, _⟩⟩ => f
+    have left_inv : Function.LeftInverse invFun toFun := fun _ => rfl
+    have right_inv : Function.RightInverse invFun toFun := fun ⟨⟨S, hS⟩, ⟨f, hf⟩⟩ => by
+      simp only [toFun, invFun]
+      refine Sigma.ext (Subtype.ext hf) ?_
+      have heq_pred :
+          ∀ x : H ↪g G,
+            (x.toCopy.toSubgraph = f.toCopy.toSubgraph) ↔ (x.toCopy.toSubgraph = S) :=
+        fun x => ⟨fun h => h.trans hf, fun h => h.trans hf.symm⟩
+      exact (Subtype.heq_iff_coe_eq heq_pred).mpr rfl
+    exact ⟨toFun, invFun, left_inv, right_inv⟩
+  have hβ : ∀ S : α, Nat.card (β S) = autCount H := by
+    intro S
+    have hFiberEquiv :
+        {f : H ↪g G // f.toCopy.toSubgraph = S.val} ≃ {f : Copy H G // f.toSubgraph = S.val} :=
+      simpa using (embFiberEquivCopyFiber (G := G) (H := H) S)
+    let S' : {S : G.Subgraph // Nonempty (H ≃g S.coe)} := ⟨S.val, S.property.2⟩
+    have hcard : Nat.card {f : Copy H G // f.toSubgraph = S'.val} = autCount H := by
+      have h := card_fiber_eq_autCount (G := G) (H := H) S'
+      have h' := h; rw [Fintype.card_eq_nat_card] at h'; exact h'
+    have :
+        Nat.card {f : H ↪g G // f.toCopy.toSubgraph = S.val} = autCount H :=
+      calc
+        Nat.card {f : H ↪g G // f.toCopy.toSubgraph = S.val}
+            = Nat.card {f : Copy H G // f.toSubgraph = S.val} := Nat.card_congr hFiberEquiv
+        _ = autCount H := by simpa [S'] using hcard
+    simpa [β] using this
+  calc
+    Nat.card (H ↪g G)
+        = Nat.card (Sigma β) := Nat.card_congr hEquiv
+    _ = ∑ S : α, Nat.card (β S) := Nat.card_sigma
+    _ = ∑ _S : α, autCount H := by
+          simpa using Fintype.sum_congr (fun S : α => Nat.card (β S)) (fun _S : α => autCount H) hβ
+    _ = Fintype.card α * autCount H := by simp
+    _ = G.indCopyCount H * autCount H := by
+          simp [α, indCopyCount, Fintype.card_subtype]
+
+end Multiplicative
+
+/-!
 ### Killing a subgraph
 
 An important aspect of graph containment is that we can remove not too many edges from a graph `H`
