@@ -41,7 +41,7 @@ namespace Delab.Noncanonical
 `arg` is a non-canonical instance (is not defeq to what is synthesized for its type, or else
 instance synthesis fails). -/
 def delabUnary (arity arg : Nat) (mkStx : Term → Delab) : Delab :=
-  withOverApp arity <| whenPPOption Lean.getPPNotation do
+  whenPPOption Lean.getPPNotation <| whenNotPPOption getPPExplicit <| withOverApp arity <| do
     let (false, instD) ← withNaryArg arg delabCheckingCanonical | failure
     mkStx instD
 
@@ -49,7 +49,7 @@ def delabUnary (arity arg : Nat) (mkStx : Term → Delab) : Delab :=
 argument `arg₁` or `arg₂` are non-canonical instances (are not defeq to what is synthesized for
 its type, or else instance synthesis fails). -/
 def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term) : Delab :=
-  withOverApp arity <| whenPPOption Lean.getPPNotation do
+  whenPPOption Lean.getPPNotation <| whenNotPPOption getPPExplicit <| withOverApp arity <| do
     let (canonα?, instDα) ← withNaryArg arg₁ delabCheckingCanonical
     let (canonβ?, instDβ) ← withNaryArg arg₂ delabCheckingCanonical
     if canonα? && canonβ? then failure

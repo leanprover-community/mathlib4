@@ -119,15 +119,25 @@ section applied
 -- in either or both slots do trigger the delab and that
 -- `instTopologicalSpaceNat`, `sierpinskiSpace` does not.
 
-/-- info: [Continuous[τ₁, _] p, Continuous[τ₂, _] p, Continuous[induced g inferInstance, inferInstance] g] : List Prop -/
+/-- info: [Continuous[τ₁, _] p, Continuous[τ₂, _] p] : List Prop -/
 #guard_msgs(info) in
-#check [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p,
-  Continuous[induced g inferInstance, inferInstance] g]
+#check [Continuous[τ₁, sierpinskiSpace] p, Continuous[τ₂, sierpinskiSpace] p]
 
-/-- info: [Continuous[_, σ₁] p, Continuous[_, σ₂] p, Continuous[inferInstance, coinduced h inferInstance] h] : List Prop -/
+-- TODO should be `Continuous[induced g inferInstance, _]`
+-- Once `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the right.
+/--info: Continuous[induced g inferInstance, inferInstance] g : Prop -/
 #guard_msgs(info) in
-#check [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p,
-  Continuous[inferInstance, coinduced h inferInstance] h]
+#check Continuous[induced g inferInstance, inferInstance] g
+
+/-- info: [Continuous[_, σ₁] p, Continuous[_, σ₂] p] : List Prop -/
+#guard_msgs(info) in
+#check [Continuous[instTopologicalSpaceNat, σ₁] p, Continuous[instTopologicalSpaceNat, σ₂] p]
+
+-- TODO should be `Continuous[_, coinduced h inferInstance]`
+-- Once `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the left.
+/-- info: Continuous[inferInstance, coinduced h inferInstance] h : Prop -/
+#guard_msgs(info) in
+#check Continuous[inferInstance, coinduced h inferInstance] h
 
 /-- info: [Continuous[induced p inferInstance, coinduced p inferInstance] p, Continuous p]
 : List Prop -/
@@ -146,9 +156,8 @@ section unapplied
 #guard_msgs(info) in
 #check [Continuous[τ₁, sierpinskiSpace], Continuous[τ₂, sierpinskiSpace]]
 
--- Note: This is *not* the desired behavior. Treat it instead as a 'bug tracker.'
--- When `(try)SynthInstance` in `$check` is fixed, this should no longer trigger the delab
--- on the right, so we should get `Continuous[induced g inferInstance, _]`.
+-- TODO: should be `Continuous[induced g inferInstance, _]
+-- When `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the right.
 /-- info:
 Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 #guard_msgs(info) in
@@ -160,9 +169,8 @@ Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 #check [Continuous[instTopologicalSpaceNat, σ₁], Continuous[instTopologicalSpaceNat, σ₂]]
 
 
--- As above, this is not the desired behavior. When `(try)SynthInstance` in `#check` is fixed,
--- this should no longer trigger the delab on the left, so we should get
--- `Continuous[_, coinduced h inferInstance]`.
+-- TODO should be `Continuous[_, coinduced h inferInstance]`.
+-- When `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the left.
 /-- info:
 Continuous[inst✝, coinduced h inferInstance] : (α → β) → Prop -/
 #guard_msgs(info) in
