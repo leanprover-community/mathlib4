@@ -5,7 +5,7 @@ Authors: Ralf Stephan
 -/
 module
 
-import Mathlib.NumberTheory.Height.NumberField
+public import Mathlib.NumberTheory.Height.NumberField
 
 /-!
 # Heights of rational numbers
@@ -15,6 +15,8 @@ cast to `ℚ`. Since `ℚ` has a unique infinite place (the usual absolute value
 and every finite place satisfies `v n ≤ 1` for `n : ℕ`, the height simplifies to
 `mulHeight₁ (n : ℚ) = n` and `logHeight₁ (n : ℚ) = Real.log n` for `1 ≤ n`.
 -/
+
+@[expose] public section
 
 open NumberField Height
 
