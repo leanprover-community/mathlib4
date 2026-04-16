@@ -199,40 +199,71 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Category* D]
 
 set_option backward.isDefEq.respectTransparency false in
 def leftUnitor (P : Profunctor.{u} C D) : (Profunctor.id (C := C)).comp P ≅ P :=
-  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ Equiv.toIso {
-    toFun := Quot.lift (fun ⟨d, f, x⟩ ↦ (P.map f).app _ x) fun _ _ h ↦ by
-      simp only [compDiagram_obj_obj, id_obj_obj, op_unop]
-      cases h with
-      | mk f x =>
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ Equiv.toIso {
+      toFun := Quot.lift (fun ⟨d, f, x⟩ ↦ (P.map f).app _ x) fun _ _ h ↦ by cases h; simp
+      invFun x := Quot.mk _ ⟨X, 𝟙 X, x⟩
+      left_inv x := by
+        obtain ⟨⟨_, f, x⟩, rfl⟩ := Quot.mk_surjective x
+        symm
+        apply Quot.sound
         dsimp
-        rw [← comp_apply, ← NatTrans.comp_app, ← Functor.map_comp]
-    invFun x := Quot.mk _ ⟨X, 𝟙 X, x⟩
-    left_inv x := by
-      obtain ⟨⟨_, f, x⟩, rfl⟩ := Quot.mk_surjective x
-      symm
-      apply Quot.sound
-      dsimp
-      convert Limits.Types.coendRel.mk
-        (F := compDiagram (Profunctor.id.{u} (C := C)) P X (unop Y)) f ⟨𝟙 X, x⟩
-      cat_disch
-    right_inv _ := by simp }) (by
-      dsimp
-      intro x y f
-      ext
-      simp only [compDiagram_obj_obj, id_obj_obj, op_unop, Limits.chosenCoend.ι_map_assoc,
-        compDiagramMap_app_app, Functor.map_id, NatTrans.id_app, Quiver.Hom.op_unop,
-        TypeCat.Fun.toFun_apply, comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk,
-        Equiv.toIso_hom_hom_apply, Equiv.coe_fn_mk]
-      erw [Limits.chosenCoend.ι_apply, Limits.chosenCoend.ι_apply] -- TODO: fix
-      simp)) (by
-      dsimp
-      intro x y f
+        convert Limits.Types.coendRel.mk
+          (F := compDiagram (Profunctor.id.{u} (C := C)) P X (unop Y)) f ⟨𝟙 X, x⟩
+        cat_disch
+      right_inv _ := by simp })
+    (fun f ↦ by dsimp; ext; simp [compDiagram, Limits.chosenCoend.ι_apply _]))
+    (fun f ↦ by
       ext _ z
       simp [Limits.chosenCoend.map_apply, Quot.map]
       obtain ⟨_, rfl⟩ := Quot.mk_surjective z
       simp)
 
 end LeftUnitor
+
+section RightUnitor
+
+variable {C : Type u} [Category* C] {D : Type u} [Category.{u} D]
+
+set_option backward.isDefEq.respectTransparency false in
+def rightUnitor (P : Profunctor.{u} C D) : P.comp (.id (C := D)) ≅ P :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
+    (fun Y ↦ Equiv.toIso {
+      toFun := Quot.lift (fun ⟨d, x, f⟩ ↦ (P.obj X).map f.op x) fun _ _ h ↦ by cases h; simp
+      invFun x := Quot.mk _ ⟨Y.unop, x, 𝟙 Y.unop⟩
+      left_inv x := by
+        obtain ⟨⟨_, x, f⟩, rfl⟩ := Quot.mk_surjective x
+        apply Quot.sound
+        dsimp
+        convert Limits.Types.coendRel.mk
+          (F := compDiagram P (.id (C := D)) X (unop Y)) f ⟨x, 𝟙 _⟩
+        cat_disch
+      right_inv x := by simp })
+    (fun f ↦ by dsimp; ext; simp [compDiagram, Limits.chosenCoend.ι_apply _]))
+    (fun f ↦ by
+      ext _ z
+      simp [Limits.chosenCoend.map_apply, Quot.map]
+      obtain ⟨_, rfl⟩ := Quot.mk_surjective z
+      simp)
+
+end RightUnitor
+
+section Associator
+
+variable {C D E F : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} E] [Category.{u} F]
+variable (P : Profunctor.{u} C D) (Q : Profunctor.{u} D E) (R : Profunctor.{u} E F)
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ Equiv.toIso {
+    toFun := Quot.lift (fun ⟨e, x⟩ ↦ Quot.mk _ ⟨(Quot.out x.1).1, (Quot.out x.1).2.1,
+      Quot.mk _ ⟨e, (Quot.out x.1).2.2, x.snd⟩⟩) sorry
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry
+  }) sorry) sorry
+
+end Associator
 
 end Composition
 
