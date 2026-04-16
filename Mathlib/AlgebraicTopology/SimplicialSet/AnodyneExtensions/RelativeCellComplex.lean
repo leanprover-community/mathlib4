@@ -244,6 +244,7 @@ all cells of rank `j`. -/
 noncomputable abbrev sigmaHorn (j : ι) : SSet.{u} :=
   ∐ fun (c : f.Cell j) ↦ c.horn
 
+variable {f} in
 /-- Given a cell `c` of rank `j` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is the inclusion of
 `c.horn` into `f.sigmaHorn j`. -/
@@ -257,6 +258,7 @@ to all cells of rank `j`. -/
 noncomputable abbrev sigmaStdSimplex (j : ι) : SSet.{u} :=
   ∐ fun (i : f.Cell j) ↦ Δ[i.dim + 1]
 
+variable {f} in
 /-- Given a cell `c` of rank `j` for a rank function `f` for a proper
 pairing of a subcomplex of a simplicial set, this is the inclusion of
 `Δ[c.dim + 1]` into `f.sigmaStdSimplex j`. -/
@@ -358,10 +360,12 @@ of a subcomplex of a simplicial set, this is the induced morphism
 noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
   Sigma.desc (fun c ↦ c.mapHorn)
 
+variable {f} in
 @[reassoc (attr := simp)]
 lemma Cell.ι_t {j : ι} (c : f.Cell j) : c.ιSigmaHorn ≫ f.t j = c.mapHorn := by
   simp [t, Sigma.ι_desc]
 
+variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma Cell.ι_t_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
     c.ιSigmaHorn.app x ≫ (f.t j).app x = c.mapHorn.app x :=
@@ -434,10 +438,12 @@ of a subcomplex of a simplicial set, this is the induced morphism
 noncomputable def b (j : ι) : f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
   Sigma.desc (fun c ↦ c.mapToSucc)
 
+variable {f} in
 @[reassoc (attr := simp)]
 lemma Cell.ι_b {j : ι} (c : f.Cell j) : c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by
   simp [b, Sigma.ι_desc]
 
+variable {f} in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma Cell.ι_b_app {j : ι} (c : f.Cell j) (x : SimplexCategoryᵒᵖ) :
     c.ιSigmaStdSimplex.app x ≫ (f.b j).app x = c.mapToSucc.app x :=
@@ -507,12 +513,11 @@ lemma mapN_type₁ {j : ι} (c : f.Cell j) : f.mapN c.type₁ = S.mk (P.p c.s).v
   rw [S.ext_iff, c.ι_b_app_apply]
   apply yonedaEquiv_symm_app_id
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]
-  rw [S.ext_iff]
-  erw [← NatTrans.comp_app_apply]
-  rw [c.ι_b, Cell.mapToSucc]
+  rw [S.ext_iff, c.ι_b_app_apply, Cell.mapToSucc]
   dsimp
   rw [Cell.map_app_objEquiv_symm_δ_index]
 
