@@ -50,27 +50,16 @@ theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = no
       split_ifs <;> simp
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
-  List.reverseRecOn l (by simp [eq_comm])
-    (by
-      intro tl hd ih a m
-      simp only [foldl_append, foldl_cons, foldl_nil, argAux]
-      cases hf : foldl (argAux r) (some a) tl
-      · simp +contextual
-      · dsimp only
-        split_ifs
-        · simp +contextual
-        · -- `finish [ih _ _ hf]` closes this goal
-          simp only [List.mem_cons] at ih
-          rcases ih _ _ hf with rfl | H
-          · simp +contextual only [Option.mem_def, Option.some.injEq,
-              eq_comm, mem_cons, mem_append, true_or, implies_true]
-          · simp +contextual [@eq_comm _ _ m, H])
+  List.reverseRecOn l (by simp [eq_comm]) <| by
+    intro _ _ _ _
+    simp only [foldl_append, foldl_cons, foldl_nil, argAux]
+    cases _ : foldl _ _ _ <;> grind
 
 @[simp]
 theorem argAux_self (hr₀ : Std.Irrefl r) (a : α) : argAux r (some a) a = a :=
   if_neg <| hr₀.irrefl _
 
-theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : Transitive r) :
+theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
   induction l using List.reverseRecOn with
   | nil => simp
@@ -82,13 +71,7 @@ theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : Transitive r) :
     rw [foldl_argAux_eq_none] at hf
     simp_all [hf.1, hf.2, hr₀.irrefl _]
   rw [hf, Option.mem_def] at ho
-  dsimp only at ho
-  split_ifs at ho with hac <;> rcases mem_append.1 hb with h | h <;>
-    injection ho with ho <;> subst ho
-  · exact fun hba => ih h hf (hr₁ hba hac)
-  · simp_all [hr₀.irrefl _]
-  · exact ih h hf
-  · simp_all
+  grind +splitIndPred
 
 end ArgAux
 
@@ -126,11 +109,11 @@ theorem argmin_singleton {f : α → β} {a : α} : argmin f [a] = a :=
 
 theorem not_lt_of_mem_argmax : a ∈ l → m ∈ argmax f l → ¬f m < f a :=
   not_of_mem_foldl_argAux _ ⟨fun x h => lt_irrefl (f x) h⟩
-    (fun _ _ z hxy hyz => lt_trans (a := f z) hyz hxy)
+    ⟨fun _ _ z hxy hyz => lt_trans (a := f z) hyz hxy⟩
 
 theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
   not_of_mem_foldl_argAux _ ⟨fun x h => lt_irrefl (f x) h⟩
-    (fun x _ _ hxy hyz => lt_trans (a := f x) hxy hyz)
+    ⟨fun x _ _ hxy hyz => lt_trans (a := f x) hxy hyz⟩
 
 theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
@@ -177,10 +160,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    dsimp
-    split_ifs <;> try rfl
-    · exact absurd (lt_trans ‹f a < f m› ‹_›) ‹_›
-    · cases (‹f a < f tl›.gt_or_lt _).elim ‹_› ‹_›
+    grind
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =

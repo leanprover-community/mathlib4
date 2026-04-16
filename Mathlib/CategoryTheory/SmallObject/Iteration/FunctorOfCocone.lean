@@ -68,7 +68,6 @@ lemma map_id (i : J) (hi : i ≤ j) :
   dsimp [map]
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ ≤ j) :
     map c i₁ i₃ (hi.trans hi') hi₃ =
       map c i₁ i₂ hi (hi'.trans hi₃) ≫

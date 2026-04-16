@@ -52,12 +52,12 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well-founded order on `S`
-  obtain ⟨_, wf⟩ := exists_wellOrder ι
+  obtain ⟨_, wf⟩ := exists_wellFoundedLT ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
   have mem_ind (x) : x ∈ s (ind x) := wellFounded_lt.min_mem _ (hcov x)
   have notMem_of_lt_ind {x i} (hlt : i < ind x) (hxi : x ∈ s i) : False :=
-    wellFounded_lt.not_lt_min _ (hcov x) hxi hlt
+    wellFounded_lt.not_lt_min {i | x ∈ s i} hxi hlt
   /- The refinement `D : ℕ → ι → Set α` is defined recursively. For each `n` and `i`, `D n i`
     is the union of balls `ball x (1 / 2 ^ n)` over all points `x` such that
 
@@ -137,7 +137,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle (m) (hm : m ≤ n + k) : Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by
       rintro j₁ ⟨y, hyD, hyB⟩ j₂ ⟨z, hzD, hzB⟩
-      by_contra! h' : j₁ ≠ j₂
+      by_contra h' : j₁ ≠ j₂
       wlog h : j₁ < j₂ generalizing j₁ j₂ y z
       · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_gt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩

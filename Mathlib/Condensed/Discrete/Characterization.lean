@@ -72,7 +72,6 @@ noncomputable abbrev LocallyConstant.adjunction :
 
 open Condensed
 
-set_option backward.isDefEq.respectTransparency false in
 open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae (X : CondensedSet.{u}) :
     TFAE
@@ -120,7 +119,6 @@ lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
 instance : HasLimitsOfSize.{u, u + 1} (ModuleCat.{u + 1} R) :=
   hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
 
-set_option backward.isDefEq.respectTransparency false in
 open CondensedMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : CondensedMod.{u} R) :
     TFAE
@@ -193,7 +191,6 @@ noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open LightCondSet.LocallyConstant List in
 theorem isDiscrete_tfae (X : LightCondSet.{u}) :
     TFAE
@@ -231,7 +228,6 @@ lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
     (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
 
-set_option backward.isDefEq.respectTransparency false in
 open LightCondMod.LocallyConstant List in
 theorem isDiscrete_tfae (M : LightCondMod.{u} R) :
     TFAE

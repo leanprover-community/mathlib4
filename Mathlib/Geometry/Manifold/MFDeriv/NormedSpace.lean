@@ -15,6 +15,10 @@ The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 
+In addition to the above, this file provides
+* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
+* `extDerivFun`: the exterior derivative of a scalar function, as a section of the cotangent bundle
+
 -/
 
 public section
@@ -273,7 +277,7 @@ lemma HasMFDerivAt.smul
     letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
-    letI gx :  𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
@@ -390,3 +394,24 @@ lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
   fromTangentSpace_mfderiv_smul_apply hf hg v
 
 end smul
+
+/-! ### Exterior derivative of a scalar function -/
+
+/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
+noncomputable abbrev extDerivFun (g : M → 𝕜) :
+    Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+
+@[simp]
+lemma extDerivFun_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    extDerivFun (g + g') x = extDerivFun (I := I) g x + extDerivFun g' x := by
+  simp [extDerivFun, mfderiv_add hg hg']
+  congr
+
+@[simp]
+lemma extDerivFun_zero {x : M} : extDerivFun (I := I) (0 : M → 𝕜) x = 0 := by
+  have : extDerivFun (0 : M → 𝕜) x + extDerivFun (0 : M → 𝕜) x =
+      extDerivFun (I := I) (0 : M → 𝕜) x := by
+    rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
+    simp
+  simpa using this

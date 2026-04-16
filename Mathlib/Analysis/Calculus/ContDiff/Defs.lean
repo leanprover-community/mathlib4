@@ -116,6 +116,8 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 variable (𝕜) in
 /-- A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
+(when the `ContDiff` scope is open).
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
 For `n = ω`, we require the function to be analytic within `s` at `x`. The precise definition we
@@ -158,7 +160,6 @@ theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
   obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ω
   exact ⟨u, hu, p, hp.of_le le_top, fun i ↦ h'p i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u :=
@@ -205,7 +206,6 @@ theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
@@ -435,7 +435,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
     · intro h
       apply (f_an h).mono hwu
     · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem_nhdsWithin ?_
-      refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
+      grw [← subset_insert]
       exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem_nhdsWithin (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt hn,
@@ -449,9 +449,14 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' (hn : n ≠ ∞) :
 variable (𝕜) in
 /-- A function is continuously differentiable up to `n` on `s` if, for any point `x` in `s`, it
 admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
+(when the `ContDiff` scope is open).
 
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
+For `n = ω`, we require the function to be analytic within `s` at every point of `s`. The precise
+definition we give (all the derivatives should be analytic) is more involved to work around issues
+when the space is not complete, but it is equivalent when the space is complete.
 -/
 @[fun_prop]
 def ContDiffOn (n : WithTop ℕ∞) (f : E → F) (s : Set E) : Prop :=
@@ -600,7 +605,6 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
 
 /-! ### Iterated derivative within a set -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
   refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
@@ -624,7 +628,6 @@ theorem contDiffWithinAt_zero (hx : x ∈ s) :
     have h' : x ∈ s ∩ u := ⟨hx, mem_of_mem_nhdsWithin hx H⟩
     exact (contDiffOn_zero.mpr hu).contDiffWithinAt h'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When a function is `C^n` in a set `s` of unique differentiability, it admits
 `ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
 protected theorem ContDiffOn.ftaylorSeriesWithin
@@ -715,7 +718,6 @@ theorem AnalyticOnNhd.contDiffOn_of_completeSpace [CompleteSpace F] (h : Analyti
     ContDiffOn 𝕜 n f s :=
   h.analyticOn.contDiffOn_of_completeSpace
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, m < n →
@@ -766,7 +768,6 @@ theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn �
     (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := by
@@ -775,7 +776,6 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
   apply (((h.of_le this).ftaylorSeriesWithin hs).fderivWithin m ?_ x hx).differentiableWithinAt
   exact_mod_cast lt_add_one m
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
@@ -804,7 +804,6 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
@@ -915,6 +914,14 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
 variable (𝕜) in
 /-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
+(when the `ContDiff` scope is open).
+
+For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
+depend on the finite order we consider).
+For `n = ω`, we require the function to be analytic at `x`. The precise
+definition we give (all the derivatives should be analytic) is more involved to work around issues
+when the space is not complete, but it is equivalent when the space is complete.
 -/
 @[fun_prop]
 def ContDiffAt (n : WithTop ℕ∞) (f : E → F) (x : E) : Prop :=
@@ -1040,6 +1047,12 @@ variable (𝕜) in
 /-- A function is continuously differentiable up to `n` if it admits derivatives up to
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
+The parameter `n` belongs to `WithTop ℕ∞`, i.e., it can be a natural number, `∞`, or `ω`
+(when the `ContDiff` scope is open).
+
+For `n = ω`, we require the function to be analytic. The precise
+definition we give (all the derivatives should be analytic) is more involved to work around issues
+when the space is not complete, but it is equivalent when the space is complete.
 -/
 @[fun_prop]
 def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
@@ -1200,7 +1213,6 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
   simp [contDiffOn_univ.symm, continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
@@ -1218,7 +1230,6 @@ theorem ContDiff.continuous_iteratedFDeriv' {m : ℕ} (hf : ContDiff 𝕜 m f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp hf).1 m le_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=

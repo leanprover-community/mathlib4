@@ -54,7 +54,6 @@ open IsIntegrallyClosed
 
 variable (K : Type*) [Field K] [Algebra R K]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
@@ -323,7 +322,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
   iterate 2
     apply mul_ne_zero hq.ne_zero
     rw [Ne, C_eq_zero]
-    contrapose! s0
+    contrapose s0
     simp [s0, mem_nonZeroDivisors_iff_ne_zero]
 
 variable (K)

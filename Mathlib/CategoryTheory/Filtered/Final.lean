@@ -215,7 +215,7 @@ instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget 
     (fun {_} {x} s s' => by
       use mk (x.hom ≫ IsFiltered.coeqHom s s')
       use homMk (IsFiltered.coeqHom s s') (by simp)
-      simp only [forget_obj, id_obj, mk_right, forget_map, homMk_right]
+      simp only [forget_obj, mk_right, forget_map, homMk_right]
       rw [IsFiltered.coeq_condition])
 
 /-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
@@ -232,6 +232,7 @@ section LocallySmall
 
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation; use `Functor.Final.exists_coeq instead`. -/
 theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
     (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t := by
@@ -241,7 +242,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
   obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
   refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
   conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
-  dsimp only [comp_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app] at h
+  dsimp at h
   simp [reassoc_of% h]
 
 end LocallySmall

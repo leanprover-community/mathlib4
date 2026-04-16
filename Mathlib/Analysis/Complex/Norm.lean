@@ -96,7 +96,6 @@ theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
 
 @[simp 1100, norm_cast]
@@ -141,14 +140,19 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonn
 @[simp 1100, norm_cast]
 lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]; rfl
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]
 
 protected theorem sq_norm (z : ℂ) : ‖z‖ ^ 2 = normSq z := (normSq_eq_norm_sq z).symm
+
+lemma one_lt_normSq_iff {x : ℂ} : 1 < normSq x ↔ 1 < ‖x‖ := by
+  rw [← one_lt_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
+
+lemma one_le_normSq_iff {x : ℂ} : 1 ≤ normSq x ↔ 1 ≤ ‖x‖ := by
+  rw [← one_le_sq_iff₀ (norm_nonneg _), normSq_eq_norm_sq]
 
 @[simp]
 theorem sq_norm_sub_sq_re (z : ℂ) : ‖z‖ ^ 2 - z.re ^ 2 = z.im ^ 2 := by

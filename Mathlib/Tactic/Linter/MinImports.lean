@@ -21,9 +21,6 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
 meta section
 
 open Lean Elab Command Linter
@@ -55,7 +52,7 @@ structure ImportState where
 /--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
-initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
+private initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => minImportsRef.set {}

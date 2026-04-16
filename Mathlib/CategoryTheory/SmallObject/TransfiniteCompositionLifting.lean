@@ -109,7 +109,6 @@ include sq' in
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
   rw [← sq'.w₁, assoc, sq'.w₂, Cocone.w_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
 ```
@@ -128,7 +127,6 @@ lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `sqFunctor`. -/
 @[simps]
 def map {j' : J} (α : j' ⟶ j) : SqStruct c p f g j' where
@@ -143,7 +141,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α sq' := sq'.map α.unop
+  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
 
 variable [F.IsWellOrderContinuous]
 
@@ -168,7 +166,6 @@ lemma liftHom_fac (i : J) (hi : i < j) :
     F.map (homOfLE hi.le) ≫ liftHom hj s = (s.1 ⟨⟨i, hi⟩⟩).f' :=
   (F.isColimitOfIsWellOrderContinuous j hj).fac _ ⟨i, hi⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 @[simps]
 noncomputable def lift : (sqFunctor c p f g).obj (Opposite.op j) where
@@ -198,6 +195,7 @@ section
 variable (hF : ∀ (j : J) (_ : ¬IsMax j),
   HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
+set_option backward.isDefEq.respectTransparency false in
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :

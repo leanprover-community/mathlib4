@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
@@ -84,6 +85,8 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasColimitsOfShape_of_finallySmall _ _
 
+instance : IsSifted Φ.fiber.Elementsᵒᵖ := IsFiltered.isSifted
+
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasExactColimitsOfShape_of_final _
@@ -130,6 +133,7 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
 /-- The (colimit) cocone which defines the fiber of a presheaf. -/
+@[simps]
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
     Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
   pt := Φ.presheafFiber.obj P
@@ -218,9 +222,7 @@ lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (
     Φ.toPresheafFiber X x P z₁ = Φ.toPresheafFiber X x P z₂ ↔
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
-  refine (Types.FilteredColimit.isColimit_eq_iff'
-    (ht := isColimitOfPreserves (forget A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..).trans ?_
+  refine ((colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P)).eq_iff' ..).trans ?_
   constructor
   · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
     exact ⟨Y, f, y, hf, hf'⟩
@@ -269,8 +271,13 @@ lemma W_isInvertedBy_presheafFiber'
 end
 
 /-- The fiber functor on the category of sheaves that is given a by a point of a site. -/
-noncomputable abbrev sheafFiber : Sheaf J A ⥤ A :=
+noncomputable def sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
+
+/-- The fiber functor on sheaves is induced by the fiber functor on presheaves. -/
+noncomputable def sheafToPresheafCompPresheafFiberIso :
+    sheafToPresheaf J A ⋙ Φ.presheafFiber ≅ Φ.sheafFiber :=
+  Iso.refl _
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=

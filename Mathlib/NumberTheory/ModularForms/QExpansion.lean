@@ -139,7 +139,9 @@ lemma cuspFunction_apply_zero [ModularFormClass F Γ k] (hh : 0 < h) (hΓ : h �
   exact qParam_tendsto_atImInfty hh
 
 variable (h) in
-/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
+/-- The `q`-expansion of a modular form with strict period `h`, bundled as a `PowerSeries`.
+The `m`-th coefficient is the Taylor coefficient of the `cuspFunction` at `q = 0`, where
+`q = exp(2πiτ/h)` is the local parameter at the cusp. -/
 def qExpansion (f : ℍ → ℂ) : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction h f) 0
 
@@ -413,13 +415,11 @@ lemma qExpansion_smul
   grind [map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
     (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_const_smul_field]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_neg
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (f : F) [ModularFormClass F Γ k] :
     qExpansion h (-f) = -qExpansion h f := by
   simpa using qExpansion_smul hh hΓ (-1 : ℂ) f
 
-set_option backward.isDefEq.respectTransparency false in
 lemma qExpansion_sub (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {a b : ℤ}
     (f : ModularForm Γ a) (g : ModularForm Γ b) :
     qExpansion h (f - g) = qExpansion h f - qExpansion h g := by

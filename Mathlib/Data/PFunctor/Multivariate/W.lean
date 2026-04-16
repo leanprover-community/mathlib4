@@ -64,7 +64,7 @@ inductive WPath : P.last.W → Fin2 n → Type u
   | child (a : P.A) (f : P.last.B a → P.last.W) (i : Fin2 n) (j : P.last.B a)
     (c : WPath (f j) i) : WPath ⟨a, f⟩ i
 
-instance WPath.inhabited (x : P.last.W) {i} [I : Inhabited (P.drop.B x.head i)] :
+instance WPath.inhabited (x : P.last.W) {i : Fin2 n} [I : Inhabited (P.drop.B x.head i)] :
     Inhabited (WPath P x i) :=
   ⟨match x, I with
     | ⟨a, f⟩, I => WPath.root a f i (@default _ I)⟩
@@ -127,22 +127,25 @@ def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath 
     P.W α :=
   ⟨⟨a, f⟩, f'⟩
 
-def wpRec {α : TypeVec n} {C : Type*}
+def wpRec {α : TypeVec n} {C : Sort*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C) :
     ∀ (x : P.last.W) (_ : P.WPath x ⟹ α), C
   | ⟨a, f⟩, f' => g a f f' fun i => wpRec g (f i) (P.wPathDestRight f' i)
 
-theorem wpRec_eq {α : TypeVec n} {C : Type*}
+theorem wpRec_eq {α : TypeVec n} {C : Sort*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C)
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 
--- Note: we could replace Prop by Type* and obtain a dependent recursor
-theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
+/-- Induction principle for an unfolded `W` -/
+@[elab_as_elim]
+def wpInd {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort v}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
     ∀ (x : P.last.W) (f' : P.WPath x ⟹ α), C x f'
-  | ⟨a, f⟩, f' => ih a f f' fun _i => wp_ind ih _ _
+  | ⟨a, f⟩, f' => ih a f f' fun _i => wpInd ih _ _
+
+@[deprecated (since := "2026-03-20")] alias wp_ind := wpInd
 
 /-!
 Now think of W as defined inductively by the data ⟨a, f', f⟩ where
@@ -159,7 +162,7 @@ def wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → 
   ⟨⟨a, g⟩, g'⟩
 
 /-- Recursor for `W` -/
-def wRec {α : TypeVec n} {C : Type*}
+def wRec {α : TypeVec n} {C : Sort*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) : P.W α → C
   | ⟨a, f'⟩ =>
     let g' (a : P.A) (f : P.last.B a → P.last.W) (h : P.WPath ⟨a, f⟩ ⟹ α)
@@ -168,28 +171,38 @@ def wRec {α : TypeVec n} {C : Type*}
     P.wpRec g' a f'
 
 /-- Defining equation for the recursor of `W` -/
-theorem wRec_eq {α : TypeVec n} {C : Type*}
+theorem wRec_eq {α : TypeVec n} {C : Sort*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := rfl
 
 /-- Induction principle for `W` -/
-theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
+@[elab_as_elim]
+def wInd {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
-    ∀ x, C x := by
-  intro x; obtain ⟨a, f⟩ := x
-  apply @wp_ind n P α fun a f => C ⟨a, f⟩
-  intro a f f' ih'
-  dsimp [wMk] at ih
-  let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
-  dsimp at ih''; rw [wPathCasesOn_eta] at ih''
-  apply ih''
-  apply ih'
+    ∀ x, C x := fun ⟨hd, ch⟩ =>
+  wpInd P (fun head f f' ih' =>
+    cast
+      (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
+      <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
-theorem w_cases {α : TypeVec n} {C : P.W α → Prop}
+@[deprecated (since := "2026-03-20")] alias w_ind := wInd
+
+@[simp]
+theorem wInd_wMk {α : TypeVec n} {C : P.W α → Sort v}
+    (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α),
+        (∀ i, C (f i)) → C (P.wMk a f' f))
+    {a : P.drop.A} {f' : P.drop.B a ⟹ α} {f : P.last.B a → P.W α}
+    : wInd P ih (wMk P a f' f) = ih a f' f (fun i => wInd P ih (f i)) := rfl
+
+/-- Cases lemma for `W` types -/
+@[elab_as_elim]
+def wCases {α : TypeVec n} {C : P.W α → Sort v}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
-    ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f
+    ∀ x, C x := P.wInd fun a f' f _ih' => ih a f' f
+
+@[deprecated (since := "2026-03-20")] alias w_cases := wCases
 
 /-- W-types are functorial -/
 def wMap {α β : TypeVec n} (g : α ⟹ β) : P.W α → P.W β := fun x => g <$$> x

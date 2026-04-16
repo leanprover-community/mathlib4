@@ -223,7 +223,7 @@ def normalizationObjIso {U : Y.Opens} (hU : IsAffineOpen U) :
 set_option backward.isDefEq.respectTransparency false in
 lemma toNormalization_app_preimage (U : Y.affineOpens) :
     let := (f.app U.1).hom.toAlgebra
-    f.toNormalization.app (f.fromNormalization ⁻¹ᵁ ↑U) =
+    dsimp% f.toNormalization.app (f.fromNormalization ⁻¹ᵁ ↑U) =
       (f.normalizationObjIso U.2).hom ≫
       CommRingCat.ofHom (integralClosure ↑Γ(Y, ↑U) ↑Γ(X, f ⁻¹ᵁ ↑U)).val.toRingHom ≫
       X.presheaf.map (eqToHom (by simp [← Scheme.Hom.comp_preimage])).op := by
@@ -274,6 +274,7 @@ lemma normalizationObjIso_hom_val {U : Y.Opens} (hU : IsAffineOpen U) :
     f.toNormalization.appLE _ _ (by simp [← Scheme.Hom.comp_preimage]) := by
   rw [appLE, f.toNormalization_app_preimage ⟨U, hU⟩, Category.assoc]
   simp [← Functor.map_comp]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[stacks 03GP]
@@ -326,12 +327,11 @@ lemma ker_toNormalization : f.toNormalization.ker = ⊥ := by
   rw [← RingHom.injective_iff_ker_eq_bot,
     ← ConcreteCategory.mono_iff_injective_of_preservesPullback, ← MorphismProperty.monomorphisms]
   simp only [toNormalization_app_preimage,
-    eqToHom_op, AlgHom.toRingHom_eq_coe, MorphismProperty.cancel_left_of_respectsIso,
+    eqToHom_op, MorphismProperty.cancel_left_of_respectsIso,
     MorphismProperty.cancel_right_of_respectsIso]
   rw [MorphismProperty.monomorphisms, @ConcreteCategory.mono_iff_injective_of_preservesPullback]
   exact Subtype.val_injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsDominant f.toNormalization := by
   have := congr(($(f.ker_toNormalization).support : Set f.normalization))
   rw [IdealSheafData.support_bot, Scheme.Hom.support_ker, TopologicalSpace.Closeds.coe_top] at this
@@ -451,18 +451,19 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       simp only [← Scheme.Hom.comp_preimage, hf₂]
     have h₃ : f ⁻¹ᵁ U.1 = toNormalization f ⁻¹ᵁ fromNormalization f ⁻¹ᵁ U.1 := by
       simp [← Scheme.Hom.comp_preimage]
-    trans Spec.map (f₀.appLE _ _ h₁) ≫ (U.2.preimage g).fromSpec
-    · simp only [AlgHom.toRingHom_eq_coe, comp_appLE, Spec.map_comp, Category.assoc, f₀,
-        app_eq_appLE]
-      rw [IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.2.preimage _).preimage _)]
-      have : (toNormalization f).appLE (f₁ ⁻¹ᵁ g ⁻¹ᵁ U.1) (f ⁻¹ᵁ U.1) h₁ =
+    trans Spec.map (f₀.appLE (g ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) h₁) ≫ (U.prop.preimage g).fromSpec
+    · simp only [AlgHom.toRingHom_eq_coe, comp_appLE, Spec.map_comp, Category.assoc, f₀]
+      rw [app_eq_appLE, IsAffineOpen.SpecMap_appLE_fromSpec _ _ ((U.2.preimage _).preimage _)]
+      have : (toNormalization f).appLE (f₁ ⁻¹ᵁ g ⁻¹ᵁ U.val) (f ⁻¹ᵁ U.val) h₁ =
         f.normalization.presheaf.map (eqToHom h₂).op ≫
-        (toNormalization f).app (f.fromNormalization ⁻¹ᵁ U.1) ≫
+        (toNormalization f).app (f.fromNormalization ⁻¹ᵁ U.val) ≫
           X.presheaf.map (eqToHom h₃).op := by
         simp [app_eq_appLE]
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
+      #adaptation_note /-- Before #36613, the following simp call was not needed. -/
+      simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
     · simp only [AlgHom.toRingHom_eq_coe, hf₀, comp_appLE, Spec.map_comp, Category.assoc,
         app_eq_appLE]
@@ -475,6 +476,8 @@ lemma normalization.hom_ext (f₁ f₂ : f.normalization ⟶ T) (g : T ⟶ Y) [I
       rw [this, f.toNormalization_app_preimage U]
       simp [appIso_hom', IsAffineOpen.SpecMap_appLE_fromSpec_assoc _ _ (isAffineOpen_top (Spec _)),
         IsAffineOpen.fromSpec_top, normalizationObjIso, normalizationDiagram]
+      #adaptation_note /-- Before #36613, the following simp call was not needed. -/
+      simp [← Spec.map_comp_assoc, -Spec.map_comp]
       rfl
 
 end UniversalProperty
