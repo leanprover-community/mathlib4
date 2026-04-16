@@ -940,7 +940,7 @@ protected theorem WeakEMetricSpace.ext {α : Type*} [TopologicalSpace α] {m m' 
 
 /-- Every `EMetricSpace` has a `WeakEMetricSpace` structure by
   using the topology induced by edist. -/
-instance EMetricSpace.toWeakEMetricSpace (α : Type u) [inst : EMetricSpace α] :
+instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
     WeakEMetricSpace α where
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
