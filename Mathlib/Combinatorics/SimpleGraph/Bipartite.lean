@@ -477,13 +477,13 @@ theorem encard_edgeSet_completeBipartiteGraph :
 def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
     (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
   toFun := fun ⟨e, he⟩ ↦
-    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+    e.fromRelNdrec he (sym := G.symm) (fun u v h ↦ hG.mem_of_adj h |>.by_cases
       (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
       (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
-    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+    ) <| by grind [Or.by_cases, hG.disjoint]
   inj' := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    change (dite ..) = (dite ..) → _
     grind
 
 end completeBipartiteGraph
