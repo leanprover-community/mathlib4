@@ -152,15 +152,59 @@ lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.t
 
 end Quiver.Hom
 
+namespace CategoryTheory
+
 @[simp]
-lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
+lemma LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
     (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
   subst h; rfl
 
-lemma CategoryTheory.CommSq.toLoc {C : Type*} [Category C] {X₁ X₂ X₃ X₄ : C}
+lemma CommSq.toLoc {C : Type*} [Category* C] {X₁ X₂ X₃ X₄ : C}
     {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
     (h : CommSq t l r b) :
     CommSq t.toLoc l.toLoc r.toLoc b.toLoc :=
   ⟨by simp only [← Quiver.Hom.comp_toLoc, h.w]⟩
 
-end
+/-- The canonical 1-functor from a category to the strict bicategory induced by that category. -/
+@[simps obj map]
+def toLocallyDiscreteFunc (C : Type*) [Category* C] : C ⥤ LocallyDiscrete C where
+  obj X := LocallyDiscrete.mk X
+  map f := f.toLoc
+
+/-- The canonical 1-functor from the strict bicategory induced by a category to that category. -/
+@[simps obj map]
+def ofLocallyDiscreteFunc (C : Type*) [Category* C] : LocallyDiscrete C ⥤ C where
+  obj X := X.as
+  map f := f.as
+
+/-- The canonical equivalence of categories between a category and the strict bicategory induced by
+that category -/
+@[simps]
+def locallyDiscreteEquivalence (C : Type*) [Category* C] : C ≌ LocallyDiscrete C where
+  functor := toLocallyDiscreteFunc C
+  inverse := ofLocallyDiscreteFunc C
+  unitIso := NatIso.ofComponents (fun X => eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun X => eqToIso (by simp))
+
+/-- The canonical functor between a category and its induced strict bicategory is fully faithful. -/
+def fullyFaithfulToLocallyDiscrete {C : Type*} [Category* C] :
+  (toLocallyDiscreteFunc C).FullyFaithful := (locallyDiscreteEquivalence C).fullyFaithfulFunctor
+
+instance {C : Type*} [Category* C] : (toLocallyDiscreteFunc C).Faithful :=
+  fullyFaithfulToLocallyDiscrete.faithful
+
+instance {C : Type*} [Category* C] : (toLocallyDiscreteFunc C).Full :=
+  fullyFaithfulToLocallyDiscrete.full
+
+/-- The canonical functor between the strict bicategory induced by some category and that same
+category is fully faithful. -/
+def fullyFaithfulOfLocallyDiscrete {C : Type*} [Category* C] :
+  (ofLocallyDiscreteFunc C).FullyFaithful := (locallyDiscreteEquivalence C).fullyFaithfulInverse
+
+instance {C : Type*} [Category* C] : (ofLocallyDiscreteFunc C).Faithful :=
+  fullyFaithfulOfLocallyDiscrete.faithful
+
+instance {C : Type*} [Category* C] : (ofLocallyDiscreteFunc C).Full :=
+  fullyFaithfulOfLocallyDiscrete.full
+
+end CategoryTheory

@@ -629,11 +629,11 @@ noncomputable def _root_.CategoryTheory.withPartialMaps [HasPullbacks C] :
     StrictPseudofunctor (LocallyDiscrete C) (WithPartialMaps C) :=
   .mk'' (withPartialMapsPreCore C)
 
-variable (C) in
-@[simps]
-def toLocallyDiscrete : C ⥤ LocallyDiscrete C where
-  obj X := .mk X
-  map f := f.toLoc
+-- variable (C) in
+-- @[simps]
+-- def toLocallyDiscrete : C ⥤ LocallyDiscrete C where
+--   obj X := .mk X
+--   map f := f.toLoc
 
 @[simp]
 lemma _root_.CategoryTheory.withPartialMaps_obj [HasPullbacks C] (X : LocallyDiscrete C) :
@@ -653,13 +653,13 @@ lemma ofHom_injective [HasPullbacks C] {X Y : C} :
   rw [hid] at hf
   simpa using hf.symm
 
-instance [HasPullbacks C] : (toLocallyDiscrete C ⋙ (withPartialMaps C).toFunctor).Faithful where
-  map_injective {_ _} := ofHom_injective
+instance [HasPullbacks C] : ((withPartialMaps C).toFunctor).Faithful where
+  map_injective {_ _} _ _ h := congr($(ofHom_injective h).toLoc)
 
 lemma mono_of_mono_ofHom [HasPullbacks C] {X Y : C} {f : X ⟶ Y} :
     Mono (PartialMap.ofHom f) → Mono f := by
   intro h
-  change Mono ((toLocallyDiscrete C ⋙ (withPartialMaps C).toFunctor).map f) at h
+  change Mono ((toLocallyDiscreteFunc C ⋙ (withPartialMaps C).toFunctor).map f) at h
   exact Functor.ReflectsMonomorphisms.reflects _ h
 
 lemma eq_ofHom_of_mono [HasPullbacks C] {X Y : C} (f : X ⇀ Y) [Mono f] :
@@ -717,6 +717,8 @@ instance [HasPullbacks C] {X U Y : C} (m : U ⟶ X) [IsIso m] (f : U ⟶ Y) [Mon
 
 open Bicategory
 variable (C) in
+
+/-- The coyoneda 1-functor for FOO. -/
 noncomputable def coyoneda [HasPullbacks C] :
     (WithPartialMaps C)ᵒᵖ ⥤ (WithPartialMaps C) ⥤ Cat where
   obj X := {
@@ -743,12 +745,12 @@ noncomputable def coyoneda [HasPullbacks C] :
     ext W
     exact Functor.ext (by simp)
 
-/-- the presheaf of partial map functors. -/
+/-- The presheaf of partial map functors. -/
 noncomputable def _root_.CategoryTheory.partialMaps
   [HasPullbacks C] : Cᵒᵖ ⥤ C ⥤ Type _ :=
-  (((Functor.whiskeringLeft₂ (Type _)).obj (toLocallyDiscrete C ⋙
+  (((Functor.whiskeringLeft₂ (Type _)).obj (toLocallyDiscreteFunc C ⋙
     (withPartialMaps C).toFunctor).op).obj
-    (toLocallyDiscrete C ⋙ (withPartialMaps C).toFunctor)).obj
+    (toLocallyDiscreteFunc C ⋙ (withPartialMaps C).toFunctor)).obj
     ((Functor.postcompose₂.obj (Cat.objects)).obj (WithPartialMaps.coyoneda C))
 
 @[simp]
@@ -763,7 +765,7 @@ lemma _root_.CategoryTheory.partialMaps_obj_map [HasPullbacks C] (X : Cᵒᵖ) {
 lemma _root_.CategoryTheory.partialMaps_map_app [HasPullbacks C] {X Y : Cᵒᵖ} {f : Y ⟶ X} (Z : C) :
     (partialMaps.map f).app Z = (PartialMap.ofHom f.unop ≫ ·) := rfl
 
-/-- the presheaf of partial maps into X -/
+/-- The presheaf of partial maps into the object `X : C`. -/
 noncomputable def _root_.CategoryTheory.partialMapsTo [HasPullbacks C] (X : C) :
   Cᵒᵖ ⥤ Type _ := partialMaps.flip.obj X
 
@@ -775,6 +777,7 @@ lemma _root_.CategoryTheory.partialMapsTo_obj [HasPullbacks C] (X : C) (Y : Cᵒ
 lemma _root_.CategoryTheory.partialMapsTo_map [HasPullbacks C] (X : C) {Y Z : Cᵒᵖ} (g : Y ⟶ Z) :
   (partialMapsTo X).map g = (PartialMap.ofHom g.unop ≫ ·) := rfl
 
+/-- The copresheaf of partial maps from the object `X : C` -/
 noncomputable def _root_.CategoryTheory.partialMapsFrom [HasPullbacks C] (X : C) :
   C ⥤ Type _ := partialMaps.obj (.op X)
 
