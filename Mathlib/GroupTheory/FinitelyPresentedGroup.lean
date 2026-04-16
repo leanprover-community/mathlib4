@@ -67,7 +67,7 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
 /-- The trivial group is the normal closure of a finite set of relations. -/
-theorem BotIsNormalClosureFG : Subgroup.IsNormalClosureFG (⊥ : Subgroup G) := by
+theorem Subgroup.isNormalClosureFG_bot : Subgroup.IsNormalClosureFG (⊥ : Subgroup G) := by
   use ∅
   exact ⟨Finite.of_subsingleton, Subgroup.normalClosure_empty⟩
 
@@ -77,6 +77,6 @@ instance {n : ℕ} : Group.IsFinitelyPresented (FreeGroup (Fin n)) := by
   constructor
   · exact FreeGroup.map_surjective Function.surjective_id
   · rw [(FreeGroup.map id).ker_eq_bot_iff.mpr (FreeGroup.map_injective Function.injective_id)]
-    exact BotIsNormalClosureFG
+    exact Subgroup.isNormalClosureFG_bot
 
 end Group.IsFinitelyPresented
