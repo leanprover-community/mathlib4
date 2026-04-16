@@ -452,7 +452,6 @@ def DefinableFun (f : (α → M) → M) : Prop :=
   A.Definable L f.tupleGraph
 
 /-- A family of functions is definable when each coordinate is definable. -/
-@[fun_prop]
 def DefinableMap (F : (α → M) → (β → M)) : Prop :=
   ∀ i : β, A.DefinableFun L (fun x => F x i)
 
@@ -462,6 +461,10 @@ variable {L A} {f : (α → M) → M}
 theorem DefinableFun.mono {B : Set M} (hAs : A.DefinableFun L f) (hAB : A ⊆ B) :
     B.DefinableFun L f :=
   Set.Definable.mono hAs hAB
+
+@[fun_prop]
+theorem DefinableFun.of_empty (hAs : (∅ : Set M).DefinableFun L f) :
+    A.DefinableFun L f := Set.Definable.mono hAs (empty_subset A)
 
 theorem empty_definableFun_iff :
     (∅ : Set M).DefinableFun L f ↔
@@ -475,7 +478,7 @@ theorem definableFun_iff_empty_definableFun_with_params :
 /-- A term is a definable function. -/
 @[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
-     (∅ : Set M).DefinableFun L (t.realize):= by
+    (∅ : Set M).DefinableFun L (t.realize) := by
   rw [empty_definableFun_iff]
   refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
   ext v
@@ -494,6 +497,10 @@ variable (L)
 theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
     (∅ : Set M).DefinableFun L (fun v => v i) :=
   (Term.var i).definableFun_realize
+
+@[fun_prop]
+theorem DefinableFun.proj {i : α} : A.DefinableFun L fun v => v i :=
+  of_empty <| L.definableFun_var i
 
 /-- A constant function is a definable function. -/
 @[fun_prop]
@@ -520,6 +527,37 @@ lemma _root_.Set.Definable.preimage_map
   convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
+
+@[fun_prop]
+theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
+    (hg : A.DefinableMap L g) (hf : A.DefinableFun L f) :
+    A.DefinableFun L fun v => f (g v) := by
+  let G : (Option β → M) → Option α → M := fun w j =>
+    match j with
+    | none => w none
+    | some i => g (w ∘ some) i
+  have hG : A.DefinableMap L G := by
+    intro i
+    cases i with
+    | none => fun_prop
+    | some j =>
+      simpa [Function.tupleGraph] using
+        ((hg j).preimage_comp fun
+          | none => (none : Option (Option β))
+          | some i => some (some i))
+  simpa [DefinableFun, G, Function.tupleGraph] using hf.preimage_map hG
+
+@[fun_prop]
+theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
+    (hp : A.Definable L (setOf p)) (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
+    DefinableFun L A fun v => if p v then f v else g v := by
+  let P : Set (Option α → M) := {w | p (w ∘ some)}
+  have hP : A.Definable L P := hp.preimage_comp some
+  have : Function.tupleGraph (fun v => if p v then f v else g v) =
+      (P ∩ Function.tupleGraph f) ∪ (Pᶜ ∩ Function.tupleGraph g) := by
+    ext w
+    by_cases h : p (w ∘ some) <;> simp [Function.tupleGraph, P, h]
+  simpa [DefinableFun, this] using (hP.inter hf).union (hP.compl.inter hg)
 
 /-- The set where two definable functions agree is definable. -/
 lemma DefinableFun.setOf_eq {f g : (α → M) → M}
