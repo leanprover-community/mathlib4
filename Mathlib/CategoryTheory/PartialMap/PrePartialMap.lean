@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
 module
-public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
-public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
-public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
-public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.Order.Category.Preord
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Partial Map Diagrams
@@ -18,18 +15,10 @@ As preparation for defining `PartialMap X Y`, we set up the theory for
 `PrePartialMap X Y ≃ {s : BinaryFan X Y // Mono s.fst}`.
 
 Here `PrePartialMap X Y` is a thin category (a pair of objects has at most one morphism between
-them), so we can think of it as a preorder. However as it is not skeletal, it is not yet a partial
+them), so we can think of it as a preorder. However as it is not skeletal, it is not a partial
 order.
 
-`PartialMap X Y` will be defined as the skeletalization of `PrePartialMap X`.
-
-We provide
-
--- - `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
--- - `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
--- - `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`
-
-and prove their basic properties and relationships.
+`PartialMap X Y` will be defined as the skeleton of `PrePartialMap X`.
 
 -/
 @[expose] public section
@@ -72,7 +61,7 @@ instance : Quiver (WithPrePartialMaps C) where
   Hom X Y := PrePartialMap X.out Y.out
 
 @[inherit_doc PrePartialMap]
-scoped notation:40 x:41 " ⇀' " y:41 =>
+scoped[CategoryTheory.PrePartialMap] notation:40 x:41 " ⇀' " y:41 =>
   (WithPrePartialMaps.mk x) ⟶ (WithPrePartialMaps.mk y)
 
 /-- The support object of a partial map diagram. -/
@@ -262,8 +251,6 @@ noncomputable def mkCompMkIso {X Y Z : C} {U₁ : C} (m₁ : U₁ ⟶ X) [Mono m
     comp (mk m₁ f₁) (mk m₂ f₂) ≅ mk (m₃ ≫ m₁) (f₃ ≫ f₂) where
   hom := homMk (h.isoPullback.inv) (by simp [comp]) (by simp [comp])
   inv := homMk (h.isoPullback.hom) (by simp [comp]) (by simp [comp])
-  hom_inv_id := by ext
-  inv_hom_id := by ext
 
 /-- Given total morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, we have an isomorphism of partial map
   diagrams between `↑(f ≫ g)` and `↑f ≫ ↑g`. -/
@@ -296,8 +283,6 @@ noncomputable def associator {W X Y Z : WithPrePartialMaps C}
     (pullbackAssoc f₁.hom f₂.fst f₂.hom f₃.fst).hom (by simp [comp]) (by simp [comp])
   inv := homMk
     (pullbackAssoc f₁.hom f₂.fst f₂.hom f₃.fst).inv (by simp [comp]) (by simp [comp])
-  hom_inv_id := by ext
-  inv_hom_id := by ext
 
 /-- Left whiskering in the bicategory of partial map diagrams. -/
 noncomputable def whiskerLeft {X Y Z : WithPrePartialMaps C} (f : X ⟶ Y) {g₁ g₂ : Y ⟶ Z}
@@ -316,38 +301,21 @@ noncomputable def leftUnitor {X Y : C} (f : X ⇀' Y) : comp (mkOfHom (𝟙 X)) 
   hom := homMk (pullback.snd _ _) (pullback.condition.symm) rfl
   inv := homMk (pullback.lift f.fst (𝟙 f.support) (by simp))
     (by simp [comp, pullback.lift_fst]) (by simp [comp, pullback.lift_snd_assoc])
-  hom_inv_id := by ext
-  inv_hom_id := by ext
 
 /-- The right unitor in the bicategory of partial map diagrams. -/
 noncomputable def rightUnitor {X Y : C} (f : X ⇀' Y) : comp f (mkOfHom (𝟙 Y)) ≅ f where
   hom := homMk (pullback.fst _ _) (rfl) (pullback.condition)
   inv := homMk (pullback.lift (𝟙 f.support) f.hom)
     (by simp [comp, pullback.lift_fst_assoc]) (by simp [comp, pullback.lift_snd])
-  hom_inv_id := by ext
-  inv_hom_id := by ext
 
-noncomputable instance : Bicategory (WithPrePartialMaps C) := by
-  refine {
-    id X := mkOfHom (𝟙 X.out)
-    comp {X Y Z} f g := comp f g
-    whiskerLeft {X Y Z} f g₁ g₂ h := whiskerLeft f h
-    whiskerRight {X Y Z} f₁ f₂ h g := whiskerRight h g
-    associator {W X Y Z} f g h := associator f g h
-    leftUnitor {X Y} f := leftUnitor f
-    rightUnitor {X Y} f := rightUnitor f
-    whiskerLeft_id := ?_
-    whiskerLeft_comp := ?_
-    id_whiskerLeft := ?_
-    comp_whiskerLeft := ?_
-    id_whiskerRight := ?_
-    comp_whiskerRight := ?_
-    whiskerRight_id := ?_
-    whiskerRight_comp := ?_
-    whisker_assoc := ?_
-    whisker_exchange := ?_
-    pentagon := ?_
-    triangle := ?_ } <;> intros <;> ext
+noncomputable instance : Bicategory (WithPrePartialMaps C) where
+  id X := mkOfHom (𝟙 X.out)
+  comp {X Y Z} f g := comp f g
+  whiskerLeft {X Y Z} f g₁ g₂ h := whiskerLeft f h
+  whiskerRight {X Y Z} f₁ f₂ h g := whiskerRight h g
+  associator {W X Y Z} f g h := associator f g h
+  leftUnitor {X Y} f := leftUnitor f
+  rightUnitor {X Y} f := rightUnitor f
 
 end PrePartialMap
 end CategoryTheory
