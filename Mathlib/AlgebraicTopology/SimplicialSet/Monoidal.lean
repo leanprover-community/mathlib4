@@ -316,7 +316,7 @@ noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) wh
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
 `S.ι □ T.ι`. -/
-@[simps!]
+@[simps! -isSimp]
 noncomputable
 def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
   Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _)
