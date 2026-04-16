@@ -71,6 +71,8 @@ def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
 
+@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
+
 end
 
 end CategoryTheory
