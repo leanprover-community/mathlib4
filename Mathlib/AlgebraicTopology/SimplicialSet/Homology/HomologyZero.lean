@@ -40,7 +40,7 @@ noncomputable def π₀.fromChainComplexXZero :
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
-  X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
+    X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
     Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
   simp [π₀.fromChainComplexXZero, ιChainComplex]
 
