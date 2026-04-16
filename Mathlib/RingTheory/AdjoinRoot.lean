@@ -338,8 +338,6 @@ theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
   ext
   simp
 
-variable (hfx : aeval a f = 0)
-
 end deprecated
 
 section AdjoinInv
