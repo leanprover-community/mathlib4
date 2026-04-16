@@ -3128,8 +3128,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.PEmpty
 public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.PartialMap.PrePartialMap
 public import Mathlib.CategoryTheory.PartialMap.Defs
+public import Mathlib.CategoryTheory.PartialMap.PrePartialMap
 public import Mathlib.CategoryTheory.PathCategory.Basic
 public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 public import Mathlib.CategoryTheory.Pi.Basic
