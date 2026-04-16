@@ -5,7 +5,7 @@ Authors: Boris Bilich, Alexei Piskunov, Jonathan Shneyer
 -/
 module
 
-public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.ClassGroup.Basic
 
 /-!
 # The class group of a Unique Factorization Domain is trivial
