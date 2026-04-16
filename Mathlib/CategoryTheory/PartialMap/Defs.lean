@@ -53,6 +53,8 @@ objects `U`) which transform the respective maps `m` and `f` into eachother.
 universe v u
 namespace CategoryTheory
 open Limits
+open scoped PrePartialMap
+
 variable {C : Type u} [Category.{v} C]
 
 /-- The skeleton category of partially defined maps, where given `f g : X ⇀ Y`,
