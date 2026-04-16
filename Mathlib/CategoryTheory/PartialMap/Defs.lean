@@ -435,11 +435,11 @@ lemma _root_.CategoryTheory.partialMaps_obj_obj [HasPullbacks C] (X : Cᵒᵖ) (
 
 @[simp]
 lemma _root_.CategoryTheory.partialMaps_obj_map [HasPullbacks C] (X : Cᵒᵖ) {Y Z : C} (g : Y ⟶ Z) :
-    (partialMaps.obj X).map g = (· ≫ (PartialMap.ofHom g)) := rfl
+    (partialMaps.obj X).map g = TypeCat.ofHom (· ≫ (PartialMap.ofHom g)) := rfl
 
 @[simp]
 lemma _root_.CategoryTheory.partialMaps_map_app [HasPullbacks C] {X Y : Cᵒᵖ} {f : Y ⟶ X} (Z : C) :
-    (partialMaps.map f).app Z = (PartialMap.ofHom f.unop ≫ ·) := rfl
+    (partialMaps.map f).app Z = TypeCat.ofHom (PartialMap.ofHom f.unop ≫ ·) := rfl
 
 /-- The presheaf of partial maps into the object `X : C`. -/
 noncomputable def _root_.CategoryTheory.partialMapsTo [HasPullbacks C] (X : C) :
@@ -451,7 +451,7 @@ lemma _root_.CategoryTheory.partialMapsTo_obj [HasPullbacks C] (X : C) (Y : Cᵒ
 
 @[simp]
 lemma _root_.CategoryTheory.partialMapsTo_map [HasPullbacks C] (X : C) {Y Z : Cᵒᵖ} (g : Y ⟶ Z) :
-  (partialMapsTo X).map g = (PartialMap.ofHom g.unop ≫ ·) := rfl
+  (partialMapsTo X).map g = TypeCat.ofHom (PartialMap.ofHom g.unop ≫ ·) := rfl
 
 /-- The copresheaf of partial maps from the object `X : C` -/
 noncomputable def _root_.CategoryTheory.partialMapsFrom [HasPullbacks C] (X : C) :
@@ -463,7 +463,7 @@ lemma _root_.CategoryTheory.partialMapsFrom_obj [HasPullbacks C] (X Y : C) :
 
 @[simp]
 lemma _root_.CategoryTheory.partialMapsFrom_map [HasPullbacks C] (X : C) {Y Z : C} (g : Y ⟶ Z) :
-  (partialMapsFrom X).map g = (· ≫ PartialMap.ofHom g) := rfl
+  (partialMapsFrom X).map g = TypeCat.ofHom (· ≫ PartialMap.ofHom g) := rfl
 
 
 end CategoryTheory.WithPartialMaps
