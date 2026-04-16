@@ -5,6 +5,7 @@ General algebra:
     functor: 'CategoryTheory.Functor'
     natural transformation: 'CategoryTheory.NatTrans'
     Yoneda embedding: 'CategoryTheory.yoneda'
+    isomorphism: 'CategoryTheory.Iso'
     adjunction: 'CategoryTheory.Adjunction'
     monad: 'CategoryTheory.Monad'
     comma category: 'CategoryTheory.Comma'
@@ -116,6 +117,7 @@ General algebra:
 
   Field theory:
     field: 'Field'
+    subfield: 'Subfield'
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
@@ -480,6 +482,7 @@ Geometry:
     locally ringed space: 'AlgebraicGeometry.LocallyRingedSpace'
     scheme: 'AlgebraicGeometry.Scheme'
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
+    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Convex geometry:
     convex cone: 'ConvexCone'
