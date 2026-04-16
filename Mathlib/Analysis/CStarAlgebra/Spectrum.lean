@@ -313,12 +313,8 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
       rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
     intro s
-    have := AlgHom.apply_mem_spectrum φ (s : A)
-    rw [selfAdjoint.val_re_map_spectrum s] at this
-    rcases this with ⟨⟨_, _⟩, _, heq⟩
-    simp only [Function.comp_apply] at heq
-    rw [← heq, RCLike.star_def]
-    exact RCLike.conj_ofReal _
+    rw [selfAdjoint.mem_spectrum_eq_re s (AlgHom.apply_mem_spectrum φ (s : A))]
+    simp
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
