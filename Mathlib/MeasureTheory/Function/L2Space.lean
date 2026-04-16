@@ -117,9 +117,9 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
     rw [← @Nat.cast_two ℝ, Real.rpow_natCast, Real.rpow_natCast]
     calc
       ‖⟪f x, g x⟫‖ ≤ ‖f x‖ * ‖g x‖ := norm_inner_le_norm _ _
-      _ ≤ 2 * ‖f x‖ * ‖g x‖ :=
-        (mul_le_mul_of_nonneg_right (le_mul_of_one_le_left (norm_nonneg _) one_le_two)
-          (norm_nonneg _))
+      _ ≤ 2 * ‖f x‖ * ‖g x‖ := by
+        gcongr
+        exact le_mul_of_one_le_left (norm_nonneg _) one_le_two
       -- TODO(kmill): the type ascription is getting around an elaboration error
       _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
   refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)

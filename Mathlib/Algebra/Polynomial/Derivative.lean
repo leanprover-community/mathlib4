@@ -689,7 +689,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
       case pos hP' => simp [hP']
       case neg hP' =>
         have hP'' : P.natDegree ≠ 0 := by
-          contrapose! hP'
+          contrapose hP'
           exact derivative_of_natDegree_zero hP'
         refine ind <| (natDegree_lt_iff_degree_lt hP').mp ?_
         linarith [(natDegree_lt_iff_degree_lt hP).mpr h, natDegree_derivative_lt hP'']

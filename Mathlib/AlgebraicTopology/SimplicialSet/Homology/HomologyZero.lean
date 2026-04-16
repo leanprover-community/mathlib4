@@ -19,7 +19,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 universe w v v' u u'
 
-open CategoryTheory Limits AlgebraicTopology Simplicial
+open CategoryTheory Limits AlgebraicTopology Simplicial TypeCat
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
@@ -32,7 +32,7 @@ variable (X : SSet) (R : C)
 of `R` indexed by `π₀ X`. -/
 noncomputable def π₀.fromChainComplexXZero :
     (X.chainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
-  (sigmaConst.obj _).map π₀.mk
+  (sigmaConst.obj _).map (↾π₀.mk)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -41,7 +41,6 @@ lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
     Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
   simp [π₀.fromChainComplexXZero, ιChainComplex]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀.d_fromChainComplexXZero (n : ℕ) :
     (X.chainComplex R).d n 0 ≫ π₀.fromChainComplexXZero X R = 0 := by

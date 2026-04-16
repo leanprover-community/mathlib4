@@ -31,7 +31,7 @@ of a simplicial sets. We also introduce typeclasses
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Simplicial Limits Opposite TypeCat
 
 namespace SSet
 
@@ -111,30 +111,30 @@ lemma mapπ₀_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (x : π₀ X) :
 @[simps]
 def π₀Functor : SSet.{u} ⥤ Type u where
   obj X := π₀ X
-  map f := mapπ₀ f
+  map f := TypeCat.ofHom <| mapπ₀ f
 
 /-- The map `π₀.mk : X _⦋0⦌ ⟶ π₀ X` for all simplicial sets `X`,
 as a natural transformation. -/
 def toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor.{u} where
-  app X := π₀.mk
+  app X := ↾π₀.mk
 
 /-- The (colimit) cofork expressing `π₀ X` as a coequalizer
 of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
 abbrev coforkπ₀ : Cofork (X.δ (1 : Fin 2)) (X.δ 0) :=
-  Cofork.ofπ π₀.mk (by ext s; exact π₀.sound (Edge.mk' s))
+  Cofork.ofπ (↾π₀.mk) (by ext s; exact π₀.sound (Edge.mk' s))
 
 /-- If `X` is a simplicial set, `£₀ X` is a coequalizer
 of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
 def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
   Cofork.IsColimit.mk _
-    (fun s ↦ π₀.lift s.π (by
-      rintro x₀ x₁ e
-      simpa only [← e.src_eq, ← e.tgt_eq] using congr_fun s.condition e.edge))
+    (fun s ↦ ↾π₀.lift s.π (fun x₀ x₁ e ↦ by
+      simpa only [← e.src_eq, ← e.tgt_eq] using
+        ConcreteCategory.congr_hom s.condition e.edge))
     (fun s ↦ rfl)
     (fun s m hm ↦ by
       ext (x : π₀ X)
       induction x
-      exact congr_fun hm _)
+      exact ConcreteCategory.congr_hom hm _)
 
 /-- The colimit cofork saying that natural transformation
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`
