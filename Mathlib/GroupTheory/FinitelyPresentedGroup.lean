@@ -67,9 +67,11 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
+/-- The trivial group is finitely presented. -/
+lemma subsingleton (G : Type*) [Group G] [Subsingleton G] : IsFinitelyPresented G :=
+  ⟨0, 1, Function.surjective_to_subsingleton _, ∅, Set.finite_empty,
+    by ext x; simp [Subsingleton.elim x 1]⟩
+
+instance : IsFinitelyPresented PUnit := subsingleton _
+
 end Group.IsFinitelyPresented
-
-open Group
-
-instance : IsFinitelyPresented Unit :=
-  sorry
