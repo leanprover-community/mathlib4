@@ -183,7 +183,7 @@ variable [Module B M] [IsScalarTower A B M]
 variable (A) in
 open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
 theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
-    length A q = Module.length A p + (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+    length A q = Module.length A p + Module.length (ResidueField A) (ResidueField B) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   let f : p →ₗ[B] q := inclusion h.le
   have key : IsSimpleModule B (q ⧸ f.range) := by
@@ -196,18 +196,18 @@ theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
   have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
   rw [length_eq_add_of_exact (f.restrictScalars A) (g.restrictScalars A)
     (by simpa) (by simpa) (by simpa), Module.length_eq_of_surjective (M := ResidueField B)
-      (residue_surjective (R := A)), Module.length_eq_rank]
+      (residue_surjective (R := A))]
 
 -- PRed
 variable (A B M) in
 open IsLocalRing Module Submodule in
 theorem length_restrictScalars :
-    length A M = length B M * (Module.rank (ResidueField A) (ResidueField B)).toENat := by
+    length A M = length B M * Module.length (ResidueField A) (ResidueField B) := by
   have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
   by_cases h : IsFiniteLength B M
   · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
     rw [← length_compositionSeries s hs_bot hs_top]
-    suffices ∀ k, length A (s k) = k * (Module.rank (ResidueField A) (ResidueField B)).toENat by
+    suffices ∀ k, length A (s k) = k * Module.length (ResidueField A) (ResidueField B) by
       rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top]
       exact length_top.symm
     intro k
@@ -220,8 +220,8 @@ theorem length_restrictScalars :
       exact h.imp (isNoetherian_of_tower A) (isArtinian_of_tower A)
     rw [← length_ne_top_iff, not_ne_iff] at h this
     rw [h, this, ENat.top_mul]
-    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq, Cardinal.toENat_eq_zero]
-    exact Module.rank_pos_of_free.ne'
+    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq]
+    exact Module.length_pos.ne'
 
 end flatBaseChange
 
@@ -352,15 +352,12 @@ noncomputable def Fiber.algEquivQuotient :
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
       commutes' := by simp }
 
-noncomputable instance [Algebra.QuasiFinite R S] : Fintype (PrimeSpectrum (p.Fiber S)) :=
-  Fintype.ofFinite (PrimeSpectrum (p.Fiber S))
-
 instance [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
     Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
   Module.Finite.of_quasiFinite
 
-theorem foo1 [Algebra.QuasiFinite R S] : Module.finrank p.ResidueField (p.Fiber S) =
-    ∑ q : PrimeSpectrum (p.Fiber S),
+theorem finrank_fiber_eq_sum_finrank_localization [Algebra.QuasiFinite R S] :
+    Module.finrank p.ResidueField (p.Fiber S) = ∑ q : PrimeSpectrum (p.Fiber S),
       Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
   have key := (IsArtinianRing.equivPiLocalizationPrime (p.Fiber S)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
@@ -469,9 +466,9 @@ theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : PrimeSpectrum (p.F
   set r := q.1.comap Algebra.TensorProduct.includeRight
   set Sr := Localization.AtPrime r
   set A := Sr ⧸ p.map (algebraMap R Sr)
-  have := length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A
-  replace this := congrArg ENat.toNat this
-  rw [ENat.toNat_mul, Cardinal.toNat_toENat] at this
+  have this := congrArg ENat.toNat
+    (length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A)
+  rw [ENat.toNat_mul, Module.length_eq_finrank] at this
   rw [ramificationIdx'_eq p, inertiaDeg'_eq p]
   convert this -- todo: can we remove this convert?
   rw [← foo3, Module.length_eq_of_surjective
@@ -483,7 +480,8 @@ theorem sum_ramification_inertia
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
       ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
-  rw [foo1, ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
+  rw [finrank_fiber_eq_sum_finrank_localization,
+    ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
   apply Finset.sum_congr rfl
   intros
   apply foo2
