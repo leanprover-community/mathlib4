@@ -133,7 +133,7 @@ def mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B 
     rcases Ideal.Quotient.mk_surjective x with ⟨x, rfl⟩
     exact DFunLike.congr_fun f.residue_comp x )
 
-@[simp, reassoc]
+@[simp]
 theorem toOfQuot_comp_mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)]
     (hf : I ≤ J.comap f.toAlgHom) : A.toOfQuot I ≫ mapOfQuot f hf = f ≫ B.toOfQuot J := rfl
 
@@ -163,7 +163,7 @@ lemma toAlgHom_ofQuotKerIsoOfSurjective_inv_apply {f : A ⟶ B} (h : Surjective 
       Ideal.Quotient.mk (RingHom.ker f.toAlgHom) a :=
   (Ideal.quotientKerAlgEquivOfSurjective h).symm_apply_apply a
 
-@[simp, reassoc]
+@[simp]
 lemma toOfQuot_comp_ofQuotKerIsoOfSurjective_hom {f : A ⟶ B} (h : Surjective f.toAlgHom) :
     A.toOfQuot (RingHom.ker f.toAlgHom) ≫ (ofQuotKerIsoOfSurjective f h).hom = f := Hom.ext rfl
 
@@ -195,6 +195,10 @@ abbrev mapInfinitesimalNeighborhood (m n : ℕ) [NeZero m] [NeZero n] (hmn : n �
   mapOfQuot f (le_trans (Ideal.pow_le_pow_right hmn) (f.comap_maximalIdeal_eq ▸
       Ideal.le_comap_pow f.toAlgHom n))
 
+lemma toInfinitesimalNeighborhood_comp_map (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m)
+    (f : A ⟶ B) : A.toInfinitesimalNeighborhood m ≫ mapInfinitesimalNeighborhood m n hmn f =
+      f ≫ B.toInfinitesimalNeighborhood n := by simp
+
 /-- The special fiber of `A` over `Λ` when `Λ` is a local ring, defined as the quotient by
 the extended maximal ideal of `Λ`, viewed as an object in `LocAlgCat`. -/
 abbrev specialFiber [IsLocalRing Λ] [IsLocalHom (algebraMap Λ k)]
@@ -209,6 +213,11 @@ abbrev mapSpecialFiber [IsLocalRing Λ] [IsLocalHom (algebraMap Λ k)]
     (f : A ⟶ B) : A.specialFiber ⟶ B.specialFiber :=
   mapOfQuot f (by rw [Ideal.map_le_iff_le_comap, ← Ideal.comap_coe f.toAlgHom,
     Ideal.comap_comap, AlgHom.comp_algebraMap, ← Ideal.map_le_iff_le_comap])
+
+lemma toInfinitesimalNeighborhood_comp_mapInfinitesimalNeighborhood_toSpecialFiber [IsLocalRing Λ]
+    [IsLocalHom (algebraMap Λ k)] (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) :
+    A.toInfinitesimalNeighborhood n ≫ mapInfinitesimalNeighborhood n n le_rfl A.toSpecialFiber =
+      A.toSpecialFiber ≫ (A.specialFiber).toInfinitesimalNeighborhood n := by simp
 
 @[simp]
 lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [IsLocalHom (algebraMap Λ k)]

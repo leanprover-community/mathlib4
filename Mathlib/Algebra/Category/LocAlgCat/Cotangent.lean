@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Category.LocAlgCat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
 
 /-!
 # Cotangent Spaces in `LocAlgCat`
@@ -132,6 +133,42 @@ theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.to
   exact Function.Surjective.comp (equivCotangent (ofQuotKerIsoOfSurjective f h)).surjective
     (surjective_mapCotangent_toOfQuot _)
 
+@[stacks 06S3 "(2) => (3)"]
+theorem mapCotangent_mapOfQuot_surjective_of_mapCotangent_surjective {I : Ideal A} {J : Ideal B}
+    {f : A ⟶ B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hf : I ≤ J.comap f.toAlgHom)
+    (h : Surjective (mapCotangent f)) : Surjective (mapCotangent (mapOfQuot f hf)) := by
+  have : Surjective ((mapCotangent (mapOfQuot f hf)) ∘ₗ (mapCotangent (A.toOfQuot I))) := by
+    rw [← mapCotangent_comp, toOfQuot_comp_mapOfQuot, mapCotangent_comp, LinearMap.coe_comp]
+    exact .comp (surjective_mapCotangent_toOfQuot J) h
+  exact .of_comp this
+
+@[stacks 06GZ "(2) => (1)"]
+theorem surjective_of_surjective_mapCotangent [IsPrecomplete (maximalIdeal A) A]
+    [IsNoetherianRing B] [haus : IsHausdorff (maximalIdeal B) B] (f : A ⟶ B)
+    (h : Surjective (mapCotangent f)) : Surjective f.toAlgHom := by
+  have map_eq : (maximalIdeal A).map f.toAlgHom = maximalIdeal B := by
+    let M : Submodule B (maximalIdeal B) := Submodule.comap (maximalIdeal B).subtype
+      ((maximalIdeal A).map f.toAlgHom)
+    suffices M = ⊤ by
+      refine le_antisymm f.map_maximalIdeal_le fun b hb ↦ ?_
+      have hb_mem : (⟨b, hb⟩ : maximalIdeal B) ∈ (⊤ : Submodule B (maximalIdeal B)) := trivial
+      rwa [← this] at hb_mem
+    rw [← CotangentSpace.map_eq_top_iff, Submodule.eq_top_iff']
+    intro x
+    obtain ⟨x, rfl⟩ := h x
+    obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
+    rw [mapCotangent_toCotangent]
+    exact Submodule.mem_map_of_mem <| Ideal.mem_map_of_mem f.toAlgHom x.prop
+  rw [← map_eq, ← Ideal.map_coe, ← AlgHom.toRingHom_eq_coe] at haus
+  apply surjective_of_mk_map_comp_surjective (I := maximalIdeal A)
+  intro y
+  obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
+  obtain ⟨x, hx⟩ := A.residue_surjective (B.residue y)
+  use x
+  rw [RingHom.comp_apply, Ideal.Quotient.eq, AlgHom.toRingHom_eq_coe, Ideal.map_coe, map_eq,
+    ← residue_eq_zero_iff, map_sub, sub_eq_zero, ← hx]
+  exact DFunLike.congr_fun f.residue_comp x
+
 section IsLocalRing
 
 variable [IsLocalRing Λ]
@@ -223,6 +260,21 @@ theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap
 theorem exact_baseCotangentMap_mapCotangent_toSpecialFiber [Algebra.IsIntegral Λ k]
     [IsLocalHom (algebraMap Λ k)] : Exact A.baseCotangentMap (mapCotangent A.toSpecialFiber) :=
   LinearMap.exact_iff.mpr A.range_baseCotangentMap.symm
+
+@[stacks 06S3 "(3) => (2)"]
+theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber [Algebra.IsIntegral Λ k]
+    [IsLocalHom (algebraMap Λ k)] (f : A ⟶ B)
+    (h : Surjective (mapCotangent (mapSpecialFiber f))) : Surjective (mapCotangent f) := by
+  intro y
+  obtain ⟨x, hx⟩ := h (mapCotangent B.toSpecialFiber y)
+  obtain ⟨x, rfl⟩ := surjective_mapCotangent_toSpecialFiber x
+  rw [← LinearMap.comp_apply, ← mapCotangent_comp, toOfQuot_comp_mapOfQuot,
+    mapCotangent_comp, LinearMap.comp_apply] at hx
+  have h_ker : y - mapCotangent f x ∈ LinearMap.ker (mapCotangent B.toSpecialFiber) := by
+    rw [LinearMap.mem_ker, map_sub, hx, sub_self]
+  rw [← B.range_baseCotangentMap, LinearMap.mem_range] at h_ker
+  rcases h_ker with ⟨z, hz⟩
+  exact ⟨x + A.baseCotangentMap z, by simp [hz]⟩
 
 end IsLocalRing
 
