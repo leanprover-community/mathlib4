@@ -38,8 +38,6 @@ noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
   Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / (n)!) • (.dirac n))
 
-/-! ### Notation for Poisson measure -/
-
 /-- The Poisson probability distribution with rate `r`. -/
 scoped notation3 "Po(" r ")" => poissonMeasure r
 
@@ -47,15 +45,15 @@ scoped notation3 "Po(" r ")" => poissonMeasure r
 scoped notation3 "Po(" R ", " r ")" => (poissonMeasure r).map (Nat.cast : ℕ → R)
 
 lemma poissonMeasure_singleton (r : ℝ≥0) (n : ℕ) :
-    (Po(r)) {n} = ENNReal.ofReal (exp (-r) * r ^ n / (n)!) := by
+    Po(r) {n} = ENNReal.ofReal (exp (-r) * r ^ n / (n)!) := by
   rw [poissonMeasure, Measure.sum_smul_dirac_singleton]
 
 lemma poissonMeasure_real_singleton (r : ℝ≥0) (n : ℕ) :
-    (Po(r)).real {n} = exp (-r) * r ^ n / (n)! := by
+    Po(r).real {n} = exp (-r) * r ^ n / (n)! := by
   rw [measureReal_def, poissonMeasure_singleton, ENNReal.toReal_ofReal (by positivity)]
 
 lemma poissonMeasure_real_singleton_pos {r : ℝ≥0} (n : ℕ) (hr : 0 < r) :
-    0 < (Po(r)).real {n} := by
+    0 < Po(r).real {n} := by
   rw [poissonMeasure_real_singleton]
   positivity
 
@@ -64,34 +62,32 @@ lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^
   · simp_rw [mul_div_assoc]
   · simp [← exp_eq_exp_ℝ, ← exp_add]
 
-instance isProbabilityMeasure_poissonMeasure (r : ℝ≥0) :
-    IsProbabilityMeasure (Po(r)) :=
+instance (r : ℝ≥0) : IsProbabilityMeasure Po(r) :=
   (hasSum_one_poissonMeasure r).isProbabilityMeasure_sum_dirac (fun _ ↦ by positivity)
 
-instance isProbabilityMeasure_map_cast_poissonMeasure (r : ℝ≥0) {R : Type*} [AddMonoidWithOne R]
-    [MeasurableSpace R] :
-    IsProbabilityMeasure (Po(R, r)) :=
+instance (r : ℝ≥0) {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R] :
+    IsProbabilityMeasure Po(R, r) :=
   Measure.isProbabilityMeasure_map (measurable_of_countable _).aemeasurable
 
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
+variable {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R]
 
 lemma integrable_poissonMeasure_iff {r : ℝ≥0} {f : ℕ → E} :
-    Integrable f (Po(r)) ↔ Summable (fun n ↦ exp (-r) * r ^ n / (n)! * ‖f n‖) := by
+    Integrable f Po(r) ↔ Summable (fun n ↦ exp (-r) * r ^ n / (n)! * ‖f n‖) := by
   rw [poissonMeasure, integrable_sum_dirac_iff (by simp)]
   congrm Summable (fun n ↦ ?_ * _)
   rw [ENNReal.toReal_ofReal (by positivity)]
 
-lemma integrable_map_cast_poissonMeasure_iff {r : ℝ≥0} {R : Type*} [AddMonoidWithOne R]
-    [MeasurableSpace R] [Countable R] [MeasurableSingletonClass R] {f : R → E} :
-    Integrable f (Po(R, r)) ↔ Integrable (f ∘ Nat.cast) (Po(r)) :=
+lemma integrable_map_cast_poissonMeasure_iff {r : ℝ≥0} [Countable R] [MeasurableSingletonClass R]
+  {f : R → E} : Integrable f Po(R, r) ↔ Integrable (f ∘ Nat.cast) Po(r) :=
   integrable_map_measure AEStronglyMeasurable.of_discrete (measurable_of_countable _).aemeasurable
 
 variable [NormedSpace ℝ E]
 
 lemma hasSum_integral_poissonMeasure [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
-    (hf : Integrable f (Po(r))) :
+    (hf : Integrable f Po(r)) :
     HasSum (fun n ↦ (exp (-r) * r ^ n / (n)!) • f n) (∫ n, f n ∂Po(r)) := by
   have : (fun n ↦ (exp (-r) * r ^ n / (n)!) • f n) =
       fun n ↦ (ENNReal.ofReal (exp (-r) * r ^ n / (n)!)).toReal • f n := by
@@ -107,9 +103,16 @@ against this measure is given by its sum weighted by `exp (-r) * r ^ n / n!`.
 See `integral_poissonMeasure` for a version where the codomain is finite-dimensional
 and does not require the integrability hypothesis. -/
 lemma integral_poissonMeasure' [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
-    (hf : Integrable f (Po(r))) :
+    (hf : Integrable f Po(r)) :
     ∫ n, f n ∂Po(r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n :=
   (hasSum_integral_poissonMeasure hf).tsum_eq.symm
+
+lemma integral_map_cast_poissonMeasure' [CompleteSpace E] [Countable R] [MeasurableSingletonClass R]
+    {r : ℝ≥0} {f : R → E} (hf : Integrable f Po(R, r)) :
+    ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f (n : R) := by
+  rw [integral_map (measurable_of_countable _).aemeasurable AEStronglyMeasurable.of_discrete]
+  rw [integrable_map_cast_poissonMeasure_iff] at hf
+  exact integral_poissonMeasure' hf
 
 /-- The integral of a function taking values in a finite-dimensional space
 against `poissonMeasure r` is given by its sum weighted by `exp (-r) * r ^ n / n!`. This version
@@ -123,57 +126,59 @@ lemma integral_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) (f : ℕ �
   congr with n
   rw [ENNReal.toReal_ofReal (by positivity)]
 
-lemma integral_map_cast_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) {R : Type*}
-    [AddMonoidWithOne R] [MeasurableSpace R] [Countable R] [MeasurableSingletonClass R]
-    (f : R → E) :
+lemma integral_map_cast_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) [Countable R]
+  [MeasurableSingletonClass R] (f : R → E) :
     ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
   rw [integral_map (measurable_of_countable _).aemeasurable AEStronglyMeasurable.of_discrete,
       integral_poissonMeasure]
 
 end Integral
 
+section CharFun
+
+open Complex
+
 /-- The characteristic function of the Poisson distribution with rate `r` is
 `t ↦ exp(r(exp(it) - 1))`. -/
 lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
-    charFun (Po(ℝ, r)) t = Complex.exp (r * (Complex.exp (t * Complex.I) - 1)) := by
+    charFun Po(ℝ, r) t = cexp (r * (cexp (t * I) - 1)) := by
   rw [charFun_apply,
       integral_map (measurable_of_countable _).aemeasurable (by fun_prop),
       integral_poissonMeasure r]
   simp_rw [show ∀ (a : ℕ), inner ℝ (↑a : ℝ) t = ↑a * t from
            fun a => by change t * ↑a = ↑a * t; ring]
-  calc ∑' a, ((rexp (-↑r) * ↑r ^ a / ↑a ! : ℝ) : ℂ) * Complex.exp (↑(↑a * t) * Complex.I)
-      _ = ∑' a, ↑(rexp (-↑r)) * ((↑r * Complex.exp (↑t * Complex.I)) ^ a / ↑a !) := by
-          congr 1 with a
-          push_cast; rw [mul_pow, ← Complex.exp_nat_mul]; ring_nf
-      _ = ↑(rexp (-↑r)) * ∑' a, ((↑r * Complex.exp (↑t * Complex.I)) ^ a / ↑a !) := by
-          rw [tsum_mul_left]
-      _ = ↑(rexp (-↑r)) * Complex.exp (↑r * Complex.exp (↑t * Complex.I)) := by
-          rw [(NormedSpace.expSeries_div_hasSum_exp
-               (↑r * Complex.exp (↑t * Complex.I))).tsum_eq, Complex.exp_eq_exp_ℂ]
-      _ = Complex.exp (↑r * (Complex.exp (↑t * Complex.I) - 1)) := by
-          rw [Complex.ofReal_exp, Complex.exp_eq_exp_ℂ, ← NormedSpace.exp_add]
-          congr 1; push_cast; ring
+  calc ∑' a, ((rexp (-↑r) * ↑r ^ a / ↑a ! : ℝ) : ℂ) * cexp (↑(↑a * t) * I)
+  _ = ∑' a, ↑(rexp (-↑r)) * ((↑r * cexp (↑t * I)) ^ a / ↑a !) := by
+      congr 1 with a; push_cast; rw [mul_pow, ← Complex.exp_nat_mul]; ring_nf
+  _ = ↑(rexp (-↑r)) * ∑' a, ((↑r * cexp (↑t * I)) ^ a / ↑a !) := tsum_mul_left
+  _ = ↑(rexp (-↑r)) * cexp (↑r * cexp (↑t * I)) := by
+      rw [(NormedSpace.expSeries_div_hasSum_exp (↑r * cexp (↑t * I))).tsum_eq, exp_eq_exp_ℂ]
+  _ = cexp (↑r * (cexp (↑t * I) - 1)) := by
+      rw [ofReal_exp, exp_eq_exp_ℂ, ← NormedSpace.exp_add]; congr 1; push_cast; ring
 
 /-- Convolution of Poisson distributions on `ℝ`. -/
-theorem map_cast_poissonMeasure_conv (r₁ r₂ : ℝ≥0) :
+private theorem map_cast_poissonMeasure_conv_real (r₁ r₂ : ℝ≥0) :
     Po(ℝ, r₁) ∗ Po(ℝ, r₂) = Po(ℝ, r₁ + r₂) := by
   apply Measure.ext_of_charFun
   ext t
   simp only [charFun_conv, charFun_map_cast_poissonMeasure, ← Complex.exp_add]
   congr 1; push_cast; ring
 
+end CharFun
+
 /-! ## Convolution of Poisson measures on ℕ -/
 
 section Convolution
+
+variable {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R]
 
 theorem poissonMeasure_conv_poissonMeasure (r₁ r₂ : ℝ≥0) :
     Po(r₁) ∗ Po(r₂) = Po(r₁ + r₂) := by
   apply (MeasurableEmbedding.natCast (α := ℝ)).map_injective
   rw [← Nat.coe_castAddMonoidHom, Measure.map_conv_addMonoidHom _ (by fun_prop)]
-  exact map_cast_poissonMeasure_conv _ _
+  exact map_cast_poissonMeasure_conv_real _ _
 
-theorem map_cast_poissonMeasure_conv_general {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R]
-    [MeasurableAdd₂ R] (r₁ r₂ : ℝ≥0) :
+theorem map_cast_poissonMeasure_conv [MeasurableAdd₂ R] (r₁ r₂ : ℝ≥0) :
     Po(R, r₁) ∗ Po(R, r₂) = Po(R, r₁ + r₂) := by
   have h : ∀ (μ ν : Measure ℕ), (μ.map Nat.cast : Measure R) ∗ (ν.map Nat.cast) =
       (μ ∗ ν).map Nat.cast := fun μ ν ↦ by
@@ -184,21 +189,19 @@ theorem map_cast_poissonMeasure_conv_general {R : Type*} [AddMonoidWithOne R] [M
 random variable with rate `r₁ + r₂`. -/
 theorem IndepFun.hasLaw_add_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace Ω}
     {P : Measure Ω} {r₁ r₂ : ℝ≥0} {X Y : Ω → ℕ}
-    (hXY : IndepFun X Y P) (hX : HasLaw X (Po(r₁)) P)
-    (hY : HasLaw Y (Po(r₂)) P) :
-    HasLaw (X + Y) (Po(r₁ + r₂)) P := by
+    (hXY : IndepFun X Y P) (hX : HasLaw X Po(r₁) P)
+    (hY : HasLaw Y Po(r₂) P) :
+    HasLaw (X + Y) Po(r₁ + r₂) P := by
   rw [← poissonMeasure_conv_poissonMeasure]
   exact hXY.hasLaw_add hX hY
 
 /-- The sum of two independent Poisson random variables with rates `r₁, r₂` taking values in `R`
 is a Poisson random variable with rate `r₁ + r₂`. -/
 theorem IndepFun.hasLaw_add_map_cast_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace Ω}
-    {P : Measure Ω} {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R] [MeasurableAdd₂ R]
-    {r₁ r₂ : ℝ≥0} {X Y : Ω → R}
-    (hXY : IndepFun X Y P) (hX : HasLaw X (Po(R, r₁)) P)
-    (hY : HasLaw Y (Po(R, r₂)) P) :
-    HasLaw (X + Y) (Po(R, r₁ + r₂)) P := by
-  rw [← map_cast_poissonMeasure_conv_general]
+    {P : Measure Ω} [MeasurableAdd₂ R] {r₁ r₂ : ℝ≥0} {X Y : Ω → R} (hXY : IndepFun X Y P)
+    (hX : HasLaw X Po(R, r₁) P) (hY : HasLaw Y Po(R, r₂) P) :
+    HasLaw (X + Y) Po(R, r₁ + r₂) P := by
+  rw [← map_cast_poissonMeasure_conv]
   exact hXY.hasLaw_add hX hY
 
 end Convolution
