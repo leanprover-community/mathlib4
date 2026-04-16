@@ -35,16 +35,13 @@ lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
       _ ≤ eLpNorm f p count := eLpNorm_restrict_le ..
 
 omit [MeasurableSingletonClass α] in
-lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) :
-    eLpNorm f p .count < ∞ := by
-  letI _ := Fintype.ofFinite α
+lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
+  haveI := Fintype.ofFinite α
   let C : ℝ≥0∞ := Finset.univ.sup (‖f ·‖ₑ)
-  have hC : ∀ x, ‖f x‖ₑ ≤ C := fun x => Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
-  have hC_lt : C < ∞ := by
-    simp [C, Finset.sup_lt_iff, h]
-  refine (eLpNorm_mono_enorm (μ := (count : Measure α)) (p := p) (f := f)
-    (g := fun _ : α => C) fun x => by simpa [C] using hC x).trans_lt ?_
-  exact (memLp_const_enorm (μ := (count : Measure α)) (p := p) (c := C) hC_lt.ne).eLpNorm_lt_top
+  have hC : ∀ x, ‖f x‖ₑ ≤ C := fun x ↦ Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
+  have hC_lt : C < ∞ := by simp [C, h]
+  exact (eLpNorm_mono_enorm (g := fun _ ↦ C) fun x => by simp [hC x]).trans_lt
+    (memLp_const_enorm hC_lt.ne).eLpNorm_lt_top
 
 lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) :
     eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ :=
