@@ -38,6 +38,8 @@ open Set Function WithTop
 
 namespace Graph
 
+/-- The extended graph is the graph with a top element `⊤` as a junk value for the sInf of empty
+  set and sup/sSup of incompatible graphs. -/
 def ExtendedGraph (α β : Type*) := WithTop (Graph α β)
 deriving PartialOrder, OrderTop, OrderBot
 
