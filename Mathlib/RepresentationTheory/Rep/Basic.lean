@@ -589,7 +589,7 @@ instance : Linear k (Rep k G) where
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
-end commsemiring
+end CommSemiring
 
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 
