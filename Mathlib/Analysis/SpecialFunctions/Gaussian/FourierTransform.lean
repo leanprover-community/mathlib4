@@ -197,7 +197,7 @@ lemma _root_.integrable_cexp_quadratic' (hb : b.re < 0) (c d : ℂ) :
     Integrable (fun (x : ℝ) ↦ cexp (b * x ^ 2 + c * x + d)) := by
   have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   by_contra H
-  simpa [hb', pi_ne_zero, Complex.exp_ne_zero, integral_undef H]
+  simpa [hb', pi_ne_zero, Complex.exp_ne_zero, integral_undef H, eqComm]
     using integral_cexp_quadratic hb c d
 
 lemma _root_.integrable_cexp_quadratic (hb : 0 < b.re) (c d : ℂ) :

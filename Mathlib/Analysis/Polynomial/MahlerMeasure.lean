@@ -126,7 +126,7 @@ open intervalIntegral in
 theorem mahlerMeasure_mul (p q : ℂ[X]) :
     (p * q).mahlerMeasure = p.mahlerMeasure * q.mahlerMeasure := by
   by_cases hpq : p * q = 0
-  · simpa [hpq, mahlerMeasure_zero] using mul_eq_zero.mp hpq
+  · simpa [hpq, mahlerMeasure_zero, eqComm] using mul_eq_zero.mp hpq
   rw [mul_eq_zero, not_or] at hpq
   simp only [mahlerMeasure, ne_eq, mul_eq_zero, hpq, or_self, not_false_eq_true, ↓reduceIte,
     logMahlerMeasure, eval_mul, Complex.norm_mul, circleAverage_def, mul_inv_rev, smul_eq_mul]
