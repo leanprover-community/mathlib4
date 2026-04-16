@@ -27,7 +27,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
   Its commutative subgroups consist of the permutations with support
   in a given element of `Set.powersetCard α 2`. They are cyclic of order 3.
 
-* `alternatingGroup.iwasawaStructure_three`:
+* `alternatingGroup.iwasawaStructure_four`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 4`
 
   Its commutative subgroups consist of the permutations of cycleType (2, 2) with support
