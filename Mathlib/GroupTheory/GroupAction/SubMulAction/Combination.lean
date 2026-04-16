@@ -86,7 +86,7 @@ theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    contrapose! has'
+    contrapose has'
     simp only [AddAction.toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa [← mem_coe_iff]
