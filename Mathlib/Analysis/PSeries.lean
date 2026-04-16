@@ -452,9 +452,9 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Tendsto.congr' (by simp) tendsto_natCast_atTop_atTop
   have h_abs : (fun n : ℕ ↦ |n + a|) ~[atTop] (·) := by
     apply (IsEquivalent.add_const_of_norm_tendsto_atTop IsEquivalent.refl hnorm).congr_left
-    filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with _ hn
-    rw [abs_of_pos]
-    linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
+    · filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with _ hn
+      rw [abs_of_pos]
+      linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
   rw [← summable_one_div_nat_rpow, Asymptotics.IsEquivalent.summable_iff_nat]
   simpa [one_div] using (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
 
