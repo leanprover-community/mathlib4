@@ -165,6 +165,7 @@ equality, coming from the choice axiom, so that we don't have to provide
 `[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
 noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
 
+/-- Pointwise addition of a element in `M` and a submodule of `p`. -/
 scoped instance hVAddSet : HVAdd M (Submodule R M) (Set M) where
   hVAdd a p := (fun x ↦ a + x) '' p
 
