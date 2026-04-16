@@ -36,25 +36,23 @@ variable (X) in
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
   __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α
-  inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
+  inv := α.homEquiv'.symm (α.homEquiv (𝟙 _))⁻¹
   left_inv := by
-    change lift (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
-      α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
-        toUnit X ≫ α.homEquiv.symm 1
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [-Functor.comp_obj]
+    change lift (α.homEquiv'.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
+      α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) =
+        toUnit X ≫ α.homEquiv'.symm 1
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, map_one]
+    simp only [← α.homEquiv'_comp, Functor.comp_obj, lift_fst, Equiv.apply_symm_apply, lift_snd]
+    exact inv_mul_cancel (α.homEquiv (𝟙 X))
   right_inv := by
-    change lift (𝟙 X) (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) ≫
-      α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
-        toUnit X ≫ α.homEquiv.symm 1
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [-Functor.comp_obj]
+    change lift (𝟙 X) (α.homEquiv'.symm (α.homEquiv' (𝟙 X))⁻¹) ≫
+      α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) =
+        toUnit X ≫ α.homEquiv'.symm 1
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, map_one]
+    simp only [← α.homEquiv'_comp]
+    simp
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
 @[to_additive
@@ -66,7 +64,8 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[CategoryTheory.MonObj] attribute [instance] Hom.group Hom.addGroup
+scoped[CategoryTheory.MonObj] attribute [instance] Hom.group
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addGroup
 
 @[to_additive]
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
@@ -307,6 +306,7 @@ additive group structure. -/]
 abbrev Hom.commGroup [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commGroup
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addCommGroup
 
 section
 
