@@ -91,12 +91,12 @@ theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a 
 @[to_additive (attr := simp)]
 theorem mul_le_mul_iff_left [MulLeftMono α] [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
-  rel_iff_cov' CovariantClass.elim MulLeftReflectLE.le_of_mul_le_mul_left'
+  rel_iff_cov' ‹MulLeftMono α›.elim fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
 theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
-  rel_iff_cov' CovariantClass.elim MulRightReflectLE.le_of_mul_le_mul_right'
+  rel_iff_cov' ‹MulRightMono α›.elim fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
 
 end LE
 

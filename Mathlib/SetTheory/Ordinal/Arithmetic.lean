@@ -73,7 +73,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
 instance instAddLeftReflectLE : AddLeftReflectLE Ordinal.{u} where
-  le_of_add_le_add_left c a b := by
+  le_of_add_le_add_left {c a b} := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
     have H₁ a : f (Sum.inl a) = Sum.inl a := by
       simpa using ((InitialSeg.leAdd t r).trans f).eq (InitialSeg.leAdd t s) a
