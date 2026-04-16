@@ -468,7 +468,7 @@ theorem DefinableFun.of_empty (hAs : (∅ : Set M).DefinableFun L f) :
 
 theorem empty_definableFun_iff :
     (∅ : Set M).DefinableFun L f ↔
-      ∃ φ : L.Formula (Option α), tupleGraph f = setOf φ.Realize := by
+      ∃ φ : L.Formula (Option α), f.tupleGraph = setOf φ.Realize := by
   simp [DefinableFun, Set.empty_definable_iff]
 
 theorem definableFun_iff_empty_definableFun_with_params :
@@ -482,7 +482,7 @@ theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
   rw [empty_definableFun_iff]
   refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
   ext v
-  simp [Function.tupleGraph]
+  simp [tupleGraph]
 
 /-- A function symbol is a definable function. -/
 @[fun_prop]
@@ -520,7 +520,7 @@ lemma _root_.Set.Definable.preimage_map
   have h_graph : A.Definable L { w : α ⊕ β → M | ∀ i, F (w ∘ Sum.inl) i = w (Sum.inr i) } := by
     rw [setOf_forall]
     refine definable_iInter_of_finite fun i => ?_
-    simpa [Function.tupleGraph] using
+    simpa [tupleGraph] using
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
@@ -541,11 +541,11 @@ theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
     cases i with
     | none => fun_prop
     | some j =>
-      simpa [Function.tupleGraph] using
+      simpa [tupleGraph] using
         ((hg j).preimage_comp fun
-          | none => (none : Option (Option β))
+          | none => none
           | some i => some (some i))
-  simpa [DefinableFun, G, Function.tupleGraph] using hf.preimage_map hG
+  simpa [DefinableFun, G, tupleGraph] using hf.preimage_map hG
 
 @[fun_prop]
 theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
@@ -553,10 +553,10 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
     DefinableFun L A fun v => if p v then f v else g v := by
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
-  have : Function.tupleGraph (fun v => if p v then f v else g v) =
-      (P ∩ Function.tupleGraph f) ∪ (Pᶜ ∩ Function.tupleGraph g) := by
+  have : tupleGraph (fun v => if p v then f v else g v) =
+      (P ∩ f.tupleGraph) ∪ (Pᶜ ∩ g.tupleGraph) := by
     ext w
-    by_cases h : p (w ∘ some) <;> simp [Function.tupleGraph, P, h]
+    by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
   simpa [DefinableFun, this] using (hP.inter hf).union (hP.compl.inter hg)
 
 /-- The set where two definable functions agree is definable. -/
