@@ -362,85 +362,84 @@ theorem finrank_fiber_eq_sum_finrank_localization [Algebra.QuasiFinite R S] :
   have key := (IsArtinianRing.equivPiLocalizationPrime (p.Fiber S)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
-/-- _ -/
+open TensorProduct
+
+theorem le_of_liesOver_quotient {R : Type*} [CommRing R]
+    (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I)) [q.LiesOver p] : I ≤ p := by
+  simp [over_def q p, ← map_le_iff_le_comap]
+
+theorem algebraMapSubmonoid_primeCompl_of_liesOver_quotient
+    {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I))
+    [p.IsPrime] [q.IsPrime] [q.LiesOver p] :
+    Algebra.algebraMapSubmonoid (R ⧸ I) p.primeCompl = q.primeCompl := by
+  ext x
+  obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
+  rw [mem_primeCompl_iff, ← Quotient.algebraMap_eq, ← mem_comap, ← under_def, ← over_def q p]
+  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
+  rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
+  contrapose! hy
+  simpa [p.sub_mem_iff_left hy] using le_of_liesOver_quotient I p q hx
+
+/-- The localization of the quotient `Sp⧸pSp` is isomorphic to a quotient of a localization. -/
 noncomputable def foo9 :
-    letI Rp := Localization p.primeCompl
+    letI Rp := Localization.AtPrime p
     letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
     letI pS := p.map (algebraMap R S)
     letI pSp := pS.map (algebraMap S Sp)
     ∀ (q : Ideal (Sp ⧸ pSp)) (r : Ideal S) [q.IsPrime] [r.IsPrime] [q.LiesOver r] [r.LiesOver p],
       letI Sr := Localization.AtPrime r
-      Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) := by
-  intro q r hq hr hqr hrp
-  let Rp := Localization p.primeCompl
-  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  let pS := p.map (algebraMap R S)
-  let pSp := pS.map (algebraMap S Sp)
-  let Sr := Localization.AtPrime r
-  have h1 : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
+      Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) :=
+  fun q r hq hr hqr hrp ↦
+  letI Rp := Localization.AtPrime p
+  letI pS := p.map (algebraMap R S)
+  letI Sr := Localization.AtPrime r
+  haveI : Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl = (q.under (S ⧸ pS)).primeCompl := by
+    apply algebraMapSubmonoid_primeCompl_of_liesOver_quotient
+  haveI : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
       (Localization.AtPrime q) := by
-    suffices Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl = (q.under (S ⧸ pS)).primeCompl by
-      convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
-        (Algebra.algebraMapSubmonoid (S ⧸ pS) (Algebra.algebraMapSubmonoid S p.primeCompl))
-            (Localization.AtPrime q) q
-    ext x
-    obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
-    rw [mem_primeCompl_iff, mem_comap, ← Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply,
-      ← mem_comap, ← under_def, ← hqr.over]
-    refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
-    rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
-    contrapose! hy
-    simpa [r.sub_mem_iff_left hy] using map_le_iff_le_comap.mpr hrp.over.le hx
-  have := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Localization.AtPrime q)
-  have := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Sr ⧸ map (algebraMap S Sr) pS)
-  let e := (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
+    convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
+      (Algebra.algebraMapSubmonoid (S ⧸ pS) (Algebra.algebraMapSubmonoid S p.primeCompl))
+          (Localization.AtPrime q) q
+  haveI := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Localization.AtPrime q)
+  haveI := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Sr ⧸ map (algebraMap S Sr) pS)
+  letI e := (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
     (Localization.AtPrime q) ((Sr ⧸ pS.map (algebraMap S Sr)))).restrictScalars R
-  exact
-    { __ := e
-      commutes' := by
-        let f := e.toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
-        let g := IsScalarTower.toAlgHom R Rp (Sr ⧸ pS.map (algebraMap S Sr))
-        suffices f = g by rwa [DFunLike.ext_iff] at this
-        apply Localization.algHom_ext
-        suffices f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) by
-          rwa [DFunLike.ext_iff] at this ⊢
-        simp }
+  { __ := e
+    commutes' := by
+      let f := e.toAlgHom.comp (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q))
+      let g := IsScalarTower.toAlgHom R Rp (Sr ⧸ pS.map (algebraMap S Sr))
+      have : f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) := by simp
+      suffices f = g by rwa [DFunLike.ext_iff] at this
+      apply Localization.algHom_ext
+      rwa [DFunLike.ext_iff] at this ⊢ }
 
-open TensorProduct
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-/-- _ -/
+/-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
     letI r := q.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
-    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) := by
-  let Rp := Localization p.primeCompl
-  let Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
-  let pS := p.map (algebraMap R S)
-  let pSp := pS.map (algebraMap S Sp)
-  let r := q.under S
-  let Sr := Localization.AtPrime r
-  change Localization.AtPrime q ≃ₐ[Rp] Sr ⧸ p.map (algebraMap R Sr)
-  let eq : p.Fiber S ≃ₐ[S] (Sp ⧸ pSp) := by
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
+  letI : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
+  letI Rp := Localization p.primeCompl
+  letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+  letI pS := p.map (algebraMap R S)
+  letI pSp := pS.map (algebraMap S Sp)
+  letI Sr := Localization.AtPrime (q.under S)
+  letI e : (Sp ⧸ pSp) ≃ₐ[S] p.Fiber S := .symm <| by
     refine (Fiber.algEquivQuotient p).trans (quotientEquivAlgOfEq S ?_)
-    rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map]
-    dsimp only [pSp, pS]
-    rw [map_map, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-  let q' : Ideal (Sp ⧸ pSp) := q.comap eq.symm
-  have : Localization.AtPrime q' ≃ₐ[Rp] Localization.AtPrime q :=
-    { __ := Localization.localAlgEquiv q' q eq.symm rfl
+    simp [Sp, pS, pSp, map_map, ← IsScalarTower.algebraMap_eq,
+      ← Localization.AtPrime.map_eq_maximalIdeal]
+  letI q' : Ideal (Sp ⧸ pSp) := q.comap e
+  let : Localization.AtPrime q' ≃ₐ[Rp] Localization.AtPrime q :=
+    { __ := Localization.localAlgEquiv q' q e rfl
       commutes' := by
-        let e1 := (Localization.localAlgEquiv q' q eq.symm rfl).toAlgHom.restrictScalars R
-        let e2 := IsScalarTower.toAlgHom R Rp (Localization.AtPrime q')
-        let f := e1.comp e2
+        let f := ((Localization.localAlgEquiv q' q e rfl).toAlgHom.restrictScalars R).comp
+          (IsScalarTower.toAlgHom R Rp (Localization.AtPrime q'))
         let g := IsScalarTower.toAlgHom R Rp (Localization.AtPrime q)
+        have : f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) := by simp
         suffices f = g by rwa [DFunLike.ext_iff] at this
         apply Localization.algHom_ext
-        suffices f.toRingHom.comp (algebraMap R Rp) = g.toRingHom.comp (algebraMap R Rp) by
-          rwa [DFunLike.ext_iff] at this ⊢
-        simp }
-  refine this.symm.trans <| (foo9 p q' r).trans <|
-    quotientEquivAlgOfEq Rp <| by rw [map_map, ← IsScalarTower.algebraMap_eq]
+        rwa [DFunLike.ext_iff] at this ⊢ }
+  this.symm.trans <| (foo9 p q' (q.under S)).trans <| quotientEquivAlgOfEq Rp (map_map _ _)
 
 theorem diamond {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
     (q : Ideal (p.Fiber S)) [q.IsPrime] :
@@ -459,22 +458,6 @@ theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
   rw [diamond]
   rfl
 
-theorem foo2 [Algebra.QuasiFinite R S] [Module.Flat R S] (q : PrimeSpectrum (p.Fiber S)) :
-    Module.finrank p.ResidueField (Localization.AtPrime q.1) =
-      (q.1.comap Algebra.TensorProduct.includeRight).ramificationIdx' R *
-          (q.1.comap Algebra.TensorProduct.includeRight).inertiaDeg' R := by
-  set r := q.1.comap Algebra.TensorProduct.includeRight
-  set Sr := Localization.AtPrime r
-  set A := Sr ⧸ p.map (algebraMap R Sr)
-  have this := congrArg ENat.toNat
-    (length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A)
-  rw [ENat.toNat_mul, Module.length_eq_finrank] at this
-  rw [ramificationIdx'_eq p, inertiaDeg'_eq p]
-  convert this -- todo: can we remove this convert?
-  rw [← foo3, Module.length_eq_of_surjective
-    (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
-    Module.length_eq_finrank, ENat.toNat_coe]
-
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
@@ -482,9 +465,17 @@ theorem sum_ramification_inertia
       ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
   rw [finrank_fiber_eq_sum_finrank_localization,
     ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
-  apply Finset.sum_congr rfl
-  intros
-  apply foo2
+  refine Finset.sum_congr rfl fun q _ ↦ ?_
+  let r := q.1.comap Algebra.TensorProduct.includeRight
+  let Sr := Localization.AtPrime r
+  let A := Sr ⧸ p.map (algebraMap R Sr)
+  transitivity (Module.length (Localization.AtPrime p) A).toNat
+  · rw [← foo3,
+      Module.length_eq_of_surjective (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
+      Module.length_eq_finrank, ENat.toNat_coe]
+  · rw [length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A,
+      ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, inertiaDeg'_eq p]
+    rfl
 
 -- PRed
 lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [AddCommGroup S] [Module R S]
