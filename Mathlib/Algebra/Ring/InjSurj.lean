@@ -75,7 +75,6 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R]
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne S :=
   reduceProj% zeta% unfoldReducible%
   { hf.addMonoid f zero add (swap nsmul) with
-    natCast := Nat.cast,
     natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
     natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]) }
 
@@ -102,7 +101,6 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
   reduceProj% zeta% unfoldReducible%
   { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add nsmul natCast with
-    intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
     intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
@@ -346,9 +344,8 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne S :=
   reduceProj% zeta% unfoldReducible%
   { hf.addMonoid f zero add (swap nsmul) with
-    natCast := Nat.cast,
-    natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
-    natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast] }
+    natCast_zero := (natCast _).symm.trans <| by rw [Nat.cast_zero, zero]
+    natCast_succ n := (natCast _).symm.trans <| by rw [Nat.cast_succ, add, one, natCast] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits a surjective map that preserves `0`, `1` and `*` from an additive monoid with one.
@@ -371,10 +368,8 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
   reduceProj% zeta% unfoldReducible%
   { hf.addMonoidWithOne f zero one add nsmul natCast,
     hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
-    intCast := Int.cast,
-    intCast_ofNat := fun n => by rw [← intCast, Int.cast_natCast, natCast],
-    intCast_negSucc := fun n => by
-      rw [← intCast, Int.cast_negSucc, neg, natCast] }
+    intCast_ofNat n := (intCast _).symm.trans <| by rw [Int.cast_natCast, natCast],
+    intCast_negSucc n := (intCast _).symm.trans <| by rw [Int.cast_negSucc, neg, natCast] }
 
 /-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
 surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
