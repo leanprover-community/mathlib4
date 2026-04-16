@@ -599,8 +599,8 @@ instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbac
 
 /-- When `[WellPowered C]` and `[HasWidePullbacks C]`, `Subobject A` has arbitrary infimums.
 -/
-def sInf {A : C} (s : Set (Subobject A)) : Subobject A :=
-  Subobject.mk (widePullbackι s)
+instance {A : C} : InfSet (Subobject A) where
+  sInf s := Subobject.mk (widePullbackι s)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ f := by
@@ -610,7 +610,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
       eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
-  · dsimp [sInf]
+  · dsimp [sInf, InfSet.sInf]
     simp only [Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
@@ -621,7 +621,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
-  · dsimp [sInf]
+  · dsimp [sInf, InfSet.sInf]
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
 
 instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
@@ -643,8 +643,8 @@ variable [HasImages C]
 
 /-- When `[WellPowered C] [HasImages C] [HasCoproducts C]`,
 `Subobject A` has arbitrary supremums. -/
-def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
-  Subobject.mk (image.ι (smallCoproductDesc s))
+instance {A : C} : SupSet (Subobject A) where
+  sSup s := Subobject.mk (image.ι (smallCoproductDesc s))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
@@ -652,7 +652,7 @@ theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup 
   · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
-  · simp [sSup, smallCoproductDesc]
+  · simp [sSup, SupSet.sSup, smallCoproductDesc]
 
 theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
@@ -672,7 +672,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     · ext
       dsimp [smallCoproductDesc]
       simp
-  · dsimp [sSup]
+  · dsimp [sSup, SupSet.sSup]
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
 
 instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where

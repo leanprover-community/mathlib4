@@ -1096,8 +1096,9 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
 instance {_ : MeasurableSpace α} : InfSet (Measure α) :=
   ⟨fun m => (sInf (toOuterMeasure '' m)).toMeasure <| sInf_caratheodory⟩
 
-theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s :=
-  toMeasure_apply _ _ hs
+theorem sInf_apply (hs : MeasurableSet s) : sInf m s = sInf (toOuterMeasure '' m) s := by
+  simp only [sInf]
+  exact toMeasure_apply _ _ hs
 
 private theorem measure_sInf_le (h : μ ∈ m) : sInf m ≤ μ :=
   have : sInf (toOuterMeasure '' m) ≤ μ.toOuterMeasure := sInf_le (mem_image_of_mem _ h)
