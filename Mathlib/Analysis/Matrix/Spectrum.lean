@@ -56,7 +56,7 @@ variable (hA : A.IsHermitian) (hB : B.IsHermitian)
 /-- The eigenvalues of a Hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
-  (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
+  (isSymmetric_toEuclideanLin_iff.mpr hA).eigenvalues finrank_euclideanSpace
 
 lemma eigenvalues₀_antitone : Antitone hA.eigenvalues₀ :=
   LinearMap.IsSymmetric.eigenvalues_antitone ..
@@ -67,14 +67,14 @@ noncomputable def eigenvalues : n → ℝ := fun i =>
 
 /-- A choice of an orthonormal basis of eigenvectors of a Hermitian matrix. -/
 noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
-  ((isHermitian_iff_isSymmetric.1 hA).eigenvectorBasis finrank_euclideanSpace).reindex
+  ((isSymmetric_toEuclideanLin_iff.mpr hA).eigenvectorBasis finrank_euclideanSpace).reindex
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
   simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
-      congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
+      congr(⇑$((isSymmetric_toEuclideanLin_iff.mpr hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
 /-- Eigenvalues of a Hermitian matrix A are in the ℝ spectrum of A. -/
@@ -229,7 +229,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
   classical
   have : hA.eigenvalues ≠ 0 := by
-    contrapose! h_ne
+    contrapose h_ne
     have := hA.spectral_theorem
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, map_zero] at this

@@ -534,6 +534,18 @@ theorem mul_val_inv (h : IsUnit a) : a * ↑h.unit⁻¹ = 1 := by
 instance (x : M) [h : Decidable (∃ u : Mˣ, ↑u = x)] : Decidable (IsUnit x) :=
   h
 
+theorem mul_left_iff {a b : M} (ha : IsUnit a) :
+    IsUnit (a * b) ↔ IsUnit b :=
+  show IsUnit (ha.unit * b) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_left_iff => IsUnit a, IsUnit (a * b)
+
+theorem mul_right_iff {a b : M} (hb : IsUnit b) :
+    IsUnit (a * b) ↔ IsUnit a :=
+  show IsUnit (a * hb.unit) ↔ _ by simp [-IsUnit.unit_spec]
+
+grind_pattern mul_right_iff => IsUnit b, IsUnit (a * b)
+
 end Monoid
 
 section DivisionMonoid

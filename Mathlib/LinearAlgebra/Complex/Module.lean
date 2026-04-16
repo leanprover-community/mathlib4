@@ -275,9 +275,12 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
+
+open Algebra
 
 /-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
@@ -285,18 +288,20 @@ See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
-    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero])
-    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
-    show
-      algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
-        (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I') by
-      rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
-      congr 1
-      -- equate "real" and "imaginary" parts
-      · rw [smul_mul_smul_comm, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg,
-          ← map_mul, ← map_sub]
-      · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂,
-          ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
+    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero]) ?_
+where finally
+  rintro ⟨x₁, y₁⟩ ⟨x₂, y₂⟩
+  rw [mk_mul_mk]
+  change
+    algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
+      (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I')
+  rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
+  congr 1
+  -- equate "real" and "imaginary" parts
+  · rw [smul_mul_smul_comm, hf, smul_neg, ← algebraMap_eq_smul_one, ← sub_eq_add_neg,
+      ← map_mul, ← map_sub]
+  · rw [smul_def, smul_def, smul_def, ← right_comm _ x₂,
+      ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
 
 @[simp]
 theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap ℝ A z.re + z.im • I' :=
@@ -305,13 +310,13 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 
 @[simp]
-theorem adjoin_I : Algebra.adjoin ℝ {I} = ⊤ := by
+theorem adjoin_I : ℝ[I] = ⊤ := by
   refine top_unique fun x hx => ?_; clear hx
   rw [← x.re_add_im, ← smul_eq_mul, ← Complex.coe_algebraMap]
-  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _)
+  exact add_mem (algebraMap_mem _ _) (Subalgebra.smul_mem _ (subset_adjoin <| by simp) _)
 
 @[simp]
-theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = Algebra.adjoin ℝ {I'} := by
+theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = ℝ[I'] := by
   simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
 
 /-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element

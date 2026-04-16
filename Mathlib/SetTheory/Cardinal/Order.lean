@@ -426,7 +426,7 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  isSuccLimit_iff
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
@@ -525,35 +525,40 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 
 variable (α) in
+/-- The **well-ordering theorem** (or **Zermelo's theorem**):
+every type has a linear order which satisfies `WellFoundedGT` -/
+lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
+  classical
+  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
+  exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
+    by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
+
+variable (α) in
 /-- The **well-ordering theorem** (or **Zermelo's theorem**): every type has a well-order -/
-theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
+@[to_dual existing]
+theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
   classical
   exact ⟨linearOrderOfSTO WellOrderingRel, WellOrderingRel.isWellOrder.toIsWellFounded⟩
 
+@[deprecated (since := "2026-04-12")] alias exists_wellOrder := exists_wellFoundedLT
+
 namespace Cardinal
 
-/-! ### Bounds on suprema -/
-
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  suffices BddAbove (range f) from (isLUB_csSup' this).mem_of_not_isSuccPrelimit hω
-  contrapose! hω with hf
-  rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
-  exact isSuccPrelimit_bot
+  exact exists_eq_ciSup_of_not_isSuccPrelimit' hω
 
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
     (h : ⨆ i, f i = c) : ∃ i, f i = c := by
-  rw [Cardinal.isSuccLimit_iff] at hc
-  refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
-    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
-  cases not_not.mp e
-  rw [← nonpos_iff_eq_zero] at h ⊢
-  exact (le_ciSup hf _).trans h
+  subst h
+  exact exists_eq_ciSup_of_not_isSuccLimit hf hc
 
 /-! ### Indexed cardinal `prod` -/
 

@@ -269,13 +269,16 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     have :=
       calc
         re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
-        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := by gcongr; exact le_opNorm _ _
     calc
       ‖A x‖ = √(re ⟪(A† ∘L A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
       _ ≤ √(‖A† ∘L A‖ * ‖x‖ * ‖x‖) := Real.sqrt_le_sqrt this
       _ = √‖A† ∘L A‖ * ‖x‖ := by
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
+
+@[simp] theorem adjoint_comp_self_eq_zero_iff {A : E →L[𝕜] F} :
+    adjoint A ∘L A = 0 ↔ A = 0 := by rw [← norm_eq_zero]; simp [norm_adjoint_comp_self]
 
 /-- The C⋆-algebra instance when `𝕜 := ℂ` can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousLinearMap.lean`. -/
@@ -450,6 +453,20 @@ alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
 theorem _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (hx : ‖x‖ = 1) :
     IsStarProjection (rankOne 𝕜 x x) := (isSymmetricProjection_rankOne_self hx).isStarProjection
+
+open Module End Submodule in
+theorem orthogonal_mem_invtSubmodule {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    (h : U ∈ invtSubmodule T.adjoint.toLinearMap) :
+    Uᗮ ∈ invtSubmodule T.toLinearMap := by
+  simp only [mem_invtSubmodule_iff_forall_mem_of_mem, coe_coe, mem_orthogonal] at h ⊢
+  grind [T.adjoint_inner_left]
+
+open Module End in
+theorem mem_invtSubmodule_adjoint_iff {T : E →L[𝕜] E} {U : Submodule 𝕜 E}
+    [U.HasOrthogonalProjection] :
+    U ∈ invtSubmodule T.adjoint.toLinearMap ↔ Uᗮ ∈ invtSubmodule T.toLinearMap where
+  mp := orthogonal_mem_invtSubmodule
+  mpr := by simpa using orthogonal_mem_invtSubmodule (T := T.adjoint) (U := Uᗮ)
 
 end ContinuousLinearMap
 
@@ -768,6 +785,14 @@ theorem adjoint_toSpanSingleton (x : E) :
     adjoint (toSpanSingleton 𝕜 E x) = innerₛₗ 𝕜 x := by
   simp [← adjoint_innerₛₗ_apply]
 
+open Module End in
+/-- The linear map version of `ContinuousLinearMap.mem_invtSubmodule_adjoint_iff`
+in a finite-dimensional space. -/
+theorem _root_.Module.End.mem_invtSubmodule_adjoint_iff {T : E →ₗ[𝕜] E} {U : Submodule 𝕜 E} :
+    U ∈ invtSubmodule T.adjoint ↔ Uᗮ ∈ invtSubmodule T :=
+  have := FiniteDimensional.complete 𝕜 E
+  ContinuousLinearMap.mem_invtSubmodule_adjoint_iff
+
 end LinearMap
 
 section Unitary
@@ -789,6 +814,10 @@ theorem inner_map_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
 theorem norm_map_iff_adjoint_comp_self (u : H →L[𝕜] K) :
     (∀ x : H, ‖u x‖ = ‖x‖) ↔ adjoint u ∘L u = 1 := by
   rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_adjoint_comp_self]
+
+theorem isometry_iff_adjoint_comp_self (u : H →L[𝕜] K) :
+    Isometry u ↔ adjoint u ∘L u = 1 := by
+  rw [AddMonoidHomClass.isometry_iff_norm, norm_map_iff_adjoint_comp_self]
 
 @[simp]
 lemma _root_.LinearIsometryEquiv.adjoint_eq_symm (e : H ≃ₗᵢ[𝕜] K) :
@@ -1011,3 +1040,31 @@ theorem Matrix.toEuclideanLin_conjTranspose_eq_adjoint (A : Matrix m n 𝕜) :
   A.toLin_conjTranspose (EuclideanSpace.basisFun n 𝕜) (EuclideanSpace.basisFun m 𝕜)
 
 end Matrix
+
+@[simp]
+theorem LinearIsometry.adjoint_comp_self {E E' : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [CompleteSpace E'] (f : E →ₗᵢ[𝕜] E') :
+    f.toContinuousLinearMap.adjoint ∘L f.toContinuousLinearMap = 1 :=
+  f.toContinuousLinearMap.isometry_iff_adjoint_comp_self.mp f.isometry
+
+/-- A version of `LinearIsometry.adjoint_comp_self` in terms of `LinearMap.adjoint`. -/
+@[simp]
+theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
+    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
+    f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 E'
+  ext x
+  exact congr($(f.adjoint_comp_self) x)
+
+theorem LinearIsometryEquiv.toMatrix_mem_unitaryGroup {ι E E' : Type*} [Fintype ι] [DecidableEq ι]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (f : E ≃ₗᵢ[𝕜] E') (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι 𝕜 E') :
+    f.toMatrix b.toBasis b'.toBasis ∈ Matrix.unitaryGroup ι 𝕜 := by
+  have : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b.toBasis
+  have : FiniteDimensional 𝕜 E' := Module.Basis.finiteDimensional_of_finite b'.toBasis
+  simp [Matrix.mem_unitaryGroup_iff, Matrix.star_eq_conjTranspose, ← LinearMap.toMatrix_adjoint,
+    ← LinearMap.toMatrix_comp, LinearIsometryEquiv.adjoint_toLinearMap_eq_symm,
+    -OrthonormalBasis.coe_toBasis]

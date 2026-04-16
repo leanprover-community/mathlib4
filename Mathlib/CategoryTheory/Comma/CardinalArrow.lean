@@ -25,7 +25,6 @@ universe w w' v u
 
 namespace CategoryTheory
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Arrow.finite_iff (C : Type u) [SmallCategory C] :
     Finite (Arrow C) ↔ Nonempty (FinCategory C) := by
   constructor
@@ -70,7 +69,6 @@ lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
   small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     LocallySmall.{w} C where
   hom_small X Y :=
