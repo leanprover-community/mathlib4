@@ -61,8 +61,11 @@ lemma gaussNorm_eq : gaussNorm v c f = ⨆ i : ℕ, v (f.coeff i) * c ^ i := by
   `gaussNormC f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t)))
 
-lemma foo : (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t))) =
-    Set.range fun t ↦ v ((MvPowerSeries.coeff t) f) * t.prod fun _ x2 ↦ c ^ x2 := by
+lemma HasGaussNorm.HasMvGaussNorm (h : HasGaussNorm v c f) :
+    MvPowerSeries.HasGaussNorm v (fun _ ↦ c) f := by
+  suffices (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t))) =
+      Set.range fun t ↦ v ((MvPowerSeries.coeff t) f) * t.prod fun _ x2 ↦ c ^ x2 by
+    simpa only [MvPowerSeries.HasGaussNorm, ← this]
   refine Set.ext (fun _ ↦ ?_)
   simp only [Set.mem_range, Finsupp.prod_pow, Finset.univ_unique, PUnit.default_eq_unit,
     Finset.prod_singleton]
@@ -79,12 +82,6 @@ lemma foo : (Set.range (fun (t : ℕ) ↦ (v (coeff t f) * c ^ t))) =
     use Equiv.finsuppUnique.toFun y
     simpa [coeff, show (Finsupp.single () (y PUnit.unit)) = y by grind]
 
-lemma HasGaussNorm_MvHasGaussNorm (h : HasGaussNorm v c f) :
-    MvPowerSeries.HasGaussNorm v (fun _ ↦ c) f := by
-  simpa only [MvPowerSeries.HasGaussNorm, ← foo]
-
--- Note: not convinced that foo + HasGaussNorm... is the best way to do this
-
 theorem gaussNorm_zero (vZero : v 0 = 0) : gaussNorm v c 0 = 0 :=
   MvPowerSeries.gaussNorm_zero v (fun _ ↦ c) vZero
 
@@ -100,13 +97,13 @@ lemma gaussNorm_eq_zero_iff (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
     (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : 0 < c) (hbd : HasGaussNorm v c f) :
     gaussNorm v c f = 0 ↔ f = 0 :=
   MvPowerSeries.gaussNorm_eq_zero_iff v (fun _ ↦ c) f vZero vNonneg h_eq_zero
-    (by grind) (HasGaussNorm_MvHasGaussNorm v c f hbd)
+    (by grind) (hbd.HasMvGaussNorm)
 
 lemma gaussNorm_add_le_max (g : PowerSeries R) (hc : 0 ≤ c)
     (vNonneg : ∀ a, v a ≥ 0) (hv : ∀ x y, v (x + y) ≤ max (v x) (v y))
     (hbfd : HasGaussNorm v c f) (hbgd : HasGaussNorm v c g) :
     gaussNorm v c (f + g) ≤ max (gaussNorm v c f) (gaussNorm v c g) :=
   MvPowerSeries.gaussNorm_add_le_max v (fun _ ↦ c) f g (fun _ => by simp [hc]) vNonneg hv
-    (HasGaussNorm_MvHasGaussNorm v c f hbfd) (HasGaussNorm_MvHasGaussNorm v c g hbgd)
+   hbfd.HasMvGaussNorm hbgd.HasMvGaussNorm
 
 end PowerSeries
