@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -37,7 +36,7 @@ abbrev PointedCone
 
 namespace PointedCone
 
-open Submodule
+open Submodule Pointwise
 
 section Semiring
 
@@ -296,6 +295,12 @@ section AddCommGroup
 
 variable [AddCommGroup M] [Module R M] (C : PointedCone R M)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+  neg_restrictScalars S
+
+end Submodule
+
 /-- A pointed cone is salient iff the intersection of the cone with its negative
 is the set `{0}`. -/
 lemma salient_iff_inter_neg_eq_singleton :
@@ -318,11 +323,11 @@ variable [PartialOrder R] [IsOrderedRing R] {C : PointedCone R M}
 
 lemma sup_inf_assoc_of_le_submodule (D : PointedCone R M)
     {S : Submodule R M} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
-  sup_inf_assoc_of_le_of_neg_le _ hCS (fun _ hx => by simpa using hCS hx)
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le])
 
 lemma inf_sup_assoc_of_le_of_submodule_le (D : PointedCone R M)
     {S : Submodule R M} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
-  inf_sup_assoc_of_le_of_neg_le _ hSC (fun _ hx => by apply hSC; simpa [hSC] using hx)
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le])
 
 end AddCommGroup
 
@@ -331,8 +336,6 @@ end PartialOrder
 variable [LinearOrder R] [IsOrderedRing R] {C : PointedCone R M}
 
 section Lineal
-
-open Pointwise
 
 variable (C)
 

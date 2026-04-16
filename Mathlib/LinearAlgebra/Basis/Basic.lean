@@ -93,6 +93,12 @@ protected lemma linearIndepOn (s : Set ι) : LinearIndepOn R b s :=
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
 
+theorem injective_constr_of_linearIndependent
+    [Semiring R₂] [Module R₂ M'] [SMulCommClass R R₂ M'] {v : ι → M'}
+    (hv : LinearIndependent R v) : Injective (b.constr R₂ v) :=
+  fun _ _ hab ↦ b.repr.injective <| hv.finsuppLinearCombination_injective <| by
+    simpa [constr_def] using hab
+
 end Properties
 
 variable {v : ι → M} {x y : M}
