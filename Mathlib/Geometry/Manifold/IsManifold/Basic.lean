@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
+import Mathlib.Tactic.ZBMathAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -782,6 +783,7 @@ field `𝕜`. This definition includes the model with corners `I` (which might a
 or not, so this class covers both manifolds with boundary and manifolds without boundary), and
 a smoothness parameter `n : WithTop ℕ∞` (where `n = 0` means topological manifold, `n = ∞` means
 smooth manifold and `n = ω` means analytic manifold). -/
+@[zbmath "smooth manifold"]
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
@@ -927,6 +929,7 @@ example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
+@[zbmath "product of manifolds"]
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
