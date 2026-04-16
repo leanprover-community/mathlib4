@@ -714,8 +714,8 @@ lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monoton
     (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - m)).2
   exact (key n (hmb.trans hbn)).trans (key b hmb).symm
 
-/-- An antitone function `f : ℕ → ℕ` which stabilises for the first time at step `m` remains
-constant from step `m` onward. The stabilisation index is at most `f 0`.
+/-- An antitone function `f : ℕ → ℕ` which is constant after stabilising for the first time,
+stabilises in at most `f 0` steps.
 
 Compared to `WellFoundedLT.antitone_chain_condition`, this lemma requires the extra hypothesis
 `hfstab` and only applies to `ℕ`-valued functions, but in return it gives an explicit bound on the
