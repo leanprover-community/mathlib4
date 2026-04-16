@@ -193,7 +193,7 @@ lemma schnirelmannDensity_congr {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A 
 
 @[simp] lemma schnirelmannDensity_congr_decidable {A : Set ℕ} (h : DecidablePred (· ∈ A))
     [DecidablePred (· ∈ A)] :
-    @schnirelmannDensity A h = schnirelmannDensity A := by congr
+    @schnirelmannDensity A (id h) = schnirelmannDensity A := by congr
 
 /--
 If the Schnirelmann density is `0`, there is a positive natural for which
