@@ -238,6 +238,22 @@ lemma Cell.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cell j) :
 
 section
 
+/-!
+The main technical result in this section is `SSet.Subcomplex.Pairing.RankFunction.isPushout`
+which states that there is a pushout square:
+```
+                                      f.t j
+∐ fun (c : f.Cell j) ↦ c.horn  -------------> f.filtration j
+               |                                   |
+         f.m j |                                   |
+               v                      f.b j         v
+∐ fun (i : f.Cell j) ↦ Δ[i.dim + 1]  -------> f.filtration (Order.succ j)
+```
+The map on the left is a coproduct of horn inclusions (the source and target
+of the morphism `f.m j` are denoted `f.sigmaHorn j` and `f.sigmaStdSimplex j`).
+
+-/
+
 /-- Given a rank function for a proper pairing of a subcomplex of a
 simplicial set, this is the coproduct of the horns corresponding to
 all cells of rank `j`. -/
@@ -521,7 +537,7 @@ lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.sim
   dsimp
   rw [Cell.map_app_objEquiv_symm_δ_index]
 
-lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
+private lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by
   obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s
   · rw [f.mapN_type₁]
@@ -529,7 +545,7 @@ lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
   · rw [f.mapN_type₂]
     exact c.s.val.nonDegenerate
 
-lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) := by
+private lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) := by
   intro s t h
   obtain ⟨c, rfl | rfl⟩ := f.exists_or_of_range_m_N s <;>
     obtain ⟨c', rfl | rfl⟩ := f.exists_or_of_range_m_N t <;>
@@ -541,7 +557,7 @@ lemma isPushout_aux₂ {j : ι} : Function.Injective (f.mapN (j := j)) := by
   · exact (P.ne _ _ h.symm).elim
   · congr; aesop
 
-lemma isPushout_aux₃ {j : ι} :
+private lemma isPushout_aux₃ {j : ι} :
     Function.Injective fun (x : (Subcomplex.range (f.m j)).N) ↦ S.mk ((f.b j).app _ x.simplex) :=
   fun _ _ h ↦ f.isPushout_aux₂ (congr_arg (S.map (Subcomplex.ι _)) h)
 
