@@ -463,8 +463,7 @@ lemma isPullback (j : ι) :
       rw [Subtype.ext_iff] at h
       dsimp at h
       subst h
-      erw [← NatTrans.comp_app_apply] at hy
-      rwa [x.ι_b] at hy
+      rwa [x.ι_b_app_apply] at hy
     refine ⟨x.ιSigmaHorn.app _ ⟨b, hb⟩, ?_, ?_⟩
     · erw [← NatTrans.comp_app_apply] at h ⊢
       simpa only [Subtype.ext_iff, x.ι_t, x.ι_b] using h.symm
