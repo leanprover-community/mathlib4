@@ -78,9 +78,6 @@ section
 
 variable (f : R →+* R')
 
-instance : (ModuleCat.restrictScalars.{v} f).Additive where
-  map_add := by simp
-
 lemma ModuleCat.restrictScalars_map_exact (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
     (S.map (ModuleCat.restrictScalars.{v} f)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact] at h ⊢
