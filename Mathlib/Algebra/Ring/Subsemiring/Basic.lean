@@ -201,6 +201,7 @@ theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R
 theorem mem_bot {x : R} : x ∈ (⊥ : Subsemiring R) ↔ ∃ n : ℕ, ↑n = x :=
   RingHom.mem_rangeS
 
+@[no_expose]
 instance : InfSet (Subsemiring R) :=
   ⟨fun s =>
     Subsemiring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, Subsemiring.toSubmonoid t) (by simp)
@@ -209,7 +210,7 @@ instance : InfSet (Subsemiring R) :=
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subsemiring R)) : ((sInf S : Subsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -236,9 +237,7 @@ theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
 /-- Subsemirings of a semiring form a complete lattice. -/
 instance : CompleteLattice (Subsemiring R) :=
   { completeLatticeOfInf (Subsemiring R) fun _ =>
-      IsGLB.of_image
-        (fun {s t : Subsemiring R} => show (s : Set R) ⊆ t ↔ s ≤ t from SetLike.coe_subset_coe)
-        isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     bot := ⊥
     bot_le := fun s _ hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx

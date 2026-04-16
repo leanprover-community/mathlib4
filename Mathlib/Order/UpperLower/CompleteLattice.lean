@@ -80,11 +80,11 @@ instance : Top (UpperSet α) :=
 instance : Bot (UpperSet α) :=
   ⟨⟨univ, isUpperSet_univ⟩⟩
 
-@[to_dual]
+@[no_expose, to_dual]
 instance : SupSet (UpperSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isUpperSet_iInter₂ fun s _ => s.upper⟩⟩
 
-@[to_dual]
+@[no_expose, to_dual]
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
@@ -93,12 +93,12 @@ instance : PartialOrder (UpperSet α) :=
 
 instance completeLattice : CompleteLattice (UpperSet α) :=
   (toDual.injective.comp SetLike.coe_injective).completeLattice _
-    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ by rfl) (fun _ ↦ by rfl) rfl rfl
 
 instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
   .ofMinimalAxioms <|
     (toDual.injective.comp SetLike.coe_injective).completelyDistribLatticeMinimalAxioms .of _
-      .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+      .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ by rfl) (fun _ ↦ by rfl) rfl rfl
 
 @[to_dual existing]
 instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
@@ -107,12 +107,12 @@ instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
 @[to_dual existing]
 instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
   SetLike.coe_injective.completeLattice _
-    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ by rfl) (fun _ ↦ by rfl) rfl rfl
 
 @[to_dual existing]
 instance _root_.LowerSet.completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
   .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
-    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ by rfl) (fun _ ↦ by rfl) rfl rfl
 
 @[to_dual]
 instance : Inhabited (UpperSet α) :=
@@ -153,11 +153,11 @@ theorem coe_inf (s t : UpperSet α) : (↑(s ⊓ t) : Set α) = (s : Set α) ∪
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sSup (S : Set (UpperSet α)) : (↑(sSup S) : Set α) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (UpperSet α)) : (↑(sInf S) : Set α) = ⋃ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_iSup (f : ι → UpperSet α) : (↑(⨆ i, f i) : Set α) = ⋂ i, f i := by simp [iSup]

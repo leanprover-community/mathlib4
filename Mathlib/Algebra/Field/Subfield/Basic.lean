@@ -241,6 +241,7 @@ theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carr
 theorem mem_inf {p p' : Subfield K} {x : K} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
+@[no_expose]
 instance : InfSet (Subfield K) :=
   ⟨fun S =>
     { sInf (Subfield.toSubring '' S) with

@@ -177,6 +177,7 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
 ## Infima & suprema in a submodule
 -/
 
+@[no_expose]
 instance : InfSet (Submodule R M) :=
   ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
@@ -229,7 +230,7 @@ theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x 
 
 @[simp, norm_cast]
 theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :

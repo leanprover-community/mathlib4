@@ -283,6 +283,7 @@ theorem coe_inf (p p' : NonUnitalSubring R) :
 theorem mem_inf {p p' : NonUnitalSubring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
+@[no_expose]
 instance : InfSet (NonUnitalSubring R) :=
   ⟨fun s =>
     NonUnitalSubring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubring.toSubsemigroup t)
@@ -291,7 +292,7 @@ instance : InfSet (NonUnitalSubring R) :=
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (NonUnitalSubring R)) :
     ((sInf S : NonUnitalSubring R) : Set R) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem mem_sInf {S : Set (NonUnitalSubring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -318,8 +319,7 @@ theorem sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
 /-- `NonUnitalSubring`s of a ring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubring R) :=
   { completeLatticeOfInf (NonUnitalSubring R) fun _s =>
-      IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
-        isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     bot := ⊥
     bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤

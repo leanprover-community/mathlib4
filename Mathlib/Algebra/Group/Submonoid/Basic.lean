@@ -66,7 +66,7 @@ namespace Submonoid
 
 variable (S : Submonoid M)
 
-@[to_additive]
+@[no_expose, to_additive]
 instance : InfSet (Submonoid M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
@@ -77,7 +77,7 @@ instance : InfSet (Submonoid M) :=
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -95,7 +95,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set 
 @[to_additive /-- The `AddSubmonoid`s of an `AddMonoid` form a complete lattice. -/]
 instance : CompleteLattice (Submonoid M) :=
   { (completeLatticeOfInf (Submonoid M)) fun _ =>
-      .of_image SetLike.coe_subset_coe isGLB_biInf with
+      .of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥

@@ -436,6 +436,7 @@ instance : Min (LieSubalgebra R L) :=
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
 
+@[no_expose]
 instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with

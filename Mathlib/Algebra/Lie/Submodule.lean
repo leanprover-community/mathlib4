@@ -322,6 +322,7 @@ instance : Min (LieSubmodule R L M) :=
     { (N ⊓ N' : Submodule R M) with
       lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
 
+@[no_expose]
 instance : InfSet (LieSubmodule R L M) :=
   ⟨fun S ↦
     { toSubmodule := sInf {(s : Submodule R M) | s ∈ S}

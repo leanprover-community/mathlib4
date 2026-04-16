@@ -57,7 +57,7 @@ namespace Subsemigroup
 
 variable (S : Subsemigroup M)
 
-@[to_additive]
+@[no_expose, to_additive]
 instance : InfSet (Subsemigroup M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
@@ -67,7 +67,7 @@ instance : InfSet (Subsemigroup M) :=
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (S : Set (Subsemigroup M)) : ((sInf S : Subsemigroup M) : Set M) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Subsemigroup M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -85,7 +85,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : S
 @[to_additive /-- The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice. -/]
 instance : CompleteLattice (Subsemigroup M) :=
   { completeLatticeOfInf (Subsemigroup M) fun _ =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥

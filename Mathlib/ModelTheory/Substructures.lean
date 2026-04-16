@@ -182,6 +182,7 @@ theorem coe_inf (p p' : L.Substructure M) :
 theorem mem_inf {p p' : L.Substructure M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
+@[no_expose]
 instance instInfSet : InfSet (L.Substructure M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, (t : Set M)
@@ -196,7 +197,7 @@ instance instInfSet : InfSet (L.Substructure M) :=
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (L.Substructure M)) :
     ((sInf S : L.Substructure M) : Set M) = ⋂ s ∈ S, (s : Set M) :=
-  rfl
+  (rfl)
 
 theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
@@ -212,9 +213,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
 /-- Substructures of a structure form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
   { completeLatticeOfInf (L.Substructure M) fun _ =>
-      IsGLB.of_image
-        (fun {S T : L.Substructure M} => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
-        isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     le := (· ≤ ·)
     lt := (· < ·)
     top := ⊤

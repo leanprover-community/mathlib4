@@ -76,9 +76,11 @@ instance instBot : Bot L where
 instance instTop : Top L where
   top := ⟨⊤, top_mem⟩
 
+@[no_expose]
 instance instSupSet : SupSet L where
   sSup s := ⟨sSup <| (↑) '' s, L.sSupClosed' image_val_subset⟩
 
+@[no_expose]
 instance instInfSet : InfSet L where
   sInf s := ⟨sInf <| (↑) '' s, L.sInfClosed' image_val_subset⟩
 
@@ -90,12 +92,12 @@ theorem sInfClosed {s : Set α} (h : s ⊆ L) : sInf s ∈ L := L.sInfClosed' h
 
 @[simp] theorem coe_top : (↑(⊤ : L) : α) = ⊤ := rfl
 
-@[simp] theorem coe_sSup (S : Set L) : (↑(sSup S) : α) = sSup {(s : α) | s ∈ S} := rfl
+@[simp] theorem coe_sSup (S : Set L) : (↑(sSup S) : α) = sSup {(s : α) | s ∈ S} := (rfl)
 
 theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
   rw [coe_sSup, ← Set.image, sSup_image]
 
-@[simp] theorem coe_sInf (S : Set L) : (↑(sInf S) : α) = sInf {(s : α) | s ∈ S} := rfl
+@[simp] theorem coe_sInf (S : Set L) : (↑(sInf S) : α) = sInf {(s : α) | s ∈ S} := (rfl)
 
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
@@ -117,8 +119,8 @@ instance instCompleteLattice : CompleteLattice L :=
 /-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
 def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
   toFun := Subtype.val
-  map_sInf' _ := rfl
-  map_sSup' _ := rfl
+  map_sInf' _ := coe_sInf _
+  map_sSup' _ := coe_sSup _
 
 @[simp, norm_cast] lemma coe_subtype (L : CompleteSublattice α) : L.subtype = ((↑) : L → α) := rfl
 lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl

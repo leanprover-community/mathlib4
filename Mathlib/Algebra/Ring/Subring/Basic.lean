@@ -313,6 +313,7 @@ theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = (p : Set
 theorem mem_inf {p p' : Subring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
+@[no_expose]
 instance : InfSet (Subring R) :=
   ⟨fun s =>
     Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, t.toSubmonoid) (⨅ t ∈ s, Subring.toAddSubgroup t)
@@ -320,7 +321,7 @@ instance : InfSet (Subring R) :=
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subring R)) : ((sInf S : Subring R) : Set R) = ⋂ s ∈ S, ↑s :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -347,7 +348,7 @@ theorem sInf_toAddSubgroup (s : Set (Subring R)) :
 /-- Subrings of a ring form a complete lattice. -/
 instance : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx

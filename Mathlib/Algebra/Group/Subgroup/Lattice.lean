@@ -233,7 +233,7 @@ theorem coe_inf (p p' : Subgroup G) : ((p ⊓ p' : Subgroup G) : Set G) = (p : S
 theorem mem_inf {p p' : Subgroup G} {x : G} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
-@[to_additive]
+@[no_expose, to_additive]
 instance : InfSet (Subgroup G) :=
   ⟨fun s =>
     { (⨅ S ∈ s, Subgroup.toSubmonoid S).copy (⋂ S ∈ s, ↑S) (by simp) with
@@ -242,7 +242,7 @@ instance : InfSet (Subgroup G) :=
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sInf (H : Set (Subgroup G)) : ((sInf H : Subgroup G) : Set G) = ⋂ s ∈ H, ↑s :=
-  rfl
+  (rfl)
 
 @[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Subgroup G)} {x : G} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -260,7 +260,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G
 @[to_additive /-- The `AddSubgroup`s of an `AddGroup` form a complete lattice. -/]
 instance : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image SetLike.coe_subset_coe (by exact isGLB_biInf) with
     bot := ⊥
     bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
