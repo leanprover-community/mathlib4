@@ -659,7 +659,7 @@ instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
 
 open scoped IsMulCommutative in
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  commSemiringTopologicalClosure _ mul_comm
+  fast_instance% commSemiringTopologicalClosure _ mul_comm
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
     [IsSemitopologicalSemiring A] [Algebra R A] (x : A) :
