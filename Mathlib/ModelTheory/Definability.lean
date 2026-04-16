@@ -542,9 +542,7 @@ theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
     | none => fun_prop
     | some j =>
       simpa [tupleGraph] using
-        ((hg j).preimage_comp fun
-          | none => none
-          | some i => some (some i))
+        ((hg j).preimage_comp fun | none => none | some i => some (some i))
   simpa [DefinableFun, G, tupleGraph] using hf.preimage_map hG
 
 @[fun_prop]
@@ -563,12 +561,9 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
 lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
     A.Definable L {v : α → M | f v = g v} := by
-  let F : (α → M) → Fin 2 → M := fun v => ![f v, g v]
-  have hF : A.DefinableMap L F := by
-    intro i
-    fin_cases i
-    · exact hf
-    · exact hg
+  have hF : A.DefinableMap L (fun v => ![f v, g v]) := by
+    simp [DefinableMap]
+    simp_all only [and_self]
   exact (Definable.diagonal L A).preimage_map hF
 
 /-- The preimage of a constant under a definable function is definable. -/
