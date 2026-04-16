@@ -559,7 +559,7 @@ end Action
 
 end ring
 
-section commsemiring
+section CommSemiring
 
 variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
 
