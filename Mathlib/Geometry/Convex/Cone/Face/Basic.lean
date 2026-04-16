@@ -26,7 +26,7 @@ in `F` are also in `F`.
   flexibility necessary to deal wth cones over general rings. E.g. the cone of positive integers has
   no proper subset that are extreme. We prove that every face is an extreme set of its cone.
 * Most results proven over a division ring hold more generally over an Archimedean ring. In
-  particular, `iff_mem_of_add_mem` holds whenever for every `x ∈ R` there is a `y ∈ R` with
+  particular, `iff_mem_of_add_mem_left` holds whenever for every `x ∈ R` there is a `y ∈ R` with
   `1 ≤ x * y`.
 
 -/
@@ -55,7 +55,7 @@ variable {C C₁ C₂ F F₁ F₂ : PointedCone R M}
 
 theorem isFaceOf_iff_mem_of_smul_add_smul_mem : F.IsFaceOf C ↔
     F ≤ C ∧ ∀ {x y : M} {a b : R}, x ∈ C → y ∈ C → 0 < a → 0 < b → a • x + b • y ∈ F → x ∈ F where
-  mp h := ⟨h.1, fun xC yC a0 b0 hab ↦ h.2 xC (smul_mem _ b0.le yC) a0 hab⟩
+  mp h := ⟨h.1, fun xC yC a0 b0 ↦ h.2 xC (smul_mem _ b0.le yC) a0⟩
   mpr h := by
     refine ⟨h.1, ?_⟩
     by_cases hc : 0 < (1 : R)
@@ -69,13 +69,6 @@ namespace IsFaceOf
 protected theorem refl (C : PointedCone R M) : C.IsFaceOf C := ⟨fun _ a ↦ a, fun hx _ _ _ ↦ hx⟩
 
 protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := .refl _
-
-/-- The face of a face of a cone is also a face of the cone. -/
-@[trans]
-protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
-  rw [isFaceOf_iff_mem_of_smul_add_smul_mem] at h₁ h₂ ⊢
-  refine ⟨h₁.1.trans h₂.1, fun hx hy a0 b0 h ↦ ?_⟩
-  exact h₁.2 (h₂.2 hx hy a0 b0 (h₁.1 h)) (h₂.2 hy hx b0 a0 (by rw [add_comm]; exact h₁.1 h)) a0 b0 h
 
 /-- A face of a cone is a face of another if and only if they are contained in each other. -/
 theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
@@ -107,20 +100,24 @@ theorem inf_left (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) : (F₁ ⊓ F
 theorem inf_right (h₁ : F.IsFaceOf C₁) (h₂ : F.IsFaceOf C₂) : F.IsFaceOf (C₁ ⊓ C₂) :=
   inf_idem F ▸ inf h₁ h₂
 
-theorem mem_of_add_mem (hF : F.IsFaceOf C) {x y : M}
+theorem mem_of_add_mem_left (hF : F.IsFaceOf C) {x y : M}
     (hx : x ∈ C) (hy : y ∈ C) (hxy : x + y ∈ F) : x ∈ F := by
   nontriviality R using Module.subsingleton R M
   simpa [hxy] using hF.mem_of_smul_add_mem hx hy zero_lt_one
 
+theorem mem_of_add_mem_right (hF : F.IsFaceOf C) {x y : M}
+    (hx : x ∈ C) (hy : y ∈ C) (hxy : x + y ∈ F) : y ∈ F := by
+  rw [add_comm x y] at hxy; exact mem_of_add_mem_left hF hy hx hxy
+
 theorem add_mem_iff_mem (hF : F.IsFaceOf C) {x y : M} (hx : x ∈ C) (hy : y ∈ C) :
     x + y ∈ F ↔ x ∈ F ∧ y ∈ F := by
   refine ⟨?_, fun ⟨hx, hy⟩ ↦ F.add_mem hx hy⟩
-  exact fun h ↦ ⟨mem_of_add_mem hF hx hy h, mem_of_add_mem hF hy hx (by rwa [add_comm])⟩
+  exact fun h ↦ ⟨mem_of_add_mem_left hF hx hy h, mem_of_add_mem_right hF hx hy h⟩
 
 /-- If the sum of points of a cone is in a face, then all the points are in the face. -/
 theorem mem_of_sum_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
     (hsC : ∀ i : ι, f i ∈ C) (hs : ∑ i : ι, f i ∈ F) (i : ι) : f i ∈ F := by classical
-  refine hF.mem_of_add_mem (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) ↦ hsC j)) ?_
+  refine hF.mem_of_add_mem_left (hsC i) (sum_mem (fun j (_ : j ∈ Finset.univ.erase i) ↦ hsC j)) ?_
   simp [hs]
 
 theorem sum_mem_iff_mem {ι : Type*} [Fintype ι] {f : ι → M} (hF : F.IsFaceOf C)
@@ -136,6 +133,12 @@ theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι →
   · refine hF.mem_of_smul_add_mem (hsC i) ?_ hci hs
     exact C.sum_mem fun i _ ↦ C.smul_mem (hc i) (hsC i)
   · simp
+
+/-- The face of a face of a cone is also a face of the cone. -/
+@[trans]
+protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
+  refine ⟨h₁.1.trans h₂.1, fun hx hy ha hxy ↦ h₁.2 (h₂.2 hx hy ha (h₁.le hxy)) ?_ ha hxy⟩
+  exact h₂.mem_of_add_mem_right (smul_mem _ ha.le hx) hy (h₁.le hxy)
 
 section Map
 
@@ -206,9 +209,9 @@ variable [DivisionRing R] [LinearOrder R] [IsOrderedRing R]
 variable [AddCommGroup M] [Module R M]
 variable {C F F₁ F₂ : PointedCone R M}
 
-theorem isFaceOf_iff_mem_of_add_mem : F.IsFaceOf C ↔
+theorem isFaceOf_iff_mem_of_add_mem_left : F.IsFaceOf C ↔
     (F ≤ C ∧ ∀ {x y : M}, x ∈ C → y ∈ C → x + y ∈ F → x ∈ F) := by
-  refine ⟨fun h ↦ ⟨h.le, h.mem_of_add_mem⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun hx hy ha haxy ↦ ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.le, h.mem_of_add_mem_left⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun hx hy ha haxy ↦ ?_⟩⟩
   simpa [← smul_assoc, inv_mul_cancel₀ (ne_of_gt ha)] using smul_mem _
     (inv_nonneg.mpr (le_of_lt ha)) <| h₂ (smul_mem _ (le_of_lt ha) hx) hy haxy
 
@@ -216,7 +219,7 @@ namespace IsFaceOf
 
 /-- The lineality space of a cone is a face. -/
 lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
-  rw [isFaceOf_iff_mem_of_add_mem]
+  rw [isFaceOf_iff_mem_of_add_mem_left]
   simp only [lineal_le, true_and]
   intro _ _ xc yc xyf
   simp [neg_add_rev, xc, true_and] at xyf ⊢
@@ -224,7 +227,7 @@ lemma lineal (C : PointedCone R M) : IsFaceOf C.lineal C := by
 
 /-- The lineality space of a cone lies in every face. -/
 lemma lineal_le (hF : F.IsFaceOf C) : C.lineal ≤ F :=
-  fun _ hx ↦ hF.mem_of_add_mem hx.1 hx.2 (by simp)
+  fun _ hx ↦ hF.mem_of_add_mem_left hx.1 hx.2 (by simp)
 
 /-- The lineality space of a face of a cone agrees with the lineality space of the cone. -/
 lemma lineal_congr (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
@@ -232,8 +235,8 @@ lemma lineal_congr (hF : F.IsFaceOf C) : F.lineal = C.lineal := by
   constructor <;> intro ⟨hx, hx'⟩
   · exact ⟨hF.le hx, hF.le hx'⟩
   constructor
-  · exact hF.mem_of_add_mem hx hx' (by simp)
-  · exact hF.mem_of_add_mem hx' hx (by simp)
+  · exact hF.mem_of_add_mem_left hx hx' (by simp)
+  · exact hF.mem_of_add_mem_left hx' hx (by simp)
 
 section Prod
 
