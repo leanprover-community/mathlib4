@@ -72,8 +72,7 @@ theorem Subgroup.isNormalClosureFG_bot : Subgroup.IsNormalClosureFG (⊥ : Subgr
 
 /-- A free group (with a finite number of generators) is finitely presented. -/
 instance {n : ℕ} : Group.IsFinitelyPresented (FreeGroup (Fin n)) := by
-  use n, FreeGroup.map id
-  constructor
+  refine ⟨n, FreeGroup.map id, ?surjective, ?closure⟩
   · exact FreeGroup.map_surjective Function.surjective_id
   · rw [(FreeGroup.map id).ker_eq_bot_iff.mpr (FreeGroup.map_injective Function.injective_id)]
     exact Subgroup.isNormalClosureFG_bot
