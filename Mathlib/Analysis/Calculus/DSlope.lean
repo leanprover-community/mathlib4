@@ -144,12 +144,7 @@ theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
 
 lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
     (b - a) • dslope f a b = f b := by
-  by_cases h : b = a
-  · simp [h, hf]
-  · have h_dslope : dslope f a b = (b - a)⁻¹ • f b := by simp [dslope, slope, h, hf]
-    have h_sub_ne_zero : b - a ≠ 0 := sub_ne_zero.mpr h
-    rw [h_dslope, smul_smul]
-    simp [h_sub_ne_zero]
+  simp [hf]
 
 lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
     (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
