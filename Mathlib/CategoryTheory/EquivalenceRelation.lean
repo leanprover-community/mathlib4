@@ -65,12 +65,16 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
+/-- Standard reflexive relations on types are internal reflexive relations in the category of
+types. -/
 def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : Std.Refl φ) :
     ReflexiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
       (↾(_root_.Prod.snd ∘ Subtype.val)) where
   __ := Types.jointlyMono₂ φ
   r := (↾(fun x => ⟨⟨x, x⟩, hφ.refl x⟩))
 
+/-- An internal reflexive relation in the category of types gives rise to a standard reflexive
+relation. -/
 lemma Types.of_reflexiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : ReflexiveRelation p₁ p₂) :
     Std.Refl (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
   refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
@@ -85,12 +89,16 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
 
 attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
 
+/-- Standard symmetric relations on types are internal symmetric relations in the category of
+types. -/
 def Types.symmetricRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Symmetric φ) :
     SymmetricRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
       (↾(_root_.Prod.snd ∘ Subtype.val)) where
   __ := Types.jointlyMono₂ φ
   s := ↾(fun ⟨⟨x₁, x₂⟩, h⟩ => ⟨⟨x₂, x₁⟩, hφ h⟩)
 
+/-- An internal symmetric relation in the category of types gives rise to a standard symmetric
+relation. -/
 lemma Types.of_symmetricRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : SymmetricRelation p₁ p₂) :
     _root_.Symmetric (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) := by
   refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
@@ -112,6 +120,8 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
 
 attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
+/-- Standard transitive relations on types are internal transitive relations in the category of
+types. -/
 def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : IsTrans _ φ) :
     TransitiveRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
       (↾(_root_.Prod.snd ∘ Subtype.val)) where
@@ -123,6 +133,8 @@ def Types.transitiveRelation {X : Type w} {φ : X → X → Prop} (hφ : IsTrans
     rw [← h₁₂] at h'
     refine ⟨⟨x₁, x₂'⟩, hφ.trans _ _ _ h h'⟩)
 
+/-- An internal transitive relation in the category of types gives rise to a standard transitive
+relation. -/
 lemma Types.of_transitiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : TransitiveRelation p₁ p₂) :
     IsTrans _ (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
   trans x₁ x₂ x₃ := by
@@ -169,7 +181,8 @@ noncomputable def IsKernelPair.equivalenceRelation {X Y : C} (f : X ⟶ Y) {R : 
   t := h.lift (pullback.fst _ _ ≫ p₁) (pullback.snd _ _ ≫ p₂)
     (by simp [h.w, pullback.condition_assoc])
 
-/-- Equivalences relations on types are internal equivalence relations in the category of types. -/
+/-- Standard equivalence relations on types are internal equivalence relations in the category of
+types. -/
 def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
     EquivalenceRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
       (↾(_root_.Prod.snd ∘ Subtype.val)) where
@@ -177,6 +190,8 @@ def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_
   __ := Types.symmetricRelation hφ.symmetric
   __ := Types.transitiveRelation hφ.isTrans
 
+/-- An internal equivalence relation in the category of types gives rise to a standard equivalence
+relation. -/
 lemma Types.of_equivalenceRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : EquivalenceRelation p₁ p₂) :
     _root_.Equivalence (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
   refl := (Types.of_reflexiveRelation e.toReflexiveRelation).refl
