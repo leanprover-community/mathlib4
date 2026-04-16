@@ -83,7 +83,7 @@ See `rnDeriv_map_ae_eq_trim` for the same statement, but with a.e. equality with
 the trimmed measure `ν.trim hg.comap_le`. -/
 lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [hσ : SigmaFinite (ν.map g)] :
-    (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν | m𝓨.comap g] := by
+    (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν|m𝓨.comap g] := by
   have : SigmaFinite ν := SigmaFinite.of_map _ hg.aemeasurable hσ
   have h_ne_top1 : ∀ᵐ x ∂ν, (μ.map g).rnDeriv (ν.map g) (g x) ≠ ∞ :=
     ae_of_ae_map hg.aemeasurable (Measure.rnDeriv_ne_top (μ.map g) (ν.map g))
@@ -104,11 +104,12 @@ See `rnDeriv_map` for the same statement, but with a.e. equality with respect to
 lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν.trim hg.comap_le]
-      ν⁻[μ.rnDeriv ν | m𝓨.comap g] := by
-  exact StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hg.comap_le
-    ((Measure.measurable_rnDeriv (μ.map g) (ν.map g)).stronglyMeasurable.comp_measurable
-      (measurable_iff_comap_le.mpr le_rfl))
-    (by fun_prop) (rnDeriv_map hμν hg)
+      ν⁻[μ.rnDeriv ν|m𝓨.comap g] := by
+  rw [StronglyMeasurable.ae_eq_trim_iff]
+  · exact rnDeriv_map hμν hg
+  · refine Measurable.stronglyMeasurable fun s hs ↦ ?_
+    exact ⟨((μ.map g).rnDeriv (ν.map g)) ⁻¹' s, hs.preimage (by fun_prop), by grind⟩
+  · fun_prop
 
 /-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
 a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
