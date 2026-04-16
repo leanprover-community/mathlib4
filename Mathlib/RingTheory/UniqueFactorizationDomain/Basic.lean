@@ -59,7 +59,6 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CommMonoidWithZero α] [IsCance
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
       convert h.wf
-      ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CommMonoidWithZero α] [IsCancelMulZero α] :
