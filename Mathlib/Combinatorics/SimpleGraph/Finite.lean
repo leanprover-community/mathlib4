@@ -250,7 +250,7 @@ theorem degree_eq_zero_of_subsingleton {G : SimpleGraph V} (v : V) [Fintype (G.n
 
 theorem nontrivial_of_degree_ne_zero {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)]
     (h : G.degree v ≠ 0) : Nontrivial V :=
-  not_subsingleton_iff_nontrivial.mp fun _ ↦ h <| G.degree_eq_zero_of_subsingleton v
+  nontrivial_of_not_isIsolated <| G.degree_eq_zero v |>.not.mp h
 
 theorem degree_eq_one_iff_existsUnique_adj {G : SimpleGraph V} {v : V} [Fintype (G.neighborSet v)] :
     G.degree v = 1 ↔ ∃! w : V, G.Adj v w := by
@@ -705,4 +705,3 @@ theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Ad
 end Map
 
 end SimpleGraph
-#lint
