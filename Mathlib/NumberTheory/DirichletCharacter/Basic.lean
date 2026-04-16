@@ -341,14 +341,6 @@ theorem mem_conductorSet_iff_conductor_dvd {d : ℕ} [NeZero n] (hd : d ∣ n) :
     d ∈ χ.conductorSet ↔ χ.conductor ∣ d :=
   ⟨conductor_dvd_of_mem_conductorSet χ, fun h ↦ χ.factorsThrough_conductor.mono χ h hd⟩
 
-lemma conductor_pow_dvd (χ : DirichletCharacter R n) (m : ℕ) :
-    conductor (χ ^ m) ∣ conductor χ := by
-  obtain rfl | hn := eq_zero_or_neZero n
-  · simp [conductor_eq_zero_iff_level_eq_zero.mpr]
-  rw [← mem_conductorSet_iff_conductor_dvd _ χ.conductor_dvd_level, mem_conductorSet_iff]
-  refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter ^ m, ?_⟩
-  rw [MonoidHom.map_pow, changeLevel_primitiveCharacter]
-
 lemma conductor_zpow_dvd (χ : DirichletCharacter R n) (m : ℤ) :
     conductor (χ ^ m) ∣ conductor χ := by
   obtain rfl | hn := eq_zero_or_neZero n
@@ -356,6 +348,10 @@ lemma conductor_zpow_dvd (χ : DirichletCharacter R n) (m : ℤ) :
   rw [← mem_conductorSet_iff_conductor_dvd _ χ.conductor_dvd_level, mem_conductorSet_iff]
   refine ⟨χ.conductor_dvd_level, χ.primitiveCharacter ^ m, ?_⟩
   rw [MonoidHom.map_zpow, changeLevel_primitiveCharacter]
+
+lemma conductor_pow_dvd (χ : DirichletCharacter R n) (m : ℕ) :
+    conductor (χ ^ m) ∣ conductor χ :=
+  zpow_natCast χ m ▸ conductor_zpow_dvd ..
 
 /-- The conductor of χ⁻¹ equals the conductor of χ. -/
 theorem conductor_inv (χ : DirichletCharacter R n) :
@@ -407,7 +403,7 @@ def subgroupOfCoprimeConductor [NeZero n] (d : ℕ) :
   inv_mem' hχ := by rwa [Set.mem_setOf, conductor_inv]
 
 @[simp]
-lemma mem_subgroupOfCoprimeConductor [NeZero n] (d : ℕ) (χ : DirichletCharacter R n) :
+lemma mem_subgroupOfCoprimeConductor [NeZero n] {d : ℕ} {χ : DirichletCharacter R n} :
     χ ∈ subgroupOfCoprimeConductor d ↔ d.Coprime χ.conductor := Iff.rfl
 
 /-
