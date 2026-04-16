@@ -310,20 +310,22 @@ namespace alternatingGroup
 
 open Equiv.Perm
 
-theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
+theorem eq_bot_of_card_le_two (h2 : Nat.card α ≤ 2) : alternatingGroup α = ⊥ := by
   nontriviality α
-  suffices hα' : card α = 2 by
+  suffices hα' : Nat.card α = 2 by
     rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by simp),
-      Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
-      Nat.factorial_two]
-  exact h2.antisymm Fintype.one_lt_card
+      two_mul_nat_card_alternatingGroup, mul_one, Nat.card_perm, hα', Nat.factorial_two]
+  refine h2.antisymm ?_
+  simpa [Nat.card_eq_fintype_card] using Fintype.one_lt_card
 
-theorem nontrivial_of_three_le_card (h3 : 3 ≤ card α) : Nontrivial (alternatingGroup α) := by
-  haveI := Fintype.one_lt_card_iff_nontrivial.1 (lt_trans (by decide) h3)
-  rw [← Fintype.one_lt_card_iff_nontrivial]
+theorem nontrivial_of_three_le_card (h3 : 3 ≤ Nat.card α) : Nontrivial (alternatingGroup α) := by
+  have : Nontrivial α := by
+    rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
+    refine lt_of_lt_of_le (by decide) h3
+  rw [← Fintype.one_lt_card_iff_nontrivial, ← Nat.card_eq_fintype_card]
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt Nat.prime_two.pos)
-  rw [two_mul_card_alternatingGroup, card_perm, ← Nat.succ_le_iff]
-  exact le_trans h3 (card α).self_le_factorial
+  rw [two_mul_nat_card_alternatingGroup, Nat.card_perm, ← Nat.succ_le_iff]
+  exact le_trans h3 (Nat.card α).self_le_factorial
 
 instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
   nontrivial_of_three_le_card (by simp)
@@ -490,7 +492,6 @@ theorem isMulCommutative_iff_card_le_three :
   rw [← not_lt]
   intro h
   suffices Subsingleton (alternatingGroup α) by
-    rw [Nat.card_eq_fintype_card] at h
     rw [← not_nontrivial_iff_subsingleton] at this
     apply this
     exact nontrivial_of_three_le_card h.le
