@@ -3446,6 +3446,7 @@ public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete
+public import Mathlib.Combinatorics.Graph.GraphLike
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.GraphLike.Basic
 public import Mathlib.Combinatorics.GraphLike.Symm
