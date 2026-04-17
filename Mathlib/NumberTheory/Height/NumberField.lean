@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
+import Mathlib.NumberTheory.Height.MvPolynomial
+
 /-!
 # Heights over number fields
 
@@ -140,32 +142,138 @@ lemma totalWeight_pos : 0 < totalWeight K := by
 end NumberField
 
 /-!
-### Heights of rational numbers
+### Heights over the rational numbers
 
-Since `ℚ` has a unique infinite place (the usual absolute value)
-and every finite place satisfies `v n ≤ 1` for `n : ℕ`, the height simplifies to
-`mulHeight₁ (n : ℚ) = n` and `logHeight₁ (n : ℚ) = Real.log n` for `1 ≤ n`.
+We show that the `Height.mulHeight` of a tuple of coprime integers (considered as rational numbers)
+equals the maximum of their absolute values and that the `Height.mulHeight₁` of a rational
+number is the maximum of the absolute value of the numerator and the denominator.
+We add the corresponding results for logarithmic heights.
 -/
+
+-- There does not appear to be a natural home for the following lemma.
+/-- A version of Bézout's theorem for greatest common divisors over arbitrary `Finset`s. -/
+lemma Finset.gcd_eq_sum_mul {α R : Type*} [CommRing R] [IsBezout R] [IsDomain R]
+    [NormalizedGCDMonoid R] (s : Finset α) (f : α → R) :
+    ∃ g : α → R, s.gcd f = ∑ a ∈ s, f a * g a := by classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih =>
+    obtain ⟨x, y, hxy⟩ := exists_gcd_eq_mul_add_mul (f a) (s.gcd f)
+    obtain ⟨g, hg⟩ := ih
+    conv => enter [1, g]; rw [gcd_insert, sum_insert ha, hxy, hg]
+    refine ⟨Function.update (g · * y) a x, ?_⟩
+    simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
+    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
+      (Function.update_of_ne (show b ≠ a by grind) x (g · * y)).symm
 
 namespace Rat
 
 open NumberField Height
 
-/-- The multiplicative height of a positive natural number cast to `ℚ` equals `n`. -/
+section tuples
+
+/-- The term corresponding to a finite place in the definition of the multiplicative height
+of a tuple of rational numbers equals `1` if the tuple consists of coprime integers. -/
+lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) {ι : Type*}
+    [Fintype ι] [Nonempty ι] {x : ι → ℤ} (hx : Finset.univ.gcd x = 1) :
+    ⨆ i, v (x i) = 1 := by
+  have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
+  have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one_of_isNonarchimedean hv
+  obtain ⟨f, hf⟩ := by classical exact Finset.gcd_eq_sum_mul .univ x
+  rw [hx] at hf
+  obtain ⟨j, hj⟩ : ∃ j, v (x j) = 1 := by
+    have h' : v (∑ i, x i * f i) ≤ ⨆ i, v (x i * f i) := by
+      convert IsNonarchimedean.apply_sum_le hv
+      rw [← cbiSup_eq_of_forall (by grind)]
+      simp [Finset.mem_univ, ciSup_unique]
+    by_contra! h
+    replace h i : v (x i) < 1 := lt_of_le_of_ne (H <| x i) (h i)
+    rw [← map_one v, show (1 : ℚ) = (1 : ℤ) from rfl, hf] at h
+    push_cast at h
+    replace h i : v (x i * f i) < ⨆ i, v (x i * f i) := by
+      rw [map_mul, ← mul_one (iSup _)]
+      exact mul_lt_mul_of_nonneg_of_pos ((h i).trans_le h') (H _) (by positivity) zero_lt_one
+    obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i * f i))
+    exact (h i).ne hi
+  exact le_antisymm (ciSup_le fun i ↦ H (x i)) <| Finite.le_ciSup_of_le j hj.symm.le
+
+open AdmissibleAbsValues in
+/-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
+is the maximum of the absolute values of the entries. -/
+lemma mulHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
+    (hx : Finset.univ.gcd x = 1) :
+    mulHeight (((↑) : ℤ →  ℚ) ∘ x) = ⨆ i, |x i| := by
+  have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
+    contrapose! hx
+    replace hx : x = 0 := by ext i; simpa using funext_iff.mp hx i
+    rw [hx, Finset.gcd_eq_zero_iff.mpr (by simp)]
+    simp
+  simp_rw [NumberField.mulHeight_eq hx₀, Function.comp_apply, infinitePlace_apply, ← Int.cast_abs,
+    cast_intCast, prod_infinitePlace,
+    finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), mul_one]
+  exact (Monotone.map_ciSup_of_continuousAt continuous_of_discreteTopology.continuousAt
+    Int.cast_mono (Finite.bddAbove_range _)).symm
+
+/-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
+is the maximum of the absolute values of the entries. This version is in terms of a subtype. -/
+lemma mulHeight_eq_max_abs_of_gcd_eq_one' {ι : Type*} [Fintype ι] [Nonempty ι]
+    (x : { x : ι → ℤ // Finset.univ.gcd x = 1 }) :
+    mulHeight (((↑) : ℤ →  ℚ) ∘ x.val) = ⨆ i, |x.val i| :=
+  mulHeight_eq_max_abs_of_gcd_eq_one x.prop
+
+open Real in
+/-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
+is the logarithm of the maximum of the absolute values of the entries. -/
+lemma logHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
+    (hx : Finset.univ.gcd x = 1) :
+    logHeight (((↑) : ℤ →  ℚ) ∘ x) = log ↑(⨆ i, |x i|) := by
+  rw [logHeight_eq_log_mulHeight, mulHeight_eq_max_abs_of_gcd_eq_one hx]
+
+end tuples
+
+section mulHeight₁
+
+/-- The multiplicative height of a rational number is the maximum of the absolute value of
+its numerator and its denominator. -/
+lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
+  rw [mulHeight₁_eq_mulHeight]
+  suffices mulHeight ![q, 1] = mulHeight ![(q.num : ℚ), q.den] by
+    rw [this, ← intCast_natCast q.den]
+    have : (Finset.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
+      rw [show (Finset.univ : Finset (Fin 2)) = {0, 1} by grind]
+      simpa [Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+        Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
+    convert mulHeight_eq_max_abs_of_gcd_eq_one this
+    · ext i; fin_cases i <;> simp
+    · rw [show (↑(max q.num.natAbs q.den) : ℝ) = (max q.num.natAbs q.den : ℤ) by norm_cast]
+      norm_cast
+      push_cast
+      refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
+      · exact Finite.le_ciSup_of_le 0 <| by simp
+      · exact Finite.le_ciSup_of_le 1 <| by simp
+      · fin_cases i <;> simp
+  nth_rewrite 1 [← Rat.num_div_den q]
+  have hq₀ : (q.den : ℚ) ≠ 0 := mod_cast q.den_nz
+  rw [← mulHeight_smul_eq_mulHeight _ hq₀]
+  simp [mul_div_cancel₀ _ hq₀]
+
+open Real in
+/-- The logarithmic height of a rational number is the logarithm of the maximum of the absolute
+value of its numerator and its denominator. -/
+lemma logHeight₁_eq_log_max (q : ℚ) : logHeight₁ q = log (max q.num.natAbs q.den) := by
+  norm_cast
+  rw [logHeight₁_eq_log_mulHeight₁, mulHeight₁_eq_max]
+
+/-- The multiplicative height of a positive natural number `n` cast to `ℚ` equals `n`. -/
 theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
     mulHeight₁ (n : ℚ) = n := by
-  have hfin (v : FinitePlace ℚ) : max (v n) 1 = 1 :=
-    max_eq_right (IsNonarchimedean.apply_natCast_le_one_of_isNonarchimedean
-      (NonarchimedeanHomClass.map_add_le_max v))
-  rw [NumberField.mulHeight₁_eq, finprod_eq_one_of_forall_eq_one hfin, Fintype.prod_unique,
-    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _]
-  have hn : 1 ≤ n := by grind [NeZero.ne n]
-  simp [hn, InfinitePlace.mult, isReal_infinitePlace]
+  simp [mulHeight₁_eq_max, show 1 ≤ n by grind [NeZero.ne n]]
 
-/-- The logarithmic height of a positive natural number cast to `ℚ` equals `log n`. -/
+/-- The logarithmic height of a positive natural number `n` cast to `ℚ` equals `log n`. -/
 theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
     logHeight₁ (n : ℚ) = Real.log n := by
   simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n]
+end mulHeight₁
 
 end Rat
 
