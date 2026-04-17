@@ -295,7 +295,7 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
-  le_add_self a _ := (zero_add a).ge.trans <| add_left_mono bot_le
+  le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
 
 @[deprecated zero_le (since := "2026-04-17")]
 protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := zero_le
