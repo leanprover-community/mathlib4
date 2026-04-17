@@ -49,8 +49,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
       rfl).isZero_X₂ h ((@AddCommGrpCat.isZero_of_subsingleton _
       (Ext.subsingleton_of_projective S.X₂ M 0)).eq_zero_of_tgt _))
   refine this.trans ⟨fun h ↦ fun g ↦ ?_, fun h ↦ fun e ↦ ?_⟩
-  · rcases h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap))) with
-      ⟨f', hf'⟩
+  · obtain ⟨f', hf'⟩ := h (Ext.mk₀ (ModuleCat.ofHom (g.comp (Shrink.linearEquiv R I).toLinearMap)))
     rw [Ext.bilinearComp_apply_apply, ← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
     use (Ext.addEquiv₀ f').hom.comp (Shrink.linearEquiv R R).symm.toLinearMap
     intro x hx
@@ -58,7 +57,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
       ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
     simpa [-Shrink.linearEquiv_apply, -Shrink.linearEquiv_symm_apply, S, shortComplexOfConj]
       using this
-  · rcases h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap) with ⟨g', hg'⟩
+  · obtain ⟨g', hg'⟩ := h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap)
     use Ext.mk₀ (ModuleCat.ofHom (g'.comp (Shrink.linearEquiv R R).toLinearMap))
     rw [Ext.bilinearComp_apply_apply, Ext.mk₀_comp_mk₀, ← Ext.mk₀_addEquiv₀_apply e]
     congr
