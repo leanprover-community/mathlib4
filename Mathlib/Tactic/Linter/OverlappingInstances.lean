@@ -19,15 +19,11 @@ non-defeq versions of that data. This situation, both for declarations and more 
 as an "instance diamond". This linter warns against declarations whose local contexts include
 multiple versions of the same data.
 
-This is a hybrid syntax and environment linter.For performance reasons, the syntax linter **only**
-runs interactively in the language server. It will not run on the command line during a typical
-`lake build`. The syntax linter also only lints the bodies of declarations that appear in source,
-and does not currently handle declarations that do not have a "body" such as `structure`s. (The
-environment linter does handle these cases.)
+This is a syntax linter. It is run on partially and fully elaborated declarations.
 
 Note that since all proofs of a given proposition are definitionally equal, multiple different ways
-of obtaining instances of `Prop` classes pose no issue. Hence, this linter only warns against
-data-carrying instance projections.
+of obtaining instances of `Prop` classes pose no issue. So for `Prop` classes, this linter only
+warns when the same class is assumed multiple times.
 
 Note that since this linter also warns against the trivial case of the same data-carrying instance
 appearing twice, it warns against explicit local instance hypotheses which shadow `variable`s.
@@ -148,6 +144,8 @@ def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInf
     MetaM MessageData := do
   let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
     overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
+  -- Sort the suggestions in a somewhat fvarId-independent way
+  let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
   for (fvars, overlaps) in sortedOverlaps do
     let parents ← fvars.mapM (do instantiateMVars <| ← ·.getType)
