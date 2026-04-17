@@ -40,9 +40,6 @@ we show that a strong anodyne extension is an anodyne extension.
 * show that strong anodyne extensions are indeed stable under coproducts,
   transfinite compositions and pushouts (the proof should reduce to the
   construction of pairings)
-* use the small object argument to show that any anodyne extensions is indeed
-  a retract of a transfinite composition of pushouts of coproducts of horn
-  inclusions (@joelriou)
 * study the interaction between anodyne extension and binary products:
   the critical case consists in showing that inclusions
   `Λ[m, i] ⊗ Δ[n] ∪ Δ[m] ⊗ ∂Δ[n] ⟶ Δ[m] ⊗ Δ[n]` are strong anodyne extensions (@joelriou)
