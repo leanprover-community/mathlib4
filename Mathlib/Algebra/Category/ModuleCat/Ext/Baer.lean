@@ -85,10 +85,12 @@ lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
         Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
       have := Ext.subsingleton_of_injective N S.X₂
-      have := (Ext.covariantSequence_exact N ip.shortExact_shortComplex (n + 1) (n + 2)
-        rfl).isIso_map' 1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
-        ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt  _)
-      exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
+      have : IsIso (AddCommGrpCat.ofHom (ip.shortExact_shortComplex.extClass.postcomp N rfl)) :=
+        (Ext.covariantSequence_exact N ip.shortExact_shortComplex (n + 1) (n + 2) rfl).isIso_map'
+          1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
+            ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt  _)
+      exact (asIso (AddCommGrpCat.ofHom (ip.shortExact_shortComplex.extClass.postcomp N
+        rfl))).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
     simp only [this] at h
     exact (ip.shortExact_shortComplex.hasInjectiveDimensionLT_X₃_iff n inferInstance).mp (ih _ h)
 
