@@ -150,7 +150,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     obtain ⟨E_closed, E_surj⟩ := E_min.prop
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
-    contrapose! E₀_min
+    contrapose E₀_min
     exact eq_univ_of_image_val_eq <|
       E_min.eq_of_subset ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
         image_val_subset
