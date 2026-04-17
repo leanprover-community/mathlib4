@@ -130,27 +130,11 @@ def getDeclsByBody (t : InfoTree) : List Name :=
       else decls
     | _ => decls
 
-/-- A copy of `foldInfoTree`, but with the `@[specialize]` attribute. -/
-@[specialize]
-partial def foldInfoTree' {α} (init : α) (f : ContextInfo → InfoTree → α → α) : InfoTree → α :=
-  go none init
-where
-  /-- `foldInfoTree.go` is like `foldInfoTree` but with an additional outer context parameter `ctx?`. -/
-  @[specialize]
-  go ctx? a
-  | context ctx t => go (ctx.mergeIntoOuter? ctx?) a t
-  | t@(node i ts) =>
-    let a := match ctx? with
-      | none => a
-      | some ctx => f ctx t a
-    ts.foldl (init := a) (go <| i.updateContext? ctx?)
-  | hole _ => a
-
 /-- Gets the first child info of each `Lean.Elab.BodyInfo`, which should be the only child, and
 should be a `TermInfo`, `PartialTermInfo`, or `TacticInfo`. `getDeclBodyInfos` does not validate
 either of these conditions. -/
 def getDeclBodyInfos (t : InfoTree) : List (Syntax × ContextInfo × Info) :=
-  t.foldInfoTree' (init := []) fun ctx t acc =>
+  t.foldInfoTree (init := []) fun ctx t acc =>
     match t with
     | .node (.ofCustomInfo i) body => Id.run do
       if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
