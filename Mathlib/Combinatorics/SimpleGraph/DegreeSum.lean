@@ -135,7 +135,7 @@ lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
   have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
   set d₀ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨v, w⟩, hadj⟩, by grind⟩
   set d₁ : {d // f d = ⟨e, he⟩} := ⟨⟨⟨w, v⟩, hadj.symm⟩, by simp [f]; aesop⟩
-  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨by grind [G.loopless.irrefl v], fun d h₀ ↦ ?_⟩⟩
+  refine (Cardinal.mk_eq_two_iff' d₀).mpr ⟨d₁, ⟨by grind [G.irrefl v], fun d h₀ ↦ ?_⟩⟩
   obtain ⟨⟨_, hadj⟩, hd⟩ := d
   grind
 
