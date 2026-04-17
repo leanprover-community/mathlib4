@@ -13,13 +13,13 @@ public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
-# The L-function of an elliptic curve
+# The L-function of a Weierstrass curve
 
-In this file, we define the L-function of an elliptic curve.
+In this file, we define the L-function of a Weierstrass curve.
 
 ## Main definitions
 
-* `WeierstrassCurve.Lfunction`: the L-function of a minimal Weierstrass equation.
+* `WeierstrassCurve.Lfunction`: the L-function of a Weierstrass equation.
 
 ## References
 
@@ -36,7 +36,7 @@ variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : 
   [Field K] [Algebra R K] [IsFractionRing R K] (W : WeierstrassCurve K)
 
 open Classical Polynomial in
-/-- The polynomial associated to an elliptic curve over a nonarchimedean local field. -/
+/-- The polynomial associated to a Weierstrass curve over a nonarchimedean local field. -/
 noncomputable def localPolynomial : ℤ[X] :=
   letI W' := W.minimal R
   letI q : ℤ := Nat.card (IsLocalRing.ResidueField R)
@@ -46,11 +46,11 @@ noncomputable def localPolynomial : ℤ[X] :=
   else if W'.HasMultiplicativeReduction R then 1 + X
   else 1
 
-/-- The power series associated to an elliptic curve over a nonarchimedean local field. -/
+/-- The power series associated to a Weierstrass curve over a nonarchimedean local field. -/
 noncomputable def localPowerSeries : PowerSeries ℤ :=
   PowerSeries.invOfUnit (W.localPolynomial R) 1
 
-/-- The local Euler factor associated to an elliptic curve over a nonarchimedean local field. -/
+/-- The local Euler factor associated to a Weierstrass curve over a nonarchimedean local field. -/
 noncomputable def localEulerFactor : ArithmeticFunction ℤ :=
   .ofPowerSeries (Nat.card (IsLocalRing.ResidueField R)) (W.localPowerSeries R)
 
@@ -62,7 +62,7 @@ open ArithmeticFunction IsDedekindDomain NumberField
 
 variable {K : Type*} [Field K] [NumberField K] (W : WeierstrassCurve K)
 
-/-- The L-function of an elliptic curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
+/-- The L-function of a Weierstrass curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
 * `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |E(K_p)|` if `E` has good reduction at `p`,
 * `fₚ = 1 - T` if `E` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `E` has nonsplit multiplicative reduction at `p`,
@@ -72,7 +72,7 @@ noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦
       (W.baseChange (p.adicCompletion K)).localEulerFactor (p.adicCompletionIntegers K)
 
-/-- The L-series of an elliptic curve. -/
+/-- The L-series of a Weierstrass curve. -/
 protected noncomputable def LSeries (W : WeierstrassCurve K) (s : ℂ) :=
   LSeries ((↑) ∘ W.LFunction) s
 
