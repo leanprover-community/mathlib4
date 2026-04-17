@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Data.Int.SuccPred
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Data.Int.SuccPred
 
 /-!
 # Pentagonal number
