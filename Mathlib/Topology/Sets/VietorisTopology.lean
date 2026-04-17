@@ -232,12 +232,6 @@ theorem _root_.Topology.IsEmbedding.image_vietoris (hf : IsEmbedding f) : IsEmbe
   __ := hf.isInducing.image_vietoris
   injective := hf.injective.image_injective
 
-instance [T1Space α] : T0Space (Set α) := by
-  refine .of_antisymm (· ⊆ ·) fun s t h x hx => ?_
-  have := h.mem_closed_iff <| isClosed_inter_nonempty_of_isClosed <| isClosed_singleton (x := x)
-  simp_rw [inter_singleton_nonempty] at this
-  exact this.mp hx
-
 /-- Given compact sets `K` and `Lᵢ ⊆ K`, the compact subsets of `K` intersecting every `Lᵢ` form a
 compact set. This is an auxiliary result used for proving the local compactness of `Compacts α`
 without assuming `T2Space α`. -/
@@ -287,17 +281,39 @@ theorem _root_.IsCompact.powerset_vietoris {K : Set α} (hK : IsCompact K) :
 instance [CompactSpace α] : CompactSpace (Set α) :=
   ⟨powerset_univ ▸ isCompact_univ.powerset_vietoris⟩
 
+theorem subset_closure_of_specializes {s t : Set α} (h : s ⤳ t) : t ⊆ closure s :=
+  h.mem_closed isClosed_closure.powerset_vietoris subset_closure
+
+theorem specializes_iff {s t : Set α} : s ⤳ t ↔ (∀ x ∈ s, ∃ y ∈ t, x ⤳ y) ∧ t ⊆ closure s := by
+  refine ⟨fun h => ⟨fun x hx => ?_, subset_closure_of_specializes h⟩, fun ⟨hst, hts⟩ => ?_⟩
+  · obtain ⟨y, hyt, hxy⟩ := h.mem_closed (s := {u | (u ∩ closure {x}).Nonempty})
+      (isClosed_inter_nonempty_of_isClosed isClosed_closure) ⟨x, hx, subset_closure rfl⟩
+    exact ⟨y, hyt, specializes_iff_mem_closure.mpr hxy⟩
+  · simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
+    rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
+    · refine iInf₂_le U.powerset ⟨fun x hx => ?_, .inl <| mem_image_of_mem _ hU⟩
+      obtain ⟨y, hyt, hxy⟩ := hst x hx
+      exact hxy.mem_open hU <| hs hyt
+    · obtain ⟨x, hxt, hxU⟩ := hs
+      obtain ⟨y, hyU, hys⟩ := mem_closure_iff.mp (hts hxt) U hU hxU
+      exact iInf₂_le {t | (t ∩ U).Nonempty} ⟨⟨y, hys, hyU⟩, .inr <| mem_image_of_mem _ hU⟩
+
+theorem specializes_iff_of_t1Space {s t : Set α} [T1Space α] : s ⤳ t ↔ s ⊆ t ∧ t ⊆ closure s := by
+  simp_rw [specializes_iff, specializes_iff_eq, existsAndEq, and_true, ← subset_def]
+
+theorem subset_of_specializes {s t : Set α} [T1Space α] (h : s ⤳ t) : s ⊆ t :=
+  (specializes_iff_of_t1Space.mp h).1
+
 theorem specializes_of_subset_closure {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) :
     s ⤳ t := by
-  simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
-  rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
-  · exact iInf₂_le U.powerset ⟨hst.trans hs, .inl <| mem_image_of_mem _ hU⟩
-  · obtain ⟨x, hxt, hxU⟩ := hs
-    obtain ⟨y, hyU, hys⟩ := mem_closure_iff.mp (hts hxt) U hU hxU
-    exact iInf₂_le {t | (t ∩ U).Nonempty} ⟨⟨y, hys, hyU⟩, .inr <| mem_image_of_mem _ hU⟩
+  grind [specializes_iff, specializes_rfl]
 
 theorem specializes_closure {s : Set α} : s ⤳ closure s :=
   specializes_of_subset_closure subset_closure .rfl
+
+instance [T1Space α] : T0Space (Set α) where
+  t0 _ _ h :=
+    subset_antisymm (subset_of_specializes h.specializes) (subset_of_specializes h.specializes')
 
 end vietoris
 

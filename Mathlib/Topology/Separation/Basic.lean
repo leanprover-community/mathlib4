@@ -89,10 +89,6 @@ theorem t0Space_iff_not_inseparable (X : Type u) [TopologicalSpace X] :
 theorem Inseparable.eq [T0Space X] {x y : X} (h : Inseparable x y) : x = y :=
   T0Space.t0 h
 
-theorem T0Space.of_antisymm (r : X → X → Prop) [Std.Antisymm r]
-    (h : ∀ x y, Inseparable x y → r x y) : T0Space X :=
-  ⟨fun x y hxy => antisymm (h x y hxy) (h y x hxy.symm)⟩
-
 /-- A topology inducing map from a T₀ space is injective. -/
 protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : Injective f := fun _ _ h =>
