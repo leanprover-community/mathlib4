@@ -22,7 +22,7 @@ namespace SSet.Subcomplex
 variable {X : SSet.{u}} (A : X.Subcomplex)
 
 /-- The opposite of subcomplex, as a subcomplex of the opposite simplicial set. -/
-def op : X.op.Subcomplex where
+protected def op : X.op.Subcomplex where
   obj := A.obj
   map _ := A.map _
 
