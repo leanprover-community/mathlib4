@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Module.Submodule.Finsupp
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 public import Mathlib.Data.Set.Semiring
@@ -247,6 +247,19 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 @[simp]
 theorem bot_mul : ⊥ * M = ⊥ :=
   bot_smul _
+
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors A] {M N : Submodule R A} :
+    M * N = ⊥ ↔ M = ⊥ ∨ N = ⊥ :=
+  ⟨fun hmn =>
+    or_iff_not_imp_left.mpr fun M_ne_bot =>
+      N.eq_bot_iff.mpr fun n hn =>
+        let ⟨m, hm, ne0⟩ := M.ne_bot_iff.mp M_ne_bot
+        Or.resolve_left (mul_eq_zero.mp ((M * N).eq_bot_iff.mp hmn _ (mul_mem_mul hm hn))) ne0,
+    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+
+instance [NoZeroDivisors A] : NoZeroDivisors (Submodule R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 protected theorem one_mul : (1 : Submodule R A) * M = M :=
   Submodule.one_smul _
