@@ -550,19 +550,17 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
     DefinableFun L A fun v => if p v then f v else g v := by
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
-  have : tupleGraph (fun v => if p v then f v else g v) =
-      (P ∩ f.tupleGraph) ∪ (Pᶜ ∩ g.tupleGraph) := by
-    ext w
-    by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
-  simpa [DefinableFun, this] using (hP.inter hf).union (hP.compl.inter hg)
+  simp only [DefinableFun]
+  convert (hP.inter hf).union (hP.compl.inter hg)
+  ext w
+  by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 
 /-- The set where two definable functions agree is definable. -/
 lemma DefinableFun.setOf_eq {f g : (α → M) → M}
     (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
     A.Definable L {v : α → M | f v = g v} := by
   have hF : A.DefinableMap L (fun v => ![f v, g v]) := by
-    simp [DefinableMap]
-    simp_all only [and_self]
+    simp [DefinableMap, *]
   exact (Definable.diagonal L A).preimage_map hF
 
 /-- The preimage of a constant under a definable function is definable. -/
