@@ -111,6 +111,17 @@ def ContinuousLinearMap.precompCompactConvergenceCLM [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
   L.precompUniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
 
+lemma ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) (T : F →SL_c[τ] G) (x : E) :
+    L.precompCompactConvergenceCLM G T x = T (L x) :=
+  rfl
+
+lemma foo [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] {T : F →SL_c[τ] G} :
+    (0 : E →SL[σ] F).precompCompactConvergenceCLM G T = 0 := by
+  ext x
+  simp_rw [ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply]
+  simp
+
 @[deprecated (since := "2026-01-27")]
 alias precomp_compactConvergenceCLM := precompCompactConvergenceCLM
 
