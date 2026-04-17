@@ -96,7 +96,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
   refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
-  contrapose! h
+  contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
   exact hP.isComplement' rfl
 

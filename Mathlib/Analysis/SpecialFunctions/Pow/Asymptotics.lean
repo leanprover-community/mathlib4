@@ -373,7 +373,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
         filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
         rw [Real.norm_of_nonneg (by positivity)]
         gcongr
-        exacts [hx, le_max_left _ _]
+        exact le_max_left _ _
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
