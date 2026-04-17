@@ -195,4 +195,3 @@ noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [S
 end
 
 end restrictScalars
-#lint
