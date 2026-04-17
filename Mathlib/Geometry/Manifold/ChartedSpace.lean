@@ -403,11 +403,11 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
 section
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
-  instInhabitedProd
+  inferInstanceAs <| Inhabited (H × H')
 
 instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
-  instTopologicalSpaceProd
+  inferInstanceAs <| TopologicalSpace (H × H')
 
 -- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
 @[simp, mfld_simps]
@@ -423,10 +423,10 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
+  inferInstanceAs <| Inhabited (∀ i, Hi i)
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (∀ i, Hi i)
 
 end
 
