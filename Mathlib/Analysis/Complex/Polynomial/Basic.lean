@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # The fundamental theorem of algebra

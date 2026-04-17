@@ -618,11 +618,6 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   nhds_eq_comap_uniformity _ := by
     simp only [comap_comap, Function.comp_def, nhds_translation_mul_inv]
 
-@[deprecated (since := "2025-09-26")]
-alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
-@[to_additive existing, deprecated (since := "2025-09-26")]
-alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
-
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
@@ -716,10 +711,5 @@ theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Gr
     [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
   ext : 1
   rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_mul_inv_nhds_one]
-
-@[deprecated (since := "2025-09-26")]
-alias IsUniformAddGroup.toUniformSpace_eq := IsUniformAddGroup.rightUniformSpace_eq
-@[to_additive existing, deprecated (since := "2025-09-26")]
-alias IsUniformGroup.toUniformSpace_eq := IsUniformGroup.rightUniformSpace_eq
 
 end TopologicalCommGroup

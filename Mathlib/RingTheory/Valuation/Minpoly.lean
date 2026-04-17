@@ -8,6 +8,7 @@ module
 public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.FieldTheory.Minpoly.Free
 public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Minimal polynomials.
