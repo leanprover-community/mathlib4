@@ -220,8 +220,8 @@ section LineDerivCLM
 
 /-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending a distribution
 `T : 𝓓'^{k}_{K}(E, F)` to its derivative along the vector `v`, which is a
-distribution in `𝓓^{n}_{K}(E, F)`. Because derivativing increases the order, this only makes sense
-if `k + 1 ≤ n`, otherwise we define it as the zero map.
+distribution in `𝓓^{n}_{K}(E, F)`. Because differentiating increases the order, this only makes
+sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
 The parameters `n` and `k` are implicit as they can often be inferred from context, or
 specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
