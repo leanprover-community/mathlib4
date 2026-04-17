@@ -130,7 +130,6 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
