@@ -104,6 +104,12 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
 
+theorem LinearMap.finrank_le_finrank_of_surjective
+    [Module R M'] [StrongRankCondition R] [Module.Finite R M]
+    {f : M →ₗ[R] M'} (h : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M := by
+  rw [← f.quotKerEquivOfSurjective h |>.finrank_eq]
+  exact Submodule.finrank_quotient_le _
+
 end Quotient
 
 variable [Semiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M₁]
