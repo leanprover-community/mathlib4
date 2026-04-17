@@ -540,25 +540,25 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
 are. -/
 theorem continuousWithinAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} {s : Set X} {x : X} :
-    ContinuousWithinAt f s x ↔ ∀ y, ContinuousWithinAt (fun q => f q y) s x := by
-  refine ⟨fun h y => (apply 𝕜 F y).continuous.continuousAt.comp_continuousWithinAt h, fun h => ?_⟩
+    ContinuousWithinAt f s x ↔ ∀ y, ContinuousWithinAt (fun q ↦ f q y) s x := by
+  refine ⟨fun h y ↦ (apply 𝕜 F y).continuous.continuousAt.comp_continuousWithinAt h, fun h ↦ ?_⟩
   let e : (E →L[𝕜] F) ≃L[𝕜] Fin (finrank 𝕜 E) → F :=
     ((ContinuousLinearEquiv.ofFinrankEq (finrank_fin_fun 𝕜).symm).arrowCongr
       (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing _)
   rw [e.toHomeomorph.isInducing.continuousWithinAt_iff]
-  exact continuousWithinAt_pi.mpr fun i => h _
+  exact continuousWithinAt_pi.mpr fun i ↦ h _
 
 /-- A family of continuous linear maps is continuous on `s` iff all its applications are. -/
 theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} {s : Set X} :
-    ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x => f x y) s := by
+    ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x ↦ f x y) s := by
   simp_rw [ContinuousOn, continuousWithinAt_clm_apply, imp_forall_iff]
   exact forall_comm
 
 /-- A family of continuous linear maps is continuous at a point iff all its applications are. -/
 theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} {x : X} :
-    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q => f q y) x := by
+    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q ↦ f q y) x := by
   simp_rw [← continuousWithinAt_univ, continuousWithinAt_clm_apply]
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
