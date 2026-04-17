@@ -256,7 +256,7 @@ lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
+@[no_expose] def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose <| LiftSourceTargetPropertyAt.property h
 
