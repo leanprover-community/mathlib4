@@ -22,9 +22,7 @@ convention, but implicitly shows the monotonicity by `pentagonal_lt_pentagonal_n
 `pentagonal_neg_lt_pentagonal_add_one`.
 
 ## Main definitions
-* `pentagonal`: pentagonal numbers as a function `ℤ → ℤ`.
-* `pentagonalNat`: pentagonal numbers as a function `ℤ → ℕ`, bundling in the fact that pentagonal
-  numbers are all non-negative.
+* `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
 
 ## TODO
 
@@ -38,27 +36,29 @@ Show the relation between pentagonal numbers and partitions, including pentagona
 public section
 
 /-- Pentagonal numbers $k(3k-1)/2$ for integer $k$. -/
-def pentagonal (k : ℤ) : ℤ := k * (3 * k - 1) / 2
+def pentagonal (k : ℤ) : ℕ := (k * (3 * k - 1) / 2).toNat
 
-theorem pentagonal_def (k : ℤ) : pentagonal k = k * (3 * k - 1) / 2 := by rfl
+theorem pentagonal_def (k : ℤ) : pentagonal k = (k * (3 * k - 1) / 2).toNat := by rfl
 
-theorem pentagonal_neg (k : ℤ) : pentagonal (-k) = k * (3 * k + 1) / 2 := by
+theorem pentagonal_neg (k : ℤ) : pentagonal (-k) = (k * (3 * k + 1) / 2).toNat := by
   grind [pentagonal_def]
 
-theorem two_pentagonal (k : ℤ) : 2 * pentagonal k = k * (3 * k - 1) :=
-  Int.two_mul_ediv_two_of_even (by grind)
-
-theorem two_pentagonal_neg (k : ℤ) : 2 * pentagonal (-k) = k * (3 * k + 1) := by
-  grind [two_pentagonal]
-
-theorem pentagonal_nonneg (k : ℤ) : 0 ≤ pentagonal k := by
-  simp only [pentagonal_def, Nat.ofNat_pos, Int.ediv_nonneg_iff_of_pos]
+theorem natCast_pentagonal (k : ℤ) : (pentagonal k : ℤ) = k * (3 * k - 1) / 2 := by
+  simp only [pentagonal_def, Int.ofNat_toNat, sup_eq_left, Nat.ofNat_pos,
+    Int.ediv_nonneg_iff_of_pos]
   rcases lt_or_ge 0 k with h | h <;> nlinarith
+
+theorem two_mul_natCast_pentagonal (k : ℤ) : 2 * (pentagonal k : ℤ) = k * (3 * k - 1) := by
+  rw [natCast_pentagonal]
+  exact Int.two_mul_ediv_two_of_even (by grind)
+
+theorem two_mul_natCast_pentagonal_neg (k : ℤ) : 2 * (pentagonal (-k) : ℤ) = k * (3 * k + 1) := by
+  grind [two_mul_natCast_pentagonal]
 
 theorem pentagonal_injective : Function.Injective pentagonal := by
   intro x y h
-  replace h := congr(2 * $h)
-  simp_rw [two_pentagonal] at h
+  replace h := congr(2 * ($h : ℤ))
+  simp_rw [two_mul_natCast_pentagonal] at h
   replace h : (3 * (x + y) - 1) * (x - y) = 0 := by linear_combination h
   rcases mul_eq_zero.mp h with h | h <;> grind
 
@@ -67,34 +67,20 @@ theorem pentagonal_inj {x y : ℤ} : pentagonal x = pentagonal y ↔ x = y :=
   pentagonal_injective.eq_iff
 
 theorem pentagonal_lt_pentagonal_neg {k : ℤ} (h : 0 < k) : pentagonal k < pentagonal (-k) := by
-  grind [pentagonal_def]
+  zify
+  grind [natCast_pentagonal]
 
 theorem pentagonal_neg_lt_pentagonal_add_one {k : ℤ} (h : 0 ≤ k) :
     pentagonal (-k) < pentagonal (k + 1) := by
-  grind [pentagonal_def]
+  zify
+  grind [natCast_pentagonal]
 
 theorem pentagonal_strictMonoOn : StrictMonoOn pentagonal (Set.Ici 0) := by
   apply strictMonoOn_of_lt_add_one Set.ordConnected_Ici
-  grind [pentagonal_def]
+  zify
+  grind [natCast_pentagonal]
 
 theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
-  grind [pentagonal_def]
-
-/-- Pentagonal numbers $k(3k-1)/2$ as `Nat` for integer $k$. -/
-def pentagonalNat (k : ℤ) : ℕ := (pentagonal k).toNat
-
-theorem pentagonalNat_def (k : ℤ) : pentagonalNat k = (pentagonal k).toNat := by rfl
-
-@[simp]
-theorem natCast_pentagonalNat (k : ℤ) : ↑(pentagonalNat k) = pentagonal k := by
-  simp [pentagonalNat_def, pentagonal_nonneg]
-
-theorem pentagonalNat_injective : Function.Injective pentagonalNat := by
-  intro x y h
-  zify at h
-  simpa using h
-
-@[simp]
-theorem pentagonalNat_inj {x y : ℤ} : pentagonalNat x = pentagonalNat y ↔ x = y :=
-  pentagonalNat_injective.eq_iff
+  zify
+  grind [natCast_pentagonal]
