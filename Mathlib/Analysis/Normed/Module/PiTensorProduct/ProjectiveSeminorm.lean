@@ -306,7 +306,8 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   refine (ContinuousMultilinearMap.opNorm_le_iff (by positivity)).mpr fun m ↦ ?_
   apply le_trans (projectiveSeminorm_tprod_le fun i ↦ f i (m i))
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
+  gcongr
+  exact ContinuousLinearMap.le_opNorm _ _
 
 variable (𝕜 E E')
 
