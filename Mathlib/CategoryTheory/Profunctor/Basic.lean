@@ -23,7 +23,7 @@ of a profunctor with functors, and the profunctors in both directions correspond
 ## Future work
 
 - Define composition of profunctors.
-- Define the bicategory of categories where the 1-cells are profunctors.
+- Define the bicategory of categories where the 1-morphisms are profunctors.
 -/
 
 @[expose] public section
