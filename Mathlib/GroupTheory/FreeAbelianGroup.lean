@@ -172,8 +172,6 @@ instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
 
 end
 
-attribute [local instance] QuotientGroup.leftRel
-
 @[elab_as_elim]
 protected theorem induction_on
     {motive : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (zero : motive 0)
