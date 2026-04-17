@@ -2816,6 +2816,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
 public import Mathlib.CategoryTheory.Limits.Presheaf
@@ -6922,6 +6923,8 @@ public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Algebra.Basic
+public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Algebraize
 public import Mathlib.Tactic.ApplyAt
 public import Mathlib.Tactic.ApplyCongr
