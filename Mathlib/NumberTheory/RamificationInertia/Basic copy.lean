@@ -35,6 +35,16 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 
 section
 
+-- PRed
+theorem IsArtinianRing.finrank_eq_sum_primeSpectrum
+    {R S : Type*} [Field R] [CommRing S] [IsArtinianRing S] [Algebra R S] [Module.Finite R S] :
+    Module.finrank R S = ∑ p : PrimeSpectrum S, Module.finrank R (Localization.AtPrime p.1) :=
+  have (p : Ideal S) [p.IsPrime] : Module.Finite R (Localization.AtPrime p) :=
+    Module.Finite.of_surjective (Algebra.algHom R S (Localization.AtPrime p)).toLinearMap
+      (IsArtinianRing.localization_surjective p.primeCompl (Localization.AtPrime p))
+  ((PrimeSpectrum.toPiLocalizationEquiv S).restrictScalars R).toLinearEquiv.finrank_eq.trans
+    (Module.finrank_pi_fintype R)
+
 namespace Ideal
 
 section ramification_inertia
@@ -136,8 +146,9 @@ end ramification_inertia
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
-noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
-  (Algebra.QuasiFinite.finite_primesOver p).fintype
+instance [Algebra.QuasiFinite R S] (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    Module.Finite p.ResidueField (Localization.AtPrime q) :=
+  Module.Finite.of_quasiFinite
 
 -- PRed
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
@@ -160,29 +171,6 @@ noncomputable def Fiber.algEquivQuotient :
         ext
         simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
       commutes' := by simp }
-
-instance [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
-    Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
-  Module.Finite.of_quasiFinite
-
--- PRed
-noncomputable def foo' (R : Type*) [CommRing R] [IsArtinianRing R] :
-    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 where
-  __ := MaximalSpectrum.toPiLocalizationEquiv R
-  commutes' _ := rfl
-
--- PRed
-noncomputable def foo (R : Type*) [CommRing R] [IsArtinianRing R] :
-    R ≃ₐ[R] ∀ I : PrimeSpectrum R, Localization.AtPrime I.1 :=
-  (foo' R).trans
-    (AlgEquiv.piCongrLeft R (fun I : PrimeSpectrum R ↦ Localization.AtPrime I.1)
-      IsArtinianRing.primeSpectrumEquivMaximalSpectrum.symm)
-
-theorem finrank_fiber_eq_sum_finrank_localization [Algebra.QuasiFinite R S] :
-    Module.finrank p.ResidueField (p.Fiber S) = ∑ q : PrimeSpectrum (p.Fiber S),
-      Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
-  have key := (foo (p.Fiber S)).restrictScalars p.ResidueField
-  rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
 open TensorProduct
 
@@ -280,12 +268,15 @@ theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
   rw [diamond]
   rfl
 
+noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
+  (Algebra.QuasiFinite.finite_primesOver p).fintype
+
 theorem sum_ramification_inertia
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     [Algebra.QuasiFinite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
     Module.finrank p.ResidueField (p.Fiber S) =
       ∑ q : p.primesOver S, q.1.ramificationIdx' R * q.1.inertiaDeg' R := by
-  rw [finrank_fiber_eq_sum_finrank_localization,
+  rw [IsArtinianRing.finrank_eq_sum_primeSpectrum,
     ← (PrimeSpectrum.primesOverOrderIsoFiber R S p).symm.sum_comp]
   refine Finset.sum_congr rfl fun q _ ↦ ?_
   let r := q.1.comap Algebra.TensorProduct.includeRight
