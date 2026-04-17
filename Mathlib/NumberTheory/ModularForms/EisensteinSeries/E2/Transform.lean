@@ -76,10 +76,10 @@ namespace EisensteinSeries
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
 nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
-def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
+def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0, 0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
-lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
+lemma δ_eq : δ ![0, 0] = 1 := by simp [δ]
 
 @[simp]
 lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
@@ -111,7 +111,7 @@ lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b :
   · simp only [not_and] at h
     by_cases hb : b = 0
     · by_cases hn : n = -1
-      · simp [hb,  hn, δ_eq_two]
+      · simp [hb, hn, δ_eq_two]
         ring
       · have hn0 : (n : ℂ) ≠ 0 := by aesop
         have hn1 : (n : ℂ) + 1 ≠ 0 := by norm_cast; grind
@@ -186,13 +186,13 @@ section transform
 
 /-- This is the key identity for how `G2` transforms under the slash action by `S`. -/
 lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z := by
-  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z , ← tsum_G2Term_eq_tsum',
+  rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
   simp_rw [SL_slash_def, modular_T_smul z]
-  simp [G2_eq_tsum_cexp,  T, denom_apply,  ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp [G2_eq_tsum_cexp, T, denom_apply, ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
@@ -212,7 +212,7 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
       rw [D2_mul, SlashAction.slash_mul, ig, sub_eq_add_neg, SlashAction.add_slash, ih]
       grind [SlashAction.neg_slash, SL_slash]
   | inv g _ ig =>
-      have H1 : (G2 ∣[(2 : ℤ)] g)∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g)∣[(2 : ℤ)] g⁻¹ := by
+      have H1 : (G2 ∣[(2 : ℤ)] g) ∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g) ∣[(2 : ℤ)] g⁻¹ := by
         rw [ig]
       simp_rw [← SlashAction.slash_mul, sub_eq_add_neg, SlashAction.add_slash, mul_inv_cancel,
         SlashAction.slash_one, SL_slash, SlashAction.neg_slash] at H1

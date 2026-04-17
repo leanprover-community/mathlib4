@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.FieldTheory.RatFunc.IntermediateField
+public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
+public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
 
 /-!
 # Function fields
@@ -22,10 +25,6 @@ This file defines a function field and the ring of integers corresponding to it.
   i.e. it is a finite extension of the field of rational functions in one variable over `F`.
 - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
   as the integral closure of `F[X]` in the function field.
-- `FunctionField.inftyValuation` : The place at infinity on `F(t)` is the nonarchimedean
-  valuation on `F(t)` with uniformizer `1/t`.
-- `FunctionField.FqtInfty` : The completion `F((t⁻¹))` of `F(t)` with respect to the
-  valuation at infinity.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -138,125 +137,120 @@ instance [Algebra.IsSeparable (RatFunc F) K] : IsDedekindDomain (ringOfIntegers 
 
 end ringOfIntegers
 
-/-! ### The place at infinity on F(t) -/
+section deprecated
 
+@[deprecated RatFunc.inftyValuationDef (since := "2026-04-14")]
+alias inftyValuationDef := RatFunc.inftyValuationDef
 
-section InftyValuation
+@[deprecated RatFunc.InftyValuation.map_zero' (since := "2026-04-14")]
+alias InftyValuation.map_zero' := RatFunc.InftyValuation.map_zero'
 
-open Multiplicative WithZero
+@[deprecated RatFunc.InftyValuation.map_one' (since := "2026-04-14")]
+alias InftyValuation.map_one' := RatFunc.InftyValuation.map_one'
 
-variable [DecidableEq (RatFunc F)]
+@[deprecated RatFunc.InftyValuation.map_mul' (since := "2026-04-14")]
+alias InftyValuation.map_mul' := RatFunc.InftyValuation.map_mul'
 
-/-- The valuation at infinity is the nonarchimedean valuation on `F(t)` with uniformizer `1/t`.
-Explicitly, if `f/g ∈ F(t)` is a nonzero quotient of polynomials, its valuation at infinity is
-`exp (degree(f) - degree(g))`. -/
-def inftyValuationDef (r : RatFunc F) : ℤᵐ⁰ :=
-  if r = 0 then 0 else exp r.intDegree
+@[deprecated RatFunc.InftyValuation.map_add_le_max' (since := "2026-04-14")]
+alias InftyValuation.map_add_le_max' := RatFunc.InftyValuation.map_add_le_max'
 
-theorem InftyValuation.map_zero' : inftyValuationDef F 0 = 0 :=
-  if_pos rfl
+@[deprecated RatFunc.inftyValuation_of_nonzero (since := "2026-04-14")]
+alias inftyValuation_of_nonzero := RatFunc.inftyValuation_of_nonzero
 
-theorem InftyValuation.map_one' : inftyValuationDef F 1 = 1 :=
-  (if_neg one_ne_zero).trans <| by simp
+@[deprecated RatFunc.inftyValuation (since := "2026-04-14")]
+alias inftyValuation := RatFunc.inftyValuation
 
-theorem InftyValuation.map_mul' (x y : RatFunc F) :
-    inftyValuationDef F (x * y) = inftyValuationDef F x * inftyValuationDef F y := by
-  rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
-  by_cases hx : x = 0
-  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
-  · by_cases hy : y = 0
-    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
-    · simp_all [RatFunc.intDegree_mul]
+@[deprecated RatFunc.inftyValuation_apply (since := "2026-04-14")]
+alias inftyValuation_apply := RatFunc.inftyValuation_apply
 
-theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
-    inftyValuationDef F (x + y) ≤ max (inftyValuationDef F x) (inftyValuationDef F y) := by
-  by_cases hx : x = 0
-  · rw [hx, zero_add]
-    conv_rhs => rw [inftyValuationDef, if_pos (Eq.refl _)]
-    rw [max_eq_right (WithZero.zero_le (inftyValuationDef F y))]
-  · by_cases hy : y = 0
-    · rw [hy, add_zero]
-      conv_rhs => rw [max_comm, inftyValuationDef, if_pos (Eq.refl _)]
-      rw [max_eq_right (WithZero.zero_le (inftyValuationDef F x))]
-    · by_cases hxy : x + y = 0
-      · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
-      · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
-          if_neg hxy]
-        simpa using RatFunc.intDegree_add_le hy hxy
+@[deprecated RatFunc.inftyValuation.C (since := "2026-04-14")]
+alias inftyValuation.C := RatFunc.inftyValuation.C
 
-@[simp]
-theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :
-    inftyValuationDef F x = exp x.intDegree := by
-  rw [inftyValuationDef, if_neg hx]
+@[deprecated RatFunc.inftyValuation.X (since := "2026-04-14")]
+alias inftyValuation.X := RatFunc.inftyValuation.X
 
-/-- The valuation at infinity on `F(t)`. -/
-def inftyValuation : Valuation (RatFunc F) ℤᵐ⁰ where
-  toFun := inftyValuationDef F
-  map_zero' := InftyValuation.map_zero' F
-  map_one' := InftyValuation.map_one' F
-  map_mul' := InftyValuation.map_mul' F
-  map_add_le_max' := InftyValuation.map_add_le_max' F
+@[deprecated RatFunc.inftyValuation.X_zpow (since := "2026-04-14")]
+alias inftyValuation.X_zpow := RatFunc.inftyValuation.X_zpow
 
-theorem inftyValuation_apply {x : RatFunc F} : inftyValuation F x = inftyValuationDef F x :=
-  rfl
+@[deprecated RatFunc.inftyValuation.X_inv (since := "2026-04-14")]
+alias inftyValuation.X_inv := RatFunc.inftyValuation.X_inv
 
-@[simp]
-theorem inftyValuation.C {k : F} (hk : k ≠ 0) :
-    inftyValuation F (RatFunc.C k) = 1 := by
-  simp [inftyValuation_apply, hk]
+@[deprecated RatFunc.inftyValuation.polynomial (since := "2026-04-14")]
+alias inftyValuation.polynomial := RatFunc.inftyValuation.polynomial
 
-@[simp]
-theorem inftyValuation.X : inftyValuation F RatFunc.X = exp 1 := by
-  simp [inftyValuation_apply, inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
+@[deprecated RatFunc.inftyValued (since := "2026-04-14")]
+alias inftyValuedFt := RatFunc.inftyValued
 
-lemma inftyValuation.X_zpow (m : ℤ) : inftyValuation F (RatFunc.X ^ m) = exp m := by simp
+@[deprecated RatFunc.inftyValued.def (since := "2026-04-14")]
+alias inftyValuedFt.def := RatFunc.inftyValued.def
 
-theorem inftyValuation.X_inv : inftyValuation F (1 / RatFunc.X) = exp (-1) := by
-  rw [one_div, ← zpow_neg_one, inftyValuation.X_zpow]
+@[deprecated RatFunc.CompletionAtInfty (since := "2026-04-14")]
+alias FtInfty := RatFunc.CompletionAtInfty
 
--- Dropped attribute `@[simp]` due to issue described here:
--- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
-theorem inftyValuation.polynomial {p : F[X]} (hp : p ≠ 0) :
-    inftyValuationDef F (algebraMap F[X] (RatFunc F) p) = exp (p.natDegree : ℤ) := by
-  rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
+@[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
+(since := "2026-04-14")]
+instance valuedFtInfty [DecidableEq (RatFunc F)] :
+    Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
+  inferInstance
 
-instance : Valuation.IsNontrivial (inftyValuation F) := ⟨RatFunc.X, by simp⟩
+@[deprecated RatFunc.valuedCompletionAtInfty.def (since := "2026-04-14")]
+alias valuedFtInfty.def := RatFunc.valuedCompletionAtInfty.def
 
-instance : Valuation.IsTrivialOn F (inftyValuation F) :=
-  ⟨fun _ hx ↦ by simp [inftyValuation.C _ hx]⟩
+end deprecated
 
-/-- The valued field `F(t)` with the valuation at infinity. -/
-@[implicit_reducible]
-def inftyValuedFqt : Valued (RatFunc F) ℤᵐ⁰ :=
-  Valued.mk' <| inftyValuation F
+section AdjoinTranscendental
 
-theorem inftyValuedFqt.def {x : RatFunc F} :
-    (inftyValuedFqt F).v x = inftyValuationDef F x :=
-  rfl
+open IntermediateField RatFunc
 
-namespace FqtInfty
+variable {F K : Type*} [Field F] [Field K] [Algebra F⟮X⟯ K] [FunctionField F K]
 
-/- We temporarily disable the existing valued instance coming from the ideal `X` to avoid diamonds
-with the uniform space structure coming from the valuation at infinity. -/
-attribute [-instance] RatFunc.valuedRatFunc
+instance FiniteDimensional.adjoin_X : FiniteDimensional F⟮(X : F⟮X⟯)⟯ K :=
+  have : Module.Finite (⊤ : IntermediateField F F⟮X⟯) F⟮X⟯ :=
+    .top_left F⟮X⟯ F⟮X⟯
+  RatFunc.adjoin_X (K := F) ▸ Module.Finite.trans F⟮X⟯ _
 
-/- Locally add the uniform space structure coming from the valuation at infinity. This instance
-is scoped in the `FqtInfty` namescape in case it is needed in the future. -/
-/-- The uniform space structure on `RatFunc F` coming from the valuation at infinity. -/
-scoped instance : UniformSpace (RatFunc F) := (inftyValuedFqt F).toUniformSpace
+variable [Algebra F K] [IsScalarTower F F⟮X⟯ K]
 
-/-- The completion `F((t⁻¹))` of `F(t)` with respect to the valuation at infinity. -/
-def _root_.FunctionField.FqtInfty := UniformSpace.Completion (RatFunc F)
-deriving Field, Algebra (RatFunc F), Coe (RatFunc F), Inhabited
+theorem FiniteDimensional.adjoin_algebraMap_X :
+    FiniteDimensional F⟮algebraMap _ K (X : F⟮X⟯)⟯ K :=
+  .of_restrictScalars_finite F⟮(X : F⟮X⟯)⟯ _ _
 
-end FqtInfty
+theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
+    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := by
+  exact .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
 
-/-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty F) ℤᵐ⁰ := (inftyValuedFqt F).valuedCompletion
+variable {y : K}
 
-theorem valuedFqtInfty.def {x : FqtInfty F} :
-  Valued.v x = (inftyValuedFqt F).extensionValuation x := rfl
+theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental F y) :
+    IsAlgebraic F⟮y⟯ (algebraMap _ K (X : F⟮X⟯)) :=
+  isAlgebraic_adjoin_iff.mpr (.adjoin_singleton transcendental_X hy
+    (isAlgebraic_adjoin_iff.mp (Algebra.IsAlgebraic.isAlgebraic y)))
 
-end InftyValuation
+lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
+    FiniteDimensional F⟮y⟯ K :=
+  -- Local definitions for convenience
+  let x := algebraMap _ K (X : F⟮X⟯)
+  let Fyx := restrictScalars F F⟮y⟯⟮x⟯
+  let Fxy := restrictScalars F F⟮x⟯⟮y⟯
+  -- Recalling instance to speed up search
+  let : Algebra F⟮y⟯ Fyx := F⟮y⟯⟮x⟯.algebra
+  let : Module F⟮y⟯ Fyx := Algebra.toModule
+  let : SMul F⟮y⟯ Fyx := Algebra.toSMul
+  let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
+  let : Module F⟮x⟯ Fxy := Algebra.toModule
+  let : SMul F⟮x⟯ Fxy := Algebra.toSMul
+  let : FiniteDimensional F⟮y⟯ Fyx :=
+    adjoin.finiteDimensional
+      (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
+  let : FiniteDimensional Fyx K := by
+    let := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
+    unfold Fyx
+    rw [adjoin_simple_comm]
+    let : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
+    exact .right F⟮x⟯ Fxy K
+  let : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
+  .trans F⟮y⟯ Fyx K
+
+end AdjoinTranscendental
 
 end FunctionField

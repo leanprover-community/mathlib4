@@ -163,6 +163,25 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
       exact h _ _ hx
   · simpa using h (N.mk _ x.prop) (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
+that is induced by an isomorphism `X ≅ Y`. -/
+@[simps -isSimp apply symm_apply]
+def orderIsoOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.N ≃o Y.N where
+  toFun x := N.mk (e.hom.app _ x.simplex)
+    ((nonDegenerate_iff_of_isIso e.hom x.simplex).mpr x.nonDegenerate)
+  invFun y := N.mk (e.inv.app _ y.simplex)
+    ((nonDegenerate_iff_of_isIso e.inv y.simplex).mpr y.nonDegenerate)
+  left_inv x := by simp [N.ext_iff, S.ext_iff']
+  right_inv _ := by simp [N.ext_iff, S.ext_iff']
+  map_rel_iff' {x y} := by
+    dsimp
+    simp only [le_iff, Subcomplex.ofSimplex_le_iff, Subcomplex.mem_ofSimplex_obj_iff]
+    refine exists_congr (fun f ↦ ?_)
+    dsimp at f ⊢
+    rw [← NatTrans.naturality_apply e.hom f.op]
+    exact (e.app _).toEquiv.apply_eq_iff_eq
+
 end N
 
 /-- The map which sends a non degenerate simplex of a simplicial set to
@@ -199,8 +218,9 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
   refine le_antisymm (subcomplex_map_le x y f hf) ?_
   simp only [Subcomplex.ofSimplex_le_iff]
   have := isSplitEpi_of_epi f
-  exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  exact ⟨(section_ f).op, by simp [← hf, ← Functor.map_comp_apply, ← op_comp]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -213,7 +233,7 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
         infer_instance
       refine ⟨(section_ f).op, this ?_⟩
       dsimp
-      rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply,
+      rw [← comp_apply, ← Functor.map_comp, ← comp_apply, ← Functor.map_comp,
         ← op_comp, ← op_comp, Category.assoc, IsSplitEpi.id, Category.comp_id]
     · simp only [Subcomplex.ofSimplex_le_iff]
       exact ⟨f.op, rfl⟩)
