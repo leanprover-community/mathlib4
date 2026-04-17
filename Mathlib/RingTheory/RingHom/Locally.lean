@@ -65,6 +65,13 @@ def Locally {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
 
 variable {R S : Type u} [CommRing R] [CommRing S]
 
+lemma locally_iff_span_eq_top {f : R →+* S} :
+    Locally P f ↔ Ideal.span {g : S | P ((algebraMap S (Localization.Away g)).comp f)} = ⊤ := by
+  refine ⟨fun ⟨s, hs, h⟩ ↦ ?_, fun h ↦ ⟨_, h, fun g hg ↦ hg⟩⟩
+  rw [eq_top_iff, ← hs, Ideal.span_le]
+  intro g hg
+  exact Ideal.subset_span (h _ hg)
+
 lemma locally_iff_finite (f : R →+* S) :
     Locally P f ↔ ∃ (s : Finset S) (_ : Ideal.span (s : Set S) = ⊤),
       ∀ t ∈ s, P ((algebraMap S (Localization.Away t)).comp f) := by
