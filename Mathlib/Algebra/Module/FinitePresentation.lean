@@ -304,6 +304,26 @@ instance pi {ι : Type*} (M : ι → Type*)
   · introv hN hN'
     infer_instance
 
+variable (R M)
+theorem exists_fin_exact [Module.FinitePresentation R M] :
+    ∃ (n m : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
+    Function.Exact f g ∧ Function.Surjective g := by
+  obtain ⟨n, K, iso, S, hS⟩ := Module.FinitePresentation.exists_fin R M
+  let m := S.card
+  let gens : Fin m → (Fin n → R) := Subtype.val ∘ (Finset.equivFin S).symm
+  let f : (Fin m → R) →ₗ[R] (Fin n → R) := Fintype.linearCombination R gens
+  let g : (Fin n → R) →ₗ[R] M := iso.symm.toLinearMap.comp (Submodule.mkQ K)
+  have h₁ : LinearMap.range f = K := by
+    simp only [← hS, f, Fintype.range_linearCombination, gens, (Function.Surjective.range_comp
+    (Finset.equivFin S).symm.surjective Subtype.val), Subtype.range_val_subtype, Finset.setOf_mem]
+  have h₂ : LinearMap.ker g = K := by
+    simp only [g, LinearEquiv.ker_comp, Submodule.ker_mkQ]
+  have exact_fg : Function.Exact f g := LinearMap.exact_iff.mpr (h₂.trans h₁.symm)
+  have : Function.Surjective g := by
+    simp only [g, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
+      Submodule.mkQ_surjective]
+  exact ⟨n, m, f, g, exact_fg, this⟩
+
 end Module.FinitePresentation
 
 end Ring
