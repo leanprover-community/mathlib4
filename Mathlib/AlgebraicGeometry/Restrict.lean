@@ -54,8 +54,6 @@ def ι : ↑U ⟶ X := X.ofRestrict _
 @[simp]
 lemma ι_apply (x : U) : U.ι x = x.val := rfl
 
-@[deprecated (since := "2025-10-07")] alias ι_base_apply := ι_apply
-
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
@@ -192,9 +190,6 @@ def Scheme.openCoverOfIsOpenCover {s : Type*} (X : Scheme.{u}) (U : s → X.Open
     use i
     simpa
 
-@[deprecated (since := "2025-09-30")]
-noncomputable alias Scheme.openCoverOfISupEqTop := Scheme.openCoverOfIsOpenCover
-
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -218,8 +213,6 @@ lemma Scheme.Opens.ι_image_basicOpen' (r : Γ(U, ⊤)) :
   exact (PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _).trans
     (CategoryTheory.Functor.map_id _ _).symm
 
-@[deprecated (since := "2025-10-07")] alias Scheme.map_basicOpen := Scheme.Opens.ι_image_basicOpen'
-
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by
@@ -230,9 +223,6 @@ lemma Scheme.Opens.ι_image_basicOpen_topIso_inv (r : Γ(X, U)) :
     U.ι ''ᵁ U.toScheme.basicOpen (U.topIso.inv r) = X.basicOpen r := by
   simp only [Scheme.Opens.toScheme_presheaf_obj]
   rw [ι_image_basicOpen', basicOpen_res_eq, topIso_inv, basicOpen_res_eq X]
-
-@[deprecated (since := "2025-10-07")]
-alias Scheme.map_basicOpen_map := Scheme.Opens.ι_image_basicOpen_topIso_inv
 
 @[simp]
 lemma Scheme.Opens.mem_basicOpen_toScheme {U : X.Opens} {V : Scheme.Opens U} {r : Γ(U, V)} {x : U} :
@@ -627,8 +617,6 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 
-@[deprecated (since := "2025-10-14")] alias Γ_map_morphismRestrict := morphismRestrict_appTop
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
@@ -752,8 +740,6 @@ lemma le_resLE_preimage_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
     W ≤ (f.resLE U V e) ⁻¹ᵁ O ↔ V.ι ''ᵁ W ≤ f ⁻¹ᵁ U.ι ''ᵁ O := by
   simp [resLE_preimage, ← image_le_image_iff V.ι, image_preimage_eq_opensRange_inf, V.ι_image_le]
 
-@[deprecated (since := "2025-10-07")] alias le_preimage_resLE_iff := le_resLE_preimage_iff
-
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma resLE_app_top : (f.resLE U V e).app ⊤ =
     U.topIso.hom ≫ f.appLE U V e ≫ V.topIso.inv := by simp [Scheme.Hom.resLE]
@@ -771,8 +757,6 @@ lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
 @[simp]
 lemma coe_resLE_apply (x : V) : (f.resLE U V e x).1 = f x := by
   simp [resLE, morphismRestrict_base]
-
-@[deprecated (since := "2025-10-07")] alias coe_resLE_base := coe_resLE_apply
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of `f.resLE U V` at `x : V` is the stalk map of `f` at `x`. -/
