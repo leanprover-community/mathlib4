@@ -97,7 +97,6 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs in
 theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 
--- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
 warning: Declaration `foo₅` has overlapping instances:
 
@@ -128,10 +127,9 @@ private def foo [Add Nat] [Add Nat] : Bool := true
 
 end Foo
 
-section classInductive
+section duplicates
 
-/-! Make sure we warn on duplicate inductive data-carrying inductive classes, even though these do
-not have and cannot be structure projections. -/
+/-! Make sure we warn on duplicate inductive classes and duplicate `Prop` classes. -/
 
 class inductive IndFoo where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
@@ -151,7 +149,6 @@ def indFoo [IndFoo] [IndFoo] : Bool := true
 class inductive IndFooProp : Prop where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
--- We also warn when there are duplicate `Prop` clases
 /--
 warning: Declaration `indFooProp` has overlapping instances:
 
@@ -164,7 +161,7 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs in
 def indFooProp [IndFooProp] [IndFooProp] : Bool := true
 
-end classInductive
+end duplicates
 
 section instantiateMVars
 
@@ -208,6 +205,8 @@ end setOptionIn
 
 namespace universes
 
+/-! Test a projection that goes from `Type*` to `Sort*`. -/
+
 class A (α : Sort u) where
 
 class B (α : Type u) extends A α
@@ -227,6 +226,8 @@ example (α : Type 4) [B α] [A α] : True := trivial
 end universes
 
 namespace parameters
+
+/-! Test a projection that changes the instance parameters. -/
 
 class A (α : Type*) where
 class A' (α : Type*) extends A α where
@@ -250,6 +251,8 @@ example {α β} [B α β] [A' α] [B' α β] : True := trivial
 
 end parameters
 
+/-! Test a `where` clause. -/
+
 /--
 warning: Declaration `lt'.go` has overlapping instances:
 
@@ -264,3 +267,7 @@ def List.lt' {α} [DecidableEq α] (a b : List α) : Bool :=
   go a b
 where
   go [DecidableEq α] (_ _ : List α) : Bool := false
+
+-- Sadly, the linter does not work when the declaration doesn't have a body:
+
+class FooClass (α : Type) [Add α] [Add α] where
