@@ -97,8 +97,8 @@ lemma homotopic_of_indiscrete [IndiscreteTopology Y] (f g : C(X, Y)) : f.Homotop
 
 lemma nullhomotopic_of_indiscrete [Nonempty Y] [IndiscreteTopology Y] (f : C(X, Y)) :
     f.Nullhomotopic := by
-  obtain ⟨b, _⟩ := Classical.exists_true_of_nonempty (by assumption)
-  use b
+  inhabit Y
+  use default
   exact homotopic_of_indiscrete _ _
 
 namespace ContractibleSpace
