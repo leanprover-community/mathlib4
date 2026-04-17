@@ -326,7 +326,7 @@ theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Modul
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range _)
+    · apply le_ciSup Cardinal.bddAbove_of_small
       exact
         ⟨Set.range v, by
           rw [LinearIndepOn]
