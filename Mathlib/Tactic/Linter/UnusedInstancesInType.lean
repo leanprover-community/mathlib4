@@ -285,7 +285,7 @@ def isDecidableVariant (type : Expr) : Bool :=
 
 /-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
 until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
-public partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
+partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
   | `(command| set_option $opt:ident $val in $cmd:command) => do
     match val.raw with
     | Syntax.atom _ "true"  =>
