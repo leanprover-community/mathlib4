@@ -28,6 +28,27 @@ The unique factorization of ideals and invertibility of fractional ideals can be
 Often, definitions assume that Dedekind domains are not fields. We found it more practical
 to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
+## TODO
+
+In #38133, many declarations were moved from the root namespace into `Ideal` or `IsDedekindDomain`.
+The deprecations have the effect that downstream files now have to use the fully qualified name
+even when the corresponding namespace is `open`ed.
+
+After the deprecations have been removed, the shorter names can be restored:
+* In Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind:
+  + `Ideal.span_singleton_dvd_span_singleton_iff_dvd` → `span_singleton_dvd_span_singleton_iff_dvd`
+     in line 75 (as of 2026-04-17)
+  + `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
+    `normalizedFactorsEquivSpanNormalizedFactors` in line 115
+  + `Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` →
+    `emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` in line 129
+  + `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
+    `normalizedFactorsEquivSpanNormalizedFactors` in line 221
+* In Mathlib.NumberTheory.NumberField.ClassNumber:
+  + `Ideal.prod_normalizedFactors_eq_self` → `prod_normalizedFactors_eq_self` in line 122
+* In Mathlib.NumberTheory.RamificationInertia.Basic, one could add `open IsDedekindDomain`
+  around line 498 and then remove many `IsDedekindDomain.` prefixes below.
+
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
