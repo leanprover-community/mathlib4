@@ -653,7 +653,7 @@ theorem sum (h : ∀ σ ∈ s, Meromorphic (G σ)) :
 
 @[fun_prop]
 theorem finsum (h : ∀ σ, Meromorphic (F σ)) :
-    Meromorphic (∑ᶠ σ , F σ) := fun x ↦ MeromorphicAt.finsum (h · x)
+    Meromorphic (∑ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finsum (h · x)
 
 @[to_fun (attr := fun_prop)]
 lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
@@ -676,7 +676,7 @@ theorem prod (h : ∀ σ ∈ s, Meromorphic (F σ)) :
 
 @[fun_prop]
 theorem finprod (h : ∀ σ, Meromorphic (F σ)) :
-    Meromorphic (∏ᶠ σ , F σ) := fun x ↦ MeromorphicAt.finprod (h · x)
+    Meromorphic (∏ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finprod (h · x)
 
 @[to_fun (attr := fun_prop)]
 lemma div {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :
