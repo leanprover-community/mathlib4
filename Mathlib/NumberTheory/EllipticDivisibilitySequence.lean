@@ -329,14 +329,9 @@ lemma normEDS_dvd_normEDS_two_mul (k : ℤ) : normEDS b c d k ∣ normEDS b c d 
 lemma complEDS₂_mul_b (k : ℤ) : complEDS₂ b c d k * b =
     normEDS b c d (k - 1) ^ 2 * normEDS b c d (k + 2) -
       normEDS b c d (k - 2) * normEDS b c d (k + 1) ^ 2 := by
-  induction k using Int.negInduction with
-  | nat k =>
-    simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
-      iff_false]
-    split_ifs <;> ring1
-  | neg ih =>
-    simp_rw [complEDS₂_neg, ← sub_neg_eq_add, ← neg_sub', ← neg_add', normEDS_neg, ih]
-    ring1
+  simp_rw [complEDS₂, normEDS, Int.even_add, Int.even_sub, even_two, iff_true, Int.not_even_one,
+    iff_false]
+  split_ifs <;> ring1
 
 lemma normEDS_even (m : ℤ) : normEDS b c d (2 * m) * b =
     normEDS b c d (m - 1) ^ 2 * normEDS b c d m * normEDS b c d (m + 2) -

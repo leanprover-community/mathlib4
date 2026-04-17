@@ -112,16 +112,11 @@ theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
 theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     ∃ a0 b0 c0, Minimal a0 b0 c0 ∧ a0 % 2 = 1 := by
   obtain ⟨a0, b0, c0, hf⟩ := exists_minimal h
-  rcases Int.emod_two_eq_zero_or_one a0 with hap | hap
-  · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
-    · exfalso
-      have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
-      rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
-      revert h1
-      decide
-    · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
-  exact ⟨a0, ⟨b0, ⟨c0, hf, hap⟩⟩⟩
+  rcases Int.emod_two_eq_zero_or_one a0 with ha0 | ha0
+  · refine ⟨b0, a0, c0, minimal_comm hf, ?_⟩
+    exact Int.odd_iff.mp <| Int.isCoprime_two_left.mp <|
+      IsCoprime.of_isCoprime_of_dvd_left (coprime_of_minimal hf) (Int.dvd_of_emod_eq_zero ha0)
+  · exact ⟨a0, b0, c0, hf, ha0⟩
 
 /-- We can assume that a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` has
 `a` odd and `c` positive. -/
@@ -188,10 +183,9 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
   -- m and r * s are coprime because m = r ^ 2 + s ^ 2 and r and s are coprime.
-  have hcp : Int.gcd m (r * s) = 1 := by
+  have hcp : IsCoprime m (r * s) := by
     rw [htt3]
-    exact Int.isCoprime_iff_gcd_eq_one.mp
-      (Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4))
+    exact Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4)
   -- b is even because b ^ 2 = 2 * m * n.
   have hb2 : 2 ∣ b := by
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
@@ -203,27 +197,20 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
   have hrsz : r * s ≠ 0 := by grind
   have h2b0 : b' ≠ 0 := by grind
-  obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
+  obtain ⟨i, hi⟩ := Int.sq_of_isCoprime hcp hs.symm
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
-    by_contra h1
-    have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
-    rw [← h1] at hit
-    apply absurd h4 (not_lt.mpr hit)
+    intro h1
+    nlinarith [sq_nonneg i, h4, h1]
   replace hi : m = i ^ 2 := Or.resolve_right hi hi'
   rw [mul_comm] at hs
-  rw [Int.gcd_comm] at hcp
   -- obtain d such that r * s = d ^ 2
-  obtain ⟨d, hd⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
+  obtain ⟨d, hd⟩ := Int.sq_of_isCoprime hcp.symm hs.symm
   -- (b / 2) ^ 2 and m are positive so r * s is positive
   have hd' : ¬r * s = -d ^ 2 := by
-    by_contra h1
+    intro h1
     rw [h1] at hs
-    have h2 : b' ^ 2 ≤ 0 := by
-      rw [hs, (by ring : -d ^ 2 * m = -(d ^ 2 * m))]
-      exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
-    have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
-    exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
+    nlinarith [sq_nonneg d, h4, hs, sq_pos_of_ne_zero h2b0]
   replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
