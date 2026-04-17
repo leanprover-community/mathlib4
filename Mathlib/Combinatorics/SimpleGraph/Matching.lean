@@ -225,7 +225,7 @@ lemma IsMatching.restrict {G' : Subgraph G} (hM : M.IsMatching) (hle : M ≤ G')
 
 lemma IsMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, w} ∧ M.Adj v w) :
     M.IsMatching := by
-  obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
+  obtain ⟨v, w, hverts, hadj⟩ := h
   intro a ha
   simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff]
   have he : ∃ b : V, M.Adj a b :=
