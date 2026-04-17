@@ -60,19 +60,17 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance semiring (I : Ideal R) [I.IsTwoSided] : Semiring (R ⧸ I) :=
+local instance semiring (I : Ideal R) [I.IsTwoSided] : Semiring (R ⧸ I) :=
   inferInstanceAs <| Semiring (Quotient.ringCon I).Quotient
 
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
 instance {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := semiring I
-
-instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
-
 instance {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
+instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
 instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
