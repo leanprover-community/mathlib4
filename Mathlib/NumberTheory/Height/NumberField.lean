@@ -13,6 +13,12 @@ public import Mathlib.NumberTheory.Height.Basic
 
 We provide an instance of `Height.AdmissibleAbsValues` for algebraic number fields
 and set up some API.
+
+## TODO
+
+Prove that the height of `(x₀ : x₁ : ··· : xₙ) ∈ ℙⁿ(ℚ)` equals the
+maximum of the absolute values of the `xᵢ` when they are chosen to be coprime integers. This
+should then be split off into a separate `Mathlib.NumberTheory.Height.Rat` file.
 -/
 
 @[expose] public section
