@@ -3013,7 +3013,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Complete
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
-public import Mathlib.CategoryTheory.Monoidal.Closed.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Monoidal.Closed.Transport
 public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Monoidal.Closed.Zero

@@ -214,7 +214,9 @@ def Limits.pullback.ihomMapIsTerminalIso
   inv := pullback.lift (𝟙 _) (MonoidalClosed.curry (t.from _)) (by
       rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
       exact t.hom_ext _ _)
-  hom_inv_id := pullback.hom_ext (by simp) ((t.ofIso (terminalPow t).symm).hom_ext _ _)
+  hom_inv_id :=
+    have : (ihom B).IsRightAdjoint := Adjunction.isRightAdjoint Closed.adj
+    pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom B) T t).hom_ext _ _)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `pullback (∅ ⟹ A ⟶ ∅ ⟹ B) (W ⟹ B ⟶ ∅ ⟹ B) ≅ W ⟹ B` in a braided CCC
