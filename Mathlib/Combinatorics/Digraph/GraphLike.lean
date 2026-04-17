@@ -12,20 +12,22 @@ public import Mathlib.Combinatorics.Digraph.Basic
 In this file we make `Digraph` an instance of `GraphLike`.
 -/
 
-@[expose] public section
+public section
 
-variable {V : Type*}
+open GraphLike
 
 namespace Digraph
 
-instance : GraphLike V (V × V) (Digraph V) where
-  verts _ := Set.univ
-  darts G := { (u, v) | G.Adj u v }
+variable {V : Type*} {G : Digraph V}
+
+instance : SimpleGraphLike G where
+  verts := Set.univ
+  darts := { (u, v) | G.Adj u v }
   fst_mem_of_darts _ := Set.mem_univ _
   snd_mem_of_darts _ := Set.mem_univ _
-  Adj G := G.Adj
-  exists_darts_iff_adj {G : Digraph V} {u v : V} := by simp
+  Adj := G.Adj
+  exists_darts_iff_adj {u v : V} := by simp
 
-lemma darts_def (G : Digraph V) : GraphLike.darts G = { (u, v) | G.Adj u v } := rfl
+lemma darts_def (G : Digraph V) : D(G) = { (u, v) | G.Adj u v } := rfl
 
 end Digraph
