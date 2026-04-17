@@ -801,7 +801,6 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
   app _ := Unit.map.{u₁, u₂, v} f
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.proofsInPublic true in
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y` -/
 @[simps! hom_apply]
@@ -810,7 +809,7 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
   { toFun :=
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
-      TensorProduct.lift
+      TensorProduct.lift (σ₁₂ := .id R)
       { toFun := fun s : S =>
         { toFun := fun y : Y => s • y,
           map_add' := smul_add _
