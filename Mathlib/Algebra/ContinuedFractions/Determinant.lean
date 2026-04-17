@@ -70,8 +70,7 @@ theorem determinant :
   rw [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
   rw [nums_stable_of_terminated n.le_succ <| terminatedAt_n]
   rw [Finset.prod_range_succ, partNums, Stream'.Seq.map_get?, terminatedAt_n]
-  rw [Option.map_none, Option.getD_none]
-  ring
+  grind
 
 end GenContFract
 
