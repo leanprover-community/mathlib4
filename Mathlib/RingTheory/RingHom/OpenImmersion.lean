@@ -30,13 +30,13 @@ variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
     [Algebra R S] : Prop where
   exists_away (R S) : ∃ r : R, IsLocalization.Away r S
 
-open IsStandardOpenImmersion
+namespace IsStandardOpenImmersion
 
 instance (r : R) : IsStandardOpenImmersion R (Localization.Away r) :=
   ⟨r, inferInstance⟩
 
 variable (R S T) in
-@[trans] theorem IsStandardOpenImmersion.trans [Algebra S T] [IsScalarTower R S T]
+@[trans] theorem trans [Algebra S T] [IsScalarTower R S T]
     [IsStandardOpenImmersion R S] [IsStandardOpenImmersion S T] :
     IsStandardOpenImmersion R T :=
   let ⟨r, _⟩ := exists_away R S
@@ -50,17 +50,16 @@ instance [IsStandardOpenImmersion R T] : IsStandardOpenImmersion S (S ⊗[R] T) 
   let ⟨r, _⟩ := exists_away R T
   ⟨algebraMap R S r, inferInstance⟩
 
--- after `Algebra.IsStandardOpenImmersion`
 instance : IsStandardOpenImmersion R R :=
   ⟨1, IsLocalization.away_of_isUnit_of_bijective R isUnit_one Function.bijective_id⟩
 
-lemma IsStandardOpenImmersion.of_bijective (h : Function.Bijective (algebraMap R S)) :
+lemma of_bijective (h : Function.Bijective (algebraMap R S)) :
     IsStandardOpenImmersion R S := by
   rw [Algebra.isStandardOpenImmersion_iff]
   use 1
   apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one h
 
-lemma IsStandardOpenImmersion.of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T] (e : S ≃ₐ[R] T)
+lemma of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T] (e : S ≃ₐ[R] T)
     [h : IsStandardOpenImmersion R S] :
     IsStandardOpenImmersion R T := by
   rw [Algebra.isStandardOpenImmersion_iff] at *
@@ -68,15 +67,20 @@ lemma IsStandardOpenImmersion.of_algEquiv {T : Type*} [CommSemiring T] [Algebra 
   use r
   exact IsLocalization.isLocalization_of_algEquiv _ e
 
+lemma iff_of_algEquiv {T : Type*} [CommSemiring T] [Algebra R T]
+    (e : S ≃ₐ[R] T) :
+    IsStandardOpenImmersion R S ↔ IsStandardOpenImmersion R T :=
+  ⟨fun _ ↦ .of_algEquiv e, fun _ ↦ .of_algEquiv e.symm⟩
+
 variable (R S) in
-lemma IsStandardOpenImmersion.of_isPushout (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
+lemma of_isPushout (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
     [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S'] [IsScalarTower R R' S']
     [IsScalarTower R S S'] [IsPushout R S R' S'] [IsStandardOpenImmersion R S] :
     IsStandardOpenImmersion R' S' :=
   have : IsPushout R R' S S' := by rwa [IsPushout.comm]
   .of_algEquiv (IsPushout.equiv R _ S _)
 
-end Algebra
+end Algebra.IsStandardOpenImmersion
 
 namespace RingHom
 
