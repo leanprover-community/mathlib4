@@ -328,6 +328,18 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, map_zero, Finsupp.zero_apply]⟩
 
+omit [StrongRankCondition R] in
+theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
+    [OrzechProperty R] [Module.Finite R M] [Module.Finite R M']
+    (f : M →ₗ[R] M') (hf : Function.Surjective f) (h : Module.finrank R M ≤ Module.finrank R M') :
+    Function.Bijective f := by
+  cases subsingleton_or_nontrivial R
+  · have := Module.subsingleton R M
+    have := Module.subsingleton R M'
+    exact ⟨Function.injective_of_subsingleton f, hf⟩
+  rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
+  exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
+
 variable {R : Type*} [CommSemiring R] [StrongRankCondition R]
     {M : Type*} [AddCommMonoid M] [Module R M] [Module.Free R M]
 
