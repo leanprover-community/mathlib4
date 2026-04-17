@@ -278,12 +278,12 @@ theorem toFun_tendsto_top_of_FirstNonzeroIsPos {m : UnitMonomial} {basis : Basis
     (h_firstIsPos : FirstNonzeroIsPos m) :
     Tendsto (UnitMonomial.toFun m basis) atTop atTop := by
   cases m with
-  | nil => simp [FirstNonzeroIsPos] at h_firstIsPos
+  | nil => simp at h_firstIsPos
   | cons exps_hd exps_tl =>
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp only [FirstNonzeroIsPos] at h_firstIsPos
+      simp only [FirstNonzeroIsPos.cons_iff] at h_firstIsPos
       obtain h | h := h_firstIsPos
       · exact toFun_tendsto_top_of_head_pos h_basis h
       · have h_eq : UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) =
@@ -297,12 +297,12 @@ theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {m : UnitMonomial} {basis : Basi
     (h_firstIsNeg : FirstNonzeroIsNeg m) :
     Tendsto (UnitMonomial.toFun m basis) atTop (𝓝 0) := by
   cases m with
-  | nil => simp [FirstNonzeroIsNeg] at h_firstIsNeg
+  | nil => simp at h_firstIsNeg
   | cons exps_hd exps_tl =>
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp only [FirstNonzeroIsNeg] at h_firstIsNeg
+      simp only [FirstNonzeroIsNeg.cons_iff] at h_firstIsNeg
       obtain h | h := h_firstIsNeg
       · exact toFun_tendsto_zero_of_head_neg h_basis h
       · have h_eq : UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) =

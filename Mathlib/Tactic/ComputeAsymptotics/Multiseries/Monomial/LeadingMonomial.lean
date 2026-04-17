@@ -572,8 +572,7 @@ lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
     basis ≠ [] := by
   contrapose! h_pos
   subst h_pos
-  simp only [const_exps']
-  exact id
+  simp [const_exps']
 
 -- TODO: move?
 set_option backward.isDefEq.respectTransparency false in
@@ -630,6 +629,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
     obtain _ | ⟨exp, exps_tl⟩ := exps
     · simp at h_len
     simp only [List.length_cons, Nat.add_right_cancel_iff] at h_len
+    simp only [UnitMonomial.FirstNonzeroIsPos.cons_iff] at h_pos
     rcases h_pos with h_pos | ⟨rfl, h_pos⟩
     · exact List.Lex.rel h_pos
     apply List.Lex.cons
