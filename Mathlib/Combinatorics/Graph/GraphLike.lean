@@ -18,6 +18,7 @@ variable {α β γ : Type*} {G : Graph α β}
 
 namespace Graph
 
+/-- `HasDart` is a typeclass for graphs with a dart structure. -/
 class HasDart (G : Graph α β) (γ : outParam Type*) where
   /-- The set of darts of a graph. -/
   dartSet : Set γ
