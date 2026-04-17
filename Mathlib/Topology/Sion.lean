@@ -13,13 +13,19 @@ public import Mathlib.Topology.Order.Completion
 
 ## Statements
 
-`Sion.exists_isSaddlePointOn` :
 Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
-`X` being moreover compact,
-and let `f : X × Y → ℝ` be a function such that
+`X` being moreover compact, `β` a linearly ordered set (with the order topology),
+and let `f : X × Y → β` be a function such that
 - for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
 - for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
-Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
+
+* `Sion.minimax' : If `β` is complete, then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
+
+* `Sion.minimax` : A variant using `IsLUB` and `IsGLB` that does not assume a complete order.
+
+* `Sion.exists_isSaddlePointOn` : There exists `a ∈ X` and `b ∈ Y`  such that
+  `Function.uncurry f` has a saddle point at `(a, b)`, that is,
+  `f a y ≤ f x b` for all `x ∈ X` and `y ∈ Y`.
 
 The classical case of the theorem assumes that `f` is continuous,
 `f(x, ⬝)` is concave, `f(⬝, y)` is convex.
@@ -27,28 +33,20 @@ The classical case of the theorem assumes that `f` is continuous,
 As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
+* `Sion.minimax` is a variant of that result that
+avoids complete linear orders using `IsLUB` and `IsGLB`.
+
 We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## Remark on implementation
 
-  * The essential part of the proof holds for a function
-  `f : X → Y → β`, where `β` is a complete dense linear order.
-  * We have written part of it for just a dense linear order,
-
-  * On the other hand, if the theorem holds for such `β`,
-  it must hold for any linear order, for the reason that
-  any linear order embeds into a complete dense linear order.
-  Although one can construct such an embedding using the Dedekind-Mac Neille completion,
-  this result does not seem to be known to Mathlib.
-
-  * When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
+* The initial proof in [Komiya-1988][Komiya (1988)] is written for `β := ℝ`
+  but it holds verbatim for any dense linearly ordered set.
+  Using `Order.exists_dense_continuous_completion`, it applies to any linear order.
 
 ## TODO
 
 - Spell out the particular case of von Neumann theorem.
-
-- Use the Dedekind MacNeille completion of a linear order to simplify
-  the statement of `DMCompletion.exists_isSaddlePointOn`.
 
 ## References
 
@@ -229,11 +227,11 @@ theorem isClosed_setOf_sublevelLeft_subset
     exact ⟨⟨z', hz'⟩, ⟨hxz'2, hxz'1⟩⟩
   exact hfx.mp <| .of_forall fun z hzt' ⟨hz, hz'⟩ ↦ ⟨hz, ⟨hzt'.le, hz'⟩⟩
 
-variable [DenselyOrdered β]
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
+-- Provisional version that assumes `DenselyOrdered β`
 include ne_X kX hfx hfx' cY hfy hfy' in
-public theorem exists_lt_iInf_of_lt_iInf_of_sup
+theorem exists_lt_iInf_of_lt_iInf_of_sup' [DenselyOrdered β]
     {y1 : F} (hy1 : y1 ∈ Y) {y2 : F} (hy2 : y2 ∈ Y) {t : β}
     (ht : ∀ x ∈ X, t < f x y1 ⊔ f x y2) :
     ∃ y0 ∈ Y, ∀ x ∈ X, t < f x y0 := by
@@ -285,6 +283,29 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
     grw [mem_J2_iff, monotone_sublevelLeft y2 htt'.le]
   · refine hJ1J2 ⟨y1, left_mem_segment ℝ (y1 : F) y2⟩ ⟨?_, h2 (Set.mem_univ _)⟩
     grw [mem_J1_iff, monotone_sublevelLeft y1 htt'.le]
+
+include ne_X kX hfx hfx' cY hfy hfy' in
+public theorem exists_lt_iInf_of_lt_iInf_of_sup
+    {y1 : F} (hy1 : y1 ∈ Y) {y2 : F} (hy2 : y2 ∈ Y) {t : β}
+    (ht : ∀ x ∈ X, t < f x y1 ⊔ f x y2) :
+    ∃ y0 ∈ Y, ∀ x ∈ X, t < f x y0 := by
+  let : TopologicalSpace β := Preorder.topology _
+  have : OrderTopology β := ⟨rfl⟩
+  obtain ⟨γ, _, _, _, _, ι, hι⟩ := Order.exists_dense_continuous_completion β
+  let g := fun x y ↦ ι (f x y)
+  have hgy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x ↦ g x y) X := fun y hy ↦
+    hι.comp_lowerSemicontinuousOn (hfy y hy) ι.monotone
+  have hgy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x ↦ g x y := fun y hy ↦
+    (hfy' y hy).monotone_comp ι.monotone
+  have hgx : ∀ x ∈ X, UpperSemicontinuousOn (fun y ↦ g x y) Y := fun x hx ↦
+    hι.comp_upperSemicontinuousOn (hfx x hx) ι.monotone
+  have hgx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y ↦ g x y := fun x hx ↦
+    (hfx' x hx).monotone_comp ι.monotone
+  have ht' : ∀ x ∈ X, ι t < g x y1 ⊔ g x y2 := fun x hx ↦ by
+    simp only [g, ← SupHomClass.map_sup, ι.lt_iff_lt.mpr (ht x hx)]
+  obtain ⟨y0, hy0, h⟩ := Sion.exists_lt_iInf_of_lt_iInf_of_sup'
+    ne_X kX hgy hgy' cY hgx hgx' hy1 hy2 ht'
+  refine ⟨y0, hy0, by simpa [g, ι.lt_iff_lt] using h⟩
 
 variable (cX : Convex ℝ X)
 
@@ -399,7 +420,7 @@ public theorem minimax
 variable (ne_Y : Y.Nonempty) (kY : IsCompact Y)
 include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
 /-- The Sion-von Neumann minimax theorem (saddle point form) -/
-public theorem exists_isSaddlePointOn' :
+public theorem exists_isSaddlePointOn :
     ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b := by
   have hmax_y (x) (hx : x ∈ X) : ∃ y ∈ Y, IsMaxOn (f x) Y y := (hfx x hx).exists_isMaxOn ne_Y kY
   choose! η η_mem η_max using hmax_y
@@ -426,7 +447,7 @@ end LinearOrder
 
 section CompleteLinearOrder
 
-variable {E F β : Type*} [CompleteLinearOrder β] [DenselyOrdered β]
+variable {E F β : Type*} [CompleteLinearOrder β]
 variable {X : Set E} {Y : Set F} {f : E → F → β}
 variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
     [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
@@ -446,101 +467,6 @@ public theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x
   minimax ne_X kX hfy hfy' cY hfx hfx' cX
    _ (fun _ _ ↦ isLUB_biSup) _ isGLB_biInf _ (fun _ _ ↦ isGLB_biInf) _ isLUB_biSup
 
-include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
-/-- The Sion-von Neumann minimax theorem (saddle point form),
-case of complete linear orders. -/
-public theorem exists_saddlePointOn' :
-    ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b := by
-  have hlsc : LowerSemicontinuousOn (fun x => ⨆ y ∈ Y, f x y) X := fun x hx ↦ by
-    apply lowerSemicontinuousWithinAt_iSup
-    intro i
-    exact lowerSemicontinuousWithinAt_iSup fun i_1 ↦ hfy i i_1 x hx
-  have husc : UpperSemicontinuousOn (fun y => ⨅ x ∈ X, f x y) Y := fun y hy ↦ by
-    apply upperSemicontinuousWithinAt_iInf
-    intro i
-    exact upperSemicontinuousWithinAt_iInf fun i_1 ↦ hfx i i_1 y hy
-  obtain ⟨a, ha, ha'⟩ := LowerSemicontinuousOn.exists_isMinOn
-   ne_X kX hlsc
-  obtain ⟨b, hb, hb'⟩ := UpperSemicontinuousOn.exists_isMaxOn ne_Y kY husc
-  use a, ha, b, hb
-  rw [isSaddlePointOn_iff' ha hb]
-  refine le_trans (le_iInf₂ ha') ?_
-  refine le_trans ?_ (iSup₂_le_iff.mpr hb')
-  rw [minimax' ne_X cX kX hfy hfy' cY hfx hfx']
-
 end CompleteLinearOrder
-
-section DedekindMacNeille
-
-variable {E F β γ : Type*} [LinearOrder β]
-
-variable {X : Set E} {Y : Set F} {f : E → F → β}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-    [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
-    (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
-    (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
-    (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
-
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
-  (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
-  (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
-  (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
-
-/- The following lines essentially assume that `β` has a densely ordered completion.
-(The Dedekind MacNeille completion is not densely ordered.) -/
-variable [TopologicalSpace β] [OrderTopology β]
-variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
-  [TopologicalSpace γ] [OrderTopology γ]
-  {ι : β ↪o γ} (hι : Continuous ι)
-
-include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' hι in
-/-- The minimax theorem, in the saddle point form,
-when `β` is given a Dedekind-MacNeille completion `ι : β ↪o γ` -/
-public theorem DMCompletion.exists_isSaddlePointOn :
-  ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b := by
-  -- Reduce to the cae of EReal-valued functions
-  let φ : E → F → γ := fun x y ↦ ι (f x y)
-  -- suffices : ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y φ a b
-  have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (fun y ↦ φ x y) Y := by
-    convert Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone
-  have hφx' (x) (hx : x ∈ X) : QuasiconcaveOn ℝ Y fun y ↦ φ x y := by
-    convert (hfx' x hx).monotone_comp ι.monotone
-  have hφy (y) (hy : y ∈ Y) : LowerSemicontinuousOn (fun x ↦ φ x y) X := by
-    convert Continuous.comp_lowerSemicontinuousOn hι (hfy y hy) ι.monotone
-  have hφy' (y) (hy : y ∈ Y) : QuasiconvexOn ℝ X fun x ↦ φ x y := by
-    convert (hfy' y hy).monotone_comp ι.monotone
-  obtain ⟨a, ha, b, hb, hab⟩ :=
-    exists_isSaddlePointOn' ne_X kX hφy hφy' cY kY hφx hφx' cX ne_Y
-  use a, ha, b, hb
-  intro x hx y hy
-  simpa only [OrderEmbedding.le_iff_le, φ] using hab x hx y hy
-
-end DedekindMacNeille
-
-section Real
-
-variable {E F : Type*}
-variable {X : Set E} {Y : Set F} {f : E → F → ℝ}
-variable [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-    [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
-    (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
-    (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x : E ↦ f x y) X)
-    (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X fun x => f x y)
-
-variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
-  (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
-  (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y : F => f x y) Y)
-  (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
-
-include ne_X ne_Y cX cY kX kY hfx hfx' hfy hfy' in
-/-- The minimax theorem, in the saddle point form -/
-public theorem exists_isSaddlePointOn :
-    ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b :=
-  DMCompletion.exists_isSaddlePointOn ne_X cX kX hfy hfy' cY ne_Y kY hfx hfx'
-    (ι := EReal.orderEmbedding) (hι := continuous_coe_real_ereal)
-
-end Real
 
 end Sion
