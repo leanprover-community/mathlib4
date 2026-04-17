@@ -60,7 +60,8 @@ abbrev Functor.profunctor (F : C ⥤ Dᵒᵖ ⥤ Type w) : Profunctor.{w} C D :=
 
 namespace ProfunctorCore
 
-/-- Custom structure to construct natural transformations between profunctors. -/
+/-- Custom structure to construct natural transformations between profunctors, see
+`CategoryTheory.Profunctor.ofHom`. -/
 structure Hom (P Q : ProfunctorCore.{w} C D) where
   /-- The components of the natural transformation -/
   app (X : C) (Y : D) : P.obj X Y ⟶ Q.obj X Y
@@ -144,7 +145,7 @@ def Functor.toProfunctor (F : C ⥤ D) : Profunctor C D :=
 
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `D` to `C`. -/
 @[simps! obj_obj obj_map map_app]
-def Functor.toProfunctorFlip (F : C ⥤ D) : Profunctor D C :=
+def Functor.toProfunctorRev (F : C ⥤ D) : Profunctor D C :=
   (Profunctor.id (C := D)).whiskerLeft (𝟭 _) F
 
 end CategoryTheory
