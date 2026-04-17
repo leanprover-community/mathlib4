@@ -46,7 +46,7 @@ open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
 Intended to be used in the `hashCommand` linter, where we want to enter `set_option` `in` commands.
 -/
-private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
+partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun stx => do
   if stx.getKind == ``Lean.Parser.Command.in then
     if stx[0].getKind == ``Lean.Parser.Command.set_option then
       let (opts, _) ← Elab.elabSetOption stx[0][1] stx[0][3]
@@ -58,7 +58,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
+abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
