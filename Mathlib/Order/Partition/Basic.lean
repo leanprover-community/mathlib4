@@ -22,14 +22,15 @@ where `s` is the set of all `x` for which `r x x`.
 Partitions are ordered by refinement: `P ≤ Q` if every part of `P` is less than or equal to a part
 of `Q`.
 
-## Main definitions / results
+## Main results
 
 * `Partition s`: For `[CompleteLattice α]` and `s : α`, a `Partition s` is an independent
   collection of nontrivial elements whose supremum is `s`.
 * `Partition.removeBot`: A constructor for `Partition s` that removes `⊥` from a set of parts.
-* `Partition s` has a top element, consisting of just `s` if `s ≠ ⊥` or nothing otherwise.
-* `Partition s` has finite meets `P ⊓ Q` when `α` is a frame, given by the collection of all
-  non-bottom infima `p ⊓ q` of parts of the two partitions
+* `Partition.instOrderTop`: `Partition s` has a top element, consisting of just `s` if `s ≠ ⊥` or
+  nothing otherwise.
+* `Partition.instSemilatticeInf`: `Partition s` has finite meets `P ⊓ Q` when `α` is a frame,
+  given by the collection of all non-bottom infima `p ⊓ q` of parts of the two partitions.
 * `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
 
 ## TODO
@@ -203,7 +204,7 @@ lemma existsUnique_of_mem_le (h : P ≤ Q) (hx : x ∈ P) :
 
 /-- The top partition of `s` is the partition with the single part `s`, or no parts if `s` is the
 bottom element. -/
-instance : OrderTop (Partition s) where
+instance instOrderTop : OrderTop (Partition s) where
   top := removeBot {s} (sSupIndep_singleton s) sSup_singleton
   le_top P x hxP := by simp [P.ne_bot_of_mem' hxP, P.le_of_mem hxP]
 
@@ -224,21 +225,17 @@ non-bottom meets `p ⊓ q` for `p ∈ P` and `q ∈ Q`.
 Note that while finite meets of partitions can be constructed in this way, arbitrary meets generally
 do not exist: for example when `α` is the frame of open subsets of the Cantor space, `Partition α`
 has no bottom element. -/
-instance {α : Type*} [Order.Frame α] {s : α} : SemilatticeInf (Partition s) where
-  inf P Q := {
-    parts := {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} \ {⊥}
-    sSupIndep' := by
+instance instSemilatticeInf {α : Type*} [Order.Frame α] (s : α) : SemilatticeInf (Partition s) where
+  inf P Q := removeBot {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} (by
       rw [sSupIndep_iff_pairwiseDisjoint]
       intro a ha a' ha' h
-      grind [Partition.eq_or_disjoint, Disjoint.inf_left, Disjoint.inf_left']
-    bot_notMem' := by grind
-    sSup_eq' := by
+      grind [Partition.eq_or_disjoint, Disjoint.inf_left, Disjoint.inf_left'])
+    (by
       suffices sSup {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} = sSup P ⊓ sSup Q by simpa
       rw [sSup_inf_sSup]
       refine le_antisymm ?_ ?_
       · exact sSup_le fun a ⟨p, hp, q, hq, ha⟩ ↦ le_iSup₂_of_le (p, q) ⟨hp, hq⟩ <| by grind
-      · exact iSup₂_le fun (p, q) ⟨hp, hq⟩ ↦ le_sSup_of_le ⟨p, hp, q, hq, rfl⟩ (by simp)
-  }
+      · exact iSup₂_le fun (p, q) ⟨hp, hq⟩ ↦ le_sSup_of_le ⟨p, hp, q, hq, rfl⟩ (by simp))
   inf_le_left P Q a ha := by
     obtain ⟨⟨p, hp, q, hq, rfl⟩, h⟩ := ha
     grind [inf_le_left]
@@ -252,8 +249,8 @@ instance {α : Type*} [Order.Frame α] {s : α} : SemilatticeInf (Partition s) w
 
 @[simp]
 lemma mem_inf_iff {α : Type*} [Order.Frame α] {s a : α} {P Q : Partition s} :
-    a ∈ P ⊓ Q ↔ a ≠ ⊥ ∧ ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q := by
-  exact and_comm
+    a ∈ P ⊓ Q ↔ a ≠ ⊥ ∧ ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q :=
+  and_comm
 
 end Order
 
