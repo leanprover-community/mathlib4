@@ -85,7 +85,7 @@ normed lattice ordered group.
 -/
 instance (priority := 100) OrderDual.instHasSolidNorm :
     HasSolidNorm αᵒᵈ :=
-  { solid := dual_solid (α := α) }
+  { solid := by simp_rw [abs_eq_max_neg]; exact dual_solid (α := α) }
 
 theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
   (solid (abs_abs a).le).antisymm (solid (abs_abs a).symm.le)

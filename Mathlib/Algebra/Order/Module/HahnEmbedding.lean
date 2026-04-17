@@ -110,7 +110,7 @@ instance archimedean_stratum : Archimedean (u.stratum c) := by
   apply ArchimedeanClass.archimedean_of_mk_eq_mk
   intro a ha b hb
   suffices ArchimedeanClass.mk a.val = ArchimedeanClass.mk b.val by
-    rw [ArchimedeanClass.mk_eq_mk] at this ⊢
+    rw [ArchimedeanClass.mk_eq_mk, abs_eq_max_neg, abs_eq_max_neg] at this ⊢
     exact this
   rw [u.archimedeanClassMk_of_mem_stratum a.prop (by simpa using ha)]
   rw [u.archimedeanClassMk_of_mem_stratum b.prop (by simpa using hb)]

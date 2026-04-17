@@ -45,8 +45,10 @@ protected theorem Measurable.leOnePart [MeasurableSup α] (hf : Measurable f) :
 variable [MeasurableSup₂ α]
 
 @[to_additive]
-theorem measurable_mabs : Measurable (mabs : α → α) :=
-  measurable_id'.sup measurable_inv
+theorem measurable_mabs : Measurable (mabs : α → α) := by
+  eta_expand
+  simp_rw [mabs_eq_max_inv]
+  fun_prop
 
 @[to_additive (attr := fun_prop)]
 protected theorem Measurable.mabs (hf : Measurable f) : Measurable fun x ↦ mabs (f x) :=

@@ -115,7 +115,7 @@ instance : FloorRing (FiniteElement K) :=
   .ofBounded _ fun x ↦ by
     obtain ⟨n, hn⟩ := x.2
     refine ⟨n, (le_abs_self x).trans ?_⟩
-    simpa using hn
+    simpa [abs_eq_max_neg] using hn
 
 end FiniteElement
 
