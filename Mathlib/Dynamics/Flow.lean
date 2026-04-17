@@ -68,7 +68,7 @@ alias IsInvariant.isFwInvariant := IsInvariant.isForwardInvariant
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
 theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α}
-    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
+    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun _ => h zero_le
 
 @[deprecated (since := "2025-09-25")]
 alias IsFwInvariant.isInvariant := IsForwardInvariant.isInvariant
