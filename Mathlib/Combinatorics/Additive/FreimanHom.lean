@@ -381,8 +381,28 @@ end Prod
 namespace Fin
 variable {k m n : ℕ}
 
+/-- **No wrap-around principle**.
+
+A set of elements of `Fin (n + 1)` is `m`-Freiman isomorphic to its image in `ℕ`
+if all elements of the set are at most `k` and `m * k ≤ n`, i.e. there is no wrap-around. -/
+lemma isAddFreimanIso_image_val (hkmn : m * k ≤ n) (S : Set (Fin (n + 1))) (hS : ∀ i ∈ S, i ≤ k) :
+    IsAddFreimanIso m S (val '' S) val where
+  bijOn := ⟨by unfold MapsTo; grind, val_injective.injOn, by simp [SurjOn]⟩
+  map_sum_eq_map_sum s t hsS htS hs ht := by
+    open Fin.CommRing in
+    have (u : Multiset (Fin (n + 1))) : Nat.castRingHom _ (u.map val).sum = u.sum := by simp
+    rw [← this, ← this]
+    have {u : Multiset (Fin (n + 1))} (huk : ∀ x ∈ u, ↑x ≤ k) (hu : card u = m) :
+        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 <| hkmn.trans' <| by
+      rw [← hu, ← card_map]
+      refine sum_le_card_nsmul (u.map val) k ?_
+      simpa only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using huk
+    refine ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) ?_ ?_⟩
+    all_goals grind
+
 open Fin.CommRing
 
+@[simp, grind →]
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
   Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
 
@@ -391,20 +411,15 @@ private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
 The first `k + 1` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k + 1` elements
 of `ℕ` assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
-    IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val where
-  bijOn.left := by simp [MapsTo, Fin.le_iff_val_le_val, Nat.mod_eq_of_lt, aux hm hkmn]
-  bijOn.right.left := val_injective.injOn
-  bijOn.right.right x (hx : x ≤ _) :=
-    ⟨x, by simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn, hx.trans_lt]⟩
-  map_sum_eq_map_sum s t hsA htA hs ht := by
-    have (u : Multiset (Fin (n + 1))) : Nat.castRingHom _ (u.map val).sum = u.sum := by simp
-    rw [← this, ← this]
-    have {u : Multiset (Fin (n + 1))} (huk : ∀ x ∈ u, x ≤ k) (hu : card u = m) :
-        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 <| hkmn.trans' <| by
-      rw [← hu, ← card_map]
-      refine sum_le_card_nsmul (u.map val) k ?_
-      simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn] using huk
-    exact ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) (this hsA hs) (this htA ht)⟩
+    IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val := by
+  have h := isAddFreimanIso_image_val hkmn (Iic (k : Fin (n + 1))) (by
+    simp [le_iff_val_le_val, Nat.mod_eq_of_lt (aux hm hkmn)])
+  suffices (val '' Iic (k : Fin (n + 1))) = Iic k by rwa [this] at h
+  ext i
+  simp only [mem_image, mem_Iic, le_iff_val_le_val, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+  constructor
+  · grind
+  · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
 
 /-- **No wrap-around principle**.
 
@@ -412,14 +427,13 @@ The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first 
 assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
-  obtain _ | k := k
-  · simp [← bot_eq_zero]
-  have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
-  convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
-  · simp only [Nat.cast_add, Nat.cast_one, mem_Iio, lt_def, mem_Iic, le_iff_val_le_val,
-      val_natCast, aux hm hkmn', Nat.mod_eq_of_lt]
-    simp_rw [← Nat.cast_add_one]
-    rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]
-  · simp [Nat.lt_succ_iff]
+  have h := isAddFreimanIso_image_val hkmn (Iio (k : Fin (n + 1))) (by
+    simp only [mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]; grind)
+  suffices (val '' Iio (k : Fin (n + 1))) = Iio k by rwa [this] at h
+  ext i
+  simp only [mem_image, mem_Iio, Fin.lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+  constructor
+  · grind
+  · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
 
 end Fin
