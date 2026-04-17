@@ -459,6 +459,7 @@ variable (N : Subgroup G) [N.Normal] [hF : IsGaloisGroup N F L]
 variable (F' : Type*) [Field F'] [Algebra K F'] [Algebra F' L] [IsScalarTower K F' L]
   [hF' : IsGaloisGroup N F' L]
 
+/-- Docstring -/
 @[implicit_reducible]
 noncomputable def SMulOfNormal : SMul G F' where
   smul g x := (smul_mem_of_normal' G K L F' N g x).choose
