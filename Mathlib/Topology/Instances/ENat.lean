@@ -72,7 +72,7 @@ instance : ContinuousAdd ℕ∞ := by
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
     have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
-      rcases eq_bot_or_bot_lt a with rfl | ha
+      rcases eq_zero_or_pos a with rfl | ha
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_
