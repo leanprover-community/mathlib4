@@ -55,8 +55,8 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
 /--
 `addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
 whether it is a Kerodon or Stacks tag (`db`) and
-the `String`s `tag` and `comment` of the `stacks` attribute.
-It extends the `Tag` environment extension with the data `declName, tag, comment`.
+the `String`s `tag` and `comment` of the `stacks` or `kerodon` attribute.
+It extends the `Tag` environment extension with the data `declName, db, tag, comment`.
 -/
 def addTagEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) (db : Database) (tag comment : String) : m Unit :=
