@@ -138,7 +138,7 @@ end MulStruct
 
 /-- If `f` and `g` are in `X.PtSimplex n x`, then `RelStruct f g i.castSucc`
 identifies to `MulStruct .const f g i`. -/
-@[simps]
+@[simps apply_map symm_apply_map]
 def relStructCastSuccEquivMulStruct {f g : X.PtSimplex n x} {i : Fin n} :
     RelStruct f g i.castSucc ≃ MulStruct .const f g i where
   toFun h :=
@@ -154,7 +154,7 @@ def relStructCastSuccEquivMulStruct {f g : X.PtSimplex n x} {i : Fin n} :
 
 /-- If `f` and `g` are in `X.PtSimplex n x`, then `RelStruct f g i.succ`
 identifies to `MulStruct g .const f i`. -/
-@[simps]
+@[simps apply_map symm_apply_map]
 def relStructSuccEquivMulStruct {f g : X.PtSimplex n x} {i : Fin n} :
     RelStruct f g i.succ ≃ MulStruct g .const f i where
   toFun h :=
