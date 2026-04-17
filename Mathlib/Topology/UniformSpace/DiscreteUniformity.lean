@@ -78,7 +78,7 @@ theorem relId_mem_uniformity : SetRel.id ∈ uniformity X :=
 @[deprecated (since := "2025-10-17")]
 alias idRel_mem_uniformity := relId_mem_uniformity
 
-instance of_finite {Y : Type*} [Finite Y] [UniformSpace Y] [DiscreteTopology Y] :
+instance {Y : Type*} [Finite Y] [UniformSpace Y] [DiscreteTopology Y] :
     DiscreteUniformity Y := by
   have h : SetRel.id = ⋂ y : Y, {p | p.2 = y → p.1 ∈ ({y} : Set Y)} := by
     ext x
