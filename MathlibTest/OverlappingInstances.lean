@@ -249,3 +249,18 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 example {α β} [B α β] [A' α] [B' α β] : True := trivial
 
 end parameters
+
+/--
+warning: Declaration `lt'.go` has overlapping instances:
+
+There are 2 `[DecidableEq α]` instances
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+def List.lt' {α} [DecidableEq α] (a b : List α) : Bool :=
+  go a b
+where
+  go [DecidableEq α] (_ _ : List α) : Bool := false

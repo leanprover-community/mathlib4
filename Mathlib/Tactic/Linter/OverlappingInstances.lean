@@ -173,8 +173,7 @@ open Linter in
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
 -/
 def overlappingInstances : Linter where
-  run :=
-    UnusedInstancesInType.withSetBoolOptionIn fun cmd => do
+  run := UnusedInstancesInType.withSetBoolOptionIn fun cmd => do
     unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
       return
     -- Note: we don't break on errors; we want to lint even on partial declarations
