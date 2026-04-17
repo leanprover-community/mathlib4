@@ -7,7 +7,6 @@ module
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
-public import Mathlib.Topology.Order.Completion
 
 /-! # Formalization of Sion's version of the von Neumann minimax theorem
 
