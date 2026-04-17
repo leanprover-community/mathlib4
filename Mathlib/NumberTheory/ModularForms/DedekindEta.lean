@@ -134,7 +134,7 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
   have : 𝕢 h = cexp ∘ ((2 * π * I / h) * ·) := by
     ext
     grind [Periodic.qParam]
-  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
+  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul_id]
   simp [logDeriv_exp]
 
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
