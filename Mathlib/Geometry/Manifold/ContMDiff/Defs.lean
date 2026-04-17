@@ -77,7 +77,8 @@ variable (I I') in
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
 functions between manifolds.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
-number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions.
+-/
 def ContDiffWithinAtProp (n : ℕ∞ω) (f : H → H') (s : Set H) (x : H) : Prop :=
   ContDiffWithinAt 𝕜 n (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x)
 

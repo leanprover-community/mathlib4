@@ -38,7 +38,7 @@ fields, etc.
 
 * `ContMDiffVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is `C^n`, in the
   sense of having `C^n` transition functions, where the smoothness index `n`
-  belongs to `ℕ∞ω`.
+  belongs to `ℕ∞ω` (notation for `WithTop ℕ∞` in the `ContDiff` scope).
 
 * `ContMDiffFiberwiseLinear.hasGroupoid`: For a `C^n` vector bundle `E` over `B` with fiber
   modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
