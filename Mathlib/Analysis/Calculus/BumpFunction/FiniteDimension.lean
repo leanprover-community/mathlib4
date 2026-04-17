@@ -169,7 +169,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, smul_eq_mul, mem_support, Ne] at hx
-      contrapose! hx
+      contrapose hx
       have : ∀ n, g n x = 0 := by
         intro n
         contrapose! hx

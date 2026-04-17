@@ -164,9 +164,6 @@ lemma lieBracket_smul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
   rw [lieBracket_swap, lieBracket_smul_right hf hV, lieBracket_swap, add_comm]
   simp
 
-@[deprecated (since := "2025-10-12")]
-alias lieBracket_fmul_left := lieBracket_smul_left
-
 lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (V + V₁) W s x =

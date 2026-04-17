@@ -355,8 +355,7 @@ protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
-      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_not_isSuccLimit hf (not_isSuccLimit_of_lt_aleph0 hs)
     exact hi ▸ le_ciSup bdd i
   rw [add_eq_max hs, max_le_iff]
   exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
@@ -384,8 +383,7 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
-      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_not_isSuccLimit hf (not_isSuccLimit_of_lt_aleph0 hs)
     exact hi ▸ le_ciSup bdd i
   rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
   obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
@@ -401,11 +399,11 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
 
 theorem sum_eq_lift_iSup_of_lift_mk_le_lift_iSup [Small.{v} ι] {f : ι → Cardinal.{v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ lift.{u} (⨆ i, f i)) : sum f = lift (⨆ i, f i) := by
-  rw [lift_iSup (bddAbove_of_small _)] at h
+  rw [lift_iSup bddAbove_of_small] at h
   apply (lift_iSup_le_sum f).antisymm'
   convert sum_le_lift_mk_mul_iSup_lift f
   rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h,
-    lift_iSup (bddAbove_of_small _)]
+    lift_iSup bddAbove_of_small]
 
 theorem sum_eq_iSup_of_lift_mk_le_iSup {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ ⨆ i, f i) : sum f = ⨆ i, f i := by

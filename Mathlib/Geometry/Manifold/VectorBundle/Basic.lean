@@ -648,7 +648,7 @@ variable (IB n) in
 /-- A randomly chosen coordinate change on a `VectorPrebundle` satisfying `IsContMDiff`, given by
   the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
   `a.coordChange`. -/
-noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
+@[no_expose] noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b
 

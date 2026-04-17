@@ -469,19 +469,9 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
+  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
-  let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
-  { toFun := fun x ↦
-      { toFun := fun y ↦ f'' x y
-        map_add' := by simp
-        map_smul' := by simp }
-    map_add' := by intros; ext; simp
-    map_smul' := by intros; ext; simp }
-  let f''R : E →L[ℝ] E →L[ℝ] F := by
-    refine LinearMap.mkContinuous₂ f''Rl (‖f''‖) (fun x y ↦ ?_)
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, f''Rl]
-    exact ContinuousLinearMap.le_opNorm₂ f'' x y
   have : HasFDerivAt f'R f''R x := by
     simp only [hasFDerivAt_iff_tendsto] at hx ⊢
     exact hx
