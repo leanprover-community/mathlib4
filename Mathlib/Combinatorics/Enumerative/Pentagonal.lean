@@ -38,11 +38,12 @@ Show the relation between pentagonal numbers and partitions, including pentagona
 public section
 
 /-- Pentagonal numbers $k(3k-1)/2$ for integer $k$. -/
-@[expose]
 def pentagonal (k : ℤ) : ℤ := k * (3 * k - 1) / 2
 
+theorem pentagonal_def (k : ℤ) : pentagonal k = k * (3 * k - 1) / 2 := by rfl
+
 theorem pentagonal_neg (k : ℤ) : pentagonal (-k) = k * (3 * k + 1) / 2 := by
-  grind [pentagonal]
+  grind [pentagonal_def]
 
 theorem two_pentagonal (k : ℤ) : 2 * pentagonal k = k * (3 * k - 1) :=
   Int.two_mul_ediv_two_of_even (by grind)
@@ -51,7 +52,7 @@ theorem two_pentagonal_neg (k : ℤ) : 2 * pentagonal (-k) = k * (3 * k + 1) := 
   grind [two_pentagonal]
 
 theorem pentagonal_nonneg (k : ℤ) : 0 ≤ pentagonal k := by
-  simp only [pentagonal, Nat.ofNat_pos, Int.ediv_nonneg_iff_of_pos]
+  simp only [pentagonal_def, Nat.ofNat_pos, Int.ediv_nonneg_iff_of_pos]
   rcases lt_or_ge 0 k with h | h <;> nlinarith
 
 theorem pentagonal_injective : Function.Injective pentagonal := by
@@ -66,27 +67,28 @@ theorem pentagonal_inj {x y : ℤ} : pentagonal x = pentagonal y ↔ x = y :=
   pentagonal_injective.eq_iff
 
 theorem pentagonal_lt_pentagonal_neg {k : ℤ} (h : 0 < k) : pentagonal k < pentagonal (-k) := by
-  grind [pentagonal]
+  grind [pentagonal_def]
 
 theorem pentagonal_neg_lt_pentagonal_add_one {k : ℤ} (h : 0 ≤ k) :
     pentagonal (-k) < pentagonal (k + 1) := by
-  grind [pentagonal]
+  grind [pentagonal_def]
 
 theorem pentagonal_strictMonoOn : StrictMonoOn pentagonal (Set.Ici 0) := by
   apply strictMonoOn_of_lt_add_one Set.ordConnected_Ici
-  grind [pentagonal]
+  grind [pentagonal_def]
 
 theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
-  grind [pentagonal]
+  grind [pentagonal_def]
 
 /-- Pentagonal numbers $k(3k-1)/2$ as `Nat` for integer $k$. -/
-@[expose]
 def pentagonalNat (k : ℤ) : ℕ := (pentagonal k).toNat
+
+theorem pentagonalNat_def (k : ℤ) : pentagonalNat k = (pentagonal k).toNat := by rfl
 
 @[simp]
 theorem natCast_pentagonalNat (k : ℤ) : ↑(pentagonalNat k) = pentagonal k := by
-  simp [pentagonalNat, pentagonal_nonneg]
+  simp [pentagonalNat_def, pentagonal_nonneg]
 
 theorem pentagonalNat_injective : Function.Injective pentagonalNat := by
   intro x y h
