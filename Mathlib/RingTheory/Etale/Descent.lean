@@ -42,10 +42,27 @@ namespace Algebra
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
 
-/-- The `FinitePresentation` assumption is not necessary (see the TODO in the module docstring). -/
-lemma FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
-    [FinitePresentation R S] [FormallySmooth T (T ⊗[R] S)] :
-    FormallySmooth R S := by
+lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
+    [FormallyUnramified T (T ⊗[R] S)] :
+    FormallyUnramified R S := by
+  constructor
+  let _ : Algebra S (T ⊗[R] S) := TensorProduct.rightAlgebra
+  have : Subsingleton (T ⊗[R] Ω[S⁄R]) :=
+    (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
+  exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
+
+/-- Formally smooth algebras descend along faithfully flat base change. See the TODO
+in the module docstring. -/
+proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
+    [FormallySmooth T (T ⊗[R] S)] :
+    FormallySmooth R S
+
+lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
+    Smooth R S := by
+  have : Algebra.FinitePresentation R S := .of_finitePresentation_tensorProduct_of_faithfullyFlat T
+  refine ⟨?_, .of_finitePresentation_tensorProduct_of_faithfullyFlat T⟩
   rw [formallySmooth_iff]
   constructor
   · let _ : Algebra T (S ⊗[R] T) := TensorProduct.rightAlgebra
@@ -59,21 +76,6 @@ lemma FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
     exact Module.Flat.projective_of_finitePresentation
   · have : Subsingleton (T ⊗[R] H1Cotangent R S) := (tensorH1CotangentOfFlat R S T).subsingleton
     exact Module.FaithfullyFlat.lTensor_reflects_triviality R T (H1Cotangent R S)
-
-lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
-    [FormallyUnramified T (T ⊗[R] S)] :
-    FormallyUnramified R S := by
-  constructor
-  let _ : Algebra S (T ⊗[R] S) := TensorProduct.rightAlgebra
-  have : Subsingleton (T ⊗[R] Ω[S⁄R]) :=
-    (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
-  exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
-
-lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
-    Smooth R S := by
-  have : Algebra.FinitePresentation R S := .of_finitePresentation_tensorProduct_of_faithfullyFlat T
-  exact ⟨.of_formallySmooth_tensorProduct_of_faithfullyFlat T,
-    .of_finitePresentation_tensorProduct_of_faithfullyFlat T⟩
 
 lemma Unramified.of_unramified_tensorProduct_of_faithfullyFlat [Unramified T (T ⊗[R] S)] :
     Unramified R S :=
