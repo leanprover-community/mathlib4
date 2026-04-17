@@ -65,10 +65,8 @@ This is Lemma 3.2, part 1 of [arXiv:2503.07846](https://arxiv.org/abs/2503.07846
 The proof lifts a primitive element of the residue field extension via Nakayama's lemma. -/
 theorem exists_adjoin_eq_top [Algebra.Etale R S] :
     ∃ β : S, adjoin R {β} = ⊤ := by
-  obtain ⟨β₀, hβ₀⟩ := @Field.exists_primitive_element
+  obtain ⟨β₀, hβ₀⟩ := Field.exists_primitive_element
     (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S)
-    _ _ _ IsLocalRing.ResidueField.finite_of_module_finite
-    instIsSeparableResidueFieldOfFormallyUnramified
   obtain ⟨β, hβ⟩ := Ideal.Quotient.mk_surjective β₀
   refine ⟨β, eq_top_iff.mpr (Submodule.le_of_le_smul_of_le_jacobson_bot
     (Module.finite_def.mp inferInstance) (IsLocalRing.maximalIdeal_le_jacobson ⊥)
@@ -135,7 +133,7 @@ lemma minpoly_map_residue [Algebra.Etale R S]
   · suffices ((minpoly R β).map (IsLocalRing.residue R)).natDegree
       = (minpoly kR β₀).natDegree from this.le
     haveI : Module.Free R S := Module.free_of_flat_of_isLocalRing
-    erw [hmonic.natDegree_map _,
+    rw [hmonic.natDegree_map _,
       ← (IsAdjoinRootMonic.mkOfAdjoinEqTop' hadj).finrank,
       finrank_eq_finrank_residueField,
       ← IntermediateField.finrank_top']
