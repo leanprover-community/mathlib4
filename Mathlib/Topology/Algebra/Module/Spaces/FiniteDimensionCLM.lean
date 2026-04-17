@@ -17,7 +17,10 @@ When `E` is a finite dimensional T2 vector space over a complete nontrivially no
 then the topology of bounded convergence on `E →L[𝕜] F` coincides with the toplogy of
 pointwise convergence.
 
-TODO: Generalize this to `UniformConvergenceCLM`.
+In fact, the same applies to `E →L_c[𝕜] F` (with the topology of compact convergence) and,
+more generally, to `E →Lᵤ[𝕜, 𝔖] F` for any covering family `𝔖 : Set (Set E)` of bounded subsets
+of `E`.
+
 -/
 
 @[expose] public section
@@ -66,7 +69,7 @@ protected noncomputable def constrCLE [Finite ι] (b : Basis ι 𝕜 E)
     continuous_toFun := UniformConvergenceCLM.continuous_constrL b h𝔖₁
     continuous_invFun := continuous_pi fun i ↦ continuous_eval_const (b i) }
 
-/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
+/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →Lᵤ[𝕜, 𝔖] F`
 identifies with the product topology. -/
 theorem isEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E]
@@ -79,8 +82,6 @@ theorem isEmbedding_coeFn_of_finiteDimensional
   exact .of_comp continuous_coeFun this
     (UniformConvergenceCLM.constrCLE 𝕜 b h𝔖₁ h𝔖₂).symm.toHomeomorph.isEmbedding
 
-/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
 theorem isUniformEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E]
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
@@ -109,8 +110,8 @@ theorem Module.Basis.continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
   UniformConvergenceCLM.continuous_constrL b (fun _ ↦ id)
 
 variable (R) in
-/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, where `E →L[𝕜] F` is endowed with
-the topology of bounded convergence. -/
+/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, between `ι → V`
+and `E →L[𝕜, 𝔖] V`. -/
 @[simps! apply symm_apply]
 protected noncomputable def Module.Basis.constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
     (ι → V) ≃L[R] (E →L[𝕜] V) :=
@@ -124,8 +125,6 @@ theorem ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional
   UniformConvergenceCLM.isEmbedding_coeFn_of_finiteDimensional (fun _ ↦ id)
     sUnion_isVonNBounded_eq_univ
 
-/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
 theorem ContinuousLinearMap.isUniformEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
     IsUniformEmbedding ((↑) : (E →L[𝕜] Vᵤ) → (E → Vᵤ)) :=
@@ -154,27 +153,11 @@ theorem continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
   UniformConvergenceCLM.continuous_constrL b (fun _ ↦ Finite.isVonNBounded)
 
 variable (R) in
-/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, where `E →L[𝕜] F` is endowed with
-the topology of bounded convergence. -/
+/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, between `ι → V`
+and `E →Lₚₜ[𝕜, 𝔖] V`. -/
 protected noncomputable def constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
     (ι → V) ≃L[R] (E →Lₚₜ[𝕜] V) :=
   UniformConvergenceCLM.constrCLE R b (fun _ ↦ Finite.isVonNBounded) sUnion_finite_eq_univ
-
-/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
-theorem isEmbedding_coeFn_of_finiteDimensional
-    [FiniteDimensional 𝕜 E] :
-    IsEmbedding ((↑) : (E →Lₚₜ[𝕜] V) → (E → V)) :=
-  UniformConvergenceCLM.isEmbedding_coeFn_of_finiteDimensional (fun _ ↦ Finite.isVonNBounded)
-    sUnion_finite_eq_univ
-
-/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
-theorem isUniformEmbedding_coeFn_of_finiteDimensional
-    [FiniteDimensional 𝕜 E] :
-    IsUniformEmbedding ((↑) : (E →Lₚₜ[𝕜] Vᵤ) → (E → Vᵤ)) :=
-  UniformConvergenceCLM.isUniformEmbedding_coeFn_of_finiteDimensional (fun _ ↦ Finite.isVonNBounded)
-    sUnion_finite_eq_univ
 
 end PointwiseConvergenceCLM
 
@@ -196,29 +179,27 @@ variable {ι 𝕜 R E F V Vᵤ : Type*} [Semiring R] [NontriviallyNormedField �
 theorem continuous_constrL [Finite ι] (b : Basis ι 𝕜 E) :
     Continuous (Y := E →L_c[𝕜] V) b.constrL :=
   UniformConvergenceCLM.continuous_constrL b
-    (fun _ (hS : IsCompact _) ↦ hS.totallyBounded.isVonNBounded)
+    (fun _ hS ↦ hS.isVonNBounded 𝕜)
 
 variable (R) in
-/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, where `E →L[𝕜] F` is endowed with
-the topology of bounded convergence. -/
+/-- `Basis.constrL` upgraded to a `ContinuousLinearEquiv`, between `ι → V`
+and `E →L_c[𝕜] V`. -/
 protected noncomputable def constrCLE [Finite ι] (b : Basis ι 𝕜 E) :
-    (ι → V) ≃L[R] (E →Lₚₜ[𝕜] V) :=
-  UniformConvergenceCLM.constrCLE R b (fun _ ↦ Finite.isVonNBounded) sUnion_finite_eq_univ
+    (ι → V) ≃L[R] (E →L_c[𝕜] V) :=
+  UniformConvergenceCLM.constrCLE R b (fun _ hS ↦ hS.isVonNBounded 𝕜) sUnion_isCompact_eq_univ
 
-/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
+/-- If `E` is finite dimensional, the topology of compact convergence on `E →L_c[𝕜] F`
 identifies with the product topology. -/
 theorem isEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
-    IsEmbedding ((↑) : (E →Lₚₜ[𝕜] V) → (E → V)) :=
-  UniformConvergenceCLM.isEmbedding_coeFn_of_finiteDimensional (fun _ ↦ Finite.isVonNBounded)
-    sUnion_finite_eq_univ
+    IsEmbedding ((↑) : (E →L_c[𝕜] V) → (E → V)) :=
+  UniformConvergenceCLM.isEmbedding_coeFn_of_finiteDimensional (fun _ hS ↦ hS.isVonNBounded 𝕜)
+    sUnion_isCompact_eq_univ
 
-/-- If `E` is finite dimensional, the topology of bounded convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
 theorem isUniformEmbedding_coeFn_of_finiteDimensional
     [FiniteDimensional 𝕜 E] :
-    IsUniformEmbedding ((↑) : (E →Lₚₜ[𝕜] Vᵤ) → (E → Vᵤ)) :=
-  UniformConvergenceCLM.isUniformEmbedding_coeFn_of_finiteDimensional (fun _ ↦ Finite.isVonNBounded)
-    sUnion_finite_eq_univ
+    IsUniformEmbedding ((↑) : (E →L_c[𝕜] Vᵤ) → (E → Vᵤ)) :=
+  UniformConvergenceCLM.isUniformEmbedding_coeFn_of_finiteDimensional
+    (fun _ hS ↦ hS.isVonNBounded 𝕜) sUnion_isCompact_eq_univ
 
 end CompactConvergenceCLM
