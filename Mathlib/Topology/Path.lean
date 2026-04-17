@@ -338,10 +338,9 @@ theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
   norm_num [image_mul_left_Ici, image_mul_left_Iic,
     image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
-/-- If both paths have values in a set, so does their composition. -/
+/-- If both paths have ranges in a set, so does their composition. -/
 theorem trans_range_subset {a b c : X} {γ₁ : Path a b} {γ₂ : Path b c} {s : Set X}
-    (h₁ : ∀ t, γ₁ t ∈ s) (h₂ : ∀ t, γ₂ t ∈ s) : ∀ t, (γ₁.trans γ₂) t ∈ s := by
-  rw [← range_subset_iff] at h₁ h₂ ⊢
+    (h₁ : range γ₁ ⊆ s) (h₂ : range γ₂ ⊆ s) : range (γ₁.trans γ₂) ⊆ s := by
   rw [trans_range]
   exact union_subset h₁ h₂
 
@@ -411,7 +410,8 @@ theorem codRestrict_symm {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : �
 theorem codRestrict_trans {s : Set X} {x y z : s}
     (γ : Path x.val y.val) (γ' : Path y.val z.val)
     (hγ : ∀ t, γ t ∈ s) (hγ' : ∀ t, γ' t ∈ s) :
-    (γ.trans γ').codRestrict (Path.trans_range_subset hγ hγ') =
+    (γ.trans γ').codRestrict (range_subset_iff.mp
+      (Path.trans_range_subset (range_subset_iff.mpr hγ) (range_subset_iff.mpr hγ'))) =
       (γ.codRestrict hγ).trans (γ'.codRestrict hγ') := by
   ext t
   simp only [codRestrict_coe, trans_apply]

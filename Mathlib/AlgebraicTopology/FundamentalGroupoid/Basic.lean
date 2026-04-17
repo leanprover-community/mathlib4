@@ -190,7 +190,7 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x�
 
 /-- If `γ.trans γ'.symm` is nullhomotopic, then `γ` and `γ'` are homotopic.
 This is the path-homotopy analogue of `a * b⁻¹ = 1 → a = b`. -/
-theorem eq_of_trans_symm {γ γ' : Path x₀ x₁}
+theorem of_trans_symm {γ γ' : Path x₀ x₁}
     (h : (γ.trans γ'.symm).Homotopic (Path.refl x₀)) : γ.Homotopic γ' :=
   (trans_refl γ).symm |>.trans <|
   (hcomp (.refl γ) (symm_trans γ').symm) |>.trans <|
@@ -213,7 +213,7 @@ theorem paths_homotopic_iff_loops_nullhomotopic {X : Type*} [TopologicalSpace X]
     have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
       simp only [Path.trans_range, Path.symm_range, Set.union_subset_iff]
       exact ⟨hγ, hγ'⟩
-    exact eq_of_trans_symm (hloops (γ.trans γ'.symm) hloop)
+    exact of_trans_symm (hloops (γ.trans γ'.symm) hloop)
 
 namespace Quotient
 
@@ -254,12 +254,12 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
 
 /-- If `trans γ (symm γ') = refl`, then `γ = γ'`.
 This is the quotient analogue of `a * b⁻¹ = 1 → a = b`. -/
-theorem eq_of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
+theorem of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
     (h : trans γ (symm γ') = refl x₀) : γ = γ' := by
   induction γ using Quotient.ind with | mk γ =>
   induction γ' using Quotient.ind with | mk γ' =>
   simp only [← mk_trans, ← mk_symm, ← mk_refl] at h
-  exact Quotient.sound (Homotopic.eq_of_trans_symm (Quotient.exact h))
+  exact Quotient.sound (Homotopic.of_trans_symm (Quotient.exact h))
 
 end Quotient
 
