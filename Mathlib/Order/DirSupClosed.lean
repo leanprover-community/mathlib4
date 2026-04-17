@@ -192,7 +192,7 @@ theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) 
 
 private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
-  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton Std.Refl.refl a)
+  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton a)
   rw [← isLUB_congr_of_antisymmRel h]
   exact isLUB_singleton
 
