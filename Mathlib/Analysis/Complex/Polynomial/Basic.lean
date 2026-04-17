@@ -205,5 +205,3 @@ lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree
 /-- An irreducible real polynomial has degree at most two. -/
 lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 :=
   natDegree_le_iff_degree_le.1 hp.natDegree_le_two
-
-#min_imports

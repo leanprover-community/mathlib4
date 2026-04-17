@@ -222,5 +222,3 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]
 
 end PowerBasis
-
-#min_imports
