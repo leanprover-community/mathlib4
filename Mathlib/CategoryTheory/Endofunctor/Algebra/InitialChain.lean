@@ -73,6 +73,12 @@ def iterateMap : ∀ (n : ℕ), (F.iterate n).obj X ⟶ (F.iterate (n + 1)).obj 
   | 0 => α
   | n + 1 => F.map (iterateMap n)
 
+@[simp]
+lemma iterateMap_zero : dsimp% iterateMap α 0 = α := rfl
+
+@[simp]
+lemma iterateMap_succ (n : ℕ) : dsimp% iterateMap α (n + 1) = F.map (iterateMap α n) := rfl
+
 /-- The chain `X → F(X) → F²(X) → ⋯` as a functor `ℕ ⥤ C`, constructed from a seed
 morphism `α : X ⟶ F.obj X`. -/
 def chainMk : ℕ ⥤ C :=
@@ -83,7 +89,7 @@ lemma chainMk_obj (n : ℕ) : (chainMk α).obj n = (F.iterate n).obj X := rfl
 
 @[simp]
 lemma chainMk_map_succ (n : ℕ) :
-    (chainMk α).map (homOfLE (Nat.le_add_right n 1)) = iterateMap α n :=
+    dsimp% (chainMk α).map (homOfLE (Nat.le_add_right n 1)) = iterateMap α n :=
   Functor.ofSequence_map_homOfLE_succ (iterateMap α) n
 
 /-- The chain map at successor indices equals `F` applied to the chain map.
@@ -92,29 +98,18 @@ is `F` applied to the `m`-to-`n` map. -/
 lemma chainMk_map_succ_eq {m n : ℕ} (h : m ≤ n) :
     (chainMk α).map (homOfLE (Nat.succ_le_succ h)) =
     F.map ((chainMk α).map (homOfLE h)) := by
-  induction h with
-  | refl =>
-    have h1 : (homOfLE (Nat.succ_le_succ (le_refl m)) : (m+1 : ℕ) ⟶ (m+1 : ℕ)) = 𝟙 _ :=
-      Subsingleton.elim _ _
-    have h2 : (homOfLE (le_refl m) : (m : ℕ) ⟶ (m : ℕ)) = 𝟙 _ :=
-      Subsingleton.elim _ _
-    rw [h1, h2, Functor.map_id, Functor.map_id, F.map_id]
-    rfl
-  | @step k h' ih =>
-    have decomp_lhs :
-        (homOfLE (Nat.succ_le_succ (Nat.le.step h')) : (m+1 : ℕ) ⟶ (k+2 : ℕ)) =
-        (homOfLE (Nat.succ_le_succ h') : (m+1 : ℕ) ⟶ (k+1 : ℕ)) ≫
-        (homOfLE (Nat.le_add_right (k+1) 1) : (k+1 : ℕ) ⟶ (k+2 : ℕ)) :=
-      Subsingleton.elim _ _
-    have decomp_rhs :
-        (homOfLE (Nat.le.step h') : (m : ℕ) ⟶ (k+1 : ℕ)) =
-        (homOfLE h' : (m : ℕ) ⟶ (k : ℕ)) ≫
-        (homOfLE (Nat.le_add_right k 1) : (k : ℕ) ⟶ (k+1 : ℕ)) :=
-      Subsingleton.elim _ _
-    rw [decomp_lhs, Functor.map_comp, ih, decomp_rhs, Functor.map_comp, F.map_comp]
-    congr 1
-    rw [chainMk_map_succ, chainMk_map_succ]
-    rfl
+  obtain ⟨k, hk⟩ := Nat.le.dest h
+  induction k generalizing m n with
+  | zero =>
+    obtain rfl : m = n := by lia
+    simp
+  | succ k hk' =>
+    obtain rfl : n = m + k + 1 := by lia
+    rw [← homOfLE_comp (y := m + k + 1) (by lia) (by lia),
+      Functor.map_comp, hk' (by lia) (by lia),
+      ← homOfLE_comp (y := m + k) (z := m + k + 1) (by lia) (by lia),
+      Functor.map_comp]
+    simp
 
 end ChainMk
 
