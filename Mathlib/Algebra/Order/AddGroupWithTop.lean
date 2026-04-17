@@ -20,7 +20,7 @@ that show up as the target of so-called “valuations” in algebraic number the
 
 Usually, in the informal literature, these objects are constructed
 by taking a linearly ordered commutative additive group Γ and formally adjoining a
-top element: Γ ∪ {⊤}.
+top element: `Γ ∪ {⊤}`.
 
 The disadvantage is that a type such as `ENNReal` is not of that form,
 whereas it is a very common target for valuations.

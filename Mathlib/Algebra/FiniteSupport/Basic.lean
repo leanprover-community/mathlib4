@@ -13,7 +13,7 @@ public import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Algebra.Group.Support
 
 /-!
-# Make fun_prop work for finite (multiplicative) support
+# Make `fun_prop` work for finite (multiplicative) support
 
 We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additivized version
 `HasFiniteSupport`) on functions so that `fun_prop` can prove it for functions that are

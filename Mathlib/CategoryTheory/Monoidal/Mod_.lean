@@ -141,7 +141,7 @@ structure Hom (M N : Mod_ D A) where
 attribute [instance] Hom.isMod_Hom
 
 /-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, as well as the relevant
+taking a morphism without a `[isMod_Hom]` instance, as well as the relevant
 equality to put such an instance. -/
 @[simps!]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
@@ -150,7 +150,7 @@ def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
   ⟨f⟩
 
 /-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, between objects with
+taking a morphism without a `[isMod_Hom]` instance, between objects with
 a `ModObj` instance (rather than bundled as `Mod_`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]

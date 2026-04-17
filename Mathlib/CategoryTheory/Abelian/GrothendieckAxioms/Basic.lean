@@ -500,7 +500,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat_and_finite [HasCountableCoprod
 
 /--
 Checking exactness of limits of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for
-countable AB4*.
+countable `AB4*`.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat_and_finite [HasCountableProducts C]
     [HasFiniteColimits C] [∀ (J : Type) [Finite J], HasExactLimitsOfShape (Discrete J) C]
@@ -540,7 +540,7 @@ lemma CountableAB4.of_hasExactColimitsOfShape_nat [HasFiniteLimits C] [HasCounta
   exact fun _ ↦ inferInstance
 
 /--
-Checking exact limits of shape `Discrete ℕ` is enough for countable AB4*, provided that the
+Checking exact limits of shape `Discrete ℕ` is enough for countable `AB4*`, provided that the
 category has finite biproducts and finite colimits.
 -/
 lemma CountableAB4Star.of_hasExactLimitsOfShape_nat [HasFiniteColimits C]

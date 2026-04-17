@@ -79,7 +79,7 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 universe u
 
-/-- A CHSH tuple in a *-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
+/-- A CHSH tuple in a `*`-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
 The physical interpretation is that `A₀` and `A₁` are a pair of Boolean observables which

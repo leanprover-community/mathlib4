@@ -20,9 +20,9 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 ## Main definitions
 
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a PresheafedSpace hom `f` is an open_immersion.
+  that a PresheafedSpace hom `f` is an open immersion.
 * `AlgebraicGeometry.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a Scheme morphism `f` is an open_immersion.
+  that a Scheme morphism `f` is an open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is

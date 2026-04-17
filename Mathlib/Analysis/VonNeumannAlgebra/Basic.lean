@@ -51,12 +51,12 @@ class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
-as a *-closed subalgebra of bounded operators on a Hilbert space,
+as a `*`-closed subalgebra of bounded operators on a Hilbert space,
 which is equal to its double commutant.
 
 Note that this definition is parameterised by the Hilbert space
 on which the algebra faithfully acts, as is standard in the literature.
-See `WStarAlgebra` for the abstract notion (a C^*-algebra with Banach space predual).
+See `WStarAlgebra` for the abstract notion (a C⋆-algebra with Banach space predual).
 
 Note this is a bundled structure, parameterised by the Hilbert space `H`,
 rather than a typeclass on the type of elements.
@@ -69,7 +69,7 @@ structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpa
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
 
-/-- Consider a von Neumann algebra acting on a Hilbert space `H` as a *-subalgebra of `H →L[ℂ] H`.
+/-- Consider a von Neumann algebra acting on a Hilbert space `H` as a `*`-subalgebra of `H →L[ℂ] H`.
 (That is, we forget that it is equal to its double commutant
 or equivalently that it is closed in the weak and strong operator topologies.)
 -/

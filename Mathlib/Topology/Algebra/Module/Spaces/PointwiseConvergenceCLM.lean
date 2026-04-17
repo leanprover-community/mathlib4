@@ -56,7 +56,7 @@ variable (σ E F) in
 sometimes also called the *strong operator topology*. We avoid this terminology since so many other
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
-This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
+This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
 abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]

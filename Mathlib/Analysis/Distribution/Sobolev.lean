@@ -43,7 +43,7 @@ the definition of the Sobolev spaces.
 
 ## References
 * [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
-* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations][mclean2000]
+* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations*][mclean2000]
 
 -/
 

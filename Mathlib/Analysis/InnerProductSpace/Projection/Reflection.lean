@@ -129,7 +129,7 @@ theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) = f.symm.trans (K.reflection.trans f) :=
   LinearIsometryEquiv.ext <| reflection_map_apply f K
 
-/-- Reflection through the trivial subspace {0} is just negation. -/
+/-- Reflection through the trivial subspace `{0}` is just negation. -/
 @[simp]
 theorem reflection_bot : reflection (⊥ : Submodule 𝕜 E) = LinearIsometryEquiv.neg 𝕜 := by
   ext; simp [reflection_apply]
