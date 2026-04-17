@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Copyright (c) 2021 Aaron Anderson, Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Alex Meiburg
 -/
 module
 
@@ -271,6 +271,21 @@ def Definable₁ (s : Set M) : Prop :=
 /-- A 2-dimensional version of `Definable`, for `Set (M × M)`. -/
 def Definable₂ (s : Set (M × M)) : Prop :=
   A.Definable L { x : Fin 2 → M | (x 0, x 1) ∈ s }
+
+variable (L' : Language) [inst' : L'.Structure M]
+
+/-- Definability is transitive. Given a structure S on L and T on L', if:
+  * a set S is Definable in some M-structure on L,
+  * the realizations of all L.Functions have tupleGraph that's Definable on S,
+  * the realizations of all L.Relations are Definable on S,
+then S is Definable on T, as well. -/
+theorem Definable.trans {S : Set (α → M)} (h₁ : A.Definable L S)
+    (h₂ : ∀ {n} (g : L[[A]].Functions n), A.Definable L' (g.term.realize).tupleGraph)
+    (h₃ : ∀ {n} (g : L[[A]].Relations n), A.Definable L' (RelMap g)) :
+    A.Definable L' S :=
+  h₁.elim fun φ₁ hφ₁ ↦
+    ⟨_, hφ₁.trans <| (φ₁.subst_definitions_eq
+      (fun g ↦ (h₂ g).choose_spec.symm) (fun g ↦ (h₃ g).choose_spec.symm)).symm⟩
 
 end Set
 
