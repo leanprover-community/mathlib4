@@ -682,7 +682,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   obtain ⟨u, u_open, x₀u, ut, maps_u, u_smooth⟩ :
       ∃ u, IsOpen u ∧ x₀ ∈ u ∧ s ∩ u ⊆ f ⁻¹' t ∧
         s ∩ u ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ CMDiff[s ∩ u] 2 f := by
-    obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ CMDiff[insert x₀ s ∩ u] 2 f  :=
+    obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ CMDiff[insert x₀ s ∩ u] 2 f :=
       hf.contMDiffOn' le_rfl (by simp)
     have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
       hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (f x₀))
@@ -735,7 +735,7 @@ end Invariance_IsSymmSndFDerivWithinAt
 section Invariance
 
 variable [IsManifold I (minSmoothness 𝕜 2) M] [IsManifold I' (minSmoothness 𝕜 2) M']
-  [CompleteSpace E] {n : WithTop ℕ∞}
+  [CompleteSpace E] {n : ℕ∞ω}
 
 /-- The pullback commutes with the Lie bracket of vector fields on manifolds. Version where one
 assumes that the map is smooth on a larger set `u` (so that the
@@ -830,7 +830,7 @@ lemma mpullback_mlieBracket
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
-    [IsManifold I (n + 1) M] {m : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] {m : ℕ∞ω}
     {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hU : CMDiffAt[s] n (T% U) x) (hV : CMDiffAt[s] n (T% V) x)
     (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : minSmoothness 𝕜 (m + 1) ≤ n) :

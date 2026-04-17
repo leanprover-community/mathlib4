@@ -6,9 +6,6 @@ Authors: Chris Hughes, Johan Commelin
 module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Minimal polynomials
@@ -238,19 +235,6 @@ theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]
   apply Set.ext_iff.mp Subtype.range_val_subtype
-
-omit [Nontrivial B] in
-/-- For finite free modules over a nontrivial ring,
-the degree of the minimal polynomials is bounded by the rank of the module -/
-theorem natDegree_le' [Module.Finite A B] [Module.Free A B] [Nontrivial A] :
-    (minpoly A x).natDegree ≤ Module.finrank A B := by
-  have b := Module.Free.chooseBasis A B
-  let M := LinearMap.toMatrixAlgEquiv b (Algebra.lmul A B x)
-  refine (natDegree_le_natDegree (minpoly.min A x M.charpoly_monic ?_)).trans
-    (M.charpoly_natDegree_eq_dim.trans (Module.finrank_eq_card_chooseBasisIndex A B).symm).le
-  let h := Matrix.aeval_self_charpoly M
-  rwa [aeval_algHom_apply, _root_.map_eq_zero_iff _ (LinearMap.toMatrixAlgEquiv b).injective,
-    aeval_algHom_apply, _root_.map_eq_zero_iff _ Algebra.lmul_injective] at h
 
 end
 

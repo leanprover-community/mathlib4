@@ -602,6 +602,21 @@ lemma pos_iff_pos_of_smul_pos [PosSMulReflectLT α β] [SMulPosReflectLT α β] 
     0 < a ↔ 0 < b :=
   ⟨pos_of_smul_pos_left hab ∘ le_of_lt, pos_of_smul_pos_right hab ∘ le_of_lt⟩
 
+lemma IsOrderedModule.of_smul_one_mono
+    [MulOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β]
+    (h : Monotone (fun x : α ↦ x • (1 : β))) : IsOrderedModule α β where
+  smul_le_smul_of_nonneg_left _ ha _ _ hb := by
+    have := mul_le_mul_of_nonneg_left hb (by simpa using h ha)
+    simpa
+  smul_le_smul_of_nonneg_right _ ha _ _ hb := by
+    simpa using mul_le_mul_of_nonneg_right (h hb) ha
+
+theorem isOrderedModule_iff_smul_one_mono
+    [MulOneClass β] [ZeroLEOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β] :
+    IsOrderedModule α β ↔ Monotone (fun x : α ↦ x • (1 : β)) where
+  mp _ := smul_one_mono _
+  mpr := IsOrderedModule.of_smul_one_mono
+
 end Preorder
 
 section PartialOrder
@@ -920,7 +935,6 @@ lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
   obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
@@ -938,7 +952,6 @@ lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
   obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :

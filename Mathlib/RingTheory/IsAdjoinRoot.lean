@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # A predicate on adjoining roots of polynomial
@@ -591,10 +592,10 @@ end lift
 section mkOfAdjoinEqTop
 
 variable [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyClosed R]
-    {α : S} {hα : IsIntegral R α} {hα₂ : Algebra.adjoin R {α} = ⊤}
+    {α : S} (hα : IsIntegral R α) (hα₂ : Algebra.adjoin R {α} = ⊤)
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+@[simps]
 def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
   map := aeval α
   map_surjective := by
@@ -604,7 +605,6 @@ def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
     ext
     simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
 
-variable (hα hα₂) in
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
 abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
   __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
@@ -612,7 +612,7 @@ abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R
 
 @[simp]
 theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
-  simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
+  simp [IsAdjoinRoot.root]
 
 end mkOfAdjoinEqTop
 
@@ -647,36 +647,43 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
       rw [mul_one]
 
-/-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+/-- If `α` generates `S` as an algebra and `S` is free and finite,
+then `S` is given by adjoining a root of `minpoly R α`.
+Does not require that `R` is an integral domain, unlike `mkOfAdjoinEqTop`. -/
+@[simps]
 def mkOfAdjoinEqTop'
-    [Module.Finite R S] [Module.Free R S] [Nontrivial R]
+    [Module.Finite R S] [Module.Free R S]
     {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) where
-  map := aeval α
-  ker_map := by
-    set f := minpoly R α
+  __ : IsAdjoinRoot S (minpoly R α) :=
+    let f := minpoly R α
     have hf := minpoly.monic (Algebra.IsIntegral.isIntegral (R := R) α)
     let φ : AdjoinRoot f →ₐ[R] S :=
       AdjoinRoot.liftAlgHom f (Algebra.ofId R S) α (minpoly.aeval R α)
-    have hφ : Function.Surjective φ := by
-      rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
-      intro s; obtain ⟨p, hp⟩ := hα s
-      exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
-    refine IsAdjoinRoot.ofAdjoinRootEquiv (AlgEquiv.ofBijective φ ⟨?_, hφ⟩) |>.ker_map
-    haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
-    letI : Module R (AdjoinRoot f) := Algebra.toModule
-    have e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S
-      ((finrank_quotient_span_eq_natDegree' hf).trans <|
-        le_antisymm minpoly.natDegree_le' ?_)
-    · exact fun x y h => OrzechProperty.injective_of_surjective_endomorphism
-        (e.symm.toLinearMap.comp φ.toLinearMap)
-        (e.symm.surjective.comp hφ) (congr_arg e.symm h)
-    · rw [← φ.toLinearMap.quotKerEquivRange.trans
-        (LinearEquiv.ofTop _ (LinearMap.range_eq_top.mpr hφ)) |>.finrank_eq]
-      exact (Submodule.finrank_quotient_le _).trans (finrank_quotient_span_eq_natDegree' hf).le
-  map_surjective := by
-    rwa [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at *
+    IsAdjoinRoot.ofAdjoinRootEquiv <| AlgEquiv.ofBijective φ <| by
+      have hφ : Function.Surjective φ := by
+        rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+        intro s; obtain ⟨p, hp⟩ := hα s
+        exact ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
+      haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
+      by_cases h : Nontrivial R
+      · letI e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S <|
+          le_antisymm (finrank_quotient_span_eq_natDegree' hf ▸ minpoly.natDegree_le α)
+          (LinearMap.finrank_le_finrank_of_surjective (f := φ.toLinearMap) hφ)
+        exact OrzechProperty.bijective_of_surjective_of_injective
+          e.toLinearMap φ e.injective hφ
+      · apply not_nontrivial_iff_subsingleton.mp at h
+        haveI := Module.subsingleton R (AdjoinRoot f)
+        exact ⟨Function.injective_of_subsingleton φ, hφ⟩
+  map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
+
+@[simp]
+theorem mkOfAdjoinEqTop'_root
+    [Module.Finite R S] [Module.Free R S]
+    {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
+      (mkOfAdjoinEqTop' hα).root = α := by
+  simp [IsAdjoinRoot.root]
 
 end IsAdjoinRootMonic
 
