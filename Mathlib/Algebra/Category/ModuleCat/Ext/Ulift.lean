@@ -48,25 +48,32 @@ end
 
 section
 
+variable {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R}
+
+/-- If two modules are linear equivalent then their `ULift` are isomorphic in `ModuleCat`. -/
+def ModuleCat.uliftFunctorObjIso (e1 : M ≃ₗ[R] M') :
+    (uliftFunctor.{v'} R).obj M ≅ (uliftFunctor.{v} R).obj M' :=
+  ((ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm).toModuleIso
+
 set_option backward.isDefEq.respectTransparency false in
+/-- Auxiliary definition for the connection of `ModuleCat.extUliftLinearEquiv`. -/
+noncomputable def CategoryTheory.Abelian.Ext.moduleCatUliftFunctorObjIso
+    [Small.{max v v'} R] (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
+    Ext ((ModuleCat.uliftFunctor.{v'} R).obj M) ((ModuleCat.uliftFunctor.{v'} R).obj N) n ≃ₗ[R]
+    Ext ((ModuleCat.uliftFunctor.{v} R).obj M') ((ModuleCat.uliftFunctor.{v} R).obj N') n := {
+  __ := (((extFunctorObj ((ModuleCat.uliftFunctor.{v'} R).obj M) n).mapIso
+    (ModuleCat.uliftFunctorObjIso e2)).trans (((extFunctor n).mapIso
+      (ModuleCat.uliftFunctorObjIso e1).symm.op).app
+        ((ModuleCat.uliftFunctor.{v} R).obj N'))).addCommGroupIsoToAddEquiv
+  map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+
 /-- Given linear equivalence of `R`-modules `M ≃ₗ[R] M'` and `N ≃ₗ[R] N'`,
 the linear equivalence `Ext M N n ≃ₗ[R] Ext M' N' n`. -/
 noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
-    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R} (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
-    Ext M N n ≃ₗ[R] Ext M' N' n :=
+    (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) : Ext M N n ≃ₗ[R] Ext M' N' n :=
   letI : Small.{max v v'} R := small_lift R
-  let e1' : (uliftFunctor.{v'} R).obj M ≅ (uliftFunctor.{v} R).obj M' :=
-    ((ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm).toModuleIso
-  let e2' : (uliftFunctor.{v'} R).obj N ≅ (uliftFunctor.{v} R).obj N' :=
-    ((ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm).toModuleIso
-  let e3 : Ext ((uliftFunctor.{v'} R).obj M) ((uliftFunctor.{v'} R).obj N) n ≃ₗ[R]
-    Ext ((uliftFunctor.{v} R).obj M') ((uliftFunctor.{v} R).obj N') n := {
-      __ := (((extFunctorObj.{max v v'} ((uliftFunctor.{v'} R).obj M) n).mapIso e2').trans
-        (((extFunctor.{max v v'} n).mapIso e1'.symm.op).app
-        ((uliftFunctor.{v} R).obj N'))).addCommGroupIsoToAddEquiv
-      map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
-  ((ModuleCat.extUliftLinearEquiv M N n).trans e3).trans
-      (ModuleCat.extUliftLinearEquiv M' N' n).symm
+  ((ModuleCat.extUliftLinearEquiv M N n).trans (Ext.moduleCatUliftFunctorObjIso e1 e2 n)).trans
+    (ModuleCat.extUliftLinearEquiv M' N' n).symm
 
 end
 
