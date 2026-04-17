@@ -95,8 +95,11 @@ theorem isUniformEmbedding_coeFn_of_finiteDimensional
   AddMonoidHom.isUniformEmbedding_of_isEmbedding (f := Φ)
     (isEmbedding_coeFn_of_finiteDimensional h𝔖₁ h𝔖₂)
 
-/-- If `E` is finite dimensional, the topology of `𝔖`-convergence on `E →L[𝕜] F`
-identifies with the product topology. -/
+/-- If `E` is finite dimensional, then "flipping the variables" yields a linear isomorphism
+between `E →Lᵤ[𝕜, 𝔖] F →Lᵤ[𝕜, 𝔗] V` and `F →Lᵤ[𝕜, 𝔗] E →Lᵤ[𝕜, 𝔖] V`.
+
+Note: This version has a bad definitional behaviour, you should use
+`flipOfFiniteDimensional` instead. -/
 noncomputable def flipOfBasis [Fintype ι] (b : Basis ι 𝕜 E)
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ)
@@ -113,7 +116,7 @@ noncomputable def flipOfBasis [Fintype ι] (b : Basis ι 𝕜 E)
     UniformConvergenceCLM.piEquivL 𝕜 _ _
   B.symm.trans <| Φ.trans A
 
-lemma flipOfBasis_apply [Fintype ι] (b : Basis ι 𝕜 E)
+private lemma flipOfBasis_apply [Fintype ι] (b : Basis ι 𝕜 E)
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ)
     (h𝔗₁ : ∀ t ∈ 𝔗, IsVonNBounded 𝕜 t)
@@ -127,7 +130,7 @@ lemma flipOfBasis_apply [Fintype ι] (b : Basis ι 𝕜 E)
   simp_rw [Sₗ, LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Basis.constr_basis,
     LinearMap.pi_apply, Basis.constr_symm_apply, LinearMap.flip_apply]
 
-lemma flipOfBasis_symm_apply [Fintype ι] (b : Basis ι 𝕜 E)
+private lemma flipOfBasis_symm_apply [Fintype ι] (b : Basis ι 𝕜 E)
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ)
     (h𝔗₁ : ∀ t ∈ 𝔗, IsVonNBounded 𝕜 t)
@@ -138,6 +141,11 @@ lemma flipOfBasis_symm_apply [Fintype ι] (b : Basis ι 𝕜 E)
   intro T
   simp [flipOfBasis_apply]
 
+/-- If `E` is finite dimensional, then "flipping the variables" yields a linear isomorphism
+between `E →Lᵤ[𝕜, 𝔖] F →Lᵤ[𝕜, 𝔗] V` and `F →Lᵤ[𝕜, 𝔗] E →Lᵤ[𝕜, 𝔖] V`.
+
+TODO: This can be made computable, for example by having a version of `copy` where
+the only data is the new `toFun`. -/
 noncomputable def flipOfFiniteDimensional [FiniteDimensional 𝕜 E]
     (h𝔖₁ : ∀ s ∈ 𝔖, IsVonNBounded 𝕜 s)
     (h𝔖₂ : ⋃₀ 𝔖 = .univ)
@@ -256,6 +264,8 @@ theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional
     {f : X → E →L[𝕜] V} : Continuous f ↔ ∀ y, Continuous (f · y) := by
   simp_rw [← continuousOn_univ, continuousOn_clm_apply]
 
+/-- If `E` is finite dimensional, then "flipping the variables" yields a linear isomorphism
+between `E →L[𝕜] F →L[𝕜] V` and `F →L[𝕜] E →L[𝕜] V`. -/
 noncomputable def ContinuousLinearMap.flipOfFiniteDimensional [FiniteDimensional 𝕜 E] :
     (E →L[𝕜] F →L[𝕜] V) ≃L[𝕜] (F →L[𝕜] E →L[𝕜] V) :=
   UniformConvergenceCLM.flipOfFiniteDimensional
