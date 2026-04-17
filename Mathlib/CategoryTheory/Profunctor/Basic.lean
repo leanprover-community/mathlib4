@@ -23,7 +23,7 @@ of a profunctor with functors, and the profunctors in both directions correspond
 ## Future work
 
 - Define composition of profunctors.
-- Define the bicategory of categories where the 1-cells are profunctors.
+- Define the bicategory of categories where the 1-morphisms are profunctors.
 -/
 
 @[expose] public section
@@ -32,9 +32,9 @@ namespace CategoryTheory
 
 open Opposite
 
-universe w' w
+universe w' w v₁ v₂ u₁ u₂
 
-variable (C D : Type*) [Category* C] [Category* D]
+variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
 /-- Custom structure to construct profunctors, i.e. bifunctors `C ⥤ Dᵒᵖ ⥤ Type w`. -/
 @[pp_with_univ]
@@ -60,7 +60,8 @@ abbrev Functor.profunctor (F : C ⥤ Dᵒᵖ ⥤ Type w) : Profunctor.{w} C D :=
 
 namespace ProfunctorCore
 
-/-- Custom structure to construct natural transformations between profunctors. -/
+/-- Custom structure to construct natural transformations between profunctors, see
+`CategoryTheory.Profunctor.ofHom`. -/
 structure Hom (P Q : ProfunctorCore.{w} C D) where
   /-- The components of the natural transformation -/
   app (X : C) (Y : D) : P.obj X Y ⟶ Q.obj X Y
@@ -144,7 +145,7 @@ def Functor.toProfunctor (F : C ⥤ D) : Profunctor C D :=
 
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `D` to `C`. -/
 @[simps! obj_obj obj_map map_app]
-def Functor.toProfunctorFlip (F : C ⥤ D) : Profunctor D C :=
+def Functor.toProfunctorRev (F : C ⥤ D) : Profunctor D C :=
   (Profunctor.id (C := D)).whiskerLeft (𝟭 _) F
 
 end CategoryTheory
