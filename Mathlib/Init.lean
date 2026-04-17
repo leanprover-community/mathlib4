@@ -15,7 +15,6 @@ public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.TacticDocumentation
 -- The following import contains the environment extension for the unused tactic linter.
