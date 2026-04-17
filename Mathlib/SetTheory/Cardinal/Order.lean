@@ -273,9 +273,9 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 
 /-! ### Order properties -/
 
-private theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
-  rintro ⟨α⟩
-  exact ⟨Embedding.ofIsEmpty⟩
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := by rintro ⟨α⟩; exact ⟨Embedding.ofIsEmpty⟩
 
 private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → a + c ≤ b + d := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
@@ -294,15 +294,14 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a b := (add_zero a).ge.trans <| by grw [zero_le b]
-  le_add_self a _ := (zero_add a).ge.trans <| by grw [zero_le]
+  le_self_add a b := (add_zero a).ge.trans <| add_right_mono bot_le
+  le_add_self a _ := (zero_add a).ge.trans <| add_left_mono bot_le
+
+@[deprecated zero_le (since := "2026-04-17")]
+protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
-
-instance orderBot : OrderBot Cardinal.{u} where
-  bot := 0
-  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
