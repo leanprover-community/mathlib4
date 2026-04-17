@@ -115,26 +115,26 @@ end ChainMk
 
 section InitialChain
 
-variable (F : C ⥤ C) [HasInitial C]
+variable (F : C ⥤ C) {X : C} (hX : IsInitial X)
 
-/-- The initial chain `⊥ → F(⊥) → F²(⊥) → ⋯` as a functor `ℕ ⥤ C`,
-obtained by specializing `chainMk` to the seed map `initial.to (F.obj (⊥_ C))`. -/
+/-- The initial chain `X → F(X) → F²(X) → ⋯` as a functor `ℕ ⥤ C`,
+obtained by specializing `chainMk` to the seed map `hX.to (F.obj X)`. -/
 noncomputable def initialChain : ℕ ⥤ C :=
-  chainMk (initial.to (F.obj (⊥_ C)))
+  chainMk (hX.to (F.obj X))
 
 @[simp]
 lemma initialChain_obj (n : ℕ) :
-    (initialChain F).obj n = (F.iterate n).obj (⊥_ C) := rfl
+    (initialChain F hX).obj n = (F.iterate n).obj X := rfl
 
 @[simp]
 lemma initialChain_map_succ (n : ℕ) :
-    (initialChain F).map (homOfLE (Nat.le_add_right n 1)) =
-    iterateMap (initial.to (F.obj (⊥_ C))) n :=
+    (initialChain F hX).map (homOfLE (Nat.le_add_right n 1)) =
+    iterateMap (hX.to (F.obj X)) n :=
   chainMk_map_succ _ n
 
 lemma initialChain_map_succ_eq {m n : ℕ} (h : m ≤ n) :
-    (initialChain F).map (homOfLE (Nat.succ_le_succ h)) =
-    F.map ((initialChain F).map (homOfLE h)) :=
+    (initialChain F hX).map (homOfLE (Nat.succ_le_succ h)) =
+    F.map ((initialChain F hX).map (homOfLE h)) :=
   chainMk_map_succ_eq _ h
 
 end InitialChain
