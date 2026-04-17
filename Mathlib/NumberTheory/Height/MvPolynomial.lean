@@ -536,7 +536,7 @@ namespace Height
 variable [AdmissibleAbsValues K]
 
 lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
-    mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
+    mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
   convert mulHeight_comp_equiv finProdFinEquiv _ with i
   fin_cases i <;> simp [finProdFinEquiv]
@@ -583,7 +583,7 @@ lemma mulHeight_sym2_ge :
   simp only [pow_one] at hC
   refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
   rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
-  convert hC p fun j ↦ ?H  with i
+  convert hC p fun j ↦ ?H with i
   case H => fin_cases j <;> simp [p, q, Fin.sum_univ_three] <;> ring
   fin_cases i <;> simp [p]
 

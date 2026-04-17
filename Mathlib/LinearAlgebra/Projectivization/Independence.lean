@@ -81,7 +81,7 @@ representatives are linearly dependent. -/
 theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
   refine ⟨?_, fun h => ?_⟩
   · rintro ⟨ff, hff, hh1⟩
-    contrapose! hh1
+    contrapose hh1
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh1.units_smul a⁻¹
     ext i
