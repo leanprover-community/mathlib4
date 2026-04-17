@@ -35,76 +35,76 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 @[expose] public section
 
-/-- The typeclass `SymmDartLike α β` captures the common structure of darts with symmetry. -/
-class SymmDartLike (α β : Type*) extends DartLike α β where
-  /-- The inverse of a dart. -/
-  inv : β → β
-  /-- The inverse of the inverse of a dart is the dart itself. -/
-  inv_invol {d : β} : inv (inv d) = d
-  /-- The first vertex of the inverse of a dart is the second vertex of the dart. -/
-  inv_fst {d : β} : fst (inv d) = snd d
-  /-- The second vertex of the inverse of a dart is the first vertex of the dart. -/
-  inv_snd {d : β} : snd (inv d) = fst d
+-- /-- The typeclass `SymmDartLike α β` captures the common structure of darts with symmetry. -/
+-- class SymmDartLike (α β : Type*) extends DartLike α β where
+--   /-- The inverse of a dart. -/
+--   inv : β → β
+--   /-- The inverse of the inverse of a dart is the dart itself. -/
+--   inv_invol {d : β} : inv (inv d) = d
+--   /-- The first vertex of the inverse of a dart is the second vertex of the dart. -/
+--   inv_fst {d : β} : fst (inv d) = snd d
+--   /-- The second vertex of the inverse of a dart is the first vertex of the dart. -/
+--   inv_snd {d : β} : snd (inv d) = fst d
 
-attribute [simp] SymmDartLike.inv_invol SymmDartLike.inv_fst SymmDartLike.inv_snd
+-- attribute [simp] SymmDartLike.inv_invol SymmDartLike.inv_fst SymmDartLike.inv_snd
 
 /-- `SymmGraphLike` extends `GraphLike` for graph-like structures where darts are symmetric. -/
-class SymmGraphLike (α β : outParam Type*) [SymmDartLike α β] (Gr : Type*)
-    extends GraphLike α β Gr where
-  inv_mem_darts_iff {G : Gr} {d : β} : SymmDartLike.inv α d ∈ darts G ↔ d ∈ darts G
+class SymmGraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) extends GraphLike V D G where
+  symm : D → D
+  symm_invol : ∀ ⦃d⦄, symm (symm d) = d
+  symm_ne : ∀ ⦃d⦄, symm d ≠ d
+  symm_fst (d) : fst (symm d) = snd d
+  symm_snd (d) : snd (symm d) = fst d
+  symm_mem_darts_iff {d : D} : symm d ∈ darts ↔ d ∈ darts
 
-attribute [simp] SymmGraphLike.inv_mem_darts_iff
+attribute [simp] SymmGraphLike.symm_invol SymmGraphLike.symm_ne SymmGraphLike.symm_fst
+  SymmGraphLike.symm_snd
 
-open DartLike SymmDartLike GraphLike SymmGraphLike
+open GraphLike SymmGraphLike
 namespace GraphLike
 
-@[inherit_doc verts]
-scoped notation "V(" G ")" => verts G
-
-variable {α β Gr : Type*} {G : Gr} {u v w : α} {d : β}
+variable {V D Gr : Type*} {G : Gr} {u v w : V} {d : D}
 
 section SymmGraphLike
 
-variable [SymmDartLike α β] [SymmGraphLike α β Gr]
+variable [SymmGraphLike V D G]
 
-lemma inv_mem_darts (hd : d ∈ darts G) : inv α d ∈ darts G :=
-  inv_mem_darts_iff.mpr hd
+lemma symm_mem_darts (hd : d ∈ darts G) : symm G d ∈ darts G :=
+  symm_mem_darts_iff.mpr hd
 
 /-- The inverse of a step. -/
-def step.inv (h : step G u v) : step G v u := by
+def step.symm (h : step G u v) : step G v u := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  use SymmDartLike.inv α d, inv_mem_darts hd, hv ▸ inv_fst, hu ▸ inv_snd
+  use SymmGraphLike.symm G d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d
 
 @[simp]
-lemma step.inv_inv (h : step G u v) : h.inv.inv = h := by
+lemma step.symm_symm (h : step G u v) : h.symm.symm = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.inv (⟨SymmDartLike.inv α d, inv_mem_darts hd, hv ▸ inv_fst, hu ▸ inv_snd⟩ :
+  change step.symm (⟨SymmGraphLike.symm G d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d⟩ :
     step G v u) = _
-  simp [inv]
+  simp [symm]
 
 instance : Std.Symm (Adj G) where
   symm _ _ h := by
     rw [← exists_darts_iff_adj] at h ⊢
     obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨SymmDartLike.inv α d, inv_mem_darts hd, inv_fst, inv_snd⟩
+    exact ⟨SymmGraphLike.symm G d, symm_mem_darts hd, symm_fst d, symm_snd d⟩
 
 lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
 lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
 
 /-- The two vertices of the dart as an unordered pair. -/
-def dartSym2 (d : darts G) : Sym2 α := s(fst d.val, snd d.val)
+def dartSym2 (d : darts G) : Sym2 V := s(fst G d.val, snd G d.val)
 
 @[simp]
-theorem dartSym2_mk {p : β} (h : p ∈ darts G) : dartSym2 (⟨p, h⟩ : darts G) = s(fst p, snd p) :=
-  rfl
+theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(fst G d, snd G d) := rfl
 
 /-- The dart with reversed orientation from a given dart. -/
-def dartSymm (d : darts G) : darts G := ⟨inv α d.val, inv_mem_darts_iff.mpr d.prop⟩
+def dartSymm (d : darts G) : darts G := ⟨symm G d.val, symm_mem_darts_iff.mpr d.prop⟩
 
 @[simp]
-theorem dartSymm_mk {p : β} (h : p ∈ darts G) :
-    dartSymm (⟨p, h⟩) = ⟨inv α p, inv_mem_darts_iff.mpr h⟩ :=
+theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨symm G d, symm_mem_darts_iff.mpr h⟩ :=
   rfl
 
 @[simp]
@@ -112,12 +112,12 @@ theorem dartSym2_symm (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
   simp [dartSym2, dartSymm]
 
 @[simp]
-theorem dartSym2_comp_symm : dartSym2 ∘ dartSymm = (dartSym2 : darts G → Sym2 α) :=
+theorem dartSym2_comp_symm : dartSym2 ∘ dartSymm = (dartSym2 : darts G → Sym2 _) :=
   funext dartSym2_symm
 
 @[simp]
 theorem dartSymm_dartSymm (d : darts G) : dartSymm (dartSymm d) = d :=
-  darts_ext _ _ <| inv_invol
+  darts_ext _ _ <| by simp [dartSymm]
 
 @[simp]
 theorem dartSymm_involutive : Function.Involutive (dartSymm : darts G → darts G) :=
