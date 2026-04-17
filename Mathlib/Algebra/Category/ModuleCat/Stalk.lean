@@ -64,7 +64,7 @@ to avoid needing even more. (The maxHeartbeats limit was also bumped up a little
 the meaning of maxHeartbeats changed -- level metavariables started allocating some more memory in
 general.) -/
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 720000 in --
+set_option maxHeartbeats 700000 in --
 set_option synthInstance.maxHeartbeats 40000 in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
