@@ -52,6 +52,7 @@ private theorem determinant_aux (hyp : n = 0 ∨ ¬g.TerminatedAt (n - 1)) :
     have not_terminated_at_n : ¬TerminatedAt g n := Or.resolve_left hyp n.succ_ne_zero
     obtain ⟨gp, s_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
       Option.ne_none_iff_exists'.1 not_terminated_at_n
+    -- unfold the recurrence relation for `conts` once and simplify to derive the following
     suffices ppA * pB - ppB * pA = ∏ i ∈ Finset.range n, - (g.partNums.get? i).getD 0 by
       rw [Finset.prod_range_succ, ← this, partNums, Stream'.Seq.map_get?, s_nth_eq]
       simp only [Option.map_some, Option.getD_some, mul_neg]
