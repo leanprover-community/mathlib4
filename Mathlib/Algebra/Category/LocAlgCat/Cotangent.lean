@@ -126,20 +126,24 @@ theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
   rw [sup_eq_right.mpr this]
   exact (A.toOfQuot I).comap_maximalIdeal_eq
 
-theorem bijective_mapCotangent_toOfQuot_of_le_pow_two {I : Ideal A} (h : I ≤ maximalIdeal A ^ 2) :
-    haveI : Nontrivial (A ⧸ I) := by
-      rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-      exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, h.trans (Ideal.pow_le_self (by simp))⟩
-    Bijective (mapCotangent (A.toOfQuot I)) := by
-  haveI : Nontrivial (A ⧸ I) := by
-    rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
-    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, h.trans (Ideal.pow_le_self (by simp))⟩
-  refine ⟨?_, surjective_mapCotangent_toOfQuot I⟩
-  rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+theorem bijective_mapCotangent_toOfQuot_iff {I : Ideal A} [Nontrivial (A ⧸ I)] :
+    Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
+  simp only [Bijective, surjective_mapCotangent_toOfQuot I, and_true]
+  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker]
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
+  · have x_mem_m : x ∈ maximalIdeal A :=
+      le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp inferInstance) hx
+    let x_cot := (maximalIdeal A).toCotangent ⟨x, x_mem_m⟩
+    have h_map_zero : mapCotangent (A.toOfQuot I) x_cot = 0 := by
+      rw [mapCotangent_toCotangent, Ideal.toCotangent_eq_zero]
+      change (A.toOfQuot I).toAlgHom x ∈ _
+      rw [← ker_toAlgHom_toOfQuot (I := I), RingHom.mem_ker] at hx
+      exact hx ▸ zero_mem _
+    specialize h x_cot h_map_zero
+    rwa [Ideal.toCotangent_eq_zero] at h
   intro x hx
   rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
-  simp only [LinearMap.mem_ker, mapCotangent_toCotangent, toAlgHom_toOfQuot_apply,
-    Ideal.toCotangent_eq_zero] at hx ⊢
+  simp only [mapCotangent_toCotangent, toAlgHom_toOfQuot_apply, Ideal.toCotangent_eq_zero] at hx ⊢
   change (A.toOfQuot I).toAlgHom x ∈ _ at hx
   rwa [← map_toAlgHom_toOfQuot_maximalIdeal_eq, ← Ideal.mem_comap, ← Ideal.map_pow,
     Ideal.comap_map_of_surjective' _ surjective_toAlgHom_toOfQuot, ker_toAlgHom_toOfQuot,
@@ -152,12 +156,22 @@ theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.to
   exact Function.Surjective.comp (equivCotangent (ofQuotKerIsoOfSurjective f h)).surjective
     (surjective_mapCotangent_toOfQuot _)
 
-theorem bijective_mapCotangent_of_surjective_of_ker_le_pow_two {f : A ⟶ B}
-    (hf : Surjective f.toAlgHom) (h_ker : RingHom.ker f.toAlgHom ≤ maximalIdeal A ^ 2) :
-    Function.Bijective (mapCotangent f) := by
-  rw [← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf, mapCotangent_comp, LinearMap.coe_comp]
-  exact Function.Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective
-    (bijective_mapCotangent_toOfQuot_of_le_pow_two h_ker)
+theorem bijective_mapCotangent_iff {f : A ⟶ B} (hf : Surjective f.toAlgHom) :
+    Function.Bijective (mapCotangent f) ↔ RingHom.ker f.toAlgHom ≤ maximalIdeal A ^ 2 := by
+  rw [← bijective_mapCotangent_toOfQuot_iff]
+  have h_comp : mapCotangent f = (mapCotangent (ofQuotKerIsoOfSurjective f hf).hom) ∘ₗ
+      (mapCotangent (A.toOfQuot (RingHom.ker f.toAlgHom))) := by
+    rw [← mapCotangent_comp, toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf]
+  refine ⟨fun h_bij ↦ ?_, fun h_bij ↦ ?_⟩
+  · suffices ⇑(mapCotangent (A.toOfQuot (RingHom.ker f.toAlgHom))) =
+      ⇑(equivCotangent (ofQuotKerIsoOfSurjective f hf)).symm ∘ ⇑(mapCotangent f) from
+      this ▸ Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).symm.bijective h_bij
+    ext
+    simp only [h_comp, LinearMap.coe_comp, Function.comp_apply, equivCotangent_symm_apply]
+    rw [← LinearMap.comp_apply, ← mapCotangent_comp]
+    simp
+  · rw [h_comp, LinearMap.coe_comp]
+    exact Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective h_bij
 
 @[stacks 06S3 "(2) => (3)"]
 theorem mapCotangent_mapOfQuot_surjective_of_mapCotangent_surjective {I : Ideal A} {J : Ideal B}

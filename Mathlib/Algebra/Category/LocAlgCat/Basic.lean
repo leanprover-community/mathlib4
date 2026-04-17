@@ -250,7 +250,6 @@ def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocAlg
 lemma coe_ofPullback (hg : Surjective g.toAlgHom) :
     (ofPullback f g hg : Type w) = f.toAlgHom.pullback g.toAlgHom := rfl
 
-@[simp]
 lemma residue_ofPullback_apply (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom)
     (u : f.toAlgHom.pullback g.toAlgHom) : (ofPullback f g hg).residue u = A.residue u.val.1 := by
   rfl
