@@ -315,6 +315,11 @@ theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embeddin
 
 lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
 
+instance : AddGroupSeminormClass (FinitePlace K) K ℝ where
+  map_add_le_add v x y := by simpa [coe_apply] using IsAbsoluteValue.abv_add' x y
+  map_zero v := by simp
+  map_neg_eq_map v x := by simp [coe_apply]
+
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
 
