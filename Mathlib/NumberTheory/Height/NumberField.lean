@@ -157,9 +157,9 @@ theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
   simp [hn, InfinitePlace.mult, isReal_infinitePlace]
 
 /-- The logarithmic height of a positive natural number cast to `ℚ` equals `log n`. -/
-theorem logHeight₁_natCast (n : ℕ) (hn : 1 ≤ n) :
+theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
     logHeight₁ (n : ℚ) = Real.log n := by
-  simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n hn]
+  simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n]
 
 end Rat
 
