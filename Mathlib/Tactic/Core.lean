@@ -85,7 +85,7 @@ def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
   return (← RCases.rintro pats none g |>.run', remaining)
 
 /-- Introduce variables, giving them names from a specified list. -/
-@[deprecated MVarId.rintroWithPats (since := "2026-03-07")]
+@[deprecated MVarId.rintroWithPats (since := "2026-04-17")]
 def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
