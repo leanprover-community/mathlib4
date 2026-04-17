@@ -35,6 +35,26 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 
 section
 
+open Ideal
+
+-- PRed
+theorem le_of_liesOver_quotient {R : Type*} [CommRing R]
+    (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I)) [q.LiesOver p] : I ≤ p := by
+  simp [over_def q p, ← map_le_iff_le_comap]
+
+-- PRed
+theorem algebraMapSubmonoid_primeCompl_of_liesOver_quotient
+    {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I))
+    [p.IsPrime] [q.IsPrime] [q.LiesOver p] :
+    Algebra.algebraMapSubmonoid (R ⧸ I) p.primeCompl = q.primeCompl := by
+  ext x
+  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  rw [mem_primeCompl_iff, ← Quotient.algebraMap_eq, ← mem_comap, ← under_def, ← over_def q p]
+  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
+  rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
+  contrapose! hy
+  simpa [p.sub_mem_iff_left hy] using le_of_liesOver_quotient I p q hx
+
 -- PRed
 theorem IsArtinianRing.finrank_eq_sum_primeSpectrum
     {R S : Type*} [Field R] [CommRing S] [IsArtinianRing S] [Algebra R S] [Module.Finite R S] :
@@ -174,22 +194,6 @@ noncomputable def Fiber.algEquivQuotient :
       commutes' := by simp }
 
 open TensorProduct
-
-theorem le_of_liesOver_quotient {R : Type*} [CommRing R]
-    (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I)) [q.LiesOver p] : I ≤ p := by
-  simp [over_def q p, ← map_le_iff_le_comap]
-
-theorem algebraMapSubmonoid_primeCompl_of_liesOver_quotient
-    {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I))
-    [p.IsPrime] [q.IsPrime] [q.LiesOver p] :
-    Algebra.algebraMapSubmonoid (R ⧸ I) p.primeCompl = q.primeCompl := by
-  ext x
-  obtain ⟨x, rfl⟩ := Quotient.mk_surjective x
-  rw [mem_primeCompl_iff, ← Quotient.algebraMap_eq, ← mem_comap, ← under_def, ← over_def q p]
-  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
-  rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
-  contrapose! hy
-  simpa [p.sub_mem_iff_left hy] using le_of_liesOver_quotient I p q hx
 
 /-- The localization of the quotient `Sp⧸pSp` is isomorphic to a quotient of a localization. -/
 noncomputable def foo9 :
