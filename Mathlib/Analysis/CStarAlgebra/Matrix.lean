@@ -244,6 +244,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
           rw [toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))]
           simp
       _ ≤ _ := by grw [T.le_opNorm]; simp
+
 @[simp]
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
   Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
