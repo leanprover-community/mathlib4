@@ -91,6 +91,11 @@ lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
+variable {R} in
+lemma nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nontrivial R :=
+  ⟨⟨(1 : ℕ), 0, fun h =>
+      hv <| by rwa [CharP.cast_eq_zero_iff _ v, Nat.dvd_one] at h⟩⟩
+
 end AddMonoidWithOne
 
 section AddGroupWithOne
@@ -290,10 +295,6 @@ lemma false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
 lemma ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
   simpa using not_subsingleton R
 
-lemma nontrivial_of_char_ne_one {v : ℕ} (hv : v ≠ 1) [hr : CharP R v] : Nontrivial R :=
-  ⟨⟨(1 : ℕ), 0, fun h =>
-      hv <| by rwa [CharP.cast_eq_zero_iff _ v, Nat.dvd_one] at h⟩⟩
-
 end NonAssocSemiring
 end CharP
 
@@ -326,56 +327,67 @@ variable [AddMonoidWithOne R]
 
 /-- The definition of the exponential characteristic of a semiring. -/
 class inductive ExpChar : ℕ → Prop
+  | subsingleton (q : ℕ) [Subsingleton R] : ExpChar q
   | zero [CharZero R] : ExpChar 1
   | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar q
 
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_one [CharZero R] : ExpChar R 1 := ExpChar.zero
 
-lemma expChar_ne_zero (p : ℕ) [hR : ExpChar R p] : p ≠ 0 := by
+lemma expChar_ne_zero (p : ℕ) [Nontrivial R] [hR : ExpChar R p] : p ≠ 0 := by
   cases hR
+  · exfalso
+    exact (false_of_nontrivial_of_subsingleton R).elim
   · exact one_ne_zero
   · exact ‹p.Prime›.ne_zero
 
 variable {R} in
 /-- The exponential characteristic is unique. -/
-lemma ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
-  rcases hp with ⟨hp⟩ | ⟨hp'⟩
-  · rcases hq with hq | hq'
-    exacts [rfl, False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hq'))]
-  · rcases hq with hq | hq'
-    exacts [False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hp')),
+lemma ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) [Nontrivial R] : p = q := by
+  rcases hp with _ | ⟨hp⟩ | ⟨hp'⟩
+  · exact (false_of_nontrivial_of_subsingleton R).elim
+  · rcases hq with _ | hq | hq'
+    exacts [(false_of_nontrivial_of_subsingleton R).elim, rfl,
+      False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hq'))]
+  · rcases hq with _ | hq | hq'
+    exacts [(false_of_nontrivial_of_subsingleton R).elim,
+      False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hp')),
       CharP.eq R ‹_› ‹_›]
 
 lemma ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 lemma expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
-  rcases hq with q | hq_prime
+  rcases hq with _ | q | hq_prime
+  · exact (not_nontrivial R <| CharP.nontrivial_of_char_ne_one <| by decide).elim
   · rfl
   · exact False.elim <| hq_prime.ne_zero <| ‹CharP R q›.eq R hp
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
-lemma char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
-  rcases hq with q | hq_prime
+lemma char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] [Nontrivial R] :
+    p = q ↔ p.Prime := by
+  rcases hq with _ | q | hq_prime
+  · exact (false_of_nontrivial_of_subsingleton R).elim
   · rw [(CharP.eq R hp (.ofCharZero R) : p = 0)]
     decide
   · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp ‹CharP R q›⟩
 
 /-- The exponential characteristic is a prime number or one.
 See also `CharP.char_is_prime_or_zero`. -/
-lemma expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
+lemma expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] [Nontrivial R] :
+    Nat.Prime q ∨ q = 1 := by
   cases hq with
+  | subsingleton q => exact (false_of_nontrivial_of_subsingleton R).elim
   | zero => exact .inr rfl
   | prime hp => exact .inl hp
 
 /-- The exponential characteristic is positive. -/
-lemma expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
+lemma expChar_pos (q : ℕ) [ExpChar R q] [Nontrivial R] : 0 < q := by
   rcases expChar_is_prime_or_one R q with h | rfl
   exacts [Nat.Prime.pos h, Nat.one_pos]
 
 /-- Any power of the exponential characteristic is positive. -/
-lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
+lemma expChar_pow_pos (q : ℕ) [ExpChar R q] [Nontrivial R] (n : ℕ) : 0 < q ^ n :=
   Nat.pow_pos (expChar_pos R q)
 
 end AddMonoidWithOne
@@ -386,8 +398,9 @@ variable [NonAssocSemiring R]
 /-- Noncomputable function that outputs the unique exponential characteristic of a semiring. -/
 noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
-lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
-  rcases h with _ | h
+lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] [Nontrivial R] : ringExpChar R = q := by
+  rcases h with _ | _ | h
+  · exfalso ; exact false_of_nontrivial_of_subsingleton R
   · haveI := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
@@ -400,8 +413,10 @@ section Nontrivial
 variable [Nontrivial R]
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
-lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p = 0 := by
+lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
+    p = 0 := by
   cases hq
+  · exfalso ; exact false_of_nontrivial_of_subsingleton R
   · exact CharP.eq R hp (.ofCharZero R)
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 
@@ -409,6 +424,7 @@ lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] : p
 /-- The characteristic is zero if the exponential characteristic is one. -/
 lemma charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
+  · exfalso ; exact false_of_nontrivial_of_subsingleton R
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 

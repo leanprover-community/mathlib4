@@ -119,14 +119,16 @@ section ExpChar
 variable [hR : ExpChar R p]
 
 lemma add_pow_expChar_of_commute (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
-  obtain _ | hprime := hR
+  obtain _ | _ | hprime := hR
+  · subsingleton
   · simp only [pow_one]
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hprime
     simp [hr]
 
 lemma add_pow_expChar_pow_of_commute (h : Commute x y) :
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
-  obtain _ | hprime := hR
+  obtain _ | _ | hprime := hR
+  · subsingleton
   · simp only [one_pow, pow_one]
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_pow_eq hprime n
     simp [hr]
@@ -204,12 +206,14 @@ lemma sub_pow_eq_mul_pow_sub_pow_div_expChar_of_commute (h : Commute x y) :
 variable (R)
 
 lemma neg_one_pow_expChar : (-1 : R) ^ p = -1 := by
+  nontriviality
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
   rw [← add_pow_expChar_of_commute _ (Commute.one_right _), neg_add_cancel,
     zero_pow (expChar_ne_zero R p)]
 
 lemma neg_one_pow_expChar_pow : (-1 : R) ^ p ^ n = -1 := by
+  nontriviality
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
   rw [← add_pow_expChar_pow_of_commute _ _ (Commute.one_right _), neg_add_cancel,
@@ -320,13 +324,15 @@ variable (p n : ℕ) [ExpChar R p]
 /-- The Frobenius map `x ↦ x ^ p`. -/
 def frobenius : R →+* R where
   __ := powMonoidHom p
-  map_zero' := zero_pow (expChar_pos R p).ne'
+  map_zero' := by
+    nontriviality
+    exact zero_pow (expChar_pos R p).ne'
   map_add' _ _ := add_pow_expChar ..
 
 /-- The iterated Frobenius map `x ↦ x ^ p ^ n`. -/
 def iterateFrobenius : R →+* R where
   __ := powMonoidHom (p ^ n)
-  map_zero' := zero_pow (expChar_pow_pos R p n).ne'
+  map_zero' := by nontriviality ; exact zero_pow (expChar_pow_pos R p n).ne'
   map_add' _ _ := add_pow_expChar_pow ..
 
 variable {R}
