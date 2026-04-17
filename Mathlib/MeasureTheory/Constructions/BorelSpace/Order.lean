@@ -665,7 +665,7 @@ lemma measurable_iSup_of_lowerSemicontinuous [CompleteLinearOrder β] [OrderTopo
   obtain ⟨J, cJ, dJ⟩ := TopologicalSpace.exists_countable_dense ι
   suffices (⨆ i, f i) ⁻¹' Ioi c = ⋃ j ∈ J, {x | c < f j x} by
     rw [this]
-    exact .biUnion cJ fun j _ ↦ measurableSet_lt measurable_const (mf j)
+    exact .biUnion cJ fun j _ ↦ by measurability
   ext x
   push _ ∈ _
   simp_rw [iSup_apply, lt_iSup_iff]
@@ -685,7 +685,7 @@ lemma measurable_iInf_of_upperSemicontinuous [CompleteLinearOrder β] [OrderTopo
   obtain ⟨J, cJ, dJ⟩ := TopologicalSpace.exists_countable_dense ι
   suffices (⨅ i, f i) ⁻¹' Iio c = ⋃ j ∈ J, {x | f j x < c} by
     rw [this]
-    exact .biUnion cJ fun j _ ↦ measurableSet_lt (mf j) measurable_const
+    exact .biUnion cJ fun j _ ↦ by measurability
   ext x
   push _ ∈ _
   simp_rw [iInf_apply, iInf_lt_iff]
