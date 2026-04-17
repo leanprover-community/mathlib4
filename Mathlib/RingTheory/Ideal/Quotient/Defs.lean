@@ -60,9 +60,12 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-local instance semiring (I : Ideal R) [I.IsTwoSided] : Semiring (R ⧸ I) :=
+-- Making this an instance breaks some proofs
+@[implicit_reducible]
+def semiring (I : Ideal R) [I.IsTwoSided] : Semiring (R ⧸ I) :=
   inferInstanceAs <| Semiring (Quotient.ringCon I).Quotient
 
+attribute [local instance] semiring in
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
