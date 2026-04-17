@@ -150,8 +150,7 @@ instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) :=
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   one_le.trans_lt h
 
-alias LT.lt.pos := pos_of_gt
-@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
+@[to_additive] alias LT.lt.one_lt := one_lt_of_gt
 
 @[to_additive]
 theorem Left.one_lt_mul_of_left [MulLeftMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
