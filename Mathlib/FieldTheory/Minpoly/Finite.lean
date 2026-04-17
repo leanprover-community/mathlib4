@@ -6,14 +6,13 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+public import Mathlib.RingTheory.FiniteType
 
 /-!
-# Minimal polynomials on a free algebra
+# Minimal polynomials on a finite algebra
 
-This file proves the bound on the degree of a minimal polynomial on an algebra
-that is finite and free as a module.
+This file proves the bound on the degree of a minimal polynomial on a finite algebra.
 
 -/
 

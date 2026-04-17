@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # A predicate on adjoining roots of polynomial

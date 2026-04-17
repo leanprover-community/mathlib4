@@ -4388,7 +4388,7 @@ public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.FieldTheory.Minpoly.ConjRootClass
 public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.FieldTheory.Minpoly.Free
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.Minpoly.MinpolyDiv

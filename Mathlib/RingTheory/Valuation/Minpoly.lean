@@ -6,9 +6,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.FieldTheory.Minpoly.Free
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.RingTheory.Valuation.Basic
-public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Minimal polynomials.
