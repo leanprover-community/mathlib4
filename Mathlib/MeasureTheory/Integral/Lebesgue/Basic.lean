@@ -139,7 +139,7 @@ integral. -/
 theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
   rcases eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ | h₀
-  · exact ⟨0, measurable_zero, zero_le f, h₀.trans lintegral_zero.symm⟩
+  · exact ⟨0, measurable_zero, zero_le, h₀.trans lintegral_zero.symm⟩
   rcases exists_seq_strictMono_tendsto' h₀.bot_lt with ⟨L, _, hLf, hL_tendsto⟩
   have : ∀ n, ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ L n < ∫⁻ a, g a ∂μ := by
     intro n
@@ -184,7 +184,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
         ∀ ψ : α →ₛ ℝ≥0, (∀ x, ↑(ψ x) ≤ f x) → (map (↑) (ψ - φ)).lintegral μ < ε := by
   rw [lintegral_eq_nnreal] at h
   have := ENNReal.lt_add_right h hε
-  erw [ENNReal.biSup_add] at this <;> [skip; exact ⟨0, fun x => zero_le _⟩]
+  erw [ENNReal.biSup_add] at this <;> [skip; exact ⟨0, fun x => zero_le⟩]
   simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
   rcases this with ⟨φ, hle : ∀ x, ↑(φ x) ≤ f x, b, hbφ, hb⟩
   refine ⟨φ, hle, fun ψ hψ => ?_⟩

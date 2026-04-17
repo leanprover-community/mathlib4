@@ -279,7 +279,7 @@ theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞}
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
   simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
-  exact limsup_const_bot.trans_le (zero_le _)
+  exact limsup_const_bot.trans_le zero_le
 
 theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup f

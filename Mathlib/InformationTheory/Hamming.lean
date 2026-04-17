@@ -48,7 +48,7 @@ theorem hammingDist_self (x : ∀ i, β i) : hammingDist x x = 0 := by
 
 /-- Corresponds to `dist_nonneg`. -/
 theorem hammingDist_nonneg {x y : ∀ i, β i} : 0 ≤ hammingDist x y :=
-  zero_le _
+  zero_le
 
 /-- Corresponds to `dist_comm`. -/
 theorem hammingDist_comm (x y : ∀ i, β i) : hammingDist x y = hammingDist y x := by
@@ -148,7 +148,7 @@ theorem hammingDist_zero_left : hammingDist (0 : ∀ i, β i) = hammingNorm :=
 
 /-- Corresponds to `norm_nonneg`. -/
 theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
-  zero_le _
+  zero_le
 
 /-- Corresponds to `norm_zero`. -/
 @[simp]

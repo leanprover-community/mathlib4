@@ -248,7 +248,7 @@ theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
   exact
     ⟨Filter.EventuallyLE.trans_eq
         (Filter.Eventually.of_forall fun x => measure_mono (Set.preimage_mono hst)) ht,
-      Filter.Eventually.of_forall fun x => zero_le _⟩
+      Filter.Eventually.of_forall fun x => zero_le⟩
 
 theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) :
     ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=

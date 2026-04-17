@@ -128,7 +128,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- Now we prove some properties of `J`
   have hJmono : Antitone J :=
     antitone_nat_of_succ_le fun n ↦ by simpa [J_succ] using splitCenterBox_le _ _
-  have hJle (m) : J m ≤ I := hJmono (zero_le m)
+  have hJle (m) : J m ≤ I := hJmono zero_le
   have hJp (m) : ¬p (J m) := Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
   have hJsub (m i) : (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     induction m with

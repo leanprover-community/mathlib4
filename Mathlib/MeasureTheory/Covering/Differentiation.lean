@@ -533,14 +533,13 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
   -- to be an unpleasant interaction with default instances.
   have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
-    apply le_trans _ (zero_le _)
+    apply zero_le.trans'
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
     simp only [f, ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact Eventually.of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply withDensity_absolutelyContinuous μ _
+    apply (withDensity_absolutelyContinuous μ _ _).le.trans zero_le
     rw [← nonpos_iff_eq_zero]
     exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
@@ -598,12 +597,10 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let ν := μ.withDensity (v.limRatioMeas hρ)
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
-  have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) := by
-    refine le_trans (measure_mono inter_subset_right) (le_trans (le_of_eq ?_) (zero_le _))
-    exact v.measure_limRatioMeas_zero hρ
+  have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) :=
+    (measure_mono inter_subset_right).trans ((v.measure_limRatioMeas_zero hρ).le.trans zero_le)
   have B : ρ (s ∩ f ⁻¹' {∞}) ≤ (t • ν) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply hρ
+    apply (hρ _).le.trans zero_le
     rw [← nonpos_iff_eq_zero]
     exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
