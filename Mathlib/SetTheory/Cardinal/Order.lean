@@ -273,7 +273,7 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
 
 /-! ### Order properties -/
 
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
+private theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
   rintro ⟨α⟩
   exact ⟨Embedding.ofIsEmpty⟩
 
@@ -294,8 +294,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
         exact (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
-  le_self_add a b := (add_zero a).ge.trans <| by grw [Cardinal.zero_le b]
-  le_add_self a _ := (zero_add a).ge.trans <| by grw [Cardinal.zero_le]
+  le_self_add a b := (add_zero a).ge.trans <| by grw [zero_le b]
+  le_add_self a _ := (zero_add a).ge.trans <| by grw [zero_le]
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
