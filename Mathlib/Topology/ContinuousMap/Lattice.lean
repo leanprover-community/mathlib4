@@ -39,10 +39,13 @@ instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul �
 variable [Group β] [IsTopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
 @[to_additive (attr := simp, norm_cast)]
-lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := by
+  simp [mabs_eq_max_inv]
 
 @[to_additive (attr := simp)]
-lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := by
+  simp [mabs_eq_max_inv]
+
 
 end Lattice
 

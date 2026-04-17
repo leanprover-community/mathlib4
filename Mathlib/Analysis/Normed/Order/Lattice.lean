@@ -72,10 +72,10 @@ open HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
-  rw [abs]
+  rw [abs_eq_max_neg]
   nth_rw 1 [← neg_neg a]
   rw [← neg_inf]
-  rw [abs]
+  rw [abs_eq_max_neg]
   nth_rw 1 [← neg_neg b]
   rwa [← neg_inf, neg_le_neg_iff, inf_comm _ b, inf_comm _ a]
 

@@ -100,10 +100,9 @@ variable [MulLeftMono α]
 
 @[to_additive] lemma mabs_of_lt_one (h : a < 1) : |a|ₘ = a⁻¹ := mabs_of_le_one h.le
 
-@[to_additive] lemma mabs_le_mabs_of_one_le (ha : 1 ≤ a) (hab : a ≤ b) : |a|ₘ ≤ |b|ₘ := by
+@[to_additive (attr := gcongr)]
+lemma mabs_le_mabs_of_one_le (ha : 1 ≤ a) (hab : a ≤ b) : |a|ₘ ≤ |b|ₘ := by
   rwa [mabs_of_one_le ha, mabs_of_one_le (ha.trans hab)]
-
-attribute [gcongr] abs_le_abs_of_nonneg
 
 @[to_additive (attr := simp)] lemma mabs_one : |(1 : α)|ₘ = 1 := mabs_of_one_le le_rfl
 
@@ -298,11 +297,12 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 end LatticeOrderedAddCommGroup
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Group (α i)] [∀ i, Lattice (α i)]
 
-@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := (rfl)
+@[to_additive (attr := simp)]
+lemma mabs_apply (f : ∀ i, α i) (i : ι) : |f|ₘ i = |f i|ₘ := (rfl)
 
-@[push ←]
-lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := (rfl)
+@[to_additive (attr := push ←)]
+lemma mabs_def (f : ∀ i, α i) : |f|ₘ = fun i ↦ |f i|ₘ := (rfl)
 
 end Pi

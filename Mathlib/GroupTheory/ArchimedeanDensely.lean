@@ -183,12 +183,12 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
     rcases key with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-    simp [this.right.le, this.right, mabs]
+    simp [this.right.le, this.right, mabs_eq_max_inv]
   · wlog ha : 1 ≤ a generalizing a
     · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
-    rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
+    rw [mabs_eq_max_inv, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
     rcases h with ⟨rfl, h⟩
     refine ⟨?_, ?_⟩
     · simp [h]
