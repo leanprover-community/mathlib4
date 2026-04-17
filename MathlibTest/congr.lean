@@ -326,12 +326,10 @@ example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
 Lawful BEq instances are "subsingletons".
 -/
 
-set_option linter.overlappingInstances false in
 example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr!
 
-set_option linter.overlappingInstances false in
 /--
 error: unsolved goals
 case h.e'_2

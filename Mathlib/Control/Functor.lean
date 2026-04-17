@@ -43,7 +43,6 @@ theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
   funext fun _ => (comp_map _ _ _).symm
 
-set_option linter.overlappingInstances false in
 theorem Functor.ext {F} :
     ∀ {F1 : Functor F} {F2 : Functor F} [@LawfulFunctor F F1] [@LawfulFunctor F F2],
     (∀ (α β) (f : α → β) (x : F α), @Functor.map _ F1 _ _ f x = @Functor.map _ F2 _ _ f x) →

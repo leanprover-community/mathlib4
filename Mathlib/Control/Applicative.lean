@@ -40,7 +40,6 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   simp [functor_norm]
 
-set_option linter.overlappingInstances false in
 theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],
       (∀ {α : Type u} (x : α), @Pure.pure _ A1.toPure _ x = @Pure.pure _ A2.toPure _ x) →
