@@ -152,7 +152,7 @@ theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
     max_eq_right (IsNonarchimedean.apply_natCast_le_one_of_isNonarchimedean
       (NonarchimedeanHomClass.map_add_le_max v))
   rw [NumberField.mulHeight₁_eq, finprod_eq_one_of_forall_eq_one hfin, Fintype.prod_unique,
-    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _] 
+    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _]
   have hn : 1 ≤ n := by grind [NeZero.ne n]
   simp [hn, InfinitePlace.mult, isReal_infinitePlace]
 
