@@ -145,24 +145,28 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   exact h
 
 -- new error message as of https://github.com/leanprover-community/mathlib4/issues/27562
-/-- error: `push` made no progress anywhere -/
+/-- error: `push Not` made no progress anywhere -/
 #guard_msgs in
 example {P : Prop} (h : P) : P := by push Not at *
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: `push` made no progress at `h` -/
+/-- error: `push Not` made no progress at `h` -/
 #guard_msgs in
 example {x y : ℕ} : True := by
   have h : x ≤ y := test_sorry
   push Not at h
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562 (previously the tactic succeeded as a no-op)
-/-- error: Cannot run `push` at `inductive_proof`, it is an implementation detail -/
+/-- error: Cannot run `push Not` at `inductive_proof`, it is an implementation detail -/
 #guard_msgs in
 def inductive_proof : True := by
   push Not at inductive_proof
   trivial
+
+/-- error: `push Not` made no progress on the goal -/
+#guard_msgs in
+example {P : Prop} (h : P) : P := by push Not
 
 section use_distrib
 
