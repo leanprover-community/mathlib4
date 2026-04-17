@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.QuasiFinite.Basic
@@ -31,108 +32,6 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 -/
 
 @[expose] public section
-
-section flatBaseChange
-
-open TensorProduct
-
-variable {A B M : Type*} [CommRing A] [CommRing B] [IsLocalRing A] [IsLocalRing B] [Algebra A B]
-  [IsLocalHom (algebraMap A B)] [Module.Flat A B] [AddCommGroup M] [Module A M]
-
--- PRed
-variable (B) in
-open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
-theorem CovBy.length_baseChange {p q : Submodule A M} (h : p ⋖ q) :
-    length B (q.baseChange B) =
-      length B (p.baseChange B) + length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
-  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
-  rw [← (Submodule.toBaseChange.toLinearEquiv B p).length_eq,
-    ← (Submodule.toBaseChange.toLinearEquiv B q).length_eq]
-  let f : p →ₗ[A] q := inclusion h.le
-  have key : IsSimpleModule A (q ⧸ f.range) := by
-    rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
-  obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
-  rw [eq_maximalIdeal hm] at e
-  let g := e.comp f.range.mkQ
-  have : Function.Injective f := inclusion_injective _
-  have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
-  have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
-  rw [length_eq_add_of_exact (lTensor B B f) (lTensor B B g) (by simpa) (by simpa) (by simpa),
-    (Algebra.TensorProduct.quotIdealMapEquivTensorQuot B (maximalIdeal A)).toLinearEquiv.length_eq]
-
--- PRed
-variable (A B M) in
-open IsLocalRing Module Submodule in
-theorem length_baseChange :
-    length B (B ⊗[A] M) = length A M * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) := by
-  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
-  by_cases h : IsFiniteLength A M
-  · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
-    rw [← length_compositionSeries s hs_bot hs_top]
-    suffices ∀ k, length B ((s k).baseChange B) =
-        k * length B (B ⧸ (maximalIdeal A).map (algebraMap A B)) by
-      rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top, baseChange_top, length_top]
-    intro k
-    induction k using Fin.induction
-    case pos.zero => rw [← RelSeries.head, hs_bot, baseChange_bot]; simp
-    case pos.succ i hi => simpa [hi, add_one_mul] using (s.step i).length_baseChange B
-  · have : ¬ IsFiniteLength B (B ⊗[A] M) := by
-      contrapose! h
-      rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
-      exact h.imp IsNoetherian.of_isNoetherian_tensorProduct_of_faithfullyFlat
-        IsArtinian.of_isArtinian_tensorProduct_of_faithfullyFlat
-    rw [← length_ne_top_iff, not_ne_iff] at h this
-    rw [h, this, ENat.top_mul]
-    rw [← pos_iff_ne_zero, length_pos_iff, Quotient.nontrivial_iff]
-    exact (map_maximalIdeal_lt_top (algebraMap A B)).ne
-
-variable [Module B M] [IsScalarTower A B M]
-
--- PRed
-variable (A) in
-open IsLocalRing LinearMap Module Submodule TensorProduct.AlgebraTensorModule in
-theorem CovBy.length_restrictScalars {p q : Submodule B M} (h : p ⋖ q) :
-    length A q = Module.length A p + Module.length (ResidueField A) (ResidueField B) := by
-  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
-  let f : p →ₗ[B] q := inclusion h.le
-  have key : IsSimpleModule B (q ⧸ f.range) := by
-    rwa [range_inclusion, ← covBy_iff_quot_is_simple h.le]
-  obtain ⟨m, hm, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp key
-  rw [eq_maximalIdeal hm] at e
-  let g : q →ₗ[B] ResidueField B := e.comp f.range.mkQ
-  have : Function.Injective f := inclusion_injective _
-  have : Function.Surjective g := e.surjective.comp f.range.mkQ_surjective
-  have : Function.Exact f g := exact_iff.mpr ((e.ker_comp f.range.mkQ).trans f.range.ker_mkQ)
-  rw [length_eq_add_of_exact (f.restrictScalars A) (g.restrictScalars A)
-    (by simpa) (by simpa) (by simpa), Module.length_eq_of_surjective (M := ResidueField B)
-      (residue_surjective (R := A))]
-
--- PRed
-variable (A B M) in
-open IsLocalRing Module Submodule in
-theorem length_restrictScalars :
-    length A M = length B M * Module.length (ResidueField A) (ResidueField B) := by
-  have : FaithfullyFlat A B := FaithfullyFlat.of_flat_of_isLocalHom
-  by_cases h : IsFiniteLength B M
-  · obtain ⟨s, hs_bot, hs_top⟩ := isFiniteLength_iff_exists_compositionSeries.mp h
-    rw [← length_compositionSeries s hs_bot hs_top]
-    suffices ∀ k, length A (s k) = k * Module.length (ResidueField A) (ResidueField B) by
-      rw [← Fin.val_last s.length, ← this, ← RelSeries.last, hs_top]
-      exact length_top.symm
-    intro k
-    induction k using Fin.induction
-    case pos.zero => rw [← RelSeries.head, hs_bot]; simp
-    case pos.succ i hi => simpa [hi, add_one_mul] using (s.step i).length_restrictScalars A
-  · have : ¬ IsFiniteLength A M := by
-      contrapose! h
-      rw [isFiniteLength_iff_isNoetherian_isArtinian] at h ⊢
-      exact h.imp (isNoetherian_of_tower A) (isArtinian_of_tower A)
-    rw [← length_ne_top_iff, not_ne_iff] at h this
-    rw [h, this, ENat.top_mul]
-    rw [← pos_iff_ne_zero, pos_iff_ne_zero, ne_eq]
-    exact Module.length_pos.ne'
-
-end flatBaseChange
 
 section
 
@@ -179,7 +78,8 @@ theorem ramificationIdx'_tower
   congr
   set Sq := Localization.AtPrime q
   set Tr := Localization.AtPrime r
-  have := length_baseChange (A := Sq) (B := Tr) (M := Sq ⧸ (r.under R).map (algebraMap R Sq))
+  have := IsLocalRing.length_baseChange
+    (A := Sq) (B := Tr) (M := Sq ⧸ (r.under R).map (algebraMap R Sq))
   rw [← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq] at this
   convert this
   let f := (Ideal.quotientEquivAlgOfEq Tr (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
@@ -395,7 +295,7 @@ theorem sum_ramification_inertia
   · rw [← foo3,
       Module.length_eq_of_surjective (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
       Module.length_eq_finrank, ENat.toNat_coe]
-  · rw [length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A,
+  · rw [IsLocalRing.length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A,
       ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, inertiaDeg'_eq p]
     rfl
 
