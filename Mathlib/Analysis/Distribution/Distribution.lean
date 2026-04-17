@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
 /-!
 # Distributions
@@ -143,7 +144,7 @@ longer true for general filters.
 @[expose] public section
 
 open Set TopologicalSpace
-open scoped Distributions CompactConvergenceCLM
+open scoped Distributions CompactConvergenceCLM UniformConvergenceCLM PointwiseConvergenceCLM
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
@@ -237,15 +238,13 @@ lemma lineDerivCLM_add {v₁ v₂ : E} :
     (lineDerivCLM (v₁ + v₂) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
       lineDerivCLM v₁ + lineDerivCLM v₂ := by
   ext T f
-  -- Why `(v := _)` ???
-  simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
 
 lemma lineDerivCLM_smul {c : ℝ} {v : E} :
     (lineDerivCLM (c • v) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
       c • lineDerivCLM v := by
   ext T f
-  -- Why `(v := _)` ???
-  simp [lineDerivCLM_apply (v := _), TestFunction.lineDerivCLM_smul]
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_smul]
 
 open LineDeriv
 
