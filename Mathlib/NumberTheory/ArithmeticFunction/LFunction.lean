@@ -272,13 +272,11 @@ theorem tendsTo_eulerProduct_ofPowerSeries (q : ι → ℕ) [hq : Northcott q]
   rcases n with rfl | rfl | n
   · simp
   · simp [hf]
-  · have hqi : 1 < q i := by grind
-    rw [ofPowerSeries_apply hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne (by grind)]
-    contrapose! hi
-    obtain ⟨k, hk⟩ := hi
-    rw [← hk, Nat.lt_add_one_iff]
-    apply Nat.le_pow
-    cases k <;> grind
+  · have hqi : 1 < q i := by lia
+    rw [ofPowerSeries_apply hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne (by lia)]
+    rintro ⟨k, hk⟩
+    have h : k ≠ 0 := fun h ↦ by simp_all
+    grind [Nat.le_pow h.pos (a := q i)]
 
 end EulerProduct
 
