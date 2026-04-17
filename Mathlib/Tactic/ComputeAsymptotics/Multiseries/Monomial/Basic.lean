@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
 /-!
 
@@ -32,10 +33,6 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology Real
-
-/-- Unit monomial, represented as a list of its exponents. `[e₁, e₂, ..., eₙ]` corresponds to
-`basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where `basis` is the basis of functions. -/
-abbrev UnitMonomial := List ℝ
 
 /-- Structure for representing monomials with coefficients. -/
 structure Monomial where
