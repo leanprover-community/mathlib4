@@ -118,7 +118,8 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
   transitivity₁ : t ≫ p₁ = c.fst ≫ p₁ := by cat_disch
   transitivity₂ : t ≫ p₂ = c.snd ≫ p₂ := by cat_disch
 
-attribute [reassoc (attr := simp)] TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)] 
+  TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
 /-- Standard transitive relations on types are internal transitive relations in the category of
 types. -/
@@ -141,12 +142,7 @@ lemma Types.of_transitiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : Tran
     refine fun ⟨r, ⟨hr₁, hr₂⟩⟩ ⟨r', ⟨hr₁', hr₂'⟩⟩ =>
       ⟨e.t ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩),
         ⟨?_, ?_⟩⟩
-    · simpa only [comp_apply, hr₁, PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst] using
-        congr($e.transitivity₁
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
-    · simpa only [comp_apply, hr₂', PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd] using
-        congr($e.transitivity₂
-          ((PullbackCone.IsLimit.equivPullbackObj e.isLimit).symm ⟨(r, r'), hr₂.trans hr₁'.symm⟩))
+    all_goals simpa
 
 /-- An equivalence relation is a reflexive, symmetric and transitive relation. -/
 structure EquivalenceRelation {R X : C} (p₁ p₂ : R ⟶ X) extends ReflexiveRelation p₁ p₂,
