@@ -78,10 +78,11 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 @[to_additive]
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
-@[to_additive]
+/- @[to_additive]
 instance range_isMulCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
     IsMulCommutative f.range :=
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
+-/
 
 @[to_additive]
 instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G]
