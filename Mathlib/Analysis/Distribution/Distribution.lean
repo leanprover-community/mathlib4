@@ -188,6 +188,12 @@ noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
 
+@[simp]
+lemma mapCLM_zero {T : 𝓓'^{n}(Ω, F)} :
+    mapCLM (0 : F →L[ℝ] F') T = 0 := by
+  ext
+  simp
+
 end mapCLM
 
 section DiracDelta
