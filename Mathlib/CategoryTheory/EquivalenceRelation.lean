@@ -119,7 +119,7 @@ structure TransitiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono
   transitivity₁ : t ≫ p₁ = c.fst ≫ p₁ := by cat_disch
   transitivity₂ : t ≫ p₂ = c.snd ≫ p₂ := by cat_disch
 
-attribute [reassoc (attr := simp), elementwise (attr := simp)] 
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
   TransitiveRelation.transitivity₁ TransitiveRelation.transitivity₂
 
 /-- Standard transitive relations on types are internal transitive relations in the category of
