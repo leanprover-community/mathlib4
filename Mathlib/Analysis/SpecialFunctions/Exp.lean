@@ -76,7 +76,7 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
-  rcases (zero_le n).eq_or_lt with rfl | hn
+  rcases eq_zero_or_pos n with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
     rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
