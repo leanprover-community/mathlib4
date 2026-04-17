@@ -326,11 +326,11 @@ variable {A B : GrpCat.{u}} (f : A ⟶ B)
 
 @[to_additive AddGrpCat.forget_grp_preserves_mono]
 instance forget_grp_preserves_mono : (forget GrpCat).PreservesMonomorphisms where
-  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective] at e
 
 @[to_additive AddGrpCat.forget_grp_preserves_epi]
 instance forget_grp_preserves_epi : (forget GrpCat).PreservesEpimorphisms where
-  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective] at e
 
 end GrpCat
 
@@ -370,11 +370,11 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 
 @[to_additive AddCommGrpCat.forget_commGrp_preserves_mono]
 instance forget_commGrp_preserves_mono : (forget CommGrpCat).PreservesMonomorphisms where
-  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
+  preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective] at e
 
 @[to_additive AddCommGrpCat.forget_commGrp_preserves_epi]
 instance forget_commGrp_preserves_epi : (forget CommGrpCat).PreservesEpimorphisms where
-  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
+  preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective] at e
 
 end CommGrpCat
 

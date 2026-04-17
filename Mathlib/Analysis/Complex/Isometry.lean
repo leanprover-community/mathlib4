@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Isometries of the Complex Plane
@@ -32,6 +33,7 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 
 
 noncomputable section
+suppress_compilation -- needed to avoid a panic!
 
 open Complex
 

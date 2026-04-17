@@ -723,12 +723,13 @@ lemma isOpenEmbedding_sigmaToPi : Topology.IsOpenEmbedding (sigmaToPi R) := by
 
 /-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is homeomorphic
 to the prime spectrum of the product. -/
-noncomputable def sigmaHomeoPi {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
     (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
   (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
 
-lemma sigmaHomeoPi_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
-    sigmaHomeoPi R p = sigmaToPi R p :=
+@[simp]
+lemma sigmaToPiHomeo_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
+    sigmaToPiHomeo R p = sigmaToPi R p :=
   rfl
 
 end Pi
@@ -776,9 +777,19 @@ canonically isomorphic to the product of its localizations at the (finitely many
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
 def _root_.MaximalSpectrum.toPiLocalizationEquiv :
-    R ≃+* MaximalSpectrum.PiLocalization R :=
+    R ≃ₐ[R] MaximalSpectrum.PiLocalization R :=
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
+
+@[simp]
+theorem _root_.MaximalSpectrum.toPiLocalizationEquiv_apply (x : R) :
+    MaximalSpectrum.toPiLocalizationEquiv R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem _root_.MaximalSpectrum.toPiLocalizationEquiv_apply_apply (x : R) (I : MaximalSpectrum R) :
+    MaximalSpectrum.toPiLocalizationEquiv R x I = algebraMap R _ x :=
+  rfl
 
 theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
@@ -790,9 +801,23 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
 
-lemma toPiLocalization_bijective {R : Type*} [CommRing R]
-    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (toPiLocalization R) :=
+variable {R} in
+lemma toPiLocalization_bijective : Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
+
+/-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
+canonically isomorphic to the product of its localizations at the (finitely many) prime ideals. -/
+def toPiLocalizationEquiv : R ≃ₐ[R] PiLocalization R :=
+  .ofBijective _ toPiLocalization_bijective
+
+@[simp]
+theorem toPiLocalizationEquiv_apply (x : R) : toPiLocalizationEquiv R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem toPiLocalizationEquiv_apply_apply (x : R) (I : PrimeSpectrum R) :
+    toPiLocalizationEquiv R x I = algebraMap R _ x :=
+  rfl
 
 end DiscreteTopology
 

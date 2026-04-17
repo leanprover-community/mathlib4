@@ -56,9 +56,6 @@ lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
     (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
   f.isSpectralMap.2 U.2 hU
 
-@[deprecated (since := "2025-10-07")]
-alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
-
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
   constructor
@@ -85,10 +82,6 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
   · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
   · exact fun i => i.2.isCompact
 
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_finset_affine_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens
-
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
   convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
@@ -100,10 +93,6 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen [IsAffine X] {U
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
     (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
 
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_basicOpen_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen
-
 variable {f} in
 theorem quasiCompact_iff_forall_isAffineOpen :
     QuasiCompact f ↔ ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
@@ -113,9 +102,6 @@ theorem quasiCompact_iff_forall_isAffineOpen :
   obtain ⟨S, hS, rfl⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU', hU⟩
   simp only [Set.preimage_iUnion]
   exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
-
-@[deprecated (since := "2025-10-14")]
-alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
 
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
