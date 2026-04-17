@@ -1263,7 +1263,7 @@ def uliftFunctorInclusion (S : Sieve X) :
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
     uliftYoneda.{w}.obj Y ⟶ Sieve.uliftFunctor.{w} S where
-  app Z g := TypeCat.ofHom fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+  app Z := TypeCat.ofHom fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
