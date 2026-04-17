@@ -374,4 +374,3 @@ instance {R : Type*} [Semiring R] {x : R} : (Ideal.span {x}).IsPrincipal :=
   ⟨x, rfl⟩
 
 end PrincipalIdeal
-#lint
