@@ -140,12 +140,12 @@ end Profunctor
 
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `C` to `D`. -/
 @[simps! obj_obj obj_map map_app]
-def Functor.toProfunctor (F : C ⥤ D) : Profunctor C D :=
+def Functor.toProfunctor (F : C ⥤ D) : Profunctor.{v₂} C D :=
   (Profunctor.id (C := D)).whiskerLeft F (𝟭 _)
 
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `D` to `C`. -/
 @[simps! obj_obj obj_map map_app]
-def Functor.toProfunctorRev (F : C ⥤ D) : Profunctor D C :=
+def Functor.toProfunctorRev (F : C ⥤ D) : Profunctor.{v₂} D C :=
   (Profunctor.id (C := D)).whiskerLeft (𝟭 _) F
 
 end CategoryTheory
