@@ -118,8 +118,6 @@ instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
-@[deprecated (since := "2025-10-15")] alias IsProper.of_comp_of_isSeparated := IsProper.of_comp
-
 lemma IsProper.comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsProper g] :
     IsProper (f ≫ g) ↔ IsProper f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
@@ -151,7 +149,6 @@ theorem isField_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   algebraize [F.hom]
   exact isField_of_isIntegral_of_isField' (Field.toIsField K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
 then `Γ(X, ⊤)` is a finite field extension over `K`. -/
 theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))

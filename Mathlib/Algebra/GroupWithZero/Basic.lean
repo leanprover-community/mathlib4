@@ -250,8 +250,6 @@ instance (priority := 900) isReduced_of_noZeroDivisors [NoZeroDivisors M₀] :
 
 variable [IsReduced M₀]
 
-@[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
-
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_pow_eq_zero, (·.symm ▸ zero_pow hn)⟩
 
