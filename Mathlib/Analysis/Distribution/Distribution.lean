@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
-public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
 /-!
 # Distributions
@@ -144,7 +143,7 @@ longer true for general filters.
 @[expose] public section
 
 open Set TopologicalSpace
-open scoped Distributions CompactConvergenceCLM UniformConvergenceCLM PointwiseConvergenceCLM
+open scoped Distributions CompactConvergenceCLM
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
