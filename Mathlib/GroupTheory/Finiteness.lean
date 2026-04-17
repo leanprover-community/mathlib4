@@ -44,10 +44,15 @@ section Submonoid
 variable [Monoid N] {P : Submonoid M} {Q : Submonoid N}
 
 /-- A submonoid of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
-@[to_additive /-- An additive submonoid of `N` is finitely generated if it is the closure of a
-finite subset of `M`. -/]
-def Submonoid.FG (P : Submonoid M) : Prop :=
-  ∃ S : Finset M, Submonoid.closure ↑S = P
+class Submonoid.FG (P : Submonoid M) : Prop where
+  out : ∃ S : Finset M, Submonoid.closure S = P
+
+/-- An additive submonoid of `N` is finitely generated if it is the closure of a
+finite subset of `M`. -/
+class AddSubmonoid.FG {M : Type*} [AddMonoid M] (P : AddSubmonoid M) : Prop where
+  out : ∃ S : Finset M, AddSubmonoid.closure S = P
+
+attribute [to_additive existing] Submonoid.FG
 
 /-- An equivalent expression of `Submonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive /-- An equivalent expression of `AddSubmonoid.FG` in terms of `Set.Finite` instead of
@@ -61,7 +66,7 @@ theorem Submonoid.fg_iff (P : Submonoid M) :
 @[to_additive /-- A finitely generated submonoid has a minimal generating set. -/]
 lemma Submonoid.FG.exists_minimal_closure_eq (hP : P.FG) :
     ∃ S : Finset M, Minimal (fun S : Finset M ↦ closure S = P) S :=
-  exists_minimal_of_wellFoundedLT _ hP
+  exists_minimal_of_wellFoundedLT _ hP.out
 
 theorem Submonoid.fg_iff_add_fg (P : Submonoid M) : P.FG ↔ P.toAddSubmonoid.FG :=
   ⟨fun h =>
@@ -137,6 +142,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
 theorem Submonoid.FG.pi (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
   haveI := Fintype.ofFinite ι
+  replace hP i := (hP i).out
   choose s hs using hP
   refine ⟨Finset.univ.biUnion fun i => (s i).image (MonoidHom.mulSingle M i), ?_⟩
   simp_rw [Finset.coe_biUnion, Finset.coe_univ, Set.biUnion_univ, closure_iUnion, Finset.coe_image,
@@ -299,9 +305,14 @@ variable {G H : Type*} [Group G] [AddGroup H]
 section Subgroup
 
 /-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
-@[to_additive]
-def Subgroup.FG (P : Subgroup G) : Prop :=
-  ∃ S : Finset G, Subgroup.closure ↑S = P
+class Subgroup.FG (P : Subgroup G) : Prop where
+  out : ∃ S : Finset G, Subgroup.closure S = P
+
+/-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
+class AddSubgroup.FG (P : AddSubgroup H) : Prop where
+  out : ∃ S : Finset H, AddSubgroup.closure S = P
+
+attribute [to_additive existing] Subgroup.FG
 
 /-- An additive subgroup of `H` is finitely generated if it is the closure of a finite subset of
 `H`. -/
@@ -437,6 +448,10 @@ theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
   (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
     (Subgroup.fg_iff_submonoid_fg _).symm
 
+@[to_additive]
+instance (H : Subgroup G) [H.FG] : Group.FG H :=
+  (Group.fg_iff_subgroup_fg H).mpr ‹_›
+
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
   ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
 
@@ -493,16 +508,15 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite :
     exact Group.fg_of_surjective hφ
 
 @[to_additive]
-instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : Group.FG f.range :=
-  Group.fg_of_surjective f.rangeRestrict_surjective
+instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : f.range.FG :=
+  (Group.fg_iff_subgroup_fg f.range).mp (Group.fg_of_surjective f.rangeRestrict_surjective)
 
 @[to_additive]
-instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
-  refine ⟨⟨s.preimage Subtype.val Subtype.coe_injective.injOn, ?_⟩⟩
-  rw [Finset.coe_preimage, ← Subgroup.coe_subtype, Subgroup.closure_preimage_eq_top]
+instance Group.closure_finset_fg (s : Finset G) : (Subgroup.closure (s : Set G)).FG :=
+  ⟨s, rfl⟩
 
 @[to_additive]
-instance Group.closure_finite_fg (s : Set G) [Finite s] : Group.FG (Subgroup.closure s) :=
+instance Group.closure_finite_fg (s : Set G) [Finite s] : (Subgroup.closure s).FG :=
   haveI := Fintype.ofFinite s
   s.coe_toFinset ▸ Group.closure_finset_fg s.toFinset
 

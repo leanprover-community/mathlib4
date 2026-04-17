@@ -64,7 +64,7 @@ end Group
 namespace Subgroup
 
 @[to_additive]
-lemma rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) : rank H = rank K := by
+lemma rank_congr {H K : Subgroup G} [H.FG] [K.FG] (h : H = K) : rank H = rank K := by
   subst h; rfl
 
 @[to_additive]
