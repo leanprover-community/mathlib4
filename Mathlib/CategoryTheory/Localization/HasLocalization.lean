@@ -38,7 +38,7 @@ assumption, but one may use
 
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 universe w v u
 

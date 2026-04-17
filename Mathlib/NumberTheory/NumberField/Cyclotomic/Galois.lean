@@ -99,10 +99,10 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     galEquivZMod n K σ ∈ Subgroup.zpowers (ZMod.unitOfCoprime p hn) := by
   have hζ := IsCyclotomicExtension.zeta_spec n ℚ K
   let τ := IsFractionRing.stabilizerHom Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
-     (ℤ ⧸ span {(p : ℤ)}) (𝓞 K⧸ P) ⟨σ, hσ⟩
+     (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩
   have : CharP (ℤ ⧸ span {(p : ℤ)}) p := ringChar.of_eq <| Int.ringChar_idealQuot p
-  have : Finite (𝓞 K⧸ P) := Ring.HasFiniteQuotients.finiteQuotient (NeZero.ne P)
-  obtain ⟨i, hi⟩ := FiniteField.exists_forall_apply_eq_pow (ℤ ⧸ span {(p : ℤ)}) p (𝓞 K⧸ P) τ
+  have : Finite (𝓞 K ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient (NeZero.ne P)
+  obtain ⟨i, hi⟩ := FiniteField.exists_forall_apply_eq_pow (ℤ ⧸ span {(p : ℤ)}) p (𝓞 K ⧸ P) τ
   refine ⟨i, ?_⟩
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
     refine hζ.toInteger_isPrimitiveRoot.idealQuotient_mk
@@ -110,7 +110,7 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     rw [Ideal.absNorm_eq_pow_inertiaDeg' _ hp.out]
     exact Nat.Coprime.pow_left _ hn
   have h₁ := IsFractionRing.stabilizerHom_apply_apply_mk Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
-      (ℤ ⧸ span {(p : ℤ)}) (𝓞 K⧸ P) ⟨σ, hσ⟩ hζ.toInteger
+      (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩ hζ.toInteger
   simp only [Algebra.algebraMap_self, RingHomCompTriple.comp_apply] at h₁
   specialize hi (Ideal.Quotient.mk P hζ.toInteger)
   rwa [h₁, Int.card_ideal_quot, galEquivZMod_smul_of_pow_eq n _ _
@@ -118,7 +118,6 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
     ← h₀.eq_orderOf, ← ZMod.natCast_eq_natCast_iff', Nat.cast_pow, ← ZMod.coe_unitOfCoprime p hn,
     ← Units.val_pow_eq_pow_val, ZMod.natCast_zmod_val, ← Units.ext_iff, eq_comm] at hi
 
-set_option backward.isDefEq.respectTransparency false in
 theorem galEquivZMod_stabilizer :
     (galEquivZMod n K).mapSubgroup (stabilizer Gal(K/ℚ) P) =
       Subgroup.zpowers (ZMod.unitOfCoprime p hn) := by
@@ -131,7 +130,7 @@ theorem galEquivZMod_stabilizer :
   · replace hn : ¬ p ∣ n := (Nat.Prime.coprime_iff_not_dvd hp.out).mp hn
     rw [Fintype.card_eq_nat_card, Fintype.card_eq_nat_card, SetLike.coe_sort_coe, Nat.card_zpowers,
       MulEquiv.mapSubgroup_apply, Subgroup.coe_map]
-    change _  ≤ Nat.card ((galEquivZMod n K).toEquiv '' _)
+    change _ ≤ Nat.card ((galEquivZMod n K).toEquiv '' _)
     rw [Nat.card_image_equiv, SetLike.coe_sort_coe, Ideal.card_stabilizer_eq (span {(p : ℤ)})
       (by simp [hp.out.ne_zero]), inertiaDegIn_eq_of_not_dvd p K hn,
       ramificationIdxIn_eq_of_not_dvd p K hn, one_mul, ← orderOf_injective _ Units.coeHom_injective,

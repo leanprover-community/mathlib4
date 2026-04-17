@@ -58,7 +58,7 @@ lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
       Sieve.ofArrows 𝒰.X 𝒰.f := by
   ext V f
-  simp only [Sieve.overEquiv_iff, Functor.const_obj_obj, Sieve.generate_apply]
+  simp only [Sieve.overEquiv_iff, Sieve.generate_apply]
   constructor
   · rintro ⟨U, h, g, ⟨k⟩, hcomp⟩
     exact ⟨𝒰.X k, h.left, 𝒰.f k, ⟨k⟩, congrArg CommaMorphism.left hcomp⟩
