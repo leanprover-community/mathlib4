@@ -18,9 +18,7 @@ and set up some API.
 
 ## TODO
 
-Prove that the height of `(x₀ : x₁ : ··· : xₙ) ∈ ℙⁿ(ℚ)` equals the
-maximum of the absolute values of the `xᵢ` when they are chosen to be coprime integers. This
-should then be split off into a separate `Mathlib.NumberTheory.Height.Rat` file.
+When this file gets long, split the material on heights over `ℚ` off into a file `Rat.lean`.
 -/
 
 @[expose] public section
