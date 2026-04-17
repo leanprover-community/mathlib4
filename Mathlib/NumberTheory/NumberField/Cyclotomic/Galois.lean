@@ -23,8 +23,8 @@ to `a_σ` such that `σ (ζₙ) = ζₙ ^ a_σ`.
 
 Following [Washington][washington.cyclotomic], we define the bijection between subfields
 of `ℚ(ζₙ)` and subgroups of the group `Xₙ` of Dirichlet characters of level `n` such that
-`F` corresponds to `Y` iff the subgroup `H` of `(ℤ/nℤ)ˣ` corresponding to `F` by the above
-isomorphism is the orthogonal of `Y` for the nondegenerate pairing on `(ℤ/nℤ)ˣ × Xₙ`
+`F` corresponds to `Y` if and only if the subgroup `H` of `(ℤ/nℤ)ˣ` corresponding to `F` by
+the above isomorphism is the orthogonal of `Y` for the nondegenerate pairing on `(ℤ/nℤ)ˣ × Xₙ`
 defined by `(n, χ) ↦ χ n`.
 
 ## Main definitions and results
