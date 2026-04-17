@@ -137,7 +137,6 @@ lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
   exact IsPrime.under A P
 
 variable {P}
-
 theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
     [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
   over := by
@@ -223,6 +222,16 @@ theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
   rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
   simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
     using Set.subset_compl_comm.mp (by simp)
+
+theorem algebraMapSubmonoid_primeCompl_of_liesOver_surjective
+    [p.IsPrime] [P.IsPrime] [P.LiesOver p] (hf : Function.Surjective (algebraMap A B)) :
+    Algebra.algebraMapSubmonoid B p.primeCompl = P.primeCompl := by
+  ext x
+  obtain ⟨x, rfl⟩ := hf x
+  rw [mem_primeCompl_iff]
+  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, ?_, rfl⟩⟩
+  · rwa [← hx, ← mem_of_liesOver P p]
+  · rwa [← mem_of_liesOver P p] at hx
 
 variable (B)
 
