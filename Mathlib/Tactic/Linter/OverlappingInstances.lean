@@ -139,9 +139,15 @@ register_option linter.overlappingInstances : Bool := {
   descr := "enable the overlapping instances linter."
 }
 
-/-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/
-def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInfo) :
-    MetaM MessageData := do
+/-- Report a warning message if there are any overlapping instances in the local context. -/
+def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option Expr) :
+    IO (Option MessageData) := do
+  ctx.runMetaM lctx do
+  -- Add the hypotheses of the expected type to the local context.
+  expectedType?.elim id (forallTelescope · fun _ _ => ·) do
+  let overlaps ← findOverlappingDataInstances
+  if overlaps.isEmpty then
+    return none
   let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
     overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
   -- Sort the suggestions in a somewhat fvarId-independent way
@@ -166,7 +172,8 @@ def overlapsToMsg (overlaps : Std.HashMap Expr (Array FVarId)) (ctx : ContextInf
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
   msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
-  addMessageContextFull msg
+  msg ← addMessageContextFull msg
+  return some msg
 
 open Linter in
 /--
@@ -179,12 +186,9 @@ def overlappingInstances : Linter where
     -- Note: we don't break on errors; we want to lint even on partial declarations
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
-        let some (lctx, remainingType?) := info.getLCtx? | continue
-        ctx.runMetaMWithMessages lctx do
-        remainingType?.elim id (forallTelescope · fun _ _ => ·) do
-          let overlaps ← findOverlappingDataInstances
-          unless overlaps.isEmpty do
-            logLint linter.overlappingInstances ref (← overlapsToMsg overlaps ctx)
+        let some (lctx, expectedType?) := info.getLCtx? | continue
+        let some msg ← runLinter ctx lctx expectedType? | continue
+        logLint linter.overlappingInstances ref msg
 
 initialize addLinter overlappingInstances
 
