@@ -308,7 +308,8 @@ section Subgroup
 class Subgroup.FG (P : Subgroup G) : Prop where
   out : ∃ S : Finset G, Subgroup.closure S = P
 
-/-- A subgroup of `G` is finitely generated if it is the closure of a finite subset of `G`. -/
+/-- A additive subgroup of `G` is finitely generated if it is the closure of a\
+finite subset of `G`. -/
 class AddSubgroup.FG (P : AddSubgroup H) : Prop where
   out : ∃ S : Finset H, AddSubgroup.closure S = P
 
