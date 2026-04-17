@@ -1071,7 +1071,7 @@ theorem powerlt_eq_zero_iff {a b : Cardinal} : a ^< b = 0 ↔ b = 0 := by
   rcases (zero_le a).eq_or_lt with rfl | ha
   · simp [hb.ne', zero_powerlt hb.ne']
   · simp only [hb.ne', iff_false, ← pos_iff_ne_zero]
-    rw [← one_le_iff_pos] at hb ⊢
+    rw [← Cardinal.one_le_iff_pos] at hb ⊢
     rw [← powerlt_one ha.ne']
     exact powerlt_le_powerlt_left hb
 
