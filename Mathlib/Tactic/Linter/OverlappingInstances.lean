@@ -175,6 +175,8 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   msg ← addMessageContextFull msg
   return some msg
 
+initialize registerTraceClass `overlappingInstances
+
 open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
@@ -184,10 +186,12 @@ def overlappingInstances : Linter where
     unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
       return
     -- Note: we don't break on errors; we want to lint even on partial declarations
+    withTraceNode `overlappingInstances (fun _ ↦ return "looking for a local context") do
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
-        let some (lctx, expectedType?) := info.getLCtx? | continue
-        let some msg ← runLinter ctx lctx expectedType? | continue
+        let some (lctx, expectedType?) := info.getLCtx? | pure ()
+        withTraceNode `overlappingInstances (fun _ ↦ return m!"linting `{ctx.parentDecl?}`") do
+        let some msg ← runLinter ctx lctx expectedType? | pure ()
         logLint linter.overlappingInstances ref msg
 
 initialize addLinter overlappingInstances
