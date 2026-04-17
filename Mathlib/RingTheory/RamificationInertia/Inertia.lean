@@ -73,7 +73,7 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
   by_cases hr : r.IsPrime
   · have : q.IsPrime := isPrime_of_liesOver r q
     have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
-    rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
+    rw [inertiaDeg'_def, inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
 

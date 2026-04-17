@@ -6,9 +6,8 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Length
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.LocalRing.Length
 
 /-!
 # Ramification index
@@ -119,6 +118,27 @@ theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDoma
   have : IsDiscreteValuationRing Sq :=
     IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain S hq Sq
   rw [foo, ENat.toNat_coe]
+
+/-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
+theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
+    [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
+    r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
+  have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+  let f := (Ideal.quotientEquivAlgOfEq (Localization.AtPrime r)
+      (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
+        (Algebra.TensorProduct.quotIdealMapEquivTensorQuot (Localization.AtPrime r)
+          ((r.under R).map (algebraMap R (Localization.AtPrime q))))
+  rw [ramificationIdx'_def, ramificationIdx'_eq (r.under R), ramificationIdx'_eq q,
+    f.toLinearEquiv.length_eq, IsLocalRing.length_baseChange, ENat.toNat_mul,
+    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
+
+/-- See `ramificationIdx'_tower` for a version that only assumes local flatness. -/
+theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
+    r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
+  by_cases hr : r.IsPrime
+  · have : q.IsPrime := isPrime_of_liesOver r q
+    apply ramificationIdx'_tower'
+  · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
 end
 
