@@ -100,37 +100,31 @@ instance instIsStrictOrderedRing [Semiring β] [PartialOrder β] [IsStrictOrdere
     coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_right
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
-  inductionOn₂ x y fun a b => by
-    rcases le_total (a : β*) b with h | h
-    · rw [max_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_right hi).symm
-    · rw [max_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (max_eq_left hi).symm
+  rfl
 
 theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
-  inductionOn₂ x y fun a b => by
-    rcases le_total (a : β*) b with h | h
-    · rw [min_eq_left h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_left hi).symm
-    · rw [min_eq_right h, map₂_coe, coe_eq]
-      exact h.mono fun i hi => (min_eq_right hi).symm
+  rfl
 
 theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
     |x| = map abs x :=
-  inductionOn x fun _a => rfl
+  inductionOn x fun a => by
+    eta_expand
+    simp_rw [abs_eq_max_neg]
+    rfl
 
 @[simp]
 theorem const_max [LinearOrder β] (x y : β) : (↑(max x y : β) : β*) = max ↑x ↑y := by
-  rw [max_def, map₂_const]
+  rfl
 
 @[simp]
 theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min ↑x ↑y := by
-  rw [min_def, map₂_const]
+  rfl
 
 @[simp]
 theorem const_abs [AddCommGroup β] [LinearOrder β] (x : β) :
     (↑|x| : β*) = |↑x| := by
-  rw [abs_def, map_const]
+  rw [abs_def]
+  rfl
 
 end Germ
 

@@ -491,8 +491,9 @@ section OrderedAddGroup
 variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
-    HasCompactSupport |f| :=
-  hf.comp_left (g := abs) abs_zero
+    HasCompactSupport |f| := by
+  rw [Pi.abs_def]
+  exact hf.comp_left abs_zero
 
 end OrderedAddGroup
 

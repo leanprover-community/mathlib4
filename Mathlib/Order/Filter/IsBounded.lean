@@ -518,8 +518,8 @@ theorem isBoundedUnder_ge_inf [SemilatticeInf α] {f : Filter β} {u v : β → 
 theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     {f : Filter β} {u : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
-      f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u :=
-  isBoundedUnder_le_sup.trans <| and_congr Iff.rfl isBoundedUnder_le_neg
+      f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u := by
+  simp_rw [abs_eq_max_neg, isBoundedUnder_le_sup, isBoundedUnder_le_neg]
 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the

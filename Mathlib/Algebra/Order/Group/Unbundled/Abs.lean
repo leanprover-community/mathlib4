@@ -35,7 +35,8 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive (attr := grind) /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
+@[no_expose, to_additive
+/-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
@@ -63,6 +64,8 @@ meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
     | _ => `(|$a|)
   | _ => throw ()
+
+@[to_additive (attr := grind =)] lemma mabs_eq_max_inv : |a|ₘ = max a a⁻¹ := (rfl)
 
 @[to_additive] lemma mabs_le' : |a|ₘ ≤ b ↔ a ≤ b ∧ a⁻¹ ≤ b := sup_le_iff
 
@@ -199,8 +202,6 @@ variable [Group α] [LinearOrder α] {a b : α}
 
 @[to_additive] lemma le_mabs : a ≤ |b|ₘ ↔ a ≤ b ∨ a ≤ b⁻¹ := le_max_iff
 
-@[to_additive] lemma mabs_eq_max_inv : |a|ₘ = max a a⁻¹ := rfl
-
 @[to_additive] lemma lt_mabs : a < |b|ₘ ↔ a < b ∨ a < b⁻¹ := lt_max_iff
 
 @[to_additive] lemma mabs_by_cases (P : α → Prop) (h1 : P a) (h2 : P a⁻¹) : P |a|ₘ :=
@@ -299,9 +300,9 @@ end LatticeOrderedAddCommGroup
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
 
-@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := (rfl)
 
 @[push ←]
-lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := (rfl)
 
 end Pi

@@ -53,8 +53,10 @@ instance (priority := 100) LinearOrderedCommGroup.toIsTopologicalGroup :
       (eventually_mabs_div_lt a ε0).mono fun x hx ↦ by rwa [inv_div_inv, mabs_div_comm]
 
 @[to_additive (attr := continuity)]
-theorem continuous_mabs : Continuous (mabs : G → G) :=
-  continuous_id.max continuous_inv
+theorem continuous_mabs : Continuous (mabs : G → G) := by
+  eta_expand
+  simp_rw [mabs_eq_max_inv]
+  fun_prop
 
 section Tendsto
 
