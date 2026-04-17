@@ -641,7 +641,6 @@ namespace Rat
 
 open NumberField InfinitePlace
 
-@[simp]
 lemma prod_infinitePlace {M : Type*} [CommMonoid M] (f : InfinitePlace ℚ → M) :
     ∏ v : InfinitePlace ℚ, f v ^ v.mult = f infinitePlace := by
   have : infinitePlace.mult = 1 := mult_isReal ⟨infinitePlace, isReal_infinitePlace⟩
