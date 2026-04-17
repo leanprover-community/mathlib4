@@ -239,7 +239,7 @@ theorem omega_zero : ω_ 0 = ω := by
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
-  exact zero_le o
+  exact zero_le
 
 /-- For the theorem `0 < ω`, see `omega0_pos`. -/
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
