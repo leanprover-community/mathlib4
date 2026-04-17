@@ -109,7 +109,6 @@ theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDoma
     contrapose! hqI
     rw [sup_of_le_left hqI]
     exact hq.ne_top
-  -- replace hqI := map_eq_top_of_not_le (Localization.AtPrime q) hqI
   rw [← IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hpS hq hq'] at h
   replace h := congrArg (map (algebraMap S (Localization.AtPrime q))) h
   rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
