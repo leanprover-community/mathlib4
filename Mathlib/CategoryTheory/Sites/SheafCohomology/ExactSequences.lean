@@ -72,7 +72,6 @@ theorem connectingHom_naturality (x : H S₁.X₃ n₀) :
 
 /-- this is the long exact sequence:
 `Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`. -/
-@[simps!]
 noncomputable def longSequence :
     ComposableArrows AddCommGrpCat.{w'} 5 := ComposableArrows.mk₅
   (ofHom (map S.f n₀))
@@ -81,38 +80,90 @@ noncomputable def longSequence :
   (ofHom (map S.f n₁))
   (ofHom (map S.g n₁))
 
+open ComposableArrows
+
+@[simp]
+lemma longSequence_obj₀ : (longSequence hS n₀ n₁ h).obj 0 = of (S.X₁.H n₀) := rfl
+
+@[simp]
+lemma longSequence_obj₁ : (longSequence hS n₀ n₁ h).obj 1 = of (S.X₂.H n₀) := rfl
+
+@[simp]
+lemma longSequence_obj₂ : (longSequence hS n₀ n₁ h).obj 2 = of (S.X₃.H n₀) := rfl
+
+@[simp]
+lemma longSequence_obj₃ : (longSequence hS n₀ n₁ h).obj 3 = of (S.X₁.H n₁) := rfl
+
+@[simp]
+lemma longSequence_obj₄ : (longSequence hS n₀ n₁ h).obj 4 = of (S.X₂.H n₁) := rfl
+
+@[simp]
+lemma longSequence_obj₅ : (longSequence hS n₀ n₁ h).obj 5 = of (S.X₃.H n₁) := rfl
+
+@[simp]
+lemma longSequence_map₀₁ (i : (0 : Fin 6) ⟶ 1) :
+    (longSequence hS n₀ n₁ h).map i = ofHom (map S.f n₀) := rfl
+
+@[simp]
+lemma longSequence_map₁₂ (i : (1 : Fin 6) ⟶ 2) :
+    (longSequence hS n₀ n₁ h).map i = ofHom (map S.g n₀) := rfl
+
+@[simp]
+lemma longSequence_map₂₃ (i : (2 : Fin 6) ⟶ 3) :
+    (longSequence hS n₀ n₁ h).map i = ofHom (connectingHom hS n₀ n₁ h) := rfl
+
+@[simp]
+lemma longSequence_map₃₄ (i : (3 : Fin 6) ⟶ 4) :
+    (longSequence hS n₀ n₁ h).map i = ofHom (map S.f n₁) := rfl
+
+@[simp]
+lemma longSequence_map₄₅ (i : (4 : Fin 6) ⟶ 5) :
+    (longSequence hS n₀ n₁ h).map i = ofHom (map S.g n₁) := rfl
+
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
 /-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
 noncomputable def longSequence_hom :
-    longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := ComposableArrows.homMk₅
-  (ofHom (map f.τ₁ n₀))
-  (ofHom (map f.τ₂ n₀))
-  (ofHom (map f.τ₃ n₀))
-  (ofHom (map f.τ₁ n₁))
-  (ofHom (map f.τ₂ n₁))
-  (ofHom (map f.τ₃ n₁))
-  (by
-    have := congr_arg (functorH J n₀).map f.4
-    repeat rw [Functor.map_comp] at this
-    exact this.symm)
-  (by
-    have := congr_arg (functorH J n₀).map f.5
-    repeat rw [Functor.map_comp] at this
-    exact this.symm)
-  (by
-    ext x
-    exact (connectingHom_naturality n₀ n₁ h h₁ h₂ f x).symm)
-  (by
-    have := congr_arg (functorH J n₁).map f.4
-    repeat rw [Functor.map_comp] at this
-    exact this.symm)
-  (by
-    have := congr_arg (functorH J n₁).map f.5
-    repeat rw [Functor.map_comp] at this
-    exact this.symm)
+    longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
+  refine ComposableArrows.homMk₅
+    (ofHom (map f.τ₁ n₀))
+    (ofHom (map f.τ₂ n₀))
+    (ofHom (map f.τ₃ n₀))
+    (ofHom (map f.τ₁ n₁))
+    (ofHom (map f.τ₂ n₁))
+    (ofHom (map f.τ₃ n₁)) ?_ ?_ ?_ ?_ ?_
+  any_goals
+    dsimp
+    ext
+    simp [← H.map_comp_apply, f.4, f.5, (connectingHom_naturality n₀ n₁ h h₁ h₂ f _).symm]
 
+@[simp]
+lemma longSequence_hom_app₀ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 0 = ofHom (map f.τ₁ n₀) := rfl
+
+@[simp]
+lemma longSequence_hom_app₁ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 1 = ofHom (map f.τ₂ n₀) := rfl
+
+@[simp]
+lemma longSequence_hom_app₂ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 2 = ofHom (map f.τ₃ n₀) := rfl
+
+@[simp]
+lemma longSequence_hom_app₃ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 3 = ofHom (map f.τ₁ n₁) := rfl
+
+@[simp]
+lemma longSequence_hom_app₄ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 4 = ofHom (map f.τ₂ n₁) := rfl
+
+@[simp]
+lemma longSequence_hom_app₅ :
+    (longSequence_hom n₀ n₁ h h₁ h₂ f).app 5 = ofHom (map f.τ₃ n₁) := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] H.map_comp_apply in
 /-- The long exact sequence of cohomology is functorial -/
 @[simps]
 noncomputable def longSequenceFunctor :
@@ -120,12 +171,6 @@ noncomputable def longSequenceFunctor :
       ComposableArrows AddCommGrpCat.{w'} 5 where
       obj S := longSequence S.property n₀ n₁ h
       map {S₁ S₂} f := longSequence_hom n₀ n₁ h S₁.property S₂.property f.hom
-      map_id S := by
-        ext x
-        any_goals exact map_id_apply x
-      map_comp _ _ := by
-        ext x
-        any_goals exact map_comp_apply ..
 
 lemma longSequence_exact₁' :
     (ShortComplex.mk (ofHom (connectingHom hS n₀ n₁ h)) (ofHom (map S.f n₁)) (by
