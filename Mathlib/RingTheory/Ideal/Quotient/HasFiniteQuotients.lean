@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -19,9 +20,9 @@ quotient `R ⧸ I` is finite.
 - `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
 - `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
 - `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
-a domain and a finite `R`-module. Then `S` has finite quotients.
+  a domain and a finite `R`-module. Then `S` has finite quotients.
 - `Ring.HasFiniteQuotients.instOfIsDomainOfFG`: A domain that is also a finite `ℤ`-module
-has finite quotients.
+  has finite quotients.
 
 -/
 
@@ -123,6 +124,13 @@ theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
 theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.absNorm ≤ B}.Finite :=
   finite_cardQuot_heightOneSpectrum_le B
+
+instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
+  ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
+
+instance [IsDedekindDomain R] [Module.Free ℤ R] :
+    Northcott fun p : IsDedekindDomain.HeightOneSpectrum R ↦ p.asIdeal.absNorm :=
+  ⟨Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le⟩
 
 variable (R) in
 /--

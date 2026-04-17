@@ -351,6 +351,11 @@ just picking out the `i`-th object. -/
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+/-- The differential as a natural transformation between `eval`. -/
+@[simps] def dNatTrans (i j : ι) :
+    HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
+  app X := X.d i j
+
 end
 
 noncomputable section
