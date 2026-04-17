@@ -297,7 +297,6 @@ lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
   rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
   apply transfiniteCompositions_pushouts_coproducts_le_llp_rlp
 
-
 end MorphismProperty
 
 end CategoryTheory
