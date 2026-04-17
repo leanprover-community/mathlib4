@@ -334,16 +334,12 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
       (∀ U : Set X, IsOpen U → (S ∩ U).Nonempty → S ⊆ closure (S ∩ U)) := by
   refine ⟨fun h _ ↦ ?_, fun h ↦ ?_⟩
   · exact subset_closure_inter_of_isPreirreducible_of_isOpen h
-  · intro a b ha hb aS bS
+  · intro a b ha hb ⟨p, pS, pa⟩ bS
     by_contra! h0
-    obtain ⟨p, pS, pa⟩ := aS
     suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
     simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
-    refine ⟨aᶜ, by simpa, ?_, ?_⟩
-    · apply subset_compl_iff_disjoint_left.mpr
-      apply disjoint_iff_inter_eq_empty.mpr
-      grind
-    · simpa
+    use aᶜ
+    grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
 
 /-- A space is preirreducible iff all nonempty open sets are dense. -/
 theorem preirreducibleSpace_iff_open_dense (X : Type*) [TopologicalSpace X] :
