@@ -146,16 +146,15 @@ namespace Rat
 open NumberField Height
 
 /-- The multiplicative height of a positive natural number cast to `ℚ` equals `n`. -/
-theorem mulHeight₁_natCast (n : ℕ) (hn : 1 ≤ n) :
+theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
     mulHeight₁ (n : ℚ) = n := by
-  rw [NumberField.mulHeight₁_eq]
-  have hfin : ∀ v : FinitePlace ℚ, max (v (n : ℚ)) 1 = 1 := fun v ↦
+  have hfin (v : FinitePlace ℚ) : max (v n) 1 = 1 :=
     max_eq_right (IsNonarchimedean.apply_natCast_le_one_of_isNonarchimedean
       (NonarchimedeanHomClass.map_add_le_max v))
-  rw [finprod_eq_one_of_forall_eq_one hfin, mul_one, Fintype.prod_unique]
-  conv_lhs => rw [show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _]
-  simp [InfinitePlace.mult, if_pos isReal_infinitePlace,
-    max_eq_left (by exact_mod_cast hn : (1 : ℝ) ≤ n)]
+  rw [NumberField.mulHeight₁_eq, finprod_eq_one_of_forall_eq_one hfin, Fintype.prod_unique,
+    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _] 
+  have hn : 1 ≤ n := by grind [NeZero.ne n]
+  simp [hn, InfinitePlace.mult, isReal_infinitePlace]
 
 /-- The logarithmic height of a positive natural number cast to `ℚ` equals `log n`. -/
 theorem logHeight₁_natCast (n : ℕ) (hn : 1 ≤ n) :
