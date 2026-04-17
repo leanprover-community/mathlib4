@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
