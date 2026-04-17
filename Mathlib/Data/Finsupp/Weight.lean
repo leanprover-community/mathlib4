@@ -255,6 +255,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
+lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
+
 lemma range_single_one :
     Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
   refine subset_antisymm ?_ ?_

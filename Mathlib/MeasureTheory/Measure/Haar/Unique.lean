@@ -168,7 +168,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
           · simp [image_eq_zero_of_notMem_tsupport H]
           have : g (y⁻¹ * x) = 0 := by
             apply image_eq_zero_of_notMem_tsupport
-            contrapose! hxy
+            contrapose hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]
@@ -200,7 +200,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
           · simp [image_eq_zero_of_notMem_tsupport H]
           have : f (y * x) = 0 := by
             apply image_eq_zero_of_notMem_tsupport
-            contrapose! hxy
+            contrapose hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]
@@ -238,7 +238,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   let c : ℝ := (∫ x, g x ∂μ)⁻¹ * (∫ x, g x ∂μ')
   have c_nonneg : 0 ≤ c :=
     mul_nonneg (inv_nonneg.2 (integral_nonneg g_nonneg)) (integral_nonneg g_nonneg)
-  refine ⟨⟨c, c_nonneg⟩, fun f f_cont f_comp ↦ ?_⟩
+  refine ⟨.mk c c_nonneg, fun f f_cont f_comp ↦ ?_⟩
   /- use the lemma `integral_mulLeftInvariant_mulRightInvariant_combo` for `μ` and then `μ'`
   to reexpress the integral of `f` as the integral of `g` times a factor which only depends
   on a right-invariant measure `ν`. We use `ν = μ.inv` for convenience. -/
@@ -920,7 +920,6 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact smul_absolutelyContinuous
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass.

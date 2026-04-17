@@ -144,7 +144,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     have H := HenselianLocalRing.is_henselian f hf a₀
     simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
-      contrapose! h₂
+      contrapose h₂
       rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
     refine ⟨a, ha₁, ?_⟩
@@ -160,7 +160,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
   is_henselian := by
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
-    contrapose! h₂
+    contrapose h₂
     rw [← mem_nonunits_iff, ← IsLocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
     rw [h₂]
     exact not_isUnit_zero
@@ -260,3 +260,18 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
+
+open Polynomial in
+@[stacks 06RR]
+theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R] [IsLocalRing R]
+    {f : Polynomial R} {a b : R} (ha : f.eval a = 0) (hb : f.eval b = 0) (h : ¬ IsUnit (a - b))
+    (h' : IsUnit (f.derivative.eval a)) : a = b := by
+  obtain ⟨c, _⟩ := exists_mul_sq_add_linear_part_eq_eval_add f a (b - a)
+  have hc : (c * (b - a) + eval a (derivative f)) * (b - a) = 0 := by grind
+  suffices (c * (b - a) + eval a (derivative f)) ∉ maximalIdeal R by
+    rw [notMem_maximalIdeal, isUnit_iff_exists] at this
+    grind
+  by_contra!
+  replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
+  ring_nf at this
+  contradiction
