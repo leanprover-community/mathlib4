@@ -30,9 +30,7 @@ class GraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) where
   fst : D → V
   /-- The second/target vertex of a dart. -/
   snd : D → V
-  /-- The first/source vertex of a dart is in the set of vertices. -/
   fst_mem_of_darts {d : D} : d ∈ darts → fst d ∈ verts
-  /-- The second/target vertex of a dart is in the set of vertices. -/
   snd_mem_of_darts {d : D} : d ∈ darts → snd d ∈ verts
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, fst d = u ∧ snd d = v

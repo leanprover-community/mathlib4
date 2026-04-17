@@ -18,33 +18,37 @@ variable {α β γ : Type*} {G : Graph α β}
 
 namespace Graph
 
-class IsDart (G : Graph α β) (γ : outParam Type*) where
+class HasDart (G : Graph α β) (γ : outParam Type*) where
+  /-- The set of darts of a graph. -/
   dartSet : Set γ
-  edge : γ → β
+  /-- The opposite dart, provided by fixed-point-free involution. -/
   symm : γ → γ
   symm_invol : ∀ ⦃d⦄, symm (symm d) = d
-  symm_irrefl : ∀ ⦃d⦄, symm d ≠ d
+  symm_ne : ∀ ⦃d⦄, symm d ≠ d
   symm_mem : ∀ ⦃d⦄, d ∈ dartSet → symm d ∈ dartSet
-  edge_of_symm : ∀ ⦃d₁ d₂⦄, edge d₁ = edge d₂ ↔ d₁ = d₂ ∨ d₁ = symm d₂
+  /-- The edge of a dart. -/
+  edge : γ → β
+  edge_eq_edge_iff : ∀ ⦃d₁ d₂⦄, edge d₁ = edge d₂ ↔ d₁ = d₂ ∨ d₁ = symm d₂
+  edge_surj : ∀ ⦃e⦄, e ∈ G.edgeSet → ∃ d ∈ dartSet, e = edge d
+  /-- The base point of a dart. -/
   basePt : γ → α
   isLink : ∀ ⦃d⦄, d ∈ dartSet → G.IsLink (edge d) (basePt d) (basePt (symm d))
-  surj : ∀ ⦃e⦄, e ∈ G.edgeSet → ∃ d ∈ dartSet, e = edge d
 
-instance [IsDart G γ] : GraphLike α γ G where
+instance [HasDart G γ] : GraphLike α γ G where
   verts := V(G)
-  darts := IsDart.dartSet G
-  fst := IsDart.basePt G
-  snd := (IsDart.basePt G <| IsDart.symm G ·)
-  fst_mem_of_darts hd := (IsDart.isLink hd).left_mem
-  snd_mem_of_darts hd := (IsDart.isLink hd).right_mem
+  darts := HasDart.dartSet G
+  fst := HasDart.basePt G
+  snd := (HasDart.basePt G <| HasDart.symm G ·)
+  fst_mem_of_darts hd := (HasDart.isLink hd).left_mem
+  snd_mem_of_darts hd := (HasDart.isLink hd).right_mem
   Adj u v := G.Adj u v
   exists_darts_iff_adj {u v : α} := by
     refine ⟨?_, fun ⟨e, he⟩ => ?_⟩
     · rintro ⟨d, hd, rfl, rfl⟩
-      exact (IsDart.isLink hd).adj
-    obtain ⟨d, hd, rfl, rfl⟩ := IsDart.surj he.edge_mem
-    obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := he.eq_and_eq_or_eq_and_eq <| IsDart.isLink hd
+      exact (HasDart.isLink hd).adj
+    obtain ⟨d, hd, rfl, rfl⟩ := HasDart.edge_surj he.edge_mem
+    obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := he.eq_and_eq_or_eq_and_eq <| HasDart.isLink hd
     · use d, hd
-    exact ⟨IsDart.symm G d, IsDart.symm_mem hd, by simp [IsDart.symm_invol]⟩
+    exact ⟨HasDart.symm G d, HasDart.symm_mem hd, by simp [HasDart.symm_invol]⟩
 
 end Graph
