@@ -232,8 +232,8 @@ lemma IsMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, 
     Or.elim ha (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
   obtain ⟨b, hadj⟩ := he
   refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
-  have hb: b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
-  have hb': b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
+  have hb : b ∈ {v, w} := hverts ▸ M.edge_vert hadj.symm
+  have hb' : b' ∈ {v, w} := hverts ▸ M.edge_vert hadj'.symm
   grind [M.loopless.irrefl v, M.loopless.irrefl w]
 
 section card
