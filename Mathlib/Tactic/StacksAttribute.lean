@@ -53,7 +53,8 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   }
 
 /--
-`addTagEntry declName tag comment` takes as input the `Name` `declName` of a declaration and
+`addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
+whether it is a Kerodon or Stacks tag (`db`) and
 the `String`s `tag` and `comment` of the `stacks` attribute.
 It extends the `Tag` environment extension with the data `declName, tag, comment`.
 -/
@@ -222,7 +223,7 @@ For each found declaration, it prints a line
 The variant `#stacks_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := stacksTags) "#stacks_tags" tk:("!")?: command =>
+elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
   traceStacksTags .stacks (tk.isSome)
 
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
@@ -234,7 +235,7 @@ For each found declaration, it prints a line
 The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
+elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
   traceStacksTags .kerodon (tk.isSome)
 
 end Mathlib.StacksTag
