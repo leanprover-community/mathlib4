@@ -163,6 +163,25 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
       exact h _ _ hx
   · simpa using h (N.mk _ x.prop) (by simpa)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
+that is induced by an isomorphism `X ≅ Y`. -/
+@[simps -isSimp apply symm_apply]
+def orderIsoOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.N ≃o Y.N where
+  toFun x := N.mk (e.hom.app _ x.simplex)
+    ((nonDegenerate_iff_of_isIso e.hom x.simplex).mpr x.nonDegenerate)
+  invFun y := N.mk (e.inv.app _ y.simplex)
+    ((nonDegenerate_iff_of_isIso e.inv y.simplex).mpr y.nonDegenerate)
+  left_inv x := by simp [N.ext_iff, S.ext_iff']
+  right_inv _ := by simp [N.ext_iff, S.ext_iff']
+  map_rel_iff' {x y} := by
+    dsimp
+    simp only [le_iff, Subcomplex.ofSimplex_le_iff, Subcomplex.mem_ofSimplex_obj_iff]
+    refine exists_congr (fun f ↦ ?_)
+    dsimp at f ⊢
+    rw [← NatTrans.naturality_apply e.hom f.op]
+    exact (e.app _).toEquiv.apply_eq_iff_eq
+
 end N
 
 /-- The map which sends a non degenerate simplex of a simplicial set to
