@@ -1316,7 +1316,7 @@ variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module �
 as a linear isometric equivalence. -/
 instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
   { __ := Unitary.toUnits α • e.toLinearEquiv
-    norm_map' _ := by simp [norm_smul, CStarRing.norm_coe_unitary] }
+    norm_map' _ := by simp [norm_smul] }
 
 @[simp] theorem smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : V) :
     (α • e) x = (α : 𝕜) • e x := rfl
