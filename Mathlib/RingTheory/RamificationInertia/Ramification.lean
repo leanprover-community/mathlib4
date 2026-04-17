@@ -95,29 +95,27 @@ theorem foo {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (n
   refine (Order.coheight_orderIso (foo''' R).symm (.toDual n)).trans ?_
   rw [Order.coheight_toDual, Order.height_enat]
 
+open Localization IsLocalization.AtPrime in
 theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S]
-    [q.LiesOver p] [hq' : q.IsPrime] (hp : p ≠ ⊥) (hq : q ≠ ⊥) :
+    [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
     p.ramificationIdx q = q.ramificationIdx' R := by
   have : p.IsPrime := isPrime_of_liesOver q p
-  let pS := p.map (algebraMap R S)
-  have hpS : pS ≠ ⊥ := map_ne_bot_of_ne_bot hp
-  have : q.IsMaximal := hq'.isMaximal hq
+  have hq' : q ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp q
+  have : q.IsMaximal := hq.isMaximal hq'
+  have hpS : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp
   obtain ⟨I, hqI, h⟩ := Ideal.eq_prime_pow_mul_coprime hpS q
-  let Sq := Localization.AtPrime q
   replace hqI : ¬ I ≤ q := by
     contrapose! hqI
     rw [sup_of_le_left hqI]
-    exact hq'.ne_top
-  replace hqI := IsLocalization.AtPrime.map_eq_top_of_not_le Sq hqI
-  rw [← IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hpS hq' hq] at h
-  replace h := congrArg (map (algebraMap S Sq)) h
-  rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow, hqI, mul_top,
-    Localization.AtPrime.map_eq_maximalIdeal] at h
-  rw [ramificationIdx'_eq p q, h]
-  have : IsDiscreteValuationRing Sq :=
-    IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain S hq Sq
-  rw [foo, ENat.toNat_coe]
+    exact hq.ne_top
+  -- replace hqI := map_eq_top_of_not_le (Localization.AtPrime q) hqI
+  rw [← IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hpS hq hq'] at h
+  replace h := congrArg (map (algebraMap S (Localization.AtPrime q))) h
+  rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
+    map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
+  have := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
+  rw [ramificationIdx'_eq p q, h, foo, ENat.toNat_coe]
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
