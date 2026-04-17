@@ -6,7 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Concept
-public import Mathlib.Order.UpperLower.CompleteLattice
+
+import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Dedekind-MacNeille completion
