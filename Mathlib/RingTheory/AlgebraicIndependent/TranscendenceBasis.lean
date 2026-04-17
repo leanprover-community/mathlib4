@@ -18,16 +18,14 @@ This file defines the transcendence basis as a maximal algebraically independent
 ## Main results
 
 * `exists_isTranscendenceBasis`: a ring extension has a transcendence basis
+* `IsTranscendenceBasis.lift_cardinalMk_eq_trdeg`: any transcendence basis of a domain has
+  cardinality equal to transcendental degree.
 * `IsTranscendenceBasis.lift_cardinalMk_eq`: any two transcendence bases of a domain have the
   same cardinality.
 
 ## References
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
-
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
@@ -74,9 +72,9 @@ open Cardinal in
 theorem trdeg_eq_iSup_cardinalMk_isTranscendenceBasis :
     trdeg R A = ⨆ ι : { s : Set A // IsTranscendenceBasis R ((↑) : s → A) }, #ι.1 := by
   refine (ciSup_le' fun s ↦ ?_).antisymm
-    (ciSup_le' fun s ↦ le_ciSup_of_le (bddAbove_range _) ⟨s, s.2.1⟩ le_rfl)
+    (ciSup_le' fun s ↦ le_ciSup_of_le bddAbove_of_small ⟨s, s.2.1⟩ le_rfl)
   choose t ht using exists_isTranscendenceBasis_superset s.2
-  exact le_ciSup_of_le (bddAbove_range _) ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
+  exact le_ciSup_of_le bddAbove_of_small ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
 
 variable {R}
 
@@ -170,7 +168,6 @@ lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
 
 variable (ι R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
     IsTranscendenceBasis R (X (R := R) (σ := ι)) := by
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩
@@ -417,6 +414,7 @@ namespace IsTranscendenceBasis
 
 variable [Nontrivial R] [NoZeroDivisors A]
 
+/-- Any transcendence basis of a domain has cardinality equal to transcendental degree. -/
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective

@@ -806,7 +806,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
+  { (inferInstance : Inhabited (M →ₛₗ[σ₁₂] M₂)) with
     uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
@@ -840,8 +840,12 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
     (h.comp (f + g) : M →ₛₗ[σ₁₃] M₃) = h.comp f + h.comp g :=
   ext fun _ ↦ h.map_add _ _
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
+  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
 /-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
+instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
@@ -885,7 +889,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_sub _ _
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
+instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 

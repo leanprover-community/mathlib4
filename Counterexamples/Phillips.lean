@@ -460,7 +460,7 @@ We need the continuum hypothesis to construct it.
 
 theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
+  rcases Cardinal.exists_ord_eq ℝ with ⟨r, hr, H⟩
   refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
@@ -474,10 +474,10 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = ℵ₁) :
       · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)
-    rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r x H
-  · rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r y H
+    rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
+    exact Cardinal.card_typein_lt x H
+  · rw [← Cardinal.le_aleph0_iff_set_countable, ← Cardinal.lt_aleph_one_iff, ← Hcont]
+    exact Cardinal.card_typein_lt y H
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/

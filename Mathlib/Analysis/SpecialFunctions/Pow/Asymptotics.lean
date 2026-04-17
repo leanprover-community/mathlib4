@@ -87,9 +87,6 @@ lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
 
-@[deprecated (since := "2025-08-24")]
-alias tendsto_rpow_atTop_of_base_gt_one := tendsto_rpow_atBot_of_base_gt_one
-
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
 theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
@@ -376,7 +373,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
         filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
         rw [Real.norm_of_nonneg (by positivity)]
         gcongr
-        exacts [hx, le_max_left _ _]
+        exact le_max_left _ _
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)

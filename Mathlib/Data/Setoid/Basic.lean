@@ -338,8 +338,6 @@ injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
 
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
-
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/
 theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)

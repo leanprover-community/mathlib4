@@ -395,17 +395,7 @@ protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
 
 end IsTwoSided
 
-@[simp]
-theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
-  ⟨fun hij =>
-    or_iff_not_imp_left.mpr fun I_ne_bot =>
-      J.eq_bot_iff.mpr fun j hj =>
-        let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
-        Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
-
-instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := Submodule.mul_eq_bot
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
@@ -1194,9 +1184,8 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
-      rcases s.eq_empty_or_nonempty with hse | hsne
-      · subst hse
-        rw [Finset.coe_empty, Set.biUnion_empty] at h
+      rcases s.eq_empty_or_nonempty with rfl | hsne
+      · rw [Finset.coe_empty, Set.biUnion_empty] at h
         exact (h I.zero_mem).elim
       · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=

@@ -46,6 +46,9 @@ lemma swap_comm (i j : n) :
 lemma transpose_swap (i j : n) : (swap R i j).transpose = swap R i j := by
   simp [swap]
 
+theorem isSymm_swap (i j : n) : (swap R i j).IsSymm :=
+  transpose_swap i j
+
 @[simp]
 lemma conjTranspose_swap {R : Type*} [NonAssocSemiring R] [StarRing R] (i j : n) :
     (swap R i j).conjTranspose = swap R i j := by

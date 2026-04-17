@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.String.Defs
-public import Mathlib.Tactic.Lemma
 
 /-!
 # Miscellaneous lemmas about strings

@@ -83,14 +83,10 @@ lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   rw [← HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks), isPreimmersion_iff, and_comm]
   rfl
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_iff := SpecMap_iff
-
 lemma mk_SpecMap {R S : CommRingCat.{u}} {f : R ⟶ S}
     (h₁ : IsEmbedding (PrimeSpectrum.comap f.hom)) (h₂ : f.hom.SurjectiveOnStalks) :
     IsPreimmersion (Spec.map f) :=
   (SpecMap_iff f).mpr ⟨h₁, h₂⟩
-
-@[deprecated (since := "2025-10-07")] alias mk_Spec_map := mk_SpecMap
 
 lemma of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing S]
     [Algebra R S] [IsLocalization M S] :
