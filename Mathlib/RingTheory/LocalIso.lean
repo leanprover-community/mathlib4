@@ -38,6 +38,7 @@ open TensorProduct
 
 /-- An `R`-algebra `S` is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
+@[stacks 096E "(1) in the algebra formulation"]
 class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] : Prop where
   exists_notMem_isStandardOpenImmersion (q : Ideal S) [q.IsPrime] :
     ∃ g ∉ q, IsStandardOpenImmersion R (Localization.Away g)
