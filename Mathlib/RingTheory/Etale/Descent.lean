@@ -55,7 +55,7 @@ lemma FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
     let e' : (S ⊗[R] T) ⊗[S] Ω[S⁄R] ≃ₗ[S ⊗[R] T] Ω[S ⊗[R] T⁄T] :=
       KaehlerDifferential.tensorKaehlerEquiv R T S (S ⊗[R] T)
     have : Module.Flat (S ⊗[R] T) ((S ⊗[R] T) ⊗[S] Ω[S⁄R]) := .of_linearEquiv e'
-    have : Module.Flat S (Ω[S⁄R]) := Module.Flat.of_flat_tensorProduct _ _ (S ⊗[R] T)
+    have : Module.Flat S Ω[S⁄R] := Module.Flat.of_flat_tensorProduct _ _ (S ⊗[R] T)
     exact Module.Flat.projective_of_finitePresentation
   · have : Subsingleton (T ⊗[R] H1Cotangent R S) := (tensorH1CotangentOfFlat R S T).subsingleton
     exact Module.FaithfullyFlat.lTensor_reflects_triviality R T (H1Cotangent R S)
