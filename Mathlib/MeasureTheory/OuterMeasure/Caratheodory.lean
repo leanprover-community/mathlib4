@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.OfFunction
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.OfFunction
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
-# The Caratheodory σ-algebra of an outer measure
+# The Carathéodory σ-algebra of an outer measure
 
 Given an outer measure `m`, the Carathéodory-measurable sets are the sets `s` such that
 for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurable space.
@@ -27,6 +29,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 Carathéodory-measurable, Carathéodory's criterion
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -165,6 +169,7 @@ def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
   defined such that `s` is measurable if `∀ t, μ t = μ (t ∩ s) + μ (t \ s)`. -/
+@[implicit_reducible]
 protected def caratheodory : MeasurableSpace α := by
   apply MeasurableSpace.DynkinSystem.toMeasurableSpace (caratheodoryDynkin m)
   intro s₁ s₂
@@ -207,8 +212,8 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
 theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) : MeasurableSet[(boundedBy m).caratheodory] s := by
   apply ofFunction_caratheodory; intro t
-  rcases t.eq_empty_or_nonempty with h | h
-  · simp [h, Set.not_nonempty_empty]
+  rcases t.eq_empty_or_nonempty with rfl | h
+  · simp [Set.not_nonempty_empty]
   · convert le_trans _ (hs t)
     · simp [h]
     exact add_le_add iSup_const_le iSup_const_le

@@ -3,13 +3,15 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Filtered
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.ExactFunctor
-import Mathlib.CategoryTheory.Limits.Indization.Equalizers
-import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
-import Mathlib.CategoryTheory.Limits.Indization.Products
-import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Indization.Equalizers
+public import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
+public import Mathlib.CategoryTheory.Limits.Indization.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
 # The category of Ind-objects
@@ -52,6 +54,8 @@ Note that:
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -155,7 +159,7 @@ instance [HasLimitsOfShape WalkingParallelPair C] :
 
 noncomputable instance [HasFiniteLimits C] : CreatesFiniteLimits (Ind.inclusion C) :=
   letI _ : CreatesFiniteProducts (Ind.inclusion C) :=
-    { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _  }
+    { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _ }
   createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts (Ind.inclusion C)
 
 instance [HasFiniteLimits C] : HasFiniteLimits (Ind C) :=

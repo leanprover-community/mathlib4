@@ -3,11 +3,13 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -41,6 +43,8 @@ An ongoing Lean formalisation of the proof, using mathlib as a dependency, is ta
 https://github.com/ImperialCollegeLondon/FLT .
 
 -/
+
+@[expose] public section
 
 open List
 

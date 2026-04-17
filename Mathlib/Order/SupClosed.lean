@@ -3,11 +3,13 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Closure
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Sets closed under join/meet
@@ -29,6 +31,8 @@ is automatically complete. All dually for `⊓`.
 * `SemilatticeInf.toCompleteSemilatticeInf`: A meet-semilattice where every inf-closed set has a
   greatest lower bound is automatically complete.
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {F α β : Type*}
 
@@ -481,15 +485,13 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
 
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
-  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
-  congr 2
   ext
-  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :
     f '' latticeClosure s = latticeClosure (f '' s) := by
-  simpa only [Set.image_comp, ← Set.preimage_equiv_eq_image_symm, ← ofDual_preimage_latticeClosure]
+  simpa only [Set.image_comp, Equiv.image_symm_eq_preimage, ← ofDual_preimage_latticeClosure]
     using image_latticeClosure s (ofDual.symm ∘ f) map_sup map_inf
 
 end Lattice
@@ -530,19 +532,19 @@ end DistribLattice
 
 /-- A join-semilattice where every sup-closed set has a least upper bound is automatically complete.
 -/
+@[implicit_reducible]
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
   sSup := fun s => sSup (supClosure s)
-  le_sSup _ _ ha := (h _ supClosed_supClosure).1 <| subset_supClosure ha
-  sSup_le s a ha := (isLUB_le_iff <| h _ supClosed_supClosure).2 <| by rwa [upperBounds_supClosure]
+  isLUB_sSup _ := isLUB_supClosure.mp <| h _ supClosed_supClosure
 
 /-- A meet-semilattice where every inf-closed set has a greatest lower bound is automatically
 complete. -/
+@[implicit_reducible]
 def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α → α)
     (h : ∀ s, InfClosed s → IsGLB s (sInf s)) : CompleteSemilatticeInf α where
   sInf := fun s => sInf (infClosure s)
-  sInf_le _ _ ha := (h _ infClosed_infClosure).1 <| subset_infClosure ha
-  le_sInf s a ha := (le_isGLB_iff <| h _ infClosed_infClosure).2 <| by rwa [lowerBounds_infClosure]
+  isGLB_sInf _ := isGLB_infClosure.mp <| h _ infClosed_infClosure
 
 
 section ConditionallyCompleteLattice

@@ -3,15 +3,19 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 ## Instances
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -61,6 +65,7 @@ theorem Fintype.card_sum [Fintype α] [Fintype β] :
   card_disjSum _ _
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
+@[implicit_reducible]
 def fintypeOfFintypeNe (a : α) (_ : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective

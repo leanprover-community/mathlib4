@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.Control.EquivFunctor
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.Control.EquivFunctor
 
 /-!
 # The core of a category
@@ -20,6 +22,8 @@ category.
 Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Core C`,
 but this is not functorial with respect to `F`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -69,6 +73,11 @@ theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
   apply CoreHom.ext
   exact Iso.ext h
 
+/-- Construct an isomorphism in `Core C` from an isomorphism in `C`. -/
+@[simps! hom_iso inv_iso]
+def isoMk {x y : Core C} (e : x.of ≅ y.of) : x ≅ y :=
+  Groupoid.isoEquivHom _ _ |>.symm (.mk e)
+
 variable (C)
 
 instance : (inclusion C).Faithful where
@@ -112,6 +121,27 @@ def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
+/-- The natural isomorphism
+```
+                  F.core
+            Core C ⥤ Core D
+ inclusion C  ‖          ‖  inclusion D
+              V          V
+              C    ⥤    D
+                    F
+```
+thought of as pseudonaturality of `inclusion`,
+when viewing `Core` as a pseudofunctor.
+-/
+@[simps!]
+def coreCompInclusionIso (F : C ⥤ D) :
+    F.core ⋙ Core.inclusion D ≅ Core.inclusion C ⋙ F :=
+  Iso.refl _
+
+lemma core_comp_inclusion (F : C ⥤ D) :
+    F.core ⋙ Core.inclusion D = Core.inclusion C ⋙ F :=
+  Functor.ext_of_iso (coreCompInclusionIso F) (by cat_disch)
+
 end Functor
 
 namespace Iso
@@ -122,7 +152,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps!]
 def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
   NatIso.ofComponents
-    (fun x ↦ Groupoid.isoEquivHom _ _|>.symm <| .mk <| α.app x.of)
+    (fun x ↦ Groupoid.isoEquivHom _ _ |>.symm <| .mk <| α.app x.of)
 
 @[simp]
 lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).core = α.core ≪≫ β.core := rfl
@@ -136,7 +166,7 @@ lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D
   cat_disch
 
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
-    (isoWhiskerRight η H ).core =
+    (isoWhiskerRight η H).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   cat_disch
 
@@ -159,6 +189,44 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
   cat_disch
 
 end Iso
+
+namespace Core
+
+variable {G : Type u₂} [Groupoid.{v₂} G]
+
+/-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
+def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
+    functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
+    functorToCore (F ⋙ H) = F ⋙ functorToCore H :=
+  Functor.ext_of_iso (functorToCoreCompLeftIso H F) (by cat_disch)
+
+/-- The functor `functorToCore (H ⋙ F)` factors through `functorToCore H`. -/
+def functorToCoreCompRightIso {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ C) (F : C ⥤ C') :
+    functorToCore (H ⋙ F) ≅ functorToCore H ⋙ F.core :=
+  Iso.refl _
+
+lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ C) (F : C ⥤ C') :
+    functorToCore (H ⋙ F) = functorToCore H ⋙ F.core :=
+  Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
+
+/-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
+def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) :=
+  Functor.ext_of_iso inclusionCompFunctorToCoreIso (by cat_disch)
+
+/-- The functor `functorToCore (inclusion C)` is isomorphic to the identity on `Core C`. -/
+def functorToCoreInclusionIso : functorToCore (inclusion C) ≅ 𝟭 (Core C) :=
+  Iso.refl _
+
+theorem functorToCore_inclusion : functorToCore (inclusion C) = 𝟭 (Core C) :=
+  Functor.ext_of_iso functorToCoreInclusionIso (by cat_disch)
+
+end Core
 
 variable (D : Type u₂) [Category.{v₂} D]
 
@@ -188,12 +256,13 @@ end
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
+    Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
   map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
   map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
-    simp [EquivFunctor.map_trans', Function.comp]
+    simp [Equiv.toIso, EquivFunctor.map_trans']
 
 end CategoryTheory

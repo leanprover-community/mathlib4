@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.WithTerminal.FinCategory
-import Mathlib.CategoryTheory.WithTerminal.Cone
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.WithTerminal.FinCategory
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # If a functor preserves limits, so does the induced functor in the `Over` or `Under` category
@@ -17,6 +19,8 @@ As a corollary, if `F` preserves finite limits, or limits of a certain size, so 
 
 Dually, if `F` preserves certain colimits, `Under.post F` will preserve certain colimits as well.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 
@@ -37,7 +41,7 @@ instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J
   preservesLimit.preserves {coneK} isLimitConeK :=
     have isLimitConeD := (IsLimit.postcomposeHomEquiv liftFromOverComp.symm _).symm <|
       isLimitOfPreserves F (isLimitEquiv.symm isLimitConeK)
-    ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <| Cones.ext (.refl _) fun | .star | .of a => by aesop⟩
+    ⟨isLimitEquiv <| isLimitConeD.ofIsoLimit <| Cone.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
     PreservesFiniteLimits (Over.post F (X := X)) where
@@ -53,7 +57,7 @@ instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithIniti
     have isColimitCoconeD := (IsColimit.precomposeHomEquiv liftFromUnderComp _).symm <|
       isColimitOfPreserves F (isColimitEquiv.symm isColimitCoconeK)
     ⟨isColimitEquiv <| isColimitCoconeD.ofIsoColimit <|
-      Cocones.ext (.refl _) fun | .star | .of a => by aesop⟩
+      Cocone.ext (.refl _) fun | .star | .of a => by aesop⟩
 
 instance PreservesFiniteColimits.underPost [PreservesFiniteColimits F] :
     PreservesFiniteColimits (Under.post F (X := X)) where

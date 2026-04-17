@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.Equicontinuity
+module
+
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
 # Compact separated uniform spaces
@@ -20,6 +22,8 @@ import Mathlib.Topology.UniformSpace.Equicontinuity
 
 uniform space, uniform continuity, compact space
 -/
+
+public section
 
 open Uniformity Topology Filter UniformSpace Set
 
@@ -120,7 +124,7 @@ lemma IsCompact.mem_uniformity_of_prod
     exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
   · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
     refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
-    rcases hx with h'x|h'x
+    rcases hx with h'x | h'x
     · exact hv p hp.1 x h'x
     · exact hv' p hp.2 x h'x
   · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩

@@ -3,12 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Riccardo Brasca
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Quotients of seminormed groups
@@ -29,7 +31,7 @@ In addition, this file also provides normed structures for quotients of modules 
 of (commutative) rings by ideals. The `SeminormedAddCommGroup` and `NormedAddCommGroup`
 instances described above are transferred directly, but we also define instances of `NormedSpace`,
 `SeminormedCommRing`, `NormedCommRing` and `NormedAlgebra` under appropriate type class
-assumptions on the original space. Moreover, while `QuotientAddGroup.completeSpace` works
+assumptions on the original space. Moreover, while `QuotientAddGroup.completeSpace_right` works
 out-of-the-box for quotients of `NormedAddCommGroup`s by `AddSubgroup`s, we need to transfer
 this instance in `Submodule.Quotient.completeSpace` so that it applies to these other quotients.
 
@@ -84,13 +86,15 @@ includes a uniform space structure which includes a topological space structure,
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
 using the provided norm, and then trivially build a proof that the norm and uniform structure are
-compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.toUniformSpace`
+compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.rightUniformSpace`
 which uses the topological structure and the group structure to build the uniform structure. This
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -203,11 +207,11 @@ variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
-  toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalGroup.leftUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
-    rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
-    simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm, map_div_rev]
+    rw [uniformity_eq_comap_nhds_one_left, (nhds_one_hasBasis.comap _).eq_biInf]
+    simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm]
 
 variable (S) in
 /-- The quotient in the category of normed groups. -/
@@ -420,14 +424,14 @@ section Submodule
 variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
+  inferInstanceAs <| SeminormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
 instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
     NormedAddCommGroup (M ⧸ S) :=
-  QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
+  inferInstanceAs <| NormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
-  QuotientAddGroup.completeSpace M S.toAddSubgroup
+  QuotientAddGroup.completeSpace_left M S.toAddSubgroup
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
@@ -489,7 +493,7 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
 instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   mul_comm := _root_.mul_comm
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp

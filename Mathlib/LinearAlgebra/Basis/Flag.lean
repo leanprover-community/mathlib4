@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Fin.FlagRange
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Data.Fin.FlagRange
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -16,6 +18,8 @@ to be the subspace spanned by the first `k` vectors of the basis `b`.
 
 We also prove some lemmas about this definition.
 -/
+
+@[expose] public section
 
 open Set Submodule
 
@@ -42,7 +46,7 @@ theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
   span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
-    b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
+    b.flag k.succ = R ∙ b k ⊔ b.flag k.castSucc := by
   simp only [flag, Fin.castSucc_lt_castSucc_iff]
   simp [Fin.castSucc_lt_iff_succ_le, le_iff_eq_or_lt, setOf_or, image_insert_eq, span_insert]
 

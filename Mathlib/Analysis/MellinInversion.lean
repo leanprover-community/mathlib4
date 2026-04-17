@@ -3,8 +3,10 @@ Copyright (c) 2024 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Analysis.Fourier.Inversion
-import Mathlib.Analysis.MellinTransform
+module
+
+public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Mellin inversion formula
@@ -14,6 +16,8 @@ We derive the Mellin inversion formula as a consequence of the Fourier inversion
 ## Main results
 - `mellin_inversion`: The inverse Mellin transform of the Mellin transform applied to `x > 0` is x.
 -/
+
+public section
 
 open Real Complex Set MeasureTheory
 
@@ -42,7 +46,8 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     Complex.log_exp (by simp [pi_pos]) (by simpa using pi_nonneg)]
   ring_nf
 
-theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
+set_option backward.isDefEq.respectTransparency false in
+theorem mellin_eq_fourier (f : ℝ → E) {s : ℂ} :
     mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
     mellin f s
@@ -63,9 +68,13 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
       congr
       simp [field]
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
-      simp [fourierIntegral_eq', mul_comm (_ / _)]
+      simp [fourier_eq', mul_comm (_ / _)]
 
-theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
+@[deprecated (since := "2025-11-16")]
+alias mellin_eq_fourierIntegral := mellin_eq_fourier
+
+set_option backward.isDefEq.respectTransparency false in
+theorem mellinInv_eq_fourierInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
     (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
   mellinInv σ f x
@@ -80,12 +89,15 @@ theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx
     push_cast
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
-    simp [fourierIntegralInv_eq', mul_comm (Real.log _)]
+    simp [fourierInv_eq', mul_comm (Real.log _)]
+
+@[deprecated (since := "2025-11-16")]
+alias mellinInv_eq_fourierIntegralInv := mellinInv_eq_fourierInv
 
 variable [CompleteSpace E]
 
 /-- The inverse Mellin transform of the Mellin transform applied to `x > 0` is x. -/
-theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
+theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
     (hFf : VerticalIntegrable (mellin f) σ) (hfx : ContinuousAt f x) :
     mellinInv σ (mellin f) x = f x := by
   let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
@@ -98,7 +110,7 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
   replace hFf : Integrable (𝓕 g) := by
     have h2π : 2 * π ≠ 0 := by simp
     have : Integrable (𝓕 (fun u ↦ rexp (-(σ * u)) • f (rexp (-u)))) := by
-      simpa [mellin_eq_fourierIntegral, mul_div_cancel_right₀ _ h2π] using hFf.comp_mul_right' h2π
+      simpa [mellin_eq_fourier, mul_div_cancel_right₀ _ h2π] using hFf.comp_mul_right' h2π
     simp_rw [neg_mul_eq_neg_mul] at this
     exact this
   replace hfx : ContinuousAt g (-Real.log x) := by
@@ -107,9 +119,9 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
   calc
     mellinInv σ (mellin f) x
       = mellinInv σ (fun s ↦ 𝓕 g (s.im / (2 * π))) x := by
-      simp [g, mellinInv, mellin_eq_fourierIntegral]
+      simp [g, mellinInv, mellin_eq_fourier]
     _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
-      rw [mellinInv_eq_fourierIntegralInv _ _ hx, ← hf.fourier_inversion hFf hfx]
+      rw [mellinInv_eq_fourierInv _ _ hx, ← hf.fourierInv_fourier_eq hFf hfx]
       simp [mul_div_cancel_left₀ _ (show 2 * π ≠ 0 by simp)]
     _ = (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) := by simp [g]
     _ = f x := by
@@ -118,3 +130,6 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       norm_cast
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
         inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
+
+@[deprecated (since := "2025-11-16")]
+alias mellin_inversion := mellinInv_mellin_eq

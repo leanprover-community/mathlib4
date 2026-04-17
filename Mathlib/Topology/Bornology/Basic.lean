@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Basic theory of bornology
@@ -36,6 +38,8 @@ Although use of `cobounded α` is discouraged for indicating the (co)boundedness
 it is intended for regular use as a filter on `α`.
 -/
 
+@[expose] public section
+
 
 open Set Filter
 
@@ -50,9 +54,6 @@ class Bornology (α : Type*) where
   /-- The cobounded filter in a bornology is smaller than the cofinite filter. -/
   le_cofinite (α) : cobounded ≤ cofinite
 
-@[deprecated (since := "2025-09-06")] alias Bornology.cobounded' := Bornology.cobounded
-@[deprecated (since := "2025-09-06")] alias Bornology.le_cofinite' := Bornology.le_cofinite
-
 @[ext]
 lemma Bornology.ext (t t' : Bornology α)
     (h_cobounded : @Bornology.cobounded α t = @Bornology.cobounded α t') :
@@ -63,7 +64,7 @@ lemma Bornology.ext (t t' : Bornology α)
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps]
+@[simps, implicit_reducible]
 def Bornology.ofBounded {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)
@@ -74,7 +75,7 @@ def Bornology.ofBounded {α : Type*} (B : Set (Set α))
 
 /-- A constructor for bornologies by specifying the bounded sets,
 and showing that they satisfy the appropriate conditions. -/
-@[simps! cobounded]
+@[simps! cobounded, implicit_reducible]
 def Bornology.ofBounded' {α : Type*} (B : Set (Set α))
     (empty_mem : ∅ ∈ B)
     (subset_mem : ∀ s₁ ∈ B, ∀ s₂ ⊆ s₁, s₂ ∈ B)

@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The `stacks` and `kerodon` attributes
@@ -16,6 +18,8 @@ tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
 While the Stacks Project is the main focus, because the tag format at Kerodon is
 compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
+
+public meta section
 
 open Lean Elab
 
@@ -40,18 +44,19 @@ structure Tag where
   comment : String
   deriving BEq, Hashable
 
-/-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
-to the environment. -/
-initialize tagExt : SimplePersistentEnvExtension Tag (Std.HashSet Tag) ←
+/-- Defines the `tagExt` extension for storing all `Tag`s in the environment.
+`addImportedFn` is a constant function to avoid a performance overhead during initialization. -/
+initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
-    addEntryFn := .insert
+    addImportedFn tags := tags
+    addEntryFn tags _ := tags
   }
 
 /--
-`addTagEntry declName tag comment` takes as input the `Name` `declName` of a declaration and
-the `String`s `tag` and `comment` of the `stacks` attribute.
-It extends the `Tag` environment extension with the data `declName, tag, comment`.
+`addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
+whether it is a Kerodon or Stacks tag (`db`) and
+the `String`s `tag` and `comment` of the `stacks` or `kerodon` attribute.
+It extends the `Tag` environment extension with the data `declName, db, tag, comment`.
 -/
 def addTagEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) (db : Database) (tag comment : String) : m Unit :=
@@ -75,7 +80,7 @@ def stacksTagFn : ParserFn := fun c s =>
     ParserState.mkError s "stacks tag"
   else
     let tag := c.extract i s.pos
-    if !tag.all fun c => c.isDigit || c.isUpper then
+    if !tag.all fun (c : Char) => c.isDigit || c.isUpper then
       ParserState.mkUnexpectedError s
         "Stacks tags must consist only of digits and uppercase letters."
     else if tag.length != 4 then
@@ -167,7 +172,8 @@ end Mathlib.StacksTag
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
 private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
-  tagExt.getState env |>.toArray.qsort (·.tag < ·.tag)
+  let tags := PersistentEnvExtension.getState tagExt env
+  tags.2.flatten.appendList tags.1 |>.qsort (·.tag < ·.tag)
 
 /--
 `getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
@@ -214,9 +220,10 @@ For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#stacks_tags!` also adds the theorem statement after each summary line.
+The variant `#stacks_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := stacksTags) "#stacks_tags" tk:("!")?: command =>
+elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
   traceStacksTags .stacks (tk.isSome)
 
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
@@ -225,9 +232,10 @@ For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#kerodon_tags!` also adds the theorem statement after each summary line.
+The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
+elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
   traceStacksTags .kerodon (tk.isSome)
 
 end Mathlib.StacksTag

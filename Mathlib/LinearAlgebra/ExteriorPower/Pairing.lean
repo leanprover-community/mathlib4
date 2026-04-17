@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Sophie Morel
 -/
+module
 
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.LinearAlgebra.TensorPower.Pairing
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.TensorPower.Pairing
 
 /-!
 # The pairing between the exterior power of the dual and the exterior power
@@ -14,6 +15,8 @@ We construct the pairing
 `exteriorPower.pairingDual : ⋀[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⋀[R]^n M))`.
 
 -/
+
+@[expose] public section
 
 namespace exteriorPower
 
@@ -73,7 +76,7 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
 
 section
 
-/-! If a `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
+/-! If an `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
 such that `f i (x j)` is `1` or `0` depending on `i = j` or `i ≠ j`, then if `ι` has
 a linear order, then a similar property regarding `pairingDual R M n`
 applies to the family of vectors indexed

@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Uniform convergence
@@ -48,6 +50,8 @@ practice. Thus, we provide the more traditional definition in `TendstoUniformlyO
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -167,30 +171,50 @@ theorem TendstoUniformlyOn.mono (h : TendstoUniformlyOn F f p s) (h' : s' ⊆ s)
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr
     (h.tendstoUniformlyOnFilter.mono_right (le_principal_iff.mpr <| mem_principal.mpr h'))
 
+theorem TendstoUniformlyOnFilter.congr_inseparable {F' : ι → α → β}
+    (hf : TendstoUniformlyOnFilter F f p p')
+    (hff' : ∀ᶠ n : ι × α in p ×ˢ p', Inseparable (F n.fst n.snd) (F' n.fst n.snd)) :
+    TendstoUniformlyOnFilter F' f p p' := by
+  rw [tendstoUniformlyOnFilter_iff_tendsto, uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  exact fun i hi => (hf i hi).congr (hff'.mono fun x hx =>
+    (Inseparable.rfl.prod hx).mem_open_iff hi.2)
+
 theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUniformlyOnFilter F f p p')
     (hff' : ∀ᶠ n : ι × α in p ×ˢ p', F n.fst n.snd = F' n.fst n.snd) :
-    TendstoUniformlyOnFilter F' f p p' := by
-  refine fun u hu => ((hf u hu).and hff').mono fun n h => ?_
-  rw [← h.right]
-  exact h.left
+    TendstoUniformlyOnFilter F' f p p' :=
+  hf.congr_inseparable (hff'.mono fun _ h => .of_eq h)
+
+theorem TendstoUniformlyOn.congr_inseparable {F' : ι → α → β} (hf : TendstoUniformlyOn F f p s)
+    (hff' : ∀ᶠ n in p, ∀ x ∈ s, Inseparable (F n x) (F' n x)) : TendstoUniformlyOn F' f p s := by
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf ⊢
+  refine hf.congr_inseparable ?_
+  rwa [eventually_prod_principal_iff]
 
 theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyOn F f p s)
-    (hff' : ∀ᶠ n in p, Set.EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s := by
-  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf ⊢
-  refine hf.congr ?_
-  rw [eventually_iff] at hff' ⊢
-  simp only [Set.EqOn] at hff'
-  simp only [mem_prod_principal, hff', mem_setOf_eq]
+    (hff' : ∀ᶠ n in p, Set.EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s :=
+  hf.congr_inseparable (hff'.mono fun _ h _ hx => .of_eq (h hx))
+
+lemma tendstoUniformly_congr_inseparable {F' : ι → α → β}
+    (hF : ∀ᶠ x in p, ∀ y, Inseparable (F x y) (F' x y)) :
+    TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
+  rw [← tendstoUniformlyOn_univ, ← tendstoUniformlyOn_univ]
+  exact ⟨fun h => h.congr_inseparable (hF.mono fun _ hx y _ => hx y),
+    fun h => h.congr_inseparable (hF.mono fun _ hx y _ => (hx y).symm)⟩
 
 lemma tendstoUniformly_congr {F' : ι → α → β} (hF : F =ᶠ[p] F') :
-    TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
-  simp_rw [← tendstoUniformlyOn_univ] at *
-  have HF := EventuallyEq.exists_mem hF
-  exact ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
+    TendstoUniformly F f p ↔ TendstoUniformly F' f p :=
+  tendstoUniformly_congr_inseparable (hF.mono fun _ hx y => .of_eq (congrFun hx y))
+
+theorem TendstoUniformlyOn.congr_inseparable_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
+    (hfg : ∀ x ∈ s, Inseparable (f x) (g x)) : TendstoUniformlyOn F g p s := by
+  rw [tendstoUniformlyOn_iff_tendsto, uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  refine forall₂_imp (fun i hi hf => ?_) hf
+  rw [eventually_prod_principal_iff] at hf ⊢
+  exact hf.mono fun x hx y hy => (((hfg y hy).prod .rfl).mem_open_iff hi.2).mp (hx y hy)
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
-    (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
-  filter_upwards [hf u hu] with i hi a ha using hfg ha ▸ hi a ha
+    (hfg : EqOn f g s) : TendstoUniformlyOn F g p s :=
+  hf.congr_inseparable_right fun _ hx => .of_eq (hfg hx)
 
 protected theorem TendstoUniformly.tendstoUniformlyOn (h : TendstoUniformly F f p) :
     TendstoUniformlyOn F f p s :=

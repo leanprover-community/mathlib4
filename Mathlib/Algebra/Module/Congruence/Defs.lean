@@ -3,12 +3,16 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.GroupTheory.Congruence.Basic
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Congruence relations respecting scalar multiplication
 -/
+
+@[expose] public section
 
 variable (R S M N : Type*)
 

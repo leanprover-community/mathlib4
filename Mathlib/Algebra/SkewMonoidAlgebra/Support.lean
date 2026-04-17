@@ -3,14 +3,18 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
 # Lemmas about the support of an element of a skew monoid algebra
 
 For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that `f.coeff a ≠ 0`.
 -/
+
+public section
 
 open scoped Pointwise
 

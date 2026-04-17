@@ -3,8 +3,10 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.UniformSpace.Defs
-import Mathlib.Topology.Bases
+module
+
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Topology.Bases
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces
@@ -24,7 +26,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/SetRel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs
@@ -43,6 +45,8 @@ but rather extend the relation properties as needed.
 * [A. C. M. van Rooij, *Non-Archimedean uniformities*][vanrooij1970]
 
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 open scoped SetRel Uniformity
@@ -138,9 +142,6 @@ lemma IsTransitiveRel.mem_filter_prod_trans {s : SetRel X X} {f g h : Filter X} 
     s ∈ f ×ˢ h :=
   Eventually.trans_prod (p := (fun x y ↦ (x, y) ∈ s)) (q := (fun x y ↦ (x, y) ∈ s))
     (r := (fun x y ↦ (x, y) ∈ s)) hfg hgh fun _ _ _ ↦ s.trans
-
-@[deprecated (since := "2025-10-08")]
-alias IsTransitiveRel.mem_filter_prod_comm := IsTransitiveRel.mem_filter_prod_trans
 
 open UniformSpace
 

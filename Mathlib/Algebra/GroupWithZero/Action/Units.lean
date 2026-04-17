@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Multiplicative actions with zero on and by `Mˣ`
@@ -17,12 +19,27 @@ Additionally, a `MulDistribMulAction G M` for some group `G` satisfying some add
 admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definition stated in
 `Units.coe_smul`. This instance uses a primed name.
 
+## Implementation notes
+
+We previously had
+```
+instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
+  [IsScalarTower G M M] : MulDistribMulAction G Mˣ
+```
+as a strengthening of `Units.mulAction'`, but in fact this instance (almost) never applies!
+`MulDistribMulAction G M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`, while
+`SMulCommClass G M M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`.
+In particular, if `M` is cancellative, then we obtain
+`∀ (g : G) (m : M), g • m = m`, i.e. the action is trivial!
+
 ## See also
 
 * `Algebra.GroupWithZero.Action.Opposite`
 * `Algebra.GroupWithZero.Action.Pi`
 * `Algebra.GroupWithZero.Action.Prod`
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -52,12 +69,24 @@ lemma eq_inv_smul_iff₀ (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y ↔ a • 
   eq_inv_smul_iff (g := Units.mk0 a ha)
 
 @[simp]
+lemma SemiconjBy.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y z : β}
+    (ha : a ≠ 0) : SemiconjBy x (a • y) (a • z) ↔ SemiconjBy x y z :=
+  smul_right_iff (r := Units.mk0 a ha)
+
+@[simp]
+lemma SemiconjBy.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y z : β}
+    (ha : a ≠ 0) : SemiconjBy (a • x) y z ↔ SemiconjBy x y z :=
+  smul_left_iff (r := Units.mk0 a ha)
+
+@[simp]
 lemma Commute.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
-    (ha : a ≠ 0) : Commute x (a • y) ↔ Commute x y := Commute.smul_right_iff (g := Units.mk0 a ha)
+    (ha : a ≠ 0) : Commute x (a • y) ↔ Commute x y :=
+  SemiconjBy.smul_right_iff₀ ha
 
 @[simp]
 lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
-    (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y := Commute.smul_left_iff (g := Units.mk0 a ha)
+    (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y :=
+  SemiconjBy.smul_left_iff₀ ha
 
 /-- Right scalar multiplication as an order isomorphism. -/
 @[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
@@ -88,15 +117,6 @@ instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M �
     MulDistribMulAction Mˣ α where
   smul_mul m := smul_mul' (m : M)
   smul_one m := smul_one (m : M)
-
-/-! ### Action of a group `G` on units of `M` -/
-
-/-- A stronger form of `Units.mul_action'`. -/
-instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
-    [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
-  { Units.mulAction' with
-    smul_one := fun _ => Units.ext <| smul_one _,
-    smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 
 end Units
 

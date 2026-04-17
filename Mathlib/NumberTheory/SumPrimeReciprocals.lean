@@ -3,9 +3,11 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Analysis.PSeries
-import Mathlib.NumberTheory.SmoothNumbers
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Analysis.PSeries
+public import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # The sum of the reciprocals of the primes diverges
@@ -22,6 +24,8 @@ converges if and only if `r < -1`; see `Nat.Primes.summable_rpow`.
 See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs].
 The proof is due to Erdős.
 -/
+
+public section
 
 open Set Nat
 open scoped Topology
@@ -78,6 +82,7 @@ theorem not_summable_one_div_on_primes :
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
   convert summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes

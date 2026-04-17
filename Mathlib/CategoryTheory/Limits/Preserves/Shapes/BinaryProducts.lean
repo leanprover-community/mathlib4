@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving binary products
@@ -15,6 +17,8 @@ to concrete binary fans.
 In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
 the product of `X` and `Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -41,7 +45,7 @@ def isLimitMapConeBinaryFanEquiv :
     IsLimit (G.mapCone (BinaryFan.mk f g)) ≃ IsLimit (BinaryFan.mk (G.map f) (G.map g)) :=
   (IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm.trans
     (IsLimit.equivIsoLimit
-      (Cones.ext (Iso.refl _)
+      (Cone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving products expressed in terms of binary fans. -/
@@ -135,7 +139,7 @@ def isColimitMapCoconeBinaryCofanEquiv :
     ≃ IsColimit (BinaryCofan.mk (G.map f) (G.map g)) :=
   (IsColimit.precomposeHomEquiv (diagramIsoPair _).symm _).symm.trans
     (IsColimit.equivIsoColimit
-      (Cocones.ext (Iso.refl _)
+      (Cocone.ext (Iso.refl _)
         (by rintro (_ | _) <;> simp)))
 
 /-- The property of preserving coproducts expressed in terms of binary cofans. -/

@@ -18,7 +18,7 @@ $|x_1 + x_2 + \cdots + x_n| = 1$ and $|x_i| ≤ \frac{n+1}2$ for $i = 1, 2, \dot
 Show that there exists a permutation $y_1, y_2, \dots, y_n$ of $x_1, x_2, \dots, x_n$ such that
 $|y_1 + 2y_2 + \cdots + ny_n| ≤ \frac{n+1}2$.
 
-# Solution
+## Solution
 
 For a permutation $π$ let $S(π) = \sum_{i=1}^n i x_{π(i)}$. We wish to show that there exists $π$
 with $|S(π)| ≤ \frac{n+1}2$.
@@ -53,6 +53,7 @@ lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) 
   rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
   simp_all [abs_of_pos, abs_of_neg, abs_le] <;> linarith
 
+set_option linter.flexible false in
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : sign a = sign b) : c < |a + b| := by
   rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
@@ -73,7 +74,7 @@ lemma sign_eq_of_contra
   | one => rfl
   | mul_right p s sform ih =>
     suffices |S x p - S x (p * s)| ≤ (n + 1 : ℕ) + 1 by
-      rw [ih]; exact sign_eq_of_abs_sub_le (h _) (h _) (by norm_cast; omega) this
+      rw [ih]; exact sign_eq_of_abs_sub_le (h _) (h _) (by norm_cast; lia) this
     rw [Set.mem_range] at sform; obtain ⟨i, hi⟩ := sform
     iterate 2 rw [S, ← sum_add_sum_compl {i.castSucc, i.succ}]
     have cg : ∑ j ∈ {i.castSucc, i.succ}ᶜ, (j + 1) * x ((p * s) j) =
@@ -82,10 +83,10 @@ lemma sign_eq_of_contra
       rw [mem_compl, mem_insert, mem_singleton, not_or] at mj
       exact swap_apply_of_ne_of_ne mj.1 mj.2
     rw [cg, add_sub_add_right_eq_sub,
-      sum_pair (castSucc_lt_succ _).ne, sum_pair (castSucc_lt_succ _).ne,
+      sum_pair castSucc_lt_succ.ne, sum_pair castSucc_lt_succ.ne,
       Perm.mul_apply, Perm.mul_apply, ← hi, swap_apply_left, swap_apply_right,
       add_comm, add_sub_add_comm, ← sub_mul, ← sub_mul,
-      val_succ, coe_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
+      val_succ, val_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,
       one_mul, neg_one_mul]
     calc
       _ ≤ |x (p i.succ)| + |-x (p i.castSucc)| := abs_add_le ..
@@ -98,8 +99,8 @@ lemma S_one_add_S_revPerm
   nth_rw 2 [S]; rw [← revPerm.sum_comp _ _ (by simp)]
   simp_rw [revPerm_apply, val_rev, rev_rev, S, Perm.one_apply, ← sum_add_distrib, ← add_mul]
   have cg : ∑ i : Fin n, (i + 1 + ((n - (i + 1) : ℕ) + 1)) * x i = ∑ i, (n + 1) * x i := by
-    congr! 2 with i; norm_cast; omega
-  rw [cg, ← mul_sum, abs_mul, hx₁, mul_one]; exact abs_of_nonneg (by norm_cast; omega)
+    congr! 2 with i; norm_cast; lia
+  rw [cg, ← mul_sum, abs_mul, hx₁, mul_one]; exact abs_of_nonneg (by norm_cast; lia)
 
 theorem result {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) (hx₂ : ∀ i, |x i| ≤ (n + 1) / 2) :
     ∃ p, |S x p| ≤ (n + 1) / 2 := by
@@ -107,7 +108,7 @@ theorem result {x : Fin n → ℝ} (hx₁ : |∑ i, x i| = 1) (hx₂ : ∀ i, |x
   | 0 => simp [S]
   | n + 1 =>
     by_contra! h
-    exact (lt_abs_add_of_sign_eq (h _) (h _) (by norm_cast; omega)
+    exact (lt_abs_add_of_sign_eq (h _) (h _) (by norm_cast; lia)
       (sign_eq_of_contra hx₂ h _)).ne' (S_one_add_S_revPerm hx₁)
 
 end Imo1997Q3

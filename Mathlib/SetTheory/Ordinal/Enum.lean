@@ -3,7 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -18,6 +20,8 @@ We define this correspondence as `enumOrd`, and use it to then define an order i
 This can be thought of as an ordinal analog of `Nat.nth`.
 -/
 
+@[expose] public section
+
 universe u
 
 open Order Set
@@ -26,7 +30,11 @@ namespace Ordinal
 
 variable {o a b : Ordinal.{u}}
 
-/-- Enumerator function for an unbounded set of ordinals. -/
+/-- Enumerator function for an unbounded set of ordinals.
+
+The definition is an implementation detail; this function is entirely characterized by being an
+order isomorphism. See `enumOrdOrderIso`. -/
+@[no_expose]
 noncomputable def enumOrd (s : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b })
 termination_by o
@@ -41,7 +49,7 @@ theorem enumOrd_le_of_forall_lt (ha : a ∈ s) (H : ∀ b < o, enumOrd s b < a) 
 private theorem enumOrd_nonempty (hs : ¬ BddAbove s) (o : Ordinal) :
     (s ∩ { b | ∀ c, c < o → enumOrd s c < b }).Nonempty := by
   rw [not_bddAbove_iff] at hs
-  obtain ⟨a, ha⟩ := bddAbove_of_small (enumOrd s '' Iio o)
+  obtain ⟨a, ha⟩ := bddAbove_of_small (s := enumOrd s '' Iio o)
   obtain ⟨b, hb, hba⟩ := hs a
   exact ⟨b, hb, fun c hc ↦ (ha (mem_image_of_mem _ hc)).trans_lt hba⟩
 
@@ -124,11 +132,11 @@ theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (r
 See also `enumOrd_isNormal_iff_isClosed`. -/
 theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t ∈ s) (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) := by
-  refine (isNormal_iff_strictMono_limit _).2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
+  refine isNormal_iff.2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
   trans ⨆ b : Iio o, enumOrd s b
   · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
     · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
-      apply H _ _ (range_nonempty _) (bddAbove_of_small _)
+      apply H _ _ (range_nonempty _) bddAbove_of_small
       rintro _ ⟨c, rfl⟩
       exact enumOrd_mem hs c
     · exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)
@@ -139,15 +147,12 @@ theorem enumOrd_univ : enumOrd Set.univ = id := by
   rw [← range_id]
   exact enumOrd_range strictMono_id
 
-@[simp]
-theorem enumOrd_zero : enumOrd s 0 = sInf s := by
-  rw [enumOrd]
-  simp [Ordinal.not_lt_zero]
+@[simp] lemma enumOrd_zero : enumOrd s 0 = sInf s := by rw [enumOrd]; simp
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
   StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
-    ⟨a, Subtype.eq ha⟩
+    ⟨a, Subtype.ext ha⟩
 
 end Ordinal

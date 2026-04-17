@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 
 /-!
 # Simplex in affine space
@@ -26,6 +28,8 @@ This file defines n-dimensional simplices in affine space.
 * https://en.wikipedia.org/wiki/Simplex
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -68,6 +72,13 @@ instance [Inhabited P] : Inhabited (Simplex k P 0) :=
 
 instance nonempty : Nonempty (Simplex k P 0) :=
   ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
+
+-- Although `simp` can prove this, it is still useful as a `simp` lemma, since the `simp`-generated
+-- proof uses `range_eq_singleton_iff`, which does not apply when the LHS of this lemma appears
+-- as part of a more complicated expression.
+/-- The set of points in a simplex constructed with `mkOfPoint`. -/
+@[simp] lemma range_mkOfPoint_points (p : P) : Set.range (mkOfPoint k p).points = {p} := by
+  simp
 
 variable {k}
 
@@ -113,13 +124,39 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
     (h : #fs = m + 1) : Set.range (s.face h).points = s.points '' ↑fs := by
   rw [face_points', Set.range_comp, Finset.range_orderEmbOfFin]
 
+lemma affineSpan_face_le {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
+    (h : #fs = m + 1) :
+    affineSpan k (Set.range (s.face h).points) ≤ affineSpan k (Set.range s.points) :=
+  affineSpan_mono k (s.range_face_points h ▸ Set.image_subset_range _ _)
+
+lemma points_mem_affineSpan_face [Nontrivial k] {n : ℕ} (s : Simplex k P n)
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
+    s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
+  rw [range_face_points]
+  exact s.independent.mem_affineSpan_iff i fs
+
 /-- The face of a simplex with all but one point. -/
 def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Simplex k P (n - 1) :=
   s.face (fs := {i}ᶜ) (by simp [card_compl, NeZero.one_le])
 
 @[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
-    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ  := by
+    Set.range (s.faceOpposite i).points = s.points '' {i}ᶜ := by
   simp [faceOpposite]
+
+lemma affineSpan_faceOpposite_le {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    affineSpan k (Set.range (s.faceOpposite i).points) ≤ affineSpan k (Set.range s.points) :=
+  s.affineSpan_face_le _
+
+lemma points_mem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
+    {i j : Fin (n + 1)} :
+    s.points j ∈ affineSpan k (Set.range (s.faceOpposite i).points) ↔ j ≠ i := by
+  rw [faceOpposite, s.points_mem_affineSpan_face]
+  simp
+
+lemma points_notMem_affineSpan_faceOpposite [Nontrivial k] {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (i : Fin (n + 1)) : s.points i ∉ affineSpan k (Set.range (s.faceOpposite i).points) := by
+  rw [points_mem_affineSpan_faceOpposite]
+  simp
 
 lemma faceOpposite_point_eq_point_succAbove {n : ℕ} [NeZero n] (s : Simplex k P n)
     (i : Fin (n + 1)) (j : Fin (n - 1 + 1)) :
@@ -149,17 +186,21 @@ instance {α} [Nontrivial α] (i : α) : Nonempty ({i}ᶜ : Set _) :=
     s.points i ∈ affineSpan k (s.points '' fs) ↔ i ∈ fs :=
   s.independent.mem_affineSpan_iff _ _
 
-@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
-lemma mem_affineSpan_range_face_points_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
-    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
-    s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
-  simp
-
-@[deprecated mem_affineSpan_image_iff (since := "2025-05-18")]
-lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZero n]
-    (s : Simplex k P n) {i j : Fin (n + 1)} :
-    s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
-  simp
+lemma affineCombination_mem_affineSpan_faceOpposite_iff {n : ℕ} [NeZero n] {s : Simplex k P n}
+    {w : Fin (n + 1) → k} (hw : ∑ i, w i = 1) {i : Fin (n + 1)} :
+    Finset.univ.affineCombination k s.points w ∈
+      affineSpan k (Set.range (s.faceOpposite i).points) ↔ w i = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [range_faceOpposite_points] at h
+    exact s.independent.eq_zero_of_affineCombination_mem_affineSpan hw h (Finset.mem_univ i)
+      (by simp)
+  · rw [range_faceOpposite_points]
+    rcases subsingleton_or_nontrivial k with hk | hk
+    · have : Subsingleton V := Module.subsingleton k _
+      have : Subsingleton P := (AddTorsor.subsingleton_iff V P).1 inferInstance
+      rw [(affineSpan_eq_top_iff_nonempty_of_subsingleton k).2 (by simp)]
+      simp
+    · exact affineCombination_mem_affineSpan_image hw (by simpa using h) s.points
 
 /-- Push forward an affine simplex under an injective affine map. -/
 @[simps -fullyApplied]
@@ -234,6 +275,20 @@ theorem reindex_map {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n 
     (s.map f hf).reindex e = (s.reindex e).map f hf :=
   rfl
 
+lemma range_face_reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1))
+    {fs : Finset (Fin (n + 1))} {n' : ℕ} (h : #fs = n' + 1) :
+    Set.range ((s.reindex e).face h).points =
+      Set.range (s.face (fs := fs.map e.symm.toEmbedding) (h ▸ Finset.card_map _)).points := by
+  simp only [range_face_points, reindex_points, Set.image_comp]
+  simp
+
+lemma range_faceOpposite_reindex {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
+    (e : Fin (m + 1) ≃ Fin (n + 1)) (i : Fin (n + 1)) :
+    Set.range ((s.reindex e).faceOpposite i).points =
+      Set.range (s.faceOpposite (e.symm i)).points := by
+  rw [faceOpposite, range_face_reindex]
+  simp [Equiv.image_compl]
+
 section restrict
 
 /-- Restrict an affine simplex to an affine subspace that contains it. -/
@@ -272,8 +327,7 @@ theorem restrict_map_restrict
     letI := Nonempty.map (AffineSubspace.inclusion hS₁) inferInstance
     letI := Nonempty.map (AffineSubspace.inclusion hfS) inferInstance
     (s.restrict S₁ hS₁).map (f.restrict hfS) (AffineMap.restrict.injective hf _) =
-      (s.map f hf).restrict S₂ (
-        Eq.trans_le
+      (s.map f hf).restrict S₂ (Eq.trans_le
           (by simp [AffineSubspace.map_span, Set.range_comp])
           (AffineSubspace.map_mono f hS₁) |>.trans hfS) := by
   rfl
@@ -285,6 +339,30 @@ theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
     (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
   rfl
 
+lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1))
+    {S : AffineSubspace k P} (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
+  rfl
+
+lemma face_restrict {n : ℕ} (s : Affine.Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) {fs : Finset (Fin (n + 1))} {m : ℕ}
+    (h : #fs = m + 1) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).face h = (s.face h).restrict S ((s.affineSpan_face_le h).trans hS) := by
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  ext i
+  rw [restrict_points_coe]
+  simp_rw [Affine.Simplex.face_points]
+  simp
+
+lemma faceOpposite_restrict {n : ℕ} [NeZero n] (s : Affine.Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).faceOpposite i = (s.faceOpposite i).restrict S
+      ((s.affineSpan_faceOpposite_le i).trans hS) :=
+  s.face_restrict hS _
+
 end restrict
 
 end Simplex
@@ -295,11 +373,11 @@ namespace Affine
 
 namespace Simplex
 
-variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {k V V₂ P P₂ : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
-of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
-interior of the convex hull of the vertices. -/
+of the vertices with weights in a set `I`. -/
 protected def setInterior (I : Set k) {n : ℕ} (s : Simplex k P n) : Set P :=
   {p | ∃ w : Fin (n + 1) → k,
     (∑ i, w i = 1) ∧ (∀ i, w i ∈ I) ∧ Finset.univ.affineCombination k s.points w = p}
@@ -312,6 +390,27 @@ lemma affineCombination_mem_setInterior_iff {I : Set k} {n : ℕ} {s : Simplex k
     s.independent w' w hw' hw hww']
   exact hw'01
 
+@[simp] lemma setInterior_reindex (I : Set k) {m n : ℕ} (s : Simplex k P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).setInterior I = s.setInterior I := by
+  ext p
+  refine ⟨fun ⟨w, hw, hwI, h⟩ ↦ ?_, fun ⟨w, hw, hwI, h⟩ ↦ ?_⟩
+  · subst h
+    simp_rw [reindex]
+    rw [← Function.comp_id w, ← e.self_comp_symm, ← Function.comp_assoc,
+      ← Equiv.coe_toEmbedding, ← Finset.univ.affineCombination_map e.symm.toEmbedding,
+      map_univ_equiv]
+    have hw' : ∑ i, (w ∘ e) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e i)
+  · subst h
+    rw [← Function.comp_id w, ← Function.comp_id s.points, ← e.symm_comp_self,
+      ← Function.comp_assoc, ← Function.comp_assoc, ← e.coe_toEmbedding,
+      ← Finset.univ.affineCombination_map e.toEmbedding, map_univ_equiv]
+    change Finset.univ.affineCombination k (s.reindex e).points _ ∈ _
+    have hw' : ∑ i, (w ∘ e.symm) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e.symm i)
+
 lemma setInterior_mono {I J : Set k} (hij : I ⊆ J) {n : ℕ} (s : Simplex k P n) :
     s.setInterior I ⊆ s.setInterior J :=
   fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ hij (hw01 i), hww⟩
@@ -321,6 +420,33 @@ lemma setInterior_subset_affineSpan {I : Set k} {n : ℕ} {s : Simplex k P n} :
   rintro p ⟨w, hw, hi, rfl⟩
   exact affineCombination_mem_affineSpan_of_nonempty hw _
 
+lemma setInterior_map (I : Set k) {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂}
+    (hf : Function.Injective f) : (s.map f hf).setInterior I = f '' s.setInterior I := by
+  ext p
+  rw [Set.mem_image]
+  by_cases hp : p ∈ affineSpan k (Set.range (s.map f hf).points)
+  · obtain ⟨w, hw1, hw⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype hp
+    rw [hw, Affine.Simplex.affineCombination_mem_setInterior_iff hw1, Simplex.map_points,
+      ← Finset.map_affineCombination _ _ _ hw1]
+    simp_rw [hf.eq_iff]
+    simp [Affine.Simplex.affineCombination_mem_setInterior_iff hw1]
+  · apply iff_of_false
+    · exact fun h ↦ hp (Set.mem_of_mem_of_subset h (s.map f hf).setInterior_subset_affineSpan)
+    · contrapose hp
+      obtain ⟨q, hq, hqp⟩ := hp
+      rw [s.map_points, Set.range_comp, ← AffineSubspace.map_span, AffineSubspace.mem_map]
+      exact ⟨q, (Set.mem_of_mem_of_subset hq s.setInterior_subset_affineSpan), hqp⟩
+
+lemma setInterior_restrict (I : Set k) {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).setInterior I = S.subtype ⁻¹' (s.setInterior I) := by
+  letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  rw [← S.subtype_injective.image_injective.eq_iff,
+    Set.image_preimage_eq_of_subset (s.setInterior_subset_affineSpan.trans (by simpa using hS)),
+    ← (s.restrict S hS).setInterior_map I S.subtype_injective]
+  rfl
+
 variable [PartialOrder k]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
@@ -328,6 +454,10 @@ of the vertices with weights strictly between 0 and 1. This is equivalent to the
 interior of the convex hull of the vertices. -/
 protected def interior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Ioo 0 1)
+
+@[simp] lemma interior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).interior = s.interior :=
+  s.setInterior_reindex _ _
 
 lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
@@ -340,6 +470,10 @@ the vertices or the closure of the interior. -/
 protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Icc 0 1)
 
+@[simp] lemma closedInterior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).closedInterior = s.closedInterior :=
+  s.setInterior_reindex _ _
+
 lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
     Finset.univ.affineCombination k s.points w ∈ s.closedInterior ↔ ∀ i, w i ∈ Set.Icc 0 1 :=
@@ -348,6 +482,27 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
 lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
     s.interior ⊆ s.closedInterior :=
   fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma point_notMem_interior {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∉ s.interior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_interior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i)), not_forall]
+  exact ⟨i, by simp⟩
+
+lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ s.closedInterior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_closedInterior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i))]
+  intro j
+  by_cases hj : j = i <;> simp [hj]
+
+lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊂ s.closedInterior := by
+  rw [Set.ssubset_iff_exists]
+  exact ⟨s.interior_subset_closedInterior, s.points 0, s.point_mem_closedInterior 0,
+    s.point_notMem_interior 0⟩
 
 lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
     s.closedInterior ⊆ affineSpan k (Set.range s.points) := by
@@ -435,6 +590,26 @@ lemma affineCombination_mem_closedInterior_face_iff_nonneg [IsOrderedAddMonoid k
   refine ⟨by grind, fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
   rw [← hw, ← Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
   exact Finset.single_le_sum (fun t ht ↦ (hii t ht)) hi
+
+lemma interior_map {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂} (hf : Function.Injective f) :
+    (s.map f hf).interior = f '' s.interior :=
+  s.setInterior_map _ hf
+
+lemma closedInterior_map {n : ℕ} (s : Simplex k P n) {f : P →ᵃ[k] P₂} (hf : Function.Injective f) :
+    (s.map f hf).closedInterior = f '' s.closedInterior :=
+  s.setInterior_map _ hf
+
+lemma interior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).interior = S.subtype ⁻¹' s.interior :=
+  s.setInterior_restrict _ hS
+
+lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace k P}
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).closedInterior = S.subtype ⁻¹' s.closedInterior :=
+  s.setInterior_restrict _ hS
 
 end Simplex
 

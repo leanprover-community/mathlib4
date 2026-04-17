@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.JointlySurjective
-import Mathlib.CategoryTheory.Sites.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.JointlySurjective
+public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
 
@@ -17,6 +19,8 @@ associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -77,15 +81,31 @@ def precoverage : Precoverage Scheme.{u} :=
 lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
     .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i)) ∧ ∀ i, P (f i) := by
-  simp_rw [← Scheme.forget_map, ← Scheme.forget_obj,
+  simp_rw [← Scheme.forget_map', ← Scheme.forget_obj,
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
+
+@[simp]
+lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
+    Presieve.singleton f ∈ precoverage P S ↔ Function.Surjective f.base ∧ P f := by
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
+  aesop
+
+lemma bot_mem_precoverage (X : Scheme.{u}) [IsEmpty X] : ⊥ ∈ Scheme.precoverage P X :=
+  ⟨fun x ↦ ‹IsEmpty X›.elim x, P.bot_mem_precoverage _⟩
+
+lemma precoverage_mono {P Q : MorphismProperty Scheme.{u}} (h : P ≤ Q) :
+    precoverage P ≤ precoverage Q := by
+  grw [precoverage, precoverage, MorphismProperty.precoverage_monotone h]
 
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
 
 instance [P.ContainsIdentities] [P.RespectsIso] : (precoverage P).HasIsos := by
   dsimp only [precoverage]; infer_instance
+
+instance [P.HasPullbacks] : (precoverage P).HasPullbacks where
+  hasPullbacks_of_mem _ hR := ⟨fun hg ↦ P.hasPullback _ (hR.2 hg)⟩
 
 instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
     (precoverage P).IsStableUnderBaseChange where

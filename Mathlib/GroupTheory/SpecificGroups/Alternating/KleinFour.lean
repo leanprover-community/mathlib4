@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
-import Mathlib.GroupTheory.Sylow
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+public import Mathlib.GroupTheory.Sylow
 
 /-! # The Klein Four subgroup of an alternating group on 4 letters
 
@@ -49,6 +50,8 @@ Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
 
 -/
+
+@[expose] public section
 
 namespace alternatingGroup
 
@@ -119,7 +122,7 @@ theorem coe_two_sylow_of_card_eq_four
     simp
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
-    refine (card_two_sylow_of_card_eq_four hα4 S).symm.trans_ge ?_
+    refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
     rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]
@@ -196,7 +199,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     rw [kleinFour_card_of_card_eq_four hα4]; simp
   have comm_le : commutator (alternatingGroup α) ≤ kleinFour α := by
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
-    exact (isCyclic_of_prime_card this).commutative
+    exact (isCyclic_of_prime_card this).isMulCommutative
   have comm_ne_bot : commutator (alternatingGroup α) ≠ ⊥ := by
     rw [ne_eq, commutator_eq_bot_iff_center_eq_top,
       center_eq_bot (le_of_eq hα4.symm)]
@@ -221,10 +224,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
         Subgroup.map fc.toMonoidHom (⊤ : Subgroup (alternatingGroup α)) by
         rw [this, ← Subgroup.map_commutator]
         refine Subgroup.mem_map_of_mem _ hk
-      apply symm
-      rw [← MonoidHom.range_eq_map]
-      rw [MonoidHom.range_eq_top]
-      exact MulEquiv.surjective _
+      simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
     Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk2

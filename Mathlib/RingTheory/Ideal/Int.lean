@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ideal of `ℤ`
@@ -29,10 +31,22 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 
 -/
 
+@[expose] public section
+
+set_option backward.isDefEq.respectTransparency false in
+theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
+  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
+
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
     (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField (Field.toIsField _)
+
+theorem Int.ringChar_idealQuot (n : ℕ) : ringChar (ℤ ⧸ Ideal.span {(n : ℤ)}) = n := by
+  refine ringChar.eq_iff.mpr <| (charP_iff _ _).mpr fun x ↦ ?_
+  change Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) x = 0 ↔ _
+  rw [Ideal.Quotient.eq_zero_iff_mem, ← Int.cast_natCast, Ideal.mem_span_singleton,
+    Int.cast_natCast, Int.natCast_dvd_natCast]
 
 open Ideal
 
@@ -90,6 +104,12 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
   · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
+theorem _root_.Ideal.ringChar_quot {S : Type*} [CommRing S] (I : Ideal S) :
+    ringChar (S ⧸ I) = absNorm (under ℤ I) := by
+  refine ringChar.eq_iff.mpr <| (charP_iff _ _).mpr fun x ↦ ?_
+  change Ideal.Quotient.mk I x = 0 ↔ _
+  rw [Quotient.eq_zero_iff_mem, ← Int.cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast]
+
 end Ring
 
 end Int
@@ -104,7 +124,7 @@ theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
   · infer_instance
   · refine Int.natCast_ne_zero.mpr <| absNorm_eq_zero_iff.not.mpr ?_
     have : P ≠ ⊥ := NeZero.ne _
-    contrapose! this
+    contrapose this
     exact eq_bot_of_comap_eq_bot this
 
 end CommRing

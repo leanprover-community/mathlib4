@@ -3,12 +3,14 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison, David Wärn
 -/
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Combinatorics.Quiver.Symmetric
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Groupoids
@@ -29,6 +31,8 @@ with `IsIso f` for every `f`.
 
 See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -100,10 +104,20 @@ def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
 variable (C)
 
 /-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
-@[simps]
-noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
+@[simps, deprecated "Use Groupoid.invEquivalence.functor" (since := "2025-12-31")]
+def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
   map {_ _} f := (inv f).op
+
+/-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
+@[simps]
+def Groupoid.invEquivalence : C ≌ Cᵒᵖ where
+  functor.obj := Opposite.op
+  functor.map {_ _} f := (inv f).op
+  inverse.obj := Opposite.unop
+  inverse.map {x y} f := inv f.unop
+  unitIso := NatIso.ofComponents (fun _ ↦ .refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ .refl _)
 
 end
 
@@ -120,28 +134,31 @@ noncomputable instance {C : Type u} [Groupoid.{v} C] : IsGroupoid C where
 variable {C : Type u} [Category.{v} C]
 
 /-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
+@[implicit_reducible]
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
-  inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
+@[implicit_reducible]
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
   inv _ := all_unique.default
 
 end
 
-lemma isGroupoid_of_reflects_iso {C D : Type*} [Category C] [Category D]
+lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) [F.ReflectsIsomorphisms] [IsGroupoid D] :
     IsGroupoid C where
   all_isIso _ := isIso_of_reflects_iso _ F
 
 /-- A category equipped with a fully faithful functor to a groupoid is fully faithful -/
+@[implicit_reducible]
 def Groupoid.ofFullyFaithfulToGroupoid {C : Type*} [𝒞 : Category C] {D : Type u} [Groupoid.{v} D]
     (F : C ⥤ D) (h : F.FullyFaithful) : Groupoid C :=
   { 𝒞 with
@@ -185,5 +202,18 @@ instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Catego
   all_isIso f := (isIso_prod_iff (f := f)).mpr ⟨inferInstance, inferInstance⟩
 
 end
+
+open MorphismProperty in
+lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
+    IsGroupoid C ↔ isomorphisms C = ⊤ := by
+  constructor
+  · rw [eq_top_iff]
+    intro _ _
+    simp only [isomorphisms.iff, top_apply]
+    infer_instance
+  · intro h
+    exact ⟨of_eq_top h⟩
+
+instance {I : Type*} : IsGroupoid (Discrete I) where
 
 end CategoryTheory

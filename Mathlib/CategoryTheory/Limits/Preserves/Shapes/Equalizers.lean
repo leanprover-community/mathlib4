@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving (co)equalizers
@@ -16,6 +18,8 @@ to concrete (co)forks.
 In particular, we show that `equalizerComparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,g`, as well as the dual result.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -200,6 +204,7 @@ theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
       (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k := by
   rw [← Category.assoc, map_π_preserves_coequalizer_inv, coequalizer.π_desc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem map_π_preserves_coequalizer_inv_colimMap {X' Y' : D} (f' g' : X' ⟶ Y')
     [HasCoequalizer f' g'] (p : G.obj X ⟶ X') (q : G.obj Y ⟶ Y') (wf : G.map f ≫ q = p ≫ f')

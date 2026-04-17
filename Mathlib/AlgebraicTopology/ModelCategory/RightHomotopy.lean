@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.PathObject
-import Mathlib.CategoryTheory.Localization.Quotient
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Right homotopies in model categories
@@ -24,6 +26,8 @@ relation on `X ⟶ Y`.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -63,6 +67,7 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.RightHomotopy f g) : P.symm.RightHomotopy g f where
   h := h.h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a pre-path object `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -118,14 +123,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : PathObject Y) {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_postcomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_postcomp_iff]
 
 end
 
@@ -250,6 +249,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsFibrant Y] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g)
     {Z : C} (p : Y ⟶ Z) : RightHomotopyRel (f ≫ p) (g ≫ p) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject

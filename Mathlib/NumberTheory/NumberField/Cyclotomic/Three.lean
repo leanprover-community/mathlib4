@@ -3,11 +3,12 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Pietro Monticone
 -/
+module
 
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.Fintype
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field
@@ -24,8 +25,10 @@ and `λ = η - 1`.
   `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
-Theorem 5.36
+Theorem 5.36).
 -/
+
+public section
 
 open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 
@@ -96,7 +99,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
   replace hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K) := by
     obtain ⟨n, x, hx⟩ := hcong
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
-  have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   fin_cases this
   · left; rfl

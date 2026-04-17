@@ -3,12 +3,14 @@ Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heather Macbeth
 -/
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Product and coproduct filters
 
-In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
+In this file we prove some basic properties of `f ×ˢ g` and `Filter.coprod f g`. The product
 of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
 `Filter.Tendsto Prod.snd l g`.
 
@@ -28,11 +30,9 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
-## Notation
-
-* `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
-
 -/
+
+@[expose] public section
 
 open Set
 
@@ -171,8 +171,9 @@ theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Pro
   exact ha.mono fun a ha => hb.mono fun b hb => h ha hb
 
 protected lemma Frequently.uncurry {la : Filter α} {lb : Filter β} {p : α → β → Prop}
-    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 :=
-  mt (fun h ↦ by simpa only [not_frequently] using h.curry) h
+    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 := by
+  contrapose! h
+  exact h.curry
 
 lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p (x, y)) : ∃ᶠ xy in la ×ˢ lb, p xy :=
@@ -238,7 +239,7 @@ theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
   simp only [mem_prod_iff, prod_subset_iff]
   refine exists_congr fun _ => Iff.rfl.and <| Iff.trans ?_ exists_mem_subset_iff
-  exact exists_congr fun _ => Iff.rfl.and forall₂_swap
+  exact exists_congr fun _ => Iff.rfl.and forall₂_comm
 
 theorem mem_prod_iff_right {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ g, ∀ᶠ x in f, ∀ y ∈ t, (x, y) ∈ s := by
@@ -477,6 +478,7 @@ theorem coprod_neBot_left [NeBot f] [Nonempty β] : (f.coprod g).NeBot :=
 theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem coprod_inf_prod_le (f₁ f₂ : Filter α) (g₁ g₂ : Filter β) :
     f₁.coprod g₁ ⊓ f₂ ×ˢ g₂ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁ := calc
   f₁.coprod g₁ ⊓ f₂ ×ˢ g₂
@@ -534,6 +536,20 @@ theorem Tendsto.prodMap_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a :
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prodMap_coprod_le.trans (coprod_mono hf hg)
+
+lemma Tendsto.coprod_of_prod_top_right {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set α, s ∈ la → Tendsto f (𝓟 sᶜ ×ˢ lb) lc)
+    (h₂ : Tendsto f (la ×ˢ ⊤) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
+
+lemma Tendsto.coprod_of_prod_top_left {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set β, s ∈ lb → Tendsto f (la ×ˢ 𝓟 sᶜ) lc)
+    (h₂ : Tendsto f (⊤ ×ˢ lb) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
 
 end Coprod
 

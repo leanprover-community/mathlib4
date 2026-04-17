@@ -3,9 +3,10 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
+module
 
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -19,11 +20,13 @@ In a field extension `K/k`
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
   finite `s : Set K` to `k`.
 
-# TODO
+## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+
+@[expose] public section
 
 open IntermediateField
 
@@ -84,8 +87,11 @@ instance : Max (FiniteGaloisIntermediateField k K) where
 instance : Min (FiniteGaloisIntermediateField k K) where
   min L₁ L₂ := .mk <| L₁ ⊓ L₂
 
+instance : PartialOrder (FiniteGaloisIntermediateField k K) :=
+  PartialOrder.lift _ val_injective
+
 instance : Lattice (FiniteGaloisIntermediateField k K) :=
-  val_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  val_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : OrderBot (FiniteGaloisIntermediateField k K) where
   bot := .mk ⊥

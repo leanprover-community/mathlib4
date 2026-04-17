@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Galois.Infinite
+module
+
+public import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
 
@@ -13,6 +15,8 @@ In this file, we define the typeclass of abelian extensions and provide some bas
 
 -/
 
+@[expose] public section
+
 variable (K L M : Type*) [Field K] [Field L] [Algebra K L]
 variable [Field M] [Algebra K M] [Algebra L M] [IsScalarTower K L M]
 
@@ -21,6 +25,7 @@ defined as galois extensions whose galois group is commutative. -/
 class IsAbelianGalois (K L : Type*) [Field K] [Field L] [Algebra K L] : Prop extends
   IsGalois K L, IsMulCommutative Gal(L/K)
 
+open scoped IsMulCommutative in
 lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
     IsAbelianGalois K L :=
   have : IsGalois K L :=
@@ -33,6 +38,7 @@ lemma IsAbelianGalois.tower_bot [IsAbelianGalois K M] :
       obtain ⟨y, rfl⟩ := AlgEquiv.restrictNormalHom_surjective M y
       rw [← map_mul, ← map_mul, mul_comm] }
 
+open scoped IsMulCommutative in
 lemma IsAbelianGalois.tower_top [IsAbelianGalois K M] :
     IsAbelianGalois L M :=
   have : IsGalois L M := .tower_top_of_isGalois K L M
@@ -60,6 +66,4 @@ instance : IsAbelianGalois K K where
 instance : IsAbelianGalois K (⊥ : IntermediateField K L) :=
   .of_algHom (IntermediateField.botEquiv K L).toAlgHom
 
-lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
-    IsAbelianGalois K L where
-  is_comm := letI := IsCyclic.commGroup (α := L ≃ₐ[K] L); inferInstance
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] : IsAbelianGalois K L where

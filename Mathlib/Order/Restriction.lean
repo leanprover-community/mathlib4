@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Restriction of a function indexed by a preorder
@@ -22,6 +24,8 @@ and `Preorder.frestrictLe₂`.
 ## Main definitions
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
+
+@[expose] public section
 
 namespace Preorder
 

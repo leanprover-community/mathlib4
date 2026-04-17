@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
@@ -13,8 +15,10 @@ We construct limits and colimits in the opposite categories.
 
 -/
 
+@[expose] public section
 
-universe v₁ v₂ u₁ u₂
+
+universe w v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -29,6 +33,7 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit c) :
@@ -42,6 +47,7 @@ def isLimitConeLeftOpOfCocone (F : J ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsColimit.fac, coconeOfConeLeftOp_ι_app] using w (op j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit of `F : J ⥤ Cᵒᵖ` into a colimit of `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c) :
@@ -55,6 +61,7 @@ def isColimitCoconeLeftOpOfCone (F : J ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsLimit.fac, coneOfCoconeLeftOp_π_app] using w (op j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ C` into a limit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeRightOpOfCocone (F : Jᵒᵖ ⥤ C) {c : Cocone F} (hc : IsColimit c) :
@@ -65,6 +72,7 @@ def isLimitConeRightOpOfCocone (F : Jᵒᵖ ⥤ C) {c : Cocone F} (hc : IsColimi
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsColimit.fac] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit for `F : Jᵒᵖ ⥤ C` into a colimit for `F.rightOp : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitCoconeRightOpOfCone (F : Jᵒᵖ ⥤ C) {c : Cone F} (hc : IsLimit c) :
@@ -75,6 +83,7 @@ def isColimitCoconeRightOpOfCone (F : Jᵒᵖ ⥤ C) {c : Cone F} (hc : IsLimit 
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsLimit.fac] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ` into a limit for `F.unop : J ⥤ C`. -/
 @[simps]
 def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsColimit c) :
@@ -85,6 +94,7 @@ def isLimitConeUnopOfCocone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F} (hc : IsCol
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit of `F : Jᵒᵖ ⥤ Cᵒᵖ` into a colimit of `F.unop : J ⥤ C`. -/
 @[simps]
 def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLimit c) :
@@ -95,6 +105,7 @@ def isColimitCoconeUnopOfCone (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F} (hc : IsLim
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F.leftOp : Jᵒᵖ ⥤ C` into a limit for `F : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeOfCoconeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cocone F.leftOp} (hc : IsColimit c) :
@@ -108,6 +119,7 @@ def isLimitConeOfCoconeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cocone F.leftOp} (hc : Is
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsColimit.fac, coneOfCoconeLeftOp_π_app] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit of `F.leftOp : Jᵒᵖ ⥤ C` into a colimit of `F : J ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitCoconeOfConeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cone F.leftOp} (hc : IsLimit c) :
@@ -121,6 +133,7 @@ def isColimitCoconeOfConeLeftOp (F : J ⥤ Cᵒᵖ) {c : Cone F.leftOp} (hc : Is
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsLimit.fac, coconeOfConeLeftOp_ι_app] using w (unop j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F.rightOp : J ⥤ Cᵒᵖ` into a limit for `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : IsColimit c) :
@@ -131,6 +144,7 @@ def isLimitConeOfCoconeRightOp (F : Jᵒᵖ ⥤ C) {c : Cocone F.rightOp} (hc : 
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsColimit.fac] using w (op j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit for `F.rightOp : J ⥤ Cᵒᵖ` into a colimit for `F : Jᵒᵖ ⥤ C`. -/
 @[simps]
 def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : IsLimit c) :
@@ -141,6 +155,7 @@ def isColimitCoconeOfConeRightOp (F : Jᵒᵖ ⥤ C) {c : Cone F.rightOp} (hc : 
     refine Quiver.Hom.op_inj (hc.hom_ext fun j => Quiver.Hom.unop_inj ?_)
     simpa only [Quiver.Hom.op_unop, IsLimit.fac] using w (op j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a colimit for `F.unop : J ⥤ C` into a limit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
 def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : IsColimit c) :
@@ -151,6 +166,7 @@ def isLimitConeOfCoconeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cocone F.unop} (hc : 
     refine Quiver.Hom.unop_inj (hc.hom_ext fun j => Quiver.Hom.op_inj ?_)
     simpa only [Quiver.Hom.unop_op, IsColimit.fac] using w (op j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turn a limit for `F.unop : J ⥤ C` into a colimit for `F : Jᵒᵖ ⥤ Cᵒᵖ`. -/
 @[simps]
 def isColimitCoconeOfConeUnop (F : Jᵒᵖ ⥤ Cᵒᵖ) {c : Cone F.unop} (hc : IsLimit c) :
@@ -280,11 +296,13 @@ def limitOpIsoOpColimit (F : J ⥤ C) [HasColimit F] :
     limit F.op ≅ op (colimit F) :=
   limit.isoLimitCone ⟨_, (colimit.isColimit _).op⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitOpIsoOpColimit_inv_comp_π (F : J ⥤ C) [HasColimit F] (j : Jᵒᵖ) :
     (limitOpIsoOpColimit F).inv ≫ limit.π F.op j = (colimit.ι F j.unop).op := by
   simp [limitOpIsoOpColimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitOpIsoOpColimit_hom_comp_ι (F : J ⥤ C) [HasColimit F] (j : J) :
     (limitOpIsoOpColimit F).hom ≫ (colimit.ι F j).op = limit.π F.op (op j) := by
@@ -295,11 +313,13 @@ def limitLeftOpIsoUnopColimit (F : J ⥤ Cᵒᵖ) [HasColimit F] :
     limit F.leftOp ≅ unop (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeLeftOpOfCocone _ (colimit.isColimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitLeftOpIsoUnopColimit_inv_comp_π (F : J ⥤ Cᵒᵖ) [HasColimit F] (j : Jᵒᵖ) :
     (limitLeftOpIsoUnopColimit F).inv ≫ limit.π F.leftOp j = (colimit.ι F j.unop).unop := by
   simp [limitLeftOpIsoUnopColimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitLeftOpIsoUnopColimit_hom_comp_ι (F : J ⥤ Cᵒᵖ) [HasColimit F] (j : J) :
     (limitLeftOpIsoUnopColimit F).hom ≫ (colimit.ι F j).unop = limit.π F.leftOp (op j) := by
@@ -310,11 +330,13 @@ def limitRightOpIsoOpColimit (F : Jᵒᵖ ⥤ C) [HasColimit F] :
     limit F.rightOp ≅ op (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeRightOpOfCocone _ (colimit.isColimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitRightOpIsoOpColimit_inv_comp_π (F : Jᵒᵖ ⥤ C) [HasColimit F] (j : J) :
     (limitRightOpIsoOpColimit F).inv ≫ limit.π F.rightOp j = (colimit.ι F (op j)).op := by
   simp [limitRightOpIsoOpColimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitRightOpIsoOpColimit_hom_comp_ι (F : Jᵒᵖ ⥤ C) [HasColimit F] (j : Jᵒᵖ) :
     (limitRightOpIsoOpColimit F).hom ≫ (colimit.ι F j).op = limit.π F.rightOp j.unop := by
@@ -325,11 +347,13 @@ def limitUnopIsoUnopColimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] :
     limit F.unop ≅ unop (colimit F) :=
   limit.isoLimitCone ⟨_, isLimitConeUnopOfCocone _ (colimit.isColimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitUnopIsoUnopColimit_inv_comp_π (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] (j : J) :
     (limitUnopIsoUnopColimit F).inv ≫ limit.π F.unop j = (colimit.ι F (op j)).unop := by
   simp [limitUnopIsoUnopColimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma limitUnopIsoUnopColimit_hom_comp_ι (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit F] (j : Jᵒᵖ) :
     (limitUnopIsoUnopColimit F).hom ≫ (colimit.ι F j).unop = limit.π F.unop j.unop := by
@@ -403,11 +427,13 @@ def colimitOpIsoOpLimit (F : J ⥤ C) [HasLimit F] :
     colimit F.op ≅ op (limit F) :=
   colimit.isoColimitCocone ⟨_, (limit.isLimit _).op⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_comp_colimitOpIsoOpLimit_hom (F : J ⥤ C) [HasLimit F] (j : Jᵒᵖ) :
     colimit.ι F.op j ≫ (colimitOpIsoOpLimit F).hom = (limit.π F j.unop).op := by
   simp [colimitOpIsoOpLimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_colimitOpIsoOpLimit_inv (F : J ⥤ C) [HasLimit F] (j : J) :
     (limit.π F j).op ≫ (colimitOpIsoOpLimit F).inv = colimit.ι F.op (op j) := by
@@ -418,11 +444,13 @@ def colimitLeftOpIsoUnopLimit (F : J ⥤ Cᵒᵖ) [HasLimit F] :
     colimit F.leftOp ≅ unop (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeLeftOpOfCone _ (limit.isLimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_comp_colimitLeftOpIsoUnopLimit_hom (F : J ⥤ Cᵒᵖ) [HasLimit F] (j : Jᵒᵖ) :
     colimit.ι F.leftOp j ≫ (colimitLeftOpIsoUnopLimit F).hom = (limit.π F j.unop).unop := by
   simp [colimitLeftOpIsoUnopLimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_colimitLeftOpIsoUnopLimit_inv (F : J ⥤ Cᵒᵖ) [HasLimit F] (j : J) :
     (limit.π F j).unop ≫ (colimitLeftOpIsoUnopLimit F).inv = colimit.ι F.leftOp (op j) := by
@@ -433,11 +461,13 @@ def colimitRightOpIsoUnopLimit (F : Jᵒᵖ ⥤ C) [HasLimit F] :
     colimit F.rightOp ≅ op (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeRightOpOfCone _ (limit.isLimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_comp_colimitRightOpIsoUnopLimit_hom (F : Jᵒᵖ ⥤ C) [HasLimit F] (j : J) :
     colimit.ι F.rightOp j ≫ (colimitRightOpIsoUnopLimit F).hom = (limit.π F (op j)).op := by
   simp [colimitRightOpIsoUnopLimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_colimitRightOpIsoUnopLimit_inv (F : Jᵒᵖ ⥤ C) [HasLimit F] (j : Jᵒᵖ) :
     (limit.π F j).op ≫ (colimitRightOpIsoUnopLimit F).inv = colimit.ι F.rightOp j.unop := by
@@ -448,11 +478,13 @@ def colimitUnopIsoOpLimit (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] :
     colimit F.unop ≅ unop (limit F) :=
   colimit.isoColimitCocone ⟨_, isColimitCoconeUnopOfCone _ (limit.isLimit _)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_comp_colimitUnopIsoOpLimit_hom (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] (j : J) :
     colimit.ι F.unop j ≫ (colimitUnopIsoOpLimit F).hom = (limit.π F (op j)).unop := by
   simp [colimitUnopIsoOpLimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_colimitUnopIsoOpLimit_inv (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasLimit F] (j : Jᵒᵖ) :
     (limit.π F j).unop ≫ (colimitUnopIsoOpLimit F).inv = colimit.ι F.unop j.unop := by
@@ -477,10 +509,108 @@ theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasColimitsOfSize.{v₂, u₂} C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
 
+lemma hasColimitsOfSize_opposite_iff :
+    HasColimitsOfSize.{v₂, u₂} Cᵒᵖ ↔ HasLimitsOfSize.{v₂, u₂} C :=
+  ⟨fun _ ↦ hasLimits_of_hasColimits_op, fun _ ↦ inferInstance⟩
+
+lemma hasLimitsOfSize_opposite_iff :
+    HasLimitsOfSize.{v₂, u₂} Cᵒᵖ ↔ HasColimitsOfSize.{v₂, u₂} C :=
+  ⟨fun _ ↦ hasColimits_of_hasLimits_op, fun _ ↦ inferInstance⟩
+
 instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
   ⟨fun _ _ _ => hasColimitsOfShape_op_of_hasLimitsOfShape⟩
 
 instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
   ⟨fun _ _ _ => hasLimitsOfShape_op_of_hasColimitsOfShape⟩
+
+lemma hasFiniteLimits_opposite_iff : HasFiniteLimits Cᵒᵖ ↔ HasFiniteColimits C :=
+  ⟨fun _ ↦ ⟨fun _ _ _ ↦ hasColimitsOfShape_of_hasLimitsOfShape_op⟩, fun _ ↦ inferInstance⟩
+
+lemma hasFiniteColimits_opposite_iff : HasFiniteColimits Cᵒᵖ ↔ HasFiniteLimits C :=
+  ⟨fun _ ↦ ⟨fun _ _ _ ↦ hasLimitsOfShape_of_hasColimitsOfShape_op⟩, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_op_iff_hasLimit {F : J ⥤ C} : HasColimit F.op ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_op F, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_leftOp_iff_hasLimit {F : J ⥤ Cᵒᵖ} : HasColimit F.leftOp ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_leftOp F, fun _ ↦ inferInstance⟩
+
+lemma hasColimit_rightOp_iff_hasLimit {F : Jᵒᵖ ⥤ C} : HasColimit F.rightOp ↔ HasLimit F :=
+  ⟨fun _ ↦ hasLimit_of_hasColimit_rightOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_op_iff_hasColimit {F : J ⥤ C} : HasLimit F.op ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_op F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_leftOp_iff_hasColimit {F : J ⥤ Cᵒᵖ} : HasLimit F.leftOp ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_leftOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimit_rightOp_iff_hasColimit {F : Jᵒᵖ ⥤ C} : HasLimit F.rightOp ↔ HasColimit F :=
+  ⟨fun _ ↦ hasColimit_of_hasLimit_rightOp F, fun _ ↦ inferInstance⟩
+
+lemma hasLimitsOfShape_opposite_iff : HasLimitsOfShape J Cᵒᵖ ↔ HasColimitsOfShape Jᵒᵖ C := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : HasLimitsOfShape Jᵒᵖᵒᵖ Cᵒᵖ := hasLimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasColimitsOfShape_of_hasLimitsOfShape_op
+
+lemma hasColimitsOfShape_opposite_iff : HasColimitsOfShape J Cᵒᵖ ↔ HasLimitsOfShape Jᵒᵖ C := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : HasColimitsOfShape Jᵒᵖᵒᵖ Cᵒᵖ := hasColimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasLimitsOfShape_of_hasColimitsOfShape_op
+
+lemma hasLimitsOfShape_opposite_opposite_iff :
+    HasLimitsOfShape Jᵒᵖ Cᵒᵖ ↔ HasColimitsOfShape J C := by
+  refine ⟨fun _ ↦ hasColimitsOfShape_of_hasLimitsOfShape_op, fun _ ↦ ?_⟩
+  have : HasColimitsOfShape Jᵒᵖᵒᵖ C := hasColimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasLimitsOfShape_op_of_hasColimitsOfShape
+
+lemma hasColimitsOfShape_opposite_opposite_iff :
+    HasColimitsOfShape Jᵒᵖ Cᵒᵖ ↔ HasLimitsOfShape J C := by
+  refine ⟨fun _ ↦ hasLimitsOfShape_of_hasColimitsOfShape_op, fun _ ↦ ?_⟩
+  have : HasLimitsOfShape Jᵒᵖᵒᵖ C := hasLimitsOfShape_of_equivalence (opOpEquivalence J).symm
+  exact hasColimitsOfShape_op_of_hasLimitsOfShape
+
+instance [HasWidePullbacks.{w} C] : HasWidePushouts.{w} Cᵒᵖ := by
+  intro ι
+  rw [hasColimitsOfShape_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+instance [HasWidePushouts.{w} C] : HasWidePullbacks.{w} Cᵒᵖ := by
+  intro ι
+  rw [hasLimitsOfShape_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+lemma hasWidePullbacks_opposite_iff :
+    HasWidePullbacks.{w} Cᵒᵖ ↔ HasWidePushouts.{w} C := by
+  refine ⟨fun h ι ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← hasLimitsOfShape_opposite_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+lemma hasWidePushouts_opposite_iff :
+    HasWidePushouts.{w} Cᵒᵖ ↔ HasWidePullbacks.{w} C := by
+  refine ⟨fun h ι ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [← hasColimitsOfShape_opposite_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+instance [HasFiniteWidePullbacks C] : HasFiniteWidePushouts Cᵒᵖ := by
+  refine ⟨fun J _ ↦ ?_⟩
+  rw [hasColimitsOfShape_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+instance [HasFiniteWidePushouts C] : HasFiniteWidePullbacks Cᵒᵖ := by
+  refine ⟨fun J _ ↦ ?_⟩
+  rw [hasLimitsOfShape_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
+
+lemma hasFiniteWidePullbacks_opposite_iff :
+    HasFiniteWidePullbacks Cᵒᵖ ↔ HasFiniteWidePushouts C := by
+  refine ⟨fun h ↦ ⟨fun J _ ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [← hasLimitsOfShape_opposite_opposite_iff]
+  exact hasLimitsOfShape_of_equivalence (widePushoutShapeOpEquiv _).symm
+
+lemma hasFiniteWidePushouts_opposite_iff :
+    HasFiniteWidePushouts Cᵒᵖ ↔ HasFiniteWidePullbacks C := by
+  refine ⟨fun h ↦ ⟨fun J _ ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  rw [← hasColimitsOfShape_opposite_opposite_iff]
+  exact hasColimitsOfShape_of_equivalence (widePullbackShapeOpEquiv _).symm
 
 end CategoryTheory.Limits

@@ -3,10 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Index
-import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Closed subgroups of a topological group
@@ -14,7 +15,7 @@ import Mathlib.Topology.Algebra.Group.Quotient
 This file builds the frame of closed subgroups in a topological group `G`,
 and its additive version `ClosedAddSubgroup`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `normalCore_isClosed`: The `normalCore` of a closed subgroup is closed.
 
@@ -24,6 +25,8 @@ and its additive version `ClosedAddSubgroup`.
 
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
+
+@[expose] public section
 
 section
 
@@ -61,6 +64,8 @@ instance : SetLike (ClosedSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (ClosedSubgroup G) := .ofSetLike (ClosedSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (ClosedSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -77,7 +82,7 @@ instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=
@@ -89,7 +94,7 @@ open scoped Pointwise
 
 namespace Subgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by

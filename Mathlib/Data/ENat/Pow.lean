@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Powers of extended natural numbers
@@ -22,6 +24,8 @@ The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is
 lemmas' names.
 -/
 
+@[expose] public section
+
 namespace ENat
 
 variable {x y z : ℕ∞}
@@ -30,6 +34,12 @@ instance : Pow ℕ∞ ℕ∞ where
   pow
     | x, some y => x ^ y
     | x, ⊤ => if x = 0 then 0 else if x = 1 then 1 else ⊤
+
+lemma epow_def {x y : ℕ∞} :
+    x ^ y = if y < ⊤ then x ^ y.toNat else if x = 0 then 0 else if x = 1 then 1 else ⊤ := by
+  cases y with
+  | top => simp only [lt_self_iff_false, ↓reduceIte]; rfl
+  | coe n => simp only [coe_lt_top, ↓reduceIte, toNat_coe]; rfl
 
 @[simp, norm_cast]
 lemma epow_natCast {y : ℕ} : x ^ (y : ℕ∞) = x ^ y := rfl
@@ -65,7 +75,8 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
-  simp only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+  have : (0 : ℕ∞) ≤ 1 := zero_le_one
+  rw [epow_def, if_neg, if_neg, if_neg] <;> grind
 
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z
@@ -122,6 +133,7 @@ lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
       exact one_le_iff_ne_zero.1 (one_le_epow (one_le_iff_ne_zero.1 x_2.le))
     simp only [← Nat.cast_add, epow_natCast, pow_add x]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy x 1 with x_0 | rfl | x_2

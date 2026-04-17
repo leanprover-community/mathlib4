@@ -3,9 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+module
 
-import Mathlib.Probability.Decision.Risk.Defs
-import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 /-!
 # Basic properties of the risk of an estimator
@@ -31,6 +32,8 @@ In many cases, the maximal Bayes risk and the minimax risk are equal
 (by a so-called minimax theorem).
 
 -/
+
+public section
 
 open MeasureTheory Function
 open scoped ENNReal NNReal

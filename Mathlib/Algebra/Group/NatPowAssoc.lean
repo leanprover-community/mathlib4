@@ -3,10 +3,12 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Cast.Basic
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures
@@ -31,9 +33,11 @@ We also produce the following instances:
 
 ## TODO
 
-* to_additive?
+* `to_additive`?
 
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered
 
@@ -72,7 +76,7 @@ theorem npow_mul_comm (m n : ℕ) (x : M) :
 
 theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
-  | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
+  | zero => rw [npow_zero, mul_zero, npow_zero]
   | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
 theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by

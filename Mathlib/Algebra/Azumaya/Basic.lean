@@ -3,11 +3,14 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Azumaya.Defs
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.Algebra.Azumaya.Defs
+public import Mathlib.Algebra.Central.End
+public import Mathlib.Algebra.Central.TensorProduct
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Basic properties of Azumaya algebras
@@ -26,6 +29,8 @@ over itself where `R` is a commutative ring.
 Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -65,7 +70,7 @@ End R A   ------------> End R B
 -/
 lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
     (AlgHom.mulLeftRight R B).comp (Algebra.TensorProduct.congr e e.op).toAlgHom =
-    (e.toLinearEquiv.algConj R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
+    (e.toLinearEquiv.conjAlgEquiv R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
   ext <;> simp
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
@@ -78,3 +83,9 @@ theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
     simp [AlgHom.mulLeftRight_bij]⟩
 
 end IsAzumaya
+
+/-- An Azumaya algebra is a central algebra. -/
+instance Algebra.IsCentral.instIsAzumaya {R A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] [Module.Free R A] [IsAzumaya R A] : IsCentral R A :=
+  have := of_algEquiv R _ _ (AlgEquiv.ofBijective (.mulLeftRight R A) IsAzumaya.bij).symm
+  left_of_tensor R A Aᵐᵒᵖ <| FaithfulSMul.algebraMap_injective _ _

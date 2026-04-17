@@ -3,9 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Quotients of powers of principal ideals
@@ -25,6 +27,8 @@ These equivs are defined here as opposed to in the quotients file since they can
 formed as ring equivs.
 
 -/
+
+@[expose] public section
 
 
 namespace Ideal
@@ -61,7 +65,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
       rw [mul_comm, pow_succ, mul_assoc, mul_right_inj' (pow_ne_zero _ _)] at hy
       · rw [hI, Ideal.mem_span_singleton]
         exact ⟨y, hy⟩
-      · contrapose! h'
+      · contrapose h'
         rw [hI, h', Ideal.span_singleton_eq_bot]
   let e : (R ⧸ I) ≃ₗ[R] R ⧸ (LinearMap.ker (f.comp g)) :=
     Submodule.quotEquivOfEq I (LinearMap.ker (f ∘ₗ g)) this

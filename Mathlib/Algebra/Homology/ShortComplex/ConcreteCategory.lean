@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 # Exactness of short complexes in concrete abelian categories
@@ -16,6 +18,8 @@ which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -54,7 +58,7 @@ lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
-  simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
+  simp only [mono_iff_injective, ← CategoryTheory.ofHom_mono_iff_injective]
   apply (MorphismProperty.monomorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
@@ -69,7 +73,7 @@ lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
-  simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
+  simp only [epi_iff_surjective, ← CategoryTheory.ofHom_epi_iff_surjective]
   apply (MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
@@ -108,6 +112,7 @@ noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (forget₂ C Ab).obj S.cycles :=
   (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
     (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
@@ -137,6 +142,7 @@ namespace SnakeInput
 
 variable (D : SnakeInput C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁ : ToType (D.L₂.X₁))
@@ -159,6 +165,7 @@ lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁
   rw [ConcreteCategory.comp_apply, eq₁]
   exact h₁.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
@@ -167,18 +174,14 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
-  apply (mono_iff_injective (e.hom.app _)).1 inferInstance
-  refine (congr_hom (e.hom.naturality D.δ) x₃).trans
-    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans
-    (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
-  · refine ((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
-      (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃)
-    dsimp
-    rw [h₂]
-  · refine ((congr_fun (e.hom.naturality D.L₂.f) x₁).symm.trans ?_).trans
-      (congr_fun (e.hom.naturality D.v₁₂.τ₂) x₂)
-    dsimp
-    rw [h₁]
+  apply (ofHom_mono_iff_injective (e.hom.app _)).1 inferInstance
+  exact (ConcreteCategory.congr_hom (e.hom.naturality D.δ) x₃).trans ((D.δ_apply _ _ _
+    (((ConcreteCategory.congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans (by simp_all)).trans
+      (ConcreteCategory.congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃))
+    (((ConcreteCategory.congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans (by simp_all)).trans
+      (ConcreteCategory.congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂))).trans
+    (ConcreteCategory.congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
+
 
 end SnakeInput
 

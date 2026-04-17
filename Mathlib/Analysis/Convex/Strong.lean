@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Chenyi Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.InnerProductSpace.Basic
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Uniformly and strongly convex functions
@@ -22,6 +24,8 @@ If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖
 
 Prove derivative properties of strongly convex functions.
 -/
+
+@[expose] public section
 
 open Real
 

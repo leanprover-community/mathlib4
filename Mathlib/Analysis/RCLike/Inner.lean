@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dilies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dilies
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # L2 inner product of finite sequences
@@ -16,12 +18,14 @@ from `RCLike.innerProductSpace`.
 
 * Build a non-instance `InnerProductSpace` from `wInner`.
 * `cWeight` is a poor name. Can we find better? It doesn't hugely matter for typing, since it's
-  hidden behind the `⟪f, g⟫ₙ_[𝕝] `notation, but it does show up in lemma names
+  hidden behind the `⟪f, g⟫ₙ_[𝕝]` notation, but it does show up in lemma names
   `⟪f, g⟫_[𝕝, cWeight]` is called `wInner_cWeight`. Maybe we should introduce some naming
   convention, similarly to `MeasureTheory.average`?
 -/
 
-open Finset Function Real
+@[expose] public section
+
+open Finset Function Real WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]
@@ -124,18 +128,19 @@ lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
     ⟪f, const _ a⟫ₙ_[𝕜] = a * (𝔼 i, conj (f i)) := by simp [wInner_cWeight_eq_expect, mul_expect]
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
-    ⟪f, g⟫_[𝕜, 1] = ⟪WithLp.toLp 2 f, WithLp.toLp 2 g⟫_𝕜 := by
+    ⟪f, g⟫_[𝕜, 1] = ⟪toLp 2 f, toLp 2 g⟫_𝕜 := by
   simp [PiLp.inner_apply, wInner]
 
 lemma inner_eq_wInner_one (f g : PiLp 2 fun _i : ι ↦ 𝕜) :
-    ⟪f, g⟫_𝕜 = ⟪WithLp.ofLp f, WithLp.ofLp g⟫_[𝕜, 1] := by
+    ⟪f, g⟫_𝕜 = ⟪ofLp f, ofLp g⟫_[𝕜, 1] := by
   simp [PiLp.inner_apply, wInner]
 
 lemma linearIndependent_of_ne_zero_of_wInner_one_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫_[𝕜] = 0) : LinearIndependent 𝕜 f := by
   simp_rw [wInner_one_eq_inner] at hinner
   have := linearIndependent_of_ne_zero_of_inner_eq_zero ?_ hinner
-  exacts [this, hf]
+  exacts [(WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).symm.toLinearMap.linearIndependent_iff_of_injOn
+    (toLp_injective 2).injOn |>.1 this, fun i ↦ (toLp_eq_zero 2).ne.2 (hf i)]
 
 lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 𝕜} (hf : ∀ k, f k ≠ 0)
     (hinner : Pairwise fun k₁ k₂ ↦ ⟪f k₁, f k₂⟫ₙ_[𝕜] = 0) : LinearIndependent 𝕜 f := by
@@ -148,6 +153,7 @@ lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 
 lemma wInner_nonneg (hw : 0 ≤ w) (hf : 0 ≤ f) (hg : 0 ≤ g) : 0 ≤ ⟪f, g⟫_[𝕜, w] :=
   sum_nonneg fun _ _ ↦ smul_nonneg (hw _) <| mul_nonneg (hg _) (star_nonneg_iff.2 (hf _))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_wInner_le (hw : 0 ≤ w) : ‖⟪f, g⟫_[𝕜, w]‖ ≤ ⟪fun i ↦ ‖f i‖, fun i ↦ ‖g i‖⟫_[ℝ, w] :=
   (norm_sum_le ..).trans_eq <| sum_congr rfl fun i _ ↦ by
     simp [Algebra.smul_def, norm_mul, abs_of_nonneg (hw i)]

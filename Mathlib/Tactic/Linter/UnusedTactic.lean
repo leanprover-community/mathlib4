@@ -3,13 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Parser.Syntax
-import Batteries.Tactic.Unreachable
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.Linter.UnusedTacticExtension
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Batteries.Tactic.Unreachable
+public import Lean.Parser.Syntax
+public import Mathlib.Tactic.Linter.UnusedTacticExtension
 
 /-!
 # The unused tactic linter
@@ -54,12 +55,14 @@ before and after and see if there is some change.
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
+meta section
+
 open Lean Elab Std Linter
 
 namespace Mathlib.Linter
 
 /-- The unused tactic linter makes sure that every tactic call actually changes *something*. -/
-register_option linter.unusedTactic : Bool := {
+public register_option linter.unusedTactic : Bool := {
   defValue := true
   descr := "enable the unused tactic linter"
 }
@@ -67,7 +70,7 @@ register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
 
 -- Tactics that are expected to not change the state but should also not be flagged by the
 -- unused tactic linter.
@@ -82,7 +85,7 @@ abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
   Lean.Parser.Tactic.failIfSuccess
 
 /--
-A list of blacklisted syntax kinds, which are expected to have subterms that contain
+A list of blocklisted syntax kinds, which are expected to have subterms that contain
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
@@ -96,6 +99,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     ``Lean.Parser.Command.mixfix,
     ``Lean.Parser.Tactic.discharger,
     ``Lean.Parser.Tactic.Conv.conv,
+    ``Lean.Parser.Command.registerTryTactic,
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
@@ -195,8 +199,8 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     eraseUsedTacticsList exceptions trees
   let (_, map) ← go.run {}
   let unused := map.toArray
-  let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
-  let mut last : String.Range := ⟨0, 0⟩
+  let key (r : Lean.Syntax.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
+  let mut last : Lean.Syntax.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
     if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
       continue

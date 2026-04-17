@@ -3,9 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
-import Mathlib.SetTheory.Ordinal.Enum
+module
+
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Omega, aleph, and beth functions
@@ -37,6 +41,8 @@ The following notations are scoped to the `Cardinal` namespace.
   `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
+@[expose] public section
+
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
 noncomputable section
@@ -57,10 +63,14 @@ def IsInitial (o : Ordinal) : Prop :=
 
 theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
 
+theorem IsInitial.le_ord_iff_card_le {o : Ordinal} (ho : o.IsInitial) (c : Cardinal) :
+    o ≤ c.ord ↔ o.card ≤ c := by
+  grw [← ord_le_ord, ho.ord_card]
+
 theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
   refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
-  rw [← ord_le_ord, ha.ord_card] at h
-  exact h.trans (ord_card_le b)
+  rw [← ha.le_ord_iff_card_le] at h
+  grw [h, ord_card_le]
 
 theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
   lt_iff_lt_of_le_iff_le hb.card_le_card
@@ -154,7 +164,7 @@ theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b <
   enumOrd_le_of_forall_lt ha H
 
 theorem isNormal_preOmega : IsNormal preOmega := by
-  rw [isNormal_iff_strictMono_limit]
+  rw [isNormal_iff]
   refine ⟨preOmega_strictMono, fun o ho a ha ↦
     (preOmega_le_of_forall_lt (isInitial_ord _) fun b hb ↦ ?_).trans (ord_card_le a)⟩
   rw [← (isInitial_ord _).card_lt_card, card_ord]
@@ -173,7 +183,7 @@ alias ⟨_, IsInitial.mem_range_preOmega⟩ := mem_range_preOmega_iff
 
 @[simp]
 theorem preOmega_omega0 : preOmega ω = ω := by
-  simp_rw [← isNormal_preOmega.apply_omega0, preOmega_natCast, iSup_natCast]
+  simp_rw [← apply_omega0_of_isNormal isNormal_preOmega, preOmega_natCast, iSup_natCast]
 
 @[simp]
 theorem omega0_le_preOmega_iff {x : Ordinal} : ω ≤ preOmega x ↔ ω ≤ x := by
@@ -192,11 +202,12 @@ For a version including finite ordinals, see `Ordinal.preOmega`. -/
 def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans preOmega
 
-@[inherit_doc]
-scoped notation "ω_ " => omega
+@[inherit_doc] scoped notation "ω_ " => omega
+recommended_spelling "omega" for "ω_" in [omega, «termω_»]
 
 /-- `ω₁` is the first uncountable ordinal. -/
 scoped notation "ω₁" => ω_ 1
+recommended_spelling "omega_one" for "ω₁" in [«termω₁»]
 
 theorem omega_eq_preOmega (o : Ordinal) : ω_ o = preOmega (ω + o) :=
   rfl
@@ -214,7 +225,7 @@ theorem omega_max (o₁ o₂ : Ordinal) : ω_ (max o₁ o₂) = max (ω_ o₁) (
   omega.monotone.map_max
 
 theorem preOmega_le_omega (o : Ordinal) : preOmega o ≤ ω_ o :=
-  preOmega_le_preOmega.2 (Ordinal.le_add_left _ _)
+  preOmega_le_preOmega.2 le_add_self
 
 theorem isInitial_omega (o : Ordinal) : IsInitial (omega o) :=
   isInitial_preOmega _
@@ -228,18 +239,22 @@ theorem omega_zero : ω_ 0 = ω := by
 
 theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
-  exact Ordinal.zero_le o
+  exact zero_le o
 
 /-- For the theorem `0 < ω`, see `omega0_pos`. -/
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
   omega0_pos.trans_le (omega0_le_omega o)
 
-theorem omega0_lt_omega1 : ω < ω₁ := by
+@[simp]
+theorem omega0_lt_omega_one : ω < ω₁ := by
   rw [← omega_zero, omega_lt_omega]
   exact zero_lt_one
 
+@[deprecated (since := "2025-12-22")]
+alias omega0_lt_omega1 := omega0_lt_omega_one
+
 theorem isNormal_omega : IsNormal omega :=
-  isNormal_preOmega.trans (isNormal_add_right _)
+  isNormal_preOmega.comp (isNormal_add_right _)
 
 @[simp]
 theorem range_omega : range omega = {x | ω ≤ x ∧ IsInitial x} := by
@@ -278,13 +293,14 @@ theorem ord_preAleph (o : Ordinal) : (preAleph o).ord = preOmega o := by
   rw [← o.card_preOmega, (isInitial_preOmega o).ord_card]
 
 @[simp]
-theorem type_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
-  rw [Ordinal.univ_id]
-  exact Quotient.sound ⟨preAleph.symm.toRelIsoLT⟩
+theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u + 1} := by
+  simpa using preAleph.symm.toRelIsoLT.ordinal_type_eq
+
+@[deprecated (since := "2026-03-20")] alias type_cardinal := type_lt_cardinal
 
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
-  simpa only [card_type, card_univ] using congr_arg card type_cardinal
+  simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
@@ -300,6 +316,14 @@ theorem preAleph_zero : preAleph 0 = 0 :=
   preAleph.map_bot
 
 @[simp]
+theorem succ_preAleph (o : Ordinal) : succ (preAleph o) = preAleph (o + 1) :=
+  (preAleph.map_succ o).symm
+
+@[deprecated succ_preAleph (since := "2026-03-24")]
+theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
+  preAleph.map_succ o
+
+@[deprecated succ_preAleph (since := "2026-03-24")]
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
@@ -318,6 +342,12 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 @[simp]
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
+
+theorem _root_.Ordinal.card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o :=
+  o.card_preOmega.trans_ge <| card_le_card <| o.le_preOmega_self
+
+theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
+  simpa using c.ord.card_le_preAleph
 
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
@@ -338,9 +368,6 @@ theorem preAleph_le_of_isSuccPrelimit {o : Ordinal} (l : IsSuccPrelimit o) {c} :
   · simp
   · exact isNormal_preAleph.le_iff_forall_le ⟨by simpa, l⟩
 
-@[deprecated (since := "2025-07-08")]
-alias preAleph_le_of_isLimit := preAleph_le_of_isSuccPrelimit
-
 theorem preAleph_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preAleph o = ⨆ a : Iio o, preAleph a := by
   obtain rfl | h := eq_or_ne o 0
@@ -358,11 +385,12 @@ For a version including finite cardinals, see `Cardinal.preAleph`. -/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans preAleph.toOrderEmbedding
 
-@[inherit_doc]
-scoped notation "ℵ_ " => aleph
+@[inherit_doc] scoped notation "ℵ_ " => aleph
+recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
 
 /-- `ℵ₁` is the first uncountable cardinal. -/
 scoped notation "ℵ₁" => ℵ_ 1
+recommended_spelling "aleph_one" for "ℵ₁" in [«termℵ₁»]
 
 theorem aleph_eq_preAleph (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -385,11 +413,19 @@ theorem aleph_max (o₁ o₂ : Ordinal) : ℵ_ (max o₁ o₂) = max (ℵ_ o₁)
   aleph.monotone.map_max
 
 theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
-  preAleph_le_preAleph.2 (Ordinal.le_add_left _ _)
+  preAleph_le_preAleph.2 le_add_self
 
 @[simp]
-theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
-  rw [aleph_eq_preAleph, add_succ, preAleph_succ, aleph_eq_preAleph]
+theorem succ_aleph (o : Ordinal) : succ (ℵ_ o) = ℵ_ (o + 1) := by
+  rw [aleph_eq_preAleph, succ_preAleph, add_assoc, aleph_eq_preAleph]
+
+@[deprecated succ_aleph (since := "2026-03-24")]
+theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
+  simp
+
+@[deprecated succ_aleph (since := "2026-03-24")]
+theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
+  (succ_aleph o).symm
 
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
@@ -412,10 +448,16 @@ theorem aleph_limit {o : Ordinal} (ho : IsSuccLimit o) : ℵ_ o = ⨆ a : Iio o,
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
   rw [aleph_eq_preAleph, aleph0_le_preAleph]
-  apply Ordinal.le_add_right
+  exact le_self_add
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
+
+theorem _root_.Ordinal.card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o :=
+  o.card_le_preAleph.trans (preAleph_le_aleph o)
+
+theorem le_aleph_ord (c : Cardinal) : c ≤ ℵ_ c.ord := by
+  simpa using c.ord.card_le_aleph
 
 @[simp]
 theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
@@ -429,9 +471,6 @@ theorem isSuccLimit_omega (o : Ordinal) : IsSuccLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isSuccLimit_ord (aleph0_le_aleph _)
 
-@[deprecated (since := "2025-07-08")]
-alias isLimit_omega := isSuccLimit_omega
-
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
   ext c
@@ -442,45 +481,44 @@ theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
 theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
   rw [range_aleph, mem_Ici]
 
-@[simp]
-theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
-  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
-
-theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
-  rw [← succ_aleph0]
-  apply lt_succ
-
-theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
-  rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
-
-@[simp]
-theorem aleph1_le_lift {c : Cardinal.{u}} : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
-  simpa using lift_le (a := ℵ₁)
-
-@[simp]
-theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
-  simpa using lift_le (b := ℵ₁)
-
-@[simp]
-theorem aleph1_lt_lift {c : Cardinal.{u}} : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
-  simpa using lift_lt (a := ℵ₁)
-
-@[simp]
-theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
-  simpa using lift_lt (b := ℵ₁)
-
-@[simp]
-theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
-  simpa using lift_inj (a := ℵ₁)
-
-@[simp]
-theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simpa using lift_inj (b := ℵ₁)
-
 theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
   rw [← (isInitial_omega o).card_lt_card, card_omega]
 
+@[simp]
+theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
+  rw [← aleph_zero, succ_aleph, zero_add]
+
+@[simp]
+theorem aleph_one_le_iff {c : Cardinal} : ℵ₁ ≤ c ↔ ℵ₀ < c := by
+  rw [← succ_aleph0, succ_le_iff]
+
+@[simp]
+theorem lt_aleph_one_iff {c : Cardinal} : c < ℵ₁ ↔ c ≤ ℵ₀ := by
+  rw [← succ_aleph0, lt_succ_iff]
+
+theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
+
+@[deprecated aleph_one_le_iff (since := "2026-03-23")]
+theorem aleph0_lt_iff_aleph_one_le {c} : ℵ₀ < c ↔ ℵ₁ ≤ c :=
+  aleph_one_le_iff.symm
+
+@[deprecated aleph0_lt_mk_iff (since := "2026-03-23")]
+theorem aleph1_le_mk_iff {α : Type*} : ℵ₁ ≤ #α ↔ Uncountable α := by
+  rw [aleph_one_le_iff, aleph0_lt_mk_iff]
+
+@[deprecated aleph0_lt_mk (since := "2026-03-23")]
+theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α := by
+  simp
+
+@[deprecated le_aleph0_iff_set_countable (since := "2026-03-23")]
+theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
+  rw [lt_aleph_one_iff, le_aleph0_iff_set_countable]
+
+end Cardinal
+
 /-! ### Beth cardinals -/
+
+namespace Cardinal
 
 /-- The "pre-beth" function is defined so that `preBeth o` is the supremum of `2 ^ preBeth a` for
 `a < o`. This implies `beth 0 = 0`, `beth (succ o) = 2 ^ beth o`, and that for a limit ordinal `o`,
@@ -495,7 +533,7 @@ decreasing_by exact a.2
 theorem preBeth_strictMono : StrictMono preBeth := by
   intro a b h
   conv_rhs => rw [preBeth]
-  rw [lt_ciSup_iff' (bddAbove_of_small _)]
+  rw [lt_ciSup_iff' bddAbove_of_small]
   exact ⟨⟨a, h⟩, cantor _⟩
 
 theorem preBeth_mono : Monotone preBeth :=
@@ -522,23 +560,27 @@ theorem preBeth_zero : preBeth 0 = 0 := by
   simp
 
 @[simp]
-theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o := by
-  rw [preBeth, Iio_succ]
+theorem preBeth_add_one (o : Ordinal) : preBeth (o + 1) = 2 ^ preBeth o := by
+  rw [preBeth, ← succ_eq_add_one, Iio_succ]
   exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
+
+-- TODO: deprecate
+theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o :=
+  preBeth_add_one o
 
 theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preBeth o = ⨆ a : Iio o, preBeth a := by
   rw [preBeth]
-  apply (ciSup_mono (bddAbove_of_small _) fun _ ↦ (cantor _).le).antisymm'
-  rw [ciSup_le_iff' (bddAbove_of_small _)]
+  apply (ciSup_mono bddAbove_of_small fun _ ↦ (cantor _).le).antisymm'
+  rw [ciSup_le_iff' bddAbove_of_small]
   intro a
   rw [← preBeth_succ]
-  exact le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt a.2⟩ : Iio o)
+  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.2⟩ : Iio o)
 
 theorem isNormal_preBeth : Order.IsNormal preBeth := by
   rw [isNormal_iff]
   refine ⟨preBeth_strictMono, fun o ho ↦ ?_⟩
-  simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
@@ -553,16 +595,22 @@ theorem preBeth_one : preBeth 1 = 1 := by
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
   apply le_antisymm
-  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
-    exact (nat_lt_aleph0 _).le
+    exact natCast_le_aleph0
   · simpa using preAleph_le_preBeth ω
 
 @[simp]
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
+
+theorem _root_.Ordinal.card_le_preBeth (o : Ordinal) : o.card ≤ preBeth o :=
+  o.card_le_preAleph.trans (preAleph_le_preBeth o)
+
+theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
+  simpa using c.ord.card_le_preBeth
 
 @[simp]
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
@@ -581,7 +629,22 @@ theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSu
     obtain ho | ⟨a, rfl⟩ := H
     · simp [ho.eq_bot]
     · intro h
-      simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
+      simpa using h.two_power_lt (preBeth_strictMono (lt_add_one a))
+
+@[simp]
+theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lift.{v} o) := by
+  induction o using SuccOrder.prelimitRecOn with
+  | succ o _ IH => simp [IH]
+  | isSuccPrelimit o ho IH =>
+    rw [preBeth_limit ho, preBeth_limit (isSuccPrelimit_lift.2 ho), lift_iSup bddAbove_of_small]
+    apply congrArg sSup
+    ext x
+    constructor <;> rintro ⟨⟨i, hi⟩, rfl⟩
+    · refine ⟨⟨i.lift, ?_⟩, (IH _ hi).symm⟩
+      simpa
+    · obtain ⟨i, rfl⟩ := Ordinal.mem_range_lift_of_le hi.le
+      rw [mem_Iio, Ordinal.lift_lt] at hi
+      exact ⟨⟨i, hi⟩, IH _ hi⟩
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
@@ -593,14 +656,14 @@ For a version which starts at zero, see `Cardinal.preBeth`. -/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   preBeth (ω + o)
 
-@[inherit_doc]
-scoped notation "ℶ_ " => beth
+@[inherit_doc] scoped notation "ℶ_ " => beth
+recommended_spelling "beth" for "ℶ_" in [«termℶ_»]
 
 theorem beth_eq_preBeth (o : Ordinal) : beth o = preBeth (ω + o) :=
   rfl
 
 theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
-  preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
+  preBeth_le_preBeth.2 le_add_self
 
 theorem beth_strictMono : StrictMono beth :=
   preBeth_strictMono.comp fun _ _ h ↦ by gcongr
@@ -621,8 +684,12 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
   simp [beth]
 
 @[simp]
-theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o := by
-  simp [beth, add_succ]
+theorem beth_add_one (o : Ordinal) : ℶ_ (o + 1) = 2 ^ ℶ_ o := by
+  simp [beth, ← add_assoc]
+
+-- TODO; deprecate
+theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o :=
+  beth_add_one o
 
 theorem isNormal_beth : Order.IsNormal beth :=
   isNormal_preBeth.comp (isNormal_add_right _)
@@ -642,7 +709,234 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
+theorem _root_.Ordinal.card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
+  o.card_le_aleph.trans (aleph_le_beth o)
+
+theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
+  simpa using c.ord.card_le_beth
+
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
 
+@[simp]
+theorem lift_beth (o : Ordinal) : lift.{v} (ℶ_ o) = ℶ_ (Ordinal.lift.{v} o) := by
+  rw [beth_eq_preBeth, beth_eq_preBeth, lift_preBeth, Ordinal.lift_add, lift_omega0]
+
+/-! ### Simp lemmas with `lift` -/
+
+section lift
+variable {c : Cardinal.{u}} {n : ℕ}
+
+@[deprecated aleph0_lt_lift (since := "2026-03-23")]
+theorem aleph_one_le_lift : ℵ₁ ≤ lift.{v} c ↔ ℵ₁ ≤ c := by
+  simp
+
+@[deprecated (since := "2025-12-22")] alias aleph1_le_lift := aleph_one_le_lift
+
+@[simp]
+theorem lift_le_aleph_one : lift.{v} c ≤ ℵ₁ ↔ c ≤ ℵ₁ := by
+  simpa using lift_le (b := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias lift_le_aleph1 := lift_le_aleph_one
+
+@[simp]
+theorem aleph_one_lt_lift : ℵ₁ < lift.{v} c ↔ ℵ₁ < c := by
+  simpa using lift_lt (a := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias aleph1_lt_lift := aleph_one_lt_lift
+
+@[deprecated lift_le_aleph0 (since := "2026-03-23")]
+theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
+  simp
+
+@[deprecated (since := "2025-12-22")] alias lift_lt_aleph1 := lift_lt_aleph_one
+
+@[simp]
+theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  simpa using lift_inj (a := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias aleph1_eq_lift := aleph_one_eq_lift
+
+@[simp]
+theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
+  simpa using lift_inj (b := ℵ₁)
+
+@[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
+
+@[simp]
+theorem aleph_natCast_le_lift : ℵ_ n ≤ lift.{v} c ↔ ℵ_ n ≤ c := by
+  simpa using lift_le (a := ℵ_ n)
+
+@[simp]
+theorem lift_le_aleph_natCast : lift.{v} c ≤ ℵ_ n ↔ c ≤ ℵ_ n := by
+  simpa using lift_le (b := ℵ_ n)
+
+@[simp]
+theorem aleph_natCast_lt_lift : ℵ_ n < lift.{v} c ↔ ℵ_ n < c := by
+  simpa using lift_lt (a := ℵ_ n)
+
+@[simp]
+theorem lift_lt_aleph_natCast : lift.{v} c < ℵ_ n ↔ c < ℵ_ n := by
+  simpa using lift_lt (b := ℵ_ n)
+
+@[simp]
+theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
+  simpa using lift_inj (a := ℵ_ n)
+
+@[simp]
+theorem lift_eq_aleph_natCast : lift.{v} c = ℵ_ n ↔ c = ℵ_ n := by
+  simpa using lift_inj (b := ℵ_ n)
+
+@[simp]
+theorem aleph_ofNat_le_lift [n.AtLeastTwo] : ℵ_ ofNat(n) ≤ lift.{v} c ↔ ℵ_ ofNat(n) ≤ c :=
+  aleph_natCast_le_lift
+
+@[simp]
+theorem lift_le_aleph_ofNat [n.AtLeastTwo] : lift.{v} c ≤ ℵ_ ofNat(n) ↔ c ≤ ℵ_ ofNat(n) :=
+  lift_le_aleph_natCast
+
+@[simp]
+theorem aleph_ofNat_lt_lift [n.AtLeastTwo] : ℵ_ ofNat(n) < lift.{v} c ↔ ℵ_ ofNat(n) < c :=
+  aleph_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_aleph_ofNat [n.AtLeastTwo] : lift.{v} c < ℵ_ ofNat(n) ↔ c < ℵ_ ofNat(n) :=
+  lift_lt_aleph_natCast
+
+@[simp]
+theorem aleph_ofNat_eq_lift [n.AtLeastTwo] : ℵ_ ofNat(n) = lift.{v} c ↔ ℵ_ ofNat(n) = c :=
+  aleph_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_aleph_ofNat [n.AtLeastTwo] : lift.{v} c = ℵ_ ofNat(n) ↔ c = ℵ_ ofNat(n) :=
+  lift_eq_aleph_natCast
+
+@[simp]
+theorem beth_natCast_le_lift : ℶ_ n ≤ lift.{v} c ↔ ℶ_ n ≤ c := by
+  simpa using lift_le (a := ℶ_ n)
+
+@[simp]
+theorem lift_le_beth_natCast : lift.{v} c ≤ ℶ_ n ↔ c ≤ ℶ_ n := by
+  simpa using lift_le (b := ℶ_ n)
+
+@[simp]
+theorem beth_natCast_lt_lift : ℶ_ n < lift.{v} c ↔ ℶ_ n < c := by
+  simpa using lift_lt (a := ℶ_ n)
+
+@[simp]
+theorem lift_lt_beth_natCast : lift.{v} c < ℶ_ n ↔ c < ℶ_ n := by
+  simpa using lift_lt (b := ℶ_ n)
+
+@[simp]
+theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
+  simpa using lift_inj (a := ℶ_ n)
+
+@[simp]
+theorem lift_eq_beth_natCast : lift.{v} c = ℶ_ n ↔ c = ℶ_ n := by
+  simpa using lift_inj (b := ℶ_ n)
+
+@[simp]
+theorem beth_ofNat_le_lift [n.AtLeastTwo] : ℶ_ ofNat(n) ≤ lift.{v} c ↔ ℶ_ ofNat(n) ≤ c :=
+  beth_natCast_le_lift
+
+@[simp]
+theorem lift_le_beth_ofNat [n.AtLeastTwo] : lift.{v} c ≤ ℶ_ ofNat(n) ↔ c ≤ ℶ_ ofNat(n) :=
+  lift_le_beth_natCast
+
+@[simp]
+theorem beth_ofNat_lt_lift [n.AtLeastTwo] : ℶ_ ofNat(n) < lift.{v} c ↔ ℶ_ ofNat(n) < c :=
+  beth_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_beth_ofNat [n.AtLeastTwo] : lift.{v} c < ℶ_ ofNat(n) ↔ c < ℶ_ ofNat(n) :=
+  lift_lt_beth_natCast
+
+@[simp]
+theorem beth_ofNat_eq_lift [n.AtLeastTwo] : ℶ_ ofNat(n) = lift.{v} c ↔ ℶ_ ofNat(n) = c :=
+  beth_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_beth_ofNat [n.AtLeastTwo] : lift.{v} c = ℶ_ ofNat(n) ↔ c = ℶ_ ofNat(n) :=
+  lift_eq_beth_natCast
+
+end lift
 end Cardinal
+
+namespace Ordinal
+section lift
+variable {o : Ordinal.{u}} {n : ℕ}
+
+@[simp]
+theorem omega_one_le_lift : ω₁ ≤ lift.{v} o ↔ ω₁ ≤ o := by
+  simpa using lift_le (a := ω₁)
+
+@[simp]
+theorem lift_le_omega_one : lift.{v} o ≤ ω₁ ↔ o ≤ ω₁ := by
+  simpa using lift_le (b := ω₁)
+
+@[simp]
+theorem omega_one_lt_lift : ω₁ < lift.{v} o ↔ ω₁ < o := by
+  simpa using lift_lt (a := ω₁)
+
+@[simp]
+theorem lift_lt_omega_one : lift.{v} o < ω₁ ↔ o < ω₁ := by
+  simpa using lift_lt (b := ω₁)
+
+@[simp]
+theorem omega_one_eq_lift : ω₁ = lift.{v} o ↔ ω₁ = o := by
+  simpa using lift_inj (a := ω₁)
+
+@[simp]
+theorem lift_eq_omega_one : lift.{v} o = ω₁ ↔ o = ω₁ := by
+  simpa using lift_inj (b := ω₁)
+
+@[simp]
+theorem omega_natCast_le_lift : ω_ n ≤ lift.{v} o ↔ ω_ n ≤ o := by
+  simpa using lift_le (a := ω_ n)
+
+@[simp]
+theorem lift_le_omega_natCast : lift.{v} o ≤ ω_ n ↔ o ≤ ω_ n := by
+  simpa using lift_le (b := ω_ n)
+
+@[simp]
+theorem omega_natCast_lt_lift : ω_ n < lift.{v} o ↔ ω_ n < o := by
+  simpa using lift_lt (a := ω_ n)
+
+@[simp]
+theorem lift_lt_omega_natCast : lift.{v} o < ω_ n ↔ o < ω_ n := by
+  simpa using lift_lt (b := ω_ n)
+
+@[simp]
+theorem omega_natCast_eq_lift : ω_ n = lift.{v} o ↔ ω_ n = o := by
+  simpa using lift_inj (a := ω_ n)
+
+@[simp]
+theorem lift_eq_omega_natCast : lift.{v} o = ω_ n ↔ o = ω_ n := by
+  simpa using lift_inj (b := ω_ n)
+
+@[simp]
+theorem omega_ofNat_le_lift [n.AtLeastTwo] : ω_ ofNat(n) ≤ lift.{v} o ↔ ω_ ofNat(n) ≤ o :=
+  omega_natCast_le_lift
+
+@[simp]
+theorem lift_le_omega_ofNat [n.AtLeastTwo] : lift.{v} o ≤ ω_ ofNat(n) ↔ o ≤ ω_ ofNat(n) :=
+  lift_le_omega_natCast
+
+@[simp]
+theorem omega_ofNat_lt_lift [n.AtLeastTwo] : ω_ ofNat(n) < lift.{v} o ↔ ω_ ofNat(n) < o :=
+  omega_natCast_lt_lift
+
+@[simp]
+theorem lift_lt_omega_ofNat [n.AtLeastTwo] : lift.{v} o < ω_ ofNat(n) ↔ o < ω_ ofNat(n) :=
+  lift_lt_omega_natCast
+
+@[simp]
+theorem omega_ofNat_eq_lift [n.AtLeastTwo] : ω_ ofNat(n) = lift.{v} o ↔ ω_ ofNat(n) = o :=
+  omega_natCast_eq_lift
+
+@[simp]
+theorem lift_eq_omega_ofNat [n.AtLeastTwo] : lift.{v} o = ω_ ofNat(n) ↔ o = ω_ ofNat(n) :=
+  lift_eq_omega_natCast
+
+end lift
+end Ordinal

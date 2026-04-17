@@ -1,17 +1,21 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.MetricSpace.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.MetricSpace.Defs
 
 /-!
 # Basic properties of metric spaces, and instances.
 
 -/
+
+@[expose] public section
 
 open Set Filter Bornology Topology
 open scoped NNReal Uniformity
@@ -73,17 +77,17 @@ uniformity are defeq in the metric space and the emetric space. In this definiti
 is given separately, to be able to prescribe some expression which is not defeq to the push-forward
 of the edistance to reals. -/
 abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : α → α → ℝ)
-    (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
+    (dist_nonneg : ∀ x y, 0 ≤ dist x y) (h : ∀ x y, edist x y = .ofReal (dist x y)) :
     MetricSpace α :=
-  @MetricSpace.ofT0PseudoMetricSpace _
-    (PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist edist_ne_top h) _
+  letI := PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist dist_nonneg h
+  MetricSpace.ofT0PseudoMetricSpace _
 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the metric space and the emetric space. -/
-def EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
+abbrev EMetricSpace.toMetricSpace {α : Type u} [EMetricSpace α] (h : ∀ x y : α, edist x y ≠ ⊤) :
     MetricSpace α :=
-  EMetricSpace.toMetricSpaceOfDist (fun x y => ENNReal.toReal (edist x y)) h fun _ _ => rfl
+  EMetricSpace.toMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
 
 /-- Metric space structure pulled back by an injective function. Injectivity is necessary to
 ensure that `dist x y = 0` only if `x = y`. -/
@@ -122,12 +126,21 @@ end Real
 section NNReal
 
 instance : MetricSpace ℝ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
+
+theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
+  isUniformEmbedding_subtype_val
+
+theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
+  isUniformEmbedding_coe.isEmbedding
+
+theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal :=
+  isClosed_Ici.isClosedEmbedding_subtypeVal
 
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
-  MetricSpace.induced ULift.down ULift.down_injective ‹_›
+  fast_instance% MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 
@@ -186,8 +199,8 @@ theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : �
 
 instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
     MetricSpace (SeparationQuotient α) :=
-  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 edist_ne_top) <|
-    surjective_mk.forall₂.2 dist_edist
+  EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
+    surjective_mk.forall₂.2 edist_dist
 
 end EqRel
 
@@ -214,7 +227,7 @@ lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible dsimp [replaceEDist]
+  dsimp +instances [replaceEDist]
 
 end PseudoEMetricSpace
 
@@ -240,11 +253,11 @@ lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible dsimp [replaceDist]
+  dsimp +instances [replaceDist]
 
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
-  with_reducible dsimp [replaceDist]
+  dsimp +instances [replaceDist]
 
 end PseudoMetricSpace
 
@@ -259,7 +272,7 @@ non-definitionally) equal to some given edistance. We also provide convenience v
 PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-abbrev replaceEDist : EMetricSpace X where
+noncomputable abbrev replaceEDist : EMetricSpace X where
   edist := d
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]
@@ -270,7 +283,7 @@ lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible simp [replaceEDist_eq]
+  simp +instances [replaceEDist_eq]
 
 end EMetricSpace
 
@@ -293,10 +306,10 @@ lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
-  with_reducible simp [replaceDist_eq]
+  simp +instances [replaceDist_eq]
 
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
-  with_reducible simp [replaceDist_eq]
+  simp +instances [replaceDist_eq]
 
 end MetricSpace

@@ -3,10 +3,12 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Products
 
 /-!
 # The IPC property
@@ -30,9 +32,13 @@ does the category of Ind-objects of `C`.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
 
+@[expose] public section
+
 universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory.Limits
+
+open ConcreteCategory
 
 section
 
@@ -63,6 +69,7 @@ noncomputable def colimitPointwiseProductToProductColimit :
     colimit (pointwiseProduct F) ⟶ ∏ᶜ fun (s : α) => colimit (F s) :=
   colimit.desc (pointwiseProduct F) (coconePointwiseProduct F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) :
     colimit.ι (pointwiseProduct F) k ≫ colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
@@ -89,6 +96,7 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimitPointwiseProductToProductColimit_app (d : D) :
     (colimitPointwiseProductToProductColimit F).app d =
       (colimitObjIsoColimitCompEvaluation _ _).hom ≫
@@ -124,6 +132,7 @@ section types
 
 variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ Type u) :
     IsIso (colimitPointwiseProductToProductColimit F) := by
   -- We follow the proof in [Kashiwara2006], Prop. 3.1.11(ii)
@@ -136,17 +145,17 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     let yk' : (pointwiseProduct F).obj k :=
       (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
-      simp only [k, yk, Types.Colimit.w_apply, hyk₀]
+      simp only [k, yk, colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
-      simp only [k, yk', Types.Colimit.w_apply, hyk₀']
+      simp only [k, yk', colimit.w_apply, hyk₀']
     dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =
           (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk') := by
       intro s
-      have hy₁ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk
-      have hy₂ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk'
-      dsimp only [pointwiseProduct_obj, types_comp_apply] at hy₁ hy₂
+      have hy₁ := congr_hom (ι_colimitPointwiseProductToProductColimit_π F k s) yk
+      have hy₂ := congr_hom (ι_colimitPointwiseProductToProductColimit_π F k s) yk'
+      dsimp at hy₁ hy₂ hy
       rw [← hy, hy₁, Types.FilteredColimit.colimit_eq_iff] at hy₂
       obtain ⟨i₀, f₀, g₀, h₀⟩ := hy₂
       refine ⟨IsFiltered.coeq f₀ g₀, f₀ ≫ IsFiltered.coeqHom f₀ g₀, ?_⟩
@@ -154,13 +163,13 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
       simp [h₀]
     choose k' f hk' using hch
     apply Types.colimit_sound' f f
-    exact Types.limit_ext' _ _ _ (fun ⟨s⟩ => by simpa using hk' _)
+    exact Types.limit_ext' _ _ _ (fun ⟨s⟩ => by simpa [Pi.map_π_apply] using hk' s)
   · have hch : ∀ (s : α), ∃ (i : I s) (xi : (F s).obj i), colimit.ι (F s) i xi =
         Pi.π (fun s => colimit (F s)) s x := fun s => Types.jointly_surjective' _
     choose k p hk using hch
     refine ⟨colimit.ι (pointwiseProduct F) k ((Types.productIso _).inv p), ?_⟩
     refine Types.limit_ext' _ _ _ (fun ⟨s⟩ => ?_)
-    have := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s)
+    have := congr_hom (ι_colimitPointwiseProductToProductColimit_π F k s)
       ((Types.productIso _).inv p)
     exact this.trans (by simpa using hk _)
 

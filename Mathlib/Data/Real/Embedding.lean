@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals
@@ -19,6 +21,8 @@ This file provides embedding of any archimedean groups into reals.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
+
+@[expose] public section
 
 
 variable {M : Type*}
@@ -166,7 +170,7 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     rw [mem_upperBounds]
     suffices (∀ (y : ℚ), y.num • (1 : M) < 0 → y ≤ x) → 0 ≤ x by simpa using this
     intro h
-    have h' (y : ℚ) (hy: y < 0) : y ≤ x := by
+    have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
       exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
@@ -197,7 +201,7 @@ def embedReal : M →+o ℝ where
   map_add' := embedRealFun_add
   monotone' := (embedRealFun_strictMono M).monotone
 
-theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := by rfl
+theorem embedReal_apply (a : M) : embedReal M a = embedRealFun a := by rfl
 
 variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=

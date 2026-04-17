@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Prime
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.RingTheory.Ideal.Prime
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 
@@ -22,6 +24,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -49,6 +53,9 @@ theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
 
 theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
+
+theorem IsMaximal.lt_top {I : Ideal α} (h : I.IsMaximal) : I < ⊤ :=
+  h.ne_top.lt_top
 
 theorem isMaximal_iff {I : Ideal α} :
     I.IsMaximal ↔ (1 : α) ∉ I ∧ ∀ (J : Ideal α) (x), I ≤ J → x ∉ I → x ∈ J → (1 : α) ∈ J := by
@@ -84,7 +91,7 @@ theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal �
   exact IsMaximal.ne_top hMmax
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
+  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
@@ -113,7 +120,7 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
     fun e =>
     or_iff_not_imp_left.mpr fun hx => by
       rw [Ideal.mem_sInf] at hx e ⊢
-      push_neg at hx
+      push Not at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
       rcases hs'.total hI hJ with h | h
@@ -213,9 +220,6 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
 
-@[deprecated (since := "2025-05-24")]
-alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
-
 section IsPrincipalIdealRing
 
 variable [IsPrincipalIdealRing α]
@@ -233,7 +237,7 @@ theorem isPrime_iff_of_isPrincipalIdealRing_of_noZeroDivisors [NoZeroDivisors α
     {P : Ideal α} : P.IsPrime ↔ P = ⊥ ∨ ∃ p, Prime p ∧ P = span {p} := by
   rw [or_iff_not_imp_left, ← forall_congr' isPrime_iff_of_isPrincipalIdealRing,
     ← or_iff_not_imp_left, or_iff_right_of_imp]
-  rintro rfl; exact bot_prime
+  rintro rfl; exact isPrime_bot
 
 end IsPrincipalIdealRing
 

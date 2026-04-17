@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Multilinear.Curry
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-! # Multilinear maps over finite-dimensional spaces
 
@@ -17,6 +19,8 @@ finitely-generated and free.
 We do not put this in `LinearAlgebra.Multilinear.Basic` to avoid making the imports too large
 there.
 -/
+
+@[expose] public section
 
 
 namespace MultilinearMap

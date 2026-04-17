@@ -3,13 +3,16 @@ Copyright (c) 2025 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.Topology.Separation.Basic
-import Mathlib.Topology.AlexandrovDiscrete
+public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # T1 Alexandrov-discrete topology is discrete
 -/
+
+@[expose] public section
 
 open Filter
 

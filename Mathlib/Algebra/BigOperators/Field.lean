@@ -3,13 +3,17 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.Finset.Density
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Finset.Density
 
 /-!
 # Results about big operators with values in a field
 -/
+
+public section
 
 open Fintype
 
@@ -29,7 +33,8 @@ variable {α β : Type*} [Fintype β]
 
 @[simp]
 lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by simp [dens, sum_div]
+    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by
+  simp [dens, sum_div]
 
 variable {s : Finset α} {t : α → Finset β}
 
