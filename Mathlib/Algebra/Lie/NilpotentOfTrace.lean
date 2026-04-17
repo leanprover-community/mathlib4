@@ -63,8 +63,6 @@ lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 section Lagrange
 
-variable {K : Type*} [Field K]
-
 lemma exists_polynomial_eval_eq
     {ι : Type*} [Finite ι] (a c : ι → K) (hwd : ∀ i j, a i = a j → c i = c j) :
     ∃ q : Polynomial K, ∀ i, eval (a i) q = c i := by
