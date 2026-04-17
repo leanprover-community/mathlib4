@@ -723,13 +723,13 @@ lemma isOpenEmbedding_sigmaToPi : Topology.IsOpenEmbedding (sigmaToPi R) := by
 
 /-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is homeomorphic
 to the prime spectrum of the product. -/
-noncomputable def sigmaHomeoPi {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
     (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
   (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
 
 @[simp]
-lemma sigmaHomeoPi_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
-    sigmaHomeoPi R p = sigmaToPi R p :=
+lemma sigmaToPiHomeo_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
+    sigmaToPiHomeo R p = sigmaToPi R p :=
   rfl
 
 end Pi
