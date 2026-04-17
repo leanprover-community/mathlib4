@@ -60,10 +60,8 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
-  __ := Submodule.Quotient.addMonoid I
-  __ := Submodule.Quotient.addCommGroup I
-  __ := (inferInstanceAs <| Ring (Quotient.ringCon I).Quotient : Ring (R ⧸ I))
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
+  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
 instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
 instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
@@ -75,8 +73,7 @@ instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
-  with_reducible_and_instances rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
 
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
