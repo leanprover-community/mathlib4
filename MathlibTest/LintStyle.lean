@@ -284,6 +284,7 @@ warning: Please use '<|' instead of '$' for the pipe operator.
 Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
+set_option linter.impossibleInstance false in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
     · have := 0

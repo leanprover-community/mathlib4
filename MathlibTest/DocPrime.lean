@@ -67,6 +67,7 @@ Declarations whose name ends with a `'` are expected to contain an explanation f
 Note: This linter can be disabled with `set_option linter.docPrime false`
 -/
 #guard_msgs in
+set_option linter.nonClassInstance false in
 instance inst_no_doc' : True := .intro
 
 /--
@@ -91,6 +92,7 @@ def def_no_doc' : True := .intro
 namespace Foo'
 
 example : True := .intro
+set_option linter.nonClassInstance false in
 instance : True := .intro
 
 end Foo'
