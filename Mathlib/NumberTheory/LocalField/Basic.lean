@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
@@ -142,8 +143,6 @@ instance : Finite 𝓀[K] :=
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
 
-proof_wanted isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K]
-
 end TopologicalSpace
 
 section UniformSpace
@@ -168,6 +167,20 @@ instance : CompleteSpace 𝒪[K] :=
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
+
+open scoped Pointwise in
+instance : IsAdicComplete 𝓂[K] 𝒪[K] where
+  prec' f hf := by
+    let S n : Set 𝒪[K] := f n +ᵥ ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K])
+    have hS n : S (n + 1) ⊆ S n := by
+      apply (Set.vadd_set_subset_vadd_set_iff.mpr (Ideal.pow_le_pow_right n.le_succ)).trans
+      simpa [S] using (hf n.le_succ).symm
+    have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
+    obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
+      (by simp [S, Submodule.nonempty]) h
+    refine ⟨L, fun n ↦ ?_⟩
+    obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
+    simpa [SModEq.sub_mem] using hy
 
 end UniformSpace
 

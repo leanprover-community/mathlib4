@@ -410,8 +410,9 @@ theorem ideal_isPrincipal [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] 
       simp only [hu, Units.isUnit]
     · rw [← Subring.coe_mul, SetLike.coe_eq_coe] at hu
       rw [hu, Ideal.mul_unit_mem_iff_mem P u.isUnit,
-        IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn), ← Ideal.span_singleton_le_iff_mem,
-        ← π.is_generator] at hx_mem
+        IsPrime.pow_mem_iff_mem hP _ (pos_iff_ne_zero.mpr hn),
+        ← Ideal.span_singleton_le_iff_mem] at hx_mem
+      replace hx_mem := π.is_generator ▸ hx_mem
       rw [← Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal K₀) hP.ne_top hx_mem]
       exact ⟨π.1, π.is_generator⟩
 
