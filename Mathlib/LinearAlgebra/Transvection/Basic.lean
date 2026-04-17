@@ -82,7 +82,6 @@ theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
   simp only [LinearMap.comp_apply, apply, map_add, map_smul, add_assoc]
   simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
 
-theorem comp_of_right_eq_apply {f g : Dual R V} {v : V} {x : V} (hf : f v = 0) :
     (transvection f v) (transvection g v x) = transvection (f + g) v x := by
   simp [transvection, map_add, hf, add_smul, add_assoc]
 
