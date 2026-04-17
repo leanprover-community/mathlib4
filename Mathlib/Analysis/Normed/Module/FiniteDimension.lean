@@ -536,22 +536,6 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
       rw [norm_smul, mul_comm]
       gcongr <;> apply norm_le_pi_norm }
 
-/-- A family of continuous linear maps is continuous on `s` if all its applications are. -/
-theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} {s : Set X} : ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x => f x y) s := by
-  refine ⟨fun h y => (ContinuousLinearMap.apply 𝕜 F y).continuous.comp_continuousOn h, fun h => ?_⟩
-  let d := finrank 𝕜 E
-  have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
-  let e₁ : E ≃L[𝕜] Fin d → 𝕜 := ContinuousLinearEquiv.ofFinrankEq hd
-  let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
-    (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← f.id_comp, ← e₂.symm_comp_self]
-  exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
-
-theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by
-  simp_rw [← continuousOn_univ, continuousOn_clm_apply]
-
 end CompleteField
 
 section LocallyCompactField

@@ -509,7 +509,7 @@ section Pi
 open scoped UniformConvergenceCLM
 
 variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
   [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
 
@@ -534,6 +534,18 @@ def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
       apply continuous_pi (A := fun i ↦ E →Lᵤ[𝕜, 𝔖] F i) fun i ↦ ?_
       exact (ContinuousLinearMap.proj i : (Π j, F j) →L[𝕜] F i).postcompUniformConvergenceCLM 𝔖
         |>.continuous}
+
+@[simp]
+lemma UniformConvergenceCLM.piEquivL_apply (𝔖 : Set (Set E))
+    (T : Π i, E →Lᵤ[𝕜, 𝔖] F i) (e : E) (i : ι) :
+    piEquivL 𝕜 F 𝔖 T e i = T i e :=
+  rfl
+
+@[simp]
+lemma UniformConvergenceCLM.piEquivL_symm_apply (𝔖 : Set (Set E))
+    (T : E →Lᵤ[𝕜, 𝔖] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜 F 𝔖).symm T i e = T e i :=
+  rfl
 
 end Pi
 
