@@ -228,6 +228,6 @@ theorem toOrderedSub [AddRightReflectLE α] : OrderedSub α where
     · rw [not_le] at h
       constructor <;> intro h'
       · simpa using add_le_add h' h.le
-      · exact zero_le c
+      · exact zero_le
 
 end CanonicallyOrderedAdd
