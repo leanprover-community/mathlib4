@@ -5807,7 +5807,6 @@ public import Mathlib.Order.Disjoint
 public import Mathlib.Order.Disjointed
 public import Mathlib.Order.Extension.Linear
 public import Mathlib.Order.Extension.Well
-public import Mathlib.Order.Fill
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.AtTopBot.BigOperators
@@ -7736,6 +7735,7 @@ public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Category.AlexDisc
 public import Mathlib.Topology.Order.Category.FrameAdjunction
 public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.Order.Completion
 public import Mathlib.Topology.Order.CountableSeparating
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.ExtendFrom
