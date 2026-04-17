@@ -505,18 +505,8 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
       rw [← mul_sum]
     _ = ‖x‖ ^ n * ∑ m ∈ range (j - n), (‖x‖ ^ m / m.factorial) := by
       congr 1
-      refine (sum_bij (fun m hm ↦ m + n) ?_ ?_ ?_ ?_).symm
-      · grind
-      · intro a ha b hb hab
-        simpa using hab
-      · intro b hb
-        simp only [mem_range, exists_prop]
-        simp only [mem_filter, mem_range] at hb
-        refine ⟨b - n, ?_, ?_⟩
-        · rw [tsub_lt_tsub_iff_right hb.2]
-          exact hb.1
-        · rw [tsub_add_cancel_of_le hb.2]
-      · simp
+      refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
+        simp +contextual [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
       gcongr
       refine Real.sum_le_exp_of_nonneg ?_ _

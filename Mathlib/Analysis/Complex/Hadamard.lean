@@ -311,31 +311,16 @@ def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u -
 lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l) ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
-    ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc, le_add_iff_nonneg_right]
-  simp only [verticalClosedStrip, mem_preimage, mem_Icc] at hz
-  obtain ⟨hz₁, hz₂⟩ := hz
-  simp only [sub_pos, hul, mul_nonneg_iff_of_pos_right, hz₁, true_and]
-  rw [add_comm, ← sub_le_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
-  nth_rewrite 2 [← one_mul (u - l)]
-  have := sub_nonneg.2 hul.le
-  gcongr
+    ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc] at hz ⊢
+  constructor <;> nlinarith [hz.1, hz.2, hul]
 
 /-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0, 1]`. -/
 lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip l u)) :
     BddAbove ((norm ∘ scale f l u) '' verticalClosedStrip 0 1) := by
-  obtain ⟨R, hR⟩ := bddAbove_def.mp hB
-  rw [bddAbove_def]
-  use R
-  intro r hr
-  obtain ⟨w, hw₁, hw₂, _⟩ := hr
-  simp only [comp_apply, scale, smul_eq_mul]
-  have : ‖f (↑l + w * (↑u - ↑l))‖ ∈ norm ∘ f '' verticalClosedStrip l u := by
-    simp only [comp_apply, mem_image]
-    use ↑l + w * (↑u - ↑l)
-    simp only [and_true]
-    exact scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hw₁
-  exact hR ‖f (↑l + w * (↑u - ↑l))‖ this
+  refine hB.mono ?_
+  rintro _ ⟨z, hz, rfl⟩
+  exact ⟨l + z * (u - l), scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hz, rfl⟩
 
 /-- A bound to the norm of `f` on the line `z.re = l` induces a bound to the norm of
   `scale f l u z` on the line `z.re = 0`. -/

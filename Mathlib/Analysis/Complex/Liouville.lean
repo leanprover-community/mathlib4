@@ -93,11 +93,7 @@ theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : 
     (z w : ℂ) : f z = f w := by
   suffices ∀ c, deriv f c = 0 from is_const_of_deriv_eq_zero hf this z w
   clear z w; intro c
-  obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
-    rcases isBounded_iff_forall_norm_le.1 hb with ⟨C, hC⟩
-    exact
-      ⟨max C 1, lt_max_iff.2 (Or.inr zero_lt_one), fun z =>
-        (hC (f z) (mem_range_self _)).trans (le_max_left _ _)⟩
+  obtain ⟨C, C₀, hC⟩ := hb.exists_pos_norm_le
   refine norm_le_zero_iff.1 (le_of_forall_gt_imp_ge_of_dense fun ε ε₀ => ?_)
   calc
     ‖deriv f c‖ ≤ C / (C / ε) :=

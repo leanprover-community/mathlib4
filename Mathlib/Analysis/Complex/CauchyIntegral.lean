@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+public import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
 # Cauchy integral formula
@@ -516,19 +517,8 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     rw [circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux hs hz hc hd,
       inv_smul_smul₀]
     simp [Real.pi_ne_zero, I_ne_zero]
-  refine mem_closure_iff_nhds.2 fun t ht => ?_
-  -- TODO: generalize to any vector space over `ℝ`
-  set g : ℝ → ℂ := fun x => w + ofReal x
-  have : Tendsto g (𝓝 0) (𝓝 w) := Continuous.tendsto' (by fun_prop) 0 w (add_zero _)
-  rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
-    ⟨l, u, hlu₀, hlu_sub⟩
-  obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by
-    refine diff_nonempty.2 fun hsub => ?_
-    have : (Ioo l u).Countable :=
-      (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
-    rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this
-    exact this.not_gt Cardinal.aleph0_lt_continuum
-  exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
+  simpa [diff_eq, inter_comm] using
+    (hs.dense_compl (𝕜 := ℝ)).open_subset_closure_inter isOpen_ball hw
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
 complex differentiable at all but countably many points of its interior, then for any `w` in this
