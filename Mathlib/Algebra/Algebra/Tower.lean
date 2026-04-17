@@ -135,7 +135,7 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
 
 /-- In a tower, the canonical map from the middle element to the top element is an
 algebra homomorphism over the bottom element. -/
-abbrev toAlgHom := Algebra.algHom
+alias toAlgHom := Algebra.algHom
 
 theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
