@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, Heather Macbeth
 -/
+
+module
+
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Positivity
-
-
-@[expose] public section
 
 /-!
 # The Motzkin polynomial
@@ -20,6 +19,8 @@ This file contains a proof of the first property (nonnegativity).
 
 TODO: prove the second property.
 -/
+
+@[expose] public section
 
 variable {K : Type*} [CommRing K] [LinearOrder K] [IsStrictOrderedRing K]
 

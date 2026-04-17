@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
+
+module
+
 public import Mathlib.Tactic.Ring
 public import Mathlib.Data.Nat.Prime.Basic
-
-
-@[expose] public section
 
 /-!
 # IMO 1959 Q1
@@ -19,6 +18,7 @@ Since Lean doesn't have a concept of "irreducible fractions" per se, we just for
 as saying the numerator and denominator are relatively prime.
 -/
 
+@[expose] public section
 
 open Nat
 

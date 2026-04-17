@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+
+module
+
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 public import Mathlib.Data.ZMod.Basic
-
-
-@[expose] public section
 
 /-!
 # A canonically ordered commutative semiring where multiplication by 2 is not injective
@@ -28,7 +27,7 @@ Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
 -/
 
-
+@[expose] public section
 
 namespace Counterexample
 

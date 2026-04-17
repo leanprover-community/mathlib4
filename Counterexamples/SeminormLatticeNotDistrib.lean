@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
+
+module
+
 public import Mathlib.Analysis.Seminorm
-
-
-@[expose] public section
 
 /-!
 # The lattice of seminorms is not distributive
@@ -22,6 +21,7 @@ This proves the lattice `Seminorm ℝ (ℝ × ℝ)` is not distributive.
 * https://en.wikipedia.org/wiki/Seminorm#Examples
 -/
 
+@[expose] public section
 
 open Seminorm
 

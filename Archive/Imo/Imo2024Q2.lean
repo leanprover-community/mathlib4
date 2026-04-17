@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+
+module
+
 public import Mathlib.FieldTheory.Finite.Basic
-
-
-@[expose] public section
 
 /-!
 # IMO 2024 Q2
@@ -22,6 +21,7 @@ are zero modulo `ab+1`, so `ab+1` divides `g`, and all sufficiently large terms,
 from which we conclude that `a=b=1`.
 -/
 
+@[expose] public section
 
 namespace Imo2024Q2
 

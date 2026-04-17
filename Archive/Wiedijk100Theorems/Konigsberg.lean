@@ -1,15 +1,14 @@
-module
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+
+module
+
 public import Mathlib.Combinatorics.SimpleGraph.Trails
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Tactic.NormNum
-
-
-@[expose] public section
 
 /-!
 # The Königsberg bridges problem
@@ -18,6 +17,7 @@ We show that a graph that represents the islands and mainlands of Königsberg an
 between them has no Eulerian trail.
 -/
 
+@[expose] public section
 
 namespace Konigsberg
 

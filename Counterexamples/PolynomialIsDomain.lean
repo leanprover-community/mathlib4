@@ -1,16 +1,15 @@
-module
 /-
 Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+
+module
+
 public import Mathlib.Algebra.GroupWithZero.TransferInstance
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.RingTheory.Polynomial.Opposites
-
-
-@[expose] public section
 
 /-!
 # A commutative semiring that is a domain whose polynomial semiring is not a domain
@@ -21,6 +20,8 @@ addition. Under these operations it is a commutative semiring that is a domain, 
 As a consequence, the polynomial semiring `NatMaxAdd[X]` is not a domain,
 even though it has no zero-divisors other than 0.
 -/
+
+@[expose] public section
 
 /-- A type synonym for ℕ equipped with maximum as addition. -/
 def NatMaxAdd := ℕ

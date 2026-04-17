@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2022 Jeoff Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeoff Lee, Thomas Zhu
 -/
+
+module
+
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-
-
-@[expose] public section
 
 /-!
 # The roots of cubic and quartic polynomials
@@ -72,6 +71,7 @@ The proof of the quartic formula is similar in structure to the cubic, and uses 
 polynomial, cubic, quartic, root
 -/
 
+@[expose] public section
 
 namespace Theorems100
 

@@ -1,16 +1,15 @@
-module
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+
+module
+
 public import Mathlib.Algebra.Order.Interval.Set.Group
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.Order.Interval.Set.Disjoint
-
-
-@[expose] public section
 
 /-!
 # Dissection of Cubes
@@ -23,6 +22,7 @@ We follow the proof described here:
 http://www.alaricstephen.com/main-featured/2017/9/28/cubing-a-cube-proof
 -/
 
+@[expose] public section
 
 open Real Set Function Fin
 

@@ -1,18 +1,17 @@
-module
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+
+module
+
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
-
-
-@[expose] public section
 
 /-!
 # IMO 2008 Q2
@@ -34,6 +33,7 @@ using `c`, `m` and `n`. We factor `LHS - 1` as a square, which finishes the proo
 set of rational solutions to the equation, and that `W` is infinite.
 -/
 
+@[expose] public section
 
 namespace Imo2008Q2
 

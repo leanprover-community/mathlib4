@@ -1,19 +1,18 @@
-module
 /-
 Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
+
+module
+
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Topology.Algebra.MvPolynomial
-
-
-@[expose] public section
 
 /-!
 # Smooth functions whose integral calculates the values of polynomials
@@ -23,6 +22,8 @@ whose integral against a multivariate polynomial `P` of total degree at most `N`
 
 This is a test of the state of the library suggested by Martin Hairer.
 -/
+
+@[expose] public section
 
 noncomputable section
 

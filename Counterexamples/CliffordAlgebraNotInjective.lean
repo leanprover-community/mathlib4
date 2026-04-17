@@ -1,18 +1,17 @@
-module
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+
+module
+
 public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.Tactic.Ring.NamePolyVars
-
-
-@[expose] public section
 
 /-! # `algebraMap R (CliffordAlgebra Q)` is not always injective.
 
@@ -33,6 +32,8 @@ Some Zulip discussion at https://leanprover.zulipchat.com/#narrow/stream/113489-
 As a bonus result, we also show `BilinMap.not_forall_toQuadraticMap_surjective`: that there
 are quadratic forms that cannot be expressed via even non-symmetric bilinear forms.
 -/
+
+@[expose] public section
 
 noncomputable section
 

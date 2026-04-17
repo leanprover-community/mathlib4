@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+
+module
+
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Dynamics.PeriodicPts.Lemmas
-
-
-@[expose] public section
 
 /-!
 # IMO 2006 Q5
@@ -42,6 +41,7 @@ on these equalities, we deduce $a+b=t+u$. This means that every root of $P(P(t))
 $P(t)+t-a-b$, and we're again done.
 -/
 
+@[expose] public section
 
 open Function Polynomial
 

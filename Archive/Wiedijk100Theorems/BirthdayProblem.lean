@@ -1,15 +1,14 @@
-module
 /-
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
+
+module
+
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Probability.UniformOn
 public import Mathlib.Probability.Notation
-
-
-@[expose] public section
 
 /-!
 # Birthday Problem
@@ -20,6 +19,8 @@ As opposed to the standard probabilistic statement, we instead state the birthda
 in terms of injective functions. The general result about `Fintype.card (α ↪ β)` which this proof
 uses is `Fintype.card_embedding_eq`.
 -/
+
+@[expose] public section
 
 namespace Theorems100
 

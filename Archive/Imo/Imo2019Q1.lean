@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
+
+module
+
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
-
-
-@[expose] public section
 
 /-!
 # IMO 2019 Q1
@@ -24,6 +23,7 @@ Note that there is a much more compact proof of this fact in Isabelle/HOL
   - http://downthetypehole.de/paste/4YbGgqb4
 -/
 
+@[expose] public section
 
 theorem imo2019_q1 (f : ℤ → ℤ) :
     (∀ a b : ℤ, f (2 * a) + 2 * f b = f (f (a + b))) ↔ f = 0 ∨ ∃ c, f = fun x => 2 * x + c := by

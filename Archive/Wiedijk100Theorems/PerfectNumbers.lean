@@ -1,15 +1,14 @@
-module
 /-
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+
+module
+
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.LucasLehmer
 public import Mathlib.Tactic.NormNum.Prime
-
-
-@[expose] public section
 
 /-!
 # Perfect Numbers
@@ -28,6 +27,7 @@ Euler proved the converse, that if `n` is even and perfect, then there exists `k
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
 -/
 
+@[expose] public section
 
 namespace Theorems100
 

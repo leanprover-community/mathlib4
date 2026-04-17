@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2026 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+
+module
+
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.NthRewrite
-
-
-@[expose] public section
 
 /-!
 # Minimal Sheffer stroke axioms for Boolean algebra
@@ -35,6 +34,8 @@ following [the original paper's](mccune) Otter derivation of commutativity close
 Both axiom sets are minimal in the sense that for any set using fewer total Sheffer strokes,
 non-Boolean algebra models exist.
 -/
+
+@[expose] public section
 
 /-- Veroff's two axioms for Boolean algebra. -/
 class VeroffAlgebra (α : Type*) extends Inhabited α where

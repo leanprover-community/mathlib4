@@ -1,16 +1,15 @@
-module
 /-
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
+
+module
+
 public import Mathlib.Data.Int.Lemmas
 public import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.LinearCombination
-
-
-@[expose] public section
 
 /-!
 # IMO 1981 Q3
@@ -22,6 +21,7 @@ The trick to this problem is that `m` and `n` have to be consecutive Fibonacci n
 because you can reduce any solution to a smaller one using the Fibonacci recurrence.
 -/
 
+@[expose] public section
 
 /-
 First, define the problem in terms of finding the maximum of a set.

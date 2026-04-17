@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2024 Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seewoo Lee
 -/
+
+module
+
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.NumberTheory.Real.Irrational
-
-
-@[expose] public section
 
 /-!
 # An irrational power of an irrational number need not be irrational
@@ -20,6 +19,7 @@ Consider `c = √2^√2`. If `c` is rational, we are done.
 If `c` is irrational, then `c^√2 = 2` is rational, so we are done.
 -/
 
+@[expose] public section
 
 open Real
 

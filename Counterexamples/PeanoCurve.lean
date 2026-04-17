@@ -1,20 +1,21 @@
-module
 /-
 Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+
+module
+
 public import Mathlib.Analysis.Complex.Tietze
 public import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
-
-
-@[expose] public section
 
 /-!
 # Peano curve
 This file proves the existence of a Peano curve -- continuous surjective map from the interval
 `[0, 1]` onto the square `[0, 1] × [0, 1]`.
 -/
+
+@[expose] public section
 
 open scoped unitInterval
 

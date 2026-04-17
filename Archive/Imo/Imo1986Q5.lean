@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+
+module
+
 public import Mathlib.Data.NNReal.Basic
-
-
-@[expose] public section
 
 /-!
 # IMO 1986 Q5
@@ -29,6 +28,8 @@ Formalization is based on
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1986_IMO_Problems/Problem_5)
 with minor modifications.
 -/
+
+@[expose] public section
 
 open NNReal
 

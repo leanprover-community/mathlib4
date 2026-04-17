@@ -1,15 +1,14 @@
-module
 /-
 Copyright (c) 2021 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
+
+module
+
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.Linarith
-
-
-@[expose] public section
 
 /-!
 # IMO 2021 Q1
@@ -40,6 +39,8 @@ Therefore, it is enough to show that there exists a natural number `l` such that
 Then, by the Pigeonhole principle, at least two numbers in the triplet must lie in the same pile,
 which finishes the proof.
 -/
+
+@[expose] public section
 
 open Finset
 

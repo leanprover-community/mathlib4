@@ -1,18 +1,17 @@
-module
 /-
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+
+module
+
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.NumberTheory.PrimesCongruentOne
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 public import Mathlib.Tactic.LinearCombination
-
-
-@[expose] public section
 
 /-!
 # IMO 2008 Q3
@@ -30,6 +29,7 @@ and we can take this `n` such that `n ≤ p/2`. Let `k = p - 2n ≥ 0`. Then we 
 Then `p = 2n + k ≥ 2n + √(p - 4) = 2n + √(2n + k - 4) > √(2n)` and we are done.
 -/
 
+@[expose] public section
 
 open Real
 

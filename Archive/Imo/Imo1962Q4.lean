@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
 -/
+
+module
+
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-
-
-@[expose] public section
 
 /-!
 # IMO 1962 Q4
@@ -17,6 +16,8 @@ Solve the equation `cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 = 1`.
 Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
+
+@[expose] public section
 
 open Real
 

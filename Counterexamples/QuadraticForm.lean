@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+
+module
+
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-
-
-@[expose] public section
 
 /-!
 # `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2
@@ -17,6 +16,7 @@ The main result of this file is `LinearMap.BilinForm.not_injOn_toQuadraticForm_i
 The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' : ZMod 2`.
 -/
 
+@[expose] public section
 
 variable (F : Type*) [CommRing F]
 

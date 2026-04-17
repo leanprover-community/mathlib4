@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2021 Matt Kempster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matt Kempster
 -/
+
+module
+
 public import Mathlib.Geometry.Euclidean.Triangle
-
-
-@[expose] public section
 
 /-!
 # Freek № 57: Heron's Formula
@@ -22,6 +21,7 @@ lengths.
 
 -/
 
+@[expose] public section
 
 open Real EuclideanGeometry
 

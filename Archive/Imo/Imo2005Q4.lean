@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+
+module
+
 public import Mathlib.FieldTheory.Finite.Basic
-
-
-@[expose] public section
 
 /-!
 # IMO 2005 Q4
@@ -18,6 +17,8 @@ Problem: Determine all positive integers relatively prime to all the terms of th
 This is quite an easy problem, in which the key point is a modular arithmetic calculation with
 the sequence `a n` relative to an arbitrary prime.
 -/
+
+@[expose] public section
 
 namespace IMO2005Q4
 

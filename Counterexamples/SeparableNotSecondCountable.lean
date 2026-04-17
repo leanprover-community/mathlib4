@@ -1,13 +1,12 @@
-module
 /-
 Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+
+module
+
 public import Mathlib.Analysis.Real.Cardinality
-
-
-@[expose] public section
 
 /-!
 # Example of a linear order which is a separable space but is not a second countable topology
@@ -19,6 +18,8 @@ The example is `ℝ ×ₗ Bool` which is the real line with each point duplicate
 so that the duplicate is greater than the original point
 and points with different real values are compared by these values.
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace
 

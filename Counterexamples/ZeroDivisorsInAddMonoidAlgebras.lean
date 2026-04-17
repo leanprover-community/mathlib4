@@ -1,17 +1,16 @@
-module
 /-
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+
+module
+
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.ZMod.Basic
-
-
-@[expose] public section
 
 /-!
 # Examples of zero-divisors in `AddMonoidAlgebra`s
@@ -44,7 +43,7 @@ finitely supported function is lexicographic, matching the list notation.  The i
 `[1, 1] > [1, 0]`.
 -/
 
-
+@[expose] public section
 
 open Finsupp hiding single
 open AddMonoidAlgebra

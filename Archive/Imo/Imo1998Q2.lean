@@ -1,9 +1,11 @@
-module
 /-
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+
+module
+
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Field.Rat
@@ -11,9 +13,6 @@ public import Mathlib.Data.Finite.Prod
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Ring
-
-
-@[expose] public section
 
 /-!
 # IMO 1998 Q2
@@ -42,6 +41,8 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 
 Rearranging gives the result.
 -/
+
+@[expose] public section
 
 variable {C J : Type*} (r : C → J → Prop)
 

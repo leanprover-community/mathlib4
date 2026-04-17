@@ -1,14 +1,13 @@
-module
 /-
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+
+module
+
 public import Mathlib.Data.W.Basic
 public import Mathlib.Data.Fin.VecNotation
-
-
-@[expose] public section
 
 /-!
 # W types
@@ -25,6 +24,7 @@ that it is encodable. We then define a map from propositional formulas to the
 corresponding `Wfin` type, and show that map has a left inverse.
 -/
 
+@[expose] public section
 
 namespace PropEncodable
 

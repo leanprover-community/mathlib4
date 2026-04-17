@@ -1,17 +1,16 @@
-module
 /-
 Copyright (c) 2020. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
 -/
+
+module
+
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring
-
-
-@[expose] public section
 
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
@@ -26,6 +25,7 @@ We prove that the sum of the reciprocals of the first `n` triangular numbers is 
 discrete_sum
 -/
 
+@[expose] public section
 
 open Finset
 
