@@ -224,12 +224,8 @@ noncomputable def TransitiveRelation.map (e : TransitiveRelation p₁ p₂) (F :
   t := F.map e.t
   c := e.c.map F
   isLimit := isLimitPullbackConeMapOfIsLimit F e.c.condition (.ofIsoLimit e.isLimit e.c.eta)
-  transitivity₁ := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, transitivity₁]
-  transitivity₂ := by
-    dsimp
-    rw [← F.map_comp, ← F.map_comp, transitivity₂]
+  transitivity₁ := by simp [← Functor.map_comp]
+  transitivity₂ := by simp [← Functor.map_comp]
 
 section Effective
 
