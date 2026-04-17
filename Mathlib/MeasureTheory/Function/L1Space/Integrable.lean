@@ -567,6 +567,7 @@ theorem Integrable.abs {β}
     {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
   rw [← memLp_one_iff_integrable] at hf ⊢
+  push fun _ ↦ _
   exact hf.abs
 
 -- TODO: generalise the following lemmas to enorm classes

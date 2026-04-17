@@ -141,7 +141,7 @@ lemma angle_le_angle_add_angle_of_norm_eq_one : angle x z ≤ angle x y + angle 
 lemma ortho_ne_zero_of_not_collinear (hxy1 : angle x y ≠ 0) (hxy2 : angle x y ≠ π) :
     ortho x y ≠ 0 := by
   intro h; rw [ortho_eq_sub_inner _ hx, sub_eq_zero] at h
-  grind [abs, norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
+  grind [norm_smul, Real.norm_eq_abs, norm_zero, inner_eq_mul_norm_iff_angle_eq_zero,
     inner_eq_neg_mul_norm_iff_angle_eq_pi]
 
 lemma eq_of_angle_eq_zero (hxy : angle x y = 0) : x = y := by
