@@ -74,8 +74,7 @@ abbrev Fill (α : Type*) [LinearOrder α] : Type _ :=
 
 namespace Fill
 
-instance [TopologicalSpace α] [OrderTopology α] : TopologicalSpace (Fill α) :=
-  Preorder.topology _
+instance : TopologicalSpace (Fill α) := Preorder.topology _
 
 instance [TopologicalSpace α] [OrderTopology α] : OrderTopology (Fill α) :=
   ⟨rfl⟩
