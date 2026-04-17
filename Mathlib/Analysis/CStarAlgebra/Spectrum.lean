@@ -82,7 +82,7 @@ theorem Unitary.spectrum_subset_circle (u : unitary E) :
     rw [← inv_inv (Unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
     have : ‖k‖⁻¹ ≤ ‖(↑(Unitary.toUnits u)⁻¹ : E)‖ := by
       simpa only [norm_inv] using norm_le_norm_of_mem hk
-    simpa using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
+    simpa [norm_coe_unitary] using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
 
 @[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_circle :=
   Unitary.spectrum_subset_circle
