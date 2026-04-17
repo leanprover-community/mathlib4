@@ -22,7 +22,7 @@ where `s` is the set of all `x` for which `r x x`.
 Partitions are ordered by refinement: `P ≤ Q` if every part of `P` is less than or equal to a part
 of `Q`.
 
-## Main results
+## Main declarations
 
 * `Partition s`: For `[CompleteLattice α]` and `s : α`, a `Partition s` is an independent
   collection of nontrivial elements whose supremum is `s`.
