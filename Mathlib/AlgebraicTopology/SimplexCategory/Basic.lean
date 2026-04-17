@@ -598,6 +598,12 @@ lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 @[simp]
 lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
+lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% ⇑(δ i) = Fin.succAbove i := rfl
+
+lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% ⇑(σ i) = Fin.predAbove i := rfl
+
 end Concrete
 
 section EpiMono
@@ -660,13 +666,11 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
-          ext1
-          ext1
-          exact Iso.hom_inv_id (asIso ((forget _).map f))
+          ext x : 3
+          exact Iso.hom_inv_id_apply (asIso ((forget _).map f)) x
         inv_hom_id := by
-          ext1
-          ext1
-          exact Iso.inv_hom_id (asIso ((forget _).map f)) }⟩
+          ext x : 3
+          exact Iso.inv_hom_id_apply (asIso ((forget _).map f)) x }⟩
 
 theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
