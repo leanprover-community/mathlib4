@@ -41,7 +41,7 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
 
 variable [Finite (commutatorSet G)]
 
-instance : Group.FG (_root_.commutator G) := by
+instance : (_root_.commutator G).FG := by
   rw [commutator_eq_closure]; apply Group.closure_finite_fg
 
 variable (G) in
@@ -82,7 +82,7 @@ variable [Finite (commutatorSet G)]
 
 instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.finite_range _)
 
-instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
+instance closureCommutatorRepresentatives_fg : (closureCommutatorRepresentatives G).FG :=
   Group.closure_finite_fg _
 
 variable (G) in
