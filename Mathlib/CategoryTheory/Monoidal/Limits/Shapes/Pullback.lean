@@ -6,7 +6,8 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Closed.Limits.Shapes.IsTerminal
 
 /-!
 # Pullbacks and pushouts in a monoidal category
@@ -15,6 +16,9 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 `Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. This file and
 `Mathlib.CategoryTheory.Monoidal.Limits.HasLimits` are needed to define a monoidal category
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
+
+Additionally, certain isomorphisms of pushouts and pullbacks involving terminal/initial objects are
+defined.
 
 ## TODO
 An attribute should be developed to automatically generate lemmas of this form.
@@ -28,11 +32,11 @@ namespace CategoryTheory.MonoidalCategory
 
 open Limits MonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 
 namespace IsPushout
 
-variable {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
+variable [MonoidalCategory C] {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
     {inl : X ⟶ P} {inr : Y ⟶ P} (hP : IsPushout f g inl inr)
     {W : C} (h : X ⟶ W) (k : Y ⟶ W) (w : f ≫ h = g ≫ k)
 
@@ -110,7 +114,7 @@ end IsPushout
 
 section Pushout
 
-variable [HasPushouts C]
+variable [MonoidalCategory C] [HasPushouts C]
   {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
   (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
 
@@ -161,5 +165,74 @@ lemma Limits.inr_comp_pushoutSymmetry_hom_whiskerRight (f : X ⟶ Y) (g : X ⟶ 
   simp [← comp_whiskerRight]
 
 end Pushout
+
+noncomputable section
+
+open MonoidalClosed
+
+variable [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pushout (f ▷ I) (A ◁ (∅ ⟶ W)) ≅ A ⊗ W` in a CCC with pushouts and an
+initial object. -/
+@[simps]
+def Limits.pushout.isInitialWhiskerLeftIso
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pushout (f ▷ I) (A ◁ i.to W) ≅ A ⊗ W where
+  hom := pushout.desc ((i.ofIso (zeroMul i).symm).to _) (𝟙 _)
+    ((i.ofIso (zeroMul i).symm).hom_ext _ _)
+  inv := pushout.inr _ _
+  hom_inv_id := pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pushout  ((∅ ⟶ W) ▷ A) (I ◁ f) ≅ W ⊗ A` in a braided CCC with pushouts and
+an initial object. -/
+@[simps]
+def Limits.pushout.isInitialWhiskerRightIso [BraidedCategory C]
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pushout (i.to W ▷ A) (I ◁ f) ≅ W ⊗ A where
+  hom := pushout.desc (𝟙 _) ((i.ofIso (mulZero i).symm).to _)
+    ((i.ofIso (mulZero i).symm).hom_ext _ _)
+  inv := pushout.inl _ _
+  hom_inv_id := pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _)
+
+end
+
+noncomputable section
+
+variable [HasPullbacks C]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pullback (A ⟹ W ⟶ A ⟹ ⋆) (B ⟹ ⋆ ⟶ A ⟹ ⋆) ≅ A ⟹ W` in a monoidal closed
+category with pullbacks and a terminal object. -/
+@[simps]
+def Limits.pullback.ihomMapIsTerminalIso
+    [MonoidalCategory C] [MonoidalClosed C]
+    {A B : C} (f : A ⟶ B) {T : C} (t : IsTerminal T) {W : C} :
+    pullback ((ihom A).map (t.from W)) ((MonoidalClosed.pre f).app T) ≅ (ihom A).obj W where
+  hom := pullback.fst _ _
+  inv := pullback.lift (𝟙 _) (MonoidalClosed.curry (t.from _)) (by
+      rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
+      exact t.hom_ext _ _)
+  hom_inv_id := pullback.hom_ext (by simp) ((t.ofIso (terminalPow t).symm).hom_ext _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pullback (∅ ⟹ A ⟶ ∅ ⟹ B) (W ⟹ B ⟶ ∅ ⟹ B) ≅ W ⟹ B` in a braided CCC
+with pullbacks and an initial object. -/
+@[simps]
+def Limits.pullback.preAppIsInitialIso
+    [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pullback ((ihom I).map f) ((MonoidalClosed.pre (i.to W)).app B) ≅ (ihom W).obj B where
+  hom := pullback.snd _ _
+  inv := pullback.lift (MonoidalClosed.curry ((i.ofIso (mulZero i).symm).to _)) (𝟙 _) (by
+      rw [← MonoidalClosed.curry_natural_right, MonoidalClosed.curry_eq_iff]
+      exact (i.ofIso (mulZero i).symm).hom_ext _ _)
+  hom_inv_id := pullback.hom_ext (by
+    simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
+      ← MonoidalClosed.curry_natural_left, MonoidalClosed.curry_eq_iff]
+    exact (i.ofIso (mulZero i).symm).hom_ext _ _) (by simp)
+
+end
 
 end CategoryTheory.MonoidalCategory
