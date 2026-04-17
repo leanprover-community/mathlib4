@@ -227,7 +227,7 @@ lemma IsMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, 
     M.IsMatching := by
   obtain ⟨v, w, hverts, hadj⟩ := h
   intro a ha
-  simp_all only [Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [hverts] at ha
   obtain ⟨b, hadj⟩ : ∃ b : V, M.Adj a b :=
     ha.elim (fun hav ↦ ⟨w, hav ▸ hadj⟩) (fun haw ↦ ⟨v, haw ▸ hadj.symm⟩)
   refine ⟨b, ⟨hadj, fun b' hadj' => ?_⟩⟩
