@@ -11,7 +11,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
-# Topologies on `E →L[𝕜] F` when `E` is finite dimensional
+# Topology on `E →L[𝕜] F` when `E` is finite dimensional
 
 When `E` is a finite dimensional T2 vector space over a complete nontrivially normed field,
 then the topology of bounded convergence on `E →L[𝕜] F` coincides with the toplogy of
@@ -20,6 +20,10 @@ pointwise convergence.
 In fact, the same applies to `E →L_c[𝕜] F` (with the topology of compact convergence) and,
 more generally, to `E →Lᵤ[𝕜, 𝔖] F` for any covering family `𝔖 : Set (Set E)` of bounded subsets
 of `E`.
+
+## TODO
+
+- Write `ContinuousLinearEquiv.piRing` in this setting.
 
 -/
 
@@ -130,6 +134,31 @@ theorem ContinuousLinearMap.isUniformEmbedding_coeFn_of_finiteDimensional
     IsUniformEmbedding ((↑) : (E →L[𝕜] Vᵤ) → (E → Vᵤ)) :=
   UniformConvergenceCLM.isUniformEmbedding_coeFn_of_finiteDimensional (fun _ ↦ id)
     sUnion_isVonNBounded_eq_univ
+
+/-- A family of continuous linear maps is continuous within `s` at `x` iff all its applications
+are. -/
+theorem continuousWithinAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] V} {s : Set X} {x : X} :
+    ContinuousWithinAt f s x ↔ ∀ y, ContinuousWithinAt (fun q ↦ f q y) s x := by
+  simp [ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional.continuousWithinAt_iff,
+    continuousWithinAt_pi]
+
+/-- A family of continuous linear maps is continuous on `s` iff all its applications are. -/
+theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] V} {s : Set X} :
+    ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x ↦ f x y) s := by
+  simp [ContinuousLinearMap.isEmbedding_coeFn_of_finiteDimensional.continuousOn_iff,
+    continuousOn_pi]
+
+/-- A family of continuous linear maps is continuous at a point iff all its applications are. -/
+theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] V} {x : X} :
+    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q ↦ f q y) x := by
+  simp_rw [← continuousWithinAt_univ, continuousWithinAt_clm_apply]
+
+theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] V} : Continuous f ↔ ∀ y, Continuous (f · y) := by
+  simp_rw [← continuousOn_univ, continuousOn_clm_apply]
 
 end ContinuousLinearMap
 
