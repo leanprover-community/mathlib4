@@ -274,10 +274,7 @@ theorem mapIso_inv_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
     (mapIso f g h).inv.app U = eqToHom (by rw [h]) :=
   rfl
 
-/-- A homeomorphism of spaces gives an equivalence of categories of open sets.
-
-TODO: define `OrderIso.equivalence`, use it.
--/
+/-- A homeomorphism of spaces gives an equivalence of categories of open sets. -/
 def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X :=
   (Homeomorph.opensCongr (TopCat.homeoOfIso H)).equivalence.symm
 
