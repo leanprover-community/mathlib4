@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -51,7 +52,16 @@ lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
+lemma structuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
+    {L : A ⥤ T} {X : T} {f g : StructuredArrow X L} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
 lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over X} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
+lemma under_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Under X} (e : f ≅ g) :
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
@@ -121,6 +131,14 @@ def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun 
 
 instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
   inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+@[simp]
+lemma inverseImage_op_overObj (W : MorphismProperty T) {X : T} :
+    W.overObj.op.inverseImage (Under.opEquivOpOver X).functor = W.op.underObj := rfl
+
+@[simp]
+lemma inverseImage_op_underObj (W : MorphismProperty T) {X : T} :
+    W.underObj.op.inverseImage (Over.opEquivOpUnder X).functor = W.op.overObj := rfl
 
 end
 
