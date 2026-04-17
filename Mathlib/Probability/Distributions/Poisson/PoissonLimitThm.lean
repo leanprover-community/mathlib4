@@ -116,18 +116,17 @@ lemma complexMGF_id_poissonMeasure_map_natCast (r : ℝ≥0) (z : ℂ) :
       (Measurable.aemeasurable (Measurable.of_discrete (f := fun n : ℕ ↦ (n : ℝ))))
       (by fun_prop)]
   rw [integral_poissonMeasure]
-  change ∑' n : ℕ, (rexp (-r) * r ^ n / n.factorial) • cexp (z * (n : ℂ)) = _
-  have hsum : HasSum (fun n : ℕ ↦
-      (((rexp (-r) * r ^ n / n.factorial : ℝ) : ℂ) * cexp (z * (n : ℂ))))
-      ((rexp (-r) : ℂ) * cexp ((r : ℂ) * cexp z)) := by
-    have hsum := (NormedSpace.expSeries_div_hasSum_exp ((r : ℂ) * cexp z)).mul_left (rexp (-r) : ℂ)
+  change ∑' n : ℕ, (rexp (-r) * r ^ n / n.factorial) • cexp (z * n) = _
+  have hsum : HasSum (fun n : ℕ ↦ (rexp (-r) * r ^ n / n.factorial * cexp (z * n)))
+      (rexp (-r) * cexp (r * cexp z)) := by
+    have hsum := (NormedSpace.expSeries_div_hasSum_exp (r * cexp z)).mul_left (rexp (-r) : ℂ)
     convert hsum using 1
     · funext n
       rw [CommMonoid.mul_comm z n, Complex.exp_nat_mul]
       simp [mul_assoc, mul_left_comm, mul_comm, mul_pow, div_eq_mul_inv]
     · rw [Complex.exp_eq_exp_ℂ]
-  have htsum : ∑' n : ℕ, (rexp (-r) * r ^ n / n.factorial) • cexp (z * (n : ℂ)) =
-      (rexp (-r) : ℂ) * cexp ((r : ℂ) * cexp z) := by
+  have htsum : ∑' n : ℕ, (rexp (-r) * r ^ n / n.factorial) • cexp (z * n) =
+      rexp (-r) * cexp (r * cexp z) := by
     simpa [smul_eq_mul] using hsum.tsum_eq
   rw [htsum]
   simp [← Complex.exp_add]
@@ -135,17 +134,15 @@ lemma complexMGF_id_poissonMeasure_map_natCast (r : ℝ≥0) (z : ℂ) :
   ring
 
 lemma mgf_id_poissonMeasure_map_natCast (r : ℝ≥0) (t : ℝ) :
-    mgf id ((poissonMeasure r).map (fun n : ℕ ↦ (n : ℝ))) t =
-      rexp (r * (rexp t - 1)) := by
+    mgf id ((poissonMeasure r).map (fun n : ℕ ↦ (n : ℝ))) t = rexp (r * (rexp t - 1)) := by
   have h := complexMGF_id_poissonMeasure_map_natCast r (t : ℂ)
   rw [complexMGF_ofReal] at h
-  exact Complex.ofReal_injective <| by
-    simpa [Complex.ofReal_exp, Complex.ofReal_mul, Complex.ofReal_sub] using h
+  exact ofReal_injective <| by simpa [ofReal_exp, Complex.ofReal_mul, Complex.ofReal_sub] using h
 
 lemma charFun_poissonMeasure_map_natCast (r : ℝ≥0) (t : ℝ) :
     charFun ((poissonMeasure r).map (fun n : ℕ ↦ (n : ℝ))) t =
-      cexp ((r : ℂ) * (cexp (t * Complex.I) - 1)) := by
-  simpa [complexMGF_id_mul_I] using complexMGF_id_poissonMeasure_map_natCast r (t * Complex.I)
+      cexp (r * (cexp (t * I) - 1)) := by
+  simpa [complexMGF_id_mul_I] using complexMGF_id_poissonMeasure_map_natCast r (t * I)
 
 lemma poissonMeasure_conv (r s : ℝ≥0) :
     poissonMeasure r ∗ poissonMeasure s = poissonMeasure (r + s) := by
@@ -154,15 +151,15 @@ lemma poissonMeasure_conv (r s : ℝ≥0) :
   ext t
   change charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure r ∗ poissonMeasure s)) t =
     charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure (r + s))) t
-  rw [MeasureTheory.Measure.map_conv_addMonoidHom (Nat.castAddMonoidHom ℝ) (by fun_prop)]
+  rw [Measure.map_conv_addMonoidHom (Nat.castAddMonoidHom ℝ) (by fun_prop)]
   calc
     _ = charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure r)) t *
         charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure s)) t := by
       rw [charFun_conv]
-    _ = cexp ((r : ℂ) * (cexp (t * Complex.I) - 1)) * cexp ((s : ℂ) * (cexp (t * Complex.I) - 1)) :=
+    _ = cexp (r * (cexp (t * I) - 1)) * cexp ((s : ℂ) * (cexp (t * I) - 1)) :=
       congrArg₂ (fun a b : ℂ ↦ a * b) (charFun_poissonMeasure_map_natCast r t)
         (charFun_poissonMeasure_map_natCast s t)
-    _ = cexp (((r + s : ℝ≥0) : ℂ) * (cexp (t * Complex.I) - 1)) := by
+    _ = cexp ((r + s) * (cexp (t * I) - 1)) := by
       rw [← Complex.exp_add]
       congr 1
       simp [sub_eq_add_neg, add_assoc, add_left_comm, add_comm, mul_comm, mul_add]
