@@ -96,7 +96,6 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
--- TODO: This declaration really shouldn't exist.
 set_option linter.style.setOption false in
 set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
 /-- The opposite linear order to a given linear order -/
