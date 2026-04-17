@@ -73,7 +73,7 @@ instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
 instance {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
-instance {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
 
