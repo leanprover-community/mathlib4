@@ -131,32 +131,36 @@ private lemma foo (hc : 0 ≤ c) (t : σ →₀ ℕ) : 0 ≤ t.prod (c · ^ ·) 
 -- reduce NormedGroup with IsUltraMetric dist to a function with vUltra hypothesis
 
 -- this is a weakening of `Finset.Nonempty.norm_sum_le_sup'_norm`
-lemma Finset.Nonempty.map_sum_le_sup'_map {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (f : ι → R)
-    (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b)) :
-    v (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ v (f x) := by
+lemma Finset.Nonempty.map_sum_le_sup'_map
+    {α S : Type*} [Semiring S] [LinearOrder S] [AddCommMonoid α] (g : α → S)
+    {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (f : ι → α)
+    (Ultra : ∀ a b, g (a + b) ≤ max (g a) (g b)) :
+    g (∑ i ∈ s, f i) ≤ s.sup' hs fun x ↦ g (f x) := by
   simp only [Finset.le_sup'_iff]
   induction hs using Finset.Nonempty.cons_induction with
   | singleton j => simp only [Finset.mem_singleton, Finset.sum_singleton, exists_eq_left, le_refl]
   | cons j s hj _ IH =>
       simp only [Finset.sum_cons, Finset.mem_cons, exists_eq_or_imp]
-      refine (le_total (v (∑ i ∈ s, f i)) (v (f j))).imp ?_ ?_ <;> intro h
-      · exact (vUltra _ _).trans (max_eq_left h).le
-      · exact ⟨_, IH.choose_spec.left, (vUltra _ _).trans <|
+      refine (le_total (g (∑ i ∈ s, f i)) (g (f j))).imp ?_ ?_ <;> intro h
+      · exact (Ultra _ _).trans (max_eq_left h).le
+      · exact ⟨_, IH.choose_spec.left, (Ultra _ _).trans <|
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
 -- this is a weakening of `exists_norm_finset_prod_le_of_nonempty`
-lemma exists_map_finset_prod_le_of_nonempty {ι : Type*} {t : Finset ι} (ht : t.Nonempty) (f : ι → R)
-    (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b)) : ∃ i ∈ t, v (∑ j ∈ t, f j) ≤ v (f i) := by
-  simpa [Finset.le_sup'_iff] using Finset.Nonempty.map_sum_le_sup'_map v ht f vUltra
+lemma exists_map_finset_prod_le_of_nonempty {α S : Type*} [Semiring S] [LinearOrder S]
+    [AddCommMonoid α] (g : α → S) {ι : Type*} {t : Finset ι} (ht : t.Nonempty) (f : ι → α)
+    (Ultra : ∀ a b, g (a + b) ≤ max (g a) (g b)) : ∃ i ∈ t, g (∑ j ∈ t, f j) ≤ g (f i) := by
+  simpa [Finset.le_sup'_iff] using Finset.Nonempty.map_sum_le_sup'_map g ht f Ultra
 
 -- this is a weakening of `exists_norm_multiset_prod_le`
-lemma exists_map_multiset_prod_le {ι : Type*} (vZero : v 0 = 0) (vNonneg : ∀ a, v a ≥ 0)
-    (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b)) (t : Finset ι) [Nonempty ι]
-    (f : ι → R) : ∃ i, (t.Nonempty → i ∈ t) ∧ v (∑ j ∈ t, f j) ≤ v (f i) := by
+lemma exists_map_multiset_prod_le {α S : Type*} [Semiring S] [LinearOrder S]
+    [AddCommMonoid α] (g : α → S) {ι : Type*} (Zero : g 0 = 0) (Nonneg : ∀ a, g a ≥ 0)
+    (Ultra : ∀ a b, g (a + b) ≤ max (g a) (g b)) (t : Finset ι) [Nonempty ι]
+    (f : ι → α) : ∃ i, (t.Nonempty → i ∈ t) ∧ g (∑ j ∈ t, f j) ≤ g (f i) := by
   rcases t.eq_empty_or_nonempty with rfl | ht
-  · simp [vZero, vNonneg]
+  · simp [Zero, Nonneg]
   · exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <|
-      exists_map_finset_prod_le_of_nonempty v ht f vUltra
+      exists_map_finset_prod_le_of_nonempty g ht f Ultra
 
 lemma gaussNorm_mul_le (f g : MvPowerSeries σ R) (hc : 0 ≤ c) (vNonneg : ∀ a, v a ≥ 0)
     (vMul : ∀ a b, v (a * b) ≤ v a * v b) (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b))
@@ -198,41 +202,43 @@ def AchievesGaussNorm (i : σ →₀ ℕ) : Prop :=
   v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f
 section absoluteValue
 
-lemma ultrametric_strict (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b))
-    (vNeg : ∀ a, v a = v (-a)) {a b : R}
-    (hne : v a ≠ v b) : v (a + b) = max (v a) (v b) := by
-  wlog hab : v a > v b generalizing a b with H
+lemma ultrametric_strict {α S : Type*} [Semiring S] [LinearOrder S] [AddCommGroup α]
+    (f : α → S) (Ultra : ∀ a b, f (a + b) ≤ max (f a) (f b))
+    (Neg : ∀ a, f a = f (-a)) {a b : α}
+    (hne : f a ≠ f b) : f (a + b) = max (f a) (f b) := by
+  wlog hab : f a > f b generalizing a b with H
   · simpa [add_comm, max_comm] using (H hne.symm ((not_lt.mp hab).lt_of_ne hne))
-  apply le_antisymm (vUltra a b)
-  rcases le_max_iff.mp (vUltra (a + b) (-b)) with h | h
+  apply le_antisymm (Ultra a b)
+  rcases le_max_iff.mp (Ultra (a + b) (-b)) with h | h
   · simpa [max_eq_left (le_of_lt hab)] using h
-  · exact absurd h (not_le.mpr (by simpa [vNeg b] using hab))
+  · exact absurd h (not_le.mpr (by simpa [Neg b] using hab))
 
 -- this is a version of Fabrizio's apply_sum_eq_of_lt (in Algebra/Order/Ring/IsNonarchimedean)
--- but in our generality of function v + hypothesis
+-- but in our generality of function f + hypothesis
+lemma apply_sum_eq_of_lt {α β S : Type*} [Semiring S] [LinearOrder S]
+    [AddCommGroup α] (f : α → S) (Ultra : ∀ a b, f (a + b) ≤ max (f a) (f b)) {s : Finset β}
+    {l : β → α} (Neg : ∀ a, f a = f (-a)) {k : β} (hk : k ∈ s)
+    (hmax : ∀ j ∈ s, j ≠ k → f (l j) < f (l k)) :
+    f (∑ i ∈ s, l i) = f (l k) := by
+  by_cases hcard : s.card = 1
+  · grind [Finset.card_eq_one.mp hcard]
+  · classical
+    rw [← Finset.add_sum_erase _ _ hk]
+    have hNonempty : (s.erase k).Nonempty :=
+      Finset.Nontrivial.erase_nonempty (Finset.one_lt_card_iff_nontrivial.mp (by grind))
+    have hrest_le := (Finset.Nonempty.map_sum_le_sup'_map f hNonempty l Ultra)
+    simp only [Finset.le_sup'_iff, Finset.mem_erase, ne_eq] at hrest_le
+    rw [ultrametric_strict f Ultra Neg (by grind), max_eq_left (le_of_lt (by grind))]
+
 lemma antidiagonal_dominant [DecidableEq σ] (f g : MvPowerSeries σ R) (i j : σ →₀ ℕ)
     (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b))
     (vMulEq : ∀ a b, v (a * b) = v a * v b) (vNeg : ∀ a, v a = v (-a))
     (hdom : ∀ p ∈ Finset.antidiagonal (i + j), p ≠ (i, j) →
         v (coeff p.1 f * coeff p.2 g) < v (coeff i f) * v (coeff j g)) :
     v (coeff (i + j) (f * g))  = v (coeff i f * coeff j g) := by
-  rw [coeff_mul]
-  have hmem : (i, j) ∈ Finset.antidiagonal (i + j) := by simp [Finset.mem_antidiagonal]
-  by_cases hcard : (Finset.antidiagonal (i + j)).card = 1
-  · have h : Finset.antidiagonal (i + j) = {(i, j)} := by
-      obtain ⟨a, ha⟩ := Finset.card_eq_one.mp hcard
-      grind
-    simp only [h, Finset.sum_singleton]
-  · rw [← Finset.add_sum_erase _ _ hmem]
-    have hNonempty : ((Finset.antidiagonal (i + j)).erase (i, j)).Nonempty := by
-      simpa [Finset.nonempty_iff_ne_empty, ne_eq, Finset.erase_eq_empty_iff, not_or] using
-        ⟨Finset.ne_empty_of_mem hmem, fun h => by simp [h] at hcard⟩
-    obtain ⟨m, hm, hvm⟩ := Finset.exists_max_image _ (fun p => v (coeff p.1 f * coeff p.2 g))
-      hNonempty
-    have hrest_le := (Finset.Nonempty.map_sum_le_sup'_map v hNonempty
-      (fun p => coeff p.1 f * coeff p.2 g) vUltra).trans
-      (Finset.sup'_le hNonempty _ (fun x hx => hvm x hx))
-    rw [ultrametric_strict v vUltra vNeg (by grind), max_eq_left (le_of_lt (by grind))]
+  rw [← vMulEq] at hdom
+  rw [coeff_mul, apply_sum_eq_of_lt v vUltra (by grind) (k := (i, j))
+    (s := Finset.antidiagonal (i + j)) (Finset.mem_antidiagonal.mpr rfl) hdom]
 
 lemma gaussNorm_le_mul [DecidableEq σ] (f g : MvPowerSeries σ R)
     (vMulEq : ∀ a b, v (a * b) = v a * v b) (vUltra : ∀ a b, v (a + b) ≤ max (v a) (v b))
