@@ -1214,10 +1214,10 @@ theorem orderMonoidIso_embed [v.Compatible] {Γ' : Type*} [LinearOrderedCommGrou
     (w : Valuation R Γ') [w.Compatible] (x : ValueGroupWithZero R) (h : w.IsEquiv v) :
     h.orderMonoidIso
     (embed w x) = embed v x := by
-simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
-induction x using ValueGroupWithZero.ind with
-| mk r s =>
-  simp
+  simp only [embed, ← Valuation.restrict_def, coe_mk, ZeroHom.coe_mk]
+  induction x using ValueGroupWithZero.ind with
+  | mk r s =>
+    simp
 
 /-- If a valuation `v` is compatible with the valuative relation, then `ValueGroupWithZero R`
 is isomorphic to the image group (with zero) of `v` as an ordered group with zero. -/

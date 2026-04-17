@@ -353,7 +353,7 @@ abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.obj ⟶ Y.obj) :=
 def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
     sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
       yoneda :=
-  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.symm.{max u₁ v₂} _) ≪≫
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.{max u₁ v₂}.symm _) ≪≫
     (fullyFaithfulSheafToPresheaf J A).compUliftYonedaCompWhiskeringLeft ≪≫
     uliftYonedaIsoYoneda
 
@@ -368,7 +368,7 @@ def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
     (sheafToPresheaf J A).op ⋙ coyoneda ⋙
       (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A) ≅
       coyoneda :=
-  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.symm.{max u₁ v₂} _) ≪≫
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.{max u₁ v₂}.symm _) ≪≫
     (fullyFaithfulSheafToPresheaf J A).compUliftCoyonedaCompWhiskeringLeft ≪≫
     uliftCoyonedaIsoCoyoneda
 
