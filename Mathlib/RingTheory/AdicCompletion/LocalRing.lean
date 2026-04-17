@@ -82,13 +82,13 @@ instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (max
 
 lemma AdicCompletion.maximalIdeal_eq_map_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     letI := AdicCompletion.isLocalRing_of_fg fg
-    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
+    maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   letI := AdicCompletion.isLocalRing_of_fg fg
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)).symm
 
 lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
-    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
+    maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
@@ -126,8 +126,8 @@ instance [IsNoetherianRing R] [IsLocalRing R] : IsAdicComplete
 lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     haveI := AdicCompletion.isLocalRing_of_fg fg
     haveI := AdicCompletion.algebraMap_isLocalHom_of_fg fg
-    Function.Bijective (IsLocalRing.ResidueField.map
-      (algebraMap R (AdicCompletion (maximalIdeal R) R))) := by
+    Function.Bijective
+      (IsLocalRing.ResidueField.map (algebraMap R (AdicCompletion (maximalIdeal R) R))) := by
   have := AdicCompletion.isLocalRing_of_fg fg
   refine ⟨RingHom.injective _, fun x ↦ ?_⟩
   rcases residue_surjective x with ⟨y, hy⟩
