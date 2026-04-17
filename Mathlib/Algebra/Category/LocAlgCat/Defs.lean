@@ -120,7 +120,7 @@ lemma residueEquiv_residue_apply {x : A} :
 /-- The type of morphisms in `LocAlgCat`. A morphism consists of a local algebra map
 compatible with the residue maps. -/
 @[ext]
-structure Hom (A B : LocAlgCat.{w} Λ k) where
+structure Hom (A B : LocAlgCat.{w} Λ k) : Type w where
   /-- The underlying algebra map. -/
   toAlgHom : A →ₐ[Λ] B
   -- We do not use `IsLocalHom` in order to avoid introducing `IsLocalHom` instances for `AlgHom`.

@@ -58,3 +58,53 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
   SetLike.coe_injective Set.prod_inter_prod
 
 end Subalgebra
+
+namespace AlgHom
+
+variable {R A B C : Type*} [CommSemiring R]
+
+section Semiring
+
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+
+/-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
+  the pullback of f and g as a subalgebra of A × B. -/
+abbrev pullback (f : A →ₐ[R] C) (g : B →ₐ[R] C) : Subalgebra R (A × B) := equalizer
+  (f.comp (fst R A B)) (g.comp (snd R A B))
+
+/-- The first projection from the pullback of `f` and `g` to `A`. -/
+abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] A :=
+  (fst R A B).comp (pullback f g).val
+
+/-- The second projection from the pullback of `f` and `g` to `B`. -/
+abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
+  (snd R A B).comp (pullback f g).val
+
+end Semiring
+
+section Ring
+
+variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C]
+
+theorem isUnit_pullback_mk_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {a : A × B}
+    (a_in : a ∈ f.pullback g) : IsUnit (⟨a, a_in⟩ : f.pullback g) ↔
+      IsUnit a.1 ∧ IsUnit a.2 :=
+  RingHom.isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) a_in
+
+theorem isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
+    IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g hg).map_nonunit⟩
+
+theorem isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hf : IsLocalHom f) :
+    IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g hf).map_nonunit⟩
+
+theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=
+  RingHom.surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) h
+
+theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective f) : Function.Surjective (pullbackSnd f g) :=
+  RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
+
+end Ring
+
+end AlgHom

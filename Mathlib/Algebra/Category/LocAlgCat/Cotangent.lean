@@ -126,12 +126,38 @@ theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
   rw [sup_eq_right.mpr this]
   exact (A.toOfQuot I).comap_maximalIdeal_eq
 
+theorem bijective_mapCotangent_toOfQuot_of_le_pow_two {I : Ideal A} (h : I ≤ maximalIdeal A ^ 2) :
+    haveI : Nontrivial (A ⧸ I) := by
+      rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
+      exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, h.trans (Ideal.pow_le_self (by simp))⟩
+    Bijective (mapCotangent (A.toOfQuot I)) := by
+  haveI : Nontrivial (A ⧸ I) := by
+    rw [Ideal.Quotient.nontrivial_iff, Ideal.ne_top_iff_exists_maximal]
+    exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, h.trans (Ideal.pow_le_self (by simp))⟩
+  refine ⟨?_, surjective_mapCotangent_toOfQuot I⟩
+  rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+  intro x hx
+  rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
+  simp only [LinearMap.mem_ker, mapCotangent_toCotangent, toAlgHom_toOfQuot_apply,
+    Ideal.toCotangent_eq_zero] at hx ⊢
+  change (A.toOfQuot I).toAlgHom x ∈ _ at hx
+  rwa [← map_toAlgHom_toOfQuot_maximalIdeal_eq, ← Ideal.mem_comap, ← Ideal.map_pow,
+    Ideal.comap_map_of_surjective' _ surjective_toAlgHom_toOfQuot, ker_toAlgHom_toOfQuot,
+    sup_eq_left.mpr h] at hx
+
 @[stacks 06S3 "(1) => (2)"]
 theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.toAlgHom) :
     Surjective (mapCotangent f) := by
   rw [← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom h, mapCotangent_comp, LinearMap.coe_comp]
   exact Function.Surjective.comp (equivCotangent (ofQuotKerIsoOfSurjective f h)).surjective
     (surjective_mapCotangent_toOfQuot _)
+
+theorem bijective_mapCotangent_of_surjective_of_ker_le_pow_two {f : A ⟶ B}
+    (hf : Surjective f.toAlgHom) (h_ker : RingHom.ker f.toAlgHom ≤ maximalIdeal A ^ 2) :
+    Function.Bijective (mapCotangent f) := by
+  rw [← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf, mapCotangent_comp, LinearMap.coe_comp]
+  exact Function.Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective
+    (bijective_mapCotangent_toOfQuot_of_le_pow_two h_ker)
 
 @[stacks 06S3 "(2) => (3)"]
 theorem mapCotangent_mapOfQuot_surjective_of_mapCotangent_surjective {I : Ideal A} {J : Ideal B}

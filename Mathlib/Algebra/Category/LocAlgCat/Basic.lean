@@ -7,6 +7,11 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Defs
+public import Mathlib.RingTheory.LocalRing.LocalSubring
+public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.Henselian
+
+import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Basic Constructions and Lemmas in `LocAlgCat`
@@ -37,7 +42,7 @@ namespace LocAlgCat
 
 open IsLocalRing CategoryTheory Function
 
-variable {Λ : Type u} [CommRing Λ] {k : Type v} [Field k] [Algebra Λ k] {A B : LocAlgCat.{w} Λ k}
+variable {Λ : Type u} [CommRing Λ] {k : Type v} [Field k] [Algebra Λ k] {A B C : LocAlgCat.{w} Λ k}
 
 instance [IsLocalHom (algebraMap Λ k)] : IsLocalHom (algebraMap Λ A) :=
   haveI : IsLocalHom ((algebraMap A k).comp (algebraMap Λ A)) := by
@@ -219,5 +224,124 @@ lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [IsLocalHom (algebr
   exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_map_of_mem _ y_in)
 
 end ofQuot
+
+section ofPullback
+
+variable {f : A ⟶ C} {g : B ⟶ C}
+
+instance ofPullbackResidueAlgebra : Algebra (f.toAlgHom.pullback g.toAlgHom) k :=
+  (A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)).toAlgebra
+
+instance isScalarTower_ofPullbackResidueAlgebra :
+    IsScalarTower Λ (f.toAlgHom.pullback g.toAlgHom) k := .of_algebraMap_eq (by
+  simp [RingHom.algebraMap_toAlgebra])
+
+/-- Given morphisms `f : A ⟶ C` and `g : B ⟶ C` in `LocAlgCat` where `g.toAlgHom` is surjective,
+`ofPullback` is the object in `LocAlgCat` obtained from the pullback of the underlying
+algebra homomorphisms`. -/
+def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocAlgCat.{w} Λ k :=
+  letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
+    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+  of Λ k (f.toAlgHom.pullback g.toAlgHom) (by
+    simpa [RingHom.algebraMap_toAlgebra] using Surjective.comp A.surj
+      (AlgHom.surjective_pullbackFst_of_surjective _ _ hg))
+
+@[simp]
+lemma coe_ofPullback (hg : Surjective g.toAlgHom) :
+    (ofPullback f g hg : Type w) = f.toAlgHom.pullback g.toAlgHom := rfl
+
+@[simp]
+lemma residue_ofPullback_apply (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom)
+    (u : f.toAlgHom.pullback g.toAlgHom) : (ofPullback f g hg).residue u = A.residue u.val.1 := by
+  rfl
+
+/-- Upgrades the first projection map from the pullback algebra to a morphism in `LocAlgCat`. -/
+abbrev fromOfPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+    ofPullback f g hg ⟶ A :=
+  letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
+    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+  ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
+    (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
+
+open Polynomial in
+private lemma not_isUnit_aeval_of_aeval_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (x : k)
+    {a : A} {p : (ResidueField Λ)[X]} {q : Λ[X]} (hp : aeval x p = 0)
+    (hq : q.map (IsLocalRing.residue Λ) = p) (ha : algebraMap A k a = x) :
+    ¬ IsUnit (aeval a q) := fun h ↦ by
+  replace h := IsUnit.map (algebraMap A k) h
+  have : algebraMap A k (aeval a q) = 0 := by
+    rw [← aeval_algebraMap_apply, ha, ← Polynomial.aeval_map_algebraMap (ResidueField Λ),
+    ResidueField.algebraMap_eq, hq, hp]
+  simp [this] at h
+
+open Polynomial in
+private lemma isUnit_aeval_derivative_of_isSeparable [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
+    {x : k} {a : A} {q : Λ[X]} (hx : IsSeparable (ResidueField Λ) x)
+    (hq : q.map (IsLocalRing.residue Λ) = minpoly (ResidueField Λ) x) (ha : residue A a = x) :
+    IsUnit (aeval a (derivative q)) := by
+  rw [← notMem_maximalIdeal, ← ker_residue, RingHom.mem_ker, ← RingHom.coe_coe, aeval_def,
+    hom_eval₂, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe, ← Polynomial.eval_map,
+    IsScalarTower.algebraMap_eq Λ (ResidueField Λ) k, ← map_map, ResidueField.algebraMap_eq,
+    ← derivative_map, hq, Polynomial.eval_map, ← aeval_def, ha]
+  exact hx.aeval_derivative_ne_zero (minpoly.aeval (ResidueField Λ) x)
+
+open Polynomial in
+@[stacks 06GH "(3)"]
+theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Module.Finite Λ k]
+    [HenselianRing A (maximalIdeal A)] [HenselianRing B (maximalIdeal B)]
+    [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
+    Surjective (A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)) := by
+  obtain ⟨x, hx⟩ := Field.exists_primitive_element (ResidueField Λ) k
+  let p := minpoly (ResidueField Λ) x
+  obtain ⟨q, map_q, deg_q, monic_q⟩ := lifts_and_natDegree_eq_and_monic
+    (show p ∈ lifts (IsLocalRing.residue Λ) by
+      rw [lifts_iff_coeff_lifts]; intro; exact IsLocalRing.residue_surjective _)
+    (minpoly.monic (Algebra.IsIntegral.isIntegral x))
+  obtain ⟨a', ha⟩ := A.residue_surjective x
+  obtain ⟨a, a_rt, a_sub⟩ := HenselianRing.is_henselian (R := A) (I := maximalIdeal A)
+    (q.map (algebraMap Λ A)) (Monic.map _ monic_q) a' (by
+      simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
+        map_q ha)
+    (by change IsUnit ((IsLocalRing.residue A) _); simpa using
+        LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
+          (ResidueField Λ) x) map_q ha)
+  replace ha : A.residue a = x := by
+    rw [← sub_add_cancel a a', map_add, ha, LocAlgCat.residue_eq_zero_iff.mpr a_sub, zero_add]
+  obtain ⟨b', hb⟩ := B.residue_surjective x
+  obtain ⟨b, b_rt, b_sub⟩ := HenselianRing.is_henselian (R := B) (I := maximalIdeal B)
+    (q.map (algebraMap Λ B)) (Monic.map _ monic_q) b' (by
+      simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
+        map_q hb)
+    (by change IsUnit ((IsLocalRing.residue B) _); simpa using
+        LocAlgCat.isUnit_aeval_derivative_of_isSeparable
+          (Algebra.IsSeparable.isSeparable (ResidueField Λ) x) map_q hb)
+  replace hb : B.residue b = x := by
+    rw [← sub_add_cancel b b', map_add, hb, LocAlgCat.residue_eq_zero_iff.mpr b_sub, zero_add]
+  clear a' a_sub b' b_sub
+  have hab : f.toAlgHom a = g.toAlgHom b := by
+    simp only [IsRoot.def, eval_map_algebraMap, aeval_def] at a_rt b_rt
+    apply DFunLike.congr_arg f.toAlgHom at a_rt
+    apply DFunLike.congr_arg g.toAlgHom at b_rt
+    rw [algHom_eval₂_algebraMap, map_zero, eval₂_eq_eval_map] at a_rt b_rt
+    refine eq_of_eval_eq_zero_of_not_isUnit_sub a_rt b_rt ?_ ?_
+    · rw [← notMem_maximalIdeal, not_not, ← LocAlgCat.residue_eq_zero_iff, map_sub, sub_eq_zero,
+        ← AlgHom.comp_apply, ← AlgHom.comp_apply, f.residue_comp, g.residue_comp, ha, hb]
+    · rw [derivative_map, eval_map_algebraMap]
+      exact LocAlgCat.isUnit_aeval_derivative_of_isSeparable
+        (Algebra.IsSeparable.isSeparable (ResidueField Λ) x) map_q (by
+          rwa [← AlgHom.comp_apply, f.residue_comp])
+  apply Algebra.adjoin_eq_top_of_primitive_element (Algebra.IsAlgebraic.isAlgebraic x) at hx
+  simp only [SetLike.ext_iff, Algebra.mem_top, iff_true] at hx
+  intro y
+  simp only [AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply, AlgHom.fst_apply,
+    Subtype.exists, AlgHom.mem_equalizer, AlgHom.snd_apply, exists_prop, Prod.exists,
+    exists_and_right]
+  obtain ⟨r, hr⟩ := Algebra.adjoin_eq_exists_aeval (ResidueField Λ) x ⟨y, hx y⟩
+  obtain ⟨r, rfl⟩ :=
+    map_surjective (algebraMap Λ (ResidueField Λ)) IsLocalRing.residue_surjective r
+  rw [aeval_map_algebraMap] at hr
+  exact ⟨aeval a r, ⟨aeval b r, by simp [aeval_def, hab]⟩, by simpa [aeval_def, ha]⟩
+
+end ofPullback
 
 end LocAlgCat
