@@ -99,7 +99,7 @@ lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} 
     atTop (𝓝 (poissonMeasure r {k})) := by
   have t1 : Tendsto (fun n ↦ (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
       atTop (𝓝 (poissonMeasure r {k})) := by
-    simp_rw [poissonMeasure_singleton]
+    rw [poissonMeasure_singleton]
     exact tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
   refine Tendsto.congr' ?_ t1
   simpa only [EventuallyEq, eventually_atTop, ge_iff_le] using
@@ -112,9 +112,8 @@ open MeasureTheory Complex Real
 lemma complexMGF_id_poissonMeasure_map_natCast (r : ℝ≥0) (z : ℂ) :
     complexMGF id ((poissonMeasure r).map (fun n : ℕ ↦ (n : ℝ))) z =
     cexp ((r : ℂ) * (cexp z - 1)) := by
-  rw [complexMGF, integral_map
-      (Measurable.aemeasurable (Measurable.of_discrete (f := fun n : ℕ ↦ (n : ℝ))))
-      (by fun_prop)]
+  rw [complexMGF, integral_map (Measurable.aemeasurable
+    (Measurable.of_discrete (f := fun n : ℕ ↦ (n : ℝ)))) (by fun_prop)]
   rw [integral_poissonMeasure]
   change ∑' n : ℕ, (rexp (-r) * r ^ n / n.factorial) • cexp (z * n) = _
   have hsum : HasSum (fun n : ℕ ↦ (rexp (-r) * r ^ n / n.factorial * cexp (z * n)))
@@ -147,7 +146,7 @@ lemma charFun_poissonMeasure_map_natCast (r : ℝ≥0) (t : ℝ) :
 lemma poissonMeasure_conv (r s : ℝ≥0) :
     poissonMeasure r ∗ poissonMeasure s = poissonMeasure (r + s) := by
   apply (MeasurableEmbedding.natCast (α := ℝ)).map_injective
-  apply MeasureTheory.Measure.ext_of_charFun
+  apply Measure.ext_of_charFun
   ext t
   change charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure r ∗ poissonMeasure s)) t =
     charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure (r + s))) t
@@ -156,7 +155,7 @@ lemma poissonMeasure_conv (r s : ℝ≥0) :
     _ = charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure r)) t *
         charFun (Measure.map (⇑(Nat.castAddMonoidHom ℝ)) (poissonMeasure s)) t := by
       rw [charFun_conv]
-    _ = cexp (r * (cexp (t * I) - 1)) * cexp ((s : ℂ) * (cexp (t * I) - 1)) :=
+    _ = cexp (r * (cexp (t * I) - 1)) * cexp (s * (cexp (t * I) - 1)) :=
       congrArg₂ (fun a b : ℂ ↦ a * b) (charFun_poissonMeasure_map_natCast r t)
         (charFun_poissonMeasure_map_natCast s t)
     _ = cexp ((r + s) * (cexp (t * I) - 1)) := by
