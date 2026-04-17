@@ -146,6 +146,7 @@ end ramification_inertia
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
 
+-- PRed
 instance [Algebra.QuasiFinite R S] (q : Ideal (p.Fiber S)) [q.IsPrime] :
     Module.Finite p.ResidueField (Localization.AtPrime q) :=
   Module.Finite.of_quasiFinite
