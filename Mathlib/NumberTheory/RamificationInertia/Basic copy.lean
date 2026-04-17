@@ -32,97 +32,6 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 
 @[expose] public section
 
-section artinian
-
-open Submodule
-
-theorem tada1 (R : Type*) [CommRing R] :
-    Function.Injective (algebraMap R (∀ I : MaximalSpectrum R, Localization.AtPrime I.1)) := by
-  rw [injective_iff_map_eq_zero]
-  intro x hx
-  rw [← Submodule.mem_bot R, ← SetLike.mem_coe, ← Set.singleton_subset_iff,
-    ← Submodule.colon_eq_top_iff_subset, ← not_ne_iff, Ideal.ne_top_iff_exists_maximal]
-  contrapose! hx
-  obtain ⟨I, hI, hx⟩ := hx
-  refine Function.ne_iff.mpr ⟨⟨I, hI⟩, ?_⟩
-  simpa [IsLocalization.map_eq_zero_iff I.primeCompl, not_imp_not, SetLike.le_def] using hx
-
-/-- A version of `IsArtinianRing.equivPiLocalization` with worse definitional equality. -/
-noncomputable def IsArtinianRing.equivPiLocalizationAux
-    (R : Type*) [CommRing R] [IsArtinianRing R] :
-    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 :=
-  have : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
-  let n : ℕ := Classical.choose (isNilpotent_nilradical (R := R))
-  let hn : nilradical R ^ n = ⊥ := Classical.choose_spec isNilpotent_nilradical
-  have hn : nilradical R ^ (n + 1) = ⊥ := by rw [pow_succ, hn, bot_mul]
-  have (I : MaximalSpectrum R) : IsLocalization I.1.primeCompl (R ⧸ I.asIdeal ^ (n + 1)) := by
-    classical
-    rw [isLocalization_iff]
-    refine ⟨fun x ↦ ?_, fun x ↦ ?_, fun h ↦ ?_⟩
-    · exact (Ideal.Quotient.isUnit_mk_pow_iff_notMem I.1 n.succ_ne_zero).mpr x.2
-    · obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-      exact ⟨⟨y, 1⟩, by simp⟩
-    · have key : IsCoprime ((∏ J ≠ I, J.1) ^ (n + 1)) (I.1 ^ (n + 1)) := by
-        rw [IsCoprime.pow_iff n.succ_pos n.succ_pos, IsCoprime.prod_left_iff]
-        intro J hJ
-        rw [Ideal.isCoprime_iff_sup_eq]
-        exact J.2.coprime_of_ne I.2 <| mt MaximalSpectrum.ext <| Finset.ne_of_mem_erase hJ
-      obtain ⟨a, ha, b, hb, hab⟩ := key.exists
-      refine ⟨⟨a, ?_⟩, ?_⟩
-      · simpa [← hab, I.1.add_mem_iff_left, I.1.pow_le_self _ hb] using I.1.one_notMem
-      · rw [← sub_eq_zero, ← mul_sub, ← Ideal.mem_bot, ← hn]
-        rw [IsArtinianRing.nilradical_pow_eq_iInf, iInf_split_single _ I, mul_comm]
-        refine Ideal.mul_le_inf (Ideal.mul_mem_mul (Ideal.Quotient.eq.mp h) ?_)
-        simp only [mem_iInf]
-        refine fun J h ↦ Ideal.pow_right_mono ?_ (n + 1) ha
-        refine Ideal.prod_le_inf.trans (Finset.inf_le ?_)
-        exact Finset.mem_erase_of_ne_of_mem h (Finset.mem_univ J)
-  ((AlgEquiv.piCongrRight fun I ↦ IsLocalization.algEquiv I.1.primeCompl _ _).trans
-    ((IsArtinianRing.quotNilradicalPowEquivPi R (n + 1)).symm.trans
-      ((Ideal.quotientEquivAlgOfEq R hn).trans (.quotientBot R R)))).symm
-
-/-- An Artinian local ring is isomorphic to the product of its localizations. -/
-noncomputable def IsArtinianRing.equivPiLocalizationMaximal
-    (R : Type*) [CommRing R] [IsArtinianRing R] :
-    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 :=
-  letI ψ := IsArtinianRing.equivPiLocalizationAux R
-  AlgEquiv.ofBijective (Algebra.ofId _ _) ⟨tada1 R, fun x ↦
-    ⟨ψ.symm x, (ψ.commutes (ψ.symm x)).symm.trans (ψ.apply_symm_apply x)⟩⟩
-
-@[simp]
-theorem IsArtinianRing.equivPiLocalizationMaximal_apply
-    (R : Type*) [CommRing R] [IsArtinianRing R] (x : R) :
-    IsArtinianRing.equivPiLocalizationMaximal R x = algebraMap R _ x :=
-  rfl
-
-@[simp]
-theorem IsArtinianRing.equivPiLocalizationMaximal_apply_apply
-    (R : Type*) [CommRing R] [IsArtinianRing R] (x : R) (I : MaximalSpectrum R) :
-    IsArtinianRing.equivPiLocalizationMaximal R x I = algebraMap R _ x :=
-  rfl
-
-/-- An Artinian local ring is isomorphic to the product of its localizations. -/
-noncomputable def IsArtinianRing.equivPiLocalizationPrime
-    (R : Type*) [CommRing R] [IsArtinianRing R] :
-    R ≃ₐ[R] ∀ I : PrimeSpectrum R, Localization.AtPrime I.1 :=
-  (IsArtinianRing.equivPiLocalizationMaximal R).trans
-    (AlgEquiv.piCongrLeft R (fun I : PrimeSpectrum R ↦ Localization.AtPrime I.1)
-      IsArtinianRing.primeSpectrumEquivMaximalSpectrum.symm)
-
-@[simp]
-theorem IsArtinianRing.equivPiLocalizationPrime_apply
-    (R : Type*) [CommRing R] [IsArtinianRing R] (x : R) :
-    IsArtinianRing.equivPiLocalizationPrime R x = algebraMap R _ x :=
-  rfl
-
-@[simp]
-theorem IsArtinianRing.equivPiLocalizationPrime_apply_apply
-    (R : Type*) [CommRing R] [IsArtinianRing R] (x : R) (I : PrimeSpectrum R) :
-    IsArtinianRing.equivPiLocalizationPrime R x I = algebraMap R _ x :=
-  rfl
-
-end artinian
-
 section flatBaseChange
 
 open TensorProduct
@@ -356,10 +265,23 @@ instance [Algebra.QuasiFinite R S] (q : PrimeSpectrum (p.Fiber S)) :
     Module.Finite p.ResidueField (Localization.AtPrime q.1) :=
   Module.Finite.of_quasiFinite
 
+-- PRed
+noncomputable def foo' (R : Type*) [CommRing R] [IsArtinianRing R] :
+    R ≃ₐ[R] ∀ I : MaximalSpectrum R, Localization.AtPrime I.1 where
+  __ := MaximalSpectrum.toPiLocalizationEquiv R
+  commutes' _ := rfl
+
+-- PRed
+noncomputable def foo (R : Type*) [CommRing R] [IsArtinianRing R] :
+    R ≃ₐ[R] ∀ I : PrimeSpectrum R, Localization.AtPrime I.1 :=
+  (foo' R).trans
+    (AlgEquiv.piCongrLeft R (fun I : PrimeSpectrum R ↦ Localization.AtPrime I.1)
+      IsArtinianRing.primeSpectrumEquivMaximalSpectrum.symm)
+
 theorem finrank_fiber_eq_sum_finrank_localization [Algebra.QuasiFinite R S] :
     Module.finrank p.ResidueField (p.Fiber S) = ∑ q : PrimeSpectrum (p.Fiber S),
       Module.finrank p.ResidueField (Localization.AtPrime q.1) := by
-  have key := (IsArtinianRing.equivPiLocalizationPrime (p.Fiber S)).restrictScalars p.ResidueField
+  have key := (foo (p.Fiber S)).restrictScalars p.ResidueField
   rw [key.toLinearEquiv.finrank_eq, Module.finrank_pi_fintype]
 
 open TensorProduct
