@@ -21,8 +21,6 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 ## Main definitions
 
-* `UnitMonomial`: type to represent monomials without coefficient. It's easier to reason
-  about them and then translate the result to `Monomial`.
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
 
