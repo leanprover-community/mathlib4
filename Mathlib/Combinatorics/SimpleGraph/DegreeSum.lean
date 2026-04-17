@@ -129,7 +129,7 @@ open scoped Cardinal
 lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
   let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
   suffices fib_size : ∀ e, #{d // f d = e} = 2 by
-   simp [←(Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
+   simp [← (Equiv.sigmaFiberEquiv f).cardinal_eq, fib_size, mul_comm]
   rintro ⟨e, he⟩
   obtain ⟨⟨v, w⟩, hvw⟩ := e.exists_rep
   have hadj : G.Adj v w := G.mem_edgeSet.mp (by simp [he, hvw])
