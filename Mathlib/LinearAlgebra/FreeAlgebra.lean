@@ -11,7 +11,8 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`

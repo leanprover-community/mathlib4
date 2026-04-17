@@ -5,7 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!

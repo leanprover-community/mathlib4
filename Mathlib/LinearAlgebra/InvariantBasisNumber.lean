@@ -265,7 +265,6 @@ end
      `R^n ≃ R^m`.
 -/
 
-
 section
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
@@ -296,15 +295,18 @@ section
 
 attribute [local instance] Ideal.Quotient.field
 
-/-- Nontrivial commutative rings have the invariant basis number property.
+/--
+Nontrivial commutative rings have the invariant basis number property.
 
-There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
-nontrivial commutative ring satisfies the strong rank condition, and
-`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
-satisfies the rank condition.
+There are two stronger results in mathlib:
+1.  `CommRing.orzechProperty`, which says that any commutative ring satisfies the Orzech property,
+    and hence, if it's nontrivial, satisfies the strong rank condition by
+    `strongRankCondition_of_orzechProperty`.
+2.  `rankCondition_of_nontrivial_of_commSemiring`, which says that
+    any nontrivial commutative semiring satisfies the rank condition.
 
-We prove this instance separately to avoid dependency on
-`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
+We prove this instance separately to signficantly reduce the required imports.
+-/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

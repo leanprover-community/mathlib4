@@ -37,6 +37,8 @@ is injective.
 
 -/
 
+deprecated_module (since := "2026-04-18")
+
 @[expose] public section
 
 

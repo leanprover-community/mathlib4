@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Quotient.Pi
 
 /-! # Quotient of submodules of full rank in free finite modules over PIDs

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 
