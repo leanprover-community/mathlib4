@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2024 Christian Merten. All rights reserved.
+Copyright (c) 2026 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Locally
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
@@ -14,6 +13,21 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 A ring homomorphism is a local isomorphism if source locally (in the geometric sense)
 it is a standard open immersion.
+
+## Main declarations
+
+- `Algebra.IsLocalIso`: The class of algebras that are locally standard open immersions.
+
+We show that local isomorphisms are local, stable under composition and base change.
+
+## Implementation note
+
+Most results in this file follow purely formally from the corresponding property of
+standard open immersion. We could use the `RingHom.Locally` API to obtain them, but
+it would yield results with less universe generality and we would have to replace
+`CommSemiring` by `CommRing`. In the future, we may consider refactoring the API
+for `RingHom` properties to allow for also treating properties of `CommSemiring`s
+and then simplify the proofs in this file.
 -/
 
 universe w v u
@@ -21,60 +35,6 @@ universe w v u
 public section
 
 open TensorProduct
-
-instance isScalarTower_localizationAlgebra {R : Type*} [CommSemiring R] (M : Submonoid R)
-    (S : Type*)
-    [CommSemiring S] [Algebra R S] {Rₘ : Type*} {Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
-    [Algebra R Rₘ] [IsLocalization M Rₘ] [Algebra S Sₘ]
-    [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-    [Algebra R Sₘ] [IsScalarTower R S Sₘ] :
-    letI : Algebra Rₘ Sₘ := localizationAlgebra M S
-    IsScalarTower R Rₘ Sₘ :=
-  letI : Algebra Rₘ Sₘ := localizationAlgebra M S
-  .of_algebraMap_eq' <| by
-    simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_eq R S Sₘ]
-
-set_option backward.isDefEq.respectTransparency false in
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-noncomputable
-def IsLocalization.tensorProductEquivOfMapIncludeRight
-    {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    {T : Type*} [CommSemiring T] [Algebra R T] (M : Submonoid S)
-    (Sₘ : Type*) [CommSemiring Sₘ] [Algebra R Sₘ] [Algebra S Sₘ] [IsScalarTower R S Sₘ]
-    [IsLocalization M Sₘ]
-    (A : Type*) [CommSemiring A] [Algebra T A]
-    [Algebra (T ⊗[R] S) A] [IsScalarTower T (T ⊗[R] S) A]
-    [IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := T))) A] :
-    T ⊗[R] Sₘ ≃ₐ[T] A :=
-  letI M' : Submonoid (T ⊗[R] S) := Algebra.algebraMapSubmonoid (T ⊗[R] S) M
-  letI : Algebra (T ⊗[R] S) (T ⊗[R] Sₘ) :=
-    (Algebra.TensorProduct.map (AlgHom.id R T) (IsScalarTower.toAlgHom R _ _)).toAlgebra
-  haveI : IsScalarTower T (T ⊗[R] S) (T ⊗[R] Sₘ) :=
-    .of_algebraMap_eq <| by intro; simp [RingHom.algebraMap_toAlgebra]
-  haveI : IsLocalization M' (T ⊗[R] Sₘ) := by
-    let : Algebra S (T ⊗[R] Sₘ) := .compHom _ (algebraMap S Sₘ)
-    have : IsScalarTower S (T ⊗[R] S) (T ⊗[R] Sₘ) := .of_algebraMap_eq' rfl
-    have : IsScalarTower S Sₘ (T ⊗[R] Sₘ) := .of_algebraMap_eq' rfl
-    rw [Algebra.isLocalization_iff_isPushout _ Sₘ, Algebra.IsPushout.comm,
-      ← Algebra.IsPushout.comp_iff R _ T]
-    infer_instance
-  haveI : IsLocalization M' A :=
-    inferInstanceAs <|
-      IsLocalization (M.map (Algebra.TensorProduct.includeRight (R := R) (A := T))) _
-  (IsLocalization.algEquiv M' _ _).restrictScalars T
-
-noncomputable
-def IsLocalization.Away.tensorProductEquiv
-    {T R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T]
-    (g : S) (Sₘ : Type*) [CommSemiring Sₘ] [Algebra R Sₘ] [Algebra S Sₘ] [IsScalarTower R S Sₘ]
-    [IsLocalization.Away g Sₘ] :
-    T ⊗[R] Sₘ ≃ₐ[T] Localization.Away ((1 : T) ⊗ₜ[R] g) :=
-  haveI : IsLocalization
-      ((Submonoid.powers g).map (Algebra.TensorProduct.includeRight (R := R) (A := T)))
-      (Localization.Away ((1 : T) ⊗ₜ[R] g)) := by
-    simp only [Submonoid.map_powers, Algebra.TensorProduct.includeRight_apply]
-    infer_instance
-  IsLocalization.tensorProductEquivOfMapIncludeRight (.powers g) _ _
 
 /-- An `R`-algebra `S` is a local isomorphism if source locally (in the geometric sense),
 it is a standard open immersion. -/
@@ -84,8 +44,9 @@ class Algebra.IsLocalIso (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebr
 
 namespace Algebra.IsLocalIso
 
-variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
+variable (R S) in
 lemma span_isStandardOpenImmersion_eq_top [Algebra.IsLocalIso R S] :
     Ideal.span {g : S | Algebra.IsStandardOpenImmersion R (Localization.Away g)} = ⊤ := by
   by_contra hne
@@ -102,19 +63,6 @@ lemma iff_span_isStandardOpenImmersion_eq_top :
   apply hq.ne_top
   rw [_root_.eq_top_iff, ← h, Ideal.span_le]
   grind [SetLike.mem_coe]
-
-end Algebra.IsLocalIso
-
-/-- A ring homomorphism is a local isomorphism if source locally (in the geometric sense),
-it is a standard open immersion. -/
-@[stacks 096E "(1)", algebraize]
-def RingHom.IsLocalIso {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) : Prop :=
-  letI := f.toAlgebra
-  Algebra.IsLocalIso R S
-
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-namespace Algebra.IsLocalIso
 
 instance (priority := 100) [IsStandardOpenImmersion R S] : IsLocalIso R S where
   exists_notMem_isStandardOpenImmersion q hq := by
@@ -169,11 +117,11 @@ lemma pi_of_finite {ι : Type*} (R : Type*) (S : ι → Type*) [CommSemiring R]
   apply of_span_range_eq_top (fun i ↦ Pi.single i (1 : S i)) _ fun i ↦ S i
   exact Ideal.span_single_eq_top _
 
-instance refl : IsLocalIso R R := inferInstance
+variable (T : Type*) [CommSemiring T]
 
 variable (R S) in
 /-- Local isomorphisms are stable under composition. -/
-lemma trans (T : Type*) [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+lemma trans [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [IsLocalIso R S] [IsLocalIso S T] : IsLocalIso R T := by
   -- The proof is purely formal given that open immersions are stable under composition.
   let s : Set S := {g : S | IsStandardOpenImmersion R (Localization.Away g)}
@@ -214,54 +162,23 @@ lemma trans (T : Type*) [CommSemiring T] [Algebra S T] [Algebra R T] [IsScalarTo
     Algebra.isPushout_of_isLocalization (.powers g) _ _ _
   exact .of_isPushout S (Localization.Away x) _ _
 
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
-set_option backward.isDefEq.respectTransparency false in
-instance (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalIso R S] :
-    IsLocalIso T (T ⊗[R] S) := by
+variable {T} in
+lemma of_algEquiv [Algebra R T] (e : S ≃ₐ[R] T) [IsLocalIso R S] : IsLocalIso R T := by
+  algebraize [e.toAlgHom.toRingHom]
+  have : IsStandardOpenImmersion S T := .of_bijective e.bijective
+  exact .trans _ S _
+
+variable {T} in
+lemma iff_of_algEquiv [Algebra R T] (e : S ≃ₐ[R] T) : IsLocalIso R S ↔ IsLocalIso R T :=
+  ⟨fun _ ↦ .of_algEquiv e, fun _ ↦ .of_algEquiv e.symm⟩
+
+instance [Algebra R T] [IsLocalIso R S] : IsLocalIso T (T ⊗[R] S) := by
   rw [iff_span_isStandardOpenImmersion_eq_top, _root_.eq_top_iff,
-    ← Ideal.map_top TensorProduct.includeRight, ← span_isStandardOpenImmersion_eq_top R S,
+    ← Ideal.map_top Algebra.TensorProduct.includeRight, ← span_isStandardOpenImmersion_eq_top R S,
     Ideal.map_le_iff_le_comap, Ideal.span_le]
   intro g hg
   apply Ideal.subset_span
   simp only [Set.mem_setOf_eq] at hg ⊢
-  exact .of_algEquiv (IsLocalization.Away.tensorProductEquiv _ (Localization.Away g))
+  exact .of_algEquiv <| IsLocalization.Away.tensorProductEquivTMulRight R T g (Localization.Away g)
 
 end Algebra.IsLocalIso
-
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] {f : R →+* S}
-
-lemma RingHom.isLocalIso_algebraMap [Algebra R S] :
-    (algebraMap R S).IsLocalIso ↔ Algebra.IsLocalIso R S := by
-  rw [RingHom.IsLocalIso, toAlgebra_algebraMap]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma RingHom.isLocalIso_iff_locally_isStandardOpenImmersion {R S : Type u} [CommRing R]
-    [CommRing S] (f : R →+* S) :
-    f.IsLocalIso ↔ f.Locally RingHom.IsStandardOpenImmersion := by
-  algebraize [f]
-  rw [RingHom.IsLocalIso, Algebra.IsLocalIso.iff_span_isStandardOpenImmersion_eq_top,
-    RingHom.locally_iff_span_eq_top, ← RingHom.algebraMap_toAlgebra f]
-  simp_rw [← IsScalarTower.algebraMap_eq R S, RingHom.isStandardOpenImmersion_algebraMap]
-
-namespace RingHom.IsLocalIso
-
-/-- A bijective ring homomorphism is a local isomorphism. -/
-lemma of_bijective (hf : Function.Bijective f) : f.IsLocalIso := by
-  algebraize [f]
-  haveI := Algebra.IsStandardOpenImmersion.of_bijective hf
-  change Algebra.IsLocalIso R S
-  infer_instance
-
-/-- The composition of local isomorphisms is a local isomorphism. -/
-lemma comp {T : Type*} [CommSemiring T] {g : S →+* T} (hg : g.IsLocalIso) (hf : f.IsLocalIso) :
-    (g.comp f).IsLocalIso := by
-  algebraize [f, g, g.comp f]
-  exact Algebra.IsLocalIso.trans R S T
-
-lemma stableUnderComposition : StableUnderComposition IsLocalIso :=
-  fun _ _ _ _ _ _ _ _ hf hg ↦ hg.comp hf
-
-lemma respectsIso : RespectsIso IsLocalIso :=
-  stableUnderComposition.respectsIso fun e ↦ .of_bijective e.bijective
-
-end RingHom.IsLocalIso

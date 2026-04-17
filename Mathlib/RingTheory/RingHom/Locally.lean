@@ -72,6 +72,8 @@ lemma locally_iff_span_eq_top {f : R →+* S} :
   intro g hg
   exact Ideal.subset_span (h _ hg)
 
+alias ⟨Locally.span_eq_top, _⟩ := locally_iff_span_eq_top
+
 lemma locally_iff_finite (f : R →+* S) :
     Locally P f ↔ ∃ (s : Finset S) (_ : Ideal.span (s : Set S) = ⊤),
       ∀ t ∈ s, P ((algebraMap S (Localization.Away t)).comp f) := by
@@ -287,48 +289,20 @@ lemma locally_stableUnderCompositionWithLocalizationAwaySource
 alias locally_StableUnderCompositionWithLocalizationAwaySource :=
   locally_stableUnderCompositionWithLocalizationAwaySource
 
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
     IsStableUnderBaseChange (Locally P) := by
   apply IsStableUnderBaseChange.mk (locally_respectsIso hPi)
   introv hf
-  obtain ⟨s, hsone, hs⟩ := hf
-  rw [locally_iff_exists hPi]
-  letI (a : s) : Algebra (S ⊗[R] T) (S ⊗[R] Localization.Away a.val) :=
-    (Algebra.TensorProduct.map (AlgHom.id R S) (IsScalarTower.toAlgHom R _ _)).toRingHom.toAlgebra
-  letI (a : s) : Algebra T (S ⊗[R] Localization.Away a.val) :=
-    ((algebraMap _ (S ⊗[R] Localization.Away a.val)).comp (algebraMap T (S ⊗[R] T))).toAlgebra
-  haveI (a : s) : IsScalarTower T (S ⊗[R] T) (S ⊗[R] Localization.Away a.val) :=
-    IsScalarTower.of_algebraMap_eq' rfl
-  haveI (a : s) : IsScalarTower T (Localization.Away a.val) (S ⊗[R] Localization.Away a.val) :=
-    IsScalarTower.of_algebraMap_eq' rfl
-  haveI (a : s) : IsScalarTower S (S ⊗[R] T) (S ⊗[R] Localization.Away a.val) :=
-      IsScalarTower.of_algebraMap_eq <| by
-    intro x
-    simp [RingHom.algebraMap_toAlgebra]
-  haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
-      (S ⊗[R] Localization.Away a.val) := by
-    rw [← Algebra.IsPushout.comp_iff R _ S]
-    infer_instance
-  refine ⟨s, fun a ↦ Algebra.TensorProduct.includeRight a.val, ?_,
-      fun a ↦ (S ⊗[R] Localization.Away a.val), inferInstance, inferInstance, ?_, ?_⟩
-  · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · intro a
-    convert_to IsLocalization (Algebra.algebraMapSubmonoid (S ⊗[R] T) (Submonoid.powers a.val))
-        (S ⊗[R] Localization.Away a.val)
-    · simp only [Algebra.TensorProduct.includeRight_apply, Algebra.algebraMapSubmonoid,
-        Submonoid.map_powers]
-      rfl
-    · rw [← isLocalizedModule_iff_isLocalization, isLocalizedModule_iff_isBaseChange
-        (S := Submonoid.powers a.val) (A := Localization.Away a.val)]
-      exact Algebra.IsPushout.out
-  · intro a
-    rw [← IsScalarTower.algebraMap_eq]
-    apply hPb R (Localization.Away a.val)
-    rw [IsScalarTower.algebraMap_eq R T]
-    exact hs a a.property
+  rw [locally_iff_span_eq_top, eq_top_iff, ← Ideal.map_top Algebra.TensorProduct.includeRight,
+    ← hf.span_eq_top, Ideal.map_le_iff_le_comap, Ideal.span_le]
+  intro g hg
+  apply Ideal.subset_span
+  simp only [Set.mem_setOf_eq, Algebra.TensorProduct.includeRight_apply,
+    ← IsScalarTower.algebraMap_eq] at hg ⊢
+  let e := IsLocalization.Away.tensorProductEquivTMulRight R S g (Localization.Away g)
+  rw [← e.toAlgHom.comp_algebraMap]
+  exact hPi.left _ _ (hPb.tensorProduct _ hg)
 
 /-- If `P` is preserved by localization away, then so is `Locally P`. -/
 lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
