@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 /-!
 # Etale descends along faithfully flat ring maps
 
-In this file we show that smooth, unramified and étale descends along faithfully flat
+In this file we show that smooth, unramified and étale algebras descend along faithfully flat
 base change.
 
 ## Main results
