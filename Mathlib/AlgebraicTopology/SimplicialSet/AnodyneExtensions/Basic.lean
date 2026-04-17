@@ -128,6 +128,9 @@ and there exists a regular pairing (in the sense of Moss) for the subcomplex
 def strongAnodyneExtensions : MorphismProperty SSet.{u} :=
   fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing), P.IsRegular
 
+lemma strongAnodyneExtensions.mono {X Y : SSet.{u}} {f : X ⟶ Y}
+    (hf : strongAnodyneExtensions f) : Mono f := hf.1
+
 lemma Subcomplex.Pairing.strongAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
     (P : A.Pairing) [P.IsRegular] :
     strongAnodyneExtensions A.ι :=
@@ -156,6 +159,20 @@ lemma Subcomplex.Pairing.anodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
       simp only [pushouts_le_iff, coproducts_le_iff]
       rintro _ _ _ ⟨c⟩
       exact .horn_ι c.index⟩
+
+instance : strongAnodyneExtensions.{u}.RespectsIso where
+  precomp e _ f hf := by
+    have := hf.mono
+    obtain ⟨_, rfl, P, hP⟩ : ∃ (A : _) (hA : Subcomplex.range (e ≫ f) = A)
+        (P : A.Pairing), P.IsRegular := by
+      obtain ⟨_, P, hP⟩ := hf
+      refine ⟨_, ?_, P, hP⟩
+      rw [Subcomplex.range_comp, Subcomplex.range_eq_top, Subcomplex.image_top]
+    exact ⟨inferInstance, P, hP⟩
+  postcomp e _ f hf := by
+    obtain ⟨_, P, hP⟩ := hf
+    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance⟩
+    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
 
 lemma strongAnodyneExtensions_le_anodyneExtensions :
     strongAnodyneExtensions.{u} ≤ anodyneExtensions := by
