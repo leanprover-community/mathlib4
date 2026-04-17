@@ -119,8 +119,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
           logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
             use `linter.style.whitespace` instead."
         else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
-          logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances option \
-            marks the introduction of technical debt: don't introduce new options, please"
+          logWarningAt stx "The `backward.inferInstanceAs.wrap.reuseSubInstances` option \
+            marks the introduction of technical debt, so please don't use it."
 
 initialize addLinter setOptionLinter
 
