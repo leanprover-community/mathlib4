@@ -43,27 +43,27 @@ This shortens the overall argument, as the definition of submersions has the sam
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 * `IsImmersionAtOfComplement.congr_F`, `IsImmersionOfComplement.congr_F`:
   being an immersion (at `x`) w.r.t. `F` is stable under
-  replacing the complement `F` by an isomorphic copy
+  replacing the complement `F` by an isomorphic copy.
 * `IsOpen.isImmersionAtOfComplement` and `IsOpen.isImmersionAt`:
   the set of points where `IsImmersionAt(OfComplement)` holds is open.
 * `IsImmersionAt.prodMap` and `IsImmersion.prodMap`: the product of two immersions (at a point)
-  is an immersion (at a point).
+  is an immersion (at the product point).
 * `IsImmersion.id`: the identity map is an immersion
 * `IsImmersion.of_opens`: the inclusion of an open subset `s → M` of a smooth manifold
   is a smooth immersion
 
 ## Implementation notes
 
-* In most applications, there is no need to control the chosen complement in the definition of
-  immersions, so `IsImmersion(At)` is perfectly fine to use. Such control will be helpful, however,
+* In most applications, there is no need to control the choice of complement in the definition of an
+  immersion, so `IsImmersion(At)` is perfectly adequate. Such control will be helpful, however,
   when considering the local characterisation of submanifolds: locally, a submanifold is described
   either as the image of an immersion, or the preimage of a submersion --- w.r.t. the same
-  complement. Having access to a definition version with complements allows stating this equivalence
-  cleanly.
+  complement. Providing a version of the definition that includes complements enables stating this
+  equivalence cleanly.
 * To avoid a free universe variable in `IsImmersion(At)`, we ask for a complement in the same
   universe as the model normed space for `N`. We provide convenience constructors which do not
-  have this restriction (recovering usability).
-  The underlying observation is that the equivalence in the definition of immersions allows
+  have this restriction to preserve usability.
+  This relies on the observation that the equivalence in the definition of immersions allows
   shrinking the universe of the complement: this is implemented in
   `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
