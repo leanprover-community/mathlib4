@@ -144,7 +144,7 @@ variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
 
 variable (𝕜₁ E) in
 /-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
-`Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`. -/
+`Π i, E →L_c[𝕜] F i` and `E →L_c[𝕜] Π i, F i`. -/
 def CompactConvergenceCLM.piEquivL :
     (Π i, E →L_c[𝕜₁] F i) ≃L[𝕜₁] (E →L_c[𝕜₁] Π i, F i) where
   toFun F := ContinuousLinearMap.pi F
