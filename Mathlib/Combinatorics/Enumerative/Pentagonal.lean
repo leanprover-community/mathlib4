@@ -37,6 +37,7 @@ Show the relation between pentagonal numbers and partitions, including pentagona
 
 public section
 
+/-- Pentagonal numbers $3k(k-1)/2$ for integer $k$. -/
 @[expose]
 def pentagonal (k : ℤ) : ℤ := k * (3 * k - 1) / 2
 
@@ -79,6 +80,7 @@ theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
   grind [pentagonal]
 
+/-- Pentagonal numbers $3k(k-1)/2$ as `Nat` for integer $k$. -/
 @[expose]
 def pentagonalNat (k : ℤ) : ℕ := (pentagonal k).toNat
 
