@@ -61,7 +61,7 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     exact mul_sub_mul_mem I h₁ h₂
 
 -- Making this an instance breaks some proofs
-@[implicit_reducible]
+@[implicit_reducible, nolint docBlame]
 def semiring (I : Ideal R) [I.IsTwoSided] : Semiring (R ⧸ I) :=
   inferInstanceAs <| Semiring (Quotient.ringCon I).Quotient
 
