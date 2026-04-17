@@ -461,8 +461,8 @@ lemma isRightAdjoint_ι_isLocal
     (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ)
     [HasColimitsOfSize.{w, w} C] :
     W.isLocal.ι.IsRightAdjoint := by
-  let : OrderBot κ.ord.ToType :=
-    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have : Nonempty κ.ord.ToType := by simpa using Cardinal.IsRegular.ne_zero Fact.out
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   have := D₁.hasCoproductsOfShape.{w} W
   have := D₂.hasColimitsOfShape.{w} W
   exact isRightAdjoint_ι W κ hW

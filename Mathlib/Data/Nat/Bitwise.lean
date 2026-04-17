@@ -268,18 +268,6 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
-@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
-
-@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
-
-@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
-
-@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
-
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
