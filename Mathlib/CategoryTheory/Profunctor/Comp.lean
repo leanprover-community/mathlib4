@@ -130,10 +130,9 @@ lemma chosenCoend.desc_apply {X : Type max w u} (f : ∀ j, (F.obj (op j)).obj j
 lemma chosenCoend.map_apply {G : Jᵒᵖ ⥤ J ⥤ Type max w u} (f : F ⟶ G) (x : chosenCoend F) :
     chosenCoend.map f x = Quot.map (fun ⟨j, y⟩ ↦ ⟨j, (f.app _).app _ y⟩) (fun _ _ h ↦ by
       cases h with | mk g x =>
-        dsimp
         convert Types.coendRel.mk g ((f.app _).app _ x)
         · simp only [← NatTrans.comp_app_apply, f.naturality]
-        · simp [← (f.app _).naturality_apply, -NatTrans.naturality_apply]) x :=
+        · simp [← NatTrans.naturality_apply]) x :=
   rfl
 
 end
