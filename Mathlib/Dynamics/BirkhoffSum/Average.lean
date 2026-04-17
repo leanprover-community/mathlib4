@@ -77,19 +77,19 @@ theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFi
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
 
-theorem birkhoffAverage_const_eq' (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0) :
+theorem birkhoffAverage_const' (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a := by
   ext x
   simp [hn, birkhoffAverage, birkhoffSum, ← Nat.cast_smul_eq_nsmul R]
 
 open Classical in
 @[simp]
-theorem birkhoffAverage_const_eq (f : α → α) (a : M) (n : ℕ) :
+theorem birkhoffAverage_const (f : α → α) (a : M) (n : ℕ) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ if (n : R) = 0 then 0 else a := by
   by_cases h : (n : R) = 0
   · ext
     simp [h, birkhoffAverage]
-  simp [h, birkhoffAverage_const_eq']
+  simp [h, birkhoffAverage_const']
 
 lemma birkhoffAverage_add {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g + g') = birkhoffAverage R f g + birkhoffAverage R f g' := by
