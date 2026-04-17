@@ -111,17 +111,6 @@ def ContinuousLinearMap.precompCompactConvergenceCLM [IsTopologicalAddGroup G]
     [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SL_c[τ] G) →L[𝕜₃] E →SL_c[ρ] G :=
   L.precompUniformConvergenceCLM G _ _ (fun _ hs ↦ hs.image L.continuous)
 
-lemma ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply [IsTopologicalAddGroup G]
-    [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) (T : F →SL_c[τ] G) (x : E) :
-    L.precompCompactConvergenceCLM G T x = T (L x) :=
-  rfl
-
-lemma foo [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] {T : F →SL_c[τ] G} :
-    (0 : E →SL[σ] F).precompCompactConvergenceCLM G T = 0 := by
-  ext x
-  simp_rw [ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply]
-  simp
-
 @[deprecated (since := "2026-01-27")]
 alias precomp_compactConvergenceCLM := precompCompactConvergenceCLM
 
@@ -146,3 +135,26 @@ alias postcomp_compactConvergenceCLM_apply := postcompCompactConvergenceCLM_appl
 end comp
 
 end CompactSets
+
+section Bug
+
+open scoped CompactConvergenceCLM
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+  [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+lemma ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply
+    (L : E →L[𝕜] F) (T : F →L_c[𝕜] G) (x : E) :
+    L.precompCompactConvergenceCLM G T x = T (L x) :=
+  rfl
+
+lemma foo {T : F →L_c[𝕜] G} :
+    (0 : E →L[𝕜] F).precompCompactConvergenceCLM G T = 0 := by
+  ext x
+  simp_rw [ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply]
+  simp
+
+end Bug
