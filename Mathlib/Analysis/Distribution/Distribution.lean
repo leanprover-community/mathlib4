@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Topology.Algebra.Module.FiniteDimensionStrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.FiniteDimensionCLM
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
