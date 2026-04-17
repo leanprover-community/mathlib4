@@ -6,6 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Tactic.SuppressCompilation
@@ -72,6 +73,31 @@ variable [∀ i j h, OneHomClass (T h) (G i) (G j)]
     fun ⟨i, h, eq⟩ ↦ ⟨i, h, h, eq.trans (map_one _).symm⟩⟩
 
 end ZeroOne
+
+section Star
+variable [∀ i, Star (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : Star (DirectLimit G f) where
+  star := DirectLimit.map f f (fun _ x => star x) (compat := by
+    intro i j h
+    exact StarHomClass.map_star (f i j h))
+
+lemma star_def (i : ι) (x : G i) :
+    star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x ⟩⟧ : DirectLimit G f) := by
+  rfl
+
+end Star
+
+section InvolutiveStar
+variable [∀ i, InvolutiveStar (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : InvolutiveStar (DirectLimit G f) where
+  star_involutive := by
+    apply DirectLimit.induction
+    intro i x
+    rw [star_def, star_def, star_star]
+
+end InvolutiveStar
 
 section AddMul
 variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
