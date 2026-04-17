@@ -326,7 +326,7 @@ theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Modul
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range _)
+    · apply le_ciSup Cardinal.bddAbove_of_small
       exact
         ⟨Set.range v, by
           rw [LinearIndepOn]
@@ -476,6 +476,24 @@ module over itself. -/
 @[simp]
 theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
+
+variable {R} in
+theorem finrank_of_bijective_toSpanSingleton {x : M}
+    (h : Bijective (LinearMap.toSpanSingleton R M x)) : finrank R M = 1 := by
+  rw [← (LinearEquiv.ofBijective _ h).finrank_eq, finrank_self]
+
+variable {R} in
+theorem rank_of_bijective_toSpanSingleton {x : M}
+    (h : Bijective (LinearMap.toSpanSingleton R M x)) : Module.rank R M = 1 := by
+  rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_toSpanSingleton h]
+
+theorem finrank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : finrank R S = 1 := by
+  rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) h).toLinearEquiv.finrank_eq, finrank_self]
+
+theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : Module.rank R S = 1 := by
+  rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
 
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 @[implicit_reducible]

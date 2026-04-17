@@ -46,21 +46,14 @@ Note that this definition does not give the correct answer in the function field
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
     [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+deriving CommRing, TopologicalSpace, IsTopologicalRing, Algebra K
 
 namespace AdeleRing
 
 variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
-instance : CommRing (AdeleRing R K) := Prod.instCommRing
-
 instance : Inhabited (AdeleRing R K) := ⟨0⟩
-
-instance : TopologicalSpace (AdeleRing R K) := instTopologicalSpaceProd
-
-instance : IsTopologicalRing (AdeleRing R K) := instIsTopologicalRingProd
-
-instance : Algebra K (AdeleRing R K) := Prod.algebra _ _ _
 
 @[simp]
 theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
