@@ -5,13 +5,21 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 /-!
 # Lifting properties and pushout-products / pullback-homs
 
+Various equivalent lifting properties involving pushout-products and pullback-homs. For
+`f : A ⟶ B`, `g : K ⟶ L`, `h : X ⟶ Y` in a monoidal closed category with pushouts and pullbacks,
+`f □ g` lifts against `h` if and only if `g` lifts against `f ⋔ h`.
 
+Special cases are considered when any of `A = ∅`, `K = ∅`, or `Y = ⋆` are true.
+
+## References
+
+* [Charles Rezk, *Introduction to Quasi-categories*, Proposition 21.5][Rezk2022]
 -/
 
 @[expose] public section
@@ -88,8 +96,10 @@ lemma hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff [HasPushouts C]
     HasLiftingProperty (i.to B □ g).hom (t.from X) ↔
       HasLiftingProperty g (t.from ((ihom B).obj X)) := by
   rw [hasLiftingProperty_pushoutProduct_isInitial_iff]
+  have : (ihom B).IsRightAdjoint := Closed.adj.isRightAdjoint
   exact HasLiftingProperty.iff_of_arrow_iso_right g
-    (Arrow.isoMk' _ _ (Iso.refl _) (terminalPow t) (t.hom_ext _ _))
+    (Arrow.isoMk' _ _ (Iso.refl _) ((IsTerminal.isTerminalObj (ihom B) _ t).uniqueUpToIso t)
+      (t.hom_ext _ _))
 
 /-- `f □ (∅ ⟶ L)` lifts against `X ⟶ ⋆` if and only if `f` lifts against `(L ⟹ X) ⟶ ⋆`. -/
 lemma hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff' [HasPushouts C] [HasPullbacks C]
@@ -99,8 +109,10 @@ lemma hasLiftingProperty_pushoutProduct_isInitial_isTerminal_iff' [HasPushouts C
     HasLiftingProperty (f □ i.to L).hom (t.from X) ↔
       HasLiftingProperty f (t.from ((ihom L).obj X)) := by
   rw [hasLiftingProperty_pushoutProduct_isInitial_iff']
+  have : (ihom L).IsRightAdjoint := Closed.adj.isRightAdjoint
   exact HasLiftingProperty.iff_of_arrow_iso_right f
-    (Arrow.isoMk' _ _ (Iso.refl _) (terminalPow t) (t.hom_ext _ _))
+    (Arrow.isoMk' _ _ (Iso.refl _) ((IsTerminal.isTerminalObj (ihom L) _ t).uniqueUpToIso t)
+      (t.hom_ext _ _))
 
 end MonoidalCategory.Arrow
 

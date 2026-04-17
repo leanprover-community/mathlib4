@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.Monoidal.Closed.Limits.Shapes.IsTerminal
 
 /-!
 # Pullbacks and pushouts in a monoidal category
@@ -215,7 +214,7 @@ def Limits.pullback.ihomMapIsTerminalIso
       rw [MonoidalClosed.curry_pre_app, MonoidalClosed.eq_curry_iff]
       exact t.hom_ext _ _)
   hom_inv_id :=
-    have : (ihom B).IsRightAdjoint := Adjunction.isRightAdjoint Closed.adj
+    have : (ihom B).IsRightAdjoint := Closed.adj.isRightAdjoint
     pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom B) T t).hom_ext _ _)
 
 set_option backward.isDefEq.respectTransparency false in
