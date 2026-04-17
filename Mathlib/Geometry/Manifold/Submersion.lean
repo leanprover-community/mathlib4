@@ -41,34 +41,32 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   If `f` and `g` agree near `x` and `f` is a submersion at `x`, then so is `g`.
 * `IsSubmersionAtOfComplement.congr_F`, `IsSubmersionOfComplement.congr_F`:
   being a submersion at `x` w.r.t. `F` is stable under
-  replacing the complement `F` by a continuously linearly equivalent copy of `F`.
+  replacing the complement `F` by an isomorphic copy.
 * `isOpen_isSubmersionAtOfComplement` and `isOpen_isSubmersionAt`:
   the set of points where `IsSubmersionAt(OfComplement)` holds is open.
-* `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions at a point
-  is an submersion at the product point.
+* `IsSubmersionAt.prodMap` and `IsSubmersion.prodMap`: the product of two submersions (at a point)
+  is an submersion (at the product point).
 
 ## Implementation notes
 
-* Universe management tools (`small`, `smallComplement`, `smallEquiv`) ensure that
-  complements can always be chosen in the correct universe, which is essential for
-  existential definitions such as `isSubmersionAt`.
 * In most applications, there is no need to control the choice of complement in the definition of a
   submersion, so `IsSubmersion(At)` is perfectly adequate. Nevertheless, explicit control over
-  complements becomes useful when studying the local characterisation of submanifolds. Locally,
-  a submanifold can be described either as the image of a submersion or as the preimage of
-  an immersion, and this equivalence requires working with the same choice of complement.
-  Providing a version of the definition that includes complements allows this equivalence to be
-  stated cleanly.
-* To avoid a free universe variable in `IsSubmersion(At)`, we require the complement to be taken in
-  the same universe as the model normed space for `N`. We also offer convenience constructors that
-  relax this requirement to preserve usability. This relies on the observation that the equivalence
-  in the definition of submersions allows the universe of the complement to be reduced,
-  as implemented in `IsSubmersion(At)OfComplement.small`
-  and  `IsSubmersion(At)OfComplement.smallEquiv`.
+  complements is useful when studying the local characterisation of submanifolds: locally,
+  a submanifold is described either as the image of an immersion, or the preimage of a submersion
+  --- w.r.t. the same complement. Providing a version of the definition that includes complements
+  enables stating this equivalence cleanly.
+* To avoid a free universe variable in `IsSubmersion(At)`, we ask for a complement in the same
+  universe as the model normed space for `N`. We provide convenience constructors which do not
+  have this restriction to preserve usability.
+  This relies on the observation that the equivalence in the definition of submersions allows
+  reducing the universe of the complement; this is implemented in
+  `IsSubmersion(At)OfComplement.small` and  `IsSubmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
-* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is a `C^n` map at `x`.
-* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n` map.
+* The converse to `IsSubmersionAtOfComplement.congr_F` also holds: any two complements are
+  isomorphic, as they are isomorphic to the kernel of the differential `mfderiv I J f x`.
+* `IsSubmersionAt.contMDiffAt`: if f is a submersion at `x`, it is `C^n` at `x`.
+* `IsSubmersion.contMDiff`: if f is a submersion, it is `C^n`.
 * If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right
   inverse, in particular is surjective.
 * If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` having a continuous right
