@@ -80,15 +80,18 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)
 
-theorem sum_of_support_subset [∀ i, AddCommMonoid (β i)]
-    [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommMonoid γ]
-    {f : Π₀ i, β i} {g : (i : ι) → (β i →+ γ)} {s : Finset ι} (hs : f.support ⊆ s) :
-    f.sum (fun i x ↦ g i x) = ∑ i ∈ s, g i (f i) := by
-  simp only [DFinsupp.sum]
-  apply Finset.sum_subset hs
-  intro i _ hi'
+@[to_additive]
+theorem prod_of_support_subset [∀ i, Zero (β i)]
+    [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
+    (map_zero : ∀ i ∈ s, g i 0 = 1) (hs : f.support ⊆ s) :
+    f.prod g = ∏ i ∈ s, g i (f i) := by
+  simp only [DFinsupp.prod]
+  apply Finset.prod_subset hs
+  intro i hi hi'
   simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi'
   rw [hi', map_zero]
+  exact hi
 
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsuppProd
@@ -217,13 +220,18 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   rw [mem_support_iff, not_not] at hi
   rw [hi, hf]
 
-lemma addCon_sum {A : Type*} [AddCommMonoid A] {r : AddCon A} [∀ i, AddCommMonoid (β i)]
-    [∀ i (y : β i), Decidable (y ≠ 0)] (h : (i : ι) → (β i →+ A)) (h' : (i : ι) → (β i →+ A))
-    {f g : Π₀ i, β i} (H : ∀ i, r (h i (f i)) (h' i (g i))) :
-    r (f.sum fun i y => h i y) (g.sum fun i y => h' i y) := by
-  rw [sum_of_support_subset (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
-    sum_of_support_subset (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
-  exact AddCon.finset_sum r (f.support ∪ g.support) fun i _ ↦ H i
+@[to_additive addCon_sum]
+lemma Con_prod {A : Type*} [CommMonoid A] {r : Con A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.prod h) (g.prod h') := by
+  rw [prod_of_support_subset (fun i _ ↦ hf i)
+      (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
+    prod_of_support_subset (fun i _ ↦ hf' i)
+      (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
+  exact Con.finset_prod r (f.support ∪ g.support) fun i _ ↦ H i
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]

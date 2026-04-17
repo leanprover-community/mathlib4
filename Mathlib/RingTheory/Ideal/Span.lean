@@ -166,6 +166,11 @@ theorem mem_span_singleton_sup {x y : α} {I : Ideal α} :
 def ofRel (r : α → α → Prop) : Ideal α :=
   Submodule.span α { x | ∃ a b, r a b ∧ x + b = a }
 
+lemma ofRel_mono {r r' : α → α → Prop} (hrr' : ∀ x y, r x y → r' x y) :
+    ofRel r ≤ ofRel r' := by
+  apply Submodule.span_mono
+  grind
+
 theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 := fun hz =>
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 

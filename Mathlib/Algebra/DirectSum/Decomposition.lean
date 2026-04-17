@@ -100,15 +100,22 @@ def decompose : M ≃ ⨁ i, ℳ i where
   right_inv := Decomposition.right_inv
 
 /-- A relation `r` is `PureHomogeneous` with respect to a family `ℳ : ι → σ` (where `SetLike σ M`)
-  iff `r a b` implies that `a` and `b` are homogeneous of the same degree. -/
+iff `r a b` implies that `a` and `b` are homogeneous of the same degree. -/
 def Rel.IsPureHomogeneous (r : M → M → Prop) : Prop :=
   ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i
 
+omit [DecidableEq ι] [AddCommMonoid M] [AddSubmonoidClass σ M] [Decomposition ℳ] in
+theorem Rel.isPureHomogeneous_iff {r : M → M → Prop} :
+    Rel.IsPureHomogeneous ℳ r ↔ ∀ {a b : M} (_ : r a b), ∃ i, a ∈ ℳ i ∧ b ∈ ℳ i := Iff.rfl
+
 /-- A relation `r` is `Homogeneous` for a `DirectSum.Decomposition` iff
 `r a b` implies that the components of `a` and `b` are related by `r`. -/
-def Rel.IsHomogeneous [DecidableEq ι] [DirectSum.Decomposition ℳ]
-  (r : M → M → Prop) : Prop :=
+def Rel.IsHomogeneous (r : M → M → Prop) : Prop :=
   ∀ {a b : M} (_ : r a b), ∀ i, r (decompose ℳ a i) (decompose ℳ b i)
+
+theorem Rel.isHomogeneous_iff {r : M → M → Prop} :
+    Rel.IsHomogeneous ℳ r ↔ ∀ {a b : M} (_ : r a b), ∀ i, r (decompose ℳ a i) (decompose ℳ b i) :=
+  Iff.rfl
 
 omit [AddSubmonoidClass σ M] in
 /-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
@@ -166,12 +173,9 @@ theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
   · intro hm j hj
     simpa using DirectSum.decompose_of_mem_ne ℳ hm (Ne.symm hj)
   · intro hm
-    suffices m = (((decompose ℳ) m) i) by
-      rw [this]
-      exact SetLike.coe_mem (((decompose ℳ) m) i)
+    suffices m = decompose ℳ m i by grind
     suffices decompose ℳ m = DirectSum.of (fun j ↦ ℳ j) i (decompose ℳ m i) by
-      replace this := congr((decompose ℳ).symm $this)
-      simpa only [Equiv.symm_apply_apply, decompose_symm_of] using this
+      simpa only [Equiv.symm_apply_apply, decompose_symm_of] using congr((decompose ℳ).symm $this)
     ext j
     by_cases hj : j = i
     · subst hj; simp
@@ -190,11 +194,7 @@ open Relation in
 theorem Rel.IsHomogeneous.eqvGenIsHomogeneous (r : M → M → Prop) (hr : Rel.IsHomogeneous ℳ r) :
     Rel.IsHomogeneous ℳ (EqvGen r) := by
   intro a b h
-  induction h with
-  | rel a b h => exact fun i => EqvGen.rel _ _ (hr h i)
-  | refl a => exact fun i => EqvGen.refl _
-  | symm a b _ k => exact fun i => EqvGen.symm _ _ (k i)
-  | trans a b c _ _ k k' => exact fun i => EqvGen.trans _ _ _ (k i) (k' i)
+  induction h with grind [EqvGen, IsHomogeneous]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
