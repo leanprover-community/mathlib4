@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Smooth
 public import Mathlib.RingTheory.RingHom.Unramified
+public import Mathlib.RingTheory.Smooth.Fiber
+public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 # Étale ring homomorphisms
@@ -78,5 +79,13 @@ lemma Etale.ofLocalizationSpan : OfLocalizationSpan Etale :=
 lemma Etale.stableUnderComposition : StableUnderComposition Etale := by
   rw [eq_formallyUnramified_and_smooth]
   exact FormallyUnramified.stableUnderComposition.and Smooth.stableUnderComposition
+
+lemma Etale.iff_flat_and_formallyUnramified {f : R →+* S} :
+    f.Etale ↔ f.Flat ∧ f.FormallyUnramified ∧ f.FinitePresentation := by
+  algebraize [f]
+  simp_rw [← f.algebraMap_toAlgebra, RingHom.etale_algebraMap, RingHom.flat_algebraMap_iff,
+    RingHom.formallyUnramified_algebraMap, RingHom.finitePresentation_algebraMap]
+  refine ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
+    fun ⟨_, _, _⟩ ↦ .of_formallyUnramified_of_flat⟩
 
 end RingHom

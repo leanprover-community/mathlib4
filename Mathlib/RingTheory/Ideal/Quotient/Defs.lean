@@ -52,6 +52,7 @@ variable {I} {x y : R}
 instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
   __ := QuotientAddGroup.con I.toAddSubgroup
@@ -59,17 +60,15 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) := fast_instance%
-  { __ : AddCommGroup (R ⧸ I) := inferInstance
-    __ : Ring (Quotient.ringCon I).Quotient := inferInstance }
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
+  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) := fast_instance%
-  { mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b) }
+instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
+instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
-instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := fast_instance% inferInstance
-instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) := fast_instance%
-  inferInstance
-instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := fast_instance% inferInstance
+instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
 

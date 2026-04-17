@@ -142,6 +142,7 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -252,6 +253,7 @@ def flipFlipIso : t.flip.flip ≅ t := PullbackCone.ext (Iso.refl _) (by simp) (
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
   IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -290,10 +292,10 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
 composing with `diagramIsoCospan`. -/
 @[simps!]
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
-    (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
+    (Cone.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
         ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
-  Cones.ext (Iso.refl _) <| by
+  Cone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
@@ -357,6 +359,7 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
@@ -469,6 +472,7 @@ def flipFlipIso : t.flip.flip ≅ t := PushoutCocone.ext (Iso.refl _) (by simp) 
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
   IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -506,10 +510,10 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
 `diagramIsoSpan`. -/
 @[simps!]
 def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
-    (Cocones.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
+    (Cocone.precompose (diagramIsoSpan.{v} _).inv).obj t ≅
       PushoutCocone.mk (t.ι.app WalkingSpan.left) (t.ι.app WalkingSpan.right)
         ((t.ι.naturality fst).trans (t.ι.naturality snd).symm) :=
-  Cocones.ext (Iso.refl _) <| by
+  Cocone.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
 end Limits

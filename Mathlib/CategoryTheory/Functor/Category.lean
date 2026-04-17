@@ -37,12 +37,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open NatTrans Category CategoryTheory.Functor
 
-variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-
-attribute [local simp] vcomp_app
-
-variable {C D} {E : Type u₃} [Category.{v₃} E]
-variable {E' : Type u₄} [Category.{v₄} E']
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 variable {F G H I : C ⥤ D}
 
 attribute [local grind =] NatTrans.id_app' in
@@ -61,76 +57,80 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
 
 namespace NatTrans
 
-@[ext, grind ext]
+@[ext, grind ext, to_dual self]
 theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
-@[simp]
+@[simp, to_dual self]
 theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl
 
+@[to_dual self]
 theorem vcomp_app' (α : F ⟶ G) (β : G ⟶ H) (X : C) : (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
+@[to_dual self]
 theorem congr_app {α β : F ⟶ G} (h : α = β) (X : C) : α.app X = β.app X := by rw [h]
 
 @[simp, grind =]
 theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
 
-@[simp, grind _=_]
+@[simp, grind _=_, to_dual self, reassoc]
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 
-attribute [reassoc] comp_app
-
-@[reassoc]
+@[to_dual none, reassoc]
 theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f : Y ⟶ Z) :
     (F.obj X).map f ≫ (T.app X).app Z = (T.app X).app Y ≫ (G.obj X).map f :=
   (T.app X).naturality f
 
-@[reassoc (attr := simp)]
+@[to_dual none, reassoc (attr := simp)]
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
   congr_fun (congr_arg app (T.naturality f)) Z
 
-@[reassoc]
+@[to_dual none, reassoc]
 theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
     (α : F ⟶ G) {X₁ Y₁ : C} (f : X₁ ⟶ Y₁) (X₂ : D) (X₃ : E) :
     ((F.map f).app X₂).app X₃ ≫ ((α.app Y₁).app X₂).app X₃ =
       ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
   congr_app (NatTrans.naturality_app α X₂ f) X₃
 
-/-- A natural transformation is a monomorphism if each component is. -/
-theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
-  ⟨fun g h eq => by
-    ext X
-    rw [← cancel_mono (α.app X), ← comp_app, eq, comp_app]⟩
-
 /-- A natural transformation is an epimorphism if each component is. -/
+@[to_dual /-- A natural transformation is a monomorphism if each component is. -/]
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
   ⟨fun g h eq => by
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 
 /-- The monoid of natural transformations of the identity is commutative. -/
+@[to_dual self]
 lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   ext X
   exact (α.naturality (β.app X)).symm
 
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
-@[simps (attr := grind =)]
+@[simps (attr := grind =), to_dual self]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
+
+-- Horizontal composition has two possible definitions that are dual to each other,
+-- and we need to prove to `to_dual` that these are equivalent.
+attribute [to_dual none] hcomp._proof_2 hcomp._proof_3
+to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
 
+@[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
 
+@[to_dual self]
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 
 -- Note that we don't yet prove a `hcomp_assoc` lemma here: even stating it is painful, because we
 -- need to use associativity of functor composition. (It's true without the explicit associator,
 -- because functor composition is definitionally associative,
 -- but relying on the definitional equality causes bad problems with elaboration later.)
+@[to_dual self]
 theorem exchange {I J K : D ⥤ E} (α : F ⟶ G) (β : G ⟶ H) (γ : I ⟶ J) (δ : J ⟶ K) :
     (α ≫ β) ◫ (γ ≫ δ) = (α ◫ γ) ≫ β ◫ δ := by
   cat_disch

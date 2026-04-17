@@ -92,6 +92,7 @@ a compatible Polish topology.
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
 TODO: fix the corresponding bug in `borelize`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
@@ -151,6 +152,10 @@ instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, Me
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
   letI := fun n => upgradeStandardBorel (α n)
   inferInstance
+
+instance [StandardBorelSpace α] : MeasurableEq α := by
+  letI := upgradeStandardBorel α
+  infer_instance
 
 end instances
 

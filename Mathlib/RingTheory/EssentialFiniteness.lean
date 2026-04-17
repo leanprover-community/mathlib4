@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Essentially of finite type algebras
@@ -244,6 +244,11 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   apply AlgHom.ext_of_adjoin_eq_top (s := { x | x.1 ∈ finset R S })
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
+
+instance EssFiniteType.quotient_map [EssFiniteType R S] (p : Ideal R) :
+    EssFiniteType (R ⧸ p) (S ⧸ p.map (algebraMap R S)) :=
+  .of_surjective (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.toAlgHom
+    (Algebra.TensorProduct.quotIdealMapEquivQuotTensor S p).symm.surjective
 
 end Algebra
 

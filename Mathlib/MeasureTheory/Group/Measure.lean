@@ -523,13 +523,13 @@ instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousCons
 @[to_additive
 /-- The image of an inner regular measure under left addition is again inner regular. -/]
 instance innerRegular_map_mul_left [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
-    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_mul_left g)
+    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_const_mul g)
 
 /-- The image of an inner regular measure under right multiplication is again inner regular. -/
 @[to_additive
 /-- The image of an inner regular measure under right addition is again inner regular. -/]
 instance innerRegular_map_mul_right [IsTopologicalGroup G] [InnerRegular μ] (g : G) :
-    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_right g)
+    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_const g)
 
 variable [IsTopologicalGroup G]
 
@@ -580,7 +580,7 @@ any open set. -/]
 theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
     (h : μ K ≠ 0) : IsOpenPosMeasure μ := by
   refine ⟨fun U hU hne => ?_⟩
-  contrapose! h
+  contrapose h
   rw [← nonpos_iff_eq_zero]
   rw [← hU.interior_eq] at hne
   obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
@@ -873,9 +873,9 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--
-A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
+A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`.
 -/
-@[to_additive /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map. -/]
+@[to_additive /-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/]
 instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G]
     {H : Type*} [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=

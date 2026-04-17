@@ -4,15 +4,20 @@ This directory contains miscellaneous scripts that are useful for working on or 
 When adding a new script, please make sure to document it here, so other readers have a chance
 to learn about it as well!
 
+## Where does a new script belong?
+
+A script belongs in [**`leanprover-community/mathlib-ci`**](https://github.com/leanprover-community/mathlib-ci)
+if it is a CI automation script that interacts with GitHub (e.g. managing labels, posting
+comments, triggering bots), runs from a trusted external checkout in CI, or requires access
+to secrets. CI automation scripts have been moved there; workflows that use them execute
+them from external checkouts (typically under `ci-tools/`).
+
+A script belongs in **this directory** (`scripts/`) if it is a developer or maintainer tool
+to be run locally, a code maintenance or analysis utility, a style linting tool, or a data
+file used by the library's own linters.
+
 
 ## Current scripts and their purpose
-
-**Installation scripts**
-- `install_debian.sh`, `install_macos.sh`
-  Installation scripts referenced from the leanprover community install pages.
-  https://leanprover-community.github.io/install/debian.html
-  https://leanprover-community.github.io/install/macos.html
-  If these web pages are deprecated or removed, we should remove these scripts.
 
 **Repository analysis and reporting**
 - `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
@@ -53,6 +58,15 @@ to learn about it as well!
 - `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
   automatically generates the `deprecated_module` entries, gathering information from `git`.
   The expectation is that this will be expanded to a fully automated process that happens in CI.
+- `runSkimmer.sh` applies all interactive text suggestions generated within Mathlib (the
+  `lean_lib`). `runSkimmer.sh --on tgt1 tgt2 ...` applies only to those lake targets (libraries,
+  modules) within mathlib. If oleans for the refactored targets are already present, it will use them;
+  else it will build any necessary oleans. This script may be copy-pasted to other repos with altered
+  config variables, then set up with `runSkimmer.sh --init`. This sets up a minimal side package
+  `SideSkimmer` which avoids the need for including `skimmer` as a dependency.
+  See `runSkimmer.sh -h` and the bash module doc for more details.
+  NOTE: the functionality exposed by this script is very experimental, and subject to change.
+  Please report issues to Thomas Murrills on Zulip.
 - `migrate_to_fork.py`
   Helps contributors migrate from having direct write access to the main repository
   to using a fork-based workflow. This comprehensive script automates the entire migration process:
@@ -80,6 +94,58 @@ to learn about it as well!
 
   Other subcommands to automate git-related actions may be added in the future.
 
+**Analyzing Mathlib's import structure**
+- `topological_sort.py`
+  Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
+  (roots first); use `--reverse` for leaves first. If filenames or module names are
+  provided on stdin, outputs only those modules in topological order.
+  Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**Backward-compatibility `set_option` migration tools**
+
+These scripts help with testing Lean PRs that change backward-compatibility option
+behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
+
+- `dag_traversal.py`
+  Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`
+  source files and parallelises an action over a forward or backward traversal. Each module is
+  submitted to the thread pool the moment its last in-DAG dependency finishes.
+
+  **Library usage:**
+  ```python
+  from dag_traversal import DAG, traverse_dag
+
+  dag = DAG.from_directories(Path("."))
+  results = traverse_dag(dag, my_action, direction="forward", stop_on_failure=True)
+  ```
+
+  **CLI usage:**
+  ```bash
+  scripts/dag_traversal.py --forward 'lake build {}'       # {} = file path
+  scripts/dag_traversal.py --backward --module 'echo {}'   # {} = module name
+  scripts/dag_traversal.py --forward -j4 'my_script {}'
+  ```
+
+- `set_option_utils.py`
+  Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
+  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
+  and helpers for generating `set_option` lines and regex patterns.
+
+- `add_set_option.py`
+  Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
+  **forward** (roots first) so each module is only built after all its imports are clean. For
+  each error, finds the enclosing declaration and tries candidate option combinations
+  (most-recently-successful first, then each single option, then all together).
+  Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
+
+- `rm_set_option.py`
+  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
+  **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
+  cached builds of downstream files. Tries removing all occurrences at once; if that fails,
+  falls back to one-at-a-time removal.
+  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
+
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
@@ -91,64 +157,57 @@ to learn about it as well!
 - `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
   style linters, written in Python and Lean. Run via `lake exe lint-style`.
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
-- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+- `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
-- `lean-pr-testing-comments.sh`
-  Generate comments and labels on a Lean or Batteries PR after CI has finished on a
-  `*-pr-testing-NNNN` branch.
-- `declarations_diff.sh`
-  Attempts to find which declarations have been removed and which have been added in the current PR
-  with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
-- `verify_commits.sh` verifies special commits in a PR:
-  - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
-  - **Automated commits** (prefix `x: <command>`) must match the output of re-running the command
-  Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
-  displaying human-readable output.
-- `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
-  Used by CI to post verification summaries on pull requests.
+- `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
+  `x scripts/auto_commit.sh <command>` enables a rebase workflow: during interactive rebase,
+  you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
+  (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
+  Example: `scripts/auto_commit.sh lake exe mk_all`
+**Nightly testing**
+- `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
+  at Batteries and Mathlib. Run via `lake exe nightly-testing-checklist`.
 
-**Managing nightly-testing and bump branches**
-- `create-adaptation-pr.sh` implements some of the steps in the workflow described at
-  https://leanprover-community.github.io/contribute/tags_and_branches.html#mathlib-nightly-and-bump-branches
-  Specifically, it will:
-  - merge `master` into `bump/v4.x.y`
-  - create a new branch from `bump/v4.x.y`, called `bump/nightly-YYYY-MM-DD`
-  - merge `nightly-testing` into the new branch
-  - open a PR to merge the new branch back into `bump/v4.x.y`
-  - announce the PR on zulip
-  - finally, merge the new branch back into `nightly-testing`, if conflict resolution was required.
+  **What it checks:**
+  - Whether each repo's toolchain matches the latest lean4 nightly
+  - Whether upstream dependencies (e.g. Batteries in Mathlib) are up to date
+  - CI status, with inline display of failing jobs and Lean error messages
 
-  If there are merge conflicts, it pauses and asks for help from the human driver.
-- `merge-lean-testing-pr.sh` takes a PR number `NNNN` as argument,
-  and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
-  It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
-  If there are more conflicts, it will bail.
-- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
-  branch with additional linting enabled, and posts a summary of its findings on zulip.
+  **What it can fix:**
+  - Bumps stale `lean-toolchain` files
+  - Runs `lake update` for stale upstream dependencies
+  - Removes duplicate declarations ("has already been declared" errors) using Lean's parser
+    to identify command boundaries
+
+  **Flags:**
+  - `--watch`: wait for in-progress CI runs to complete (wakes on first job failure)
+  - `--fix`: commit and push fixes (default is dry-run: generate `.patch` files)
+  - `--no-clone`: report only, don't clone repos to `/tmp`
+  - `--no-build`: clone and update deps, but don't build or fix errors
+
+- `find_command_range.lean` is a helper used by `nightly-testing-checklist.lean`.
+  Given a file and position, it uses Lean's parser to find the byte range of the enclosing
+  top-level command (including preceding attributes and doc comments). It is copied to
+  cloned repos at runtime and executed via `lake env lean --run`.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `extract-unique-nonascii.lean` is used for updating the list of non-ascii characters in
+  `Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
+  which have an abbreviation provided by the Lean VSCode extension.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
 **Version tag verification**
 - `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
-
-**Managing and tracking technical debt**
-- `technical-debt-metrics.sh`
-  Prints information on certain kind of technical debt in Mathlib.
-  This output is automatically posted to zulip once a week.
-- `long_file_report.sh`
-  Prints the list of the 10 longest Lean files in `Mathlib`.
-  This output is automatically posted to zulip once a week.
 
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
@@ -158,36 +217,17 @@ to learn about it as well!
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
+**Grind tactic analysis**
+- `grind_unused_lemmas.sh` `[N] [logfile]`
+  Builds Mathlib with `set_option grind.unusedLemmaThreshold N` (default 10) and reports
+  E-matching lemmas that are activated N+ times but do not appear in the final proof term.
+  Outputs `grind-unused-lemmas.md` with a table of lemmas ranked by how many files they
+  appear as unused in. If a logfile is given, skips the build and processes that log instead.
+  Requires a Lean toolchain with `grind.unusedLemmaThreshold` support
+  (leanprover/lean4#12805 or later).
+
 **API surrounding CI**
 - `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
-- `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
-  dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
-  to show which dependencies were updated, added, or removed, with links to GitHub diffs.
-- `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
-  It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchable history.
-- `get_tlabel.sh` extracts the `t-`label that a PR has (assuming that there is exactly one).
-  It is used by the `maintainer_merge` family of workflows to dispatch `maintainer merge` requests
-  to the appropriate topic on zulip.
-- `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
-  summaries of changes in transitive imports that the `PR_summary` message incorporates.
-- `zulip_emoji_reactions.py` is called
-  * every time a `bors d`, `bors merge` or `bors r` comment is added to a PR,
-  * whenever bors merges a PR,
-  * whenever a PR is closed or reopened
-  * whenever a PR is labelled or unlabelled with `awaiting-author` or `maintainer-merge`
-  It looks through all zulip posts containing a reference to the relevant PR
-  and will post or update an emoji reaction corresponding to the current PR state to the message.
-  This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
-  `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
-  🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
-  PRs which were migrated to a fork (as indicated by the `migrated-to-fork` label)
-  additionally receive a reaction ... (`skip_forward`).
-  Two of these are custom emojis configured on zulip.
-- `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
-  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
-  `late_importers.sh` for further details.
-- `maintainer_merge_message.sh` contains a shell script that produces the Zulip message for a
-  `maintainer merge`/`maintainer delegate` comment.
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.

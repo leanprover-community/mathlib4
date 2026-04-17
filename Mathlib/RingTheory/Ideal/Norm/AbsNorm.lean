@@ -125,7 +125,7 @@ theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] (hP : P ≠ ⊥)
   refine (Ideal.eq_prime_pow_of_succ_lt_of_le hP (lt_of_le_of_ne le_sup_right ?_)
     (sup_le (Ideal.span_le.mpr (Set.singleton_subset_iff.mpr a_mem))
       (Ideal.pow_succ_lt_pow hP i).le)).symm
-  contrapose! a_notMem with this
+  contrapose a_notMem with this
   rw [this]
   exact mem_sup.mpr ⟨a, mem_span_singleton_self a, 0, by simp, by simp⟩
 
@@ -171,7 +171,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     simpa only [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk''_eq_mk,
       Submodule.Quotient.eq] using h
   · intro d'
-    refine Quotient.inductionOn' d' fun d => ?_
+    induction d' using Quotient.inductionOn with | _ d
     have hd' := (mem_map (f := mkQ (P ^ i.succ))).mpr ⟨a * d, Ideal.mul_mem_right d _ a_mem, rfl⟩
     refine ⟨⟨_, hd'⟩, ?_⟩
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq]
@@ -413,6 +413,7 @@ section Int
 
 open Ideal
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Int.ideal_span_absNorm_eq_self (J : Ideal ℤ) :
     span {(absNorm J : ℤ)} = J := by

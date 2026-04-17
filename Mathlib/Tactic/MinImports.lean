@@ -252,7 +252,7 @@ It is used to provide the internally generated name for "nameless" `instance`s.
 def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
     let tot := getIrredundantImports (← getEnv) (← getAllImports stx id)
     let fileNames := tot.toArray.qsort Name.lt
-    logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
+    logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"public import {·}")).toList}"
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/

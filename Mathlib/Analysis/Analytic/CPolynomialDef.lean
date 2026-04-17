@@ -407,11 +407,11 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     rw [changeOrigin, FormalMultilinearSeries.sum,
       ContinuousMultilinearMap.tsum_eval (summable_of_ne_finset_zero this)]
     refine (summable_of_ne_finset_zero (s := Finset.range n) fun m hm ↦ ?_).hasSum.sigma_of_hasSum
-      (hfkl k) (summable_of_finite_support <| finsupp.preimage sigma_mk_injective.injOn)
+      (hfkl k) (summable_of_hasFiniteSupport <| finsupp.preimage sigma_mk_injective.injOn)
     rw [this m hm, ContinuousMultilinearMap.zero_apply]
   have hf : HasSum f ((p.changeOrigin x).sum y) :=
     ((p.changeOrigin x).hasSum_of_finite (fun _ ↦ changeOrigin_finite_of_finite p hn) _)
-      |>.sigma_of_hasSum hfk (summable_of_finite_support finsupp)
+      |>.sigma_of_hasSum hfk (summable_of_hasFiniteSupport finsupp)
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine (p.hasSum_of_finite hn (x + y)).sigma_of_hasSum (fun n ↦ ?_)
     (changeOriginIndexEquiv.symm.summable_iff.2 hf.summable)

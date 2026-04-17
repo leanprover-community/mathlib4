@@ -443,7 +443,7 @@ open SubMulAction
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
-of the fixing_subgroup of a subset of adequate cardinality -/
+of the `fixingSubgroup` of a subset of adequate cardinality -/
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
@@ -520,85 +520,19 @@ open Equiv MulAction
 
 variable {α : Type*}
 
+/-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
+other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
+theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
+    (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
+  obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  classical
-  intro x y
-  have (x : Fin n ↪ α) : Cardinal.mk (range x) = n := by
-    simp [Finset.card_image_of_injective, PLift.down_injective]
-  have hxy : Cardinal.mk ((range x)ᶜ : Set α) = Cardinal.mk ((range y)ᶜ : Set α) := by
-    rw [← Cardinal.add_nat_inj n]
-    nth_rewrite 1 [← this x]
-    rw [← this y]
-    simp only [add_comm, Cardinal.mk_sum_compl]
-  rw [Cardinal.eq] at hxy
-  obtain ⟨φ⟩ := hxy
-  let φ' : α → α := Function.extend Subtype.val (fun a ↦ ↑(φ a)) id
-  set ψ : α → α := Function.extend x y φ'
-  have : Function.Bijective ψ := by
-    constructor
-    · intro a b hab
-      by_cases ha : a ∈ range x
-      · obtain ⟨i, rfl⟩ := ha
-        by_cases hb : b ∈ range x
-        · obtain ⟨j, rfl⟩ := hb
-          simp only [ψ, x.injective.extend_apply, y.injective.eq_iff] at hab
-          rw [hab]
-        · simp only [ψ, φ', x.injective.extend_apply] at hab
-          rw [Function.extend_apply' _ _ _ hb] at hab
-          rw [← Set.mem_compl_iff] at hb
-          rw [← Subtype.coe_mk b hb, Subtype.val_injective.extend_apply] at hab
-          exfalso
-          have : y i ∈ (range y)ᶜ := by
-            rw [hab]
-            exact Subtype.coe_prop (φ ⟨b, hb⟩)
-          rw [Set.mem_compl_iff] at this
-          apply this
-          exact mem_range_self i
-      · by_cases hb : b ∈ range x
-        · obtain ⟨j, rfl⟩ := hb
-          simp only [ψ, φ', x.injective.extend_apply] at hab
-          rw [Function.extend_apply' _ _ _ ha] at hab
-          rw [← Set.mem_compl_iff] at ha
-          rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab
-          exfalso
-          have : y j ∈ (range y)ᶜ := by
-            rw [← hab]
-            exact Subtype.coe_prop (φ ⟨a, ha⟩)
-          rw [Set.mem_compl_iff] at this
-          apply this
-          exact mem_range_self j
-        · simp only [ψ, Function.extend_apply' _ _ _ ha,
-            Function.extend_apply' _ _ _ hb, φ'] at hab
-          rw [← Set.mem_compl_iff] at ha hb
-          rw [← Subtype.coe_mk b hb, ← Subtype.coe_mk a ha] at hab
-          rw [Subtype.val_injective.extend_apply, Subtype.val_injective.extend_apply] at hab
-          rwa [← Subtype.coe_mk a ha, ← Subtype.coe_mk b hb,
-              Subtype.coe_inj, ← φ.injective.eq_iff, ← Subtype.coe_inj]
-    · intro b
-      by_cases hb : b ∈ range y
-      · obtain ⟨i, rfl⟩ := hb
-        use x i
-        simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
-  use Equiv.ofBijective ψ this
-  ext i
-  simp [ψ, x.injective.extend_apply]
+  exact fun x y => exists_smul_eq_embedding x y
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
@@ -643,9 +577,6 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   specialize hgk i
   simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
-
-@[deprecated (since := "2025-10-03")]
-alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 

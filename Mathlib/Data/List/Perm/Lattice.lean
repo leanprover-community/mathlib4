@@ -56,10 +56,7 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
-      refine Perm.trans (Perm.cons _ l_ih) ?_
-      change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
-      rw [← List.append_assoc]
-      solve_by_elim [Perm.append_right, perm_append_comm]
+      exact perm_cons_append_cons _ l_ih
     · simp [*]
 
 theorem Perm.take_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys)
