@@ -186,9 +186,9 @@ types. -/
 def Types.equivalenceRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.Equivalence φ) :
     EquivalenceRelation (R := Subtype φ.uncurry) (↾(_root_.Prod.fst ∘ Subtype.val))
       (↾(_root_.Prod.snd ∘ Subtype.val)) where
-  __ := Types.reflexiveRelation hφ.stdRefl
-  __ := Types.symmetricRelation hφ.symmetric
-  __ := Types.transitiveRelation hφ.isTrans
+  __ := reflexiveRelation hφ.stdRefl
+  __ := symmetricRelation hφ.symmetric
+  __ := transitiveRelation hφ.isTrans
 
 /-- An internal equivalence relation in the category of types gives rise to a standard equivalence
 relation. -/
