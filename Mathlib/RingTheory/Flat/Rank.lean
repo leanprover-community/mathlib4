@@ -36,7 +36,6 @@ attribute [local instance] Module.free_of_flat_of_isLocalRing
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Flat R S] [Module.Finite R S]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PrimeSpectrum.rankAtStalk_pos_iff_mem_range_comap (p : PrimeSpectrum R) :
     0 < Module.rankAtStalk (R := R) S p ↔ p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
   rw [Module.rankAtStalk_eq, Module.finrank_pos_iff, p.nontrivial_iff_mem_rangeComap]
