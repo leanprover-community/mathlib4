@@ -105,11 +105,6 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
--- TODO Relocate (e.g., to where `trace` defined): not really Lie theory
-lemma trace_lie_mul_eq (x y z : Module.End R M) :
-    trace R M (⁅x, y⁆ * z) = trace R M (x * ⁅y, z⁆) :=
-  traceForm_apply_lie_apply R (Module.End R M) M x y z
-
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
@@ -121,10 +116,11 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
   | mem u hu =>
     obtain ⟨a, b, rfl⟩ := hu
     obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
-    replace hbc : ⁅φ b, y⁆ = - φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
-    rw [LieHom.map_lie, ← Module.End.instLieRingModule_eq, trace_lie_mul_eq, hbc, mul_neg, map_neg,
-      neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h, LinearMap.zero_apply,
-      LinearMap.zero_apply]
+    replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
+    rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
+      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
+      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
+      LinearMap.zero_apply, LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
   | smul t u _ hu => simp [hu]
