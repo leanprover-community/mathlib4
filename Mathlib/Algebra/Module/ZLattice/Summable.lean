@@ -203,7 +203,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     exact mul_le_of_le_one_left (mul_nonneg (by positivity) (by positivity)) hA'
   · refine ⟨A⁻¹ * B, mul_pos (inv_pos.mpr hA) hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [Real.mul_rpow (inv_pos.mpr hA).le hB.le, mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (by positivity))
+    gcongr
     rw [← Real.rpow_neg_one, ← Real.rpow_mul hA.le]
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
