@@ -597,8 +597,8 @@ notation:25 (name := «MulDistribMulActionHomIdLocal≺»)
 -- QUESTION/TODO : Impose that `φ` is a morphism of monoids?
 
 /-- `DistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
-  preserving the additive monoid structure and equivariant with respect to `φ`.
-    You should extend this class when you extend `DistribMulActionSemiHom`. -/
+preserving the additive monoid structure and equivariant with respect to `φ`.
+You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
     (A B : outParam Type*)
@@ -608,8 +608,8 @@ class DistribMulActionSemiHomClass (F : Type*)
     extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
 /-- `MulDistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
-  preserving the monoid structure and equivariant with respect to `φ`.
-  You should extend this class when you extend `MulDistribMulActionSemiHom`. -/
+preserving the monoid structure and equivariant with respect to `φ`.
+You should extend this class when you extend `MulDistribMulActionSemiHom`. -/
 @[to_additive existing (dont_translate := M N) DistribMulActionSemiHomClass]
 class MulDistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
@@ -620,13 +620,13 @@ class MulDistribMulActionSemiHomClass (F : Type*)
     extends MulActionSemiHomClass F φ A B, MonoidHomClass F A B
 
 /-- `MulDistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
-  the monoid structure and equivariant with respect to the action of `M`.
-    It is an abbreviation to `MulDistribMulActionHomClass F (MonoidHom.id M) A B`
+the monoid structure and equivariant with respect to the action of `M`.
+It is an abbreviation to `MulDistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `MulDistribMulActionHom`. -/
 @[to_additive (dont_translate := M) DistribMulActionHomClass
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
-  the additive monoid structure and equivariant with respect to the action of `M`.
-    It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
+the additive monoid structure and equivariant with respect to the action of `M`.
+It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/]
 abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
     (A B : outParam Type*) [Monoid M] [Monoid A] [Monoid B]
