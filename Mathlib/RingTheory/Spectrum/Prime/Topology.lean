@@ -742,13 +742,14 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
 
+variable {R} in
 lemma toPiLocalization_bijective : Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
 
 /-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) prime ideals. -/
 def toPiLocalizationEquiv : R ≃ₐ[R] PiLocalization R :=
-  .ofBijective _ (toPiLocalization_bijective R)
+  .ofBijective _ toPiLocalization_bijective
 
 @[simp]
 theorem toPiLocalizationEquiv_apply (x : R) : toPiLocalizationEquiv R x = algebraMap R _ x :=
