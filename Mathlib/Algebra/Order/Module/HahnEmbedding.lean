@@ -434,7 +434,7 @@ theorem archimedeanClassMk_eq_iff [IsOrderedAddMonoid R] (x y : f.val.domain) :
   simp_rw [← toOrderAddMonoidHom_apply, ← orderHom_mk]
   trans ArchimedeanClass.mk x = .mk y
   · exact Function.Injective.eq_iff <| orderHom_injective <| toOrderAddMonoidHom_injective _
-  · simp_rw [mk_eq_mk]
+  · simp_rw [mk_eq_mk, abs_eq_max_neg]
     aesop
 
 set_option backward.isDefEq.respectTransparency false in

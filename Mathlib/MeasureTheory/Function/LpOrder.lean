@@ -90,8 +90,9 @@ theorem _root_.MeasureTheory.MemLp.inf {f g : α → E} (hf : MemLp f p μ) (hg 
   MemLp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
     (Filter.Eventually.of_forall fun x => norm_inf_le_add (f x) (g x))
 
-theorem _root_.MeasureTheory.MemLp.abs {f : α → E} (hf : MemLp f p μ) : MemLp |f| p μ :=
-  hf.sup hf.neg
+theorem _root_.MeasureTheory.MemLp.abs {f : α → E} (hf : MemLp f p μ) : MemLp |f| p μ := by
+  rw [abs_eq_max_neg]
+  exact hf.sup hf.neg
 
 instance instLattice : Lattice (Lp E p μ) :=
   Subtype.lattice
@@ -108,8 +109,9 @@ theorem coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
 theorem coeFn_inf (f g : Lp E p μ) : ⇑(f ⊓ g) =ᵐ[μ] ⇑f ⊓ ⇑g :=
   AEEqFun.coeFn_inf _ _
 
-theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
-  AEEqFun.coeFn_abs _
+theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
+  convert ← AEEqFun.coeFn_abs _
+  · simp_rw [abs_eq_max_neg]; rfl
 
 instance instHasSolidNorm [Fact (1 ≤ p)] :
     HasSolidNorm (Lp E p μ) :=

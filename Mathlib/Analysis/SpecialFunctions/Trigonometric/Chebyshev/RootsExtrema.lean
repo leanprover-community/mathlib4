@@ -91,7 +91,7 @@ theorem abs_eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   constructor
   · intro hTx
     have hx := (abs_eval_T_real_le_one_iff (Nat.cast_ne_zero.mpr hn) x).mpr (le_of_eq hTx)
-    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_max_le_left hx), T_real_cos,
+    rw [← cos_arccos (neg_le_of_abs_le hx) (le_of_abs_le hx), T_real_cos,
       Int.cast_natCast, abs_cos_eq_one_iff] at hTx
     obtain ⟨k, hk⟩ := hTx
     have hk' : k = n * (arccos x / π) := by simpa [field]

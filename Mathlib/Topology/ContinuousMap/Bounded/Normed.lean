@@ -572,14 +572,16 @@ instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
 instance instLattice : Lattice (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.lattice _ .rfl .rfl coe_sup coe_inf
 
-@[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
+@[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := by simp [abs_eq_max_neg]
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
 instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
   { solid := by
       intro f g h
-      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
+      simp_rw [abs_eq_max_neg] at h
+      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ :=
+        fun t => HasSolidNorm.solid (by simp_rw [abs_eq_max_neg]; exact h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
 

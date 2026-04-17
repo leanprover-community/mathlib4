@@ -335,7 +335,7 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
 
 /-- If the angle between two vectors of equal norm is equal to 0, then the vectors are equal. -/
 lemma eq_of_angle_eq_zero_of_norm_eq {x y : V} (hxy : angle x y = 0) (h : ‖x‖ = ‖y‖) : x = y := by
-  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, abs, one_smul]
+  grind [angle_eq_zero_iff, norm_smul, Real.norm_eq_abs, norm_ne_zero_iff, one_smul]
 
 /-- The angle between a normalized vector and another vector is equal to the angle
 between the original vectors. -/

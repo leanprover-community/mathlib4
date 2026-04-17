@@ -164,7 +164,7 @@ section Real
 variable {w f g : ι → ℝ}
 
 lemma abs_wInner_le (hw : 0 ≤ w) : |⟪f, g⟫_[ℝ, w]| ≤ ⟪|f|, |g|⟫_[ℝ, w] := by
-  simpa using norm_wInner_le (𝕜 := ℝ) hw
+  simpa [Pi.abs_def] using norm_wInner_le (𝕜 := ℝ) hw
 
 end Real
 end RCLike
