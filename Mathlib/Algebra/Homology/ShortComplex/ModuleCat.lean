@@ -266,7 +266,6 @@ lemma ModuleCat.shortComplexOfConj_shortExact (exact : Function.Exact f g)
     (inj : Function.Injective f) (surj : Function.Surjective g) :
     (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).ShortExact := by
   refine ModuleCat.shortComplex_shortExact _ (exact_conj_of_exact eM eN eL f g exact) ?_ ?_
-  · simpa [ModuleCat.shortComplexOfConj] using inj
-  · simpa [ModuleCat.shortComplexOfConj] using surj
+  all_goals simpa
 
 end

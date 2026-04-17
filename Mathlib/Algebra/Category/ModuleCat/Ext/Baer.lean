@@ -39,7 +39,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     (Shrink.linearEquiv R (R ⧸ I)) _ _  exact.linearMap_comp_eq_zero
   have S_exact : S.ShortExact :=
     ModuleCat.shortComplexOfConj_shortExact _ _ _ _ _ exact I.subtype_injective I.mkQ_surjective
-  have : Projective S.X₂ := projective_of_categoryTheory_projective (ModuleCat.of R (Shrink.{v} R))
+  have : Projective S.X₂ := by dsimp [S]; infer_instance
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
     apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
@@ -56,14 +56,14 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     intro x hx
     have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
       ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
-    simpa [- Shrink.linearEquiv_apply, - Shrink.linearEquiv_symm_apply, S, shortComplexOfConj]
+    simpa [-Shrink.linearEquiv_apply, -Shrink.linearEquiv_symm_apply, S, shortComplexOfConj]
       using this
   · rcases h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap) with ⟨g', hg'⟩
     use Ext.mk₀ (ModuleCat.ofHom (g'.comp (Shrink.linearEquiv R R).toLinearMap))
     rw [Ext.bilinearComp_apply_apply, Ext.mk₀_comp_mk₀, ← Ext.mk₀_addEquiv₀_apply e]
     congr
     ext x
-    simp [- Shrink.linearEquiv_apply, - Shrink.linearEquiv_symm_apply,
+    simp [-Shrink.linearEquiv_apply, -Shrink.linearEquiv_symm_apply,
       LinearMap.comp_apply, S, shortComplexOfConj, hg' _ ((Shrink.linearEquiv R I) x).2]
 
 lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
@@ -76,14 +76,15 @@ open Limits in
 lemma hasInjectiveDimensionLE_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
     HasInjectiveDimensionLE M n := by
-  induction n generalizing M
-  · have : Injective M := injective_of_subsingleton_ext_quotient_one M h
+  induction n generalizing M with
+  | zero =>
+    have : Injective M := injective_of_subsingleton_ext_quotient_one M h
     infer_instance
-  · rename_i n ih
+  | succ n ih =>
     let ip : InjectivePresentation M := (EnoughInjectives.presentation M).some
     let S := ip.shortComplex
     have (N : ModuleCat R) : Subsingleton (Ext N M (n + 2)) ↔
-      Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
+        Subsingleton (Ext N (cokernel ip.3) (n + 1)) := by
       have := Ext.subsingleton_of_injective N S.X₂
       have := (Ext.covariantSequence_exact N ip.shortExact_shortComplex (n + 1) (n + 2)
         rfl).isIso_map' 1 (by decide) ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
