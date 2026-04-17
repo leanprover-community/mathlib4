@@ -52,7 +52,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
 abbrev CompactConvergenceCLM [TopologicalSpace E] [TopologicalSpace F] :=
-  UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}
+  UniformConvergenceCLM σ F {S : Set E | IsCompact S}
 
 @[inherit_doc]
 scoped[CompactConvergenceCLM]
