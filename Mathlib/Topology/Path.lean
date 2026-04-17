@@ -393,19 +393,45 @@ def codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ 
   source' := Subtype.ext γ.source
   target' := Subtype.ext γ.target
 
+/-- Restrict a path to a subspace from a range-subset hypothesis. -/
+def codRestrict' {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : range γ ⊆ s) :
+    Path x y :=
+  γ.codRestrict (range_subset_iff.mp hmem)
+
 @[simp]
 theorem codRestrict_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) (t : I) :
     (γ.codRestrict hmem t : X) = γ t := rfl
 
+@[simp]
+theorem codRestrict'_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : range γ ⊆ s)
+    (t : I) : (γ.codRestrict' hmem t : X) = γ t :=
+  rfl
+
+@[simp]
 theorem map_codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
     (γ.codRestrict hmem).map continuous_subtype_val = γ := rfl
+
+@[simp]
+theorem map_codRestrict' {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : range γ ⊆ s) :
+    (γ.codRestrict' hmem).map continuous_subtype_val = γ := rfl
 
 @[simp]
 theorem codRestrict_refl {s : Set X} (x : s) :
     (Path.refl x.val).codRestrict (fun _ => x.property) = Path.refl x := rfl
 
+@[simp]
+theorem codRestrict'_refl {s : Set X} (x : s) :
+    (Path.refl x.val).codRestrict' (by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact x.property) = Path.refl x := by
+  rfl
+
 theorem codRestrict_symm {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
     γ.symm.codRestrict (fun t => hmem (σ t)) = (γ.codRestrict hmem).symm := rfl
+
+theorem codRestrict'_symm {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : range γ ⊆ s) :
+    γ.symm.codRestrict' (by simpa [Path.symm_range] using hmem) = (γ.codRestrict' hmem).symm := by
+  rfl
 
 theorem codRestrict_trans {s : Set X} {x y z : s}
     (γ : Path x.val y.val) (γ' : Path y.val z.val)
@@ -415,6 +441,15 @@ theorem codRestrict_trans {s : Set X} {x y z : s}
       (γ.codRestrict hγ).trans (γ'.codRestrict hγ') := by
   ext t
   simp only [codRestrict_coe, trans_apply]
+  split_ifs <;> rfl
+
+theorem codRestrict'_trans {s : Set X} {x y z : s}
+    (γ : Path x.val y.val) (γ' : Path y.val z.val)
+    (hγ : range γ ⊆ s) (hγ' : range γ' ⊆ s) :
+    (γ.trans γ').codRestrict' (Path.trans_range_subset hγ hγ') =
+      (γ.codRestrict' hγ).trans (γ'.codRestrict' hγ') := by
+  ext t
+  simp only [codRestrict'_coe, trans_apply]
   split_ifs <;> rfl
 
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/

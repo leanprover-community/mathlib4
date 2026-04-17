@@ -76,12 +76,8 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
     obtain ⟨V, hVU, hV_open, hx_in_V⟩ := mem_nhds_iff.mp hU_nhd
     refine ⟨V, hV_open, hx_in_V, ?_⟩
     intro u γ hγ_range
-    -- Since range γ ⊆ V ⊆ U, γ takes values in U
-    have hγ_mem : ∀ t, γ t ∈ U := Path.range_subset_iff.mp (hγ_range.trans hVU)
-    -- Restrict γ to a path in the subspace U
-    let γ_U : Path (⟨u, γ.source ▸ hγ_mem 0⟩ : U) ⟨u, γ.target ▸ hγ_mem 1⟩ := γ.codRestrict hγ_mem
-    -- The basepoint u' : U
-    let u' : U := ⟨u, γ.source ▸ hγ_mem 0⟩
+    let u' : U := ⟨u, (hγ_range.trans hVU) γ.source_mem_range⟩
+    let γ_U : Path u' u' := γ.codRestrict' (hγ_range.trans hVU)
     -- The map from π₁(U, u') to π₁(X, u) has trivial range
     have h_range := hU_loops u'
     rw [MonoidHom.range_eq_bot_iff] at h_range
@@ -89,8 +85,7 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
            FundamentalGroup.fromPath ⟦Path.refl u⟧ := by
       rw [h_range]; rfl
-    rw [FundamentalGroup.map_fromPath, Path.map_codRestrict] at h_map
-    exact Quotient.eq.mp h_map
+    exact Quotient.eq.mp (by simpa [γ_U] using h_map)
   · -- Backward direction: small loops null implies SemilocallySimplyConnectedAt
     intro ⟨U, hU_open, hx_in_U, hU_loops_null⟩
     refine ⟨U, hU_open.mem_nhds hx_in_U, ?_⟩; intro base
@@ -99,7 +94,7 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
     have hrange : range (γ'.map continuous_subtype_val) ⊆ U :=
       Path.range_subset_iff.mpr fun t => (γ' t).property
     have hhom := hU_loops_null (γ'.map continuous_subtype_val) hrange
-    rw [FundamentalGroup.map_fromPath, Quotient.sound hhom]; rfl
+    simpa using congrArg FundamentalGroup.fromPath (Quotient.sound hhom)
 
 /-- Characterization of semilocally simply connected at a point: any two paths in U between
 the same endpoints are homotopic. -/
