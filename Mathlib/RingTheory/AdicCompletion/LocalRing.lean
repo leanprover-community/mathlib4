@@ -66,7 +66,7 @@ lemma AdicCompletion.isMaximal_map_of_le (m : Ideal R) [m.IsMaximal] (le : I ≤
       eq_comm, sup_eq_left]
     exact kerle
   rw [this]
-  let _ : (Ideal.map (Ideal.Quotient.mk I) m).IsMaximal :=
+  have : (Ideal.map (Ideal.Quotient.mk I) m).IsMaximal :=
     Ideal.IsMaximal.map_of_surjective_of_ker_le Ideal.Quotient.mk_surjective (by simpa using le)
   exact Ideal.comap_isMaximal_of_surjective _ (evalOneₐ_surjective I)
 
@@ -82,13 +82,13 @@ instance [IsNoetherianRing R] [IsLocalRing R] : IsLocalRing (AdicCompletion (max
 
 lemma AdicCompletion.maximalIdeal_eq_map_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     letI := AdicCompletion.isLocalRing_of_fg fg
-    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
+    maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   letI := AdicCompletion.isLocalRing_of_fg fg
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _) fg)).symm
 
 lemma AdicCompletion.maximalIdeal_eq_map [IsNoetherianRing R] [IsLocalRing R] :
-    (maximalIdeal (AdicCompletion (maximalIdeal R) R)) =
+    maximalIdeal (AdicCompletion (maximalIdeal R) R) =
     (maximalIdeal R).map (algebraMap R (AdicCompletion (maximalIdeal R) R)) :=
   (IsLocalRing.eq_maximalIdeal (AdicCompletion.isMaximal_map_of_le _ _ (le_refl _)
     (maximalIdeal R).fg_of_isNoetherianRing)).symm
@@ -124,11 +124,11 @@ instance [IsNoetherianRing R] [IsLocalRing R] : IsAdicComplete
   AdicCompletion.isAdicComplete_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
 lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
-    letI := AdicCompletion.isLocalRing_of_fg fg
-    letI := AdicCompletion.algebraMap_isLocalHom_of_fg fg
-    Function.Bijective (IsLocalRing.ResidueField.map
-      (algebraMap R (AdicCompletion (maximalIdeal R) R))) := by
-  let _ := AdicCompletion.isLocalRing_of_fg fg
+    haveI := AdicCompletion.isLocalRing_of_fg fg
+    haveI := AdicCompletion.algebraMap_isLocalHom_of_fg fg
+    Function.Bijective
+      (IsLocalRing.ResidueField.map (algebraMap R (AdicCompletion (maximalIdeal R) R))) := by
+  have := AdicCompletion.isLocalRing_of_fg fg
   refine ⟨RingHom.injective _, fun x ↦ ?_⟩
   rcases residue_surjective x with ⟨y, hy⟩
   rcases Ideal.Quotient.mk_surjective (y.1 1) with ⟨z, hz⟩
@@ -138,8 +138,7 @@ lemma AdicCompletion.residueField_map_bijective_of_fg [IsLocalRing R] (fg : (max
   rw [maximalIdeal_eq_map_of_fg fg, ← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map]
   have : (algebraMap R (AdicCompletion (maximalIdeal R) R)) z - y ∈
     (maximalIdeal R) ^ 1 • (⊤ : Submodule R (AdicCompletion (maximalIdeal R) R)) := by
-    change (of (maximalIdeal R) R z) - y ∈ _
-    rw [pow_smul_top_eq_ker_eval fg]
+    rw [AdicCompletion.algebraMap_apply, pow_smul_top_eq_ker_eval fg]
     simpa [eval, sub_eq_zero] using hz
   simpa
 
@@ -172,8 +171,7 @@ lemma AdicCompletion.spanFinrank_maximalIdeal_eq [IsNoetherianRing R] [IsLocalRi
     intro m
     rcases Ideal.toCotangent_surjective _ m with ⟨m', hm'⟩
     rcases Submodule.Quotient.mk_surjective _ (m'.1.1 2) with ⟨l, hl⟩
-    have lmem : (transitionMap (maximalIdeal R) R (Nat.le_succ 1)) (m'.1.1 2) = m'.1.1 1 :=
-      m'.1.2 (Nat.le_succ 1)
+    have lmem : (transitionMap _ R (Nat.le_succ 1)) (m'.1.1 2) = m'.1.1 1 := m'.1.2 (Nat.le_succ 1)
     simp only [smul_eq_mul, Nat.succ_eq_add_one, Nat.reduceAdd, transitionMap, Submodule.factorPow,
       Submodule.mapQ_eq_factor, Submodule.factor_eq_factor, ← hl, mk_eq_mk, factor_mk, pow_one,
       (mem_maximalIdeal_iff_eval_one_eq_zero m'.1).mp m'.2, eq_zero_iff_mem, mul_top] at lmem
