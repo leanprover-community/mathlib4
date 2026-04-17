@@ -592,7 +592,7 @@ theorem cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
 
 /-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
 leading exponent of `tl` is less than `exp`. -/
-theorem cons_elim {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem elim_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
     (h : Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
