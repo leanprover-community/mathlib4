@@ -86,7 +86,6 @@ set_option quotPrecheck false
 local notation "ι" => (Module.rank F E).ord.ToType
 
 set_option backward.privateInPublic true in
-private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
@@ -129,9 +128,10 @@ def leastExt : ι → ι :=
       refine ne_of_lt ?_ this
       let _ : AddCommMonoid (⊤ : IntermediateField F E) := inferInstance
       conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
-      have := mk_Iio_toType_ord_lt i
+      have := mk_Iio_lt i (by simp)
+      rw [mk_toType, card_ord] at this
       obtain eq | lt := rank_inf.out.eq_or_lt
-      · replace this := mk_lt_aleph0_iff.mp (this.trans_eq eq.symm)
+      · simp_rw [← eq, mk_lt_aleph0_iff] at this
         have : FiniteDimensional F (adjoin F s) :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
