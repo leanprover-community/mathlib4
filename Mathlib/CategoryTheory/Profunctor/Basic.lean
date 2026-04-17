@@ -32,9 +32,9 @@ namespace CategoryTheory
 
 open Opposite
 
-universe w' w
+universe w' w v₁ v₂ u₁ u₂
 
-variable (C D : Type*) [Category* C] [Category* D]
+variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D]
 
 /-- Custom structure to construct profunctors, i.e. bifunctors `C ⥤ Dᵒᵖ ⥤ Type w`. -/
 @[pp_with_univ]
