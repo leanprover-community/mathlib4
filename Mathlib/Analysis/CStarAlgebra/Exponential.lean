@@ -55,17 +55,11 @@ lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by
   let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
-  ext
-  have hcomm : Commute (I • (a : A)) (I • (b : A)) := by
-    unfold Commute SemiconjBy
-    simp only [h.eq, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
-  simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute hcomm
+  simpa only [Subtype.ext_iff, expUnitary_coe, AddSubgroup.coe_add, smul_add] using
+    exp_add_of_commute ((h.smul_left I).smul_right I)
 
 theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
-    Commute (expUnitary a) (expUnitary b) :=
-  calc
-    selfAdjoint.expUnitary a * selfAdjoint.expUnitary b =
-        selfAdjoint.expUnitary b * selfAdjoint.expUnitary a := by
-      rw [← h.expUnitary_add, ← h.symm.expUnitary_add, add_comm]
+    Commute (expUnitary a) (expUnitary b) := by
+  rw [Commute, SemiconjBy, ← h.expUnitary_add, ← h.symm.expUnitary_add, add_comm]
 
 end Star
