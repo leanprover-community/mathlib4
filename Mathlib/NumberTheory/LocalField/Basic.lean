@@ -169,7 +169,7 @@ instance : CompleteSpace 𝒪[K] :=
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
 
 open scoped Pointwise in
-instance isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K] where
+instance : IsAdicComplete 𝓂[K] 𝒪[K] where
   prec' f hf := by
     let S n : Set 𝒪[K] := f n +ᵥ ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K])
     have hS n : S (n + 1) ⊆ S n := by
