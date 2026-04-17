@@ -45,7 +45,7 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Closeds α) := .ofSetLike (Closeds α) α
+instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α) α
 
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
@@ -96,7 +96,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
 instance instCompleteLattice : CompleteLattice (Closeds α) :=
-  CompleteLattice.copy
+  fast_instance% CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
     _ rfl
@@ -188,7 +188,7 @@ def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
   iInf_sup_le_sup_sInf a s :=
     (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
 
-instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
+instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms coframeMinimalAxioms
 
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
@@ -282,26 +282,22 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
   refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma Closeds.isAtom_coe [T1Space α] {s : Closeds α} :
     IsAtom (s : Set α) ↔ IsAtom s :=
   Closeds.gi.isAtom_iff' rfl
     (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
 
-set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the singletons. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = {x} := by
   simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
 `({x} : Closeds α).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
@@ -326,7 +322,7 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Clopens α) := .ofSetLike (Clopens α) α
+instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
 
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
@@ -372,7 +368,7 @@ instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 @[simp, norm_cast] lemma coe_himp (s t : Clopens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 
-instance : BooleanAlgebra (Clopens α) :=
+instance : BooleanAlgebra (Clopens α) := fast_instance%
   SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
     coe_sdiff coe_himp
 
@@ -414,18 +410,14 @@ instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (IrreducibleCloseds α) := .ofSetLike (IrreducibleCloseds α) α
+instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
 
 theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.isIrreducible'
 
-@[deprecated (since := "2025-10-14")] alias is_irreducible' := isIrreducible
-
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
-
-@[deprecated (since := "2025-10-14")] alias is_closed' := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s
