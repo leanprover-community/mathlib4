@@ -137,6 +137,7 @@ lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
   exact IsPrime.under A P
 
 variable {P}
+
 theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
     [AlgHomClass F A B C] (f : F) (h : P = Q.comap f) : P.LiesOver p where
   over := by
