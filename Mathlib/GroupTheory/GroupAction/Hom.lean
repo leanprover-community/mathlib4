@@ -607,15 +607,6 @@ class DistribMulActionSemiHomClass (F : Type*)
     [FunLike F A B] : Prop
     extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 
-/-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
-  the additive monoid structure and equivariant with respect to the action of `M`.
-    It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
-You should extend this class when you extend `DistribMulActionHom`. -/
-abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
-    (A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
-    [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
-    DistribMulActionSemiHomClass F (MonoidHom.id M) A B
-
 /-- `MulDistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
   preserving the monoid structure and equivariant with respect to `φ`.
   You should extend this class when you extend `MulDistribMulActionSemiHom`. -/
@@ -632,22 +623,19 @@ class MulDistribMulActionSemiHomClass (F : Type*)
   the monoid structure and equivariant with respect to the action of `M`.
     It is an abbreviation to `MulDistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `MulDistribMulActionHom`. -/
-@[to_additive existing (dont_translate := M) DistribMulActionHomClass]
+@[to_additive (dont_translate := M) DistribMulActionHomClass
+/-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
+  the additive monoid structure and equivariant with respect to the action of `M`.
+    It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
+You should extend this class when you extend `DistribMulActionHom`. -/]
 abbrev MulDistribMulActionHomClass (F : Type*) (M : outParam Type*)
     (A B : outParam Type*) [Monoid M] [Monoid A] [Monoid B]
     [MulDistribMulAction M A] [MulDistribMulAction M B] [FunLike F A B] :=
     MulDistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
-instance DistribMulAction.instFunLike [AddMonoid A] [DistribMulAction M A] [AddMonoid B]
-    [DistribMulAction N B] : FunLike (A →ₑ+[φ] B) A B where
-  coe m := m.toFun
-  coe_injective' f g h := by
-    rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
-    cases tF; cases tG; congr
-
 namespace MulDistribMulActionHom
 
-@[to_additive existing (dont_translate := M N) DistribMulAction.instFunLike]
+@[to_additive (dont_translate := M N)]
 instance : FunLike (A →ₑ*[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
@@ -663,20 +651,13 @@ instance : MulDistribMulActionSemiHomClass (A →ₑ*[φ] B) φ A B where
 variable {φ φ' A B B₁}
 variable {F : Type*} [FunLike F A B]
 
-/-- Turn an element of a type `F` satisfying `DistribMulActionHomClass F M X Y` into an actual
-`DistribMulActionHom`. This is declared as the default coercion from `F` to
-`DistribMulActionHom M X Y`. -/
-def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
-    [AddMonoid A] [DistribMulAction M A] [AddMonoid B] [DistribMulAction N B]
-    [DistribMulActionSemiHomClass F φ A B]
-    (f : F) : A →ₑ+[φ] B :=
-  { (f : A →+ B), (f : A →ₑ[φ] B) with }
-
 /-- Turn an element of a type `F` satisfying `MulDistribMulActionHomClass F M X Y` into an actual
 `MulDistribMulActionHom`. This is declared as the default coercion from `F` to
 `MulDistribMulActionHom M X Y`. -/
-@[to_additive existing (attr := coe) (dont_translate := M N)
-  DistribMulActionSemiHomClass.toDistribMulActionHom]
+@[to_additive (attr := coe) (dont_translate := M N) toDistribMulActionHom
+/-- Turn an element of a type `F` satisfying `DistribMulActionHomClass F M X Y` into an actual
+`DistribMulActionHom`. This is declared as the default coercion from `F` to
+`DistribMulActionHom M X Y`. -/]
 def _root_.MulDistribMulActionSemiHomClass.toMulDistribMulActionHom
     [MulDistribMulActionSemiHomClass F φ A B]
     (f : F) : A →ₑ*[φ] B :=
@@ -751,12 +732,9 @@ protected theorem map_smulₑ (f : A →ₑ*[φ] B) (m : M) (x : A) : f (m • x
 
 variable (M)
 
-/-- The identity map as an equivariant additive monoid homomorphism. -/
-protected def _root_.DistribMulActionHom.id [AddMonoid A] [DistribMulAction M A] : A →+[M] A :=
-  ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
-
 /-- The identity map as an equivariant monoid homomorphism. -/
-@[to_additive existing (dont_translate := M)]
+@[to_additive (dont_translate := M)
+/-- The identity map as an equivariant additive monoid homomorphism. -/]
 protected def id : A →*[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
 
@@ -766,12 +744,12 @@ theorem id_apply (x : A) : MulDistribMulActionHom.id M x = x := by
 
 variable {M C ψ χ}
 
-instance _root_.DistriMulActionHom.instZero
-    [AddMonoid A] [DistribMulAction M A] [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
+instance _root_.DistriMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
+    {B : Type*} [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
 
 @[to_additive (dont_translate := M)]
-instance [Monoid A] [MulDistribMulAction M A] : One (A →*[M] A) :=
+instance : One (A →*[M] A) :=
   ⟨MulDistribMulActionHom.id M⟩
 
 @[simp]
@@ -791,22 +769,16 @@ theorem _root_.DistriMulActionHom.zero_apply {A : Type*} [AddMonoid A] [DistribM
 theorem one_apply (a : A) : (1 : A →*[M] A) a = a :=
   rfl
 
-instance [AddMonoid A] [DistribMulAction M A] [AddMonoid B] [DistribMulAction N B] :
+instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
+    {B : Type*} [AddMonoid B] [DistribMulAction N B] :
     Inhabited (A →ₑ+[φ] B) :=
   ⟨0⟩
 
-/-- Composition of two equivariant additive monoid homomorphisms. -/
-def _root_.DistribMulActionHom.comp [AddMonoid A] [DistribMulAction M A]
-  [AddMonoid B] [DistribMulAction N B] [AddMonoid C] [DistribMulAction P C]
-  (g : B →ₑ+[ψ] C) (f : A →ₑ+[φ] B)
-    [κ : MonoidHom.CompTriple φ ψ χ] : A →ₑ+[χ] C :=
-  { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
-    AddMonoidHom.comp (g : B →+ C) (f : A →+ B) with }
-
 /-- Composition of two equivariant monoid homomorphisms. -/
-@[to_additive existing (dont_translate := M N P)]
-def comp (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B)
-    [κ : MonoidHom.CompTriple φ ψ χ] : A →ₑ*[χ] C :=
+@[to_additive (dont_translate := M N P)
+/-- Composition of two equivariant additive monoid homomorphisms. -/]
+def comp [κ : MonoidHom.CompTriple φ ψ χ]
+    (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B) : A →ₑ*[χ] C :=
   { MulActionHom.comp (g : B →ₑ[ψ] C) (f : A →ₑ[φ] B),
     MonoidHom.comp (g : B →* C) (f : A →* B) with }
 
@@ -831,14 +803,9 @@ theorem comp_assoc {Q D : Type*} [Monoid Q] [Monoid D] [MulDistribMulAction Q D]
     h.comp (g.comp f) = (h.comp g).comp f :=
   ext fun _ => rfl
 
-/-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/
-def _root_.DistribMulActionHom.inverse [AddMonoid A] [DistribMulAction M A]
-    [AddMonoid B₁] [DistribMulAction M B₁] (f : A →+[M] B₁) (g : B₁ → A)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B₁ →+[M] A :=
-  { (f : A →+ B₁).inverse g h₁ h₂, f.toMulActionHom.inverse g h₁ h₂ with toFun := g }
-
 /-- The inverse of a bijective `MulDistribMulActionHom` is a `MulDistribMulActionHom`. -/
-@[to_additive existing (attr := simp) (dont_translate := M)]
+@[to_additive (attr := simp) (dont_translate := M)
+/-- The inverse of a bijective `DistribMulActionHom` is a `DistribMulActionHom`. -/]
 def inverse (f : A →*[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : B₁ →*[M] A :=
   { (f : A →* B₁).inverse g h₁ h₂, f.toMulActionHom.inverse g h₁ h₂ with toFun := g }
