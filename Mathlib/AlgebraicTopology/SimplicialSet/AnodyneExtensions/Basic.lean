@@ -66,7 +66,7 @@ open modelCategoryQuillen in
 that has the left lifting property with respect to fibrations, where
 a fibration is a morphism that has the right lifting property with respect
 to horn inclusions. We do not introduce a typeclass for anodyne extensions
-because when the Quillen model structure is fully upstreamed (TODO 0joelriou),
+because when the Quillen model structure is fully upstreamed (TODO @joelriou),
 the assumption `anodyneExtensions f` can be spelled as
 `[Cofibration f] [WeakEquivalence f]`. -/
 def anodyneExtensions : MorphismProperty SSet.{u} := (fibrations _).llp
