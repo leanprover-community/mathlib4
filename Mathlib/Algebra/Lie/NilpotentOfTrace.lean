@@ -25,8 +25,8 @@ criterion.
 
 ## Main results
 
-* `LieModule.isNilpotent_toEnd_of_traceForm_eq_zero_algClosed`: over an algebraically closed field
-  of characteristic zero, if a finite-dimensional representation `M` of `L` satisfies
+* `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed`: over an algebraically
+  closed field of characteristic zero, if a finite-dimensional representation `M` of `L` satisfies
   `traceForm K L M = 0`, then the `⁅L, L⁆`-module `M` is nilpotent.
 
 ## References
