@@ -513,7 +513,7 @@ theorem mem_dilatransvections_pow_of_not_isExceptional
     {e : V ≃ₗ[K] V} (he : ¬ IsExceptional e) :
     e ∈ transvections K V ^ (finrank K (V ⧸ e.fixedSubmodule) - 1) * dilatransvections K V := by
   simp only [not_and_or] at he
-  push_neg at he
+  push Not at he
   rcases he with he | he | he
   · simpa [Nat.sub_eq_zero_of_le he, mem_dilatransvections_iff_finrank_quotient] using he
   · exact mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one he
