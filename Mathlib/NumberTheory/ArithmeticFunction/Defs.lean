@@ -262,15 +262,11 @@ theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
 
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
-  rw [smul_apply]
-  by_cases x0 : x = 0
-  · simp [x0]
-  have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
-  rw [← sum_subset h]
+  rw [smul_apply, ← Nat.map_div_right_divisors, sum_map, sum_eq_single 1]
   · simp
-  intro y ymem ynotMem
-  have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
-  simp [y1ne]
+  · intro d hd hd1
+    simp [one_apply_ne hd1]
+  · simpa using fun hx : x = 0 => by simp [hx]
 
 end Module
 
@@ -282,17 +278,11 @@ instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
   mul_one f := by
     ext x
-    rw [mul_apply]
-    by_cases x0 : x = 0
-    · simp [x0]
-    have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
-    rw [← sum_subset h]
+    rw [mul_apply, ← Nat.map_div_left_divisors, sum_map, sum_eq_single 1]
     · simp
-    intro ⟨y₁, y₂⟩ ymem ynotMem
-    have y2ne : y₂ ≠ 1 := by
-      intro con
-      simp_all
-    simp [y2ne]
+    · intro d hd hd1
+      simp [one_apply_ne hd1]
+    · simpa using fun hx : x = 0 => by simp [hx]
   mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) where

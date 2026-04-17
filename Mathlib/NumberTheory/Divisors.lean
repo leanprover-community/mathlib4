@@ -476,20 +476,13 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
   rw [← cons_self_properDivisors h.ne_zero, prod_cons, h.prod_properDivisors]
 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
-  refine ⟨?_, ?_⟩
-  · intro h
-    refine Nat.prime_def.mpr ⟨?_, fun m hdvd => ?_⟩
-    · match n with
-      | 0 => contradiction
-      | 1 => contradiction
-      | Nat.succ (Nat.succ n) => simp
-    · rw [← mem_singleton, ← h, mem_properDivisors]
-      have := Nat.le_of_dvd ?_ hdvd
-      · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
-      · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this] at h
-        contradiction
-  · exact fun h => Prime.properDivisors h
+  refine ⟨?_, Prime.properDivisors⟩
+  intro h
+  rw [Nat.prime_def_lt]
+  refine ⟨Nat.succ_le_iff.mpr <| one_mem_properDivisors_iff_one_lt.mp (by simp [h]), ?_⟩
+  intro m hm hdvd
+  have hm' : m ∈ n.properDivisors := mem_properDivisors.2 ⟨hdvd, hm⟩
+  simpa [h] using hm'
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by
   rcases n with - | n
@@ -507,25 +500,18 @@ theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 
 
 theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ} :
     x ∈ properDivisors (p ^ k) ↔ ∃ (j : ℕ) (_ : j < k), x = p ^ j := by
-  rw [mem_properDivisors, Nat.dvd_prime_pow pp, ← exists_and_right]
-  simp only [exists_prop, and_assoc]
-  apply exists_congr
-  intro a
-  constructor <;> intro h
-  · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt] at h_right
-    exact ⟨h_right, rfl⟩
-  · rcases h with ⟨h_left, rfl⟩
-    rw [Nat.pow_lt_pow_iff_right pp.one_lt]
-    simp [h_left, le_of_lt]
+  rw [mem_properDivisors, Nat.dvd_prime_pow pp]
+  constructor
+  · rintro ⟨⟨j, hjk, rfl⟩, hlt⟩
+    exact ⟨j, (Nat.pow_lt_pow_iff_right pp.one_lt).1 hlt, rfl⟩
+  · rintro ⟨j, hjk, rfl⟩
+    exact ⟨⟨j, le_of_lt hjk, rfl⟩, (Nat.pow_lt_pow_iff_right pp.one_lt).2 hjk⟩
 
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
-  simp only [mem_properDivisors, mem_map, mem_range, Function.Embedding.coeFn_mk]
-  have := mem_properDivisors_prime_pow pp k (x := a)
-  rw [mem_properDivisors] at this
-  grind
+  rw [mem_properDivisors_prime_pow pp]
+  simp [eq_comm]
 
 @[to_additive (attr := simp)]
 theorem prod_properDivisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α}
@@ -562,19 +548,13 @@ lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) 
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
-  by_cases hn : n = 0
-  · simp [hn]
-  ext a
-  constructor
-  · rw [mem_image]
-    rintro ⟨x, hx1, hx2⟩
-    rw [mem_divisors] at *
-    refine ⟨?_, hn⟩
-    rw [← hx2]
-    exact div_dvd_of_dvd hx1.1
-  · rw [mem_divisors, mem_image]
-    rintro ⟨h1, -⟩
-    exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
+  calc
+    image (fun x : ℕ => n / x) n.divisors =
+        (n.divisors.map ⟨fun d => (n / d, d), fun _ _ => congr_arg Prod.snd⟩).image Prod.fst := by
+      rw [map_eq_image, image_image]
+      rfl
+    _ = n.divisorsAntidiagonal.image Prod.fst := by rw [map_div_left_divisors]
+    _ = n.divisors := image_fst_divisorsAntidiagonal
 
 @[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :

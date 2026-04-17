@@ -338,18 +338,12 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
-  induction n with
-  | zero => simp only [convergent_zero, floor_zero, cast_zero]
-  | succ n ih =>
-    simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
+  induction n <;> simp [convergent, *]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
-  cases n
-  · simp only [convergent_zero, floor_intCast]
-  · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
-      inv_zero]
+  cases n <;> simp [convergent, convergent_of_zero]
 
 end Real
 
