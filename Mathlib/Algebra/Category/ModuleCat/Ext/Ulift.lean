@@ -29,6 +29,7 @@ open CategoryTheory Abelian
 
 section
 
+/-- The linear equivalence `Ext M N n ≃ₗ[R] Ext (ULift M) (ULift N) n`. -/
 noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     haveI : Small.{max v v'} R := small_lift R
     Ext M N n ≃ₗ[R] Ext ((uliftFunctor.{v', v} R).obj M)
@@ -194,3 +195,4 @@ noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [S
 end
 
 end restrictScalars
+#lint
