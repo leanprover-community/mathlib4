@@ -474,6 +474,7 @@ instance : SMul (G ⧸ N) F where
       rw [smul_eq_iff_eq_inv_smul, ← smul_assoc, smul_eq_mul, smul_eq_self G K L N]
       rwa [← QuotientGroup.leftRel_apply]
 
+/-- Docstring -/
 @[implicit_reducible]
 noncomputable def mulSemiringActionOfNormal : MulSemiringAction G F' where
   smul := (SMulOfNormal G K L N F').smul
@@ -498,6 +499,7 @@ noncomputable def mulSemiringActionOfNormal : MulSemiringAction G F' where
     rw [algebraMap_smul_of_normal, map_mul, map_mul, algebraMap_smul_of_normal,
       algebraMap_smul_of_normal, MulSemiringAction.smul_mul]
 
+/-- Docstring -/
 @[implicit_reducible]
 noncomputable def SMulQuotOfNormal : SMul (G ⧸ N) F' :=
   let := SMulOfNormal G K L N F'
@@ -526,6 +528,7 @@ instance : MulSemiringAction (G ⧸ N) F where
   smul_one g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
   smul_mul g x y := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_mul']
 
+/-- Docstring -/
 @[implicit_reducible]
 noncomputable def mulSemiringActionQuotOfNormal : MulSemiringAction (G ⧸ N) F' where
   smul := (SMulQuotOfNormal G K L N F').smul
@@ -551,8 +554,7 @@ noncomputable def mulSemiringActionQuotOfNormal : MulSemiringAction (G ⧸ N) F'
 instance [SMulCommClass G K L] : SMulCommClass (G ⧸ N) K F :=
   ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_comm]⟩
 
-@[implicit_reducible]
-def sMulCommClassOfNormal [SMulCommClass G K L] :
+theorem sMulCommClassOfNormal [SMulCommClass G K L] :
     letI := SMulOfNormal G K L N F'
     SMulCommClass G K F' := by
   let := SMulOfNormal G K L N F'
@@ -560,8 +562,7 @@ def sMulCommClassOfNormal [SMulCommClass G K L] :
   apply FaithfulSMul.algebraMap_injective F' L
   simp [algebraMap.smul, algebraMap_smul_of_normal, smul_comm]
 
-@[implicit_reducible]
-def sMulCommClassQuotOfNormal [SMulCommClass G K L] :
+theorem sMulCommClassQuotOfNormal [SMulCommClass G K L] :
     letI := SMulQuotOfNormal G K L N F'
     SMulCommClass (G ⧸ N) K F' := by
   let := SMulQuotOfNormal G K L N F'
