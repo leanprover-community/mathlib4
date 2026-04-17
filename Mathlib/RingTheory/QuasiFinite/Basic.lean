@@ -137,7 +137,7 @@ private lemma finite_of_isArtinianRing_of_isLocalRing
   · rw [← RingHom.ker_coe_toRingHom, Ideal.Quotient.mkₐ_ker]
     exact Ideal.FG.map (IsNoetherian.noetherian _) _
 
-lemma _root_.Module.Finite.of_quasiFinite [IsArtinianRing R] [QuasiFinite R S] :
+instance _root_.Module.Finite.of_quasiFinite [IsArtinianRing R] [QuasiFinite R S] :
     Module.Finite R S := by
   classical
   let e : R ≃ₐ[R] PrimeSpectrum.PiLocalization R :=
