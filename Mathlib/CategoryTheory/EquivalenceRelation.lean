@@ -63,7 +63,8 @@ structure ReflexiveRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
   reflexivity₁ : r ≫ p₁ = 𝟙 _ := by cat_disch
   reflexivity₂ : r ≫ p₂ = 𝟙 _ := by cat_disch
 
-attribute [reassoc (attr := simp)] ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
+  ReflexiveRelation.reflexivity₁ ReflexiveRelation.reflexivity₂
 
 /-- Standard reflexive relations on types are internal reflexive relations in the category of
 types. -/
@@ -77,7 +78,7 @@ def Types.reflexiveRelation {X : Type w} {φ : X → X → Prop} (hφ : Std.Refl
 relation. -/
 lemma Types.of_reflexiveRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : ReflexiveRelation p₁ p₂) :
     Std.Refl (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) where
-  refl x := ⟨e.r x, congr($e.reflexivity₁ x), congr($e.reflexivity₂ x)⟩
+  refl x := ⟨e.r x, congr($e.reflexivity₁ x), by simp⟩
 
 /-- A symmetric relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X` together
 with a morphism `s : R ⟶ R` which interchanges `p₁` and `p₂`. -/
@@ -87,7 +88,8 @@ structure SymmetricRelation {R X : C} (p₁ p₂ : R ⟶ X) extends JointlyMono�
   symmetry₁ : s ≫ p₁ = p₂ := by cat_disch
   symmetry₂ : s ≫ p₂ = p₁ := by cat_disch
 
-attribute [reassoc (attr := simp)] SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
+attribute [reassoc (attr := simp), elementwise (attr := simp)]
+  SymmetricRelation.symmetry₁ SymmetricRelation.symmetry₂
 
 /-- Standard symmetric relations on types are internal symmetric relations in the category of
 types. -/
@@ -101,9 +103,8 @@ def Types.symmetricRelation {X : Type w} {φ : X → X → Prop} (hφ : _root_.S
 relation. -/
 lemma Types.of_symmetricRelation {R X : Type w} {p₁ p₂ : R ⟶ X} (e : SymmetricRelation p₁ p₂) :
     _root_.Symmetric (fun x₁ x₂ => ∃ r : R, p₁ r = x₁ ∧ p₂ r = x₂) := by
-  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_⟩
-  rw [← hr₁, ← hr₂]
-  exact ⟨congr($e.symmetry₁ r), congr($e.symmetry₂ r)⟩
+  refine fun x₁ x₂ ⟨r, hr₁, hr₂⟩ => ⟨e.s r, ?_, ?_⟩
+  all_goals simpa
 
 /-- A transitive relation is a jointly monic pair of parallel morphisms `p₁, p₂ : R ⟶ X`, together
 with a limiting pullback cone `c` for `p₁` and `p₂` and a map `c.pt ⟶ R` which factors the two
