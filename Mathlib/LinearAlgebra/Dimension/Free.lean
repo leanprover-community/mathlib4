@@ -335,7 +335,6 @@ theorem _root_.OrzechProperty.bijective_of_surjective_of_finrank_le
     Function.Bijective f := by
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R M
-    have := Module.subsingleton R M'
     exact ⟨Function.injective_of_subsingleton f, hf⟩
   rcases finrank_le_iff_exists_linearMap.mp h with ⟨_, hi⟩
   exact OrzechProperty.bijective_of_surjective_of_injective _ _ hi hf
