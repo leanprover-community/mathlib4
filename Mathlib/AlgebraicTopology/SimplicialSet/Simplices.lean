@@ -164,6 +164,15 @@ lemma le_iff_nonempty_hom (x y : X.S) :
   · rintro ⟨f, hf⟩
     exact ⟨f.unop, hf⟩
 
+/-- The bijection `X.S ≃ Y.S` on simplices of simplicial sets that
+is induced by an isomorphism `X ≅ Y`. -/
+@[simps -isSimp apply symm_apply]
+def equivOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.S ≃ Y.S where
+  toFun s := S.mk (e.hom.app _ s.simplex)
+  invFun s := S.mk (e.inv.app _ s.simplex)
+  left_inv _ := by simp
+  right_inv _ := by simp
+
 end S
 
 end SSet

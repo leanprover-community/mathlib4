@@ -138,18 +138,34 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
-/-- Two solutions are equal iff they are equal on `range E.order`. -/
-theorem sol_eq_of_eq_init (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
+theorem mkSol_injective : E.mkSol.Injective :=
+  Subtype.val_injective.comp E.toInit.symm.injective
+
+/-- A basis of the solution space given by solutions whose initial conditions are the standard basis
+vectors -/
+def basis : Module.Basis (Fin E.order) R E.solSpace :=
+  .ofEquivFun E.toInit
+
+/-- The coordinates of a solution in the basis are its first `E.order` values -/
+theorem repr_basis_eq (u : E.solSpace) :
+    E.basis.repr u = .ofSupportFinite (u ∘ Fin.val) (Set.toFinite _) :=
+  rfl
+
+/-- The nth coordinate of a solution in the basis equals its nth value -/
+@[simp]
+theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n = u.val n :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Two solutions are equal iff their initial conditions are equal. -/
+theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
-  refine Iff.intro (fun h x _ ↦ h ▸ rfl) ?_
-  intro h
-  set u' : ↥E.solSpace := ⟨u, hu⟩
-  set v' : ↥E.solSpace := ⟨v, hv⟩
-  change u'.val = v'.val
-  suffices h' : u' = v' from h' ▸ rfl
-  rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
-  ext x
-  exact mod_cast h (mem_range.mpr x.2)
+  rw [← Subtype.mk.injEq u hu v hv, ← E.basis.repr.injective.eq_iff]
+  constructor
+  · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)
+  · exact fun h ↦ Finsupp.ext fun n ↦ h <| Finset.mem_range.mpr n.prop
+
+@[deprecated (since := "2026-04-16")] alias sol_eq_of_eq_init := eq_iff_eqOn_range_order
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
 where `n := E.order`. This operation is quite useful for determining closed-form
@@ -177,9 +193,8 @@ section StrongRankCondition
 variable {R : Type*} [CommRing R] [StrongRankCondition R] (E : LinearRecurrence R)
 
 /-- The dimension of `E.solSpace` is `E.order`. -/
-theorem solSpace_rank : Module.rank R E.solSpace = E.order :=
-  letI := nontrivial_of_invariantBasisNumber R
-  @rank_fin_fun R _ _ E.order ▸ E.toInit.rank_eq
+theorem solSpace_rank : Module.rank R E.solSpace = E.order := by
+  simp [rank_eq_card_basis E.basis]
 
 end StrongRankCondition
 
