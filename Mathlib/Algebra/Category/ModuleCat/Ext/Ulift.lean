@@ -29,20 +29,20 @@ open CategoryTheory Abelian
 
 section
 
-/-- The linear equivalence `Ext M N n ≃ₗ[R] Ext (ULift M) (ULift N) n`. -/
 noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
-    letI : Small.{max v v'} R := small_lift R
+    haveI : Small.{max v v'} R := small_lift R
     Ext M N n ≃ₗ[R] Ext ((uliftFunctor.{v', v} R).obj M)
     ((uliftFunctor.{v', v} R).obj N) n :=
-  letI : Small.{max v v'} R := small_lift R
+  haveI : Small.{max v v'} R := small_lift R
   LinearEquiv.ofBijective (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
     (uliftFunctor.{v', v} R) M N n)
 
-lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
-    letI : Small.{max v v'} R := small_lift R
+lemma ModuleCat.extUliftLinearEquiv_apply [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
+    haveI : Small.{max v v'} R := small_lift R
     ModuleCat.extUliftLinearEquiv M N n =
-    (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n) := rfl
+      (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n) :=
+  rfl
 
 end
 
