@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -42,10 +43,6 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           | (product)                 | (product)                 | (product)
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
-
-## TODO
-
-* If each `q` is a prime power, then `ArithmeticFunction.ofPowerSeries q f` is multiplicative.
 -/
 
 @[expose] public section
@@ -54,7 +51,11 @@ namespace ArithmeticFunction
 
 section PowerSeries
 
-variable {R : Type*} [CommSemiring R]
+variable {R : Type*}
+
+section CommSemiring
+
+variable [CommSemiring R]
 
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
@@ -124,7 +125,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
       · obtain ⟨k, rfl⟩ := hn
         simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
       · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_map, one_apply_ne, smul_zero]
-        contrapose! hn
+        contrapose hn
         exact ⟨0, by simp [hn]⟩
     · simp
 
@@ -146,6 +147,71 @@ theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
   by_cases hq : 1 < q
   · rw [← pow_zero q, ofPowerSeries_apply_pow hq, PowerSeries.coeff_zero_eq_constantCoeff]
   · simp [ofPowerSeries, dif_neg hq]
+
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R]
+
+/-- In `ArithmeticFunction.ofPowerSeries`, replacing the base `q` with a power `q ^ k` corresponds
+to substituting `X` with `X ^ k` in the original power series. -/
+theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
+    ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
+  classical
+  by_cases hq : 1 < q
+  · ext n
+    by_cases hn : ∃ i, q ^ i = n
+    · obtain ⟨i, rfl⟩ := hn
+      rw [ofPowerSeries_apply_pow hq, PowerSeries.coeff_subst_X_pow hk]
+      split_ifs with hn
+      · obtain ⟨j, rfl⟩ := hn
+        rw [pow_mul, ofPowerSeries_apply_pow (one_lt_pow' hq hk)]
+        simp [hk]
+      · rw [ofPowerSeries_apply (one_lt_pow' hq hk), Function.extend_apply', Pi.zero_apply]
+        simp_rw [← pow_mul, Nat.pow_right_inj hq, eq_comm, ← dvd_def]
+        exact hn
+    · rwa [ofPowerSeries_apply hq, ofPowerSeries_apply (one_lt_pow' hq hk),
+        Function.extend_apply', Function.extend_apply']
+      contrapose! hn
+      obtain ⟨i, rfl⟩ := hn
+      exact ⟨k * i, pow_mul q k i⟩
+  · simp [ofPowerSeries, hq, hk]
+
+-- todo: generalize to `CommSemiring`
+/-- `ArithmeticFunction.ofPowerSeries` produces multiplicative power series. -/
+theorem isMultiplicative_ofPowerSeries_of_isPrimePow
+    (q : ℕ) (hq : IsPrimePow q) (f : PowerSeries R) (hf : f.constantCoeff = 1) :
+    IsMultiplicative (ofPowerSeries q f) := by
+  refine ⟨(ofPowerSeries_apply_one q f).trans hf, fun {m n} hmn ↦ ?_⟩
+  obtain ⟨p, k, hp, hk, rfl⟩ := hq
+  rw [← Nat.prime_iff] at hp
+  rw [ofPowerSeries_pow p hk.ne']
+  by_cases hm : ∃ i, p ^ i = m
+  · obtain ⟨i, rfl⟩ := hm
+    by_cases hn : ∃ j, p ^ j = n
+    · obtain ⟨j, rfl⟩ := hn
+      cases i
+      · simp [hk.ne', hf]
+      · cases j
+        · simp [hk.ne', hf]
+        · simp [hp.ne_one] at hmn
+    · simp_rw [ofPowerSeries_apply hp.one_lt]
+      rw [Function.extend_apply', Function.extend_apply' _ _ _ hn,
+        Pi.zero_apply, Pi.zero_apply, mul_zero]
+      contrapose! hn
+      obtain ⟨j, hj⟩ := hn
+      obtain ⟨v, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp (Dvd.intro_left _ hj.symm)
+      exact ⟨v, rfl⟩
+  · simp_rw [ofPowerSeries_apply hp.one_lt]
+    rw [Function.extend_apply', Function.extend_apply' _ _ _ hm,
+      Pi.zero_apply, Pi.zero_apply, zero_mul]
+    contrapose! hm
+    obtain ⟨i, hi⟩ := hm
+    obtain ⟨j, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp ⟨n, hi⟩
+    exact ⟨j, rfl⟩
+
+end CommRing
 
 end PowerSeries
 
@@ -258,6 +324,23 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
       exact eventually_const.mp (EventuallyEq.trans (.symm h2) (.mul (key m) (key n)))
   · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
     exact isMultiplicative_one
+
+/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
+to the Euler product pointwise. -/
+theorem tendsTo_eulerProduct_ofPowerSeries (q : ι → ℕ) [hq : Northcott q]
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (n : ℕ) :
+    ∀ᶠ s in atTop, (∏ i ∈ s, ofPowerSeries (q i) (f i)) n =
+      eulerProduct (fun i ↦ ofPowerSeries (q i) (f i)) n := by
+  apply tendsTo_eulerProduct_of_tendsTo
+  refine fun n ↦ (tendsto_atTop.mp ((northcott_iff_tendsto q).mp hq) (n + 1)).mono fun i hi ↦ ?_
+  rcases n with rfl | rfl | n
+  · simp
+  · simp [hf]
+  · have hqi : 1 < q i := by lia
+    rw [ofPowerSeries_apply hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne (by lia)]
+    rintro ⟨k, hk⟩
+    have h : k ≠ 0 := fun h ↦ by simp_all
+    grind [Nat.le_pow h.pos (a := q i)]
 
 end EulerProduct
 
