@@ -321,8 +321,10 @@ instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 universe u in
-instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+instance shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
   Module.Finite.equiv (Shrink.linearEquiv R M).symm
+
+@[deprecated (since := "2026-02-14")] alias Module.finite_shrink := shrink
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := finite_def.trans N.fg_top
