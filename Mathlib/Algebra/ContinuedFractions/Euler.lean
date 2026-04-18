@@ -5,7 +5,10 @@ Authors: emlis
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Tactic.Ring
 
 /-!
 # Euler's continued fraction
@@ -66,8 +69,28 @@ private def toEulerAux (g : GenContFract K) : Stream'.Seq K :=
 def toEuler (g : GenContFract K) : GenContFract K :=
   Euler g.h (toEulerAux g)
 
+private theorem toEulerAux_terminatedAt_iff_terminatedAt :
+    g.toEulerAux.TerminatedAt n ↔ g.TerminatedAt n := by
+  simp [TerminatedAt, toEulerAux, Stream'.Seq.TerminatedAt]
+
 theorem euler_terminatedAt_iff_terminatedAt : (Euler h ρ).TerminatedAt n ↔ ρ.TerminatedAt n := by
-  cases n <;> simp [TerminatedAt, Euler, Stream'.Seq.TerminatedAt]
+  simp [Euler, TerminatedAt, Stream'.Seq.TerminatedAt]
+
+theorem toEuler_terminatedAt_iff_terminatedAt : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := by
+  rw [toEuler, euler_terminatedAt_iff_terminatedAt, toEulerAux_terminatedAt_iff_terminatedAt]
+
+theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
+  simp only [toEuler, Euler, toEulerAux, Stream'.Seq.map_get?, Stream'.Seq.get?_enum]
+  rcases g.s.get? 0 with _ | ⟨a, b⟩ <;> simp
+
+theorem toEuler_s_succ :
+    (toEuler g).s.get? (n + 1) =
+      (g.s.get? (n + 1)).map
+        fun ⟨a, _⟩ => ⟨a * g.dens n / g.dens (n + 2), 1 - a * g.dens n / g.dens (n + 2)⟩ := by
+  simp only [toEuler, Euler, toEulerAux, Stream'.Seq.map_get?, Stream'.Seq.get?_enum]
+  rcases g.s.get? (n + 1) with _ | a
+  · simp
+  · simpa [neg_div] using SubNegMonoid.sub_eq_add_neg 1 (a.a * g.dens n / g.dens (n + 2)) |>.symm
 
 theorem exists_euler_s_of_not_terminatedAt_zero
     (not_terminatedAt_zero : ¬ρ.TerminatedAt 0) :
@@ -75,9 +98,19 @@ theorem exists_euler_s_of_not_terminatedAt_zero
   simpa [Euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_zero
 
 theorem exists_euler_s_of_not_terminatedAt_succ
-    (not_terminatedAt_n_add_one : ¬ρ.TerminatedAt (n + 1)) :
+    (not_terminatedAt_n_succ : ¬ρ.TerminatedAt (n + 1)) :
     ∃ a, (Euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ := by
-  simpa [Euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_add_one
+  simpa [Euler] using Option.ne_none_iff_exists'.mp not_terminatedAt_n_succ
+
+theorem euler_h : (Euler h ρ).h = h := by rfl
+
+theorem euler_dens_one : (Euler h ρ).dens 1 = 1 :=
+  Decidable.em ((Euler h ρ).TerminatedAt 0) |>.elim
+    (fun terminatedAt_zero =>
+      (dens_stable_of_terminated (Nat.zero_le 1) <| terminatedAt_zero) ▸ zeroth_den_eq_one)
+    (fun not_terminatedAt_zero =>
+      first_den_eq <| exists_euler_s_of_not_terminatedAt_zero
+        (euler_terminatedAt_iff_terminatedAt (K := K) |>.eq ▸ not_terminatedAt_zero) |>.choose_spec)
 
 /-- the denominators of an Euler's continued fraction are all 1. -/
 theorem euler_dens : (Euler h ρ).dens n = 1 := by
@@ -91,42 +124,42 @@ theorem euler_dens : (Euler h ρ).dens n = 1 := by
       rwa [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
     · rw [euler_terminatedAt_iff_terminatedAt] at not_terminatedAt_n
       match n with
-      | 0 =>
-        exact first_den_eq <|
-          exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_n |>.choose_spec
+      | 0 => exact euler_dens_one
       | n + 1 =>
         obtain ⟨a, s_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
           exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
         simp [dens_recurrence s_n_succ_eq, ih]
 
+theorem toEuler_dens : g.toEuler.dens n = 1 := euler_dens
+
+theorem euler_nums_one : (Euler h ρ).nums 1 = h + (ρ.get? 0).getD 0 := by
+  set g := Euler h ρ
+  rcases Decidable.em <| ρ.TerminatedAt 0 with terminatedAt_zero | not_terminatedAt_zero
+  · rw [g.nums_stable_of_terminated (Nat.zero_le _) <|
+      euler_terminatedAt_iff_terminatedAt.mpr terminatedAt_zero]
+    simp [show ρ.get? 0 = none from terminatedAt_zero, g, euler_h]
+  · obtain ⟨a, g_zeroth_eq⟩ : ∃ a, (Euler h ρ).s.get? 0 = some ⟨a, 1⟩ :=
+      exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_zero
+    rw [first_num_eq g_zeroth_eq]
+    simp [Euler] at g_zeroth_eq
+    grind [euler_h]
+
 private theorem euler_nums_aux : (Euler h ρ).nums (n + 1) - (Euler h ρ).nums n =
     ∏ j ∈ Finset.range (n + 1), (ρ.get? j).getD 0 := by
   set g := Euler h ρ
   induction n with
-  | zero =>
-    rcases Decidable.em <| ρ.TerminatedAt 0 with terminatedAt_zero | not_terminatedAt_zero
-    · rw [g.nums_stable_of_terminated (Nat.zero_le _) <|
-        euler_terminatedAt_iff_terminatedAt.mpr terminatedAt_zero]
-      simp [← terminatedAt_zero.symm]
-    · obtain ⟨a, g_zeroth_eq⟩ : ∃ a, g.s.get? 0 = some ⟨a, 1⟩ :=
-        exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_zero
-      rw [first_num_eq g_zeroth_eq]
-      simp [g, Euler] at g_zeroth_eq
-      simp [g_zeroth_eq]
+  | zero => simp [g, euler_nums_one, euler_h]
   | succ n ih =>
     rw [Finset.prod_range_succ, ← ih]
     rcases Decidable.em <| ρ.TerminatedAt n.succ with terminatedAt_n_succ | not_terminatedAt_n_succ
     · rw [nums_stable_of_terminated n.succ.le_succ <| euler_terminatedAt_iff_terminatedAt.mpr
         terminatedAt_n_succ, terminatedAt_n_succ]
-      simp [g]
-    · obtain ⟨a, g_n_add_one_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
+      grind
+    · obtain ⟨a, g_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
         exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n_succ
-      rw [nums_recurrence g_n_add_one_eq rfl rfl]
-      simp [g, Euler] at g_n_add_one_eq
-      simp [g_n_add_one_eq]
-      ring
-
-theorem euler_nums_zero : (Euler h ρ).nums 0 = h := by rfl
+      rw [nums_recurrence g_n_succ_eq rfl rfl]
+      simp [g, Euler] at g_n_succ_eq
+      grind
 
 /-- the numerators of an Euler's continued fraction are given by the formula
 $$
@@ -137,7 +170,7 @@ theorem euler_nums :
     (Euler h ρ).nums n =
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
   simp only [← euler_nums_aux (h := h)]
-  rw [Finset.sum_range_sub, euler_nums_zero, add_sub_cancel]
+  rw [Finset.sum_range_sub, zeroth_num_eq_h, euler_h, add_sub_cancel]
 
 /-- **Euler's continued fraction formula**: the convergents of an Euler's continued fraction
 are given by the formula
@@ -165,84 +198,51 @@ theorem toEuler_toEuler :
   · rfl
   · match n with
     | 0 =>
-      simp only [toEuler, Euler, toEulerAux]
-      simp only [neg_mul, Stream'.Seq.map_get?, Stream'.Seq.get?_enum, Option.map_map]
-      congr 1
-      ext a
-      simp
+      rw [toEuler_s_zero, Euler]
+      rcases hρ₀ : ρ.get? 0 with _ | a <;> simp [hρ₀]
     | n + 1 =>
-      set g := Euler h ρ
-      simp only [toEuler, Euler, toEulerAux]
-      simp only [neg_mul, Stream'.Seq.map_get?, Stream'.Seq.get?_enum, Option.map_map]
-      conv => enter [1, 1, ρ]; simp [g]
-      rcases Decidable.em <| g.TerminatedAt <| n + 1 with terminatedAt_n | not_terminatedAt_n
-      · rw [terminatedAt_n, Option.map_none]
-      · obtain ⟨a, g_nth_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
-          exists_euler_s_of_not_terminatedAt_succ <| by
-            rwa [euler_terminatedAt_iff_terminatedAt] at not_terminatedAt_n
-        simp [g_nth_eq, euler_dens]
-
-private theorem convs_eq_toEuler_convs_aux (hB: ∀ m ≤ n + 1, g.dens m ≠ 0) :
-    ∀ m ≤ n, g.convs (m + 1) - g.convs m =
-      -(∏ i ∈ Finset.range (m + 1), (- (g.partNums.get? i).getD 0)) /
-        (g.dens m * g.dens (m + 1)) := by
-  intro m hm
-  calc
-    _ = g.nums (m + 1) / g.dens (m + 1) - g.nums m / g.dens m := rfl
-    _ = (g.nums (m + 1) * g.dens m - g.dens (m + 1) * g.nums m) / (g.dens (m + 1) * g.dens m) :=
-      div_sub_div _ _ (hB _ <| Nat.add_le_add_iff_right.mpr hm) (hB _ <| Nat.le_add_right_of_le hm)
-    _ = (g.dens m * g.nums (m + 1) - g.nums m * g.dens (m + 1)) / (g.dens m * g.dens (m + 1)) :=
-      congr(($(mul_comm _ _) - $(mul_comm _ _)) / $(mul_comm _ _))
-    _ = -(g.nums m * g.dens (m + 1) - g.dens m * g.nums (m + 1)) / (g.dens m * g.dens (m + 1)) :=
-      congr($(neg_sub _ _ |>.symm) / _)
-    _ = _ := congr(-$(determinant) / _)
+      rcases Decidable.em (ρ.TerminatedAt (n + 1)) with hρₙ | hρₙ
+      · rw [← euler_terminatedAt_iff_terminatedAt (h := h)] at hρₙ
+        rw [hρₙ]
+        rw [← toEuler_terminatedAt_iff_terminatedAt] at hρₙ
+        rw [hρₙ]
+      · rw [toEuler_s_succ]
+        obtain ⟨a, g_n_succ_eq⟩ : ∃ a, (Euler h ρ).s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
+          exists_euler_s_of_not_terminatedAt_succ hρₙ
+        grind [euler_dens]
 
 theorem convs_eq_toEuler_convs_of_forall_le_dens_nonzero (hB : ∀ m ≤ n, g.dens m ≠ 0) :
     ∀ m ≤ n, g.convs m = g.toEuler.convs m := by
   intro m hm
-  match n with
-  | 0 =>
-    rw [Nat.le_zero] at hm
-    subst m
-    simp only [zeroth_conv_eq_h]
-    rfl
-  | n + 1 =>
-    rw [toEuler, euler_convs, ← sub_eq_iff_eq_add']
-    calc
-      _ = g.convs m - g.convs 0 := congr(_ - $(zeroth_conv_eq_h.symm))
-      _ = ∑ i ∈ Finset.range m, (g.convs (i + 1) - g.convs i) := Finset.sum_range_sub _ _ |>.symm
-      _ = _ := Finset.sum_congr rfl <| by
-        rintro i hi
-        rw [Finset.mem_range] at hi
-        rw [convs_eq_toEuler_convs_aux hB i (by omega)]
-        simp only [partNums, Stream'.Seq.map_get?]
-        induction i with
-        | zero =>
-          simp only [zero_add, Finset.range_one, Finset.prod_singleton]
-          simp only [toEulerAux]
-          simp only [neg_neg, zeroth_den_eq_one, one_mul, neg_mul, Stream'.Seq.map_get?,
-            Stream'.Seq.get?_enum, Option.map_map]
-          rcases Decidable.em (TerminatedAt g 0) with terminatedAt_0 | not_terminatedAt_0
-          · rw [terminatedAt_0]
-            simp
-          · obtain ⟨c, hc⟩ := Option.ne_none_iff_exists'.mp not_terminatedAt_0
-            simp [hc, first_den_eq]
-        | succ i ih =>
-          iterate 2 rw [Finset.prod_range_succ (n := i + 1)]
-          rw [← ih (by omega)]; clear ih
-          simp only [← mul_neg, neg_neg, neg_div, neg_mul]
-          simp only [toEulerAux]
-          simp only [Stream'.Seq.map, Stream'.Seq.enum, Stream'.Seq.zip, Stream'.Seq.zipWith,
-            Stream'.Seq.nats_get?, Option.map₂_coe_left, Stream'.Seq.get?_mk, Stream'.map,
-            Stream'.get, Option.map_map]
-          rw [← mul_div_right_comm, mul_div_assoc, mul_div_assoc]
-          congr 1
-          rcases g.s.get? (i + 1) with _ | c
-          · simp
-          · simp only [Option.map_some, Option.getD_some, neg_mul, neg_div, Function.comp_apply,
-            neg_neg]
-            rw [div_div, mul_comm (g.dens i), ← mul_assoc, mul_comm]
-            rw [mul_div_mul_right _ _ (hB _ (by omega))]
+  conv_rhs => rw [convs, toEuler_dens, div_one]
+  induction m using Nat.strong_induction_on with | h m ih =>
+  match m with
+  | 0 => simp [toEuler, euler_h]
+  | m + 1 =>
+    replace ih := fun m hm => ih m hm <| by omega
+    rw [← sub_left_inj (a := g.convs m), ih m m.lt_add_one]
+    rcases Decidable.em (TerminatedAt g m) with terminatedAt_m | not_terminatedAt_m
+    · rw [nums_stable_of_terminated m.le_succ <| toEuler_terminatedAt_iff_terminatedAt.mpr
+        terminatedAt_m, sub_self]
+      rw [← ih m m.lt_add_one, g.convs_stable_of_terminated m.lt_add_one.le terminatedAt_m,
+        sub_self]
+    · obtain ⟨⟨a, b⟩, g_mth_eq⟩ : ∃ gp, g.s.get? m = some gp :=
+        Option.ne_none_iff_exists'.mp not_terminatedAt_m
+      match m with
+      | 0 =>
+        have g_toEuler_zeroth_eq : g.toEuler.s.get? 0 = some ⟨a / b, 1⟩ := by
+          simp [toEuler_s_zero, g_mth_eq]
+        simp only [zero_add, zeroth_num_eq_h, sub_left_inj]
+        simp only [convs, first_num_eq g_mth_eq, first_den_eq g_mth_eq,
+          first_num_eq g_toEuler_zeroth_eq, one_mul]
+        rw [add_div, mul_div_cancel_left₀ _ fun nh => hB 1 hm
+          (first_den_eq g_mth_eq ▸ nh), toEuler, euler_h]
+      | m + 1 =>
+        have g_toEuler_mth_eq : g.toEuler.s.get? (m + 1) =
+            some ⟨a * g.dens m / g.dens (m + 2), 1 - a * g.dens m / g.dens (m + 2)⟩ := by
+          simp only [toEuler_s_succ, g_mth_eq, Option.map_some]
+        grind [nums_recurrence g_mth_eq rfl rfl, dens_recurrence g_mth_eq rfl rfl,
+          nums_recurrence g_toEuler_mth_eq rfl rfl, convs, hB m, hB (m + 1), hB (m + 2)]
 
 /-- the transformation `toEuler` preserves the convergents -/
 theorem convs_eq_toEuler_convs (hB : ∀ m, g.dens m ≠ 0) :
