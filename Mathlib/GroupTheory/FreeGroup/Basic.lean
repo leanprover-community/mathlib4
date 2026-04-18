@@ -731,6 +731,11 @@ theorem closure_range_of (α) :
   rw [← range_lift_eq_closure, lift_of_eq_id]
   exact MonoidHom.range_eq_top.2 Function.surjective_id
 
+@[to_additive]
+theorem lift_surjective_of_surjective (hf : Function.Surjective f) :
+  Function.Surjective (lift f) := by
+    rw [← MonoidHom.range_eq_top, range_lift_eq_closure, hf.range_eq, Subgroup.closure_univ]
+
 end lift
 
 section Map
@@ -866,6 +871,10 @@ theorem prod.of {x : α} : prod (of x) = x :=
 @[to_additive]
 theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
   lift_unique g hg
+
+@[to_additive]
+theorem prod_surjective : Function.Surjective (prod : FreeGroup α →* α) :=
+  FreeGroup.lift_surjective_of_surjective Function.surjective_id
 
 end Prod
 

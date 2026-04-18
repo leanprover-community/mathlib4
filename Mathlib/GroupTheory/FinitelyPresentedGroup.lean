@@ -7,6 +7,8 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.GroupTheory.Schreier
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.Algebra.Group.PUnit
@@ -50,6 +52,10 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+theorem of_FG {N : Subgroup G} [N.Normal] (h : Group.FG N) : N.IsNormalClosureFG := by
+  obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
+  exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
+
 end Subgroup.IsNormalClosureFG
 
 /-- A group is finitely presented if it has a finite generating set such that the kernel
@@ -67,11 +73,21 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
-/-- The trivial group is finitely presented. -/
-lemma subsingleton (G : Type*) [Group G] [Subsingleton G] : IsFinitelyPresented G :=
-  ⟨0, 1, Function.surjective_to_subsingleton _, ∅, Set.finite_empty,
-    by ext x; simp [Subsingleton.elim x 1]⟩
+theorem mk' (G : Type*) [Group G] (S : Type*) [Finite S] (φ : FreeGroup S →* G)
+  (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
+  let e' := FreeGroup.freeGroupCongr e
+  let φ' := φ.comp e'.symm.toMonoidHom
+  have h : φ'.ker = φ.ker.map e' := MonoidHom.ker_comp_mulEquiv φ e'.symm
+  refine ⟨n, φ', h1.comp e'.symm.surjective, ?_⟩
+  simpa [h] using h2.map e'.surjective
 
-instance : IsFinitelyPresented PUnit := subsingleton _
+/-- Any finite group is finitely presented. -/
+instance (G : Type*) [Group G] [Finite G] : IsFinitelyPresented G := by
+  refine mk' G G FreeGroup.prod FreeGroup.prod_surjective (Subgroup.IsNormalClosureFG.of_FG ?_)
+  apply Subgroup.fg_of_index_ne_zero
+
+/-- The trivial group is finitely presented. -/
+instance : IsFinitelyPresented PUnit := by infer_instance
 
 end Group.IsFinitelyPresented
