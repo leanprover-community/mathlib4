@@ -62,11 +62,8 @@ section Equiv
 
 variable (R) [CommSemiring R]
 
-/-- Algebra equivalence `MvPolynomial σ R ≃ₐ[R] R[X]` when `σ` is a subsingleton.
-
-Every index is definitionally `default`, so monomials are determined by the single exponent
-`d default : ℕ`, matching univariate polynomials. For example, take `σ` to be `PUnit` or `Fin 1`.
--/
+/-- The algebra isomorphism between multivariable polynomials indexed by a type with a unique
+element and polynomials over the ground ring. -/
 @[simps]
 def uniqueAlgEquiv (σ : Type*) [Unique σ] : MvPolynomial σ R ≃ₐ[R] R[X] where
   toFun := eval₂ Polynomial.C fun _ => Polynomial.X
