@@ -64,7 +64,7 @@ abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
 /-- The map between the second spaces -/
 abbrev Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
 
-@[simp, reassoc, elementwise]
+@[reassoc, elementwise]
 lemma Hom.w {X Y : TopPair} (f : X ⟶ Y) :
     Hom.snd f ≫ Y.map = X.map ≫ Hom.fst f :=
   f.hom.w
