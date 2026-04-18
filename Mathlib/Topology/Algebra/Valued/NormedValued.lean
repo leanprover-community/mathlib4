@@ -96,7 +96,7 @@ def toValued : Valued K ℝ≥0 :=
           simpa [RankLeOne.hom', valuation.restrict_def] using hxy
       · rintro ⟨ε, hε⟩
         refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
-        · exact NNReal.coe_pos.mpr <| embedding_strictMono.lt_iff_lt.mpr ε.zero_lt
+        · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using (mem_ball_zero_iff.mp hx) }
 
 instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
