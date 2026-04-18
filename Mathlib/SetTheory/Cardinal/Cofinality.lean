@@ -22,7 +22,7 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 
 ## Main Statements
 
-* `Cardinal.lt_power_cof`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
+* `Cardinal.lt_power_cof_ord`: A consequence of König's theorem stating that `c < c ^ c.ord.cof` for
   `c ≥ ℵ₀`.
 
 ## Implementation Notes
@@ -383,7 +383,7 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
       obtain ⟨i, hi⟩ := hb
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
-    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+    exact (lt_add_one _).trans_le <| le_ciSup bddAbove_of_small _
 
 theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i + 1) = Order.cof γ := by
@@ -502,10 +502,7 @@ theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Car
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.iSup_lt_of_lt_cof <;> simpa
 
-/-! ### Cofinality of suprema and least strict upper bounds -/
-
--- TODO: use `⨆ i, f i + 1` instead of `lsub`
-
+set_option linter.deprecated false in
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 @[deprecated "to build an increasing function with limit o, use the fundamental sequence API."
 (since := "2026-03-27")]
@@ -539,10 +536,12 @@ theorem exists_lsub_cof (o : Ordinal) :
   rw [cof_eq_sInf_lsub]
   exact csInf_mem (cof_lsub_def_nonempty o)
 
+set_option linter.deprecated false in
 @[deprecated cof_iSup_add_one_le (since := "2026-03-22")]
 theorem cof_lsub_le {ι} (f : ι → Ordinal) : cof (lsub.{u, u} f) ≤ #ι :=
   cof_iSup_add_one_le f
 
+set_option linter.deprecated false in
 @[deprecated cof_lift_iSup_add_one_le (since := "2026-03-22")]
 theorem cof_lsub_le_lift {ι} (f : ι → Ordinal) :
     cof (lsub.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
@@ -560,6 +559,7 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
         rw [← hb]
         exact H _ hf⟩
 
+set_option linter.deprecated false in
 @[deprecated lift_iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
@@ -567,6 +567,7 @@ theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
   apply lift_iSup_add_one_lt_of_lt_cof _ hf
   rwa [Cardinal.lift_umax, c.lift_id']
 
+set_option linter.deprecated false in
 @[deprecated iSup_add_one_lt_of_lt_cof (since := "2026-03-22")]
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=
@@ -697,12 +698,20 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
     (∀ i hi, f i hi < c) → bsup.{u, u} o f < c :=
   bsup_lt_ord_lift (by rwa [o.card.lift_id])
 
+/-! ### Cofinality arithmetic -/
+
 @[simp]
-theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
+theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
+
+@[simp]
+theorem cof_mul {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccPrelimit b) : cof (a * b) = cof b := by
+  by_cases hb' : IsMin b
+  · simp [hb'.eq_bot]
+  · exact cof_map_of_isNormal (isNormal_mul_right ha.pos) ⟨hb', hb⟩
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
@@ -799,27 +808,26 @@ alias unbounded_of_unbounded_iUnion := isCofinal_of_isCofinal_iUnion
 
 /-! ### Consequences of König's lemma -/
 
-theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < c ^ c.ord.cof :=
-  Cardinal.inductionOn c fun α h => by
-    rcases exists_ord_eq α with ⟨r, wo, re⟩
-    have := isSuccLimit_ord h
-    rw [re] at this ⊢
-    rcases cof_eq' r this with ⟨S, H, Se⟩
-    have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_
-    · simp only [Cardinal.prod_const, Cardinal.lift_id, ← Se, ← mk_sigma, power_def] at this ⊢
-      refine lt_of_le_of_lt ?_ this
-      refine ⟨Embedding.ofSurjective ?_ ?_⟩
-      · exact fun x => x.2.1
-      · exact fun a =>
-          let ⟨b, h, ab⟩ := H a
-          ⟨⟨⟨_, h⟩, _, ab⟩, rfl⟩
-    · have := typein_lt_type r i
-      rwa [← re, lt_ord] at this
+theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
+  induction c using Cardinal.inductionOn with | mk α
+  obtain ⟨_, _, hα⟩ := exists_ord_eq_type_lt α
+  have : NoMaxOrder α := by
+    rw [← isSuccPrelimit_type_lt_iff, ← hα]
+    exact (isSuccLimit_ord hc).isSuccPrelimit
+  obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
+  rw [hα, cof_type, ← card_ord (Order.cof _), ← hs', card_type, ← prod_const']
+  refine (mk_iUnion_le_sum_mk.trans' ?_).trans_lt (sum_lt_prod _ _ fun i ↦ mk_Iio_lt i.1 hα)
+  rw [← mk_univ, ← isCofinal_iff_iUnion_Iio_eq_univ.1 hs, iUnion_coe_set]
 
-theorem lt_cof_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (b1 : 1 < b) : a < (b ^ a).ord.cof := by
-  have b0 : b ≠ 0 := (zero_lt_one.trans b1).ne'
-  apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a b0)
+@[deprecated (since := "2026-03-30")]
+alias lt_power_cof := lt_power_cof_ord
+
+theorem lt_cof_ord_power {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : 1 < b) : a < (b ^ a).ord.cof := by
+  apply lt_imp_lt_of_le_imp_le (power_le_power_left <| power_ne_zero a hb.ne_bot)
   rw [← power_mul, mul_eq_self ha]
-  exact lt_power_cof (ha.trans <| (cantor' _ b1).le)
+  exact lt_power_cof_ord (ha.trans <| (cantor' _ hb).le)
+
+@[deprecated (since := "2026-03-30")]
+alias lt_cof_power := lt_cof_ord_power
 
 end Cardinal

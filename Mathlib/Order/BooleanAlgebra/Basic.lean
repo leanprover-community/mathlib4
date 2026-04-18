@@ -221,8 +221,6 @@ theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
 
 theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x := sdiff_eq_left.trans disjoint_comm
 
-@[deprecated (since := "2025-10-12")] alias sdiff_eq_self_iff_disjoint' := sdiff_eq_left
-
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   refine sdiff_le.lt_of_ne fun h => hy ?_
   rw [sdiff_eq_left, disjoint_iff] at h
@@ -642,5 +640,28 @@ protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [LE α] [LT
     rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := hf <| (map_sdiff _ _).trans <| sdiff_eq.trans <| by rw [map_inf, map_compl]
   himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `GeneralizedBooleanAlgebra` across an `Equiv`. -/
+protected abbrev generalizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra α := by
+  let bot := e.bot
+  let sdiff := e.sdiff
+  let distribLattice := e.distribLattice
+  apply e.injective.generalizedBooleanAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `BooleanAlgebra` across an `Equiv`. -/
+protected abbrev booleanAlgebra [BooleanAlgebra β] : BooleanAlgebra α := by
+  let top := e.top
+  let compl := e.compl
+  let himp := e.himp
+  let generalizedBooleanAlgebra := e.generalizedBooleanAlgebra
+  apply e.injective.booleanAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
 
 end lift
