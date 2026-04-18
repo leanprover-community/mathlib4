@@ -188,8 +188,25 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
 
 variable [GradedAlgebra 𝒜]
 
-instance (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
-    [i : GradedAlgebra 𝒜] : GradedAlgebra (𝒜 · |>.restrictScalars R₀) := { i with }
+section IsScalarTower
+variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- For a graded algebra `𝒜` of `R`-submodules, we obtain a ring map `R₀ →+* 𝒜 0`
+where `A / R / R₀` forms a scalar tower. We introduce `R₀` here for better defeq. -/
+@[simps!] def GradedAlgebra.toZeroRingHom : R₀ →+* 𝒜 0 where
+  toFun x := ⟨algebraMap R₀ A x, by
+    rw [IsScalarTower.algebraMap_apply _ R, Algebra.algebraMap_eq_smul_one]
+    exact (𝒜 0).smul_mem _ <| SetLike.one_mem_graded _⟩
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
+  map_zero' := by simp
+  map_add' _ _ := by simp
+
+instance : GradedAlgebra (𝒜 · |>.restrictScalars R₀) :=
+  { inferInstanceAs <| GradedAlgebra 𝒜 with }
+
+end IsScalarTower
 
 namespace DirectSum
 
