@@ -162,11 +162,12 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
     intro a ha
     simpa using le_sum (fun x ↦ e.symm x) (e ⟨a, ha⟩)⟩
 
-theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s :=
+theorem bddAbove_of_small {s : Set Cardinal.{u}} [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
 
+@[deprecated bddAbove_of_small (since := "2026-04-04")]
 theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
-  bddAbove_of_small _
+  bddAbove_of_small
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
@@ -197,7 +198,7 @@ theorem sum_le_lift_mk_mul_iSup_lift {ι : Type u} (f : ι → Cardinal.{v}) :
     lift_umax.{max v u, u}, ← sum_const]
   refine sum_le_sum _ _ fun i => ?_
   rw [lift_umax.{v, u}]
-  exact le_ciSup (bddAbove_of_small _) i
+  exact le_ciSup bddAbove_of_small i
 
 theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
     sum f ≤ lift #ι * ⨆ i, f i := by
@@ -257,7 +258,7 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 
 theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) :
     lift (⨆ i, f i) ≤ sum f := by
-  rw [lift_iSup (bddAbove_of_small _)]
+  rw [lift_iSup bddAbove_of_small]
   exact ciSup_le' fun i => lift_le_sum f i
 
 /-! ### Properties about the cast from `ℕ` -/
@@ -399,9 +400,11 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
 
+@[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
-    (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
-  exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f hf (not_isSuccLimit_natCast n) h
+    (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n := by
+  rw [← h]
+  exact exists_eq_ciSup_of_not_isSuccLimit hf (h ▸ not_isSuccLimit_natCast n)
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=

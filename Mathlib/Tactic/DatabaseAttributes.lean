@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
+Authors: Damiano Testa, Michael Rothgang
 -/
 module
 
@@ -19,7 +19,10 @@ or the corresponding tags from the [Stacks Project](https://stacks.math.columbia
 The `zbmath` attribute allows annotating a declaration as corresponding to a natural language
 mathematics concept (such as "linear map", "smooth manifold" or "Faltings' theorem").
 
-While the Stacks Project is the main focus, because the tag format at Kerodon is
+The `informal` attribute allows annotating a declaration as corresponding to a natural language
+mathematics concept (such as "linear map", "smooth manifold" or "Faltings' theorem").
+
+While the Stacks Project is the main focus over Kerodon, because the tag format at Kerodon is
 compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
 
@@ -33,7 +36,7 @@ namespace Mathlib.DatabaseTag
 inductive Database where
   | kerodon
   | stacks
-  | zbmath
+  | informal
   deriving BEq, Hashable
 
 /-- `Tag` is the structure that carries the data of a project tag and a corresponding
@@ -59,8 +62,8 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Array (Array Tag)) ←
 
 /--
 `addTagEntry declName db tag comment` takes as input the `Name` `declName` of a declaration,
-whether it is a Kerodon, Stacks tag or natural language concept (`db`) and
-the `String`s `tag` and `comment` of the `stacks` attribute.
+whether it is a Kerodon, Stacks tag or natural language concept (`db`),
+the `String`s `tag` and `comment` of the `stacks` or `kerodon` attribute.
 It extends the `Tag` environment extension with the data `declName, db, tag, comment`.
 -/
 def addTagEntry {m : Type → Type} [MonadEnv m]
@@ -154,6 +157,26 @@ declare_syntax_cat stacksTagDB
 syntax "kerodon" : stacksTagDB
 /-- The syntax for a "stacks" database identifier in a `@[stacks]` attribute. -/
 syntax "stacks" : stacksTagDB
+
+/-- The `informalMathTag` attribute. Use it as `@[informal "concept" "Optional comment"]` -/
+syntax (name := informalMathTag) "informal" ppSpace str (ppSpace str)? : attr
+
+-- TODO: can we this with the parser below?
+/-- The `informal` attribute: use it as `@[informal "concept" "Optional comment"]`
+to annotate a declaration corresponding to an informal concept (or result).
+At the moment, no formatting restrictions on "concept" are imposed.
+-/
+initialize Lean.registerBuiltinAttribute {
+  name := `informalMathTag
+  descr := "Tag a declaration as corresponding to an informal math concept or result."
+  add := fun decl stx _attrKind => do
+    let (tag, comment) ← match stx with
+    | `(attr| informal $tag $[$comment]?) => pure (tag, comment)
+    | _ => throwUnsupportedSyntax
+    addTagEntry decl Database.informal tag.getString ((comment.map (·.getString)).getD "")
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
+}
 
 /-- The `zbMathTag` attribute. Use it as `@[zbMath "concept" "Optional comment"]` -/
 syntax (name := zbMathTag) "zbmath" ppSpace str (ppSpace str)? : attr
@@ -322,7 +345,7 @@ private def databaseURL (db : Database) : String :=
   match db with
   | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
-  | .zbmath => "http://zbmath.org/"
+  | .informal => ""
 
 /--
 `traceDatabaseTags db verbose` prints the tags of the database `db` to the user and
@@ -337,7 +360,7 @@ def traceDatabaseTags (db : Database) (verbose : Bool := false) :
   for d in entries do
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
-    let start := if db == Database.zbmath then m!"ZBMath concept \"{d.tag}\"" else
+    let start := if db == Database.informal then m!"informal concept \"{d.tag}\"" else
       s!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag})"
     msgs := msgs.push m!"{start} corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
@@ -353,9 +376,10 @@ For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#stacks_tags!` also adds the theorem statement after each summary line.
+The variant `#stacks_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
-elab (name := stacksTags) "#stacks_tags" tk:("!")?: command =>
+elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
   traceDatabaseTags .stacks (tk.isSome)
 
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
@@ -364,11 +388,27 @@ For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#kerodon_tags!` also adds the theorem statement after each summary line.
+The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
+or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
+elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
+  traceDatabaseTags .kerodon (tk.isSome)
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
   traceDatabaseTags .kerodon (tk.isSome)
 
+/--
+`#informal_concepts` retrieves all declarations that have the `informal` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `informal_concepts!` also adds the theorem statement after each summary line.
+-/
+elab (name := informalConcepts) "#informal_concepts" tk:("!")?: command =>
+  traceDatabaseTags Database.informal (tk.isSome)
+
+end Mathlib.DatabaseTag
 /--
 `#zbmath_concepts` retrieves all declarations that have the `zbmath` attribute.
 
