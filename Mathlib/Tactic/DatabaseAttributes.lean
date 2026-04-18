@@ -173,23 +173,7 @@ initialize Lean.registerBuiltinAttribute {
     let (tag, comment) ← match stx with
     | `(attr| informal $tag $[$comment]?) => pure (tag, comment)
     | _ => throwUnsupportedSyntax
-    addTagEntry decl Database.informal tag.getString ((comment.map (·.getString)).getD "")
-  -- docstrings are immutable once an asynchronous elaboration task has been started
-  applicationTime := .beforeElaboration
-}
-
-/-- The `zbMathTag` attribute. Use it as `@[zbMath "concept" "Optional comment"]` -/
-syntax (name := zbMathTag) "zbmath" ppSpace str (ppSpace str)? : attr
-
--- TODO: can we this with the parser below?
-initialize Lean.registerBuiltinAttribute {
-  name := `zbMathTag
-  descr := "Apply a zbmath tag to a theorem."
-  add := fun decl stx _attrKind => do
-    let (tag, comment) ← match stx with
-    | `(attr| zbmath $tag $[$comment]?) => pure (tag, comment)
-    | _ => throwUnsupportedSyntax
-    addTagEntry decl Database.zbmath tag.getString ((comment.map (·.getString)).getD "")
+    addTagEntry decl .informal tag.getString ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -229,9 +213,9 @@ innermost key. -/
 def addZBMathFromOverview : Linter where
   run := insertAttrsOnDecls fun decl cmd => do
     if let some tag := mathOverview.get? decl then
-      unless (getTagEntry? (← getEnv) decl .zbmath (inCurrentModule? := true)).isSome do
+      unless (getTagEntry? (← getEnv) decl .informal (inCurrentModule? := true)).isSome do
         let tagStr := Syntax.mkStrLit tag.getSuffix
-        return #[← `(Parser.Term.attrInstance| zbmath $tagStr:str)]
+        return #[← `(Parser.Term.attrInstance| informal $tagStr:str)]
     return #[]
 
 initialize addLinter addZBMathFromOverview
@@ -246,7 +230,7 @@ elab tk:"#non_mathlib_zbmath?" : command => do
     let some idx := env.getModuleIdxFor? decl | continue
     if !(`Mathlib).isPrefixOf env.header.moduleNames[idx]! then
       attrs := attrs.push (decl, ← `(command|
-        attribute [zbmath $(Syntax.mkStrLit fulltag.getSuffix)] $(mkIdent decl)))
+        attribute [informal $(Syntax.mkStrLit fulltag.getSuffix)] $(mkIdent decl)))
   liftCoreM do
     let attrs := attrs.qsort (·.1.lt ·.1)
     let attrs ← attrs.mapM fun (_, stx) => return (← PrettyPrinter.ppCommand stx).pretty
@@ -263,7 +247,7 @@ elab "#check_overview" : command => do
   for (decl, fulltag) in mathOverview do
     if !env.contains decl then
       unknown := unknown.push (decl, fulltag)
-    else if let some tag := getTagEntry? env decl .zbmath then
+    else if let some tag := getTagEntry? env decl .informal then
       if tag.tag != fulltag.getSuffix then
         wrongTag := wrongTag.push (decl, fulltag, tag)
     else
@@ -393,8 +377,6 @@ or declaration type (for definitions, structures, instances, etc.) after each su
 -/
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
   traceDatabaseTags .kerodon (tk.isSome)
-elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
-  traceDatabaseTags .kerodon (tk.isSome)
 
 /--
 `#informal_concepts` retrieves all declarations that have the `informal` attribute.
@@ -407,18 +389,5 @@ The variant `informal_concepts!` also adds the theorem statement after each summ
 -/
 elab (name := informalConcepts) "#informal_concepts" tk:("!")?: command =>
   traceDatabaseTags Database.informal (tk.isSome)
-
-end Mathlib.DatabaseTag
-/--
-`#zbmath_concepts` retrieves all declarations that have the `zbmath` attribute.
-
-For each found declaration, it prints a line
-```
-'declaration_name' corresponds to tag 'declaration_tag'.
-```
-The variant `#zbmath_concepts!` also adds the theorem statement after each summary line.
--/
-elab (name := zbmathConcepts) "#zbmath_concepts" tk:("!")?: command =>
-  traceDatabaseTags .zbmath (tk.isSome)
 
 end Mathlib.DatabaseTag
