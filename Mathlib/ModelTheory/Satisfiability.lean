@@ -59,7 +59,7 @@ variable {L : Language.{u, v}} {T : L.Theory} {α : Type w} {n : ℕ}
 
 namespace Theory
 
-variable 
+variable
 @[informal "satisfiability"]
 T)
 

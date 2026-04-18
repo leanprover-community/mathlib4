@@ -636,7 +636,7 @@ theorem size_erase_of_mem [DecidableLE α] {x : α} {t a₁ a₂} (h : Valid' a�
       have t_r_h := Valid'.erase_aux x h.right
       obtain ⟨t_r_valid, t_r_size⟩ := t_r_h
       rw [size_balanceL h.left.bal t_r_valid.bal h.left.sz t_r_valid.sz
- 
+
 @[informal "ordered set"]
         (Or.inr (Exists.intro t_r.size (And.intro t_r_size h.bal.1)))]
       rw [t_ih_r, h.sz.1]

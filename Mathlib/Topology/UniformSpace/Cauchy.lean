@@ -26,7 +26,7 @@ variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 /-- A filter `f` is Cauchy if for every entourage `r`, there exists an
   `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
   sequences, because if `a : ℕ → α` then the filter of sets containing
-  cofinitely many of the `a n` is Cauchy iff 
+  cofinitely many of the `a n` is Cauchy iff
 @[informal "Cauchy filter"]
 a` is a Cauchy sequence. -/
 def Cauchy (f : Filter α) :=

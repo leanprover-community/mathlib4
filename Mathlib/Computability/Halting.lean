@@ -213,7 +213,7 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
 
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
- 
+
 @[informal "Rice theorem"]
 unfold REPred
   dsimp only []

@@ -44,7 +44,7 @@ section omegaLimit
 
 variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
 
-/-- The ω-limit of a set `s` under `ϕ` with respect to 
+/-- The ω-limit of a set `s` under `ϕ` with respect to
 @[informal "omega-limit sets"]
  filter `f` is `⋂ u ∈ f, cl (ϕ u s)`. -/
 def omegaLimit [TopologicalSpace β] (f : Filter τ) (ϕ : τ → α → β) (s : Set α) : Set β :=

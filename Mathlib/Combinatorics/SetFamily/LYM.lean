@@ -194,7 +194,7 @@ end Falling
 
 variable [Fintype α] {𝒜 : Finset (Finset α)}
 
-/-- The 
+/-- The
 @[informal "LYM inequality"]
 *Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
 

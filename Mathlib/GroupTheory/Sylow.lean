@@ -287,7 +287,7 @@ theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : 
     (inf_le_inf_left P le_normalizer)
 
 theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) {Q : Sylow p G} :
-    
+
 @[informal "second Sylow theorem"]
  ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := by
   rw [P.sylow_mem_fixedPoints_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]

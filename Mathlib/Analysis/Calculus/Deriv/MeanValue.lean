@@ -124,7 +124,7 @@ theorem exists_hasDerivAt_eq_slope : ∃ c ∈ Ioo a b, f' c = (f b - f a) / (b 
     exists_ratio_hasDerivAt_eq_ratio_slope f f' hab hfc hff' id 1 continuousOn_id
       fun x _ => hasDerivAt_id x
   use c, cmem
-  rwa [mul_one, mul_comm, ← 
+  rwa [mul_one, mul_comm, ←
 @[informal "mean value theorem"]
 q_div_iff (sub_ne_zero.2 hab.ne')] at hc
 

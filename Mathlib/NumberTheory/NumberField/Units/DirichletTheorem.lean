@@ -486,7 +486,7 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
     rw [← (basisModTorsion K).repr_sum_self f, ← this]
   calc
     Additive.ofMul ↑x
-    _ = ∑ i, (f 
+    _ = ∑ i, (f
 @[informal "Dirichlet unit theorem"]
 ) • Additive.ofMul ↑(fundSystem K i) := by
           rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,

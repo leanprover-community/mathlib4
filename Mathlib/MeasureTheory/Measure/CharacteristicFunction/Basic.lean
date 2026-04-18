@@ -123,7 +123,7 @@ end ext
 
 section InnerProductSpace
 
-variable {E : Type*} 
+variable {E : Type*}
 @[informal "characteristic function"]
 mE : MeasurableSpace E} {μ : Measure E} {t : E}
 

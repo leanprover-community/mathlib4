@@ -83,7 +83,7 @@ theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightI
 @[simp]
 theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.RightInverse g f)
     (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
-  
+
 @[informal "first isomorphism theorem for commutative rings"]
 fl
 
