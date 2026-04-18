@@ -113,10 +113,15 @@ end Fill
 
 universe u
 
+/-- Every linear order embeds continuously in a dense complete linear order. -/
 theorem exists_dense_continuous_completion
     (α : Type u) [LinearOrder α] [TopologicalSpace α] [OrderTopology α] :
-    ∃ (β : Type u) (_ : LinearOrder β) (_ : DenselyOrdered β) (_ : TopologicalSpace β)
+    ∃ (β : Type u) (_ : CompleteLinearOrder β) (_ : DenselyOrdered β) (_ : TopologicalSpace β)
       (_ : OrderTopology β) (ι : α ↪o β), Continuous ι :=
-  ⟨_, inferInstance, inferInstance, inferInstance, inferInstance, _, Fill.continuous_some⟩
+  let : TopologicalSpace (DedekindCut (Fill α)) := Preorder.topology _
+  have : OrderTopology (DedekindCut (Fill α)) := ⟨rfl⟩
+  ⟨_, inferInstance, inferInstance, inferInstance, inferInstance,
+    Fill.some.trans DedekindCut.principalEmbedding,
+    DedekindCut.continuous_principal.comp Fill.continuous_some⟩
 
 end Order
