@@ -152,7 +152,7 @@ theorem one_lt_of_gt (h : a < b) : 1 < b :=
 
 @[to_additive] alias LT.lt.one_lt := one_lt_of_gt
 
-@[to_additive]
+@[to_additive ne_zero_of_lt'] -- `ne_zero_of_lt` exists elsewhere
 theorem ne_one_of_lt (h : a < b) : b ≠ 1 :=
   h.one_lt.ne'
 
