@@ -317,16 +317,8 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   have h₁ : (fun (a : Fin 8) ↦ ↑(χ₈ a) * τ ^ (a : ℕ)) = fun a ↦ χ a * ↑(ψ₈char a) := by
     ext1; congr; apply pow_one
   have hg₁ : gaussSum χ ψ₈char = 2 * (τ - τ ^ 3) := by
-    rw [gaussSum, ← h₁, Fin.sum_univ_eight,
-      -- evaluate `χ₈`
-      show χ₈ 0 = 0 from rfl, show χ₈ 1 = 1 from rfl, show χ₈ 2 = 0 from rfl,
-      show χ₈ 3 = -1 from rfl, show χ₈ 4 = 0 from rfl, show χ₈ 5 = -1 from rfl,
-      show χ₈ 6 = 0 from rfl, show χ₈ 7 = 1 from rfl,
-      -- normalize exponents
-      show ((3 : Fin 8) : ℕ) = 3 from rfl, show ((5 : Fin 8) : ℕ) = 5 from rfl,
-      show ((7 : Fin 8) : ℕ) = 7 from rfl]
-    simp only [Int.cast_zero, zero_mul, Int.cast_one, Fin.val_one, pow_one, one_mul, zero_add,
-      Fin.val_two, add_zero, Int.reduceNeg, Int.cast_neg]
+    rw [gaussSum, ← h₁, Fin.sum_univ_eight]
+    norm_num [χ₈_nat_eq_if_mod_eight]
     linear_combination (τ ^ 3 - τ) * τ_spec
   have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     rw [hχ, one_mul, ZMod.card, Nat.cast_ofNat, hg₁]

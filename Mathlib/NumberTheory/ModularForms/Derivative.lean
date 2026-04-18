@@ -62,16 +62,6 @@ theorem normalizedDerivOfComplex_add (F G : ℍ → ℂ) (hF : MDiff F) (hG : MD
     deriv_add hFz hGz, mul_add]
 
 @[simp]
-theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
-    D (F - G) = D F - D G := by
-  ext z
-  have hFz := UpperHalfPlane.mdifferentiableAt_iff.mp (hF z)
-  have hGz := UpperHalfPlane.mdifferentiableAt_iff.mp (hG z)
-  simp only [normalizedDerivOfComplex, Pi.sub_apply]
-  rw [show (F - G) ∘ ofComplex = F ∘ ofComplex - G ∘ ofComplex from rfl,
-    deriv_sub hFz hGz, mul_sub]
-
-@[simp]
 theorem normalizedDerivOfComplex_const (c : ℂ) : D (fun _ ↦ c) = 0 := by
   ext z
   change (2 * π * I)⁻¹ * deriv (fun _ : ℂ ↦ c) (z : ℂ) = 0
@@ -94,6 +84,11 @@ theorem normalizedDerivOfComplex_neg (F : ℍ → ℂ) (hF : MDiff F) : D (-F) =
   simp
 
 @[simp]
+theorem normalizedDerivOfComplex_sub (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
+    D (F - G) = D F - D G := by
+  simpa [sub_eq_add_neg, normalizedDerivOfComplex_neg G hG] using
+    normalizedDerivOfComplex_add F (-G) hF hG.neg
+
 theorem normalizedDerivOfComplex_mul (F G : ℍ → ℂ) (hF : MDiff F) (hG : MDiff G) :
     D (F * G) = D F * G + F * D G := by
   ext z

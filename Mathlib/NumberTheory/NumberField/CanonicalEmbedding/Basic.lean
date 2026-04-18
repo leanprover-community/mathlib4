@@ -950,14 +950,9 @@ theorem norm_negAt [NumberField K] (x : mixedSpace K) :
 theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
-  · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
-        neg_apply]
-    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
-        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
-        refl_apply]
-  · rfl
+  · simp [negAt, ContinuousLinearEquiv.prodCongr_symm]
+    split_ifs <;> rfl
+  · simp [negAt, ContinuousLinearEquiv.prodCongr_symm]
 
 /-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/
 def signSet (x : mixedSpace K) : Set {w : InfinitePlace K // IsReal w} := {w | x.1 w ≤ 0}

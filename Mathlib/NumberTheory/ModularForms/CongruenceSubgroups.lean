@@ -49,15 +49,8 @@ theorem Gamma_mem' {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
 @[simp]
 theorem Gamma_mem {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ (γ 0 0 : ZMod N) = 1 ∧
     (γ 0 1 : ZMod N) = 0 ∧ (γ 1 0 : ZMod N) = 0 ∧ (γ 1 1 : ZMod N) = 1 := by
-  rw [Gamma_mem']
-  constructor
-  · intro h
-    simp [← SL_reduction_mod_hom_val N γ, h]
-  · intro h
-    ext i j
-    rw [SL_reduction_mod_hom_val N γ]
-    fin_cases i <;> fin_cases j <;> simp only
-    exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
+  rw [Gamma_mem', Matrix.SpecialLinearGroup.ext_iff]
+  simp [SL_reduction_mod_hom_val, Fin.forall_fin_two, and_assoc]
 
 theorem Gamma_normal : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
@@ -73,11 +66,7 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
-  simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
-    empty_val', cons_val_fin_one, Int.cast_one, cons_val_one,
-    Int.cast_zero, and_self, and_true, true_and]
-  refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd M (Int.natAbs N)) ?_
-  simp only [Int.natCast_natAbs, abs_dvd, hNM]
+  simp [Gamma_mem, ModularGroup.coe_T_zpow, hNM, ZMod.intCast_zmod_eq_zero_iff_dvd, abs_dvd]
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
@@ -88,18 +77,15 @@ def Gamma0 : Subgroup SL(2, ℤ) where
   one_mem' := by simp
   mul_mem' := by
     intro a b ha hb
-    simp only [Set.mem_setOf_eq]
-    have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_mul, Set.mem_setOf_eq] at *
-    rw [h]
+    change (a 1 0 : ZMod N) = 0 at ha
+    change (b 1 0 : ZMod N) = 0 at hb
+    change (((a : Matrix (Fin 2) (Fin 2) ℤ) * b) 1 0 : ZMod N) = 0
+    rw [(Matrix.two_mul_expl a.1 b.1).2.2.1]
     simp [ha, hb]
   inv_mem' := by
     intro a ha
-    simp only [Set.mem_setOf_eq]
     rw [SL2_inv_expl a]
-    simp only [cons_val_zero, cons_val_one,
-      Int.cast_neg, neg_eq_zero, Set.mem_setOf_eq] at *
-    exact ha
+    simpa using ha
 
 @[simp]
 theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=

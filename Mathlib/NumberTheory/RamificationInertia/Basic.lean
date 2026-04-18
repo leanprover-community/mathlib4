@@ -399,16 +399,12 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
       sub_add_cancel_left, map_neg]
-  letI := Classical.decEq (Ideal S)
-  rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
-    normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
-    Multiset.nsmul_singleton, Multiset.inter_replicate, Multiset.prod_replicate]
-  · rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_notMem
-    rwa [Ideal.count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
-  · intro ha
-    rw [Ideal.span_singleton_eq_bot.mp ha] at a_notMem
-    have := (P ^ (i + 1)).zero_mem
-    contradiction
+  rw [← Submodule.span_singleton_le_iff_mem, Ideal.submodule_span_eq] at a_mem a_notMem
+  have hspan0 : Ideal.span {a} ≠ ⊥ := by
+    intro ha
+    exact a_notMem (ha ▸ bot_le)
+  rw [sup_comm, irreducible_pow_sup hspan0 ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible]
+  rwa [Ideal.count_normalizedFactors_eq a_mem a_notMem, min_eq_left i.le_succ]
 
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
 `R ⧸ p`-linearly isomorphic to `S ⧸ P`. -/

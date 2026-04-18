@@ -74,14 +74,8 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ} (hap : (a 
         split_ifs <;> simp)
     _ = (-1 : ZMod p) ^ #{x ∈ Ico 1 (p / 2).succ | ¬(a * x.cast : ZMod p).val ≤ p / 2} *
           ∏ x ∈ Ico 1 (p / 2).succ, ↑((a * x : ZMod p).valMinAbs.natAbs) := by
-      have :
-          (∏ x ∈ Ico 1 (p / 2).succ, if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) =
-          ∏ x ∈ Ico 1 (p / 2).succ with ¬(a * x.cast : ZMod p).val ≤ p / 2, -1 :=
-        prod_bij_ne_one (fun x _ _ => x)
-          (fun x => by split_ifs <;> (dsimp; simp_all))
-          (fun _ _ _ _ _ _ => id) (fun b h _ => ⟨b, by simp_all [-not_le]⟩)
-          (by intros; split_ifs at * <;> simp_all)
-      rw [prod_mul_distrib, this, prod_const]
+      rw [prod_mul_distrib, Finset.prod_ite]
+      simp
     _ = (-1 : ZMod p) ^ #{x ∈ Ico 1 (p / 2).succ | ¬(a * x.cast : ZMod p).val ≤ p / 2} *
           (p / 2)! := by
       rw [← prod_natCast, Finset.prod_eq_multiset_prod,
