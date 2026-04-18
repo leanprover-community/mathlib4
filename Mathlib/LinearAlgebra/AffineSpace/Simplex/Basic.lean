@@ -626,16 +626,49 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
   intro i
   by_cases hi : i ∈ fs <;> aesop
 
--- TODO: prove that fs ≠ .univ → (s.face h).closedInterior ⊂ s.closedInterior
--- TODO: prove that fs ≠ .univ → s.interior (s.face h).closedInterior
+theorem point_mem_closedInterior_face_iff [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {j : Fin (n + 1)} :
+    s.points j ∈ (s.face h).closedInterior ↔ j ∈ fs := by
+  refine ⟨fun hj ↦ ?_, fun hfs ↦ ?_⟩
+  · suffices s.points j ∈ affineSpan k (s.points '' fs) by simpa
+    obtain ⟨w, hw, hw', hs⟩ := hj
+    rw [← hs]
+    exact Set.mem_of_mem_of_subset (affineCombination_mem_affineSpan hw _) (by simp)
+  · obtain ⟨i, rfl⟩ : ∃ i, fs.orderEmbOfFin h i = j := range_orderEmbOfFin fs h |>.ge hfs
+    exact Simplex.point_mem_closedInterior _ _
+
+theorem closedInterior_face_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
+    (s.face h).closedInterior ⊂ s.closedInterior := by
+  obtain ⟨a, ha⟩ := Classical.not_forall.mp <| Finset.eq_univ_iff_forall.not.mp hfs
+  apply (Set.ssubset_iff_of_subset (s.closedInterior_face_subset_closedInterior h)).mpr
+  refine ⟨s.points a, s.point_mem_closedInterior a, fun hs ↦ ha ?_⟩
+  exact (s.point_mem_closedInterior_face_iff h).mp hs
+
+theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
+    Disjoint s.interior (s.face h).closedInterior := by
+  refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_
+  have hp : p ∈ affineSpan k (Set.range s.points) :=
+    Set.mem_of_mem_of_subset hleft <| s.interior_subset_closedInterior.trans <|
+      s.closedInterior_subset_affineSpan
+  grind [affineCombination_mem_interior_iff, affineCombination_mem_closedInterior_face_iff_mem_Icc,
+    eq_affineCombination_of_mem_affineSpan_of_fintype]
 
 theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     (s.faceOpposite i).closedInterior ⊆ s.closedInterior :=
   s.closedInterior_face_subset_closedInterior _
 
--- TODO: prove that (s.faceOpposite i).closedInterior ⊂ s.closedInterior
--- TODO: prove that Disjoint s.interior (s.faceOpposite i).closedInterior
+theorem closedInterior_faceOpposite_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    (s.faceOpposite i).closedInterior ⊂ s.closedInterior :=
+  s.closedInterior_face_ssubset_closedInterior (by simp) _
+
+theorem disjoint_interior_closedInterior_faceOpposite [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    Disjoint s.interior (s.faceOpposite i).closedInterior :=
+  s.disjoint_interior_closedInterior_face (by simp) _
 
 end PartialOrder
 
@@ -668,9 +701,13 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
     exact s.closedInterior_faceOpposite_subset_closedInterior i
 
-
--- TODO: prove that s.closedInterior \ s.interior =
--- ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior
+theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
+    {n : ℕ} [NeZero n] (s : Simplex k P n) :
+    s.closedInterior \ s.interior =
+    ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+  suffices ∀ (i : Fin (n + 1)), Disjoint (s.faceOpposite i).closedInterior s.interior by
+    simpa [closedInterior_eq_interior_union]
+  exact fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
 end LinearOrder
 
