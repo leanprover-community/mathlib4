@@ -92,10 +92,9 @@ instance : CompactSpace (T.CompleteType α) := by
   · refine ⟨trivial, ?_⟩
     · rw [nhds_generateFrom]
       apply le_iInf₂
-      intro _ h
+      rintro _ ⟨hφ, φ, rfl⟩
       rw [Filter.le_principal_iff]
-      obtain ⟨_, rfl⟩ := h.2
-      exact h.1
+      exact hφ
 
 instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 
