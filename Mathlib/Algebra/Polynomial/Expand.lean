@@ -255,7 +255,8 @@ variable [ExpChar R p]
 
 theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0) :
     expand R p (contract p f) = f := by
-  obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  obtain _ | _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  · subsingleton
   · rw [expand_one, contract_one]
   · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
@@ -295,6 +296,7 @@ theorem rootMultiplicity_expand_pow :
   obtain rfl | h0 := eq_or_ne f 0; · simp
   obtain ⟨g, hg, ndvd⟩ := f.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h0 (r ^ p ^ n)
   rw [dvd_iff_isRoot, ← eval_X (x := r), ← eval_pow, ← isRoot_comp, ← expand_eq_comp_X_pow] at ndvd
+  nontriviality R using rootMultiplicity_eq_multiplicity
   conv_lhs => rw [hg, map_mul, map_pow, map_sub, expand_X, expand_C, map_pow, ← sub_pow_expChar_pow,
     ← pow_mul, mul_comm, rootMultiplicity_mul_X_sub_C_pow (expand_ne_zero (expChar_pow_pos R p n)
       |>.mpr <| right_ne_zero_of_mul <| hg ▸ h0), rootMultiplicity_eq_zero ndvd, zero_add]

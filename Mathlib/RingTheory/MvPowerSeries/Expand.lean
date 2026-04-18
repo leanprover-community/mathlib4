@@ -240,6 +240,7 @@ theorem map_frobenius_expand {f : MvPowerSeries σ R} :
       MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
       simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
       congr
+    nontriviality R
     rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
       (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
         trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
