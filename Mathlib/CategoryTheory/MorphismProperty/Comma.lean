@@ -479,11 +479,110 @@ end Comma
 
 end Comma
 
+section Arrow
+
+variable {T : Type*} [Category* T]
+  (P Q W : MorphismProperty T) [Q.IsMultiplicative] [W.IsMultiplicative]
+
+/-- Given a morphism property `P` on a category `T`, this is the
+subcategory of `Arrow T` defined by `P` where morphisms satisfy `Q` and `W` on the left and right,
+respectively. -/
+protected abbrev Arrow : Type _ := P.Comma (𝟭 T) (𝟭 T) Q W
+
+/-- The forgetful functor from the full subcategory of `Arrow T` defined by `P` to `Arrow T`. -/
+protected abbrev Arrow.forget : P.Arrow Q W ⥤ Arrow T := Comma.forget (𝟭 T) (𝟭 T) P Q W
+
+instance : (Arrow.forget P Q W).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Arrow.forget P ⊤ ⊤).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Arrow.forget_comp_leftFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+    (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.leftFunc).map f = f.left := rfl
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Arrow.forget_comp_rightFunc_map {A B : P.Arrow Q W} (f : A ⟶ B) :
+    (MorphismProperty.Arrow.forget P Q W ⋙ CategoryTheory.Arrow.rightFunc).map f = f.right := rfl
+
+variable {P Q W}
+
+/-- Construct a morphism in `P.Arrow Q W` from a morphism in `Arrow T`. -/
+@[simps hom]
+def Arrow.Hom.mk {A B : P.Arrow Q W} (f : (Arrow.forget _ _ _).obj A ⟶ (Arrow.forget _ _ _).obj B)
+    (hfl : Q f.left) (hfr : W f.right) : A ⟶ B where
+  __ := f
+  prop_hom_left := hfl
+  prop_hom_right := hfr
+
+/-- Make an object of `P.Arrow Q X` from a morphism `f : A ⟶ B` and a proof of `P f`. -/
+@[simps hom left]
+protected def Arrow.mk {A B : T} (f : A ⟶ B) (hf : P f) : P.Arrow Q W where
+  left := A
+  right := B
+  hom := f
+  prop := hf
+
+/-- Make a morphism in `P.Arrow Q X` from morphisms in `T` with compatibilities. -/
+@[simps hom]
+protected def Arrow.homMk {A B : P.Arrow Q W} (f : A.left ⟶ B.left) (g : A.right ⟶ B.right)
+    (w : f ≫ B.hom = A.hom ≫ g := by cat_disch)
+    (hf : Q f := by trivial) (hg : W g := by trivial) : A ⟶ B where
+  __ := CategoryTheory.Arrow.homMk f g w
+  prop_hom_left := hf
+  prop_hom_right := hg
+
+/-- Make an isomorphism in `P.Arrow Q X` from isomorphisms in `T` with compatibilities. -/
+@[simps! hom_left inv_left]
+protected def Arrow.isoMk [Q.RespectsIso] [W.RespectsIso] {A B : P.Arrow Q W}
+    (f : A.left ≅ B.left) (g : A.right ≅ B.right)
+    (w : f.hom ≫ B.hom = A.hom ≫ g.hom := by cat_disch) : A ≅ B :=
+  Comma.isoMk f g
+
+@[ext]
+lemma Arrow.Hom.ext {A B : P.Arrow Q W} {f g : A ⟶ B}
+    (hl : f.left = g.left) (hr : f.right = g.right) : f = g := by
+  ext
+  · exact hl
+  · exact hr
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma Arrow.w {A B : P.Arrow Q W} (f : A ⟶ B) :
+    f.left ≫ B.hom = A.hom ≫ f.right := f.w
+
+section
+
+variable {P' Q' W' : MorphismProperty T} [Q'.IsMultiplicative] [W'.IsMultiplicative]
+    (hPP' : P ≤ P') (hQQ' : Q ≤ Q')
+
+/-- The natural inclusion induced by implications of morphism properties. -/
+abbrev Arrow.changeProp (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') :
+    P.Arrow Q W ⥤ P'.Arrow Q' W' :=
+  Comma.changeProp _ _ hPP' hQQ' hWW'
+
+-- `simps` on `Arrow.changeProp` fails to create this lemma
+@[simp]
+lemma Arrow.changeProp_obj_left (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
+    ((changeProp hPP' hQQ' hWW').obj Y).left = Y.left := rfl
+
+-- `simps` on `Arrow.changeProp` fails to create this lemma
+@[simp]
+lemma Arrow.changeProp_obj_right (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
+    ((changeProp hPP' hQQ' hWW').obj Y).right = Y.right := rfl
+
+-- `simps` on `Arrow.changeProp` fails to create this lemma
+@[simp]
+lemma Arrow.changeProp_obj_hom (hPP' : P ≤ P') (hQQ' : Q ≤ Q') (hWW' : W ≤ W') (Y : P.Arrow Q W) :
+    ((changeProp hPP' hQQ' hWW').obj Y).hom = Y.hom := rfl
+
+end
+
+end Arrow
+
 section Over
 
 variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
-/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+/-- Given a morphism property `P` on a category `T` and an object `X : T`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
 protected abbrev Over : Type _ :=
   P.Comma (Functor.id T) (Functor.fromPUnit.{0} X) Q ⊤
@@ -492,7 +591,7 @@ protected abbrev Over : Type _ :=
 protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
   Comma.forget (Functor.id T) (Functor.fromPUnit.{0} X) P Q ⊤
 
-instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Over.forget P Q X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
@@ -501,9 +600,10 @@ lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
 
 variable {P Q X}
 
-/-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
+/-- Construct a morphism in `P.Over Q X` from a morphism in `Over X`. -/
 @[simps hom]
-def Over.Hom.mk {A B : P.Over Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.left) : A ⟶ B where
+def Over.Hom.mk {A B : P.Over Q X}
+    (f : (Over.forget _ _ _).obj A ⟶ (Over.forget _ _ _).obj B) (hf : Q f.left) : A ⟶ B where
   __ := f
   prop_hom_left := hf
   prop_hom_right := trivial
@@ -569,7 +669,7 @@ section Under
 
 variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
-/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+/-- Given a morphism property `P` on a category `T` and an object `X : T`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
 protected abbrev Under : Type _ :=
   P.Comma (Functor.fromPUnit.{0} X) (Functor.id T) ⊤ Q
@@ -578,7 +678,7 @@ protected abbrev Under : Type _ :=
 protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
   Comma.forget (Functor.fromPUnit.{0} X) (Functor.id T) P ⊤ Q
 
-instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Under.forget P Q X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
@@ -587,9 +687,10 @@ lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :
 
 variable {P Q X}
 
-/-- Construct a morphism in `P.Under Q X` from a morphism in `Under.X`. -/
+/-- Construct a morphism in `P.Under Q X` from a morphism in `Under X`. -/
 @[simps hom]
-def Under.Hom.mk {A B : P.Under Q X} (f : A.toComma ⟶ B.toComma) (hf : Q f.right) : A ⟶ B where
+def Under.Hom.mk {A B : P.Under Q X}
+    (f : (Under.forget _ _ _).obj A ⟶ (Under.forget _ _ _).obj B) (hf : Q f.right) : A ⟶ B where
   __ := f
   prop_hom_left := trivial
   prop_hom_right := hf
