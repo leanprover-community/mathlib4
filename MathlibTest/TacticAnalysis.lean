@@ -465,4 +465,21 @@ set_option linter.tacticAnalysis.verifyGrindSuggestions true in
 example : 1 + 1 = 2 := by
   rfl
 
+-- Test a known failure of `grind?`
+
+/-- warning: `grind?` suggestion failed -/
+#guard_msgs (substring := true) in
+set_option linter.tacticAnalysis.verifyGrindOnly true in
+example {α} (f : Bool → α) : Set.range f = {f false, f true} := by
+  grind only [= Set.mem_insert_iff, = Set.mem_range, = Set.mem_singleton_iff, cases Bool]
+
+-- check that the failure is still correctly reported with a definition named `approx`
+def approx {α} (f : Bool → α) : Set α := {f false, f true}
+
+/-- warning: `grind?` suggestion failed -/
+#guard_msgs (substring := true) in
+set_option linter.tacticAnalysis.verifyGrindOnly true in
+example {α} (f : Bool → α) : Set.range f = approx f := by
+  grind only [approx, = Set.mem_insert_iff, = Set.mem_range, = Set.mem_singleton_iff, cases Bool]
+
 end verifyGrindSuggestions
