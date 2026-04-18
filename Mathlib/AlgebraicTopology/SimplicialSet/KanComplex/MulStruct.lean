@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 
 /-!
 # Pointed simplices
@@ -24,6 +25,14 @@ universe u
 
 open CategoryTheory Simplicial
 namespace SSet
+
+lemma horn.exists_desc
+    {n : ℕ} {i : Fin (n + 3)} {X : SSet.{u}} (f : ({i}ᶜ : Set _) → ((Δ[n + 1] : SSet) ⟶ X))
+    (hf : ∀ (j k : ({i}ᶜ : Set _)) (hjk : j.1 < k.1),
+      stdSimplex.δ (k.1.pred (Fin.ne_zero_of_lt hjk)) ≫ f j =
+        stdSimplex.δ (j.1.castPred (Fin.ne_last_of_lt hjk)) ≫ f k) :
+    ∃ (φ : (Λ[n + 2, i] : SSet) ⟶ X), ∀ j, ι i j.1 j.2 ≫ φ = f j := by
+  sorry
 
 variable (X : SSet.{u})
 
@@ -186,6 +195,89 @@ this is the term in `MulStruct f .const f i` corresponding to
 def mulOne (f : X.PtSimplex n x) (i : Fin n) :
     MulStruct f .const f i :=
   relStructSuccEquivMulStruct (.refl f i.succ)
+
+section
+
+variable {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i : Fin n}
+  (h₀₂ : MulStruct f₀₁ f₁₂ f₀₂ i) (h₁₃ : MulStruct f₁₂ f₂₃ f₁₃ i)
+  (h : MulStruct f₀₁ f₁₃ f₀₃ i)
+
+namespace assocAux
+
+def α (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3)))) : Δ[n + 1] ⟶ X :=
+  if j.1 = i.castSucc.castSucc.castSucc then h₁₃.map else
+    if j.1 = i.castSucc.succ.succ then h.map else
+      if j.1 = i.succ.succ.succ then h₀₂.map else
+        const x
+
+lemma α_of_lt (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3))))
+    (hj : j.val < i.castSucc.castSucc.castSucc) :
+    α h₀₂ h₁₃ h j = const x := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+
+lemma α_of_gt (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3))))
+    (hj : i.succ.succ.succ < j.val) :
+    α h₀₂ h₁₃ h j = const x := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+
+@[simp]
+lemma α_castSucc_castSucc_castSucc :
+    α h₀₂ h₁₃ h ⟨i.castSucc.castSucc.castSucc, by grind⟩ = h₁₃.map := by
+  simp [α]
+
+@[simp]
+lemma α_castSucc_succ_succ :
+    α h₀₂ h₁₃ h ⟨i.castSucc.succ.succ, by grind⟩ = h.map := by
+  dsimp [α]
+  rw [if_neg (by grind), if_pos (by simp)]
+
+@[simp]
+lemma α_succ_succ_succ :
+    α h₀₂ h₁₃ h ⟨i.succ.succ.succ, by grind⟩ = h₀₂.map := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_pos (by simp)]
+
+lemma exists_desc : ∃ (β : (Λ[n + 2, i.castSucc.castSucc.succ] : SSet) ⟶ X),
+    ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
+      horn.ι _ j hj ≫ β = assocAux.α h₀₂ h₁₃ h ⟨j, hj⟩ := by
+  sorry
+
+end assocAux
+
+def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
+    (hφ : ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
+      stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h ⟨j, hj⟩) :
+    MulStruct f₀₂ f₂₃ f₀₃ i where
+  map := stdSimplex.δ i.castSucc.castSucc.succ ≫ φ
+  δ_castSucc_castSucc_map := by
+    rw [stdSimplex.δ_comp_δ_assoc (by simp), hφ _ (by grind)]
+    simp
+  δ_succ_castSucc_map := by
+    rw [dsimp% stdSimplex.δ_comp_δ_self_assoc (i := i.castSucc.succ),
+      hφ _ (by grind)]
+    simp
+  δ_succ_succ_map := by
+    rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.castSucc.succ) (by grind),
+      hφ _ (by grind)]
+    simp
+  δ_map_of_lt j hj := by
+    rw [stdSimplex.δ_comp_δ_assoc (by grind), hφ _ (by grind),
+      assocAux.α_of_lt _ _ _ _ (by grind)]
+    simp
+  δ_map_of_gt j hj := by
+    rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.castSucc.succ) (by grind),
+      hφ _ (by grind), assocAux.α_of_gt _ _ _ _ (by grind)]
+    simp
+
+variable [KanComplex X]
+
+noncomputable def assoc : MulStruct f₀₂ f₂₃ f₀₃ i := by
+  sorry
+
+end
+
 
 end MulStruct
 
