@@ -435,7 +435,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     rw [← himgo, Finset.card_image_of_injOn hinj]
   refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
-    simp [t, Ideal.span_union, Ideal.map_span]
+    simp [t, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
   convert hP'
   simp [Ideal.map_span, ← himgo]
