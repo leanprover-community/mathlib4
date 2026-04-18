@@ -5,12 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearForm.Basic
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.RingTheory.FiniteType
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
