@@ -70,7 +70,8 @@ Introduces an irreducible definition.
 a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
-elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
+elab (name := irreducibleDefStx)
+    mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
     declSig:ppIndent(optDeclSig) val:declVal :
     command => do
   let declSig : TSyntax ``Parser.Command.optDeclSig := ⟨declSig.raw⟩ -- HACK
