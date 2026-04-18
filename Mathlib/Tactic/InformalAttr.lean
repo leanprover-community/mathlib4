@@ -1,11 +1,16 @@
+/-
+Copyright (c) 2026 Thomas R. Murrills. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas R. Murrills
+-/
 module
 
-public import Mathlib.Tactic.DatabaseAttributes
-public import Batteries
-public import Lean
-public import Std
+import Mathlib.Tactic.DatabaseAttributes
+import Batteries.Data.MLList.Basic
+import Batteries.Data.RBMap.Basic
+import Batteries.Data.DList.Basic
 
--- Generated with `#imported_informal?`
+-- Generated with `#imported_informal?` after importing `Lean`, `Batteries`, `Std`
 attribute [informal "array"] Array
 attribute [informal "integer"] Int
 attribute [informal "list"] List
