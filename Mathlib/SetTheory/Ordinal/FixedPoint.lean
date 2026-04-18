@@ -97,7 +97,7 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
 
 theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily f a) = nfpFamily f a := by
-  rw [nfpFamily, H.map_iSup (bddAbove_of_small _)]
+  rw [nfpFamily, H.map_iSup bddAbove_of_small]
   apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.strictMono.le_apply.trans (Ordinal.le_iSup _ _)
@@ -159,7 +159,7 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
     exact le_nfpFamily _ _
   · rw [derivFamily_limit _ h, Set.image_eq_range]
     have := h.nonempty_Iio.to_subtype
-    exact isLUB_ciSup (bddAbove_of_small _)
+    exact isLUB_ciSup bddAbove_of_small
 
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
     StrictMono (derivFamily f) :=
@@ -176,7 +176,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     exact nfpFamily_fp H _
   | limit o l IH =>
     have := l.nonempty_Iio.to_subtype
-    rw [derivFamily_limit _ l, H.map_iSup (bddAbove_of_small _)]
+    rw [derivFamily_limit _ l, H.map_iSup bddAbove_of_small]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
     refine forall_congr' fun a ↦ ?_
@@ -423,11 +423,7 @@ end
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
-  simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_natCast]
-  congr; funext n
-  induction n with
-  | zero => rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
+  simp [← iSup_iterate_eq_nfp]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)

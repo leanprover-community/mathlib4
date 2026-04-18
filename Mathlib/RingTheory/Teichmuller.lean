@@ -30,7 +30,7 @@ namespace Perfection
 power of an arbitrary lift in `R` of the `n`-th component from the perfection of `R ⧸ I`. -/
 noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
   | 0 => 1
-  | n+1 => (coeff _ p n x).out ^ p ^ n
+  | n + 1 => (coeff _ p n x).out ^ p ^ n
 
 theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
     teichmullerAux x m ≡ teichmullerAux x (m + 1) [SMOD I ^ m] := by
