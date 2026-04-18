@@ -463,10 +463,6 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
   · field_simp
     ring_nf
 
-theorem continuous_convexCombo {a b : ℝ} :
-    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) :=
-  Continuous.subtype_mk (by fun_prop) _
-
 end Set.Icc
 
 open scoped unitInterval
@@ -517,17 +513,8 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
   by_cases hab : a = b
   · -- Case a = b: take n = 0 with single partition point
     subst hab
-    refine ⟨0, fun _ => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
-    · -- StrictMono: vacuously true for Fin 1
-      intro i j hij
-      omega
-    · -- t 0 = a
-      rfl
-    · -- t (Fin.last 0) = a = b
-      rfl
-    · -- Covering property: vacuously true for Fin 0
-      intro i
-      exact i.elim0
+    exact ⟨0, fun _ => ⟨a, by simp⟩, Subsingleton.strictMono (α := Fin 1) _, rfl, rfl,
+      fun i => i.elim0⟩
   · -- Case a < b: pick n with (b - a) / n < δ
     have hab_pos : 0 < b - a := sub_pos.mpr (Ne.lt_of_le hab h)
     obtain ⟨n, hn_pos, hn_small⟩ : ∃ n : ℕ, 0 < n ∧ (b - a) / n < δ := by
@@ -555,8 +542,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
               have : k * (b - a) ≤ n * (b - a) := by nlinarith
               linarith [div_le_div_of_nonneg_right this hn_pos'.le] }
           _ = b := by field_simp [hn_pos'.ne']; ring⟩
-    refine ⟨n, t, ?_, ?_, ?_, ?_⟩
-    · -- StrictMono
+    have ht_strict : StrictMono t := by
       intro i j hij
       change (t i : ℝ) < (t j : ℝ)
       simp only [t]
@@ -564,6 +550,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
       have : i * (b - a) < j * (b - a) := by nlinarith [hab_pos]
       linarith [div_lt_div_of_pos_right this hn_pos']
+    refine ⟨n, t, ht_strict, ?_, ?_, ?_⟩
     · -- t 0 = a
       simp [t]
     · -- t (Fin.last n) = b
@@ -573,15 +560,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
     · -- Covering property
       intro i
       -- Use StrictMono to get that t i.castSucc < t i.succ
-      have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := by
-        simp only [t]
-        have hij : (i.castSucc : ℕ) < (i.succ : ℕ) := by
-          rw [Fin.val_castSucc]
-          simp
-        have hij' : (i.castSucc : ℝ) < (i.succ : ℝ) := Nat.cast_lt.mpr hij
-        have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
-        have : i.castSucc * (b - a) < i.succ * (b - a) := by nlinarith [hab_pos]
-        linarith [div_lt_div_of_pos_right this hn_pos']
+      have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := ht_strict i.castSucc_lt_succ
       -- Define the midpoint
       let m : Icc a b := ⟨((t i.castSucc : ℝ) + (t i.succ : ℝ)) / 2, by
         constructor
@@ -591,7 +570,6 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       have h_subset : Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball m δ := by
         intro x hx
         simp only [Metric.ball, mem_setOf_eq]
-        -- The segment has length (b-a)/n, so max distance from midpoint is (b-a)/(2n)
         have segment_len : (t i.succ : ℝ) - (t i.castSucc : ℝ) = (b - a) / n := by
           simp [t]
           field_simp
@@ -602,7 +580,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
           rw [dist_comm, Real.dist_eq]
           simp only [m, abs_sub_le_iff]
           constructor <;>
-          · linarith [hx_bounds.1, hx_bounds.2]
+          · linarith [hx_bounds.1, hx_bounds.2, segment_len]
         -- Since (b-a)/n < δ, we have (b-a)/(2n) < δ/2 < δ
         calc dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := dist_bound
           _ < δ / 2 := by linarith [hn_small]
