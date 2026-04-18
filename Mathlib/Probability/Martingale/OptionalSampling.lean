@@ -70,7 +70,7 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
-    contrapose! hin
+    contrapose hin
     exact_mod_cast hin ▸ hτ_le x
 
 variable [Nonempty ι]
