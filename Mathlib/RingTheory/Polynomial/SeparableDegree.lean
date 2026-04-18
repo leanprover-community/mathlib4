@@ -103,6 +103,7 @@ variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] {f : F[X]}
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
+  · exact (false_of_nontrivial_of_subsingleton F).elim
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
   · rcases exists_separable_of_irreducible q irred ‹q.Prime›.ne_zero with ⟨n, g, hgs, hge⟩
     exact ⟨g, hgs, n, hge⟩
@@ -125,6 +126,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by
   cases hF
+  · exact (false_of_nontrivial_of_subsingleton F).elim
   · rcases hg with ⟨_, m, hm⟩
     rw [one_pow, expand_one] at hm
     rw [hf.eq_degree, hm]
