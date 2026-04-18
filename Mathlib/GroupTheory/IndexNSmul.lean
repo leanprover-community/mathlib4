@@ -13,7 +13,8 @@ public import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.RingTheory.FiniteType
 
 /-!
 # Lemmas about index and multiplication-by-n

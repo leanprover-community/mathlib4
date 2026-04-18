@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 
 /-!
 # Constructs a basis for exterior powers

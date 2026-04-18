@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!

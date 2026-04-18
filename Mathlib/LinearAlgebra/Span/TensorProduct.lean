@@ -14,8 +14,8 @@ public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
 

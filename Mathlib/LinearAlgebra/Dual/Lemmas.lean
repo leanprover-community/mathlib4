@@ -11,8 +11,8 @@ public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic

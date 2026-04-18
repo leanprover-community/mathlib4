@@ -5,8 +5,8 @@ Authors: Riccardo Brasca
 -/
 module -- shake: keep-all
 
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 
 deprecated_module (since := "2026-04-18")
 

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 
 /-!
 If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prime dimension,
