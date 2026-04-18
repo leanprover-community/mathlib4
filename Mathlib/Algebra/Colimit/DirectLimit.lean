@@ -143,6 +143,13 @@ variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)
 
 end SMul
 
+instance [Star R] [∀ i, Star (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+    [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
+    [∀ i, StarModule R (G i)] :
+    StarModule R (DirectLimit G f) where
+  star_smul r := DirectLimit.induction _ fun i x ↦ by
+    simp_rw [star_def, smul_def, ← star_smul, star_def]
+
 @[to_additive] instance [Monoid R] [∀ i, MulAction R (G i)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
     MulAction R (DirectLimit G f) where
