@@ -10,14 +10,11 @@ public import Mathlib.Init
 public meta import Mathlib.Util.SuggestAttr
 
 /-!
-# The `stacks`, `kerodon` and `zbmath` attributes
+# The `stacks`, `kerodon` and `informal` attributes
 
 This allows tagging of mathlib results with a natural language concept name,
 or the corresponding tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
 [Kerodon](https://kerodon.net/tag/).
-
-The `zbmath` attribute allows annotating a declaration as corresponding to a natural language
-mathematics concept (such as "linear map", "smooth manifold" or "Faltings' theorem").
 
 The `informal` attribute allows annotating a declaration as corresponding to a natural language
 mathematics concept (such as "linear map", "smooth manifold" or "Faltings' theorem").
@@ -208,9 +205,9 @@ def _root_.Lean.Name.getSuffix : Name → String
   | .num pre _ => pre.getSuffix
   | .anonymous => "[anonymous]"
 
-/-- Suggests adding `@[zbmath tag]` if `decl` exists in `overview.json`. `tag` is currently the
+/-- Suggests adding `@[informal tag]` if `decl` exists in `overview.json`. `tag` is currently the
 innermost key. -/
-def addZBMathFromOverview : Linter where
+def addInformalTagFromOverview : Linter where
   run := insertAttrsOnDecls fun decl cmd => do
     if let some tag := mathOverview.get? decl then
       unless (getTagEntry? (← getEnv) decl .informal (inCurrentModule? := true)).isSome do
@@ -218,17 +215,18 @@ def addZBMathFromOverview : Linter where
         return #[← `(Parser.Term.attrInstance| informal $tagStr:str)]
     return #[]
 
-initialize addLinter addZBMathFromOverview
+initialize addLinter addInformalTagFromOverview
 
 open Lean Elab Command
 
-elab tk:"#non_mathlib_zbmath?" : command => do
+elab tk:"#imported_informal?" : command => do
   let env ← getEnv
   let mut attrs := #[]
   for (decl, fulltag) in mathOverview do
     unless env.contains decl do continue
-    let some idx := env.getModuleIdxFor? decl | continue
-    if !(`Mathlib).isPrefixOf env.header.moduleNames[idx]! then
+    if env.isImportedConst decl then
+    -- let some idx := env.getModuleIdxFor? decl | continue
+    -- if !(`Mathlib).isPrefixOf env.header.moduleNames[idx]! then
       attrs := attrs.push (decl, ← `(command|
         attribute [informal $(Syntax.mkStrLit fulltag.getSuffix)] $(mkIdent decl)))
   liftCoreM do
@@ -259,7 +257,7 @@ elab "#check_overview" : command => do
     unless wrongTag.isEmpty do
       let wrongTagMsgs := wrongTag.map fun (decl,fulltag,tag) =>
         m!"• {MessageData.ofConstName decl} @ {fulltag} is tagged in lean with \
-        `@[zbmath {tag.tag}{tag.comment}]`"
+        `@[informal {tag.tag}{tag.comment}]`"
       msgs := m!"Decalarations which have the wrong tag:\n\
         {m!"\n".joinSep wrongTagMsgs.toList}}" :: msgs
     unless notLeanTagged.isEmpty do
