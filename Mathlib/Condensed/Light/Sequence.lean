@@ -359,4 +359,3 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
     have : IsIso π' := ⟨ConcreteCategory.ofHom ⟨(h.elim ·), continuous_of_const <| by aesop⟩,
       by ext x; exact h.elim (π' x), by ext x; all_goals exact h.elim x⟩
     exact ⟨(lightProfiniteToLightCondSet ⋙ free R).map (inv π' ≫ g') ≫ g, by grind⟩
-#lint
