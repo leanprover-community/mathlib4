@@ -680,20 +680,8 @@ lemma measurable_iInf_of_upperSemicontinuous [CompleteLinearOrder β] [OrderTopo
     {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
     {f : ι → δ → β} (mf : ∀ t, Measurable (f t))
     (cf : ∀ x, UpperSemicontinuous (f · x)) :
-    Measurable (⨅ i, f i) := by
-  refine measurable_of_Iio fun c ↦ ?_
-  obtain ⟨J, cJ, dJ⟩ := TopologicalSpace.exists_countable_dense ι
-  suffices (⨅ i, f i) ⁻¹' Iio c = ⋃ j ∈ J, {x | f j x < c} by
-    rw [this]
-    exact .biUnion cJ fun j _ ↦ by measurability
-  ext x
-  push _ ∈ _
-  simp_rw [iInf_apply, iInf_lt_iff]
-  refine ⟨fun ⟨i, hi⟩ ↦ ?_, by grind⟩
-  obtain ⟨v, hv, hv'⟩ := eventually_iff_exists_mem.1 (cf x i c hi)
-  have hj := dJ.inter_nhds_nonempty hv
-  exact ⟨hj.some, mem_of_mem_inter_left hj.some_mem,
-    hv' _ (mem_of_mem_inter_right hj.some_mem)⟩
+    Measurable (⨅ i, f i) :=
+   measurable_iSup_of_lowerSemicontinuous (β := βᵒᵈ) mf cf
 
 theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
