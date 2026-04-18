@@ -1,6 +1,13 @@
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 
+/-! Test for kernel reduction of elliptic curve `nsmul`
+
+In `addOrderOf_basepoint`, the `rfl` tests that the kernel is able to reduce the `nsmul`
+operation on an elliptic curve to check an equality. `nsmul` on elliptic curves implements
+multiplication by doubling and should be relatively fast.
+-/
+
 open WeierstrassCurve Affine Point
 
 instance : Fact (Nat.Prime 29) := by decide
@@ -15,7 +22,8 @@ def basepoint : curve.Point :=
     rw [nonsingular_iff, equation_iff]
     decide
 
-theorem valid_base_order : addOrderOf basepoint = 37 := by
+set_option maxRecDepth 300 in
+theorem addOrderOf_basepoint : addOrderOf basepoint = 37 := by
   apply addOrderOf_eq_prime
   · rfl
   · simp [basepoint]
