@@ -8,8 +8,6 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.FieldTheory.Tower
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!

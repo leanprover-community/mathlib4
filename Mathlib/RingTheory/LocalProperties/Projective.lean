@@ -6,9 +6,7 @@ Authors: Andrew Yang, David Swinarski
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.LocalProperties.Submodule
 

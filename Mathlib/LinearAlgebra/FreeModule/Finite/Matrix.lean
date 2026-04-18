@@ -5,9 +5,8 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.FiniteType
 
 /-!
 # Finite and free modules using matrices

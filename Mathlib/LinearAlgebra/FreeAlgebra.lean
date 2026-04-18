@@ -5,13 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.LinearAlgebra.Basis.Cardinality
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.FiniteType
 
 /-!

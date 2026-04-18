@@ -7,10 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Index
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic

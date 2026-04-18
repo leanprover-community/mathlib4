@@ -5,10 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.MvPolynomial.Basic
 

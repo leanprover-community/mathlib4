@@ -6,8 +6,6 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.FiniteType
 
 /-!

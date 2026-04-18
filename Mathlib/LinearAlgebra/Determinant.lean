@@ -5,17 +5,10 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-public import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.Tactic.FieldSimp
+public import Mathlib.RingTheory.FiniteType
 
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 

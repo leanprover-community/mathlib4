@@ -6,18 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Algebra.Epi
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.Data.Sym.Sym2
 public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.Tactic.NormNum.GCD
-public import Mathlib.Tactic.Positivity
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # The interaction of linear span and tensor product for mixed scalars.
