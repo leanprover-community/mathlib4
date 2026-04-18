@@ -175,6 +175,15 @@ end Monoid
     CommMonoid (DirectLimit G f) where
   mul_comm := mul_comm
 
+section StarAddMonoid
+variable [∀ i, AddMonoid (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, StarAddMonoid (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : StarAddMonoid (DirectLimit G f) where
+  star_add := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [add_def, star_def, star_add, add_def]
+
+end StarAddMonoid
+
 section Group
 variable [∀ i, Group (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
 
