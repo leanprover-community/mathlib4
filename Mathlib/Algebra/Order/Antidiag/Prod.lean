@@ -45,7 +45,9 @@ def s : Multiset ℕ := {0, 0, 0}
 
 ## TODO
 
-* Define `HasMulAntidiagonal` (for monoids).
+* Define `HasMulAntidiagonal` (for monoids), the multiplicative counterpart to `HasAntidiagonal`.
+  The set-based `Finset.mulAntidiagonal` in `Mathlib.Data.Finset.MulAntidiagonal` has been renamed
+  to `Finset.setMulAntidiagonal` to avoid name collision with the typeclass export.
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
 
