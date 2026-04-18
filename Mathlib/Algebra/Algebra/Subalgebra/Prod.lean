@@ -80,6 +80,10 @@ abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ
 abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
   (snd R A B).comp (pullback f g).val
 
+theorem comp_pullbackFst_eq_comp_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) :
+    f.comp (pullbackFst f g) = g.comp (pullbackSnd f g) :=
+  AlgHom.ext fun x ↦ x.prop
+
 end Semiring
 
 section Ring
@@ -90,12 +94,6 @@ theorem isUnit_pullback_mk_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {a : A ×
     (a_in : a ∈ f.pullback g) : IsUnit (⟨a, a_in⟩ : f.pullback g) ↔
       IsUnit a.1 ∧ IsUnit a.2 :=
   RingHom.isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) a_in
-
-theorem isLocalHom_pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
-    IsLocalHom (pullbackFst f g) := ⟨(RingHom.isLocalHom_pullbackFst f g hg).map_nonunit⟩
-
-theorem isLocalHom_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hf : IsLocalHom f) :
-    IsLocalHom (pullbackSnd f g) := ⟨(RingHom.isLocalHom_pullbackSnd f g hf).map_nonunit⟩
 
 theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=

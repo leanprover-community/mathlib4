@@ -46,7 +46,7 @@ variable {k : Type v} [Field k] [Algebra Λ k]
 
 /-- The category of local `Λ`-algebras with residue field `k` and their morphisms. An object of
 `LocAlgCat` consists of a local `Λ`-algebra `A` equipped with a surjective map to `k`. -/
-structure LocAlgCat (Λ : Type u) (k : Type v) [CommRing Λ] [Field k] [Algebra Λ k] where
+structure LocAlgCat (Λ : Type u) (k : Type v) [CommRing Λ] [Field k] [Algebra Λ k] : Type _ where
   private mk ::
   /-- The underlying type of the local `Λ`-algebras. -/
   carrier : Type w

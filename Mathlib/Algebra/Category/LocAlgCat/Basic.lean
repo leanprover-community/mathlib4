@@ -246,21 +246,36 @@ def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocAlg
     simpa [RingHom.algebraMap_toAlgebra] using Surjective.comp A.surj
       (AlgHom.surjective_pullbackFst_of_surjective _ _ hg))
 
-@[simp]
-lemma coe_ofPullback (hg : Surjective g.toAlgHom) :
-    (ofPullback f g hg : Type w) = f.toAlgHom.pullback g.toAlgHom := rfl
-
-lemma residue_ofPullback_apply (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom)
-    (u : f.toAlgHom.pullback g.toAlgHom) : (ofPullback f g hg).residue u = A.residue u.val.1 := by
-  rfl
-
 /-- Upgrades the first projection map from the pullback algebra to a morphism in `LocAlgCat`. -/
-abbrev fromOfPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     ofPullback f g hg ⟶ A :=
   letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
     isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
   ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
     (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
+
+/-- Upgrades the second projection map from the pullback algebra to a morphism in `LocAlgCat`. -/
+abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+    ofPullback f g hg ⟶ B :=
+  letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
+    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+  haveI : IsLocalHom f.toAlgHom.toRingHom := ⟨f.isLocalHom_toAlgHom.map_nonunit⟩
+  haveI : IsLocalHom (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom :=
+    ⟨(RingHom.isLocalHom_pullbackSnd f.toAlgHom.toRingHom g.toAlgHom.toRingHom).map_nonunit⟩
+  ⟨f.toAlgHom.pullbackSnd g.toAlgHom, IsLocalRing.maximalIdeal_comap
+    (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom, by
+      change (B.residue.comp (f.toAlgHom.pullbackSnd g.toAlgHom) :
+        ↥(f.toAlgHom.pullback g.toAlgHom) →ₐ[Λ] k) =
+          A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)
+      ext ⟨_, h⟩
+      simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
+        AlgHom.snd_apply, Subalgebra.coe_val] at h ⊢
+      rw [← DFunLike.congr_fun f.residue_comp, ← DFunLike.congr_fun g.residue_comp,
+        AlgHom.comp_apply, AlgHom.comp_apply, ← h]⟩
+
+lemma pullbackFst_comp_eq_pullbackSnd_comp (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+    pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g :=
+  Hom.ext <| AlgHom.comp_pullbackFst_eq_comp_pullbackSnd f.toAlgHom g.toAlgHom
 
 open Polynomial in
 private lemma not_isUnit_aeval_of_aeval_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (x : k)
