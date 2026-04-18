@@ -10,6 +10,7 @@ public import Lean.Syntax
 public import Lean.Data.Lsp.Utf16
 import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Utilities for suggesting attribute insertions
@@ -70,6 +71,14 @@ returns the full declaration range (which includes modifiers, such as the docstr
   let some ranges ← findDeclarationRanges? decl | return none
   return (if fullRange then ranges.range else ranges.selectionRange).toSyntaxRange (← getFileMap)
 
+/-- Finds syntax of exactly the given range -/
+def _root_.Lean.Syntax.findWithRange? (enclosing : Syntax) (range : Syntax.Range) :
+    Option Syntax := Id.run do
+  for stx in enclosing.topDown do
+    if stx.getRange?.isEqSome range then
+      return stx
+  return none
+
 /-- Finds the declaration syntax, either a typical declaration or `lemma`, and returns it. Not the
 best type signature or function behavior; there are many more ways to create declarations (e.g.
 `to_additive`, meta things like `syntax`, etc.). Strictly temporary. -/
@@ -78,13 +87,35 @@ def findDeclarationSyntax? {m : Type → Type} [Monad m] [MonadEnv m] [MonadLift
     m (Option ((kind : SyntaxNodeKind) × TSyntax kind)) := do
   let some range ← findDeclarationSyntaxRange? decl true | return none
   for stx in enclosingStx.topDown do
-    if stx.isOfKind ``Parser.Command.declaration then
+    let kind := stx.getKind
+    if kind ∈ [
+        ``Parser.Command.declaration,
+        `lemma,
+        ``Elab.Command.irreducibleDefStx,
+        `Mathlib.Tactic.ToAdditive.to_additive]
+    then
       if stx.getRange? (canonicalOnly := true) |>.isEqSome range then
-        return some ⟨``Parser.Command.declaration, ⟨stx⟩⟩
-    else if stx.isOfKind `lemma then
-      if stx.getRange? (canonicalOnly := true) |>.isEqSome range then
-        return some ⟨`lemma, ⟨stx⟩⟩
+        return some ⟨kind, ⟨stx⟩⟩
   return none
+
+/-- Runs `x` with a synthetic ref that has position info locating the given `decl` if it is defined
+in the current file, or else runs `x` without modifying the ref. This is useful for logging on a
+declaration's name from within linters.
+
+By default, this uses the "selection range" of the declaration, which is usually the declaration's
+identifier or e.g. the `instance` token for an unnamed instance. (This is also the place that
+receives hovers for the declaration.)
+
+If `fullRange` is instead set to `true`, this uses the full declaration range, which includes the
+modifiers (such as the docstring, if there is one) and the body of the declaration.
+
+`canonical` applies to the synthetic syntax generated for the ref; see `Syntax.ofRange`. -/
+@[always_inline, inline]
+def withDeclRef? {α} {m : Type → Type} [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
+    [MonadFileMap m] [MonadRef m] (decl : Name) (x : m α)
+    (fullRange := false) (canonical := true) : m α := do
+  let some range ← findDeclarationSyntaxRange? decl fullRange | x
+  withRef (.ofRange range canonical) x
 
 open Elab Command
 /-
@@ -146,6 +177,61 @@ def suggestAttrForDeclMods
   let (range, sugg) ← insertion mods declStartAfterMods attrStx
   Meta.Tactic.TryThis.addSuggestion (.ofRange range) sugg
 
+
+/-
+-- [2], many sepBy(,)
+syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
+
+-- [1], choice
+syntax bracketedOption := "(" attrOption <|> reorderOption <|>
+  relevantArgOption <|> dontTranslateOption <|> renameOption ")"
+
+syntax translationHint := (ppSpace (&"existing" <|> &"self" <|> &"none"))?
+
+-- [1], many
+syntax attrArgs :=
+  translationHint (ppSpace bracketedOption)* (ppSpace ident)? (ppSpace (str <|> docComment))?
+
+-- [2] (may be null)
+syntax (name := to_additive) "to_additive" "?"? attrArgs : attr
+-/
+--
+/-- Suggests inserting the attribute syntax after `to_additive`. -/
+def suggestAttrForToAdditive
+    (attrStx : Array (TSyntax ``Parser.Term.attrInstance))
+    (toAdditive : Syntax) : -- the whole syntax
+    CoreM Unit := do
+  let attrStx ← attrStx.mapM fun stx =>
+    -- bit of a hack, not a syntax category
+    -- column three to account for `@[]` (not all cases, but still)
+    return (← PrettyPrinter.ppCategory ``Parser.Term.attrInstance stx).pretty (column := 3)
+  let attrStx := ", ".intercalate attrStx.toList
+  let some endOfAttrPos := toAdditive.getTailPos?
+    | throwError "Could not find tail pos of to_additive"
+  let some endOfTkPos := toAdditive[0].getTailPos?
+    | throwError "Could not find tail position of token {toAdditive[0]}"
+  let attrArgs := toAdditive[2]
+  let bracketedOptions := attrArgs[1].getArgs
+  let preStartPos := (toAdditive[1][0].getOptional?.bind (·.getTailPos?)).getD endOfTkPos
+  let endPosNextArg? := (attrArgs[2].getOptional?.bind (·.getPos?)
+          <|> attrArgs[3].getOptional?.bind (·.getPos?))
+  let (range, insertStr) :=
+    if h : bracketedOptions.isEmpty then
+      if let some endPosNextArg := endPosNextArg? then
+        (⟨preStartPos, endPosNextArg⟩, s!" (attr := {attrStx}) ")
+      else
+        (⟨preStartPos, endOfAttrPos⟩, s!" (attr := {attrStx})")
+    else
+      if let some attrOption := bracketedOptions.find?
+        (·[1].isOfKind `Mathlib.Tactic.Translate.attrOption)
+      then
+        let posBeforeAttr := attrOption[1][2].getPos?.getD attrOption[2].getPos?.get!
+        (⟨posBeforeAttr, posBeforeAttr⟩, s!"{attrStx}, ")
+      else
+        let posBeforeBinders := bracketedOptions[0]'(by grind) |>.getPos?.get!
+        (⟨preStartPos, posBeforeBinders⟩, s!" (attr := {attrStx}) ")
+  Meta.Tactic.TryThis.addSuggestion (.ofRange range) insertStr
+
 /-- For each `declName` appearing in `cmd`, suggests inserting the attribute syntax produced by
 `mkAttrs declName cmd`, or warns if it can't. Note that `cmd` is the full command, not the
 declaration syntax. -/
@@ -158,12 +244,24 @@ declaration syntax. -/
     let attrs ← mkAttrs decl cmd
     unless attrs.isEmpty do
       let some ⟨kind, stx⟩ ← findDeclarationSyntax? decl cmd
-        | logWarning m!"`{.ofConstName decl}`: \
-          need to insert `@[{attrs}]`, but couldn't find syntax"
-      unless kind ∈ [`lemma, ``Parser.Command.declaration] do
-        throwError "Can't handle syntax {stx} of kind {kind}"
-      let some declStart := stx.raw[1].getPos?
-        | throwError "Couldn't find start position of declaration {stx}"
-      liftCoreM <| suggestAttrForDeclMods attrs ⟨stx.raw[0]⟩ declStart
+        | withDeclRef? decl (fullRange := true) do
+            let some range := (← getRef).getRange? | throwError "Couldn't get range of decl ref"
+            let stx := cmd.findWithRange? range
+            logWarning m!"`{.ofConstName decl}`: \
+            need to insert `{← `(Parser.Term.«attributes»|@[$attrs,*])}`, \
+            but couldn't find syntax.\n\
+            {if let some stx := stx then m!"Looking at {stx.getKind}:{indentD stx}" else
+              "Could not find syntax matching declaration range."}"
+      if kind ∈ [`lemma,
+          ``Parser.Command.declaration,
+          ``Lean.Elab.Command.irreducibleDefStx]
+      then
+        let some declStart := stx.raw[1].getPos?
+          | throwError "Couldn't find start position of declaration {stx}"
+        liftCoreM <| suggestAttrForDeclMods attrs ⟨stx.raw[0]⟩ declStart
+      else if h : kind = `Mathlib.Tactic.ToAdditive.to_additive then
+        liftCoreM <| suggestAttrForToAdditive attrs stx
+      else
+        throwError "Can't handle syntax of kind {kind} for {stx}"
 
 end Lean
