@@ -273,6 +273,7 @@ theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
 theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
     logHeight₁ (n : ℚ) = Real.log n := by
   simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n]
+
 end mulHeight₁
 
 end Rat
