@@ -186,14 +186,8 @@ lemma SortedLE.wbtw {l : List R} (h : l.SortedLE) : l.Wbtw R := by
   have hjl : j < l.length := Nat.lt_trans hjk hk
   exact Wbtw.of_le_of_le (h.getElem_le_getElem_of_le hij.le) (h.getElem_le_getElem_of_le hjk.le)
 
-@[deprecated (since := "2025-10-13")]
-alias Sorted.wbtw := SortedLE.wbtw
-
 lemma SortedLT.sbtw {l : List R} (h : l.SortedLT) : l.Sbtw R :=
   ⟨h.sortedLE.wbtw, h.nodup⟩
-
-@[deprecated (since := "2025-10-13")]
-alias Sorted.sbtw := SortedLT.sbtw
 
 lemma exists_map_eq_of_sorted_nonempty_iff_wbtw {l : List P} (hl : l ≠ []) :
     (∃ l' : List R, l'.SortedLE ∧ l'.map (lineMap (l.head hl) (l.getLast hl)) = l) ↔

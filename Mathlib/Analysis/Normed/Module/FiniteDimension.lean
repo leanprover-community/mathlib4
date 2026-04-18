@@ -497,17 +497,58 @@ lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E �
 
 end Riesz
 
-/-- A family of continuous linear maps is continuous on `s` if all its applications are. -/
+open ContinuousLinearMap
+
+/-- Continuous linear equivalence between continuous linear functions `𝕜ⁿ → E` and `Eⁿ`.
+The spaces `𝕜ⁿ` and `Eⁿ` are represented as `ι → 𝕜` and `ι → E`, respectively,
+where `ι` is a finite type. -/
+def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
+    ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
+  { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
+    continuous_toFun := by
+      refine continuous_pi fun i => ?_
+      exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
+    continuous_invFun := by
+      simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
+      -- Note: added explicit type and removed `change` that tried to achieve the same
+      refine AddMonoidHomClass.continuous_of_bound
+        (LinearMap.toContinuousLinearMap.toLinearMap.comp
+            (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
+        (Fintype.card ι : ℝ) fun g => ?_
+      rw [← nsmul_eq_mul]
+      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
+      simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+        LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
+      apply le_trans (norm_sum_le _ _)
+      rw [smul_mul_assoc]
+      refine Finset.sum_le_card_nsmul _ _ _ fun i _ => ?_
+      rw [norm_smul, mul_comm]
+      gcongr <;> apply norm_le_pi_norm }
+
+/-- A family of continuous linear maps is continuous within `s` at `x` iff all its applications
+are. -/
+theorem continuousWithinAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] F} {s : Set X} {x : X} :
+    ContinuousWithinAt f s x ↔ ∀ y, ContinuousWithinAt (fun q ↦ f q y) s x := by
+  refine ⟨fun h y ↦ (apply 𝕜 F y).continuous.continuousAt.comp_continuousWithinAt h, fun h ↦ ?_⟩
+  let e : (E →L[𝕜] F) ≃L[𝕜] Fin (finrank 𝕜 E) → F :=
+    ((ContinuousLinearEquiv.ofFinrankEq (finrank_fin_fun 𝕜).symm).arrowCongr
+      (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing _)
+  rw [e.toHomeomorph.isInducing.continuousWithinAt_iff]
+  exact continuousWithinAt_pi.mpr fun i ↦ h _
+
+/-- A family of continuous linear maps is continuous on `s` iff all its applications are. -/
 theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} {s : Set X} : ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x => f x y) s := by
-  refine ⟨fun h y => (ContinuousLinearMap.apply 𝕜 F y).continuous.comp_continuousOn h, fun h => ?_⟩
-  let d := finrank 𝕜 E
-  have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
-  let e₁ : E ≃L[𝕜] Fin d → 𝕜 := ContinuousLinearEquiv.ofFinrankEq hd
-  let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
-    (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← f.id_comp, ← e₂.symm_comp_self]
-  exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
+    {f : X → E →L[𝕜] F} {s : Set X} :
+    ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x ↦ f x y) s := by
+  simp_rw [ContinuousOn, continuousWithinAt_clm_apply, imp_forall_iff]
+  exact forall_comm
+
+/-- A family of continuous linear maps is continuous at a point iff all its applications are. -/
+theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] F} {x : X} :
+    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q ↦ f q y) x := by
+  simp_rw [← continuousWithinAt_univ, continuousWithinAt_clm_apply]
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by
