@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 
@@ -23,16 +24,189 @@ which will be used in the definition of homotopy groups of Kan complexes.
 
 universe u
 
-open CategoryTheory Simplicial
+open HomotopicalAlgebra CategoryTheory Simplicial Limits
+
 namespace SSet
 
-lemma horn.exists_desc
-    {n : ℕ} {i : Fin (n + 3)} {X : SSet.{u}} (f : ({i}ᶜ : Set _) → ((Δ[n + 1] : SSet) ⟶ X))
-    (hf : ∀ (j k : ({i}ᶜ : Set _)) (hjk : j.1 < k.1),
-      stdSimplex.δ (k.1.pred (Fin.ne_zero_of_lt hjk)) ≫ f j =
-        stdSimplex.δ (j.1.castPred (Fin.ne_last_of_lt hjk)) ≫ f k) :
-    ∃ (φ : (Λ[n + 2, i] : SSet) ⟶ X), ∀ j, ι i j.1 j.2 ≫ φ = f j := by
-  sorry
+namespace stdSimplex
+
+lemma face_pair_compl_le₁ {n : ℕ} (i j : Fin (n + 1)) : face {i, j}ᶜ ≤ face {i}ᶜ := by
+  simp [face_le_face_iff]
+
+lemma face_pair_compl_le₂ {n : ℕ} (i j : Fin (n + 1)) : face {i, j}ᶜ ≤ face {j}ᶜ := by
+  simp [face_le_face_iff]
+
+@[simps! apply]
+noncomputable def _root_.Finset.orderIsoOfOrderEmbedding
+    {α β : Type*} [Preorder α] [Preorder β] [DecidableEq β] [Fintype α]
+    (f : α ↪o β) (S : Finset β) (hS : Finset.image f ⊤ = S) : α ≃o S where
+  toEquiv := Equiv.ofBijective (f := fun a ↦ ⟨f a, by simp [← hS]⟩)
+    ⟨fun _ _ _ ↦ by aesop, fun _ ↦ by aesop⟩
+  map_rel_iff' := by simp
+
+noncomputable def _root_.Fin.orderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j) :
+    Fin n ≃o ({i, j}ᶜ : Finset _) :=
+  let φ :=
+    (Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+      (Fin.succAboveOrderEmb j)
+  Finset.orderIsoOfOrderEmbedding φ _ (by
+    refine Finset.eq_of_subset_of_card_le (fun k hk ↦ ?_) ?_
+    · simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at hk
+      obtain ⟨k, rfl⟩ := hk
+      obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
+      dsimp [φ]
+      simp only [Finset.compl_insert, Finset.mem_erase, ne_eq, Finset.mem_compl,
+        Finset.mem_singleton, Fin.succAbove_ne, not_false_eq_true, and_true]
+      grind [Fin.succAbove]
+    · rw [Finset.card_image_of_injective _ φ.injective,
+        Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
+        ← Nat.add_le_add_iff_right (n := Finset.card {i, j}),
+        Finset.card_compl_add_card, Finset.card_pair h.ne, Fintype.card_fin])
+
+noncomputable def facePairComplIso {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    Δ[n] ≅ (face {i, j}ᶜ : SSet.{u}) :=
+  isoOfRepresentableBy (faceRepresentableBy _ _ (Fin.orderIsoPairCompl i j h))
+
+@[reassoc]
+lemma facePairComplIso_hom_ι {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    (facePairComplIso.{u} i j h).hom ≫ (face {i, j}ᶜ).ι =
+      stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) ≫ stdSimplex.δ j :=
+  rfl
+
+@[reassoc]
+lemma facePairComplIso_hom_ι' {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    (facePairComplIso.{u} i j h).hom ≫ (face {i, j}ᶜ).ι =
+      stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) ≫ stdSimplex.δ i := by
+  rw [facePairComplIso_hom_ι]
+  obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
+  obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (Fin.ne_zero_of_lt h)
+  dsimp
+  rw [Fin.pred_succ, stdSimplex.δ_comp_δ (by grind)]
+
+@[reassoc]
+lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_pred {n : ℕ}
+    (i j : Fin (n + 3)) (h : i < j) :
+    Subcomplex.homOfLE (face_pair_compl_le₁ i j) ≫
+      (faceSingletonComplIso.{u} i).inv =
+        (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
+  rw [← cancel_mono (faceSingletonComplIso i).hom,
+    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom]
+  simp [facePairComplIso_hom_ι']
+
+@[reassoc]
+lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_castPred
+    {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    Subcomplex.homOfLE (face_pair_compl_le₂ i j) ≫
+      (faceSingletonComplIso.{u} j).inv =
+        (facePairComplIso i j h).inv ≫
+          stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
+  rw [← cancel_mono (faceSingletonComplIso j).hom,
+    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom]
+  simp [facePairComplIso_hom_ι]
+
+end stdSimplex
+
+namespace horn
+
+variable {X : SSet.{u}} {n : ℕ}
+
+protected def IsCompatible
+    {i : Fin (n + 2)} (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X) : Prop := by
+  match n with
+  | 0 => exact True
+  | n + 1 => exact ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
+      stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+      stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk
+
+@[simp]
+lemma isCompatible_iff_true {i : Fin 2} (f : ∀ (j : Fin 2) (_ : j ≠ i), (Δ[0] : SSet) ⟶ X) :
+    horn.IsCompatible f ↔ True := Iff.rfl
+
+@[simp]
+lemma isCompatible_iff
+    {i : Fin (n + 3)} (f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (Δ[n + 1] : SSet) ⟶ X) :
+    horn.IsCompatible f ↔
+    ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
+      stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+      stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk := Iff.rfl
+
+namespace IsCompatible
+variable {X : SSet.{u}} {n : ℕ}
+
+lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (Δ[n + 1] : SSet) ⟶ X}
+    (hf : horn.IsCompatible f)
+    (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k) :
+    stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+    stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk :=
+  hf j k hj hk hjk
+
+variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
+
+open stdSimplex in
+def multicofork (hf : horn.IsCompatible f) :
+    Multicofork ((multicoequalizerDiagram i).multispanIndex.toLinearOrder.map
+      (Subcomplex.toSSetFunctor)) :=
+  Multicofork.ofπ _ X (fun ⟨j, hj⟩ ↦ (stdSimplex.faceSingletonComplIso j).inv ≫ f j hj) (by
+    obtain _ | n := n
+    · rintro ⟨⟨a, b⟩, hab⟩
+      grind
+    · rintro ⟨⟨⟨a, ha⟩, ⟨b, hb⟩⟩, hab : a < b⟩
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at ha hb
+      dsimp
+      rw [homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_pred_assoc _ _ hab,
+        homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_castPred_assoc _ _ hab,
+        hf.δ_pred_comp _ _ _ _ hab])
+
+lemma exists_desc (hf : horn.IsCompatible f) :
+    ∃ (φ : (Λ[n + 1, i] : SSet) ⟶ X),
+      ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ φ = f j hj :=
+  ⟨(horn.isColimit.{u} i).desc hf.multicofork, fun j hj ↦ by
+    rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).inv]
+    simpa using (horn.isColimit.{u} i).fac hf.multicofork (.right ⟨j, hj⟩)⟩
+
+@[no_expose]
+noncomputable def desc (hf : horn.IsCompatible f) :
+    (Λ[n + 1, i] : SSet) ⟶ X :=
+  hf.exists_desc.choose
+
+@[reassoc (attr := simp)]
+lemma ι_desc (hf : horn.IsCompatible f) (j : Fin (n + 2))
+    (hj : j ≠ i) :
+    horn.ι i j hj ≫ hf.desc = f j hj :=
+  hf.exists_desc.choose_spec j hj
+
+open modelCategoryQuillen in
+lemma exists_lift (hf : horn.IsCompatible f) {Y : SSet.{u}} (p : X ⟶ Y) [Fibration p]
+    (b : Δ[n + 1] ⟶ Y)
+    (comm : ∀ (j : Fin (n + 2)) (hj : j ≠ i), f j hj ≫ p = stdSimplex.δ j ≫ b) :
+    ∃ (φ : Δ[n + 1] ⟶ X),
+      (∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj) ∧
+      φ ≫ p = b := by
+  have sq : CommSq hf.desc Λ[n + 1, i].ι p b :=
+    ⟨horn.hom_ext' (fun j hj ↦ by simpa using comm j hj)⟩
+  refine ⟨sq.lift, fun j hj ↦ by simp [← ι_ι_assoc i j hj], by simp⟩
+
+lemma exists_lift_of_kanComplex [KanComplex X]
+    (hf : horn.IsCompatible f) :
+    ∃ (φ : Δ[n + 1] ⟶ X),
+      ∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj := by
+  obtain ⟨φ, hφ, _⟩ := hf.exists_lift (terminal.from _) (terminal.from _) (by simp)
+  exact ⟨φ, hφ⟩
+
+@[no_expose]
+noncomputable def lift [KanComplex X] (hf : horn.IsCompatible f) :
+    Δ[n + 1] ⟶ X :=
+  hf.exists_lift_of_kanComplex.choose
+
+@[reassoc]
+lemma δ_lift [KanComplex X] (hf : horn.IsCompatible f)
+    (j : Fin (n + 2)) (hj : j ≠ i := by grind) :
+    stdSimplex.δ j ≫ hf.lift = f j hj :=
+  hf.exists_lift_of_kanComplex.choose_spec j hj
+
+end IsCompatible
+
+end horn
 
 variable (X : SSet.{u})
 
@@ -204,51 +378,94 @@ variable {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i 
 
 namespace assocAux
 
-def α (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3)))) : Δ[n + 1] ⟶ X :=
-  if j.1 = i.castSucc.castSucc.castSucc then h₁₃.map else
-    if j.1 = i.castSucc.succ.succ then h.map else
-      if j.1 = i.succ.succ.succ then h₀₂.map else
+def α (j : Fin (n + 3)) (_ : j ≠ i.castSucc.castSucc.succ := by grind) :
+    Δ[n + 1] ⟶ X :=
+  if j = i.castSucc.castSucc.castSucc then h₁₃.map else
+    if j = i.castSucc.succ.succ then h.map else
+      if j = i.succ.succ.succ then h₀₂.map else
         const x
 
-lemma α_of_lt (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3))))
-    (hj : j.val < i.castSucc.castSucc.castSucc) :
+lemma α_of_lt (j : Fin (n + 3)) (hj : j < i.castSucc.castSucc.castSucc := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
 
-lemma α_of_gt (j : ({i.castSucc.castSucc.succ}ᶜ : Set (Fin (n + 3))))
-    (hj : i.succ.succ.succ < j.val) :
+lemma α_of_gt (j : Fin (n + 3)) (hj : i.succ.succ.succ < j := by grind) :
     α h₀₂ h₁₃ h j = const x := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
 
 @[simp]
 lemma α_castSucc_castSucc_castSucc :
-    α h₀₂ h₁₃ h ⟨i.castSucc.castSucc.castSucc, by grind⟩ = h₁₃.map := by
+    α h₀₂ h₁₃ h i.castSucc.castSucc.castSucc = h₁₃.map := by
   simp [α]
 
 @[simp]
 lemma α_castSucc_succ_succ :
-    α h₀₂ h₁₃ h ⟨i.castSucc.succ.succ, by grind⟩ = h.map := by
+    α h₀₂ h₁₃ h (i.castSucc.succ.succ) = h.map := by
   dsimp [α]
   rw [if_neg (by grind), if_pos (by simp)]
 
 @[simp]
 lemma α_succ_succ_succ :
-    α h₀₂ h₁₃ h ⟨i.succ.succ.succ, by grind⟩ = h₀₂.map := by
+    α h₀₂ h₁₃ h i.succ.succ.succ = h₀₂.map := by
   dsimp [α]
   rw [if_neg (by grind), if_neg (by grind), if_pos (by simp)]
 
-lemma exists_desc : ∃ (β : (Λ[n + 2, i.castSucc.castSucc.succ] : SSet) ⟶ X),
-    ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
-      horn.ι _ j hj ≫ β = assocAux.α h₀₂ h₁₃ h ⟨j, hj⟩ := by
-  sorry
+lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j hj) := by
+  rw [horn.isCompatible_iff]
+  intro j k hj hk hjk
+  obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hjk)
+  obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hjk)
+  simp only [Fin.pred_succ, Fin.castPred_castSucc]
+  simp only [Fin.castSucc_lt_succ_iff] at hjk
+  by_cases! hj' : j < i.castSucc.castSucc
+  · rw [α_of_lt _ _ _ _ (by simpa), comp_const]
+    obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hj')
+    by_cases! hk : k.succ < i.castSucc.castSucc.castSucc
+    · simp [α_of_lt _ _ _ _ hk]
+    · obtain hk | hk := hk.eq_or_lt
+      · simp only [← hk, α_castSucc_castSucc_castSucc]
+        rwa [h₁₃.δ_map_of_lt]
+      · simp only [Fin.castSucc_lt_succ_iff] at hk
+        obtain rfl | hk := hk.eq_or_lt
+        · rw [α_of_lt, comp_const]
+        · rw [Fin.castSucc_lt_iff_succ_le] at hk
+          · obtain rfl | hk := hk.eq_or_lt
+            · rw [α_castSucc_succ_succ, h.δ_map_of_lt _ (by grind)]
+            · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hk
+              obtain rfl | hk := hk.eq_or_lt
+              · rw [α_succ_succ_succ, h₀₂.δ_map_of_lt _ (by grind)]
+              · rw [α_of_gt .., comp_const]
+  · obtain rfl | hj' := hj'.eq_or_lt
+    · rw [α_castSucc_castSucc_castSucc]
+      replace hjk := hjk.lt_of_ne' (by simpa using hk)
+      rw [Fin.castSucc_lt_iff_succ_le] at hjk
+      obtain rfl | hjk := hjk.eq_or_lt
+      · simp
+      · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hjk
+        obtain rfl | hjk := hjk.eq_or_lt
+        · simp
+        · rw [h₁₃.δ_map_of_gt _ hjk, α_of_gt .., comp_const]
+    · rw [Fin.castSucc_lt_iff_succ_le] at hj'
+      replace hj' := hj'.lt_of_ne (by grind)
+      rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hj'
+      obtain rfl | hj' := hj'.eq_or_lt
+      · simp only [Fin.castSucc_succ, α_castSucc_succ_succ]
+        obtain rfl | hjk := hjk.eq_or_lt
+        · simp
+        · rw [h.δ_map_of_gt _ hjk, α_of_gt .., comp_const]
+      · rw [← Fin.succ_le_castSucc_iff] at hj'
+        obtain hj' | hj' := hj'.eq_or_lt
+        · simp only [← hj', α_succ_succ_succ]
+          rw [h₀₂.δ_map_of_gt _ (by grind), α_of_gt .., comp_const]
+        · rw [α_of_gt .., α_of_gt .., comp_const, comp_const]
 
 end assocAux
 
 def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
     (hφ : ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
-      stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h ⟨j, hj⟩) :
+      stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h j hj) :
     MulStruct f₀₂ f₂₃ f₀₃ i where
   map := stdSimplex.δ i.castSucc.castSucc.succ ≫ φ
   δ_castSucc_castSucc_map := by
@@ -273,11 +490,11 @@ def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
 
 variable [KanComplex X]
 
-noncomputable def assoc : MulStruct f₀₂ f₂₃ f₀₃ i := by
-  sorry
+noncomputable def assoc : MulStruct f₀₂ f₂₃ f₀₃ i :=
+  assocAux h₀₂ h₁₃ h (assocAux.isCompatible_α h₀₂ h₁₃ h).lift
+    (fun j hj ↦ (assocAux.isCompatible_α h₀₂ h₁₃ h).δ_lift j hj)
 
 end
-
 
 end MulStruct
 

@@ -151,6 +151,14 @@ noncomputable def isColimit :
       Subcomplex.toSSetFunctor) :=
   (multicoequalizerDiagram i).isColimit'
 
+lemma hom_ext' {X : SSet.{u}} {i : Fin (n + 2)}
+    {f g : (Λ[n + 1, i] : SSet) ⟶ X}
+    (h : ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ f = horn.ι i j hj ≫ g) :
+    f = g := by
+  refine Multicofork.IsColimit.hom_ext  (isColimit i) (fun ⟨j, hj⟩ ↦ ?_)
+  simpa only [faceSingletonComplIso_inv_ι_assoc] using
+    (stdSimplex.faceSingletonComplIso j).inv ≫= h j hj
+
 end horn
 
 namespace horn₃₁
