@@ -85,7 +85,7 @@ instance : CompactSpace (T.CompleteType α) := by
       rw [← Filter.biInter_finset_mem x] at this
       obtain ⟨T, T_inter⟩ := F.neBot.nonempty_of_mem this
       have subset : (x : Set _) ⊆ T.toTheory := by rwa [Set.mem_iInter₂] at T_inter
-      exact Theory.IsSatisfiable.mono T.isMaximal'.1 subset
+      exact T.isMaximal.1.mono subset
     · intro φ
       simp only [mem_setOf_eq, typesWith_not]
       exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
