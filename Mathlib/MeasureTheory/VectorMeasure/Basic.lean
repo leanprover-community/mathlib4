@@ -46,10 +46,9 @@ vector measure, signed measure, complex measure
 
 @[expose] public section
 
-
 noncomputable section
 
-open NNReal ENNReal Filter
+open NNReal ENNReal Filter CompleteLinearOrderedAddCommMonoidWithTop
 
 open scoped Topology Function -- required for scoped `on` notation
 namespace MeasureTheory
@@ -474,7 +473,7 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' _ hf₁ hf₂ := by
-    rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
+    rw [Summable.hasSum_iff summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
 

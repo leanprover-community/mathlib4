@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
-
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -50,6 +50,9 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
   protected top_add' (x : α) : ⊤ + x = ⊤
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
+
+class CompleteLinearOrderedAddCommMonoidWithTop (E : Type*) extends
+    LinearOrderedAddCommMonoidWithTop E, CompleteLinearOrder E
 
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}

@@ -25,10 +25,7 @@ measure, mutually singular
 
 @[expose] public section
 
-
-open Set
-
-open MeasureTheory NNReal ENNReal Filter
+open Set MeasureTheory NNReal ENNReal Filter CompleteLinearOrderedAddCommMonoidWithTop
 
 namespace MeasureTheory
 
@@ -198,8 +195,8 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
   · rw [compl_iInter, (by simp [ENNReal.tsum_mul_left, mul_comm] :
       2 * (ε : ℝ≥0∞) = ∑' (n : ℕ), ε * (1 / 2 : ℝ≥0∞) ^ n)]
     refine (measure_iUnion_le _).trans ?_
-    exact ENNReal.summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
-      ENNReal.summable
+    exact summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
+      summable
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
