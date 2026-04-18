@@ -183,7 +183,7 @@ for example:
 - `A₂ / B₂ = h + ρ₀ + ρ₀ * ρ₁`
 - `Aₙ / Bₙ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂ + ... + ρ₀ * ρ₁ * ρ₂ * ... * ρₙ₋₁`
 -/
-theorem euler_convs {h : K} {ρ : Stream'.Seq K} :
+theorem euler_convs :
     (Euler h ρ).convs n =
       h + ∑ i ∈ Finset.range n, ∏ j ∈ Finset.range (i + 1), (ρ.get? j).getD 0 := by
   rw [convs, euler_dens, euler_nums, div_one]
