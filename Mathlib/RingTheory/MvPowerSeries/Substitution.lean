@@ -363,7 +363,7 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
     ← coeff_map, Finsupp.prod]
 
 lemma subst_zero_of_constantCoeff_zero {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
-    f.subst (0 : σ → MvPowerSeries τ R) = 0 := by
+    f.subst (0 : σ → MvPowerSeries τ S) = 0 := by
   ext n
   rw [coeff_subst (by simp [hasSubst_def]), coeff_zero, finsum_eq_zero_of_forall_eq_zero]
   intro d

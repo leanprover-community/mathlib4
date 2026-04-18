@@ -7,13 +7,14 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.Tactic.Ring.NamePowerVars
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
 
 /-! # Formal group laws over commutative ring
 
 Let `R` be a commutative ring, a one dimensional formal group law is a formal power series
 `F(X,Y) ∈ R⟦X,Y⟧` such that
-· `F(X,Y) = X + Y + higher order terms`.
-· `F(F(X,Y),Z) = F(X,F(Y,Z))`.
+* `F(X,Y) = X + Y + higher order terms`.
+* `F(F(X,Y),Z) = F(X,F(Y,Z))`.
 
 Under this definition, we can prove that `F(X,0) = X` and `F(0,X) = X`. Moreover, there is a
 unique power series `i(X)` such that `F(X, i(X)) = 0`, which is considered to be the inverse
@@ -313,5 +314,109 @@ instance : AddZeroClass (F.Point σ) where
   add_zero x := Subtype.ext (add_zero F x.prop)
 
 end FormalGroup
+
+section FormalGroupHom
+
+variable {F G : FormalGroup R}
+
+variable (F G) in
+/-- Let $F G$ be two formal group laws over commutative ring $R$. A homomorphism (over $R$)
+$F (X, Y) → G (X, Y)$ is a power series $α(X) = b_1 X + b_2 X ^ 2 + ⋯$ with coefficients
+in $R$ without constant term such that $α(F (X, Y)) = G (α (X), α (Y))$. -/
+@[ext]
+structure FormalGroupHom where
+  toPowerSeries : PowerSeries R
+  zero_constantCoeff : toPowerSeries.constantCoeff = 0
+  hom : toPowerSeries.subst F = G.toPowerSeries.subst (toPowerSeries.toMvPowerSeries ·)
+
+section FormalGroupIso
+
+variable (F G) in
+/-- The homomorphism $α(X) : F (X, Y) → G (X, Y)$ is an isomorphism if there exists a
+homomorphism $β(X) : G (X, Y) → F (X, Y)$ such that $α ∘ β = id$ and $β ∘ α = id$. -/
+@[ext]
+structure FormalGroupIso where
+  toHom : FormalGroupHom F G
+  invHom : FormalGroupHom G F
+  left_inv : toHom.toPowerSeries.subst ∘ (PowerSeries.subst invHom.toPowerSeries) = id
+  right_inv : invHom.toPowerSeries.subst ∘ (PowerSeries.subst toHom.toPowerSeries) = id
+
+@[simp]
+lemma FormalGroupIso.toHom_subst_invHom {α : FormalGroupIso F G} :
+    α.toHom.toPowerSeries.subst α.invHom.toPowerSeries = PowerSeries.X := by
+  symm
+  calc
+    _ = id PowerSeries.X := by rw [id]
+    _ = _ := by
+      rw [← α.left_inv, Function.comp_apply, PowerSeries.subst_X
+        <| PowerSeries.HasSubst.of_constantCoeff_zero' α.invHom.zero_constantCoeff]
+
+@[simp]
+lemma FormalGroupIso.invHom_subst_toHom {α : FormalGroupIso F G} :
+    α.invHom.toPowerSeries.subst α.toHom.toPowerSeries = PowerSeries.X := by
+  symm
+  calc
+    _ = id PowerSeries.X := by rw [id]
+    _ = _ := by
+      rw [← α.right_inv, Function.comp_apply, PowerSeries.subst_X
+        <| PowerSeries.HasSubst.of_constantCoeff_zero' α.toHom.zero_constantCoeff]
+
+/-- An isomorphism $α(X) : F (X, Y) → G (X, Y)$, $α(X) = a_1 X + a_2 X ^ 2 + ⋯$
+is called strict isomorphism if $a_1 = 1$. -/
+class FormalGroupIso.IsStrict (α : FormalGroupIso F G) : Prop where
+  coeff_one : α.toHom.toPowerSeries.coeff 1 = 1
+
+open PowerSeries HasSubst in
+theorem FormalGroupIso.ext_iff' {α β : FormalGroupIso F G} :
+    α = β ↔ α.toHom = β.toHom := by
+  rw [FormalGroupIso.ext_iff, and_iff_left_iff_imp]
+  intro h
+  rw [FormalGroupHom.ext_iff, ← (X_subst α.invHom.toPowerSeries), ← β.toHom_subst_invHom,
+    ← subst_comp_subst_apply (.of_constantCoeff_zero' (β.toHom.zero_constantCoeff))
+      (.of_constantCoeff_zero' (β.invHom.zero_constantCoeff)), ← h, α.invHom_subst_toHom,
+      subst_X (.of_constantCoeff_zero' (β.invHom.zero_constantCoeff))]
+
+end FormalGroupIso
+
+/-- Given a formal group homomorphism $f : F → G$ and `x : F.Point σ`, then we have a
+`f x : G.Point σ`. -/
+def FormalGroupHom.applyPoint (f : FormalGroupHom F G) (x : F.Point σ) : G.Point σ :=
+  ⟨f.toPowerSeries.subst x.val, isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff
+    x.prop.const (f.zero_constantCoeff ▸ IsNilpotent.zero)⟩
+
+@[simp]
+lemma FormalGroupHom.applyPoint_val (f : FormalGroupHom F G) (x : F.Point σ) :
+    (f.applyPoint x).val =  f.toPowerSeries.subst x.val := rfl
+
+/-- Corecion of a formal group homomorphism $f : F → G$ to a function from `F.Point σ` to
+`G.Point σ`. This instance enable us to use the notation `f x` for a `x : F.Point σ`. -/
+instance : CoeFun (FormalGroupHom F G) (fun _ ↦ {σ : Type*} → F.Point σ → G.Point σ) where
+  coe f := f.applyPoint
+
+lemma FormalGroupHom.map_add (f : FormalGroupHom F G) {x y : F.Point σ} :
+    f (x + y) = f x + f y := by
+  apply Subtype.ext
+  have : HasSubst ![x.val, y.val] := by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop]
+  calc
+    _ = (f.toPowerSeries.subst F.toPowerSeries).subst ![x.val, y.val] := by
+      simp [PowerSeries.subst, PowerSeries.subst, subst_comp_subst_apply, PowerSeries.HasSubst,
+        F.zero_constantCoeff, x.prop, y.prop, hasSubst_of_constantCoeff_nilpotent]
+      rfl
+    _ = _ := by
+      rw [f.hom, subst_comp_subst_apply
+        (PowerSeries.HasSubst.toMvPowerSeries f.zero_constantCoeff) this]
+      congr
+      ext s : 1
+      fin_cases s <;> simp [PowerSeries.toMvPowerSeries_val _ this]
+
+/-- A formal group homomorphism $f : F → G$ is a add monoid homomorphism from `F.Point σ` to
+`G.Point σ`. -/
+def FormalGroupHom.toAddMonoidHom (f : FormalGroupHom F G) :
+    F.Point σ →+ G.Point σ where
+  toFun := f.applyPoint
+  map_zero' := Subtype.ext <| PowerSeries.subst_zero f.zero_constantCoeff
+  map_add' _ _ := f.map_add
+
+end FormalGroupHom
 
 end
