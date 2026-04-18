@@ -89,7 +89,7 @@ instance : CompactSpace (T.CompleteType α) := by
     · intro φ
       simp only [mem_setOf_eq, typesWith_not]
       exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
-  · refine ⟨trivial, ?_⟩
+  · refine ⟨mem_univ _, ?_⟩
     · rw [nhds_generateFrom]
       apply le_iInf₂
       rintro _ ⟨hφ, φ, rfl⟩
