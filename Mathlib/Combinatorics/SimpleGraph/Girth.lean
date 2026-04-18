@@ -24,7 +24,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 @[expose] public section
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α β : Type*} {G : SimpleGraph α} {G' : SimpleGraph β}
 
 section egirth
 
@@ -66,6 +66,19 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
+lemma Iso.egirth_le (f : G ≃g G') : G'.egirth ≤ G.egirth := by
+  by_cases h : G.IsAcyclic
+  · simp [h.egirth_eq_top, (f.isAcyclic_iff.mp h).egirth_eq_top]
+  have h' : ¬G'.IsAcyclic := f.isAcyclic_iff.not.mp h
+  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
+  let w' := w.map f.toHom
+  have hw' : w'.IsCycle := hw.map f.toEquiv.injective
+  rw [hwl, ← w.length_map f.toHom]
+  apply egirth_le_length hw'
+
+lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
+  le_antisymm f.symm.egirth_le f.egirth_le
+
 end egirth
 
 section girth
@@ -101,6 +114,9 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
+  simp [girth, f.egirth_eq]
 
 end girth
 
