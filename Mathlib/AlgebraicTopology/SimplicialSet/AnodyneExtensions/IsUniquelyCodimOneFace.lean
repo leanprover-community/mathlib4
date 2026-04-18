@@ -105,6 +105,16 @@ lemma unique (f : ⦋d⦌ ⟶ ⦋d + 1⦌) [Mono f]
 end
 
 include hxy in
+lemma op : (S.opEquiv.symm x).IsUniquelyCodimOneFace (S.opEquiv.symm y) := by
+  obtain ⟨d, x, rfl⟩ := x.mk_surjective
+  obtain ⟨d', y, rfl⟩ := y.mk_surjective
+  obtain rfl : d' = d + 1 := hxy.dim_eq
+  simp only [opEquiv_symm_apply, iff]
+  refine ⟨(hxy.index rfl).rev, by simpa using hxy.δ_index rfl, fun i hi ↦ ?_⟩
+  obtain ⟨i, rfl⟩ := i.rev_surjective
+  simpa [← hxy.δ_eq_iff rfl] using hi
+
+include hxy in
 lemma of_iso {Y : SSet.{u}} (e : X ≅ Y) :
     (S.mk (e.hom.app _ x.simplex)).IsUniquelyCodimOneFace (S.mk (e.hom.app _ y.simplex)) := by
   obtain ⟨d, x, rfl⟩ := x.mk_surjective
