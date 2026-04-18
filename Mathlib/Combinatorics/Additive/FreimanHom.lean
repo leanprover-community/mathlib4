@@ -176,7 +176,7 @@ lemma IsMulFreimanIso.isMulFreimanIso_invFunOn (hf : IsMulFreimanIso n A B f) :
 @[to_additive] lemma IsMulFreimanHom.prod_apply (hf : IsMulFreimanHom n A B f) {s t : Finset α}
     {hsA : s.toSet ⊆ A} {htA : t.toSet ⊆ A}
     (hs : s.card = n) (ht : t.card = n) :
-    ∏ i ∈ s, i = ∏ i ∈ t, i → ∏ i in s, f i = ∏ i in t, f i := by
+    ∏ i ∈ s, i = ∏ i ∈ t, i → ∏ i ∈ s, f i = ∏ i ∈ t, f i := by
   simpa using hf.map_prod_eq_map_prod hsA htA hs ht
 
 
@@ -308,7 +308,8 @@ theorem card_eq_succ {α : Type*} {s : Multiset α} :
   match n with
   | 0 => by simpa
   | n + 1 => IsMulFreimanHom.mk hfAB fun s t hsA htA hs ht h => by
-      rw [← map_multiset_ne_zero_prod _ (by simp [hs]), h, map_multiset_ne_zero_prod _ (by simp [ht])]
+      rw [← map_multiset_ne_zero_prod _ (by rw [ne_eq, ← Multiset.card_eq_zero]; omega),
+          h, map_multiset_ne_zero_prod _ (by rw [ne_eq, ← Multiset.card_eq_zero]; omega)]
 
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
