@@ -148,24 +148,6 @@ number is the maximum of the absolute value of the numerator and the denominator
 We add the corresponding results for logarithmic heights.
 -/
 
--- There does not appear to be a natural home for the following lemma.
-/-- A version of Bézout's theorem for greatest common divisors over arbitrary `Finset`s. -/
-lemma Finset.gcd_eq_sum_mul {α R : Type*} [CommRing R] [IsBezout R] [NormalizedGCDMonoid R]
-    (s : Finset α) (f : α → R) :
-    ∃ g : α → R, s.gcd f = ∑ a ∈ s, f a * g a := by classical
-  induction s using Finset.induction with
-  | empty => simp
-  | insert a s ha ih =>
-    obtain ⟨x, y, hxy⟩ := IsBezout.gcd_eq_sum (f a) (s.gcd f)
-    obtain ⟨u, hu⟩ := IsBezout.associated_gcd_gcd R (x := f a) (y := s.gcd f)
-    rw [← hxy, add_mul, mul_comm x, mul_comm y, mul_assoc, mul_assoc] at hu
-    obtain ⟨g, hg⟩ := ih
-    conv => enter [1, g]; rw [gcd_insert, sum_insert ha, ← hu, hg]
-    refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
-    simp only [Function.update_self, add_right_inj, sum_mul, mul_assoc]
-    exact sum_congr rfl fun b hb ↦ congrArg (f b * ·) <|
-      (Function.update_of_ne (show b ≠ a by grind) (x * u) (g · * (y * u))).symm
-
 namespace Rat
 
 open NumberField Height
