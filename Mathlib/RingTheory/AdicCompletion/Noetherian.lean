@@ -70,6 +70,15 @@ lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
   exact isNoetherianRing_of_ringEquiv  _
      (Algebra.TensorProduct.quotIdealMapEquivQuotTensor (reesAlgebra I) I).symm.toRingEquiv
 
+open Polynomial
+
+lemma Polynomial.monimial_mem_reesAlgebra (i : ℕ) {r : R} (mem : r ∈ I ^ i) :
+    (monomial i) r ∈ reesAlgebra I := by
+  refine (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
+  by_cases eqi : n = i
+  · simpa [eqi]
+  · simp [coeff_monomial_of_ne _ eqi]
+
 lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
   refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
@@ -78,12 +87,8 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     | smul r hr m hm =>
       simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
     | add x hx y hy memx memy => simpa using add_mem memx memy
-  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → (Polynomial.monomial i) r ∈ reesAlgebra I := by
-      refine fun mem ↦ (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
-      by_cases eqi : n = i
-      · simpa [eqi]
-      · simp [Polynomial.coeff_monomial_of_ne _ eqi]
-    have mem (i : ℕ) := mem' i ((mem_reesAlgebra_iff I _).mp f.2 i)
+  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := fun mem ↦ monimial_mem_reesAlgebra I i mem
+    have mem (i : ℕ) := monimial_mem_reesAlgebra I i ((mem_reesAlgebra_iff I _).mp f.2 i)
     have : f = ∑ i ∈ f.1.support, ⟨(Polynomial.monomial i) (f.1.coeff i), mem i⟩ :=
       SetCoe.ext (by simpa using f.1.as_sum_support)
     rw [this]
