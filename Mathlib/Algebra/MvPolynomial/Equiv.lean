@@ -99,6 +99,8 @@ theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
 
+/-- The algebra isomorphism between multivariable polynomials in a single variable and
+polynomials over the ground ring. -/
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
 abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
 
