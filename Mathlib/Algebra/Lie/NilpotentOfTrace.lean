@@ -157,7 +157,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm 
     simpa only [map_sum, map_zero, map_smul, sq] using f.congr_arg this
   let fμ (i : I) : K := f ⟨μ i, hμ i⟩
   /- Defining `fμ i = f ⟨μ i, hμ i⟩`, we can restate our goal as `∑ i, fμ i * μ i = 0`. -/
-  suffices ∑ i, fμ i * μ i = 0 by simp [Subtype.ext_iff, fμ, ← this, Algebra.smul_def]
+  suffices ∑ i, fμ i * μ i = 0 by simp [Subtype.ext_iff, fμ, ← this, smul_def]
   /- We will do this by constructing endomorphism `y` such that `trace K M (φ x * y) = 0` and also
      `trace K M (φ x * y) = ∑ i, fμ i * μ i`. -/
   suffices ∃ y : End K M, trace K M (φ x * y) = 0 ∧ trace K M (φ x * y) = ∑ i, fμ i * μ i by grind
