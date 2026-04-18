@@ -636,19 +636,3 @@ theorem denseRange_algebraMap_pi [NumberField K] :
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
 
 end NumberField.InfinitePlace
-
-namespace Rat
-
-open NumberField InfinitePlace
-
--- @[simp]
--- This can be proved by `simp` using `NumberField.IsTotallyReal.mult_eq`,
--- which, however, is not visible here.
-lemma infinitePlace_mult_eq_one : infinitePlace.mult = 1 :=
-  mult_isReal ⟨infinitePlace, isReal_infinitePlace⟩
-
-lemma prod_infinitePlace {M : Type*} [CommMonoid M] (f : InfinitePlace ℚ → M) :
-    ∏ v : InfinitePlace ℚ, f v ^ v.mult = f infinitePlace := by
-  simp [Subsingleton.elim default infinitePlace, infinitePlace_mult_eq_one]
-
-end Rat

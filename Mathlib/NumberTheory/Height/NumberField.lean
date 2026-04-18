@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
 import Mathlib.NumberTheory.Height.MvPolynomial
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 /-!
 # Heights over number fields
@@ -187,14 +188,15 @@ lemma mulHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι]
     mulHeight (((↑) : ℤ →  ℚ) ∘ x) = ⨆ i, |x i| := by
   have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
     contrapose! hx
-    replace hx : x = 0 := by ext i; simpa using funext_iff.mp hx i
+    rw [Function.comp_eq_zero_iff x intCast_injective Rat.intCast_zero] at hx
     rw [hx, Finset.gcd_eq_zero_iff.mpr (by simp)]
-    simp
-  simp_rw [NumberField.mulHeight_eq hx₀, Function.comp_apply, infinitePlace_apply, ← Int.cast_abs,
-    cast_intCast, prod_infinitePlace,
-    finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), mul_one]
-  exact (Monotone.map_ciSup_of_continuousAt continuous_of_discreteTopology.continuousAt
-    Int.cast_mono (Finite.bddAbove_range _)).symm
+    exact zero_ne_one
+  have : ⨆ i, (↑|x i| : ℝ) = ↑(⨆ i, |x i|) :=
+    (Monotone.map_ciSup_of_continuousAt continuous_of_discreteTopology.continuousAt
+      (Int.cast_mono (R := ℝ)) (Finite.bddAbove_range _)).symm
+  simp_rw [NumberField.mulHeight_eq hx₀, Function.comp_apply, infinitePlace_apply, ← Int.cast_abs]
+  simp [-Int.cast_abs,
+    finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), this]
 
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
 is the maximum of the absolute values of the entries. This version is in terms of a subtype. -/
