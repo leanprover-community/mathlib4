@@ -10,6 +10,10 @@ import Batteries.Data.MLList.Basic
 import Batteries.Data.RBMap.Basic
 import Batteries.Data.DList.Basic
 
+/-!
+# Upstream attributes for `@[informal]`
+-/
+
 -- Generated with `#imported_informal?` after importing `Lean`, `Batteries`, `Std`
 attribute [informal "array"] Array
 attribute [informal "integer"] Int
