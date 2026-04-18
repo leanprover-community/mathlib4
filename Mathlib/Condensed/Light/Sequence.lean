@@ -27,12 +27,12 @@ section
 
 variable {X Y : LightProfinite} (y : Y) (f : X ⟶ Y)
 
-def fibre : LightProfinite :=
+def LightProfinite.fibre : LightProfinite :=
   haveI : CompactSpace (f ⁻¹' {y}) :=
     isCompact_iff_compactSpace.mp (IsClosed.preimage (by fun_prop) isClosed_singleton).isCompact
   of (f ⁻¹' {y})
 
-def fibre_incl : fibre y f ⟶ X := ⟨⟨{ toFun := Subtype.val }⟩⟩
+def LightProfinite.fibreIncl : fibre y f ⟶ X := ⟨⟨{ toFun := Subtype.val }⟩⟩
 
 end
 
@@ -189,8 +189,8 @@ are effective, it does so if the two maps `pullback π π → T → S ⊗ N∪{�
 are equal. This can be checked by precomposing with an epimorphism,
 which is given by this morphism. -/
 def cover {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) :
-    (of _ (T ⊕ (pullback (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
-      (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
+    (of _ (T ⊕ (pullback (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
+      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
   toFun := coverToFun _ _
   continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩⟩
 
@@ -205,14 +205,18 @@ using the retraction `r_inf`. -/
 noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞})
     [Epi ((lightProfiniteToLightCondSet ⋙ free R).map <| cover π)]
     (g : ((lightProfiniteToLightCondSet ⋙ free R).obj T) ⟶ X)
-    (r_inf : T ⟶ (fibre ∞ (π ≫ snd _ _))) (σ : S ⟶ (fibre ∞ (π ≫ snd _ _)))
-    (hr : fibre_incl ∞ (π ≫ snd _ _) ≫ r_inf = 𝟙 (fibre ∞ (π ≫ snd _ _))) :
+    (r_inf : T ⟶ (LightProfinite.fibre ∞ (π ≫ snd _ _)))
+    (σ : S ⟶ (LightProfinite.fibre ∞ (π ≫ snd _ _)))
+    (hr : LightProfinite.fibreIncl ∞ (π ≫ snd _ _) ≫ r_inf =
+      𝟙 (LightProfinite.fibre ∞ (π ≫ snd _ _))) :
     Cocone ((parallelPair (lightProfiniteToLightCondSet.map (CompHausLike.pullback.fst π π))
       (lightProfiniteToLightCondSet.map (pullback.snd π π))) ⋙ free R) := by
   refine Cocone.ofCofork (Cofork.ofπ (g -
-    (lightProfiniteToLightCondSet ⋙ free R).map (r_inf ≫ fibre_incl ∞ (π ≫ snd _ _)) ≫ g +
     (lightProfiniteToLightCondSet ⋙ free R).map
-      (r_inf ≫ fibre_incl ∞ (π ≫ snd _ _) ≫ π ≫ fst _ _ ≫ σ ≫ fibre_incl ∞ (π ≫ snd _ _)) ≫ g) ?_)
+      (r_inf ≫ LightProfinite.fibreIncl ∞ (π ≫ snd _ _)) ≫ g +
+    (lightProfiniteToLightCondSet ⋙ free R).map
+      (r_inf ≫ LightProfinite.fibreIncl ∞ (π ≫ snd _ _) ≫ π ≫ fst _ _ ≫ σ ≫
+        LightProfinite.fibreIncl ∞ (π ≫ snd _ _)) ≫ g) ?_)
   rw [← cancel_epi ((lightProfiniteToLightCondSet ⋙ free R).map <| cover π)]
   apply (isColimitOfPreserves (lightProfiniteToLightCondSet ⋙ free R)
       (coproductIsColimit _ _)).hom_ext
@@ -225,8 +229,9 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
       Preadditive.comp_add, Preadditive.comp_sub, ← map_comp_assoc, parallelPair_map_right]
     have : cover π = (BinaryCofan.IsColimit.desc' (coproductIsColimit _ _)
         (CompHausLike.pullback.lift _ _ (𝟙 T) (𝟙 T) (by simp))
-        (CompHausLike.pullback.lift _ _ ((CompHausLike.pullback.fst _ _) ≫ fibre_incl _ _)
-          ((pullback.snd _ _) ≫ fibre_incl _ _)
+        (CompHausLike.pullback.lift _ _
+          ((CompHausLike.pullback.fst _ _) ≫ LightProfinite.fibreIncl _ _)
+          ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
           (by simp [pullback.condition]))).val := rfl
     -- simp? [this, ← Functor.map_comp] says:
     simp only [this, pair_obj_left, const_obj_obj, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
@@ -251,17 +256,17 @@ where every map is epi. The map `(π ≫ Prod.snd) ⁻¹' ∞ ⟶ T' ⟶ S' ⨯ 
 lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
     ∃ (S' T' : LightProfinite) (y' : S' ⟶ S) (π' : T' ⟶ S' ⊗ ℕ∪{∞}) (g' : T' ⟶ T),
       Epi π' ∧ Epi y' ∧ π' ≫ (y' ▷ ℕ∪{∞}) = g' ≫ π ∧
-        IsSplitEpi (fibre_incl ∞ (π' ≫ snd S' ℕ∪{∞}) ≫ π' ≫ fst S' ℕ∪{∞}) ∧
+        IsSplitEpi (LightProfinite.fibreIncl ∞ (π' ≫ snd S' ℕ∪{∞}) ≫ π' ≫ fst S' ℕ∪{∞}) ∧
           Epi (cover π') := by
   -- Construct the space `S'` space which has functions `σ'` we can plug into
   -- `fibres`.
   have := S'_compactSpace π (by fun_prop)
-  let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ fibre n (π ≫ snd _ _) :=
+  let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
     ⟨⟨{ toFun x := x.val n, continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩⟩
   let y' : LightProfinite.of (S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
   let π' := pullback.snd π (y' ▷ ℕ∪{∞})
   let σ' : ℕ∪{∞} → LightProfinite.of (S' π) → pullback π (y' ▷ ℕ∪{∞}) := fun n ↦
-    pullback.lift _ _ (S'π n ≫ fibre_incl _ _) (lift (𝟙 _) (const _ n)) <| by
+    pullback.lift _ _ (S'π n ≫ LightProfinite.fibreIncl _ _) (lift (𝟙 _) (const _ n)) <| by
       apply CartesianMonoidalCategory.hom_ext<;> ext x; exacts [x.prop n ∞, (x.val n).prop]
   have hσ (x : ℕ∪{∞}) (s : LightProfinite.of (S' π)) : (π' (σ' x s)).1 = s := rfl
   have hσ' (x : ℕ∪{∞}) (s : LightProfinite.of (S' π)) : (π' (σ' x s)).2 = x := rfl
@@ -310,14 +315,14 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
   by_cases hS' : Nonempty S'
   · -- First construct a splitting of the fibre inclusion using injectivity
     -- of light profinite sets.
-    have : Mono (fibre_incl ∞ (π' ≫ snd _ _)) := by
+    have : Mono (LightProfinite.fibreIncl ∞ (π' ≫ snd _ _)) := by
       rw [CompHausLike.mono_iff_injective]
       exact Subtype.val_injective
-    have : Nonempty (fibre ∞ (π' ≫ snd _ _)) := by
+    have : Nonempty (LightProfinite.fibre ∞ (π' ≫ snd _ _)) := by
       obtain ⟨x, hx⟩ := (.comp ((fun y ↦ ⟨(Nonempty.some inferInstance, y), rfl⟩))
         ((LightProfinite.epi_iff_surjective _).mp hπ') : ((snd S' ℕ∪{∞}) ∘ π').Surjective) ∞
       exact ⟨x, by simpa using hx⟩
-    obtain ⟨r_inf, hr⟩ := Injective.factors (𝟙 _) (fibre_incl ∞ (π' ≫ snd _ _))
+    obtain ⟨r_inf, hr⟩ := Injective.factors (𝟙 _) (LightProfinite.fibreIncl ∞ (π' ≫ snd _ _))
     let hπ'' : RegularEpi <| lightProfiniteToLightCondSet.map π' :=
       regularEpiOfEpi _
     have : EffectiveEpi π' := by
@@ -345,11 +350,13 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
     symm
     rw [sub_add, sub_eq_self, sub_eq_zero]
     simp only [Category.assoc]
-    have : fibre_incl ∞ (π' ≫ snd _ _) ≫ π' = fibre_incl ∞ (π' ≫ snd _ _) ≫ π' ≫ fst _ _ ≫
-        lift (𝟙 _) (const S' (∞ : ℕ∪{∞})) :=
+    have : LightProfinite.fibreIncl ∞ (π' ≫ snd _ _) ≫ π' =
+        LightProfinite.fibreIncl ∞ (π' ≫ snd _ _) ≫ π' ≫ fst _ _ ≫
+          lift (𝟙 _) (const S' (∞ : ℕ∪{∞})) :=
       CartesianMonoidalCategory.hom_ext _ _ rfl (by ext a; exact a.prop)
     rw [reassoc_of% this, reassoc_of% split.id]
   · have h : IsEmpty (S' ⊗ ℕ∪{∞}) := isEmpty_prod.mpr <| Or.inl <| by simpa using hS'
     have : IsIso π' := ⟨ConcreteCategory.ofHom ⟨(h.elim ·), continuous_of_const <| by aesop⟩,
       by ext x; exact h.elim (π' x), by ext x; all_goals exact h.elim x⟩
     exact ⟨(lightProfiniteToLightCondSet ⋙ free R).map (inv π' ≫ g') ≫ g, by grind⟩
+#lint
