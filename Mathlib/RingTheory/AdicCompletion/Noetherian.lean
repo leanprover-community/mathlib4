@@ -72,7 +72,34 @@ lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
 
 lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
-  sorry
+  refine ⟨fun h n ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Submodule.restrictScalars_mem R, ← Ideal.smul_top_eq_map] at h
+    induction h using Submodule.smul_induction_on' with
+    | smul r hr m hm =>
+      simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
+    | add x hx y hy memx memy => simpa using add_mem memx memy
+  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → (Polynomial.monomial i) r ∈ reesAlgebra I := by
+      refine fun mem ↦ (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
+      by_cases eqi : n = i
+      · simpa [eqi]
+      · simp [Polynomial.coeff_monomial_of_ne _ eqi]
+    have mem (i : ℕ) := mem' i ((mem_reesAlgebra_iff I _).mp f.2 i)
+    have : f = ∑ i ∈ f.1.support, ⟨(Polynomial.monomial i) (f.1.coeff i), mem i⟩ :=
+      SetCoe.ext (by simpa using f.1.as_sum_support)
+    rw [this]
+    apply sum_mem (fun i hi ↦ ?_)
+    have {r : R} (h' : r ∈ I * I ^ i) : ⟨(Polynomial.monomial i) r,mem' i (Ideal.mul_le_left h')⟩
+      ∈ I.map (algebraMap R (reesAlgebra I)) := by
+      induction h' using Submodule.mul_induction_on' with
+      | mem_mul_mem s hs t ht =>
+        have : ⟨(Polynomial.monomial i) (s * t), mem' i (Ideal.mul_mem_left _ s ht)⟩ =
+          s • (⟨(Polynomial.monomial i) t, mem' i ht⟩: reesAlgebra I) := by
+          simp [Polynomial.smul_monomial]
+        rw [this, Algebra.smul_def]
+        exact Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ hs)
+      | add s1 hs1 s2 hs2 mem1 mem2 => simpa using add_mem mem1 mem2
+    apply this
+    simpa [pow_succ'] using h i
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
