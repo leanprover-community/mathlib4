@@ -44,7 +44,7 @@ variable {α ι : Type*} [TopologicalSpace α]
 variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
 variable {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
 variable {E F Fᵤ G : Type*} [AddCommGroup E] [TopologicalSpace E]
-  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [AddCommGroup F] [TopologicalSpace F]
   [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [AddCommGroup Fᵤ] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
   [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ] [Module 𝕜₁ E] [Module 𝕜₂ F] [Module 𝕜₂ Fᵤ] [Module 𝕜₃ G]
@@ -66,6 +66,33 @@ notation:25 E " →SLₚₜ[" σ "] " F => PointwiseConvergenceCLM σ E F
 notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) E F
 
 namespace PointwiseConvergenceCLM
+
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
+convergence topology. -/
+def precomp [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
+    (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
+  toFun f := f.comp L
+  __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
+    {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
+
+@[simp]
+theorem precomp_apply_apply [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F)
+  (f : F →SLₚₜ[τ] G) (x : E) :
+  f.precomp L x = f.comp L x := rfl
+
+variable [IsTopologicalAddGroup F]
+
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
+convergence topology. -/
+def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G) :
+    (E →SLₚₜ[σ] F) →SL[τ] E →SLₚₜ[ρ] G where
+  toFun f := L.comp f
+  __ := ContinuousLinearMap.postcompUniformConvergenceCLM {(S : Set E) | Finite S} L
+
+@[simp]
+theorem postcomp_apply_apply [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G)
+  (f : E →SLₚₜ[σ] F) (x : E) :
+  f.postcomp L x = L.comp f x := rfl
 
 instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
   UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
@@ -93,34 +120,43 @@ protected theorem isUniformEmbedding_coeFn :
     (UniformConvergenceCLM.isUniformEmbedding_coeFn σ Fᵤ _)
 
 variable (σ E F) in
-protected theorem isEmbedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
+protected theorem isEmbedding_coeFn :
+    IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
   let _ : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   PointwiseConvergenceCLM.isUniformEmbedding_coeFn σ E F |>.isEmbedding
 
 /-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E` the map
 `a · x` converges to `a₀ x`. -/
-theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ] F} {a₀ : E →SLₚₜ[σ] F} :
+theorem tendsto_iff_forall_tendsto {p : Filter ι} {a : ι → E →SLₚₜ[σ] F}
+    {a₀ : E →SLₚₜ[σ] F} :
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ x : E, Filter.Tendsto (a · x) p (𝓝 (a₀ x)) := by
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).tendsto_nhds_iff, tendsto_pi_nhds]
 
-variable (σ E F) in
 /-- Coercion from `E →SLₚₜ[σ] F` to `E →ₛₗ[σ] F` as a `𝕜₂`-linear map. -/
-@[simps!]
 def coeLMₛₗ [ContinuousConstSMul 𝕜₂ F] : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] E →ₛₗ[σ] F :=
   ContinuousLinearMap.coeLMₛₗ σ
 
-variable (𝕜 E F) in
+@[simp]
+theorem coeLMₛₗ_apply_apply [ContinuousConstSMul 𝕜₂ F] (f : E →SLₚₜ[σ] F) (x : E) :
+  f.coeLMₛₗ x = f x := rfl
+
 /-- Coercion from `E →Lₚₜ[𝕜] F` to `E →ₗ[𝕜] F` as a `𝕜`-linear map. -/
-@[simps!]
 def coeLM [ContinuousConstSMul 𝕜 F] : (E →Lₚₜ[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F := ContinuousLinearMap.coeLM 𝕜
+
+@[simp]
+theorem coeLM_apply_apply [ContinuousConstSMul 𝕜 F] (f : E →Lₚₜ[𝕜] F) (x : E) :
+  f.coeLM x = f x := rfl
 
 variable (σ F) in
 /-- The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for `a : E` as a continuous linear map. -/
-@[simps!]
 def evalCLM [ContinuousConstSMul 𝕜₂ F] (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
-  toLinearMap := (coeLMₛₗ σ E F).flip a
+  toLinearMap := coeLMₛₗ.flip a
   cont := continuous_eval_const a
+
+@[simp]
+theorem evalCLM_apply_apply [ContinuousConstSMul 𝕜₂ F] (f : E →SLₚₜ[σ] F) (a : E) :
+  PointwiseConvergenceCLM.evalCLM σ F a f = f a := rfl
 
 /-- A map to `E →SLₚₜ[σ] F` is continuous if for every `x : E` the evaluation `g · x` is
 continuous. -/
@@ -128,41 +164,31 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
     (h : ∀ x, Continuous (g · x)) : Continuous g := by
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
 
-variable (G) in
-/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
-convergence topology. -/
-@[simps! apply]
-def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
-    (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
-  toFun f := f.comp L
-  __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
-    {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
-
-variable (E) in
-/-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
-convergence topology. -/
-@[simps! apply]
-def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G) :
-    (E →SLₚₜ[σ] F) →SL[τ] E →SLₚₜ[ρ] G where
-  toFun f := L.comp f
-  __ := ContinuousLinearMap.postcompUniformConvergenceCLM {(S : Set E) | Finite S} L
-
-variable (𝕜₂ σ E F) in
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
-@[simps!]
 def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
     [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
   __ := LinearMap.id
   cont := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
     (fun _ ↦ Set.Finite.isVonNBounded)
 
-variable (𝕜 E) in
+@[simp]
+theorem _root_.ContinuousLinearMap.toPointwiseConvergenceCLM_apply_apply [ContinuousSMul 𝕜₁ E]
+    [ContinuousConstSMul 𝕜₂ F] (f : E →SL[σ] F) (x : E) :
+    f.toPointwiseConvergenceCLM x = f x := rfl
+
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
-@[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
   continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)
+
+@[simp]
+theorem equivWeakDual_apply_apply (f : E →Lₚₜ[𝕜] 𝕜) (x : E) :
+  f.equivWeakDual x = f x := rfl
+
+@[simp]
+theorem equivWeakDual_symm_apply_apply (f : WeakDual 𝕜 E) (x : E) :
+  equivWeakDual.symm f x = f x := rfl
 
 end PointwiseConvergenceCLM

@@ -75,7 +75,7 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 set_option backward.privateInPublic true in
 /-- Every temperate growth measure defines a tempered distribution. -/
 def toTemperedDistribution : 𝓢'(E, ℂ) :=
-  toPointwiseConvergenceCLM _ _ _ _ (integralCLM ℂ μ)
+  (integralCLM ℂ μ).toPointwiseConvergenceCLM
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -94,7 +94,7 @@ set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
-  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+  integralCLM ℂ μ ∘L bilinLeftCLM (lsmul ℂ ℂ) hf |>.toPointwiseConvergenceCLM
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -109,18 +109,16 @@ section MeasurableSpace
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (E F) in
 /-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
-  toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
+  toFun f := integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f |>.toPointwiseConvergenceCLM
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
@@ -159,16 +157,16 @@ def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
   haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
   haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
-  toPointwiseConvergenceCLM _ _ _ _ <|
-    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
+  (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
+    |>.toPointwiseConvergenceCLM
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, ℂ)) :
     toTemperedDistribution f g = ∫ (x : E), g x • f x ∂μ := by
-  simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply, comp_apply _, toLpCLM_apply,
-    lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
+  simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply_apply, coe_comp',
+    Function.comp_apply, toLpCLM_apply, lpPairing_eq_integral, lsmul_flip_apply,
+    toSpanSingleton_apply]
   apply integral_congr_ae
   filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
   rw [hg]
@@ -186,7 +184,6 @@ theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0�
   filter_upwards [f.coeFn_toLp p μ] with x hf
   rw [hf]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
@@ -239,7 +236,7 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable (F) in
 /-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
 def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp _ (SchwartzMap.smulLeftCLM ℂ g)
+  PointwiseConvergenceCLM.precomp (SchwartzMap.smulLeftCLM ℂ g)
 
 @[simp]
 theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, ℂ)) :
@@ -250,12 +247,11 @@ theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, 
 theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
   ext1; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
     smulLeftCLM F g₂ (smulLeftCLM F g₁ f) = smulLeftCLM F (g₁ * g₂) f := by
-  ext; simp [hg₁, hg₂]
+  ext; simp [SchwartzMap.smulLeftCLM_smulLeftCLM_apply hg₁ hg₂]
 
 theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) :
@@ -295,7 +291,6 @@ open ENNReal MeasureTheory
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
   [CompleteSpace F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
 multiplication if the left factor is a function of temperate growth. -/
 theorem _root_.MeasureTheory.Lp.toTemperedDistribution_smul_eq {p q r : ℝ≥0∞} [p.HolderTriple q r]
@@ -306,7 +301,7 @@ theorem _root_.MeasureTheory.Lp.toTemperedDistribution_smul_eq {p q r : ℝ≥0�
   simp only [Lp.toTemperedDistribution_apply, smulLeftCLM_apply_apply]
   apply integral_congr_ae
   filter_upwards [Lp.coeFn_lpSMul (r := r) (hg₂.toLp _) f, hg₂.coeFn_toLp] with x hg hg'
-  simp [hg, hg', hg₁, smul_smul, mul_comm]
+  simp [hg, hg', u.smulLeftCLM_apply_apply hg₁, smul_smul, mul_comm]
 
 end Multiplication
 
@@ -319,7 +314,7 @@ variable [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable (F) in
 /-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
 def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
-  PointwiseConvergenceCLM.precomp F (-SchwartzMap.derivCLM ℂ ℂ)
+  PointwiseConvergenceCLM.precomp (-SchwartzMap.derivCLM ℂ ℂ)
 
 @[simp]
 theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
@@ -327,12 +322,11 @@ theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
     derivCLM F (f : 𝓢'(ℝ, F)) = SchwartzMap.derivCLM 𝕜 F f := by
   ext1 g
-  simp [integral_smul_deriv_right_eq_neg_left, integral_neg]
+  simpa [integral_neg] using (integral_smul_deriv_right_eq_neg_left g f).symm
 
 end deriv
 
@@ -345,25 +339,25 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [Norm
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+  lineDerivOp m f := PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
 
 @[simp]
 theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
     ∂_{m} f g = f (- ∂_{m} g) := rfl
 
 instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
   lineDerivOp_left_add x y f := by
     ext u
     simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
 
 instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
+  lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
 set_option backward.isDefEq.respectTransparency false in
 instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m :=
-    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
+    (PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
 
 set_option backward.isDefEq.respectTransparency false in
 instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
@@ -373,19 +367,18 @@ instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
 
 instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
-    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
+    (PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
 
 theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
-  PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
+  PointwiseConvergenceCLM.precomp (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
     ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
   ext1 g
-  simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
+  simpa [integral_neg] using (integral_smul_lineDerivOp_right_eq_neg_left (μ := μ) g f m).symm
 
 end lineDeriv
 
@@ -440,16 +433,16 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
-  fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))
+  fourier := PointwiseConvergenceCLM.precomp (fourierCLM ℂ 𝓢(E, ℂ))
 
 instance instFourierAdd : FourierAdd 𝓢'(E, F) 𝓢'(E, F) where
-  fourier_add := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).map_add
+  fourier_add := (PointwiseConvergenceCLM.precomp (fourierCLM ℂ 𝓢(E, ℂ))).map_add
 
 instance instFourierSMul : FourierSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
-  fourier_smul := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).map_smul
+  fourier_smul := (PointwiseConvergenceCLM.precomp (fourierCLM ℂ 𝓢(E, ℂ))).map_smul
 
 instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
-  continuous_fourier := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).cont
+  continuous_fourier := (PointwiseConvergenceCLM.precomp (fourierCLM ℂ 𝓢(E, ℂ))).cont
 
 @[simp]
 theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
@@ -464,16 +457,16 @@ alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
 alias fourierTransform_apply := fourier_apply
 
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))
+  fourierInv := PointwiseConvergenceCLM.precomp (fourierInvCLM ℂ 𝓢(E, ℂ))
 
 instance instFourierInvAdd : FourierInvAdd 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv_add := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).map_add
+  fourierInv_add := (PointwiseConvergenceCLM.precomp (fourierInvCLM ℂ 𝓢(E, ℂ))).map_add
 
 instance instFourierInvSMul : FourierInvSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv_smul := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).map_smul
+  fourierInv_smul := (PointwiseConvergenceCLM.precomp (fourierInvCLM ℂ 𝓢(E, ℂ))).map_smul
 
 instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F) where
-  continuous_fourierInv := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).cont
+  continuous_fourierInv := (PointwiseConvergenceCLM.precomp (fourierInvCLM ℂ 𝓢(E, ℂ))).cont
 
 @[simp]
 theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
@@ -568,8 +561,8 @@ variable [NormedSpace ℝ E]
 
 /-- The Dirac delta distribution -/
 def delta (x : E) : 𝓢'(E, ℂ) :=
-  toPointwiseConvergenceCLM _ _ _ _ <|
-    (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+  (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+    |>.toPointwiseConvergenceCLM
 
 @[deprecated (since := "2025-12-23")]
 noncomputable alias _root_.SchwartzMap.delta := delta
