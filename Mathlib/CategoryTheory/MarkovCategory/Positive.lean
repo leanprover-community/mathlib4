@@ -65,10 +65,6 @@ namespace PositiveCategory
 
 variable [PositiveCategory C] {X Y : C} {e : X ≅ Y}
 
-instance : Deterministic (e.hom ≫ e.inv) where
-
-instance : Deterministic (e.inv ≫ e.hom) where
-
 instance {X Y : C} {e : X ≅ Y} : Deterministic e.hom where
   hom_comul := by
     calc
