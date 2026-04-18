@@ -193,7 +193,15 @@ keys that lead to them, represented as a `Name`. The innermost key is the last c
 name. Not sure it's great to parse the whole file on every file load. -/
 initialize mathOverview : NameMap Name ← do
   initSearchPath (← findSysroot)
-  let file ← IO.FS.readFile <| (← IO.currentDir) / "docs" / "overview.json"
+  let some oleanSearchPath := (← IO.getEnv "LEAN_PATH").map System.SearchPath.parse
+    | throw (.userError "`LEAN_PATH` is not set.")
+  -- `*/mathlib4/.lake/build/lib/lean`. Fragile.
+  let some mathlibRoot := oleanSearchPath.findSome? fun p => do
+      let root ← (p.parent.bind (·.parent.bind (·.parent.bind (·.parent))))
+      guard <| root.fileName.isEqSome "mathlib4"
+      return root
+    | throw (.userError "Could not find `*/mathlib4` in `LEAN_PATH`.")
+  let file ← IO.FS.readFile <| mathlibRoot / "docs" / "overview.json"
   let json ← match Json.parse file with
     | .ok json => pure json
     | .error e => throw <| .userError e
