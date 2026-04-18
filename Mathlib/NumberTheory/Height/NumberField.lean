@@ -155,10 +155,11 @@ open NumberField Height
 
 section tuples
 
+variable {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
+
 /-- The term corresponding to a finite place in the definition of the multiplicative height
 of a tuple of rational numbers equals `1` if the tuple consists of coprime integers. -/
-lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) {ι : Type*}
-    [Fintype ι] [Nonempty ι] {x : ι → ℤ} (hx : Finset.univ.gcd x = 1) :
+lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Finset.univ.gcd x = 1) :
     ⨆ i, v (x i) = 1 := by
   have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
   have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one_of_isNonarchimedean hv
@@ -183,8 +184,7 @@ lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) {ι : Ty
 open AdmissibleAbsValues in
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
 is the maximum of the absolute values of the entries. -/
-lemma mulHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
-    (hx : Finset.univ.gcd x = 1) :
+lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
     mulHeight (((↑) : ℤ →  ℚ) ∘ x) = ⨆ i, |x i| := by
   have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
     contrapose! hx
@@ -200,16 +200,14 @@ lemma mulHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι]
 
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
 is the maximum of the absolute values of the entries. This version is in terms of a subtype. -/
-lemma mulHeight_eq_max_abs_of_gcd_eq_one' {ι : Type*} [Fintype ι] [Nonempty ι]
-    (x : { x : ι → ℤ // Finset.univ.gcd x = 1 }) :
+lemma mulHeight_eq_max_abs_of_gcd_eq_one' (x : { x : ι → ℤ // Finset.univ.gcd x = 1 }) :
     mulHeight (((↑) : ℤ →  ℚ) ∘ x.val) = ⨆ i, |x.val i| :=
   mulHeight_eq_max_abs_of_gcd_eq_one x.prop
 
 open Real in
 /-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
 is the logarithm of the maximum of the absolute values of the entries. -/
-lemma logHeight_eq_max_abs_of_gcd_eq_one {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
-    (hx : Finset.univ.gcd x = 1) :
+lemma logHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
     logHeight (((↑) : ℤ →  ℚ) ∘ x) = log ↑(⨆ i, |x i|) := by
   rw [logHeight_eq_log_mulHeight, mulHeight_eq_max_abs_of_gcd_eq_one hx]
 
