@@ -366,8 +366,14 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         have : ¬g.TerminatedAt n' :=
           (not_congr of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none).2 this
         exact Or.inr this
-    have determinant_eq : pA * B - pB * A = (-1) ^ n :=
-      (SimpContFract.of v).determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
+    have determinant_eq : pA * B - pB * A = (-1) ^ n := by
+      match hn : n with
+      | 0 => subst n; simp [pA, pB, A, B, pred_conts, conts]
+      | n' + 1 =>
+        subst n
+        simp only [succ_ne_zero, false_or] at n_eq_zero_or_not_terminatedAt_pred_n
+        rw [add_tsub_cancel_right] at n_eq_zero_or_not_terminatedAt_pred_n
+        exact (SimpContFract.of v).determinant n_eq_zero_or_not_terminatedAt_pred_n
     -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
