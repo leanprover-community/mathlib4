@@ -6,9 +6,11 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro, Elias Judin
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
+public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.MvPolynomial.Rename
 public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.Finsupp.Option
 public import Mathlib.Logic.Equiv.Fin.Basic
 
@@ -100,23 +102,6 @@ theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
 
-theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
-    (MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n =
-      coeff (Finsupp.single default n) P := by
-  induction P using MvPolynomial.induction_on' with
-  | monomial d r =>
-    rw [uniqueAlgEquiv_monomial]
-    by_cases hsingle : d = Finsupp.single default n
-    · subst hsingle
-      simp
-    · have hd : d default ≠ n := by
-        intro hd
-        apply hsingle
-        simpa [hd] using (Finsupp.unique_single d)
-      simp [Polynomial.coeff_monomial, hd, MvPolynomial.coeff_monomial, hsingle]
-  | add P Q hP hQ =>
-    simpa [MvPolynomial.uniqueAlgEquiv_apply] using congrArg₂ HAdd.hAdd hP hQ
-
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
 abbrev pUnitAlgEquiv := uniqueAlgEquiv (R := R) PUnit
 
@@ -128,7 +113,7 @@ theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
   uniqueAlgEquiv_monomial _
 
 set_option linter.deprecated false in
-@[deprecated uniqueAlgEquiv_monomial (since := "2026-04-15")]
+@[deprecated uniqueAlgEquiv_symm_monomial (since := "2026-04-15")]
 theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
     (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
       = MvPolynomial.monomial d r :=
@@ -139,14 +124,14 @@ section Map
 variable {R} (σ)
 
 /-- If `e : A ≃+* B` is an isomorphism of rings, then so is `map e`. -/
-@[simps apply]
 def mapEquiv [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂) :
     MvPolynomial σ S₁ ≃+* MvPolynomial σ S₂ :=
-  { map (e : S₁ →+* S₂) with
-    toFun := map (e : S₁ →+* S₂)
-    invFun := map (e.symm : S₂ →+* S₁)
-    left_inv := map_leftInverse e.left_inv
-    right_inv := map_rightInverse e.right_inv }
+  AddMonoidAlgebra.mapRingEquiv _ e
+
+@[simp]
+lemma mapEquiv_apply [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S₂)
+    (x : MvPolynomial σ S₁) :
+    mapEquiv σ e x = map e x := rfl
 
 @[simp]
 theorem mapEquiv_refl : mapEquiv σ (RingEquiv.refl R) = RingEquiv.refl _ :=
@@ -160,17 +145,19 @@ theorem mapEquiv_symm [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S�
 @[simp]
 theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S₃] (e : S₁ ≃+* S₂)
     (f : S₂ ≃+* S₃) : (mapEquiv σ e).trans (mapEquiv σ f) = mapEquiv σ (e.trans f) :=
-  RingEquiv.ext fun p => by
-    simp only [RingEquiv.coe_trans, comp_apply, mapEquiv_apply, RingEquiv.coe_ringHom_trans,
-      map_map]
+  (AddMonoidAlgebra.mapRingEquiv_trans _ _).symm
 
 variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
-@[simps apply]
 def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPolynomial σ A₂ :=
-  { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
+  AddMonoidAlgebra.mapAlgEquiv _ _ e
+
+@[simp]
+lemma mapAlgEquiv_apply (e : A₁ ≃ₐ[R] A₂) (x : MvPolynomial σ A₁) :
+    mapAlgEquiv σ e x = map e x :=
+  rfl
 
 @[simp]
 theorem mapAlgEquiv_refl : mapAlgEquiv σ (AlgEquiv.refl : A₁ ≃ₐ[R] A₁) = AlgEquiv.refl :=
@@ -182,10 +169,8 @@ theorem mapAlgEquiv_symm (e : A₁ ≃ₐ[R] A₂) : (mapAlgEquiv σ e).symm = m
 
 @[simp]
 theorem mapAlgEquiv_trans (e : A₁ ≃ₐ[R] A₂) (f : A₂ ≃ₐ[R] A₃) :
-    (mapAlgEquiv σ e).trans (mapAlgEquiv σ f) = mapAlgEquiv σ (e.trans f) := by
-  ext
-  simp only [AlgEquiv.trans_apply, mapAlgEquiv_apply, map_map]
-  rfl
+    (mapAlgEquiv σ e).trans (mapAlgEquiv σ f) = mapAlgEquiv σ (e.trans f) :=
+  (AddMonoidAlgebra.mapAlgEquiv_trans _ _).symm
 
 end Map
 
@@ -214,7 +199,6 @@ theorem eval₂_uniqueAlgEquiv_symm [Unique σ] {f : Polynomial R} {φ : R →+*
   rw [(eval₂_uniqueAlgEquiv (R := R) (σ := σ) (f := (MvPolynomial.uniqueAlgEquiv R σ).symm f)
     (φ := φ) (a := a)).symm]
   rw [AlgEquiv.apply_symm_apply]
-
 
 theorem eval₂_const_uniqueAlgEquiv_symm [Unique σ] {f : Polynomial R}
     {φ : R →+* S} {a : S} :
@@ -860,26 +844,18 @@ lemma Polynomial.toMvPolynomial_C (i : σ) (r : R) : (C r).toMvPolynomial i = Mv
 lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X (R := R) i := by
   simp [toMvPolynomial]
 
-lemma Polynomial.toMvPolynomial_eq_rename_comp_uniqueAlgEquiv {τ : Type*} [Unique τ]
-    (i : σ) (f : τ → σ) (hf : f default = i) :
-    toMvPolynomial (R := R) i =
-      (MvPolynomial.rename f).comp (MvPolynomial.uniqueAlgEquiv (R := R) (σ := τ)).symm := by
-  ext x
-  simp [Polynomial.toMvPolynomial, hf]
-
+set_option linter.deprecated false in
 lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
     toMvPolynomial (R := R) i =
-      (MvPolynomial.rename (fun _ : Fin 1 ↦ i)).comp
-        (MvPolynomial.uniqueAlgEquiv (R := R) (σ := Fin 1)).symm :=
-  toMvPolynomial_eq_rename_comp_uniqueAlgEquiv i (fun _ : Fin 1 ↦ i) rfl
+      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm := by
+  ext
+  simp
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
-  rw [toMvPolynomial_eq_rename_comp]
-  intro p q h
-  let f : Fin 1 → σ := fun _ ↦ i
-  refine (AlgEquiv.injective ((MvPolynomial.uniqueAlgEquiv (R := R) (σ := Fin 1)).symm)) ?_
-  exact MvPolynomial.rename_injective f (injective_of_subsingleton f) h
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp]
+  exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 
 @[simp]
 lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :

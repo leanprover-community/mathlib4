@@ -134,13 +134,11 @@ noncomputable def eval₂ : PowerSeries R → S :=
 
 @[simp]
 theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
-  let g : MvPolynomial Unit R := (MvPolynomial.uniqueAlgEquiv R Unit).symm f
-  have : f = MvPolynomial.uniqueAlgEquiv R Unit g := by
-    simp only [g, AlgEquiv.apply_symm_apply]
-  rw [this, PowerSeries.eval₂, ← MvPolynomial.toMvPowerSeries_uniqueAlgEquiv,
-    Polynomial.MvPowerSeries.uniqueAlgEquiv_unit]
-  rw [MvPolynomial.eval₂_const_uniqueAlgEquiv]
-  convert (MvPowerSeries.eval₂_coe (φ := φ) (a := fun _ : Unit ↦ a) g) using 1
+  let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
+  have : f = MvPolynomial.pUnitAlgEquiv R g := by
+    simp only [g, ← AlgEquiv.symm_apply_eq]
+  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
+  rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 @[simp]
 theorem eval₂_C (r : R) :
@@ -198,9 +196,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
     ε = eval₂ φ a := by
   apply MvPowerSeries.eval₂_unique hφ (hasEval ha) hε
   intro p
-  simpa only [← MvPolynomial.toMvPowerSeries_uniqueAlgEquiv,
-    Polynomial.MvPowerSeries.uniqueAlgEquiv_unit, MvPolynomial.eval₂_const_uniqueAlgEquiv]
-    using h ((MvPolynomial.uniqueAlgEquiv R Unit) p)
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv]
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
