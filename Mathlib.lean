@@ -6110,6 +6110,7 @@ public import Mathlib.Probability.Kernel.Composition.RadonNikodym
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Kernel.Defs
+public import Mathlib.Probability.Kernel.Deterministic
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
