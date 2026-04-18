@@ -324,15 +324,13 @@ variable (p n : ℕ) [ExpChar R p]
 /-- The Frobenius map `x ↦ x ^ p`. -/
 def frobenius : R →+* R where
   __ := powMonoidHom p
-  map_zero' := by
-    nontriviality
-    exact zero_pow (expChar_pos R p).ne'
+  map_zero' := by nontriviality; exact zero_pow (expChar_pos R p).ne'
   map_add' _ _ := add_pow_expChar ..
 
 /-- The iterated Frobenius map `x ↦ x ^ p ^ n`. -/
 def iterateFrobenius : R →+* R where
   __ := powMonoidHom (p ^ n)
-  map_zero' := by nontriviality ; exact zero_pow (expChar_pow_pos R p n).ne'
+  map_zero' := by nontriviality; exact zero_pow (expChar_pow_pos R p n).ne'
   map_add' _ _ := add_pow_expChar_pow ..
 
 variable {R}

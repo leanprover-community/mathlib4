@@ -400,7 +400,7 @@ noncomputable def ringExpChar : ℕ := max (ringChar R) 1
 
 lemma ringExpChar.eq (q : ℕ) [h : ExpChar R q] [Nontrivial R] : ringExpChar R = q := by
   rcases h with _ | _ | h
-  · exfalso ; exact false_of_nontrivial_of_subsingleton R
+  · exact (false_of_nontrivial_of_subsingleton R).elim
   · haveI := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
@@ -416,7 +416,7 @@ variable [Nontrivial R]
 lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
     p = 0 := by
   cases hq
-  · exfalso ; exact false_of_nontrivial_of_subsingleton R
+  · exact (false_of_nontrivial_of_subsingleton R).elim
   · exact CharP.eq R hp (.ofCharZero R)
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 
@@ -424,7 +424,7 @@ lemma char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
 /-- The characteristic is zero if the exponential characteristic is one. -/
 lemma charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
-  · exfalso ; exact false_of_nontrivial_of_subsingleton R
+  · exact (false_of_nontrivial_of_subsingleton R).elim
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)
 
