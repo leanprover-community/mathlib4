@@ -123,6 +123,15 @@ end AddMul
     CommSemigroup (DirectLimit G f) where
   mul_comm := mul_comm
 
+section StarMul
+variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
+variable [∀ i, StarMul (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : StarMul (DirectLimit G f) where
+  star_mul := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, star_def, star_mul, mul_def]
+
+end StarMul
+
 section SMul
 variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
 
