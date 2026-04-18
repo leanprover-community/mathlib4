@@ -136,9 +136,9 @@ def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
       induction x
       exact ConcreteCategory.congr_hom hm _)
 
-/-- The colimit cofork saying that natural transformation
+/-- The colimit cofork exhibiting the natural transformation
 `toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`
-is the coequalizer of the two face maps, considered as
+as a coequalizer of the two face maps, considered as
 natural transformations of functors `SSet.{u} ⥤ Type u`. -/
 abbrev coforkπ₀Functor :
     Cofork (SSet.evaluation.{u}.map (SimplexCategory.δ (1 : Fin 2)).op)

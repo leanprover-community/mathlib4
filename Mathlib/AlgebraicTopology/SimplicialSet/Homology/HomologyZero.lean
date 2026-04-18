@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 /-!
 # Homology of simplicial sets in degree 0
 
+The main definition in this file is `SSet.homology₀Iso` which is
+an isomorphism `X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R)` for any simplicial
+set `X`.
 
 -/
 
@@ -37,7 +40,7 @@ noncomputable def π₀.fromChainComplexXZero :
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
-  X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
+    X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
     Sigma.ι (fun (_ : π₀ X) ↦ R) (π₀.mk x) := by
   simp [π₀.fromChainComplexXZero, ιChainComplex]
 
@@ -83,11 +86,11 @@ lemma homologyData₀_left_π :
 lemma homologyData₀_left_i :
     dsimp% (X.homologyData₀ R).left.i = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homologyData₀_left_liftK {T : C} (f : T ⟶ (X.chainComplex R).X 0) :
-    (X.homologyData₀ R).left.liftK f (by cat_disch) = f := by
-  rw [← cancel_mono (X.homologyData₀ R).left.i, (X.homologyData₀ R).left.liftK_i]
-  simp
+    dsimp% (X.homologyData₀ R).left.liftK f (by cat_disch) = f :=
+  ShortComplex.LeftHomologyData.ofIsColimitCokernelCofork_liftK ..
 
 variable [CategoryWithHomology C]
 
