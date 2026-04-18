@@ -1,15 +1,14 @@
 /-
 Copyright (c) 2026 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jonas van der Schaaf
+Authors: Jonas van der Schaaf, Dagur Asgeirsson
 -/
 module
 
 public import Mathlib.Condensed.Light.InternallyProjective
-public import Mathlib.Condensed.Light.EffectiveEpi
-public import Mathlib.Topology.Category.CompHausLike.Cartesian
-public import Mathlib.Topology.Category.LightProfinite.Injective
-public import Mathlib.Topology.FiberPartition
+
+import Mathlib.Condensed.Light.EffectiveEpi
+import Mathlib.Topology.Category.LightProfinite.Injective
 /-!
 
 # The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
@@ -18,9 +17,9 @@ public import Mathlib.Topology.FiberPartition
 open CategoryTheory Category Functor LightProfinite OnePoint LightCondensed
   MonoidalCategory CartesianMonoidalCategory CompHausLike
 
-universe u
-
 variable (R : Type) [CommRing R]
+-- `R` is in `Type` because `ℕ∪∞` currently only exists in `LightProfinite.{0}`.
+-- TODO: make a universe polymorphic `ℕ∪∞` and generalize this result.
 
 namespace InternalProjectivityProof
 
@@ -35,24 +34,26 @@ def fibre : LightProfinite :=
 
 def fibre_incl : fibre y f ⟶ X := ⟨⟨{ toFun := Subtype.val }⟩⟩
 
-variable {Z : LightProfinite} {f : X ⟶ Z} {g : Y ⟶ Z}
-
 end
+
+section
+
+variable {S T X : Type*}
 
 /-- Given a map `π : T → S ⨯ Option X` and maps `σ : Option X → S → T`,
 `fibres` gives the set containing union of the images of `σ (Some x)`
 for all `x : X`, together with the fibre over `None : Option X` of the
 composition `T → S ⨯ Option X → Option X `. -/
-def fibres {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T) : Set T :=
+def fibres (π : T → S × Option X) (σ : Option X → S → T) : Set T :=
   {t : T | (π t).2 = none} ∪ (⋃ (x : X), Set.range (σ x))
 
 @[simp, grind =]
-lemma mem_fibres_iff {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T) (t : T) :
+lemma mem_fibres_iff (π : T → S × Option X) (σ : Option X → S → T) (t : T) :
     t ∈ fibres π σ ↔ (π t).2 = none ∨ ∃ (x : X) (s : S), σ x s = t := by
   simp [fibres]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma fibres_compl_eq_iUnion {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T)
+lemma fibres_compl_eq_iUnion (π : T → S × Option X) (σ : Option X → S → T)
     (hσ' : ∀ (x : Option X) (s : S), (π (σ x s)).2 = x) :
     (fibres π σ)ᶜ =
       ⋃ i, (Set.range (σ (Option.some i)))ᶜ ∩ (Prod.snd ∘ π) ⁻¹' {(i : OnePoint X)} := by
@@ -69,7 +70,7 @@ lemma fibres_compl_eq_iUnion {S T X : Type*} (π : T → S × Option X) (σ : Op
     rw [← h, Option.some_injective _ hn'.symm]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma fibres_closed {S T X : Type*} [TopologicalSpace S] [TopologicalSpace T]
+lemma fibres_closed [TopologicalSpace S] [TopologicalSpace T]
     [TopologicalSpace X] [DiscreteTopology X] [T2Space T] [CompactSpace S]
     (π : T → S × OnePoint X) (hπ : Continuous π)
     (σ : Option X → S → T) (hσ : ∀ x, Continuous (σ x))
@@ -80,27 +81,25 @@ lemma fibres_closed {S T X : Type*} [TopologicalSpace S] [TopologicalSpace T]
   · simpa using IsCompact.isClosed (isCompact_range (hσ i))
   · exact .preimage (continuous_snd.comp hπ) ⟨fun h ↦ by simp_all, by simp⟩
 
-def π_r {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T) :
+def π_r (π : T → S × Option X) (σ : Option X → S → T) :
     fibres π σ → S × Option X :=
   fun x ↦ π x
 
 @[grind =]
-lemma π_r_apply {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T)
+lemma π_r_apply (π : T → S × Option X) (σ : Option X → S → T)
     (x : fibres π σ) : π_r π σ x = π x :=
   rfl
 
-def fibreInclGeneral {S T : Type*} (y : T) (f : S → T) : f ⁻¹' {y} → S := fun x ↦ x
-
-def fibreIncl {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T) :
+def fibreIncl (π : T → S × Option X) (σ : Option X → S → T) :
     (Prod.snd ∘ π_r π σ) ⁻¹' {none} → fibres π σ :=
-  fibreInclGeneral none (Prod.snd ∘ π_r π σ)
+  Subtype.val
 
 @[grind =]
-lemma fibreIncl_apply {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T)
+lemma fibreIncl_apply (π : T → S × Option X) (σ : Option X → S → T)
     (x : (Prod.snd ∘ π_r π σ) ⁻¹' {none}) : fibreIncl π σ x = x :=
   rfl
 
-lemma fibres_surjective {S T X : Type*}
+lemma fibres_surjective
     (π : T → S × Option X) (hπ : π.Surjective) (σ : Option X → S → T)
     (hσ : ∀ (x : Option X) s, (π (σ x s)).1 = s)
     (hσ' : ∀ (x : Option X) (s : S), (π (σ x s)).2 = x) :
@@ -121,7 +120,7 @@ lemma coverToFun_apply {S T X Y : Type*} (i : Y → T) (π : T → S × Option X
       Sum.elim (fun t ↦ ⟨(t, t), rfl⟩) (fun xy ↦ ⟨(i xy.val.1, i xy.val.2), xy.prop⟩) t :=
   rfl
 
-lemma coverToFun_surjective {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T)
+lemma coverToFun_surjective (π : T → S × Option X) (σ : Option X → S → T)
     (hσ : ∀ (x : Option X) s, (π (σ x s)).1 = s)
     (hσ' : ∀ (x : Option X) (s : S), (π (σ x s)).2 = x) :
     Function.Surjective (coverToFun (fibreIncl π σ) (π_r π σ)) := by
@@ -131,18 +130,7 @@ lemma coverToFun_surjective {S T X : Type*} (π : T → S × Option X) (σ : Opt
   · obtain ⟨n, hn⟩ := Option.ne_none_iff_exists'.mp h
     exact ⟨Sum.inl ⟨σ n (π t).1, by grind⟩, by grind⟩
 
-/-- This object is used to show that a certain map `T ⟶ X` descends
-to a map `S ⊗ N∪{∞} → X`. Because epimorphisms in `LightProfinite`
-are effective, it does so if the two maps `pullback π π → T → S ⊗ N∪{∞}`
-are equal. This can be checked by precomposing with an epimorphism,
-which is given by this morphism. -/
-def cover {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) :
-    (of _ (T ⊕ (pullback (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
-      (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
-  toFun := coverToFun _ _
-  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩⟩
-
-def sectionOfFibreIncl {S T X : Type*} (π : T → S × Option X) (σ : Option X → S → T)
+def sectionOfFibreIncl (π : T → S × Option X) (σ : Option X → S → T)
     (hσ' : ∀ (x : Option X) (s : S), (π (σ x s)).2 = x) : S → (Prod.snd ∘ π_r π σ) ⁻¹' {none} :=
   fun s ↦ ⟨⟨σ none s, by grind⟩, by grind⟩
 
@@ -157,37 +145,33 @@ T  -> S  ⨯ OnePoint X
 there are maps `σ x : S' ⟶ T'` for each `x : OnePoint X` such that
 `S' ⨯ OnePoint X ⟶ S' ⟶ T' ⟶ S' ⨯ OnePoint X` is the identity for
 all points `⟨s, x⟩ : S' ⨯ OnePoint X`. -/
-def S' {S T X : Type*} (π : T → S × OnePoint X) :
-    Set (∀ x : OnePoint X, (Prod.snd ∘ π) ⁻¹' {x}) :=
+def S' (π : T → S × OnePoint X) : Set (∀ x : OnePoint X, (Prod.snd ∘ π) ⁻¹' {x}) :=
   {x | ∀ n m, (π (x n).val).1 = (π (x m).val).1}
 
 @[simp, grind =]
-lemma mem_S'_iff {S T X : Type*} (π : T → S × OnePoint X)
-    (y : ∀ x : OnePoint X, (Prod.snd ∘ π) ⁻¹' {x}) : y ∈ S' π ↔
-      ∀ n m, (π (y n).val).1 = (π (y m).val).1 :=
+lemma mem_S'_iff (π : T → S × OnePoint X) (y : ∀ x : OnePoint X, (Prod.snd ∘ π) ⁻¹' {x}) :
+    y ∈ S' π ↔ ∀ n m, (π (y n).val).1 = (π (y m).val).1 :=
   Iff.rfl
 
-def y {S T X : Type*} (π : T → S × OnePoint X) : S' π → S :=
-  fun x ↦ (π (x.val ∞).val).1
+def y (π : T → S × OnePoint X) : S' π → S := fun x ↦ (π (x.val ∞).val).1
 
 @[grind =]
-lemma y_apply {S T X : Type*} (π : T → S × OnePoint X) (x : S' π) : y π x = (π (x.val ∞).val).1 :=
-  rfl
+lemma y_apply (π : T → S × OnePoint X) (x : S' π) : y π x = (π (x.val ∞).val).1 := rfl
 
-lemma y_continuous {S T X : Type*} [TopologicalSpace S] [TopologicalSpace T]
+lemma y_continuous [TopologicalSpace S] [TopologicalSpace T]
     [TopologicalSpace X] (π : T → S × OnePoint X) (hπ : Continuous π := by fun_prop) :
     Continuous (y π) :=
   continuous_fst.comp <| hπ.comp <| continuous_subtype_val.comp <|
     (continuous_apply _).comp (by fun_prop)
 
-lemma y_surjective {S T X : Type*} (π : T → S × OnePoint X) (hπ : π.Surjective) :
+lemma y_surjective (π : T → S × OnePoint X) (hπ : π.Surjective) :
     (y π).Surjective := by
   intro s
   let p (s : S) (n : OnePoint X) : T := (hπ (s, n)).choose
   have hp (s : S) (n : OnePoint X) : π (p s n) = (s, n) := (hπ (s, n)).choose_spec
   exact ⟨⟨fun n ↦ ⟨p s n, by grind⟩, by grind⟩, by grind⟩
 
-lemma S'_compactSpace {S T X : Type*} [TopologicalSpace S] [T2Space S] [TopologicalSpace T]
+lemma S'_compactSpace [TopologicalSpace S] [T2Space S] [TopologicalSpace T]
     [CompactSpace T] [TopologicalSpace X] [T1Space (OnePoint X)]
     (π : T → S × OnePoint X) (hπ : Continuous π) : CompactSpace (S' π) := by
   rw [← isCompact_iff_compactSpace, show S' π =
@@ -196,6 +180,19 @@ lemma S'_compactSpace {S T X : Type*} [TopologicalSpace S] [T2Space S] [Topologi
     isCompact_iff_compactSpace.mp (IsClosed.preimage (by fun_prop) isClosed_singleton).isCompact
   refine (isClosed_iInter fun n ↦ isClosed_iInter fun m ↦ isClosed_eq ?_ ?_).isCompact
   all_goals fun_prop
+
+end
+
+/-- This object is used to show that a certain map `T ⟶ X` descends
+to a map `S ⊗ N∪{∞} → X`. Because epimorphisms in `LightProfinite`
+are effective, it does so if the two maps `pullback π π → T → S ⊗ N∪{∞}`
+are equal. This can be checked by precomposing with an epimorphism,
+which is given by this morphism. -/
+def cover {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) :
+    (of _ (T ⊕ (pullback (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
+      (fibre_incl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
+  toFun := coverToFun _ _
+  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩⟩
 
 open Limits in
 set_option backward.isDefEq.respectTransparency false in
@@ -250,9 +247,7 @@ v         v
 T  -> S  ⨯ OnePoint X
 ```
 where every map is epi. The map `(π ≫ Prod.snd) ⁻¹' ∞ ⟶ T' ⟶ S' ⨯ ℕ∪{∞}` is split epi and
-`cover` is epi. The argument of (TODO cite) is modified here and `S'` is constructed
-in one step by immediate ly taking `S'` to be the pullback of all the fibres.
-instead of first over `ℕ` and then taking the fibre at `∞`. -/
+`cover` is epi. `S'` is constructed as the pullback of all the fibres. -/
 lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
     ∃ (S' T' : LightProfinite) (y' : S' ⟶ S) (π' : T' ⟶ S' ⊗ ℕ∪{∞}) (g' : T' ⟶ T),
       Epi π' ∧ Epi y' ∧ π' ≫ (y' ▷ ℕ∪{∞}) = g' ≫ π ∧
