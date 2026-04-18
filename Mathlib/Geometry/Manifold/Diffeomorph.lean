@@ -70,7 +70,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M'] {N : Type*} [TopologicalSpace N] [ChartedSpace G N] {N' : Type*}
-  [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+  [TopologicalSpace N'] [ChartedSpace G' N'] {n : ℕ∞ω}
 
 section Defs
 
