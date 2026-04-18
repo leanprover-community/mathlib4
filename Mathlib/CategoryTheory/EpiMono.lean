@@ -205,13 +205,15 @@ end
 section
 
 /-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
-@[to_dual (attr := simp) /-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/]
+@[to_dual (attr := simp) (reorder := g f 7)
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/]
 lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
     Epi (f ≫ g) ↔ Epi g :=
   ⟨fun _ ↦ epi_of_epi f _, fun _ ↦ inferInstance⟩
 
 /-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
-@[to_dual (attr := simp) /-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/]
+@[to_dual (attr := simp) (reorder := g f 8)
+/-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/]
 lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     Epi (f ≫ g) ↔ Epi f := by
   refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
