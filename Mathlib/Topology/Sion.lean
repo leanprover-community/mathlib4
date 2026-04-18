@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Anatole Dedecker
 -/
 module
+
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
@@ -487,7 +488,7 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
   (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y fun y => f x y)
 
 /- The following lines essentially assume that `β` has a densely ordered completion.
-(The Dedekind MacNeille completion is not densely ordered.) -/
+(The Dedekind MacNeille completion is not densely ordered unless `β` is.) -/
 variable [TopologicalSpace β] [OrderTopology β]
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
   [TopologicalSpace γ] [OrderTopology γ]
