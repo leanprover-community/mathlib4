@@ -86,6 +86,10 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
     coeff (R := R) n = MvPowerSeries.coeff s := by
   rw [coeff, ← h, ← Finsupp.unique_single s]
 
+@[simp]
+lemma coeff_coeToMvPowerSeries {f : R⟦X⟧} (n : ℕ) :
+    MvPowerSeries.coeff (Finsupp.single () n) f = f.coeff n := rfl
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff n φ = coeff n ψ) : φ = ψ :=
@@ -149,6 +153,8 @@ def C : R →+* R⟦X⟧ :=
 /-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
+
+theorem X_apply : X (R := R) = MvPowerSeries.X () := by rfl
 
 theorem commute_X (φ : R⟦X⟧) : Commute φ X :=
   MvPowerSeries.commute_X _ _
@@ -220,12 +226,12 @@ theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
 
+@[simp, grind =]
 theorem coeff_X_pow (m n : ℕ) : coeff m ((X : R⟦X⟧) ^ n) = if m = n then 1 else 0 := by
   rw [X_pow_eq, coeff_monomial]
 
-@[simp]
 theorem coeff_X_pow_self (n : ℕ) : coeff n ((X : R⟦X⟧) ^ n) = 1 := by
-  rw [coeff_X_pow, if_pos rfl]
+  simp
 
 @[simp]
 theorem coeff_one (n : ℕ) : coeff n (1 : R⟦X⟧) = if n = 0 then 1 else 0 :=

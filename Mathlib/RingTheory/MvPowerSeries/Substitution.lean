@@ -160,6 +160,12 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
 lemma HasSubst.X_X {i j : σ} : HasSubst (S := R) ![X i, X j] :=
   hasSubst_of_constantCoeff_zero (by simp)
 
+lemma HasSubst.X_zero {i : σ} : HasSubst ![X i (R := R), 0] :=
+  hasSubst_of_constantCoeff_zero (by simp)
+
+lemma HasSubst.zero_X {i : σ} : HasSubst ![0, X i (R := R)] :=
+  hasSubst_of_constantCoeff_zero (by simp)
+
 protected lemma HasSubst.pow {n : ℕ} (hn : n ≠ 0) {a : σ → MvPowerSeries τ S} (h : HasSubst a) :
     HasSubst (a ^ n) :=
   hasSubstIdeal.pow_mem_of_mem h _ (by lia)
@@ -306,6 +312,20 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+lemma isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff {a : σ → MvPowerSeries τ R}
+    (ha : MvPowerSeries.HasSubst a) {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
+      IsNilpotent (constantCoeff (f.subst a)) := by
+  classical
+  rw [constantCoeff_subst ha]
+  refine isNilpotent_finsum ?_
+  intro d
+  by_cases hd : d = 0
+  · simp [hd, hf]
+  obtain ⟨i, hi⟩ : d.support.Nonempty := d.support_nonempty_iff.mpr hd
+  rw [Finsupp.prod, map_prod, ← Finset.prod_erase_mul _ _ hi, smul_eq_mul, ← mul_assoc, map_pow]
+  exact Commute.isNilpotent_mul_left (Commute.all _ _)
+    <| (IsNilpotent.pow_iff_pos (d.mem_support_iff.mp hi)).mpr (ha.const_coeff i)
+
 theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
     {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
     MvPowerSeries.constantCoeff (subst a f) = 0 := by
@@ -341,6 +361,16 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   intro d
   simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
     ← coeff_map, Finsupp.prod]
+
+lemma subst_zero_of_constantCoeff_zero {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
+    f.subst (0 : σ → MvPowerSeries τ R) = 0 := by
+  ext n
+  rw [coeff_subst (by simp [hasSubst_def]), coeff_zero, finsum_eq_zero_of_forall_eq_zero]
+  intro d
+  by_cases hd : d = 0
+  · simp [hd, hf]
+  obtain ⟨i, hi⟩ : d.support.Nonempty := d.support_nonempty_iff.mpr hd
+  simp [Finsupp.prod, Finset.prod_eq_zero hi, coeff_zero, zero_pow <| d.mem_support_iff.mp hi]
 
 lemma HasSubst.cons_subst_zero_left {f : MvPowerSeries (Fin 2) R} (i j k : σ)
     (hF : constantCoeff f = 0) : HasSubst (![subst ![X i, X j] f, X k]) (S := R) :=
