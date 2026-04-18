@@ -233,29 +233,30 @@ end tuples
 
 section mulHeight₁
 
-/-- The multiplicative height of a rational number is the maximum of the absolute value of
-its numerator and its denominator. -/
-lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
-  rw [mulHeight₁_eq_mulHeight]
-  suffices mulHeight ![q, 1] = mulHeight ![(q.num : ℚ), q.den] by
-    rw [this, ← intCast_natCast q.den]
-    have : (Finset.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
-      rw [show (Finset.univ : Finset (Fin 2)) = {0, 1} by grind]
-      simpa [Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
-        Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
-    convert mulHeight_eq_max_abs_of_gcd_eq_one this
-    · ext i; fin_cases i <;> simp
-    · rw [show (↑(max q.num.natAbs q.den) : ℝ) = (max q.num.natAbs q.den : ℤ) by norm_cast]
-      norm_cast
-      push_cast
-      refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
-      · exact Finite.le_ciSup_of_le 0 <| by simp
-      · exact Finite.le_ciSup_of_le 1 <| by simp
-      · fin_cases i <;> simp
+lemma mulHeight_self_one_eq_mulHeight_num_den (q : ℚ) :
+    mulHeight ![q, 1] = mulHeight ![(q.num : ℚ), q.den] := by
   nth_rewrite 1 [← Rat.num_div_den q]
   have hq₀ : (q.den : ℚ) ≠ 0 := mod_cast q.den_nz
   rw [← mulHeight_smul_eq_mulHeight _ hq₀]
   simp [mul_div_cancel₀ _ hq₀]
+
+/-- The multiplicative height of a rational number is the maximum of the absolute value of
+its numerator and its denominator. -/
+lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
+  rw [mulHeight₁_eq_mulHeight, mulHeight_self_one_eq_mulHeight_num_den, ← intCast_natCast q.den]
+  have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
+    rw [show (.univ : Finset (Fin 2)) = {0, 1} by grind]
+    simpa [Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+      Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
+  convert mulHeight_eq_max_abs_of_gcd_eq_one this
+  · ext i; fin_cases i <;> simp
+  · rw [show (↑(max q.num.natAbs q.den) : ℝ) = (max q.num.natAbs q.den : ℤ) by norm_cast]
+    norm_cast
+    push_cast
+    refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
+    · exact Finite.le_ciSup_of_le 0 <| by simp
+    · exact Finite.le_ciSup_of_le 1 <| by simp
+    · fin_cases i <;> simp
 
 open Real in
 /-- The logarithmic height of a rational number is the logarithm of the maximum of the absolute
