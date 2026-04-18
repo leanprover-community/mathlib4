@@ -147,8 +147,8 @@ variable (p) in
 lemma ramificationIdx_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
     (P : Ideal S) (e : E) :
     ramificationIdx p (P.map e) = ramificationIdx p P := by
-  rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
-  exact p.ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁).symm P
+  rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  exact p.ramificationIdx_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     ramificationIdx p P ≠ 1 ↔ p.map f ≤ P ^ 2 := by
@@ -368,7 +368,7 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
       ramificationIdx p P * ramificationIdx P Q := by
   obtain rfl | hp := eq_or_ne p ⊥
   · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : P.IsPrime := isPrime_of_liesOver Q P
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
     rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h

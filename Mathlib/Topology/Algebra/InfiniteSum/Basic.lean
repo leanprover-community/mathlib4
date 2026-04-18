@@ -256,7 +256,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
   · by_cases h : Multipliable f L
     · exact h.map_tprod g hge.continuous
     · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      contrapose! h
+      contrapose h
       -- need to show `g ∘ f` multipliable implies `g` multipliable
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
@@ -650,7 +650,7 @@ lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f
 lemma tprod_mulIndicator_of_mem_union_disjoint (s : γ → Set β) (f : β → α)
     (hs : Pairwise (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
     ∏' d, (s d).mulIndicator f i = f i :=
-  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem  s f i hi (pairwise_disjoint_mono hs
+  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise_disjoint_mono hs
     <| fun _ _ hi ↦ hi.1)
 
 @[to_additive]

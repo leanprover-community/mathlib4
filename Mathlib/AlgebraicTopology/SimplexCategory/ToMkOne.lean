@@ -59,7 +59,6 @@ lemma toMk₁_of_le_castSucc {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : 
     dsimp% toMk₁ i j = 1 := by
   simpa [toMk₁_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i ≤ j.castSucc) :
     δ j ≫ toMk₁ i =
       toMk₁ (i.castPred (Fin.ne_last_of_lt (lt_of_le_of_lt h j.castSucc_lt_succ))) := by
@@ -73,7 +72,6 @@ lemma δ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i
   rw [Fin.eq_iff_eq_zero_iff, toMk₁_apply_eq_zero_iff, toMk₁_apply_eq_zero_iff]
   grind [Fin.succAbove]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
     δ j ≫ toMk₁ i = toMk₁ (i.pred (Fin.ne_zero_of_lt h)) := by
   obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt h)
@@ -84,7 +82,6 @@ lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j
   rw [Fin.eq_iff_eq_zero_iff, toMk₁_apply_eq_zero_iff, toMk₁_apply_eq_zero_iff]
   grind [Fin.succAbove]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma σ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
     σ j ≫ toMk₁ i = toMk₁ i.castSucc := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
@@ -102,7 +99,6 @@ lemma σ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i
     · rwa [Fin.predAbove_of_le_castSucc _ _ hk', Fin.castSucc_castPred]
     · grind [Fin.predAbove]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma σ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : j.castSucc < i) :
     σ j ≫ toMk₁ i = toMk₁ i.succ := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
@@ -129,7 +125,6 @@ lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   have := ConcreteCategory.congr_hom h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
   simp [toMk₁_apply, if_pos hij] at this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := by
   intro f
   let S : Finset (Fin (n + 1)) := { i | f i = 1}
