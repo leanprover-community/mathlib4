@@ -7054,6 +7054,7 @@ public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
+public import Mathlib.Tactic.InformalAttr
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
@@ -7922,6 +7923,7 @@ public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.Qq
 public import Mathlib.Util.Simp
 public import Mathlib.Util.SleepHeartbeats
+public import Mathlib.Util.SuggestAttr
 public import Mathlib.Util.Superscript
 public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Util.Tactic
