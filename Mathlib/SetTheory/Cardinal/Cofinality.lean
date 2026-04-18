@@ -422,7 +422,7 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
   · rw [cof_zero]
     exact zero_le
   · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
-    exact (hf.strictMono (lt_succ b)).ne_bot
+    exact (hf.strictMono (lt_succ b)).ne_zero
   · rw [cof_map_of_isNormal hf ha]
 
 @[deprecated (since := "2026-03-19")]

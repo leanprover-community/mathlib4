@@ -450,7 +450,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     use 1
     intro m hm
     have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr
-      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm))).ne_bot
+      (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm))).ne_zero
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
   have b_in : b ∈ Set.Icc (0 : ℝ) 1 := Set.Icc.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]

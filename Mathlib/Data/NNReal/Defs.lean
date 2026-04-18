@@ -772,7 +772,7 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
-    have hx : x ≠ 0 := ha.ne_bot
+    have hx : x ≠ 0 := ha.ne_zero
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this

@@ -153,6 +153,12 @@ theorem one_lt_of_gt (h : a < b) : 1 < b :=
 @[to_additive] alias LT.lt.one_lt := one_lt_of_gt
 
 @[to_additive]
+theorem ne_one_of_lt (h : a < b) : b ≠ 1 :=
+  h.one_lt.ne'
+
+@[to_additive] alias LT.lt.ne_one := ne_one_of_lt
+
+@[to_additive]
 theorem Left.one_lt_mul_of_left [MulLeftMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
   Left.one_lt_mul_of_lt_of_le ha one_le
 

@@ -818,7 +818,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     (a * b + c) / (a * d) = b / d := by
   obtain rfl | hd := eq_or_ne d 0
   · rw [mul_zero, div_zero, div_zero]
-  · have H := mul_ne_zero hc.ne_bot hd
+  · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
       · apply (add_lt_add_right hc _).trans_le
