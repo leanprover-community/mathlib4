@@ -615,8 +615,15 @@ Logic and computation:
     context-free language: 'Language.IsContextFree'
     context-free grammar: 'ContextFreeGrammar'
   Set theory:
-    ordinal: 'Ordinal'
-    cardinal: 'Cardinal'
+    Ordinals:
+      ordinal: 'Ordinal'
+      Cantor normal forms: 'Ordinal.CNF'
+      fundamental sequences: 'Ordinal.IsFundamentalSeq'
+    Cardinals:
+      cardinal: 'Cardinal'
+      aleph numbers: 'Cardinal.aleph'
+      beth numbers: 'Cardinal.beth'
+      cofinality: 'Order.cof'
     model of ZFC: 'ZFSet'
   Model theory:
     first-order structure: 'FirstOrder.Language.Structure'
