@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
 # Connected components of simplicial sets
@@ -30,7 +31,7 @@ of a simplicial sets. We also introduce typeclasses
 
 universe u
 
-open CategoryTheory Simplicial Limits Opposite
+open CategoryTheory Simplicial Limits Opposite TypeCat
 
 namespace SSet
 
@@ -112,7 +113,51 @@ def π₀Functor : SSet.{u} ⥤ Type u where
   obj X := π₀ X
   map f := TypeCat.ofHom <| mapπ₀ f
 
+/-- The map `π₀.mk : X _⦋0⦌ ⟶ π₀ X` for all simplicial sets `X`,
+as a natural transformation. -/
+def toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor.{u} where
+  app X := ↾π₀.mk
+
+/-- The (colimit) cofork expressing `π₀ X` as a coequalizer
+of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
+abbrev coforkπ₀ : Cofork (X.δ (1 : Fin 2)) (X.δ 0) :=
+  Cofork.ofπ (↾π₀.mk) (by ext s; exact π₀.sound (Edge.mk' s))
+
+/-- If `X` is a simplicial set, `£₀ X` is a coequalizer
+of `X.δ 0 : X _⦋1⦌ → X _⦋0⦌` and `X.δ 1`. -/
+def isColimitCoforkπ₀ : IsColimit X.coforkπ₀ :=
+  Cofork.IsColimit.mk _
+    (fun s ↦ ↾π₀.lift s.π (fun x₀ x₁ e ↦ by
+      simpa only [← e.src_eq, ← e.tgt_eq] using
+        ConcreteCategory.congr_hom s.condition e.edge))
+    (fun s ↦ rfl)
+    (fun s m hm ↦ by
+      ext (x : π₀ X)
+      induction x
+      exact ConcreteCategory.congr_hom hm _)
+
+/-- The colimit cofork exhibiting the natural transformation
+`toπ₀NatTrans : SSet.evaluation.obj (op ⦋0⦌) ⟶ π₀Functor`
+as a coequalizer of the two face maps, considered as
+natural transformations of functors `SSet.{u} ⥤ Type u`. -/
+abbrev coforkπ₀Functor :
+    Cofork (SSet.evaluation.{u}.map (SimplexCategory.δ (1 : Fin 2)).op)
+      (SSet.evaluation.map (SimplexCategory.δ (0 : Fin 2)).op) :=
+  Cofork.ofπ toπ₀NatTrans (by ext X s; exact π₀.sound (Edge.mk' s))
+
+/-- The functor `π₀Functor : SSet.{u} ⥤ Type u` is the coequalizer
+of the two face maps `δ (0 : Fin 2)` and `δ 1`, considered
+as natural transformations. -/
+def isColimitCoforkπ₀Functor : IsColimit coforkπ₀Functor.{u} :=
+  evaluationJointlyReflectsColimits _ (fun X ↦
+    (isColimitMapCoconeCoforkEquiv _ _).2 X.isColimitCoforkπ₀)
+
 variable (X)
+
+@[simp]
+lemma π₀.nonempty_iff : Nonempty (π₀ X) ↔ X.Nonempty :=
+  ⟨fun _ ↦ ⟨(π₀.mk_surjective (Classical.arbitrary (π₀ X))).choose⟩,
+    fun _ ↦ ⟨.mk (Classical.arbitrary _)⟩⟩
 
 /-- A simplicial set is preconnected when it has at most one connected component. -/
 protected abbrev IsPreconnected : Prop := Subsingleton (π₀ X)
@@ -122,5 +167,15 @@ protected class IsConnected : Prop extends SSet.IsPreconnected X where
   nonempty : X.Nonempty := by infer_instance
 
 attribute [instance] IsConnected.nonempty
+
+instance [X.IsConnected] : Nonempty (π₀ X) := ⟨π₀.mk (Classical.arbitrary _)⟩
+
+lemma isConnected_iff :
+    X.IsConnected ↔ X.IsPreconnected ∧ X.Nonempty :=
+  ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ⟨by assumption⟩⟩
+
+lemma isConnected_iff_nonempty_unique :
+    X.IsConnected ↔ Nonempty (Unique (π₀ X)) := by
+  rw [isConnected_iff, unique_iff_subsingleton_and_nonempty, π₀.nonempty_iff]
 
 end SSet

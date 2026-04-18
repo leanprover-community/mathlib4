@@ -250,11 +250,12 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   let K := FractionRing A
   let L := FractionRing B
   let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
+  rw [← smul_eq_mul, ← IsDedekindDomain.coe_primesOverFinset hpb B, Set.ncard_coe_finset,
+    ← Finset.sum_const]
   rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
-  rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp
+  rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hpb B] at hp
   obtain ⟨_, _⟩ := hp
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
@@ -335,7 +336,7 @@ lemma card_inertia_eq_ramificationIdxIn
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
-  refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
+  refine mul_right_injective₀ (IsDedekindDomain.primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only
