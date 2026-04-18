@@ -37,8 +37,7 @@ It computes the simplicial homology of a simplicial sets with coefficients
 in `R`. One can recover the ordinary simplicial chain complex when `C := Ab`
 and `X := ℤ`.
 -/
-noncomputable def chainComplexFunctor :
-    C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
+noncomputable def chainComplexFunctor : C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
   (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
     (sigmaConst ⋙ SimplicialObject.whiskering _ _)
 
@@ -82,8 +81,7 @@ noncomputable abbrev chainComplexMap : X.chainComplex R ⟶ Y.chainComplex R :=
 variable {R} in
 /-- The inclusion `R ⟶ (X.chainComplex R).X n` of the summand
 corresponding to a `n`-simplex `x : X _⦋n⦌`. -/
-noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) :
-    R ⟶ (X.chainComplex R).X n :=
+noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) : R ⟶ (X.chainComplex R).X n :=
   Sigma.ι (fun (_ : X _⦋n⦌) ↦ R) x
 
 set_option backward.isDefEq.respectTransparency false in
@@ -103,15 +101,13 @@ lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
 
 /-- The colimit cofan which defines the simplicial `n`-chains
 `(X.chainComplex R).X n`. -/
-noncomputable def chainComplexXCofan (n : ℕ) :
-    Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
+noncomputable def chainComplexXCofan (n : ℕ) : Cofan (fun (_ : X _⦋n⦌) ↦ R) :=
   Cofan.mk _ X.ιChainComplex
 
 /-- Simplicial `n`-chains `(X.chainComplex R).X n` of a simplicial set `X`
 with coefficients in `R` identify to a coproduct of copies of `R`
 indexed by `X _⦋n⦌`. -/
-noncomputable def isColimitChainComplexXCofan (n : ℕ) :
-    IsColimit (X.chainComplexXCofan R n) :=
+noncomputable def isColimitChainComplexXCofan (n : ℕ) : IsColimit (X.chainComplexXCofan R n) :=
   coproductIsCoproduct _
 
 variable {X R} in
@@ -134,8 +130,7 @@ protected noncomputable abbrev homologyMap (n : ℕ) : X.homology R n ⟶ Y.homo
   HomologicalComplex.homologyMap (chainComplexMap f R) n
 
 @[simp]
-lemma homologyMap_id (n : ℕ) :
-    SSet.homologyMap (𝟙 X) R n = 𝟙 _ := by
+lemma homologyMap_id (n : ℕ) : SSet.homologyMap (𝟙 X) R n = 𝟙 _ := by
   simp [SSet.homologyMap]
 
 @[reassoc]

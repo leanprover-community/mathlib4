@@ -64,7 +64,6 @@ instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
     DecidableRel (mulCayley s).Adj := fun u v =>
   decidable_of_iff (u ≠ v ∧ ∃ g ∈ s, u * g = v ∨ u = v * g) (mulCayley_adj' s u v).symm
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
 @[to_additive]
@@ -81,7 +80,6 @@ theorem mulCayley_monotone : Monotone (mulCayley (M := M) ·) :=
 theorem mulCayley_mono {U V : Set M} (hUV : U ⊆ V) : mulCayley U ≤ mulCayley V :=
   mulCayley_monotone hUV
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem mulCayley_empty : mulCayley (∅ : Set M) = ⊥ := (mulCayley_gc M).l_bot
 
@@ -90,10 +88,6 @@ theorem mulCayley_union (s₁ s₂ : Set M) : mulCayley (s₁ ∪ s₂) = mulCay
   (mulCayley_gc M).l_sup
 
 end Mul
-
-section MulCommClass
-end MulCommClass
-
 
 section Semigroup
 variable [Semigroup M]
