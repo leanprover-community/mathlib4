@@ -52,8 +52,6 @@ lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     IsAffineOpen (f ⁻¹ᵁ U) :=
   IsAffineHom.isAffine_preimage _ hU
 
-@[deprecated (since := "2025-10-07")] alias affinePreimage := IsAffineOpen.preimage
-
 instance (priority := 900) [IsIso f] : IsAffineHom f :=
   ⟨fun _ hU ↦ hU.preimage_of_isIso f⟩
 

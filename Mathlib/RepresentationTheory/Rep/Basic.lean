@@ -831,7 +831,7 @@ end MonoidalClosed
 
 section
 
-variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
+variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/

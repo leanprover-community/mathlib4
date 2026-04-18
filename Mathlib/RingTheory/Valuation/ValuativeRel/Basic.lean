@@ -723,9 +723,6 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
 
-@[deprecated (since := "2025-10-09")]
-alias Compatible.srel_iff_lt := vlt_iff_lt
-
 lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
   simp_rw [veq_def, vle_iff_le v, antisymm_iff]
 
