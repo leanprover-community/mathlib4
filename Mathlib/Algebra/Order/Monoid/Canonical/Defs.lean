@@ -128,7 +128,7 @@ section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) zero_le]
-theorem one_le {a : α} : 1 ≤ a :=
+theorem one_le : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
 @[to_additive] theorem isBot_one : IsBot (1 : α) := fun _ ↦ one_le
