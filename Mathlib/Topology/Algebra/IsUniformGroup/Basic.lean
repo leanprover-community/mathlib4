@@ -267,10 +267,6 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
-@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
-theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  inferInstance
-
 variable {G}
 
 @[to_additive]
