@@ -30,12 +30,6 @@ namespace SSet
 
 namespace stdSimplex
 
-lemma face_pair_compl_le₁ {n : ℕ} (i j : Fin (n + 1)) : face {i, j}ᶜ ≤ face {i}ᶜ := by
-  simp [face_le_face_iff]
-
-lemma face_pair_compl_le₂ {n : ℕ} (i j : Fin (n + 1)) : face {i, j}ᶜ ≤ face {j}ᶜ := by
-  simp [face_le_face_iff]
-
 @[simps! apply]
 noncomputable def _root_.Finset.orderIsoOfOrderEmbedding
     {α β : Type*} [Preorder α] [Preorder β] [DecidableEq β] [Fintype α]
@@ -46,9 +40,8 @@ noncomputable def _root_.Finset.orderIsoOfOrderEmbedding
 
 noncomputable def _root_.Fin.orderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j) :
     Fin n ≃o ({i, j}ᶜ : Finset _) :=
-  let φ :=
-    (Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
-      (Fin.succAboveOrderEmb j)
+  let φ := (Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+    (Fin.succAboveOrderEmb j)
   Finset.orderIsoOfOrderEmbedding φ _ (by
     refine Finset.eq_of_subset_of_card_le (fun k hk ↦ ?_) ?_
     · simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at hk
@@ -86,7 +79,7 @@ lemma facePairComplIso_hom_ι' {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
 @[reassoc]
 lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_pred {n : ℕ}
     (i j : Fin (n + 3)) (h : i < j) :
-    Subcomplex.homOfLE (face_pair_compl_le₁ i j) ≫
+    Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} i).inv =
         (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
   rw [← cancel_mono (faceSingletonComplIso i).hom,
@@ -96,7 +89,7 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_pred {n : ℕ}
 @[reassoc]
 lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_castPred
     {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
-    Subcomplex.homOfLE (face_pair_compl_le₂ i j) ≫
+    Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} j).inv =
         (facePairComplIso i j h).inv ≫
           stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
