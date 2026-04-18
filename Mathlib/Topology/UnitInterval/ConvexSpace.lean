@@ -42,13 +42,11 @@ noncomputable def convexCombo (t : unitInterval) (x y : M) : M :=
 
 @[simp]
 theorem convexCombo_zero (x y : M) : convexCombo 0 x y = x := by
-  unfold convexCombo
-  convert convexComboPair_one (R := ℝ) (x := x) (y := y) using 2; norm_num
+  simpa [convexCombo] using convexComboPair_one (R := ℝ) (x := x) (y := y)
 
 @[simp]
 theorem convexCombo_one (x y : M) : convexCombo 1 x y = y := by
-  unfold convexCombo
-  convert convexComboPair_zero (R := ℝ) (x := x) (y := y) using 2; norm_num
+  simpa [convexCombo] using convexComboPair_zero (R := ℝ) (x := x) (y := y)
 
 @[simp]
 theorem convexCombo_same (t : unitInterval) (x : M) : convexCombo t x x = x := by
