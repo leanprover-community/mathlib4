@@ -626,6 +626,7 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
   intro i
   by_cases hi : i ∈ fs <;> aesop
 
+@[simp]
 theorem point_mem_closedInterior_face_iff [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {j : Fin (n + 1)} :
     s.points j ∈ (s.face h).closedInterior ↔ j ∈ fs := by
@@ -642,8 +643,7 @@ theorem closedInterior_face_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClas
     (s.face h).closedInterior ⊂ s.closedInterior := by
   obtain ⟨a, ha⟩ := Classical.not_forall.mp <| Finset.eq_univ_iff_forall.not.mp hfs
   apply (Set.ssubset_iff_of_subset (s.closedInterior_face_subset_closedInterior h)).mpr
-  refine ⟨s.points a, s.point_mem_closedInterior a, fun hs ↦ ha ?_⟩
-  exact (s.point_mem_closedInterior_face_iff h).mp hs
+  exact ⟨s.points a, s.point_mem_closedInterior a, fun hs ↦ ha (by simpa using hs)⟩
 
 theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
@@ -654,6 +654,12 @@ theorem disjoint_interior_closedInterior_face [Nontrivial k] [ZeroLEOneClass k] 
       s.closedInterior_subset_affineSpan
   grind [affineCombination_mem_interior_iff, affineCombination_mem_closedInterior_face_iff_mem_Icc,
     eq_affineCombination_of_mem_affineSpan_of_fintype]
+
+@[simp]
+theorem point_mem_closedInterior_faceOpposite_iff [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
+    [NeZero n] (s : Simplex k P n) {i j : Fin (n + 1)} :
+    s.points j ∈ (s.faceOpposite i).closedInterior ↔ j ≠ i := by
+  simp [faceOpposite]
 
 theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
@@ -704,9 +710,8 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
 theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
     s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
-  suffices ∀ (i : Fin (n + 1)), Disjoint (s.faceOpposite i).closedInterior s.interior by
-    simpa [closedInterior_eq_interior_union]
-  exact fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
+  simpa [closedInterior_eq_interior_union] using
+    fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
 
 end LinearOrder
 
