@@ -1187,19 +1187,7 @@ abbrev pullbackSnd (f : A →+* C) (g : B →+* C) : f.pullback g →+* B :=
 
 theorem isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) {a : A × B} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← Prod.isUnit_iff]
-    simp [isUnit_iff_exists, ← Subtype.val_inj] at h ⊢
-    grind
-  simp only [mem_eqLocus, coe_comp, coe_fst, Function.comp_apply, coe_snd] at a_in
-  obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h.left
-  obtain ⟨t, ht⟩ := isUnit_iff_exists.mp h.right
-  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, Prod.mul_def,
-    OneMemClass.coe_one, Prod.mk_eq_one, Subtype.exists, mem_eqLocus, coe_comp, coe_fst,
-    Function.comp_apply, coe_snd, exists_and_left, exists_prop, Prod.exists]
-  refine ⟨s, t, ⟨⟨hs.left, ht.left⟩, hs.right, ?_, ht.right⟩⟩
-  rw [← mul_one (f s), ← map_one g, ← ht.left, map_mul, ← mul_assoc, ← a_in, ← map_mul,
-    hs.right, map_one, one_mul]
+  rw [isUnit_eqLocus_mk_iff, Prod.isUnit_iff]
 
 open Function in
 theorem surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) (h : Surjective g) :
