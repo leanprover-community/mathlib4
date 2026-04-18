@@ -108,7 +108,8 @@ theorem card_iSup_Iio_le_lift {o : Ordinal.{u}} {c : Cardinal} {f : Iio o → Or
     (⨆ i, f i).card ≤ c := by
   apply card_iSup_le_lift _ hf
   conv_rhs => rw [← Cardinal.lift_lift.{u, u + 1}]
-  rwa [mk_Iio_ordinal, Cardinal.lift_lift, ← Cardinal.lift_lift.{v, u + 1}, Cardinal.lift_le]
+  rwa [Cardinal.mk_Iio_ordinal, Cardinal.lift_lift, ← Cardinal.lift_lift.{v, u + 1},
+    Cardinal.lift_le]
 
 theorem card_iSup_Iio_le {o : Ordinal} {c : Cardinal} {f : Iio o → Ordinal}
     (hι : o.card ≤ c) (hf : ∀ i, (f i).card ≤ c) : (⨆ i, f i).card ≤ c := by
