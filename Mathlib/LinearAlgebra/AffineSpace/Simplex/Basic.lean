@@ -703,8 +703,7 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
 
 theorem closedInterior_diff_interior [Nontrivial k] [IsOrderedAddMonoid k] [ZeroLEOneClass k]
     {n : ℕ} [NeZero n] (s : Simplex k P n) :
-    s.closedInterior \ s.interior =
-    ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
+    s.closedInterior \ s.interior = ⋃ i : Fin (n + 1), (s.faceOpposite i).closedInterior := by
   suffices ∀ (i : Fin (n + 1)), Disjoint (s.faceOpposite i).closedInterior s.interior by
     simpa [closedInterior_eq_interior_union]
   exact fun i ↦ (s.disjoint_interior_closedInterior_faceOpposite i).symm
