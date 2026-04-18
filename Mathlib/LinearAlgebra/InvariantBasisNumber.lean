@@ -296,16 +296,18 @@ section
 attribute [local instance] Ideal.Quotient.field
 
 /--
-Nontrivial commutative rings have the invariant basis number property.
+Nontrivial commutative rings satisfy the invariant basis number property.
 
 There are two stronger results in mathlib:
-1.  `CommRing.orzechProperty`, which says that any commutative ring satisfies the Orzech property,
-    and hence, if it's nontrivial, satisfies the strong rank condition by
-    `strongRankCondition_of_orzechProperty`.
-2.  `rankCondition_of_nontrivial_of_commSemiring`, which says that
-    any nontrivial commutative semiring satisfies the rank condition.
+1.  `CommRing.orzechProperty` in `Mathlib.RingTheory.FiniteType`,
+    which says that any commutative ring satisfies the Orzech property,
+    and hence that nontrivial commutative rings satisfy the strong rank condition
+    (by `strongRankCondition_of_orzechProperty`).
+2.  `rankCondition_of_nontrivial_of_commSemiring` in
+    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that any
+    nontrivial commutative semiring satisfies the rank condition.
 
-We prove this instance separately to signficantly reduce the required imports.
+We prove this instance here anyway to reduce the required imports.
 -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
