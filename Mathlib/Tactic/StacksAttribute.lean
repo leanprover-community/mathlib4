@@ -186,7 +186,7 @@ def _root_.Lean.Json.foldKeysAsNames {α} (json : Json) (f : α → Name → Str
 
 /-- `overview.json` as a `NameMap` from the decls that are the values in the json to the path of
 keys that lead to them, represented as a `Name`. The innermost key is the last component of the
-name. -/
+name. Not sure it's great to parse the whole file on every file load. -/
 initialize mathOverview : NameMap Name ← do
   initSearchPath (← findSysroot)
   let file ← IO.FS.readFile <| (← IO.currentDir) / "docs" / "overview.json"
@@ -212,6 +212,60 @@ def addZBMathFromOverview : Linter where
     return #[]
 
 initialize addLinter addZBMathFromOverview
+
+open Lean Elab Command
+
+elab tk:"#non_mathlib_zbmath?" : command => do
+  let env ← getEnv
+  let mut attrs := #[]
+  for (decl, fulltag) in mathOverview do
+    unless env.contains decl do continue
+    let some idx := env.getModuleIdxFor? decl | continue
+    if !(`Mathlib).isPrefixOf env.header.moduleNames[idx]! then
+      attrs := attrs.push (decl, ← `(command|
+        attribute [zbmath $(Syntax.mkStrLit fulltag.getSuffix)] $(mkIdent decl)))
+  liftCoreM do
+    let attrs := attrs.qsort (·.1.lt ·.1)
+    let attrs ← attrs.mapM fun (_, stx) => return (← PrettyPrinter.ppCommand stx).pretty
+    let attrs := "\n".intercalate attrs.toList
+    Meta.Tactic.TryThis.addSuggestion tk attrs
+
+/-- Checks that every tag in the overview is reflected on a declaration in lean correctly. (Does
+not check that every tag is in the overview.) -/
+elab "#check_overview" : command => do
+  let env ← getEnv
+  let mut unknown := #[]
+  let mut notLeanTagged := #[]
+  let mut wrongTag := #[]
+  for (decl, fulltag) in mathOverview do
+    if !env.contains decl then
+      unknown := unknown.push (decl, fulltag)
+    else if let some tag := getTagEntry? env decl .zbmath then
+      if tag.tag != fulltag.getSuffix then
+        wrongTag := wrongTag.push (decl, fulltag, tag)
+    else
+      notLeanTagged := notLeanTagged.push (decl, fulltag)
+  if unknown.isEmpty && notLeanTagged.isEmpty && wrongTag.isEmpty then
+    logInfo m!"Every tag in the overview appears in Lean!"
+  else
+    let mut msgs := []
+    unless wrongTag.isEmpty do
+      let wrongTagMsgs := wrongTag.map fun (decl,fulltag,tag) =>
+        m!"• {MessageData.ofConstName decl} @ {fulltag} is tagged in lean with \
+        `@[zbmath {tag.tag}{tag.comment}]`"
+      msgs := m!"Decalarations which have the wrong tag:\n\
+        {m!"\n".joinSep wrongTagMsgs.toList}}" :: msgs
+    unless notLeanTagged.isEmpty do
+      let notLeanTaggedMsgs := notLeanTagged.map fun (decl,fulltag) =>
+        m!"• {MessageData.ofConstName decl} @ {fulltag} is not tagged in lean."
+      msgs := m!"Decalarations which are not tagged:\n\
+        {m!"\n".joinSep notLeanTaggedMsgs.toList}}" :: msgs
+    unless unknown.isEmpty do
+      let unknownMsgs := unknown.map fun (decl,fulltag) =>
+        m!"• {decl} @ {fulltag}"
+      msgs := m!"Decalarations which could not be found:\n\
+        {m!"\n".joinSep unknownMsgs.toList}}" :: msgs
+    logWarning (m!"\n\n".joinSep msgs)
 
 /-- The `stacksTag` attribute.
 Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
