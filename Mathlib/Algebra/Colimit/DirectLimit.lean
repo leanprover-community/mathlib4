@@ -580,4 +580,51 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of 
 
 end Ring
 
+namespace StarRing
+
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+noncomputable def of (i) : G i →⋆ₙ+* DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  map_mul' _ _ := (mul_def ..).symm
+  map_add' _ _ := (add_def ..).symm
+  map_zero' := (zero_def ..).symm
+  map_star' _ := (star_def ..).symm
+
+@[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (A : Type*) [NonUnitalNonAssocSemiring A] [StarRing A]
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another StarRing
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit.
+-/
+noncomputable def lift
+    (g : ∀ i, (G i) →⋆ₙ+* A) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₙ+* A where
+  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+  map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]
+  map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
+  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add (g i)]
+  map_star' := DirectLimit.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]
+
+variable (g : ∀ i, G i →⋆ₙ+* A) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp] theorem lift_of (i x) : lift G f A g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* A}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+  g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+
+end StarRing
+
 end DirectLimit
