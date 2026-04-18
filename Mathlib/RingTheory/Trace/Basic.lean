@@ -295,6 +295,8 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
       cases H hn
     | succ n =>
       cases hp with
+      | subsingleton =>
+        exact (false_of_nontrivial_of_subsingleton K).elim
       | zero =>
         rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
         cases H hn

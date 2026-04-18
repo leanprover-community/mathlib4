@@ -56,7 +56,7 @@ class HasExponent : Prop where
   has_exponent : ∃ e, ∀ a, a ^ ringExpChar K ^ e ∈ (algebraMap K L).range
 
 /-- Version of `hasExponent_iff` using `ExpChar`. -/
-theorem hasExponent_iff' (p : ℕ) [ExpChar K p] :
+theorem hasExponent_iff' (p : ℕ) [ExpChar K p] [Nontrivial K] :
     HasExponent K L ↔ ∃ e, ∀ (a : L), a ^ p ^ e ∈ (algebraMap K L).range :=
   ringExpChar.eq K p ▸ hasExponent_iff K L
 
@@ -74,7 +74,7 @@ theorem exponent_def [HasExponent K L] (a : L) :
   Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version of `exponent_def` using `ExpChar`. -/
-theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
+theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] [Nontrivial K] (a : L) :
     a ^ p ^ exponent K L ∈ (algebraMap K L).range :=
   ringExpChar.eq K p ▸ exponent_def K a
 
@@ -86,8 +86,8 @@ theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
   not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version of `exponent_min` using `ExpChar`. -/
-theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
-    ∃ a, a ^ p ^ e ∉ (algebraMap K L).range :=
+theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] [Nontrivial K] {e : ℕ}
+    (h : e < exponent K L) : ∃ a, a ^ p ^ e ∉ (algebraMap K L).range :=
   ringExpChar.eq K p ▸ exponent_min h
 
 end Ring
@@ -180,7 +180,8 @@ variable {K} in
 theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
     (h : a ^ ringExpChar K ^ n ∈ (algebraMap K L).range) : elemExponent K a ≤ n := by
   let ⟨p, _⟩ := ExpChar.exists K
-  rcases ‹ExpChar K p› with _ | ⟨hp⟩
+  rcases ‹ExpChar K p› with _ | _ | ⟨hp⟩
+  · exact (false_of_nontrivial_of_subsingleton K).elim
   · exact elemExponent_eq_zero_of_charZero K a ▸ Nat.zero_le _
   · obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| h
     let f := X ^ ringExpChar K ^ n - C y
@@ -217,7 +218,8 @@ variable {K} in
 instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
-  rcases ‹ExpChar K p› with _ | ⟨hp⟩
+  rcases ‹ExpChar K p› with _ | _ | ⟨hp⟩
+  · exact (false_of_nontrivial_of_subsingleton K).elim
   · exact ⟨0, fun a ↦ surjective_algebraMap_of_isSeparable K L _⟩
   · let e := Nat.log (ringExpChar K) (Module.finrank K L)
     refine ⟨e, fun a ↦ ⟨elemReduct K a ^ ringExpChar K ^ (e - elemExponent K a), ?_⟩⟩

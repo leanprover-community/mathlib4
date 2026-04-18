@@ -225,6 +225,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (K := k').1 hF₁irr
   contrapose coeff_ne with Hsep
   have : CharP k' p := (expChar_of_injective_algebraMap (algebraMap k k').injective p).casesOn
+    (fun _ ↦ (false_of_nontrivial_of_subsingleton k').elim)
     (fun e ↦ (e rfl).elim) (fun _ _ _ ↦ ‹_›) hp.ne_one
   obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
     (isAlgebraic_iff_isIntegral.mp <| isAlgebraic_adjoin_iff.mpr alg))).resolve_left Hsep).2
