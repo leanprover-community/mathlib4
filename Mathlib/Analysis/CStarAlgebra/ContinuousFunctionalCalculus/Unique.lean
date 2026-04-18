@@ -177,16 +177,7 @@ instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     ContinuousMap.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
-    let e : s ≃ₜ s' :=
-      { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
-        left_inv := fun _ ↦ by ext; simp
-        right_inv := fun x ↦ by
-          ext
-          obtain ⟨y, -, hy⟩ := x.2
-          simpa using hy ▸ NNReal.coe_nonneg y
-        continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+    let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
@@ -366,20 +357,10 @@ instance NNReal.instContinuousMapZero.UniqueHom
     ContinuousMapZero.UniqueHom ℝ≥0 A where
   eq_of_continuous_of_map_id s hs h0 φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
-    let e : s ≃ₜ s' :=
-      { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
-        left_inv := fun _ ↦ by ext; simp
-        right_inv := fun x ↦ by
-          ext
-          obtain ⟨y, -, hy⟩ := x.2
-          simpa using hy ▸ NNReal.coe_nonneg y
-        continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+    let e : s ≃ₜ s' := NNReal.isEmbedding_coe.homeomorphImage s
     have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    have e0 : e 0 = 0 := by ext; simp [e]; rfl
-    have e0' : e.symm 0 = 0 := by
-      simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
+    have e0 : e 0 = 0 := rfl
+    have e0' : e.symm 0 = 0 := e.symm_apply_eq.mpr e0
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
           ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;
