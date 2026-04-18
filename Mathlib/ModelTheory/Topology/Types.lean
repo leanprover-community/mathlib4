@@ -82,7 +82,7 @@ instance : CompactSpace (T.CompleteType α) := by
     · rw[Theory.IsFinitelySatisfiable]
       intro x hx
       have : ∀ φ ∈ x, T.typesWith φ ∈ F.toFilter := by intro φ hφ; exact hx hφ
-      rw[←Filter.biInter_finset_mem x] at this
+      rw [← Filter.biInter_finset_mem x] at this
       obtain ⟨T, T_inter⟩ := F.neBot.nonempty_of_mem this
       have subset : SetLike.coe x ⊆ T.toTheory := by rwa[Set.mem_iInter₂] at T_inter
       exact Theory.IsSatisfiable.mono T.isMaximal'.1 subset
