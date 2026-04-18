@@ -3638,6 +3638,7 @@ public import Mathlib.Condensed.Light.InternallyProjective
 public import Mathlib.Condensed.Light.Limits
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Light.Monoidal
+public import Mathlib.Condensed.Light.Sequence
 public import Mathlib.Condensed.Light.Small
 public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Condensed.Light.TopComparison
