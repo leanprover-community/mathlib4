@@ -81,4 +81,6 @@ def revEquivalence : SimplexCategory ≌ SimplexCategory where
   unitIso := revCompRevIso.symm
   counitIso := revCompRevIso
 
+instance : rev.IsEquivalence := revEquivalence.isEquivalence_functor
+
 end SimplexCategory
