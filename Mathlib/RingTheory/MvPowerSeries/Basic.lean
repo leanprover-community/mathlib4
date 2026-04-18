@@ -928,6 +928,11 @@ theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r :
     (by simp), Finsupp.prod]
   simp [pow_mul]
 
+theorem _root_.MvPowerSeries.monomial_mapDomain_eq_prod {τ : Type*} (d : σ →₀ ℕ) (f : σ → τ) :
+    MvPowerSeries.monomial (mapDomain f d) (1 : R)
+      = d.prod fun s e ↦ MvPowerSeries.X (f s) ^ e := by
+  simp [pow_add, prod_sum_index, MvPowerSeries.monomial_one_eq, mapDomain]
+
 section Algebra
 
 variable (A : Type*) [CommSemiring A] [Algebra R A]
