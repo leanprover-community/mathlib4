@@ -3073,6 +3073,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
+public import Mathlib.CategoryTheory.Monoidal.Symmetric.TensorBraidSwap
 public import Mathlib.CategoryTheory.Monoidal.Tor
 public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
