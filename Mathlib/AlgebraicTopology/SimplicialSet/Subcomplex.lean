@@ -351,6 +351,10 @@ lemma preimage_inv {X Y : SSet.{u}} (A : Subcomplex X) (f : X ⟶ Y) [IsIso f] :
   simp only [preimage_obj, NatIso.isIso_inv_app, Set.mem_preimage, image_obj, Set.mem_image]
   exact ⟨fun hx ↦ ⟨(inv f).app _ x, by simpa⟩, by rintro ⟨x, hx, rfl⟩; simpa⟩
 
+lemma image_inv {X Y : SSet.{u}} (A : Subcomplex Y) (f : X ⟶ Y) [IsIso f] :
+    A.image (inv f) = A.preimage f := by
+  simp [← preimage_inv]
+
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism
 `(A.preimage p : SSet) ⟶ (A : SSet)`. -/

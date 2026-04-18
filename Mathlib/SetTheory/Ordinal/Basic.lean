@@ -1254,11 +1254,6 @@ noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.ToType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
 
-/-- This can be made a local instance in order to get `⊥`
-in `Cardinal.aleph0.ord.ToType`. -/
-abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.ord.ToType :=
-  Cardinal.toTypeOrderBot Cardinal.aleph0_ne_zero
-
 end Cardinal
 
 namespace Ordinal
