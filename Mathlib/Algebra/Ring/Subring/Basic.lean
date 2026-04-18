@@ -1185,6 +1185,10 @@ abbrev pullbackFst (f : A →+* C) (g : B →+* C) : f.pullback g →+* A :=
 abbrev pullbackSnd (f : A →+* C) (g : B →+* C) : f.pullback g →+* B :=
   (RingHom.snd A B).comp (f.pullback g).subtype
 
+theorem comp_pullbackFst_eq_comp_pullbackSnd (f : A →+* C) (g : B →+* C) :
+    f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
+  RingHom.ext fun x ↦ x.prop
+
 theorem isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) {a : A × B} (a_in : a ∈ f.pullback g) :
     IsUnit (⟨a, a_in⟩ : f.pullback g) ↔ IsUnit a.1 ∧ IsUnit a.2 := by
   rw [isUnit_eqLocus_mk_iff, Prod.isUnit_iff]
