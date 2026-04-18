@@ -64,12 +64,22 @@ lemma tensorProduct_reesAlgebra_isNoetherian_of_fg [IsNoetherianRing (R ⧸ I)] 
   have := this.baseChange (R ⧸ I)
   exact Algebra.FiniteType.isNoetherianRing (R ⧸ I) _
 
+lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
+    IsNoetherianRing ((reesAlgebra I) ⧸ I.map (algebraMap R (reesAlgebra I))) := by
+  have := tensorProduct_reesAlgebra_isNoetherian_of_fg I fg
+  exact isNoetherianRing_of_ringEquiv  _
+     (Algebra.TensorProduct.quotIdealMapEquivQuotTensor (reesAlgebra I) I).symm.toRingEquiv
+
 lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     f ∈ I.map (algebraMap R (reesAlgebra I)) ↔ ∀ n, f.1.coeff n ∈ I ^ (n + 1) := by
   sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
+  apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
+  let J_rees := (J.map Polynomial.C).comap (reesAlgebra I).val
+  let J_assoc := J_rees.map (Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I))))
+
   sorry
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
