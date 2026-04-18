@@ -234,7 +234,7 @@ lemma Finset.gcd_eq_sum_mul {α : Type*} [CommRing R] [IsBezout R] [NormalizedGC
   | insert a s ha ih =>
     obtain ⟨x, y, hxy⟩ := IsBezout.gcd_eq_sum (f a) (s.gcd f)
     obtain ⟨u, hu⟩ := IsBezout.associated_gcd_gcd R (x := f a) (y := s.gcd f)
-    rw [← hxy, add_mul, mul_comm x, mul_comm y, mul_assoc, mul_assoc] at hu
+    rw [← hxy, add_mul, mul_comm x, mul_comm y] at hu
     obtain ⟨g, hg⟩ := ih
     conv => enter [1, g]; rw [gcd_insert, sum_insert ha, ← hu, hg]
     refine ⟨Function.update (g · * (y * u)) a (x * u), ?_⟩
