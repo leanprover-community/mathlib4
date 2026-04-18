@@ -133,10 +133,10 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
   mp le := by
     contrapose! le
     obtain _ | n := n; · simp at le
-    rw [Module.rank, nat_succ, Order.lt_succ_iff, ciSup_le_iff bddAbove_of_small]
+    rw [Module.rank, Nat.cast_add_one, lt_natCast_add_one_iff, ciSup_le_iff bddAbove_of_small]
     intro s
     contrapose! le
-    rw [← Order.succ_le_iff, ← nat_succ] at le
+    rw [← natCast_add_one_le_iff, ← Nat.cast_add_one] at le
     have ⟨t, ht⟩ := exists_finset_eq_card le
     exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
   mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
@@ -251,8 +251,8 @@ Rings `R` that fail the strong rank condition but satisfy `rank R R = 1` are exp
 https://mathoverflow.net/questions/317422/rings-that-fail-to-satisfy-the-strong-rank-condition. -/
 theorem CommSemiring.rank_self (R) [CommSemiring R] : Module.rank R R = 1 := by
   nontriviality R
-  rw [le_antisymm_iff, ← not_lt, ← Order.succ_le_iff, ← Nat.cast_one, ← nat_succ,
-    Module.le_rank_iff_exists_linearMap, Nat.cast_one, Module.one_le_rank_iff]
+  rw [le_antisymm_iff, ← not_lt, ← two_le_iff_one_lt, ← Nat.cast_two,
+    Module.le_rank_iff_exists_linearMap, Module.one_le_rank_iff]
   refine ⟨fun ⟨f, inj⟩ ↦ ?_, _, (LinearEquiv.refl ..).injective⟩
   have := inj (a₁ := f ![0, 1] • ![1, 0]) (a₂ := f ![1, 0] • ![0, 1]) <| by
     simp_rw [map_smul, smul_eq_mul]; apply mul_comm
