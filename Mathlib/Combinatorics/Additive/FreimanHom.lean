@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Freiman homomorphisms
@@ -120,6 +121,7 @@ lemma IsMulFreimanIso.isMulFreimanHom (hf : IsMulFreimanIso n A B f) : IsMulFrei
   mapsTo := hf.bijOn.mapsTo
   map_prod_eq_map_prod _s _t hsA htA hs ht := (hf.map_prod_eq_map_prod hsA htA hs ht).2
 
+@[to_additive]
 lemma IsMulFreimanHom.congr (hf₁ : IsMulFreimanHom n A B f₁) (h : EqOn f₁ f₂ A) :
     IsMulFreimanHom n A B f₂ where
   mapsTo := hf₁.mapsTo.congr h
@@ -127,6 +129,7 @@ lemma IsMulFreimanHom.congr (hf₁ : IsMulFreimanHom n A B f₁) (h : EqOn f₁ 
     rw [map_congr rfl fun x hx => (h (hsA hx)).symm, map_congr rfl fun x hx => (h (htA hx)).symm,
       hf₁.map_prod_eq_map_prod hsA htA hs ht h']
 
+@[to_additive]
 lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ f₂ A) :
     IsMulFreimanIso n A B f₂ where
   bijOn := hf₁.bijOn.congr h
@@ -378,6 +381,28 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
 
 end Prod
 
+namespace ZMod
+variable {k m n : ℕ}
+
+/-- **No wrap-around principle**.
+
+A set of elements of `ℕ` is `m`-Freiman isomorphic to its image in `ZMod (n + 1)`
+if all elements of the set are at most `k` and `m * k ≤ n`, i.e. there is no wrap-around. -/
+lemma isAddFreimanIso_image_cast (hm : m ≠ 0) (hkmn : m * k ≤ n) (S : Set ℕ) (hS : ∀ i ∈ S, i ≤ k) :
+    IsAddFreimanIso (β := ZMod (n + 1)) m S (Nat.cast '' S) Nat.cast where
+  bijOn := suffices InjOn Nat.cast S from ⟨by unfold MapsTo; grind, this, by simp [SurjOn]⟩; by
+    apply (CharP.natCast_injOn_Iio (ZMod (n + 1)) (n + 1)).mono
+    have aux := Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
+    grind
+  map_sum_eq_map_sum s t hsS htS hs ht := by
+    have (u : Multiset ℕ) : (u.map Nat.cast).sum = Nat.castRingHom (ZMod (n + 1)) u.sum := by simp
+    rw [this, this]
+    have {u : Multiset ℕ} (huk : ∀ x ∈ u, x ≤ k) (hu : u.card = m) : u.sum < (n + 1) := by
+      grind [sum_le_card_nsmul u k huk]
+    refine ⟨CharP.natCast_injOn_Iio _ (n + 1) ?_ ?_, congr_arg _⟩
+    all_goals grind
+
+end ZMod
 namespace Fin
 variable {k m n : ℕ}
 
@@ -385,22 +410,23 @@ variable {k m n : ℕ}
 
 A set of elements of `Fin (n + 1)` is `m`-Freiman isomorphic to its image in `ℕ`
 if all elements of the set are at most `k` and `m * k ≤ n`, i.e. there is no wrap-around. -/
-lemma isAddFreimanIso_image_val (hkmn : m * k ≤ n) (S : Set (Fin (n + 1))) (hS : ∀ i ∈ S, i ≤ k) :
-    IsAddFreimanIso m S (val '' S) val where
+lemma isAddFreimanIso_image_val (hm : m ≠ 0) (hkmn : m * k ≤ n) (S : Set (Fin (n + 1)))
+    (hS : ∀ i ∈ S, i ≤ k) : IsAddFreimanIso m S (val '' S) val where
   bijOn := ⟨by unfold MapsTo; grind, val_injective.injOn, by simp [SurjOn]⟩
   map_sum_eq_map_sum s t hsS htS hs ht := by
-    open Fin.CommRing in
-    have (u : Multiset (Fin (n + 1))) : Nat.castRingHom _ (u.map val).sum = u.sum := by simp
-    rw [← this, ← this]
-    have {u : Multiset (Fin (n + 1))} (huk : ∀ x ∈ u, ↑x ≤ k) (hu : card u = m) :
-        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 <| hkmn.trans' <| by
-      rw [← hu, ← card_map]
-      refine sum_le_card_nsmul (u.map val) k ?_
-      simpa only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] using huk
-    refine ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) ?_ ?_⟩
-    all_goals grind
-
-open Fin.CommRing
+    have := ZMod.isAddFreimanIso_image_cast hm hkmn (val '' S) (by simpa using hS)
+    rw [← this.map_sum_eq_map_sum, Multiset.map_map, Multiset.map_map]
+    · refine IsAddFreimanIso.map_sum_eq_map_sum (B := Nat.cast ∘ val '' S) ?_ hsS htS hs ht
+      -- TODO: The next two lines abuse the definition of `ZMod`.
+      let addEquivZMod : Fin (n + 1) ≃+ ZMod (n + 1) := AddEquiv.refl _
+      have : addEquivZMod ∘ Fin.ofNat (n + 1) = Nat.cast := rfl
+      have : EqOn (⇑addEquivZMod) (Nat.cast ∘ val) S := by
+        rintro ⟨i, hi⟩ -
+        simp [← this, Fin.ext_iff, Nat.mod_eq_of_modEq rfl hi]
+      apply (AddEquivClass.isAddFreimanIso addEquivZMod _).congr this
+      rw [this.symm.image_eq]
+      exact Equiv.bijOn_image _
+    all_goals simp; grind
 
 @[simp, grind →]
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
@@ -411,12 +437,13 @@ private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
 The first `k + 1` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k + 1` elements
 of `ℕ` assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
-    IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val := by
-  have h := isAddFreimanIso_image_val hkmn (Iic (k : Fin (n + 1))) (by
+    IsAddFreimanIso m (Iic (Fin.ofNat (n + 1) k)) (Iic k) val := by
+  have h := isAddFreimanIso_image_val hm hkmn (Iic (Fin.ofNat (n + 1) k)) (by
     simp [le_iff_val_le_val, Nat.mod_eq_of_lt (aux hm hkmn)])
-  suffices (val '' Iic (k : Fin (n + 1))) = Iic k by rwa [this] at h
+  suffices (val '' Iic (Fin.ofNat (n + 1) k)) = Set.Iic k by rwa [this] at h
   ext i
-  simp only [mem_image, mem_Iic, le_iff_val_le_val, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+  simp only [ofNat_eq_cast, mem_image, Set.mem_Iic, le_iff_val_le_val, val_natCast,
+    Nat.mod_eq_of_lt (aux hm hkmn)]
   constructor
   · grind
   · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
@@ -426,12 +453,14 @@ lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
 The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k` elements of `ℕ`
 assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
-    IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
-  have h := isAddFreimanIso_image_val hkmn (Iio (k : Fin (n + 1))) (by
-    simp only [mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]; grind)
-  suffices (val '' Iio (k : Fin (n + 1))) = Iio k by rwa [this] at h
+    IsAddFreimanIso m (Iio (Fin.ofNat (n + 1) k)) (Iio k) val := by
+  have h := isAddFreimanIso_image_val hm hkmn (Iio (Fin.ofNat (n + 1) k)) <| by
+    simp only [ofNat_eq_cast, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+    grind
+  suffices (val '' Iio (Fin.ofNat (n + 1) k)) = Set.Iio k by rwa [this] at h
   ext i
-  simp only [mem_image, mem_Iio, Fin.lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+  simp only [ofNat_eq_cast, mem_image, Set.mem_Iio, lt_def, val_natCast,
+    Nat.mod_eq_of_lt (aux hm hkmn)]
   constructor
   · grind
   · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
