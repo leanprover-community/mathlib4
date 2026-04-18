@@ -437,7 +437,7 @@ lemma Diffeomorph.image_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
 
 lemma Diffeomorph.boundarylessManifold (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N)
     [BoundarylessManifold I M] : BoundarylessManifold I' N :=
-    Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
+  Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
 
 lemma Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     BoundarylessManifold I M ↔ BoundarylessManifold I' N :=
