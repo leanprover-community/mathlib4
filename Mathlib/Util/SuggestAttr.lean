@@ -8,7 +8,14 @@ module
 public import Lean.Elab.Command
 public import Lean.Syntax
 public import Lean.Data.Lsp.Utf16
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
+
+/-!
+# Utilities for suggesting attribute insertions
+
+WIP.
+-/
 
 -- `getDeclsAfter` hasn't landed in mathlib yet, so recreate it here.
 
@@ -63,9 +70,9 @@ returns the full declaration range (which includes modifiers, such as the docstr
   let some ranges ← findDeclarationRanges? decl | return none
   return (if fullRange then ranges.range else ranges.selectionRange).toSyntaxRange (← getFileMap)
 
--- TODO: Some sort of DeclarationSyntax class that provides an extensible API for all different sorts of declarations? Hmm, no, requires instances at compiletime. So it's got to be some sort of env extension, `@[decl_like kind] def declAPIProvider : DeclarationLike where <millions of things>`
-
-/-- Finds the declaration syntax, either a typical declaration or `lemma`, and returns it. Not the best type signature or function behavior; there are many more ways to create declarations (e.g. `to_additive`, meta things like `syntax`, etc.). Strictly temporary. -/
+/-- Finds the declaration syntax, either a typical declaration or `lemma`, and returns it. Not the
+best type signature or function behavior; there are many more ways to create declarations (e.g.
+`to_additive`, meta things like `syntax`, etc.). Strictly temporary. -/
 def findDeclarationSyntax? {m : Type → Type} [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
     [MonadFileMap m] (decl : Name) (enclosingStx : Syntax) :
     m (Option ((kind : SyntaxNodeKind) × TSyntax kind)) := do
@@ -141,7 +148,7 @@ def suggestAttrForDeclMods
 
 /-- For each `declName` appearing in `cmd`, suggests inserting the attribute syntax produced by
 `mkAttrs declName cmd`, or warns if it can't. Note that `cmd` is the full command, not the
-declaration syntax.-/
+declaration syntax. -/
 @[specialize mkAttrs] def insertAttrsOnDecls
     (mkAttrs : Name → Syntax → CommandElabM (Array (TSyntax ``Parser.Term.attrInstance)))
     (cmd : Syntax) : CommandElabM Unit := do
@@ -151,7 +158,8 @@ declaration syntax.-/
     let attrs ← mkAttrs decl cmd
     unless attrs.isEmpty do
       let some ⟨kind, stx⟩ ← findDeclarationSyntax? decl cmd
-        | logWarning m!"`{.ofConstName decl}`: need to insert `@[{attrs}]`, but couldn't find syntax"
+        | logWarning m!"`{.ofConstName decl}`: \
+          need to insert `@[{attrs}]`, but couldn't find syntax"
       unless kind ∈ [`lemma, ``Parser.Command.declaration] do
         throwError "Can't handle syntax {stx} of kind {kind}"
       let some declStart := stx.raw[1].getPos?
