@@ -162,13 +162,10 @@ lemma Subcomplex.Pairing.anodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
 
 instance : strongAnodyneExtensions.{u}.RespectsIso where
   precomp e _ f hf := by
-    have := hf.mono
-    obtain ⟨_, rfl, P, hP⟩ : ∃ (A : _) (hA : Subcomplex.range (e ≫ f) = A)
-        (P : A.Pairing), P.IsRegular := by
-      obtain ⟨_, P, hP⟩ := hf
-      refine ⟨_, ?_, P, hP⟩
-      rw [Subcomplex.range_comp, Subcomplex.range_eq_top, Subcomplex.image_top]
-    exact ⟨inferInstance, P, hP⟩
+    obtain ⟨_, P, hP⟩ := hf
+    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance⟩
+    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e,
+      Subcomplex.image_top]
   postcomp e _ f hf := by
     obtain ⟨_, P, hP⟩ := hf
     refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance⟩
