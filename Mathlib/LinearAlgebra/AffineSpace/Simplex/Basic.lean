@@ -635,7 +635,7 @@ theorem point_mem_closedInterior_face_iff [Nontrivial k] [ZeroLEOneClass k] {n :
     rw [← hs]
     exact Set.mem_of_mem_of_subset (affineCombination_mem_affineSpan hw _) (by simp)
   · obtain ⟨i, rfl⟩ : ∃ i, fs.orderEmbOfFin h i = j := range_orderEmbOfFin fs h |>.ge hfs
-    exact Simplex.point_mem_closedInterior _ _
+    exact point_mem_closedInterior _ _
 
 theorem closedInterior_face_ssubset_closedInterior [Nontrivial k] [ZeroLEOneClass k] {n : ℕ}
     (s : Simplex k P n) {fs : Finset (Fin (n + 1))} (hfs : fs ≠ .univ) {m : ℕ} (h : #fs = m + 1) :
