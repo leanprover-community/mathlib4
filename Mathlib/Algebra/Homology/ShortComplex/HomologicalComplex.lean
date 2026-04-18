@@ -82,7 +82,9 @@ lemma hasHomology_of_iso [K.HasHomology i] : L.HasHomology i :=
 
 section
 
-variable [K.HasHomology i]
+var
+@[informal "functorial homology"]
+able [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology

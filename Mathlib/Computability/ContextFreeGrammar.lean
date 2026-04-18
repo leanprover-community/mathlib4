@@ -41,7 +41,9 @@ deriving DecidableEq, Repr
 -- See https://github.com/leanprover/lean4/issues/10295
 attribute [nolint unusedArguments] instReprContextFreeRule.repr
 
-/-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
+/-- Context-free grammar that generates words over
+@[informal "context-free grammar"]
+the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
   /-- Type of nonterminals. -/
   NT : Type
@@ -230,7 +232,9 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
   tauto
 
-lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
+lemma language_eq_zero_of_forall_
+@[informal "context-free language"]
+nput_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
     g.language = 0 := by ext; simp +contextual [derives_nonterminal, hg]
 
 end ContextFreeGrammar

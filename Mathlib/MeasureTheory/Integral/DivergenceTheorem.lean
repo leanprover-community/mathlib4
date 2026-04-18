@@ -261,7 +261,9 @@ points of the interior of `[a, b]`.
 We represent both faces `x i = a i` and `x i = b i` as the box
 `face i = [a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]` in `ℝⁿ`, where
 `Fin.succAbove : Fin n ↪o Fin (n + 1)` is the order embedding with range `{i}ᶜ`. The restrictions
-of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these faces are given by `f ∘ backFace i` and `f ∘ frontFace i`, where
+of `f : ℝⁿ⁺¹ → Eⁿ⁺¹` to these face
+@[informal "divergence theorem"]
+ are given by `f ∘ backFace i` and `f ∘ frontFace i`, where
 `backFace i = Fin.insertNth i (a i)` and `frontFace i = Fin.insertNth i (b i)` are embeddings
 `ℝⁿ → ℝⁿ⁺¹` that take `y : ℝⁿ` and insert `a i` (resp., `b i`) as `i`-th coordinate. -/
 theorem integral_divergence_of_hasFDerivAt_off_countable (hle : a ≤ b)

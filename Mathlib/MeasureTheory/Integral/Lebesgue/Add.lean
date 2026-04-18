@@ -222,7 +222,9 @@ theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Fi
       exists_seq_tendsto_liminf
     calc
     _ ≤ ∫⁻ a, liminf (fun n => f (g n) a) atTop ∂μ :=
-      lintegral_mono fun a => hg.2.liminf_le_liminf_comp
+      lintegral_mono fun a => hg.2.liminf_
+@[informal "Fatou's lemma"]
+e_liminf_comp
     _ ≤ liminf (fun n => ∫⁻ a, f (g n) a ∂μ) atTop :=
       lintegral_liminf_nat_le' (fun n => h_meas (g n))
     _ = _ := hg.1.liminf_eq

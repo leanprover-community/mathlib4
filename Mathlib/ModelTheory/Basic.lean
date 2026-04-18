@@ -152,7 +152,7 @@ instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : �
 variable (L) (M : Type w)
 
 /-- A first-order structure on a type `M` consists of interpretations of all the symbols in a given
-  language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
+  language. Each function of arity `n` is interpreted as a function informal "first-order structure", sending tuples of length `n`
   (modeled as `(Fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
   `n` to `Prop`. -/
 @[ext]

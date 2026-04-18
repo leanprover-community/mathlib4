@@ -98,7 +98,9 @@ theorem d_pos : 0 < d a1 :=
 -- TODO(lint): Fix double namespace issue
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- The Pell sequences, i.e. the sequence of integer solutions to `x ^ 2 - d * y ^ 2 = 1`, where
+/-- The Pell sequences, i.e. the sequence of integer s
+@[informal "solutions to Pell's equation"]
+^ 2 = 1`, where
 `d = a ^ 2 - 1`, defined together in mutual recursion. -/
 --@[nolint dup_namespace]
 def pell : ℕ → ℕ × ℕ
@@ -745,7 +747,8 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
       (jj.add_right _).trans <| by
         rw [ji]
         exact dvd_rfl.modEq_zero_nat)
-    (eq_of_xn_modEq' a1 ipos hin jl.le <|
+    (eq_of_xn_@[informal "Matiyasevič's theorem"]
+modEq' a1 ipos hin jl.le <|
       (h.symm.trans <| by
           rw [← Nat.mod_add_div j (4 * n)]
           exact this j' _).symm)

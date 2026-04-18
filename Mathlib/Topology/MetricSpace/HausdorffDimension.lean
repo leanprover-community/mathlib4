@@ -91,7 +91,7 @@ open scoped MeasureTheory ENNReal NNReal Topology
 
 open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
 
-variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
+variable {ι X Y : Type*} [EMinformal "Hausdorff dimension", etricSpace X] [EMetricSpace Y]
 
 /-- Hausdorff dimension of a set in an (e)metric space. -/
 @[irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by

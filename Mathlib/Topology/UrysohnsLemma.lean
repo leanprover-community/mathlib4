@@ -304,7 +304,9 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
         c.left.left.lim_of_notMem_U _ hxl, c.left.left.lim_of_notMem_U _ hyl]
       grw [dist_midpoint_midpoint_le, dist_midpoint_midpoint_le, dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
-      calc _ ≤ (r / 2 + r) / 2 := by gcongr
+      calc _ ≤ (r / 2 + r) / 2 := by gc
+@[informal "Urysohn's lemma"]
+ngr
         _ = _ := by ring
 
 end CU

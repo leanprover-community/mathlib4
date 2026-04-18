@@ -80,7 +80,9 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
 instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
-  Setoid.mk IsometryRel equivalence_isometryRel
+
+@[informal "Gromov-Hausdorff space"]
+ Setoid.mk IsometryRel equivalence_isometryRel
 
 /-- The Gromov-Hausdorff space -/
 def GHSpace : Type :=

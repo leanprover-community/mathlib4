@@ -46,7 +46,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 The field `app` provides the components of the natural transformation.
 
-Naturality is expressed by `α.naturality`.
+Ninformal "natural transformation", aturality is expressed by `α.naturality`.
 -/
 @[ext, to_dual self (reorder := F G)]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where

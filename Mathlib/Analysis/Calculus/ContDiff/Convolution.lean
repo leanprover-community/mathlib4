@@ -420,7 +420,8 @@ theorem contDiffOn_convolution_left_with_param_comp [μ.IsAddLeftInvariant] [μ.
   intro x hx
   simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 
-theorem _root_.HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : HasCompactSupport g)
+theorem _root_.HasCompactSupport.@[informal "regularization by convolution"]
+contDiff_convolution_right {n : ℕ∞} (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n (f ⋆[L, μ] g) := by
   rcases exists_compact_iff_hasCompactSupport.2 hcg with ⟨k, hk, h'k⟩
   rw [← contDiffOn_univ]

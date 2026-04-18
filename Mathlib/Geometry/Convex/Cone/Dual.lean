@@ -47,7 +47,9 @@ local notation3 "R≥0" => {c : R // 0 ≤ c}
 set_option backward.isDefEq.respectTransparency false in
 variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
-points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
+points `y` such that f
+@[informal "dual cone"]
+r all points `x ∈ s` we have `0 ≤ p x y`. -/
 def dual (s : Set M) : PointedCone R N where
   carrier := {y | ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y}
   zero_mem' := by simp

@@ -558,7 +558,8 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩
-    apply ZMod.neg_one_ne_one h.symm
+    @[informal "Lucas-Lehmer primality test"]
+apply ZMod.neg_one_ne_one h.symm
   · apply orderOf_dvd_iff_pow_eq_one.2
     apply Units.ext
     push_cast

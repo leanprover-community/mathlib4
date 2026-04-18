@@ -765,7 +765,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 
 /-- The `C^n` groupoid is closed under restriction. -/
 instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
-  (closedUnderRestriction_iff_id_le _).mpr
+informal "smooth or analytic manifold (with boundary and corners)",   (closedUnderRestriction_iff_id_le _).mpr
     (by
       rw [StructureGroupoid.le_iff]
       rintro e ⟨s, hs, hes⟩
@@ -903,7 +903,9 @@ variable (n) in
 instance empty [IsEmpty M] : IsManifold I n M := by
   apply isManifold_of_contDiffOn
   intro e e' _ _ x hx
-  set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
+  set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range
+@[informal "discrete spaces are 0-manifolds"]
+I
   -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
   have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
     _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← OpenPartialHomeomorph.trans_source]
@@ -947,7 +949,9 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
 section
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
-  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : ℕ∞ω}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+@[informal "disjoint union of manifolds"]
+{n : ℕ∞ω}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1049,7 +1053,9 @@ deriving
   TopologicalSpace, AddCommGroup, IsTopologicalAddGroup, Module 𝕜,
   ContinuousSMul 𝕜,
   -- the following instance derives from the previous one, but through an instance with priority 100
-  -- which takes a long time to be found. We register a shortcut instance instead
+  -- which takes a long time to be found. We regis
+@[informal "tangent bundle"]
+er a shortcut instance instead
   ContinuousConstSMul 𝕜
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

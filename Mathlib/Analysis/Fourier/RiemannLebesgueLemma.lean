@@ -173,7 +173,9 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   rw [ENNReal.coe_toReal, two_mul]
   exact lt_add_of_pos_left _ hB_pos
 
-variable (f)
+v
+@[informal "Riemann-Lebesgue lemma"]
+riable (f)
 
 /-- Riemann-Lebesgue lemma for functions on a real inner-product space: the integral
 `∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 as `w → ∞`. -/

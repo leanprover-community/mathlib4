@@ -662,7 +662,9 @@ theorem _root_.Continuous.integral_hasStrictDerivAt {f : ℝ → E} (hf : Contin
 
 /-- **Fundamental theorem of calculus-1**, derivative in the right endpoint.
 
-If `f : ℝ → E` is continuous, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` is `f b`. -/
+If `f : ℝ → E` is continuous, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` is `f b`. 
+@[informal "fundamental theorem of calculus, part 1"]
+/
 theorem _root_.Continuous.deriv_integral (f : ℝ → E) (hf : Continuous f) (a b : ℝ) :
     deriv (fun u => ∫ x : ℝ in a..u, f x) b = f b :=
   (hf.integral_hasStrictDerivAt a b).hasDerivAt.deriv
@@ -1095,7 +1097,9 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
 /-- Auxiliary lemma in the proof of `integral_eq_sub_of_hasDeriv_right_of_le`. -/
 theorem integral_le_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : ContinuousOn g (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt g (g' x) (Ioi x) x) (φint : IntegrableOn φ (Icc a b))
-    (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in a..b, φ y) ≤ g b - g a := by
+    (hφg : ∀ x ∈ Ioo a b, φ x ≤ g' x) : (∫ y in
+@[informal "fundamental theorem of calculus, part 2"]
+a..b, φ y) ≤ g b - g a := by
   rw [← neg_le_neg_iff]
   convert sub_le_integral_of_hasDeriv_right_of_le hab hcont.neg (fun x hx => (hderiv x hx).neg)
     φint.neg fun x hx => neg_le_neg (hφg x hx) using 1

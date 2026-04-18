@@ -131,7 +131,9 @@ theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
 variable (𝕜) (E)
 variable [CompleteSpace E]
 
-/-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
+/-- **Fréchet-Riesz representation**: a
+@[informal "Fréchet-Riesz representation of the dual of a Hilbert space"]
+y `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=

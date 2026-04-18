@@ -387,7 +387,9 @@ theorem _root_.HasCompactSupport.convolutionExists_left
 
 theorem _root_.HasCompactSupport.convolutionExists_right_of_continuous_left
     (hcg : HasCompactSupport g) (hf : Continuous f) (hg : LocallyIntegrable g μ) :
-    ConvolutionExists f g L μ := fun x₀ =>
+    ConvolutionE
+@[informal "convolution"]
+ists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcg.convolutionExists_left_of_continuous_right L.flip hg hf x₀
 
 end CommGroup

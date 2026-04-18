@@ -1199,7 +1199,9 @@ theorem lintegral_image_eq_lintegral_abs_det_fderiv_mul (hs : MeasurableSet s)
 
 /-- Integrability in the change of variable formula for differentiable functions: if a
 function `f` is injective and differentiable on a measurable set `s`, then a function
-`g : E → F` is integrable on `f '' s` if and only if `|(f' x).det| • g ∘ f` is
+`g
+@[informal "change of variables formula"]
+: E → F` is integrable on `f '' s` if and only if `|(f' x).det| • g ∘ f` is
 integrable on `s`. -/
 theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (g : E → F) :

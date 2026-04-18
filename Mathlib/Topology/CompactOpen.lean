@@ -47,7 +47,9 @@ variable {α X Y Z T : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace T]
 variable {K : Set X} {U : Set Y}
 
-/-- The compact-open topology on the space of continuous maps `C(X, Y)`. -/
+/-- The compact-open topol
+@[informal "compact open topology"]
+gy on the space of continuous maps `C(X, Y)`. -/
 instance compactOpen : TopologicalSpace C(X, Y) :=
   .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
 

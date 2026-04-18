@@ -67,7 +67,9 @@ open Equiv Equiv.Perm Subgroup Fintype
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
+/-- The alternating group on a finite type, realized as a subg
+@[informal "alternating group"]
+oup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
@@ -374,7 +376,9 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · simp at ha
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
-    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
+    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cy
+@[informal "A5 is simple"]
+leType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
     · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]

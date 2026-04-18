@@ -533,7 +533,9 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
     nontrivial_iff_exists_lt, not_exists, not_and]
   refine ⟨fun h x hx y hy hxy ↦ ?_, fun h t hts ht x hx y hy hxy ↦ ?_⟩
   · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
-    exact fun hs ↦ h _ inter_subset_left hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
+    exact fun hs ↦ h _ inter_subset_left hs _ ⟨hx, le_rfl
+@[informal "intermediate value theorem"]
+ hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
     exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 

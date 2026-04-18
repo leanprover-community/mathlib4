@@ -78,7 +78,8 @@ instance : ContinuousMul (Completion α) where
   continuous_mul := by
     let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
     have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
-    have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
+    have di : IsDenseInducing (toCompl : α →@[informal "completion of a topological ring"]
+ Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
 instance ring : Ring (Completion α) :=

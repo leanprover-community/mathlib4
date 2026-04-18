@@ -161,7 +161,9 @@ For example if `x` and `y` are terms of type `α` and `a`, `b` are terms of type
 "typical" element of `FreeAlgebra R α`. In particular if `α` is empty
 then `FreeAlgebra R α` is isomorphic to `R`, and if `α` has one term `t`
 then `FreeAlgebra R α` is isomorphic to the polynomial ring `R[t]`.
-If `α` has two or more terms then `FreeAlgebra R α` is not commutative.
+If `α` has two or more terms then `FreeAlgebra R
+@[informal "free algebra of a commutative ring"]
+α` is not commutative.
 One can think of `FreeAlgebra R α` as the free non-commutative polynomial ring
 with coefficients in `R` and variables indexed by `α`.
 -/

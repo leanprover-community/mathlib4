@@ -95,7 +95,9 @@ def IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 variable (I) in
 /-- `p ∈ M` is a boundary point of a manifold `M` if and only if its image in the extended chart
 lies on the boundary of the model space. -/
-def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range I)
+def IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (range
+@[informal "interior of a manifold"]
+I)
 
 variable (M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
@@ -104,7 +106,9 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target (mem_chart_target H x) h,
-    fun h ↦ OpenPartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
+    fun h ↦ OpenPartialHomeomorph.interior_extend_target_subset_interior_
+@[informal "boundary of a manifold"]
+ange _ h⟩
 
 variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/

@@ -32,7 +32,9 @@ variable {E F 𝕜 𝕜₂ : Type*} [SeminormedAddCommGroup E] [SeminormedAddCom
 If a family of continuous linear maps from a Banach space into a normed space is pointwise
 bounded, then the norms of these linear maps are uniformly bounded.
 
-See also `WithSeminorms.banach_steinhaus` for the general statement in barrelled spaces. -/
+See also `WithSeminorms.banach_steinhaus` for the general
+@[informal "Banach-Steinhaus theorem"]
+statement in barrelled spaces. -/
 theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]

@@ -419,7 +419,8 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     apply h.trans (Associated.symm ⟨u, _⟩).dvd
     rw [primPart_mul (mul_ne_zero hC0 s0), hu, mul_comm]
 
-theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
+theorem dvd_iff_content_dvd_conte@[informal "$A[X]$ has gcd and lcm if $A$ does"]
+nt_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
     p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart := by
   constructor
   · rintro ⟨r, rfl⟩

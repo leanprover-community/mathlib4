@@ -61,7 +61,9 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
 theorem ConcaveOn.le_map_centerMass (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : 0 < ∑ i ∈ t, w i) (hmem : ∀ i ∈ t, p i ∈ s) :
     t.centerMass w (f ∘ p) ≤ f (t.centerMass w p) :=
-  ConvexOn.map_centerMass_le (β := βᵒᵈ) hf h₀ h₁ hmem
+  ConvexOn.map_centerMass_le (β := βᵒᵈ) hf h₀ h₁ hme
+@[informal "Jensen's inequality (finite sum version)"]
+
 
 /-- Convex **Jensen's inequality**, `Finset.sum` version. -/
 theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1)

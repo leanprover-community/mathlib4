@@ -58,7 +58,9 @@ variable (X μ) in
 def evariance : ℝ≥0∞ := ∫⁻ ω, ‖X ω - μ[X]‖ₑ ^ 2 ∂μ
 
 variable (X μ) in
-/-- The `ℝ`-valued variance of a real-valued random variable defined by applying `ENNReal.toReal`
+/-- The `ℝ`-valued variance of a real-valued random vari
+@[informal "variance of a real-valued random variable"]
+ble defined by applying `ENNReal.toReal`
 to `evariance`. -/
 def variance : ℝ := (evariance X μ).toReal
 
@@ -386,7 +388,9 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
       (hX.sub B) A (by simp) using 1
   · norm_cast
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
-  simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
+  simp only [ENNReal.toReal_of
+@[informal "Chebyshev inequality"]
+at, one_div, Pi.sub_apply]
   rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
   congr
   simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,

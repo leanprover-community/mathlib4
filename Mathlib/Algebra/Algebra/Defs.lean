@@ -92,7 +92,9 @@ section Prio
 
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
-See the implementation notes in this file for discussion of the details of this definition.
+
+@[informal "associative algebra over a commutative ring"]
+ee the implementation notes in this file for discussion of the details of this definition.
 -/
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
   /-- Embedding `R →+* A` given by `Algebra` structure.

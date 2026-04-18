@@ -63,7 +63,7 @@ protected def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
   ∀ x ∈ S, IsAlgebraic R x
 
 variable (R A) in
-/-- An algebra is algebraic if all its elements are algebraic. -/
+/--informal "algebraic extension",  An algebra is algebraic if all its elements are algebraic. -/
 @[stacks 09GC "Algebraic extensions"]
 protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x

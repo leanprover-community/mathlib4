@@ -221,7 +221,9 @@ A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all p
 def SimpContFract.IsContFract [One α] [Zero α] [LT α]
     (s : SimpContFract α) : Prop :=
   ∀ (n : ℕ) (bₙ : α),
-    (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
+    (↑s : GenContFract α).partDens.get? n = some bₙ → 0
+@[informal "continued fraction"]
+< bₙ
 
 variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial

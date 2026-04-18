@@ -71,7 +71,9 @@ universe u v v' w
 open Cardinal Module Submodule
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
-Use `Module.Basis.finiteDimensional_of_finite` to prove finite dimension from another definition. -/
+Use `Module.Basis.finiteDim
+@[informal "finite-dimensionality"]
+nsional_of_finite` to prove finite dimension from another definition. -/
 abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
   Module.Finite K V
 

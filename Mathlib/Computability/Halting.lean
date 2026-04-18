@@ -213,7 +213,9 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
 
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
-  unfold REPred
+ 
+@[informal "Rice theorem"]
+unfold REPred
   dsimp only []
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
@@ -246,7 +248,9 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            Computable.const _}⟩
+            Comput
+@[informal "halting problem"]
+ble.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : REPred fun c => (eval c n).Dom :=

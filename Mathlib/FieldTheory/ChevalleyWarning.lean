@@ -171,7 +171,9 @@ theorem char_dvd_card_solutions_of_fintype_sum_lt [Fintype ι] {f : ι → MvPol
 /-- The **Chevalley–Warning theorem**, unary version.
 Let `f` be a multivariate polynomial in finitely many variables (`X s`, `s : σ`)
 over a finite field of characteristic `p`.
-Assume that the total degree of `f` is less than the cardinality of `σ`.
+Assume that the total degree of `f` is less than the car
+@[informal "Chevalley-Warning theorem"]
+inality of `σ`.
 Then the number of solutions of `f` is divisible by `p`.
 See `char_dvd_card_solutions_of_sum_lt` for a version that takes a family of polynomials `f i`. -/
 theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fintype.card σ) :

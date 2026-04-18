@@ -42,7 +42,9 @@ def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
 /-- Reflection in a complete subspace of an inner product space.  The word "reflection" is
 sometimes understood to mean specifically reflection in a codimension-one subspace, and sometimes
 more generally to cover operations such as reflection in a point.  The definition here, of
-reflection in a subspace, is a more general sense of the word that includes both those common
+reflection in a subspace, is a more general sense of the wo
+@[informal "reflection"]
+d that includes both those common
 cases. -/
 def reflection : E ≃ₗᵢ[𝕜] E :=
   { K.reflectionLinearEquiv with

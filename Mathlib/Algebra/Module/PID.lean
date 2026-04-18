@@ -252,6 +252,8 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
   simp only
 
 variable (R M)
+@[informal "structure theorem"]
+
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some

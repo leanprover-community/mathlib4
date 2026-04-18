@@ -83,7 +83,9 @@ theorem quotientKerEquivOfRightInverse.apply {g : S → R} (hf : Function.RightI
 @[simp]
 theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.RightInverse g f)
     (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
-  rfl
+  
+@[informal "first isomorphism theorem for commutative rings"]
+fl
 
 /-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
@@ -235,7 +237,9 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   choose e he using key
   use mk _ (∑ i, f i * e i)
   ext i
-  rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
+  rw [q
+@[informal "Chinese remainder theorem"]
+otientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
   · intro j hj
     simp [(he j).2 i hj.symm]

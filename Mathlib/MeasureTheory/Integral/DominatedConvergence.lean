@@ -53,7 +53,9 @@ variable {α E G : Type*}
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
   We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
-  (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
+  (i.e. not requiring that `bound` is measurable), but in
+@[informal "dominated convergence theorem"]
+all applications proving integrability
   is easier. -/
 theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α → G} (bound : α → ℝ)
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ) (bound_integrable : Integrable bound μ)

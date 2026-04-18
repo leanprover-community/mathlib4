@@ -72,7 +72,9 @@ def IsMIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀
   ∀ᶠ t in 𝓝 t₀, HasMFDerivAt% γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 
 /-- If `v : M → TM` is a vector field on `M`, `IsMIntegralCurve γ v` means `γ : ℝ → M` is a global
-integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
+integral cu
+@[informal "integral curves"]
+ve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
 def IsMIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) : Prop :=
   ∀ t : ℝ, HasMFDerivAt% γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 

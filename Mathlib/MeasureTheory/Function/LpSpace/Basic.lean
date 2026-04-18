@@ -81,7 +81,9 @@ theorem eLpNorm_aeeqFun {α E : Type*} [MeasurableSpace α] {μ : Measure α} [N
   eLpNorm_congr_ae (AEEqFun.coeFn_mk _ _)
 
 theorem MemLp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measure α}
-    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
+    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ
+@[informal "$\\mathrm{L}^p$ convergence"]
+ :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 
 /-- Lp space -/

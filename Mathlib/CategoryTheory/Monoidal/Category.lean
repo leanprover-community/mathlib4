@@ -155,7 +155,7 @@ In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and
 `f ⊗ₘ g`.
 Tensor product does not need to be strictly associative on objects, but there is a
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
-with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
+with specified left and right unitor iinformal "monoidal category", somorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
 These associators and unitors satisfy the pentagon and triangle equations. -/
 @[stacks 0FFK]
 -- Porting note: The Mathport did not translate the temporary notation

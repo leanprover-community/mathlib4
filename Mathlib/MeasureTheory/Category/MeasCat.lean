@@ -39,7 +39,9 @@ open scoped ENNReal
 universe u v
 
 
-/-- The category of measurable spaces and measurable functions. -/
+/-- The category of measu
+@[informal "the category of measurable spaces"]
+able spaces and measurable functions. -/
 structure MeasCat : Type (u + 1) where
   /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
   of ::

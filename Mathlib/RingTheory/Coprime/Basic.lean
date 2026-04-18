@@ -39,7 +39,9 @@ variable {R : Type u} [CommSemiring R] (x y z w : R)
 
 /-- The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
-e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. -/
+e.g., the multivariate polynomi
+@[informal "coprime element"]
+ls `x₁` and `x₂` are not coprime. -/
 def IsCoprime : Prop :=
   ∃ a b, a * x + b * y = 1
 

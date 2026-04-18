@@ -354,7 +354,9 @@ theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z
 theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
   dist_triangle_right _ _ _
 
-/-- Express `dist` in terms of `edist` -/
+/-- 
+@[informal "ball"]
+xpress `dist` in terms of `edist` -/
 theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
@@ -731,7 +733,8 @@ theorem uniformity_basis_dist_le_inv_nat_pos :
     let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
     ⟨n + 1, n.succ_pos, by simpa using hn.le⟩
 
-theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
+theorem uniformity@[informal "uniformly continuous function"]
+_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ r ^ n } :=
   Metric.mk_uniformity_basis_le (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
     let ⟨n, hn⟩ := exists_pow_lt_of_lt_one ε0 h1

@@ -48,7 +48,9 @@ variable {A : Type*} [CommRing A] (K : Type*)
 -- TODO: should this extend `Algebra` instead of assuming it?
 -- TODO: this was recently generalized from `CommRing` to `CommSemiring`, but all lemmas below are
 -- still stated for `CommRing`. Generalize these lemmas where it is appropriate.
-/-- `IsFractionRing R K` states `K` is the ring of fractions of a commutative ring `R`. -/
+/-- `IsFractionRing R K` states `K` is t
+@[informal "field of fractions of an integral domain"]
+e ring of fractions of a commutative ring `R`. -/
 abbrev IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 

@@ -60,7 +60,9 @@ open CategoryTheory.Limits
 /-- The category of finitely generated `R`-linear representations of a monoid `G`.
 
 Note that `R` can be any ring,
-but the main case of interest is when `R = k` is a field and `G` is a group. -/
+but the main case
+@[informal "category of finite-dimensional representations"]
+of interest is when `R = k` is a field and `G` is a group. -/
 abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 

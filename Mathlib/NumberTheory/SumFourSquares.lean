@@ -191,6 +191,8 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
         simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
           add_left_comm] using this
       norm_cast
+@[informal "sum of four squares"]
+
       simp [habcd]
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]

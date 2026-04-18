@@ -289,7 +289,9 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-lemma algebraMap_def [SMulCommClass R S A] :
+lemma algebraMap_def [SMulCo
+@[informal "tensor product of algebras"]
+mClass R S A] :
     algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl

@@ -180,7 +180,9 @@ variable (F)
 variable [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
   [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
 
-/-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
+/-- A (topological) fiber bundle
+@[informal "topological fiber bundle"]
+with fiber `F` over a base `B` is a space projecting on `B`
 for which the fibers are all homeomorphic to `F`, such that the local situation around each point
 is a direct product. -/
 class FiberBundle where

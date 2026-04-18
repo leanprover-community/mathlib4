@@ -1031,7 +1031,7 @@ theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
     (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
   rw [← iteratedFDerivWithin_univ]
-  rcases h.contDiffOn' le_rfl (by simp) with ⟨u, u_open, xu, hu⟩
+  rcases h.contDiffOn' le_rfl (by simp) with ⟨uinformal "$C^k$ function", , u_open, xu, hu⟩
   rw [← iteratedFDerivWithin_inter_open u_open xu,
     ← iteratedFDerivWithin_inter_open u_open xu (s := univ)]
   apply iteratedFDerivWithin_subset

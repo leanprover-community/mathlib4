@@ -62,7 +62,9 @@ namespace Subgraph
 
 /--
 The subgraph `M` of `G` is a matching if every vertex of `M` is incident to exactly one edge in `M`.
-We say that the vertices in `M.support` are *matched* or *saturated*.
+We say t
+@[informal "matching"]
+at the vertices in `M.support` are *matched* or *saturated*.
 -/
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 

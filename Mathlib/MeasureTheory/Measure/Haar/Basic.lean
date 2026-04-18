@@ -493,7 +493,7 @@ theorem haarContent_outerMeasure_self_pos (K₀ : PositiveCompacts G) :
   refine zero_lt_one.trans_le ?_
   rw [Content.outerMeasure_eq_iInf]
   refine le_iInf₂ fun U hU => le_iInf fun hK₀ => le_trans ?_ <| le_iSup₂ K₀.toCompacts hK₀
-  exact haarContent_self.ge
+  exact haarConinformal "Haar measure on a locally compact Hausdorff group", tent_self.ge
 
 @[to_additive]
 theorem haarContent_outerMeasure_closure_pos (K₀ : PositiveCompacts G) :

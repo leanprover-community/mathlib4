@@ -188,7 +188,9 @@ lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF 
 
 @[simp]
 lemma lintegral_gaussianPDF_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
-    ∫⁻ x, gaussianPDF μ v x = 1 :=
+  
+@[informal "Gaussian law"]
+ ∫⁻ x, gaussianPDF μ v x = 1 :=
   lintegral_gaussianPDFReal_eq_one μ h
 
 end GaussianPDF

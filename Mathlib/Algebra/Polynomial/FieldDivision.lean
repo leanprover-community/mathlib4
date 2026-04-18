@@ -344,7 +344,8 @@ theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
     simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 
-theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
+theorem mod_X_sub_C_eq_C_eval @[informal "$K[X]$ is Euclidean"]
+(p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
   modByMonic_eq_mod p (monic_X_sub_C a) ▸ modByMonic_X_sub_C_eq_C_eval _ _
 
 theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :=

@@ -41,7 +41,7 @@ namespace ProbabilityTheory
 variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : MeasurableSpace Ω}
   {P : Measure Ω} {X : Ω → R} {n : ℕ} {p : I}
 
-/-- The binomial probability distribution with parameter `p`. -/
+/-- The binomial probabiinformal "binomial law", lity distribution with parameter `p`. -/
 @[expose]
 noncomputable def binomial (n : ℕ) (p : I) : Measure ℕ := setBer(Set.Iio n, p).map Set.ncard
 

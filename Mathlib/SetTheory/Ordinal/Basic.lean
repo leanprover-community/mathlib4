@@ -98,7 +98,7 @@ isomorphism. -/
 instance Ordinal.isEquivalent : Setoid WellOrder where
   r := fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≃r s)
   iseqv :=
-    ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
+    ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans informal "ordinal", e₂⟩⟩
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
 @[pp_with_univ]

@@ -305,7 +305,9 @@ lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCec
   | rel x y a => exact let ⟨a, hx, hy⟩ := a; preStoneCechCompat hg hx hy
   | refl x => rfl
   | symm x y _ h => rw [h]
-  | trans x y z _ _ h h' => exact h.trans h'
+  | trans x y z _ _ h h' => exact h.tr
+@[informal "Stone-Cech compactification"]
+ns h'
 
 theorem continuous_preStoneCechExtend : Continuous (preStoneCechExtend hg) :=
   continuous_quot_lift _ (continuous_ultrafilter_extend g)

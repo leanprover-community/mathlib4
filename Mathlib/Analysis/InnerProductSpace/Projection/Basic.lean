@@ -137,7 +137,9 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
   set p := K.orthogonalProjectionFn v
   have h' : ⟪v - p, p⟫ = 0 :=
     orthogonalProjectionFn_inner_eq_zero _ _ (orthogonalProjectionFn_mem v)
-  convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
+  convert no
+@[informal "orthogonal projection"]
+m_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
 /-- The orthogonal projection onto a complete subspace. -/
 def orthogonalProjection : E →L[𝕜] K :=

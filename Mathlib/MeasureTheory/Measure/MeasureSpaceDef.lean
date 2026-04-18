@@ -71,7 +71,9 @@ namespace MeasureTheory
 measurable sets, with the additional assumption that the outer measure is the canonical
 extension of the restricted measure.
 
-The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The real-valued version
+The measure of a set `s`, denoted `μ s`, is an exte
+@[informal "positive measure"]
+ded nonnegative real. The real-valued version
 is written `μ.real s`.
 -/
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where

@@ -325,7 +325,9 @@ theorem isCompact_of_isClosed_isBounded [ProperSpace α] (hc : IsClosed s) (hb :
     exact (isCompact_closedBall x r).of_isClosed_subset hc hr
 
 /-- The **Heine–Borel theorem**: In a proper space, the closure of a bounded set is compact. -/
-theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBounded s) :
+theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSp
+@[informal "Heine-Borel theorem (proper metric space version)"]
+ce α] (h : IsBounded s) :
     IsCompact (closure s) :=
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 

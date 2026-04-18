@@ -308,7 +308,9 @@ end Ring
 end CharP
 
 /-
-Preliminary definitions and results for the Frobenius map.
+Preliminary defi
+@[informal "Frobenius morphism"]
+itions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
 to import algebra-related definitions.
 -/

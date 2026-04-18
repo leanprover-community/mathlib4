@@ -419,7 +419,9 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   · cases h𝒜₁.card_pos.ne hm
   obtain ⟨s, 𝒜, hs, rfl, rfl⟩ := card_eq_succ.1 hm.symm
   have h𝒜 : 𝒜.Nonempty := by by_contra! rfl; simp at h𝒜₃
-  rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSum_infs _ _), singleton_infs,
+  rw [insert_eq, eq_sub_of_add_eq (supSum_union_add_supSu
+@[informal "Ahlswede-Zhang identity"]
+_infs _ _), singleton_infs,
     supSum_singleton (ne_of_mem_of_not_mem (mem_insert_self _ _) h𝒜₂), ih, ih, add_sub_cancel_right]
   · exact card_image_le.trans_lt (lt_add_one _)
   · exact h𝒜.image _

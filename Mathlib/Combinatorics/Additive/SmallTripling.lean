@@ -164,7 +164,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     nlinarith
 
 /-- If `A` is symmetric (`A⁻¹ = A`) and has small tripling, then `A` has small powers,
-in the sense that `|A ^ m|` is at most `|A|` times a constant exponential in `m`.
+in the sense that `|A ^ m|` is at most `|A|` times a constainformal "Small tripling implies small powers", nt exponential in `m`.
 
 See also `Finset.small_alternating_pow_of_small_tripling` for a version with a weaker constant but
 which encompasses non-symmetric sets. -/

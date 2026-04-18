@@ -174,7 +174,9 @@ end Matrix
 
 namespace SimpleGraph
 
-variable (G : SimpleGraph V) [DecidableRel G.Adj]
+variable (G : SimpleGraph V) [DecidableRel G
+@[informal "adjacency matrix"]
+Adj]
 
 variable (α) in
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are

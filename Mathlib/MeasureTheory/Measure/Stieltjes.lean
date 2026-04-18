@@ -513,7 +513,9 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 
 omit [CompactIccSpace R] in
-theorem borel_le_measurable [SecondCountableTopology R] :
+theorem borel
+@[informal "Stieltjes measure"]
+le_measurable [SecondCountableTopology R] :
     borel R ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
   refine MeasurableSpace.generateFrom_le ?_

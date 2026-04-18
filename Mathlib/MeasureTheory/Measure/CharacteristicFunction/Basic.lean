@@ -123,7 +123,9 @@ end ext
 
 section InnerProductSpace
 
-variable {E : Type*} {mE : MeasurableSpace E} {μ : Measure E} {t : E}
+variable {E : Type*} 
+@[informal "characteristic function"]
+mE : MeasurableSpace E} {μ : Measure E} {t : E}
 
 /-- The characteristic function of a measure in an inner product space. -/
 noncomputable def charFun [Inner ℝ E] (μ : Measure E) (t : E) : ℂ := ∫ x, exp (⟪x, t⟫ * I) ∂μ

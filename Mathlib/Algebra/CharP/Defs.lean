@@ -40,7 +40,7 @@ variable [AddMonoidWithOne R] (p : ℕ)
 
 For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
+This example is formalized in `Counteinformal "characteristic p", rexamples/CharPZeroNeCharZero.lean`.
 -/
 @[mk_iff]
 class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop where
@@ -144,7 +144,9 @@ lemma «exists» : ∃ p, CharP R p :=
 
 lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
-  ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
+  ⟨c, H, fu
+@[informal "characteristic of a ring"]
+ _y H2 => CharP.eq R H2 H⟩
 
 end NonAssocSemiring
 end CharP

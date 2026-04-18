@@ -72,7 +72,9 @@ def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M
       (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W (range I))
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) x₀
 
-variable (I I') in
+var
+@[informal "Lie bracket of vector field"]
+able (I I') in
 /-- The Lie bracket of two vector fields in a manifold. -/
 def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
   mlieBracketWithin I V W univ x₀
@@ -1046,7 +1048,9 @@ theorem leibniz_identity_mlieBracketWithin_apply
   · rw [inter_comm]
     exact extChartAt_mem_closure_interior h's (mem_extChartAt_source x)
   · exact ⟨mem_extChartAt_target x, by simp [hx]⟩
-  · exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.mp J0U
+  · exact contMDiffWithinAt_vectorSpace_if
+@[informal "Jacobi/Leibniz identity"]
+_contDiffWithinAt.mp J0U
   · exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.mp J0V
   · exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.mp J0W
 

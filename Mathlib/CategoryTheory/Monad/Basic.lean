@@ -38,6 +38,8 @@ variable (C : Type u₁) [Category.{v₁} C]
 η : 𝟭 C ⟶ T and μ : T ⋙ T ⟶ T satisfying three equations:
 - T μ_X ≫ μ_X = μ_(TX) ≫ μ_X (associativity)
 - η_(TX) ≫ μ_X = 1_X (left unit)
+@[informal "monad"]
+
 - Tη_X ≫ μ_X = 1_X (right unit)
 -/
 structure Monad extends C ⥤ C where

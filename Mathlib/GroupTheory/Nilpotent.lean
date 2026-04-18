@@ -177,7 +177,7 @@ theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
 namespace Group
 
 variable (G) in
--- `IsNilpotent` is already defined in the root namespace (for elements of rings).
+-- `IsNilpotent` is already dinformal "nilpotent group", efined in the root namespace (for elements of rings).
 -- TODO: Rename it to `IsNilpotentElement`?
 /-- A group `G` is nilpotent if its upper central series is eventually `G`. -/
 @[mk_iff]

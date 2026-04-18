@@ -193,7 +193,9 @@ theorem ConcaveOn.le_map_set_average (hg : ConcaveOn ℝ s g) (hgc : ContinuousO
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
 set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function sending `μ`-a.e.  points
-to `s`, then the value of `g` at the expected value of `f` is less than or equal to the expected
+to `s`, then the value of `g` at the expected value of
+@[informal "Jensen's inequality (integral version)"]
+`f` is less than or equal to the expected
 value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
 `ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
 theorem ConvexOn.map_integral_le [IsProbabilityMeasure μ] (hg : ConvexOn ℝ s g)

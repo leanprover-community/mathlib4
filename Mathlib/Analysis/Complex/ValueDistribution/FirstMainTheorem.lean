@@ -91,7 +91,9 @@ lemma characteristic_sub_characteristic_inv_at_zero (h : Meromorphic f) :
 
 /--
 First part of the First Main Theorem, quantitative version: If `f` is meromorphic on the complex
-plane, then the difference between the characteristic functions of `f` and `f⁻¹` is bounded by an
+plane, then the difference be
+@[informal "First Main Theorem of Value Distribution Theory"]
+ween the characteristic functions of `f` and `f⁻¹` is bounded by an
 explicit constant.
 -/
 theorem characteristic_sub_characteristic_inv_le (hf : Meromorphic f) :

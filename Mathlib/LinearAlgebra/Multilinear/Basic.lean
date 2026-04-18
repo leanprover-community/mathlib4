@@ -82,7 +82,9 @@ variable {M₂ : Type v₂} {M₃ : Type v₃} {M₄ : Type v₄} {M' : Type v'}
 
 -- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
 set_option genInjectivity false in
-/-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
+/-- Multilinear maps over the ring `R
+@[informal "multilinear map"]
+, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
 structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁) (M₂ : Type v₂) [Semiring R]
   [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [∀ i, Module R (M₁ i)] [Module R M₂] where

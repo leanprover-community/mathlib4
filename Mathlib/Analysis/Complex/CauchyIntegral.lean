@@ -535,7 +535,9 @@ complex differentiable at all but countably many points of its interior, then fo
 interior we have $\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$.
 -/
 theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ} {c w : ℂ} {f : ℂ → E}
-    {s : Set ℂ} (hs : s.Countable) (hw : w ∈ ball c R) (hc : ContinuousOn f (closedBall c R))
+    {s : Set ℂ} (hs : s.Countable) (hw : w ∈ ball c R) (hc : ContinuousOn f (clos
+@[informal "Cauchy integral formula"]
+dBall c R))
     (hd : ∀ x ∈ ball c R \ s, DifferentiableAt ℂ f x) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w := by
   rw [← two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
@@ -617,7 +619,9 @@ theorem _root_.DiffContOnCl.hasFPowerSeriesOnBall {R : ℝ≥0} {c : ℂ} {f : �
 
 /-- If `f : ℂ → E` is complex differentiable on a closed disc of positive radius, then it is
 analytic on the corresponding open disc, and the coefficients of the power series are given by
-Cauchy integral formulas. See also
+Cauchy integral
+@[informal "analyticity of holomorphic functions"]
+formulas. See also
 `Complex.hasFPowerSeriesOnBall_of_differentiable_off_countable` for a version of this lemma with
 weaker assumptions. -/
 protected theorem _root_.DifferentiableOn.hasFPowerSeriesOnBall {R : ℝ≥0} {c : ℂ} {f : ℂ → E}

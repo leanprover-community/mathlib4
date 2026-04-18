@@ -49,7 +49,9 @@ section Monoid
 
 variable {G : Type u} [Monoid G]
 
-/-- The character of a representation `V : FDRep k G` is the function associating to `g : G` the
+/-- The character of a representation `V : FDRep k G` is the function associating 
+@[informal "character"]
+o `g : G` the
 trace of the linear map `V.ρ g`. -/
 def character (V : FDRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
@@ -124,7 +126,9 @@ variable {G : Type u} [Group G] [IsAlgClosed k]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 open scoped Classical in
-/-- Orthogonality of characters for irreducible representations of finite group over an
+/-- Orthogonality of characters for irreducible rep
+@[informal "orthogonality of characters"]
+esentations of finite group over an
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     ⅟(Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =

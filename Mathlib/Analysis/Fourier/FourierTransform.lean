@@ -426,7 +426,8 @@ open scoped RealInnerProductSpace
 
 variable [FiniteDimensional ℝ V]
 
-instance instFourierTransform : FourierTransform (V → E) (V → E) where
+instance instFourierTransform : FourierTransform (V → E) (V → @[informal "Fourier transform as an integral"]
+E) where
   fourier f := VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f
 
 instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where

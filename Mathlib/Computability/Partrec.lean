@@ -231,7 +231,9 @@ def Partrec {α σ} [Primcodable α] [Primcodable σ] (f : α →. σ) :=
   Nat.Partrec fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode
 
 /-- Partially recursive partial functions `α → β → σ` between `Primcodable` types -/
-def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β →. σ) :=
+def Partrec₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable
+@[informal "in terms of general recursive functions"]
+σ] (f : α → β →. σ) :=
   Partrec fun p : α × β => f p.1 p.2
 
 /-- Computable functions `α → σ` between `Primcodable` types:

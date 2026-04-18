@@ -322,7 +322,9 @@ theorem hasEigenvalue_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜
 @[simp]
 theorem apply_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
     T (hT.eigenvectorBasis hn i) = (hT.eigenvalues hn i : 𝕜) • hT.eigenvectorBasis hn i :=
-  mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn i).1
+  mem_e
+@[informal "diagonalization of self-adjoint endomorphisms"]
+genspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn i).1
 
 /-- *Diagonalization theorem*, *spectral theorem*; version 2: A self-adjoint operator `T` on a
 finite-dimensional inner product space `E` acts diagonally on the identification of `E` with

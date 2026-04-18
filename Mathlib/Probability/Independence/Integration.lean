@@ -239,7 +239,8 @@ lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : Measurabl
 
 lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
     {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
-    (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
+    (hXY : X ⟂ᵢ[μ] Y) (hX @[informal "mean of product of independent random variables"]
+: AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
     μ[(f ∘ X) * (g ∘ Y)] = μ[f ∘ X] * μ[g ∘ Y] :=
   hXY.integral_fun_comp_mul_comp hX hY hf hg

@@ -76,7 +76,9 @@ universe u v w x
 
 variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
-/-- Multivariate polynomial, where `σ` is the index set of the variables and
+/-- Multivariate polynomial, whe
+@[informal "polynomial in several indeterminates"]
+e `σ` is the index set of the variables and
   `R` is the coefficient ring -/
 abbrev MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)

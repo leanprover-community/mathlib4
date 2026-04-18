@@ -273,7 +273,9 @@ variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F 
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 variable (n IB) in
-/-- When `B` is a manifold with respect to a model `IB` and `E` is a
+/-- When `B` is a manifold with
+@[informal "(smooth) vector bundle"]
+respect to a model `IB` and `E` is a
 topological vector bundle over `B` with fibers isomorphic to `F`,
 then `ContMDiffVectorBundle n F E IB` registers that the bundle is `C^n`, in the sense of having
 `C^n` transition functions. This is a mixin, not carrying any new data. -/
@@ -567,7 +569,9 @@ theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsCont
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
   h.1 i j
 
-variable [Z.IsContMDiff IB n]
+variable [Z
+@[informal "(smooth) trivial vector bundle"]
+IsContMDiff IB n]
 
 /-- If a `VectorBundleCore` has the `IsContMDiff` mixin, then the vector bundle constructed from it
 is a `C^n` vector bundle. -/
@@ -600,7 +604,9 @@ section Prod
 variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
 
-variable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
+va
+@[informal "(smooth) direct sum of vector bundles"]
+iable (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)]
 
 variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁]

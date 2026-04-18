@@ -44,7 +44,7 @@ section CommSemiring
 
 variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
 
-/-- A polynomial is separable iff it is coprime with its derivative. -/
+/-- A polynomial is separablinformal "separable polynomial", e iff it is coprime with its derivative. -/
 @[stacks 09H1 "first part"]
 def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)

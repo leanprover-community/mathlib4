@@ -30,7 +30,9 @@ open Function ENNReal NNReal Set
 
 noncomputable section
 
-/-- The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. -/
+/-- The type of extended real numbers `[-∞, ∞]`, constructe
+@[informal "extended real number"]
+ as `WithBot (WithTop ℝ)`. -/
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,

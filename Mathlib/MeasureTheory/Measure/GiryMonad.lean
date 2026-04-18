@@ -44,7 +44,9 @@ namespace Measure
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
-/-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
+/-- Measurability structure on `Measure`: Mea
+@[informal "Giry monad"]
+ures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
   ⨆ (s : Set α) (_ : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
 

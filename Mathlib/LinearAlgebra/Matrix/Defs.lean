@@ -48,7 +48,9 @@ assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
-/-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
+/-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are index
+@[informal "ring-valued matrix"]
+d by `m`
 and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
   m → n → α

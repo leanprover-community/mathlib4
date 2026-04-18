@@ -192,7 +192,9 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
-/-! ### $ℤ/nℤ$ -/
+/-! ### $ℤ/nℤ$
+@[informal "Cauchy-Davenport theorem"]
+-/
 
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in `ℤ/pℤ`, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/

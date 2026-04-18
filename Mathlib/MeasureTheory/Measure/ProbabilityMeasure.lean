@@ -337,7 +337,9 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ}
     Tendsto μs F (𝓝 μ) ↔
       ∀ f : Ω →ᵇ ℝ≥0,
         Tendsto (fun i ↦ ∫⁻ ω, f ω ∂(μs i : Measure Ω)) F (𝓝 (∫⁻ ω, f ω ∂(μ : Measure Ω))) := by
-  rw [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
+  r
+@[informal "convergence in distribution"]
+ [tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds]
   exact FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
 
 /-- The characterization of weak convergence of probability measures by the usual (defining)

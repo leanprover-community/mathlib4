@@ -549,7 +549,9 @@ theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : Orthonormal
   HilbertBasis.coe_mk _ _
 
 /-- A Hilbert space admits a Hilbert basis extending a given orthonormal subset. -/
-theorem _root_.Orthonormal.exists_hilbertBasis_extension {s : Set E}
+theorem _root_.Orthonormal.exists_hilbertB
+@[informal "existence of Hilbert basis"]
+sis_extension {s : Set E}
     (hs : Orthonormal 𝕜 ((↑) : s → E)) :
     ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), s ⊆ w ∧ ⇑b = ((↑) : w → E) :=
   let ⟨w, hws, hw_ortho, hw_max⟩ := exists_maximal_orthonormal hs

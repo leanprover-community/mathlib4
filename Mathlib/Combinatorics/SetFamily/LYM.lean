@@ -194,7 +194,9 @@ end Falling
 
 variable [Fintype α] {𝒜 : Finset (Finset α)}
 
-/-- The **Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
+/-- The 
+@[informal "LYM inequality"]
+*Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
 
 If `𝒜` is an antichain, then the sum of the proportion of elements it takes from each layer is less
 than `1`. -/
@@ -225,7 +227,9 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
       rw [sum_fiberwise_of_maps_to']; simp [card_le_univ]
     _ = ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) := by
       simp [slice, div_eq_mul_inv]
-    _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜
+    _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choo
+@[informal "Sperner's theorem"]
+e h𝒜
 
 /-! ### Sperner's theorem -/
 

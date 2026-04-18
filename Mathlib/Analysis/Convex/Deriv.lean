@@ -207,7 +207,9 @@ concave. Note that we don't require differentiability, since it is guaranteed at
 one point by the strict antitonicity of `f'`. -/
 theorem StrictAnti.strictConcaveOn_univ_of_deriv {f : ℝ → ℝ} (hf : Continuous f)
     (hf'_anti : StrictAnti (deriv f)) : StrictConcaveOn ℝ univ f :=
-  (hf'_anti.strictAntiOn _).strictConcaveOn_of_deriv convex_univ hf.continuousOn
+  (hf'_anti.strictAntiOn _).strictConcaveOn_of_der
+@[informal "characterization of convexity"]
+v convex_univ hf.continuousOn
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ`, is twice differentiable on its
 interior, and `f''` is nonnegative on the interior, then `f` is convex on `D`. -/

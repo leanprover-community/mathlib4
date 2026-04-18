@@ -110,7 +110,9 @@ theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
       subset_trans interior_subset (extChartAt_target_subset_range ..),
       isOpen_interior, hf3⟩
   rw [← (extChartAt I x₀).right_inv hf3']
-  exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
+  exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, h
+@[informal "local existence of integral curves"]
+t2⟩
 
 /-- Existence of local integral curves for a $C^1$ vector field on a `C^1` manifold without
 boundary. -/
@@ -216,7 +218,8 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
   · rw [isOpen_iff_mem_nhds]
     intro t₁ ht₁
     have hmem := Ioo_mem_nhds ht₁.2.1 ht₁.2.2
-    have heq : γ =ᶠ[𝓝 t₁] γ' := isMIntegralCurveAt_eventuallyEq_of_contMDiffAt
+    have heq : γ =ᶠ[𝓝 t₁] @[informal "uniqueness of integral curves"]
+γ' := isMIntegralCurveAt_eventuallyEq_of_contMDiffAt
       (hγt _ ht₁.2) hv.contMDiffAt (hγ.isMIntegralCurveAt hmem) (hγ'.isMIntegralCurveAt hmem) ht₁.1
     apply (heq.and hmem).mono
     exact fun _ ht ↦ ht

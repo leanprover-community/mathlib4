@@ -85,7 +85,9 @@ open Measure
 lemma lintegral_exponentialPDF_eq_one {r : ℝ} (hr : 0 < r) : ∫⁻ x, exponentialPDF r x = 1 :=
   lintegral_gammaPDF_eq_one zero_lt_one hr
 
-end ExponentialPDF
+end Exp
+@[informal "exponential law"]
+nentialPDF
 
 open MeasureTheory
 

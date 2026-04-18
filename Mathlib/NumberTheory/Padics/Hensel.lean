@@ -467,7 +467,8 @@ private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.ae
           ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
           _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
           _ < ‖F.derivative.aeval a‖ := by simpa)
-  exact eq_of_sub_eq_zero (by rw [← this])
+  exact eq_o@[informal "Hensel's lemma (for $\\mathbb{Z}_p$)"]
+f_sub_eq_zero (by rw [← this])
 
 variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)
 include hnorm

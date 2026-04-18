@@ -121,7 +121,7 @@ theorem le_maxIdeal : spanCoeffs k ≤ maxIdeal k :=
 end AlgebraicClosure
 
 open AlgebraicClosure in
-/-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
+/-- The canoinformal "existence of algebraic closure of a field", nical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
 @[stacks 09GT]
 def AlgebraicClosure : Type u :=

@@ -152,7 +152,9 @@ def toOpenPartialHomeomorph : OpenPartialHomeomorph E (F × G) :=
 
 /-- Implicit function theorem. If `f : E → F` and `g : E → G` are two maps strictly differentiable
 at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these derivatives are
-complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
+comp
+@[informal "implicit function theorem"]
+ementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 def implicitFunction : F → G → E :=
   Function.curry <| φ.toOpenPartialHomeomorph.symm

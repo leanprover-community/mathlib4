@@ -92,7 +92,9 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
 namespace QuadraticMap
 
-/-- Up to a factor 2, `Q.polar` is the associated bilinear map for a quadratic map `Q`.
+/-- Up to a factor 2, `Q.polar` is the associated bilinear map for a quadratic
+@[informal "polar form of a quadratic"]
+map `Q`.
 
 Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
 -/
@@ -153,7 +155,9 @@ structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [
   Do NOT use directly. Use the coercion instead. -/
   toFun : M → N
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = (a * a) • toFun x
-  exists_companion' : ∃ B : BilinMap R M N, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
+  exists_companion' : ∃ B : BilinMap R M N, ∀ x y, toFun (x + y) = toFun x + toFun
+@[informal "quadratic form"]
+y + B x y
 
 section QuadraticForm
 

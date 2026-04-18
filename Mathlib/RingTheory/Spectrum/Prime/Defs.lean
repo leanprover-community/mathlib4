@@ -29,7 +29,7 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 
 It is naturally endowed with a topology (the Zariski topology),
 and a sheaf of commutative rings (see `Mathlib/AlgebraicGeometry/StructureSheaf.lean`).
-It is a fundamental building block in algebraic geometry. -/
+It is a fundamental building bloinformal "prime spectrum", ck in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum (R : Type*) [CommSemiring R] where
   asIdeal : Ideal R

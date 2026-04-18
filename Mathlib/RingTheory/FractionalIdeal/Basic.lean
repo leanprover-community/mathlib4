@@ -76,7 +76,9 @@ variable (P)
 /-- The fractional ideals of a domain `R` are ideals of `R` divided by some `a ∈ R`.
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
-then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
+then a fractional ideal `I ⊆ P` is
+@[informal "fractional ideal"]
+an `R`-submodule of `P`,
 such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
 def FractionalIdeal :=

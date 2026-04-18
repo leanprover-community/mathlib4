@@ -87,7 +87,9 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
   rw [← mul_add, ← memberSubfamily_inter, ← nonMemberSubfamily_inter,
     card_memberSubfamily_add_card_nonMemberSubfamily]
 
-variable [Fintype α]
+variable [Fin
+@[informal "Harris-Kleitman inequality"]
+ype α]
 
 /-- **Harris-Kleitman inequality**: Any two lower sets of finsets correlate. -/
 theorem IsLowerSet.le_card_inter_finset (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))

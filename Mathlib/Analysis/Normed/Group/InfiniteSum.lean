@@ -179,7 +179,8 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} {g : ℕ → ℝ
     (h : ∀ᶠ i in atTop, ‖f i‖ ≤ g i) : Summable f :=
   .of_norm_bounded_eventually hg <| Nat.cofinite_eq_atTop ▸ h
 
-theorem Summable.of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Summable g)
+theorem Sum@[informal "absolutely convergent series in Banach spaces"]
+mable.of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (NNReal.summable_coe.2 hg) h
 

@@ -486,7 +486,9 @@ section multiplicity
 Prefer `Classical.dec`, as the algorithm relies on `%ₘ` and so is `noncomputable`.
 -/
 @[deprecated Classical.dec (since := "2026-02-07")]
-def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
+def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable
+@[informal "multiplicity"]
+(q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
 
 theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (X - C a) p := by

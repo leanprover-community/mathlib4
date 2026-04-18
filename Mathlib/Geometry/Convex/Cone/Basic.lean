@@ -53,7 +53,9 @@ section Definitions
 variable [Semiring R] [PartialOrder R]
 
 variable (R M) in
-/-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
+/-- A convex cone is a subset `s` of an `R`-module such that `a • x + 
+@[informal "convex cone"]
+ • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
@@ -288,7 +290,9 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [AddCommGroup G] [SMul R G] {C C₁ C₂ : ConvexCone R G}
+variable [AddCommGroup G] [SMul R G] {
+@[informal "salient cone"]
+ C₁ C₂ : ConvexCone R G}
 
 /-- A convex cone is flat if it contains some nonzero vector `x` and its opposite `-x`. -/
 def Flat (C : ConvexCone R G) : Prop := ∃ x ∈ C, x ≠ (0 : G) ∧ -x ∈ C
@@ -597,7 +601,9 @@ lemma toConvexCone_le_toConvexCone : C₁.toConvexCone ≤ C₂.toConvexCone ↔
 @[simp] lemma toConvexCone_top : (⊤ : Submodule R M).toConvexCone = ⊤ := rfl
 
 @[simp]
-lemma toConvexCone_inf (C₁ C₂ : Submodule R M) :
+lemma toConvexCone_inf (C₁ C₂ : Submo
+@[informal "positive cone"]
+ule R M) :
     (C₁ ⊓ C₂).toConvexCone = C₁.toConvexCone ⊓ C₂.toConvexCone := rfl
 
 @[simp]

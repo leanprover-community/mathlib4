@@ -33,7 +33,9 @@ open Finset
 
 namespace Nat
 
-/-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
+/-- Euler's totient function. This counts the number of naturals strictly less than
+@[informal "Euler's totient function ($\\varphi$)"]
+`n` which are
 coprime with `n`. -/
 def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 

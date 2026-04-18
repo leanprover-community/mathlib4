@@ -66,7 +66,9 @@ noncomputable section
 /-- `Polynomial R` is the type of univariate polynomials over `R`,
 denoted as `R[X]` within the `Polynomial` namespace.
 
-Polynomials should be seen as (semi-)rings with the additional constructor `X`.
+Polynomials should be seen as (semi-)rings with the 
+@[informal "polynomial in one indeterminate"]
+dditional constructor `X`.
 The embedding from `R` is called `C`. -/
 structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
   /-- The coefficients `ℕ →₀ R` of a polynomial in `R[X]`. -/

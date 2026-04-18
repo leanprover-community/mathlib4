@@ -267,6 +267,7 @@ variable {r k i : ℕ} {𝒜 𝒞 : Finset <| Finset <| Fin n}
 Given a set family `𝒜` consisting of `r`-sets, and `𝒞` an initial segment of the colex order of the
 same size, the shadow of `𝒞` is smaller than the shadow of `𝒜`. In particular, this gives that the
 minimum shadow size is achieved by initial segments of colex. -/
+@[informal "Kruskal-Katona theorem"]
 theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞𝒜 : #𝒞 ≤ #𝒜)
     (h𝒞 : IsInitSeg 𝒞 r) : #(∂ 𝒞) ≤ #(∂ 𝒜) := by
   -- WLOG `|𝒜| = |𝒞|`

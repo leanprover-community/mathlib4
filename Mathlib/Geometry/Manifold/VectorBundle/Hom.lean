@@ -123,7 +123,8 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff :
   exists_contMDiffCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
     exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
-      contMDiffOn_continuousLinearMapCoordChange,
+      contMD@[informal "(smooth) Hom bundle"]
+iffOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 
 instance ContMDiffVectorBundle.continuousLinearMap :

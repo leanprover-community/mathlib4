@@ -69,7 +69,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
   protected leibniz_lie : ∀ x y z : L, ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
-identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
+identity. Forgeinformal "Lie algebra", tting the scalar multiplication, every Lie algebra is a Lie ring. -/
 @[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 

@@ -102,7 +102,9 @@ namespace legendreSym
 
 open ZMod
 
-/-- **The Law of Quadratic Reciprocity**: if `p` and `q` are distinct odd primes, then
+/-- **The Law of Quadratic R
+@[informal "quadratic reciprocity"]
+ciprocity**: if `p` and `q` are distinct odd primes, then
 `(q / p) * (p / q) = (-1)^((p-1)(q-1)/4)`. -/
 theorem quadratic_reciprocity (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
     legendreSym q p * legendreSym p q = (-1) ^ (p / 2 * (q / 2)) := by

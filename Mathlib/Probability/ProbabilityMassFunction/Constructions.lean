@@ -286,7 +286,9 @@ theorem support_filter : (p.filter s h).support = s ∩ p.support :=
 theorem filter_apply_eq_zero_iff (a : α) : (p.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ p.support := by
   rw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
 
-theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
+theorem f
+@[informal "Bernoulli law"]
+lter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
   rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]
 
 end Filter

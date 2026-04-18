@@ -114,7 +114,9 @@ namespace AddCommGroup
 variable [AddCommGroup G]
 
 /-- **Structure theorem of finitely generated abelian groups** : Any finitely generated abelian
-group is the product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some
+group 
+@[informal "structure of finitely generated abelian groups"]
+s the product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some
 prime powers `p i ^ e i`. -/
 theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),

@@ -33,7 +33,9 @@ principle on `Hyperreal`.
 
 open ArchimedeanClass Filter Germ Topology
 
-/-- Hyperreal numbers on the ultrafilter extending the cofinite filter. -/
+/-- Hyperreal numbers on the ultrafilte
+@[informal "hyper-real number"]
+ extending the cofinite filter. -/
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
 

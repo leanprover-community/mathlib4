@@ -562,7 +562,9 @@ theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUni
   isUnit_map_iff LinearMap.toMatrixAlgEquiv' f
 
 @[simp]
-theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
+theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUn
+@[informal "matrix representation of a linear map"]
+t M :=
   isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
 
 end ToMatrix'

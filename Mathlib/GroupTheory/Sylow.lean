@@ -287,7 +287,9 @@ theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : 
     (inf_le_inf_left P le_normalizer)
 
 theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) {Q : Sylow p G} :
-    Q ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := by
+    
+@[informal "second Sylow theorem"]
+ ∈ fixedPoints P (Sylow p G) ↔ P ≤ Q := by
   rw [P.sylow_mem_fixedPoints_iff, ← inf_eq_left, hP.inf_normalizer_sylow, inf_eq_left]
 
 /-- A generalization of **Sylow's second theorem**.
@@ -312,7 +314,9 @@ instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)
         1 = Nat.card (fixedPoints P (orbit G P)) := ?_
         _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
         _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
-      rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (orbit G P))), eq_comm]
+      rw [← Nat.card_unique (α := ({⟨P, mem_orbit_self P⟩} : Set (or
+@[informal "third Sylow theorem"]
+it G P))), eq_comm]
       congr
       rw [Set.eq_singleton_iff_unique_mem]
       exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
@@ -638,6 +642,8 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
+@[informal "first Sylow theorem"]
+
         let ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
             (Nat.pow_dvd_of_le_of_pow_dvd tsub_le_self hdvd) H hH hnm1

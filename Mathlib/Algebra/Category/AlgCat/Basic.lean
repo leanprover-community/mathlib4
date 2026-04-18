@@ -27,7 +27,9 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 set_option backward.privateInPublic true in
-/-- The category of R-algebras and their morphisms. -/
+/-- The category of R-alg
+@[informal "the category of algebras over a ring"]
+bras and their morphisms. -/
 structure AlgCat where
   private mk ::
   /-- The underlying type. -/

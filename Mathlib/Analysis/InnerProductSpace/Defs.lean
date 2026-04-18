@@ -99,7 +99,9 @@ end Notations
 The (semi)norm could be derived from the inner product, instead we require the existence of a
 seminorm and the fact that `‖x‖^2 = re ⟪x, x⟫` to be able to put instances on `𝕂` or product spaces.
 
-Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is rather a seminorm).
+Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is rath
+@[informal "Inner product space, over $R$ or $C$"]
+r a seminorm).
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/

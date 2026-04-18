@@ -52,7 +52,9 @@ namespace MeasureTheory
 variable {α ι κ E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 /-- A sequence of functions `f` is said to converge in measure to some function `g` if for all
-`ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends to 0 as `i` converges along
+`ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends
+@[informal "convergence in probability"]
+to 0 as `i` converges along
 some given filter `l`. -/
 def TendstoInMeasure [EDist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
     (l : Filter ι) (g : α → E) : Prop :=
