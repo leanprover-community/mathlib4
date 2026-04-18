@@ -48,15 +48,14 @@ lemma aeval_apply_of_mem_eigenspace {R M : Type*} [CommRing R] [AddCommGroup M]
     (hx : f x = μ • x) : aeval f p x = p.eval μ • x := by
   rcases eq_or_ne x 0 with rfl | hne
   · simp
-  · exact Module.End.aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
+  · exact aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
 
 lemma ad_diag_basis {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Module.Basis ι K V) (a : ι → K) (s : Module.End K V)
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  change s (b.end (i, j) (b k)) - b.end (i, j) (s (b k)) = (a i - a j) • b.end (i, j) (b k)
-  simp only [Module.Basis.end_apply_apply, hs k, map_smul]
+  simp only [LieHom.lie_apply, lie_apply, smul_apply, Module.Basis.end_apply_apply, hs k, map_smul]
   by_cases hjk : j = k
   · subst hjk; simp [hs i, sub_smul]
   · simp [hjk]
