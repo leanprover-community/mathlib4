@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public import Mathlib.Init
+public meta import Mathlib.Util.SuggestAttr
 
 /-!
 # The `stacks`, `kerodon` and `zbmath` attributes
@@ -66,6 +67,22 @@ def addTagEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) (db : Database) (tag comment : String) : m Unit :=
   modifyEnv (tagExt.addEntry ·
     { declName := declName, database := db, tag := tag, comment := comment })
+
+/--
+Gets the `db` tag entry for `declName` if there is one.
+-/
+def getTagEntry? (env : Environment) (declName : Name) (db : Database)
+    (inCurrentModule? : Option Bool := none) : Option Tag := Id.run do
+  if inCurrentModule?.isNone || inCurrentModule?.isEqSome true then
+    for tag in tagExt.getEntries env do
+      if tag.declName == declName && tag.database == db then
+        return tag
+  if inCurrentModule?.isNone || inCurrentModule?.isEqSome false then
+    for tags in tagExt.getState env do
+      for tag in tags do
+        if tag.declName == declName && tag.database == db then
+          return tag
+  return none
 
 open Parser
 
@@ -153,6 +170,48 @@ initialize Lean.registerBuiltinAttribute {
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
+
+@[specialize f]
+private partial def foldKeysAsNamesAux {α} (acc : α) (pfx : Name) (f : α → Name → String → α) :
+    Json → α
+  | .obj t => t.foldl (init := acc) fun a k v => foldKeysAsNamesAux a (.str pfx k) f v
+  | .str val => f acc pfx val
+  | _ => acc
+
+/-- Treats each path of keys as a name, and accumulates via `f acc keypath strVal` for each
+`strVal` that's a string value of the (innermost) key. Ignores non-string values. -/
+@[inline]
+def _root_.Lean.Json.foldKeysAsNames {α} (json : Json) (f : α → Name → String → α) (init : α) : α :=
+  foldKeysAsNamesAux init .anonymous f json
+
+/-- `overview.json` as a `NameMap` from the decls that are the values in the json to the path of
+keys that lead to them, represented as a `Name`. The innermost key is the last component of the
+name. -/
+initialize mathOverview : NameMap Name ← do
+  initSearchPath (← findSysroot)
+  let file ← IO.FS.readFile <| (← IO.currentDir) / "docs" / "overview.json"
+  let json ← match Json.parse file with
+    | .ok json => pure json
+    | .error e => throw <| .userError e
+  return json.foldKeysAsNames (init := {}) fun m k v => m.insert v.toName k
+
+/-- This should exist somewhere, right? -/
+def _root_.Lean.Name.getSuffix : Name → String
+  | .str _ suf => suf
+  | .num pre _ => pre.getSuffix
+  | .anonymous => "[anonymous]"
+
+/-- Suggests adding `@[zbmath tag]` if `decl` exists in `overview.json`. `tag` is currently the
+innermost key. -/
+def addZBMathFromOverview : Linter where
+  run := insertAttrsOnDecls fun decl cmd => do
+    if let some tag := mathOverview.get? decl then
+      unless (getTagEntry? (← getEnv) decl .zbmath (inCurrentModule? := true)).isSome do
+        let tagStr := Syntax.mkStrLit tag.getSuffix
+        return #[← `(Parser.Term.attrInstance| zbmath $tagStr:str)]
+    return #[]
+
+initialize addLinter addZBMathFromOverview
 
 /-- The `stacksTag` attribute.
 Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
