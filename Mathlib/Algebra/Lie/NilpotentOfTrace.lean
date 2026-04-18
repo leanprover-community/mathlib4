@@ -194,11 +194,11 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm 
   suffices trace K M (φ x * y) = ∑ i, fμ i * μ i from
     ⟨y, trace_toEnd_mul_eq_zero_of_traceForm_eq_zero h y hy_range x hx, this⟩
   /- And this is an easy calculation. -/
-  have h₁ : trace K M (n * y) = 0 :=
+  have htr_n : trace K M (n * y) = 0 :=
     (isNilpotent_trace_of_isNilpotent (hny_comm.isNilpotent_mul_right hn_nil)).eq_zero
-  have h₂ : trace K M (s * y) = ∑ i, fμ i * μ i := by
+  have htr_s : trace K M (s * y) = ∑ i, fμ i * μ i := by
     rw [trace_eq_matrix_trace _ v, Matrix.trace]
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hy, hsv]
-  rw [hX_ns, add_mul, map_add, h₁, h₂, zero_add]
+  rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
 end LieModule
