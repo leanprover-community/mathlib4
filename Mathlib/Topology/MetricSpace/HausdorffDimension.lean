@@ -170,8 +170,8 @@ theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
 theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
   rw [← nonpos_iff_eq_zero]
-  exact dimH_le_of_hausdorffMeasure_ne_top <|
-    ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
+  apply dimH_le_of_hausdorffMeasure_ne_top
+  exact ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
 
 alias Set.Subsingleton.dimH_zero := dimH_subsingleton
 
