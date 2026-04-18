@@ -53,24 +53,11 @@ $$
 from the stream `ρ` with head term `h`.
 -/
 def Euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
-  ⟨h, ⟨
-    fun n => match n with
-    | 0 => (ρ.get? n).map fun ρ => ⟨ρ, 1⟩
-    | _ => (ρ.get? n).map fun ρ => ⟨-ρ, 1 + ρ⟩,
-    fun {n} h => match n with
-    | 0 => by simp_all
-    | n + 1 => by simpa using ρ.property <| Option.map_eq_none_iff.mp h
-  ⟩⟩
+  ⟨h, ρ.enum.map fun (n, ρ) => n.casesOn ⟨ρ, 1⟩ fun _ => ⟨-ρ, 1 + ρ⟩⟩
 
 private def toEulerAux (g : GenContFract K) : Stream'.Seq K :=
-  ⟨
-    fun n => match n with
-    | 0 => (g.s.get? n).map fun c => c.a / c.b
-    | _ => (g.s.get? n).map fun c => - c.a * g.dens (n - 1) / g.dens (n + 1),
-    fun {n} h => match n with
-    | 0 => by simp_all
-    | n + 1 => by simpa using g.s.property <| Option.map_eq_none_iff.mp h
-  ⟩
+  g.s.enum.map fun (n, c) =>
+    n.casesOn (c.a / c.b) (fun n => - c.a * g.dens n / g.dens (n + 2))
 
 /--
 `toEuler g` is the Euler's continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
@@ -184,11 +171,13 @@ theorem toEuler_toEuler :
   · rfl
   · match n with
     | 0 =>
-      simp only [toEuler, Euler, toEulerAux, Stream'.Seq.get?_mk, Option.map_map]
+      simp only [toEuler, Euler, toEulerAux]
+      simp only [neg_mul, Stream'.Seq.map_get?, Stream'.Seq.get?_enum, Option.map_map]
       congr 1; ext a; simp
     | n + 1 =>
       set g := Euler h ρ
-      simp only [toEuler, Euler, toEulerAux, Stream'.Seq.get?_mk, Option.map_map]
+      simp only [toEuler, Euler, toEulerAux]
+      simp only [neg_mul, Stream'.Seq.map_get?, Stream'.Seq.get?_enum, Option.map_map]
       conv => enter [1, 1, ρ]; simp [g]
       rcases Decidable.em <| g.TerminatedAt <| n + 1 with terminatedAt_n | not_terminatedAt_n
       · rw [terminatedAt_n, Option.map_none]
@@ -234,7 +223,9 @@ theorem convs_eq_toEuler_convs_of_forall_le_dens_nonzero (hB : ∀ m ≤ n, g.de
         induction i with
         | zero =>
           simp only [zero_add, Finset.range_one, Finset.prod_singleton]
-          simp only [toEulerAux, Stream'.Seq.get?_mk]
+          simp only [toEulerAux]
+          simp only [neg_neg, zeroth_den_eq_one, one_mul, neg_mul, Stream'.Seq.map_get?,
+            Stream'.Seq.get?_enum, Option.map_map]
           rcases Decidable.em (TerminatedAt g 0) with terminatedAt_0 | not_terminatedAt_0
           · rw [terminatedAt_0]
             simp
@@ -244,11 +235,15 @@ theorem convs_eq_toEuler_convs_of_forall_le_dens_nonzero (hB : ∀ m ≤ n, g.de
           iterate 2 rw [Finset.prod_range_succ (n := i + 1)]
           rw [← ih (by omega)]; clear ih
           simp only [← mul_neg, neg_neg, neg_div, neg_mul]
-          simp only [toEulerAux, Stream'.Seq.get?_mk, add_tsub_cancel_right]
+          simp only [toEulerAux]
+          simp only [Stream'.Seq.map, Stream'.Seq.enum, Stream'.Seq.zip, Stream'.Seq.zipWith,
+            Stream'.Seq.nats_get?, Option.map₂_coe_left, Stream'.Seq.get?_mk, Stream'.map,
+            Stream'.get, Option.map_map]
           rw [← mul_div_right_comm, mul_div_assoc, mul_div_assoc]
           congr 1; rcases g.s.get? (i + 1) with _ | c
           · simp
-          · simp only [Option.map_some, Option.getD_some, neg_mul, neg_div, neg_neg]
+          · simp only [Option.map_some, Option.getD_some, neg_mul, neg_div, Function.comp_apply,
+            neg_neg]
             rw [div_div, mul_comm (g.dens i), ← mul_assoc, mul_comm]
             rw [mul_div_mul_right _ _ (hB _ (by omega))]
 
