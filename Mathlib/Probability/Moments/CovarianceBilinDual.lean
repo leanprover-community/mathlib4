@@ -171,9 +171,6 @@ def uncenteredCovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] 
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (StrongDual.toLp μ 2) (StrongDual.toLp μ 2)
 
-@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin :=
-  uncenteredCovarianceBilinDual
-
 set_option backward.isDefEq.respectTransparency false in
 lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredCovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
@@ -185,24 +182,15 @@ lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : Stron
   simp only [id_eq] at hxL₁ hxL₂
   rw [hxL₁, hxL₂, mul_comm]
 
-@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_apply :=
-  uncenteredCovarianceBilinDual_apply
-
 lemma uncenteredCovarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredCovarianceBilinDual μ L₁ L₂ = 0 := by
   simp [uncenteredCovarianceBilinDual, StrongDual.toLp_of_not_memLp h]
-
-@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_of_not_memLp :=
-  uncenteredCovarianceBilinDual_of_not_memLp
 
 @[simp]
 lemma uncenteredCovarianceBilinDual_zero : uncenteredCovarianceBilinDual (0 : Measure E) = 0 := by
   ext
   have : Subsingleton (Lp ℝ 2 (0 : Measure E)) := ⟨fun x y ↦ Lp.ext_iff.2 rfl⟩
   simp [uncenteredCovarianceBilinDual, Subsingleton.eq_zero (StrongDual.toLp 0 2)]
-
-@[deprecated (since := "2025-10-10")] alias uncenteredCovarianceBilin_zero :=
-  uncenteredCovarianceBilinDual_zero
 
 lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     ‖uncenteredCovarianceBilinDual μ L₁ L₂‖ ≤ ‖L₁‖ * ‖L₂‖ * ∫ x, ‖x‖ ^ 2 ∂μ := by
@@ -230,9 +218,6 @@ lemma norm_uncenteredCovarianceBilinDual_le (L₁ L₂ : StrongDual ℝ E) :
     rw [← integral_const_mul]
     congr with x
     ring
-
-@[deprecated (since := "2025-10-10")] alias norm_uncenteredCovarianceBilin_le :=
-  norm_uncenteredCovarianceBilinDual_le
 
 end Centered
 
@@ -270,7 +255,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   apply (integrable_norm_rpow_iff (by fun_prop) hp0 hptop).1
   have I : Integrable (fun (x : E) ↦ ‖x‖) μ := by
     apply Integrable.norm
-    contrapose! hx
+    contrapose hx
     exact integral_undef hx
   have := (h_Lp.integrable_norm_rpow hp0 hptop).const_mul (2 ^ p.toReal)
   apply (((I.const_mul (2 * ‖c‖ ^ (p.toReal - 1))).add this)).mono' (by fun_prop)
@@ -281,8 +266,9 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   rcases le_total ‖y‖ (‖c‖ / 2)
   · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
     calc ‖c‖ ^ (p : ℝ)
-    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) :=
-      Real.rpow_le_rpow (by positivity) (by linarith) (by positivity)
+    _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) := by
+      gcongr
+      linarith
     _ = 0 + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       rw [Real.mul_rpow (by simp) (by positivity)]
       ring
@@ -307,7 +293,7 @@ lemma covarianceBilinDual_of_not_memLp' (h : ¬ MemLp (fun x ↦ x - ∫ y, y �
 lemma covarianceBilinDual_of_not_memLp (h : ¬ MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     covarianceBilinDual μ L₁ L₂ = 0 := by
   apply covarianceBilinDual_of_not_memLp'
-  contrapose! h
+  contrapose h
   exact memLp_id_of_self_sub_integral h
 
 @[simp]

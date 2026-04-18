@@ -22,10 +22,11 @@ open ComplexConjugate Topology Filter Set
 namespace Complex
 variable {z : ℂ}
 
+@[no_expose]
 instance instNorm : Norm ℂ where
   norm z := √(normSq z)
 
-theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := rfl
+theorem norm_def (z : ℂ) : ‖z‖ = √(normSq z) := (rfl)
 
 theorem norm_mul_self_eq_normSq (z : ℂ) : ‖z‖ * ‖z‖ = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
@@ -277,7 +278,7 @@ theorem isCauSeq_re (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).r
 
 theorem isCauSeq_im (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).im := fun ε ε0 ↦
   (f.cauchy ε0).imp fun i H j ij ↦ by
-    simpa only [← ofReal_sub, norm_real, sub_re] using (abs_im_le_norm _).trans_lt <| H _ ij
+    simpa only [← ofReal_sub, norm_real, sub_re, sub_im] using (abs_im_le_norm _).trans_lt <| H _ ij
 
 /-- The real part of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqRe (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
@@ -304,9 +305,7 @@ theorem equiv_limAux (f : CauSeq ℂ (‖·‖)) :
     fun _ H j ij ↦ by
     obtain ⟨H₁, H₂⟩ := H _ ij
     apply lt_of_le_of_lt (norm_le_abs_re_add_abs_im _)
-    dsimp [limAux] at *
-    have := add_lt_add H₁ H₂
-    rwa [add_halves] at this
+    simpa using add_lt_add H₁ H₂
 
 instance instIsComplete : CauSeq.IsComplete ℂ (‖·‖) :=
   ⟨fun f ↦ ⟨limAux f, equiv_limAux f⟩⟩
