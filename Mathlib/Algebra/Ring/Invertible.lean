@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Ring.Defs
 
 @[expose] public section
 
+open scoped Ring
+
 variable {R : Type*}
 
 section NonUnitalNonAssocSemiring
@@ -40,9 +42,6 @@ variable {x y}
 theorem AddUnits.neg_mulLeft : -(x.mulLeft y) = (-x).mulLeft y := rfl
 theorem AddUnits.neg_mulRight : -(x.mulRight y) = (-x).mulRight y := rfl
 
-@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_left := AddUnits.neg_mulLeft
-@[deprecated (since := "2025-10-03")] alias AddUnits.neg_mul_right := AddUnits.neg_mulRight
-
 theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x * ↑(-y) := by
   rw [← neg_eq_val_neg, ← val_neg_mulRight]
   apply AddUnits.neg_eq_of_add_eq_zero_left
@@ -62,6 +61,7 @@ theorem IsAddUnit.mul_right {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (x * y
 end NonUnitalNonAssocSemiring
 
 /-- `-⅟a` is the inverse of `-a` -/
+@[implicit_reducible]
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
   ⟨-⅟a, by simp, by simp⟩
 
@@ -124,7 +124,7 @@ theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [In
 
 /-- A version of `inv_add_inv'` for `Ring.inverse`. -/
 theorem Ring.inverse_add_inverse [Semiring R] {a b : R} (h : IsUnit a ↔ IsUnit b) :
-    Ring.inverse a + Ring.inverse b = Ring.inverse a * (a + b) * Ring.inverse b := by
+    a⁻¹ʳ + b⁻¹ʳ = a⁻¹ʳ * (a + b) * b⁻¹ʳ := by
   by_cases ha : IsUnit a
   · have hb := h.mp ha
     obtain ⟨ia⟩ := ha.nonempty_invertible
@@ -135,7 +135,7 @@ theorem Ring.inverse_add_inverse [Semiring R] {a b : R} (h : IsUnit a ↔ IsUnit
 
 /-- A version of `inv_sub_inv'` for `Ring.inverse`. -/
 theorem Ring.inverse_sub_inverse [Ring R] {a b : R} (h : IsUnit a ↔ IsUnit b) :
-    Ring.inverse a - Ring.inverse b = Ring.inverse a * (b - a) * Ring.inverse b := by
+    a⁻¹ʳ - b⁻¹ʳ = a⁻¹ʳ * (b - a) * b⁻¹ʳ := by
   by_cases ha : IsUnit a
   · have hb := h.mp ha
     obtain ⟨ia⟩ := ha.nonempty_invertible

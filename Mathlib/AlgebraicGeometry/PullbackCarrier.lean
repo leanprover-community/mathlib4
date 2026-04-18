@@ -88,8 +88,6 @@ lemma isPullback_SpecMap_tensor (T : Triplet f g) : CategoryTheory.IsPullback
           (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) :=
   isPullback_SpecMap_pushout _ _
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_tensor_isPullback := isPullback_SpecMap_tensor
-
 section Congr
 
 /-- Given propositionally equal triplets `T₁` and `T₂` over `f` and `g`, the corresponding
@@ -128,6 +126,7 @@ end Congr
 
 variable (T : Triplet f g)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma SpecMap_tensorInl_fromSpecResidueField :
     (Spec.map T.tensorInl ≫ X.fromSpecResidueField T.x) ≫ f =
       (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y) ≫ g := by
@@ -137,9 +136,6 @@ lemma SpecMap_tensorInl_fromSpecResidueField :
     ← residueFieldCongr_fromSpecResidueField T.hy.symm]
   simp only [← Category.assoc, ← Spec.map_comp, pushout.condition]
 
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_tensorInl_fromSpecResidueField := SpecMap_tensorInl_fromSpecResidueField
-
 /-- Given `x : X`, `y : Y` and `s : S` such that `f x = s = g y`,
 this is `Spec (κ(x) ⊗[κ(s)] κ(y)) ⟶ X ×ₛ Y`. -/
 def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
@@ -147,6 +143,7 @@ def SpecTensorTo : Spec T.tensor ⟶ pullback f g :=
     (Spec.map T.tensorInr ≫ Y.fromSpecResidueField T.y)
     (SpecMap_tensorInl_fromSpecResidueField _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.fst f g (T.SpecTensorTo p) = T.x := by
@@ -154,16 +151,13 @@ lemma fst_SpecTensorTo_apply (p : Spec T.tensor) :
   rw [← Scheme.Hom.comp_apply]
   simp
 
-@[deprecated (since := "2025-10-11")] alias specTensorTo_base_fst := fst_SpecTensorTo_apply
-
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma snd_SpecTensorTo_apply (p : Spec T.tensor) :
     pullback.snd f g (T.SpecTensorTo p) = T.y := by
   simp only [SpecTensorTo]
   rw [← Scheme.Hom.comp_apply]
   simp
-
-@[deprecated (since := "2025-10-11")] alias specTensorTo_base_snd := snd_SpecTensorTo_apply
 
 @[reassoc (attr := simp)]
 lemma specTensorTo_fst :
@@ -204,6 +198,7 @@ def ofPointTensor (t : ↑(pullback f g)) :
     ((pullback.snd f g).residueFieldMap t)
     (residueFieldCongr_inv_residueFieldMap_ofPoint t)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ofPointTensor_SpecTensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
@@ -315,6 +310,13 @@ lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y 
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
   exact ⟨z⟩
 
+instance (priority := low) [Nonempty X] [Nonempty Y] [Subsingleton S] :
+    Nonempty ↑(pullback f g) := by
+  have : Nonempty S := .map f ‹_›
+  rw [← not_isEmpty_iff, AlgebraicGeometry.Scheme.isEmpty_pullback_iff, Set.not_disjoint_iff]
+  exact ⟨Nonempty.some ‹_›, Function.surjective_to_subsingleton _ _,
+    Function.surjective_to_subsingleton _ _⟩
+
 variable (f g)
 
 lemma range_fst : Set.range (pullback.fst f g) = f ⁻¹' Set.range g := by
@@ -343,6 +345,7 @@ lemma range_snd_comp :
     Set.range (pullback.snd f g ≫ g) = Set.range f ∩ Set.range g := by
   rw [← pullback.condition, range_fst_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ : X ⟶ X')
     (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
     (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
@@ -391,8 +394,13 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
   · simp only [Function.comp_apply, Types.pullbackIsoPullback_hom_snd]
     rwa [← types_comp_apply (g := pullback.snd _ _), pullbackComparison_comp_snd]
 
-@[deprecated (since := "2025-10-06")]
-alias Pullback.forget_comparison_surjective := pullbackComparison_forget_surjective
+instance {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) :
+    Epi (pullbackComparison Scheme.forgetToTop f g) := by
+  refine (CategoryTheory.forget TopCat).epi_of_epi_map ?_
+  rw [← CategoryTheory.epi_comp_iff_of_isIso _
+    (pullbackComparison (CategoryTheory.forget TopCat) (forgetToTop.map f) (forgetToTop.map g)),
+    ← _root_.CategoryTheory.Limits.pullbackComparison_comp, epi_iff_surjective]
+  apply Scheme.pullbackComparison_forget_surjective _ _
 
 lemma exists_preimage_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (x : X) (y : Y)

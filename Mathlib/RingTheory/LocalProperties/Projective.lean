@@ -73,6 +73,13 @@ theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [
     Module.Projective Rₛ Mₛ :=
   Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
+instance [Module.Projective R M] : Module.Projective (Localization S) (LocalizedModule S M) :=
+  Module.projective_of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
+
+instance {A : Type*} [CommRing A] [Algebra R A] [Module.Projective R A] :
+    Module.Projective (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  Module.projective_of_isLocalizedModule S (IsScalarTower.toAlgHom R A _).toLinearMap
+
 theorem LinearMap.split_surjective_of_localization_maximal
     (f : M →ₗ[R] N) [Module.FinitePresentation R N]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
@@ -151,7 +158,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 include f in
 /--
 A variant of `Module.projective_of_localization_maximal` that accepts `IsLocalizedModule`.
@@ -161,8 +168,9 @@ theorem Module.projective_of_localization_maximal'
     [Module.FinitePresentation R M] : Module.Projective R M := by
   apply Module.projective_of_localization_maximal
   intro P hP
-  refine Module.Projective.of_ringEquiv (M := Mₚ P)
-    (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  set e := (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  refine Module.Projective.of_equiv (M := Mₚ P) (R := Rₚ P)
+    (σ := e)
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
@@ -170,6 +178,6 @@ theorem Module.projective_of_localization_maximal'
     obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
     apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
-    dsimp
+    dsimp [e]
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']

@@ -65,6 +65,7 @@ lemma leftInverse_exp_arg : LeftInverse exp (arg ∘ (↑)) := exp_arg
 lemma invOn_arg_exp : InvOn (arg ∘ (↑)) exp (Ioc (-π) π) univ := argPartialEquiv.symm.invOn
 lemma surjOn_exp_neg_pi_pi : SurjOn exp (Ioc (-π) π) univ := argPartialEquiv.symm.surjOn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_
@@ -76,7 +77,7 @@ lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw
 @[simp] lemma exp_two_pi : exp (2 * π) = 1 := periodic_exp.eq.trans exp_zero
 
 lemma exp_int_mul_two_pi (n : ℤ) : exp (n * (2 * π)) = 1 :=
-  ext <| by simpa [mul_assoc] using Complex.exp_int_mul_two_pi_mul_I n
+  ext <| by simp
 
 lemma exp_two_pi_mul_int (n : ℤ) : exp (2 * π * n) = 1 := by
   simpa only [mul_comm] using exp_int_mul_two_pi n
@@ -90,6 +91,27 @@ lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
 
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
+
+lemma exp_injOn_of_diff_lt {s : Set ℝ}
+    (hs : ∀ x ∈ s, ∀ y ∈ s, x - y ∈ Ioo (-2 * Real.pi) (2 * Real.pi)) : InjOn exp s := by
+  intro t₁ ht₁ t₂ ht₂ heq
+  obtain ⟨h1, h2⟩ := hs t₁ ht₁ t₂ ht₂
+  rw [neg_mul] at h1
+  rw [← sub_eq_zero, ← Real.cos_eq_one_iff_of_lt_of_lt h1 h2, ← exp_ofReal_mul_I_re]
+  replace heq : cexp _ = cexp _ := congrArg Subtype.val heq
+  rw [exp_eq_exp_iff_exp_sub_eq_one, ← sub_mul, ← ofReal_sub, Complex.ext_iff] at heq
+  exact heq.1
+
+lemma exp_injOn_Icc {a b : ℝ} (h : b - a < 2 * Real.pi) : InjOn exp (Icc a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_injOn_Ico {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ico a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ioc a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_surjective : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
 
 end Circle
 
@@ -161,8 +183,9 @@ theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCirc
 theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
   cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
+@[fun_prop, continuity]
 theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
+  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h

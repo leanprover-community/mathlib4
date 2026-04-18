@@ -213,6 +213,7 @@ variable (R)
 
 /-- Any Bézout domain is a GCD domain. This is not an instance since `GCDMonoid` contains data,
 and this might not be how we would like to construct it. -/
+@[implicit_reducible]
 noncomputable def toGCDDomain [IsBezout R] [IsDomain R] [DecidableEq R] : GCDMonoid R :=
   gcdMonoidOfGCD (gcd · ·) (gcd_dvd_left · ·) (gcd_dvd_right · ·) dvd_gcd
 
@@ -275,7 +276,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
               (Ideal.mem_span_singleton.2 <| dvd_add (dvd_mul_right _ _) <| by
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∉
                     { x : R | x ∈ S ∧ x ≠ 0 } :=
-                  fun h₁ => WellFounded.not_lt_min wf _ h h₁ (mod_lt x hmin.2)
+                  fun h₁ => WellFounded.not_lt_min wf _ h₁ (mod_lt x hmin.2)
                 have : x % WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h = 0 := by
                   simp only [not_and_or, Set.mem_setOf_eq, not_ne_iff] at this
                   exact this.neg_resolve_left <| (mod_mem_iff hmin.1).2 hx
@@ -521,44 +522,6 @@ theorem exists_maximal_not_isPrincipal (hR : ¬IsPrincipalIdealRing R) :
 end Ideal
 
 end PrincipalOfPrime
-
-section PrincipalOfPrime_old
-
-variable (R) [CommRing R]
-
-/-- `nonPrincipals R` is the set of all ideals of `R` that are not principal ideals. -/
-@[deprecated Ideal.nonPrincipals (since := "2025-09-30")]
-def nonPrincipals :=
-  { I : Ideal R | ¬I.IsPrincipal }
-
-@[deprecated "Not necessary anymore since Ideal.nonPrincipals is an abrev." (since := "2025-09-30")]
-theorem nonPrincipals_def {I : Ideal R} : I ∈ { I : Ideal R | ¬I.IsPrincipal } ↔ ¬I.IsPrincipal :=
-  Iff.rfl
-
-variable {R}
-
-@[deprecated Ideal.nonPrincipals_eq_empty_iff (since := "2025-09-30")]
-theorem nonPrincipals_eq_empty_iff :
-    { I : Ideal R | ¬I.IsPrincipal } = ∅ ↔ IsPrincipalIdealRing R := by
-  simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
-
-/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
-(Namely, the union of the chain is such an upper bound.)
--/
-@[deprecated Ideal.nonPrincipals_zorn (since := "2025-09-30")]
-theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ { I : Ideal R | ¬I.IsPrincipal })
-    (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
-    ∃ I ∈ { I : Ideal R | ¬I.IsPrincipal }, ∀ J ∈ c, J ≤ I := by
-  refine ⟨sSup c, ?_, fun J hJ => le_sSup hJ⟩
-  rintro ⟨x, hx⟩
-  have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
-  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
-  have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
-  specialize hs hJc
-  rw [← hsSupJ, hx] at hs
-  exact hs ⟨⟨x, rfl⟩⟩
-
-end PrincipalOfPrime_old
 
 open Ideal in
 lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :

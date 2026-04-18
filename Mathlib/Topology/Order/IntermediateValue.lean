@@ -220,7 +220,16 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type u} [TopologicalSpace α]
+
+theorem denselyOrdered_of_preconnectedSpace [LinearOrder α] [OrderTopology α]
+    [PreconnectedSpace α] : DenselyOrdered α where
+  dense x y hxy := by
+    suffices (Iio y ∩ Ioi x).Nonempty by grind [Set.inter_nonempty_iff_exists_left]
+    exact nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
+      ⟨x, Set.mem_Iio.mpr hxy⟩ ⟨y, Set.mem_Ioi.mpr hxy⟩
+
+variable [ConditionallyCompleteLinearOrder α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
@@ -333,7 +342,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
   suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
   have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
   rw [preimage_inter, ← Icc_toDual] at this
-  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  apply this.mem_of_ge_of_forall_exists_gt (by simp_all) (by simp_all) (fun x hx ↦ ?_)
   rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
   aesop
 

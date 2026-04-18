@@ -83,7 +83,7 @@ variable (m' : MeasurableSpace Ω) {mΩ : MeasurableSpace Ω} [StandardBorelSpac
 respect to a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ⟦⋂ i in s, f i | m'⟧ =ᵐ[μ] ∏ i ∈ s, μ⟦f i | m'⟧`.
 See `ProbabilityTheory.iCondIndepSets_iff`.
-It will be used for families of pi_systems. -/
+It will be used for families of π-systems. -/
 def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
   Kernel.iIndepSets π (condExpKernel μ m') (μ.trim hm')
@@ -907,9 +907,6 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
       Measure.map_id]
   rw [h1, h2]
   exact ⟨fun h ↦ by rw [h], fun h ↦ by rw [h1_symm, h1, h2_symm, h2, h]⟩
-
-@[deprecated (since := "2025-10-14")] alias condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft :=
-  condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}

@@ -8,7 +8,7 @@ import Lake.CLI.Main
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
 import Mathlib.Tactic.Linter.TextBased
-import ImportGraph.FromSource
+import ImportGraph.Imports.FromSource
 import Cli.Basic
 
 /-!

@@ -35,9 +35,6 @@ affine and the induced ring hom on sections is integral. -/
 class IsIntegralHom {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
   isIntegral_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.IsIntegral
 
-@[deprecated (since := "2025-10-15")]
-alias IsIntegralHom.integral_app := IsIntegralHom.isIntegral_app
-
 alias Scheme.Hom.isIntegral_app := IsIntegralHom.isIntegral_app
 
 namespace IsIntegralHom
@@ -127,6 +124,7 @@ instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
   rw [SpecMap_iff]
   exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsIntegralHom f ↔ UniversallyClosed f ∧ IsAffineHom f := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩

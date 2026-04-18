@@ -108,6 +108,7 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
+@[implicit_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
   uniq := eq_zero_of_zero_eq_one h
@@ -248,8 +249,6 @@ instance (priority := 900) isReduced_of_noZeroDivisors [NoZeroDivisors M₀] :
     | succ n ih => rw [pow_succ, mul_eq_zero] at ha; exact ha.elim ih id⟩
 
 variable [IsReduced M₀]
-
-@[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
 
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
   ⟨eq_zero_of_pow_eq_zero, (·.symm ▸ zero_pow hn)⟩

@@ -61,6 +61,7 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -75,10 +76,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
-  map_star' f := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
-    exact rfl
+  map_star' _ := rfl
 
 theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
     star (centerToCentroidCenter z) =
@@ -96,9 +94,7 @@ the center of its centroid. -/
 def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
-  map_star' _ := by
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    exact (star_centerToCentroidCenter _).symm
+  map_star' _ := (star_centerToCentroidCenter _).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
@@ -111,11 +107,10 @@ lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : �
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
 @[reducible]
-def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
+def starRingOfCommCentroidHom (mul_comm : IsMulCommutative (CentroidHom α)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul _ _ := ext (fun _ => by
-    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
+  star_mul _ _ := ext fun _ ↦ by simp [mul_comm']
 
 end NonUnitalNonAssocStarSemiring
 

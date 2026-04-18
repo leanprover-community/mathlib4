@@ -202,11 +202,6 @@ theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
 theorem toColex_monotone : Monotone (@toColex (Π₀ i, α i)) :=
   toLex_monotone (ι := ιᵒᵈ)
 
-@[deprecated Lex.lt_iff (since := "2025-10-12")]
-theorem lt_of_forall_lt_of_lt (a b : Lex (Π₀ i, α i)) (i : ι) :
-    (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
-  fun h1 h2 ↦ ⟨i, h1, h2⟩
-
 end Zero
 
 section Covariants
@@ -228,6 +223,7 @@ instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (Π₀ i, α i)) :=
 instance Colex.addLeftStrictMono : AddLeftStrictMono (Colex (Π₀ i, α i)) :=
   Lex.addLeftStrictMono (ι := ιᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addLeftMono : AddLeftMono (Lex (Π₀ i, α i)) :=
   addLeftMono_of_addLeftStrictMono _
 
@@ -247,6 +243,7 @@ instance Lex.addRightStrictMono : AddRightStrictMono (Lex (Π₀ i, α i)) :=
 instance Colex.addRightStrictMono : AddRightStrictMono (Colex (Π₀ i, α i)) :=
   Lex.addRightStrictMono (ι := ιᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance Lex.addRightMono : AddRightMono (Lex (Π₀ i, α i)) :=
   addRightMono_of_addRightStrictMono _
 

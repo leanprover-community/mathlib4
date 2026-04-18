@@ -22,7 +22,7 @@ on the class number.
 We denote by `M K` the Minkowski bound of a number field `K`, defined as
 `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
-cardinality of the class group of its ring of integers
+  cardinality of the class group of its ring of integers
 - `isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc`: let `K`
   be a number field. To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
   `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
@@ -82,7 +82,7 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K (FractionalIdeal.mk0 K J)
   obtain ⟨I₀, hI⟩ := dvd_iff_le.mpr ((span_singleton_le_iff_mem J).mpr (by exact ha))
   have : I₀ ≠ 0 := by
-    contrapose! h_nz
+    contrapose h_nz
     rw [h_nz, mul_zero, zero_eq_bot, span_singleton_eq_bot] at hI
     rw [Algebra.linearMap_apply, hI, map_zero]
   let I := (⟨I₀, mem_nonZeroDivisors_iff_ne_zero.mpr this⟩ : (Ideal (𝓞 K))⁰)
@@ -119,7 +119,7 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     IsPrincipalIdealRing (𝓞 K) := by
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
   rw [← mem_isPrincipalSubmonoid_iff,
-    ← prod_normalizedFactors_eq_self (nonZeroDivisors.coe_ne_zero I)]
+    ← Ideal.prod_normalizedFactors_eq_self (nonZeroDivisors.coe_ne_zero I)]
   refine Submonoid.multiset_prod_mem _ _ (fun J hJ ↦ mem_isPrincipalSubmonoid_iff.mp ?_)
   by_cases hJ0 : J = 0
   · simpa [hJ0] using bot_isPrincipal

@@ -75,12 +75,11 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   let _ : Algebra K L := FractionRing.liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
-    · refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
-      · rw [← map_aeval_eq_aeval_map, hp, map_zero]
-        rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-      apply dvd_mul_of_dvd_left
-      rw [isIntegrallyClosed_eq_field_fractions K L hs]
-    exact Monic.map _ (minpoly.monic hs)
+    refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
+    · rw [← map_aeval_eq_aeval_map, hp, map_zero]
+      rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+    apply dvd_mul_of_dvd_left
+    rw [isIntegrallyClosed_eq_field_fractions K L hs]
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this
   rw [← modByMonic_eq_zero_iff_dvd (minpoly.monic hs)]
@@ -221,8 +220,6 @@ theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.to
 @[simp]
 theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
 
-@[deprecated (since := "2025-07-21")] alias equivAdjoin_apply := coe_equivAdjoin
-
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/
 def _root_.Algebra.adjoin.powerBasis' (hx : IsIntegral R x) :
@@ -248,15 +245,12 @@ noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
 
+open Algebra in
 example {x : S} (B : PowerBasis R S)
-    (hint : IsIntegral R x) (hx : B.gen ∈ Algebra.adjoin R {x}) :
+    (hint : IsIntegral R x) (hx : B.gen ∈ R[x]) :
     PowerBasis R S := by
   apply PowerBasis.ofAdjoinEqTop' hint
   exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
-  _root_.PowerBasis.ofAdjoinEqTop'
 
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
@@ -267,14 +261,6 @@ theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
 theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
   simp [PowerBasis.ofAdjoinEqTop']
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_dim :=
-   _root_.PowerBasis.ofAdjoinEqTop'_dim
-
-@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
-  deprecated definition" (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_gen :=
-  _root_.PowerBasis.ofAdjoinEqTop'_gen
 
 end AdjoinRoot
 

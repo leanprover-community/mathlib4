@@ -67,6 +67,9 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
   coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
+@[simp, norm_cast]
+theorem coe_inv' [NeZero r] : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ := coe_inv (NeZero.ne r)
+
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
 
@@ -74,13 +77,16 @@ theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_i
 theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 
+@[simp, norm_cast]
+theorem coe_div' [NeZero r] : (↑(p / r) : ℝ≥0∞) = p / r := coe_div (NeZero.ne r)
+
 lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
   simpa only [div_eq_mul_inv, coe_mul] using _root_.mul_le_mul_right coe_inv_le _
 
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
 instance : DivInvOneMonoid ℝ≥0∞ :=
-  { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
+  { (inferInstance : DivInvMonoid ℝ≥0∞) with
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
@@ -441,7 +447,7 @@ protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 
   · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
   refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
   gcongr
-  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
+  exact ENNReal.lt_add_right ha one_ne_zero
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
@@ -933,6 +939,17 @@ lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
+
+theorem ofReal_inv_le {x : ℝ} : ENNReal.ofReal x⁻¹ ≤ (ENNReal.ofReal x)⁻¹ := by
+  obtain hx | hx := lt_or_ge 0 x
+  · simp [ofReal_inv_of_pos hx]
+  · simp [ofReal_of_nonpos hx]
+
+theorem ofReal_div_le {x y : ℝ} (hy : 0 ≤ y) :
+    ENNReal.ofReal (x / y) ≤ ENNReal.ofReal x / ENNReal.ofReal y := by
+  simp_rw [div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy)]
+  gcongr
+  exact ofReal_inv_le
 
 theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
     ENNReal.ofReal (x / y) = ENNReal.ofReal x / ENNReal.ofReal y := by

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # Complex and real exponential
@@ -78,7 +79,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
   rcases (zero_le n).eq_or_lt with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
-    rw [NormedAddCommGroup.nhds_zero_basis_norm_lt.eventually_iff]
+    rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
     convert exp_bound hx.out.le hn using 1
     simp [field]
@@ -121,7 +122,7 @@ theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
 
 /-- The complex exponential function is uniformly continuous on left half planes. -/
 lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
-  have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
+  have : Continuous (cexp - 1) := Continuous.sub (by fun_prop) continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
   intro ε hε
   simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
@@ -132,7 +133,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
   intro x _ y hy hxy
-  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_eq_norm, sub_zero] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
     rw [mul_sub_one, ← exp_add]
@@ -300,10 +301,11 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 
 /-- `Real.exp` as an order isomorphism between `ℝ` and `(0, +∞)`. -/
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
-  StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
+  StrictMono.orderIsoOfSurjective _
+    (exp_strictMono.codRestrict fun x ↦ Set.mem_Ioi.mpr (exp_pos x)) <|
     (continuous_exp.subtype_mk _).surjective
       (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
-      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsGT])
+      (by simp [tendsto_exp_atBot_nhdsGT])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -445,7 +447,8 @@ lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (re
 
 namespace Complex
 
-@[simp]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by

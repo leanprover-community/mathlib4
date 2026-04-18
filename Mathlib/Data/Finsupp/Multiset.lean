@@ -132,7 +132,7 @@ variable [DecidableEq α]
 /-- Given a multiset `s`, `s.toFinsupp` returns the finitely supported function on `ℕ` given by
 the multiplicities of the elements of `s`. -/
 @[simps symm_apply]
-def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
+noncomputable def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
   invFun f := Finsupp.toMultiset f
   map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
@@ -195,7 +195,7 @@ theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Mult
 
 namespace Finsupp
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
-def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
+noncomputable def orderIsoMultiset [DecidableEq ι] : (ι →₀ ℕ) ≃o Multiset ι where
   toEquiv := Multiset.toFinsupp.symm.toEquiv
   map_rel_iff' {f g} := by simp [le_def, Multiset.le_iff_count]
 
@@ -241,7 +241,7 @@ variable [DecidableEq α] (n : ℕ)
 finitely-supported maps `α →₀ ℕ` with total mass `n`.
 
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
-def equivNatSum :
+noncomputable def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
   Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
 

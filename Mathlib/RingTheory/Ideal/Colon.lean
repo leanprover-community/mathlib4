@@ -66,7 +66,7 @@ theorem bot_colon : colon (⊥ : Submodule R M) (N : Set M) = N.annihilator := b
   simp [mem_colon, mem_annihilator]
 
 theorem colon_mono (hn : N₁ ≤ N₂) (hs : S₁ ⊆ S₂) : N₁.colon S₂ ≤ N₂.colon S₁ :=
-  fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| (mem_colon).mp hrns s₁ <| hs hs₁
+  fun _ hrns ↦ mem_colon.mpr fun s₁ hs₁ ↦ hn <| mem_colon.mp hrns s₁ <| hs hs₁
 
 theorem _root_.Ideal.le_colon {I : Ideal R} {S : Set R} [I.IsTwoSided] : I ≤ I.colon S :=
   colon_univ.symm.trans_le (colon_mono le_rfl S.subset_univ)
@@ -147,9 +147,8 @@ theorem colon_span : N.colon (span R S) = N.colon S := by
   | add => aesop
   | smul => simp_all [smul_mem, smul_comm r]
 
-@[simp]
-theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S :=
-  Submodule.colon_span
+theorem _root_.Ideal.colon_span {I : Ideal R} {S : Set R} : I.colon (Ideal.span S) = I.colon S := by
+  simp
 
 theorem mem_colon_span_singleton {x : M} {r : R} : r ∈ N.colon (span R {x}) ↔ r • x ∈ N := by
   simp
