@@ -49,19 +49,17 @@ theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
   ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
 
-/-- The midpoint of the unit interval. -/
-def half : I := ⟨1 / 2, by constructor <;> linarith⟩
-
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
-
-@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
+
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
+
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 theorem mul_le_left {x y : I} : x * y ≤ x :=
@@ -128,6 +126,11 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
+/-- The midpoint of the unit interval. -/
+def half : I := ⟨1 / 2, by constructor <;> linarith⟩
+
+@[simp]
+theorem coe_half : (half : ℝ) = 1 / 2 := rfl
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -230,8 +233,9 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
-  zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
+  zero_le x := x.2.1
+  mul_lt_mul_of_pos_left i hi j k hjk := by
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
@@ -325,6 +329,14 @@ theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := b
   simp [convexCombo]
 
 @[simp, grind =]
+theorem convexCombo_zero_one (t : unitInterval) : convexCombo 0 1 t = t := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_eq {a b : ℝ} (x : Icc a b) (t : unitInterval) : convexCombo x x t = x := by
+  simp [convexCombo, sub_mul]
+
+@[simp, grind =]
 theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
     convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
   simp [convexCombo]
@@ -343,6 +355,17 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) : Continuous (convexCombo x y) := by
+  unfold Icc.convexCombo
+  fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo_prod {a b : ℝ} :
+    Continuous fun x : Icc a b × Icc a b × unitInterval ↦ Icc.convexCombo x.1 x.2.1 x.2.2 := by
+  unfold Icc.convexCombo
+  fun_prop
 
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
@@ -445,12 +468,6 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
   · field_simp
     ring_nf
 
-theorem continuous_convexCombo {a b : ℝ} :
-    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
-  apply Continuous.subtype_mk
-  fun_prop
-
-
 end Set.Icc
 
 open scoped unitInterval
@@ -474,6 +491,20 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
   simp_rw [← Subtype.coe_inj]
   exact exists_monotone_Icc_subset_open_cover_Icc zero_le_one hc₁ hc₂
 
+lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι → Set (I × I)}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ t : ℕ → I, t 0 = 0 ∧ Monotone t ∧ (∃ n, ∀ m ≥ n, t m = 1) ∧
+      ∀ n m, ∃ i, Icc (t n) (t (n + 1)) ×ˢ Icc (t m) (t (m + 1)) ⊆ c i := by
+  obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
+  have hδ := half_pos δ_pos
+  simp_rw [Subtype.ext_iff]
+  have h : (0 : ℝ) ≤ 1 := zero_le_one
+  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
+    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
+  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
+    abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+
 /-- Finite partition variant: Any open cover of `[a, b]` can be refined to a finite partition
 with strictly monotone partition points indexed by `Fin (n + 1)`. -/
 lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
@@ -487,17 +518,8 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
   by_cases hab : a = b
   · -- Case a = b: take n = 0 with single partition point
     subst hab
-    refine ⟨0, fun _ => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
-    · -- StrictMono: vacuously true for Fin 1
-      intro i j hij
-      exact absurd hij (by omega)
-    · -- t 0 = a
-      rfl
-    · -- t (Fin.last 0) = a = b
-      rfl
-    · -- Covering property: vacuously true for Fin 0
-      intro i
-      exact absurd i.val.lt_succ_self (by omega)
+    exact ⟨0, fun _ => ⟨a, by simp⟩, Subsingleton.strictMono (α := Fin 1) _, rfl, rfl,
+      fun i => i.elim0⟩
   · -- Case a < b: pick n with (b - a) / n < δ
     have hab_pos : 0 < b - a := sub_pos.mpr (Ne.lt_of_le hab h)
     obtain ⟨n, hn_pos, hn_small⟩ : ∃ n : ℕ, 0 < n ∧ (b - a) / n < δ := by
@@ -516,17 +538,16 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
         _ = δ := by field_simp
     -- Define partition: t k = a + k * (b - a) / n
     let t : Fin (n + 1) → Icc a b := fun k => ⟨a + k * (b - a) / n, by
-    constructor
-    · linarith [mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h),
-        div_nonneg (mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h)) (Nat.cast_nonneg n)]
-    · have hk : (k : ℝ) ≤ n := Nat.cast_le.mpr (Nat.lt_succ_iff.mp k.is_lt)
-      have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
-      calc a + k * (b - a) / n ≤ a + n * (b - a) / n := by {
-            have : k * (b - a) ≤ n * (b - a) := by nlinarith
-            linarith [div_le_div_of_nonneg_right this hn_pos'.le] }
-        _ = b := by field_simp [hn_pos'.ne']; ring⟩
-    refine ⟨n, t, ?_, ?_, ?_, ?_⟩
-    · -- StrictMono
+      constructor
+      · linarith [mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h),
+          div_nonneg (mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h)) (Nat.cast_nonneg n)]
+      · have hk : (k : ℝ) ≤ n := Nat.cast_le.mpr (Nat.lt_succ_iff.mp k.is_lt)
+        have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
+        calc a + k * (b - a) / n ≤ a + n * (b - a) / n := by {
+              have : k * (b - a) ≤ n * (b - a) := by nlinarith
+              linarith [div_le_div_of_nonneg_right this hn_pos'.le] }
+          _ = b := by field_simp [hn_pos'.ne']; ring⟩
+    have ht_strict : StrictMono t := by
       intro i j hij
       change (t i : ℝ) < (t j : ℝ)
       simp only [t]
@@ -534,6 +555,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
       have : i * (b - a) < j * (b - a) := by nlinarith [hab_pos]
       linarith [div_lt_div_of_pos_right this hn_pos']
+    refine ⟨n, t, ht_strict, ?_, ?_, ?_⟩
     · -- t 0 = a
       simp [t]
     · -- t (Fin.last n) = b
@@ -543,15 +565,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
     · -- Covering property
       intro i
       -- Use StrictMono to get that t i.castSucc < t i.succ
-      have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := by
-        simp only [t]
-        have hij : (i.castSucc : ℕ) < (i.succ : ℕ) := by
-          rw [Fin.val_castSucc]
-          simp
-        have hij' : (i.castSucc : ℝ) < (i.succ : ℝ) := Nat.cast_lt.mpr hij
-        have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
-        have : i.castSucc * (b - a) < i.succ * (b - a) := by nlinarith [hab_pos]
-        linarith [div_lt_div_of_pos_right this hn_pos']
+      have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := ht_strict i.castSucc_lt_succ
       -- Define the midpoint
       let m : Icc a b := ⟨((t i.castSucc : ℝ) + (t i.succ : ℝ)) / 2, by
         constructor
@@ -561,7 +575,6 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       have h_subset : Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball m δ := by
         intro x hx
         simp only [Metric.ball, mem_setOf_eq]
-        -- The segment has length (b-a)/n, so max distance from midpoint is (b-a)/(2n)
         have segment_len : (t i.succ : ℝ) - (t i.castSucc : ℝ) = (b - a) / n := by
           simp [t]
           field_simp
@@ -571,9 +584,8 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
         have dist_bound : dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := by
           rw [dist_comm, Real.dist_eq]
           simp only [m, abs_sub_le_iff]
-          constructor
-          · linarith [hx_bounds.1, hx_bounds.2]
-          · linarith [hx_bounds.1, hx_bounds.2]
+          constructor <;>
+          · linarith [hx_bounds.1, hx_bounds.2, segment_len]
         -- Since (b-a)/n < δ, we have (b-a)/(2n) < δ/2 < δ
         calc dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := dist_bound
           _ < δ / 2 := by linarith [hn_small]
@@ -581,114 +593,6 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
       -- Apply Lebesgue number property to get the covering set
       obtain ⟨j, hj⟩ := hδ m trivial
       exact ⟨j, Subset.trans h_subset hj⟩
-
-  -- Alternative proof:
-  -- obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
-  -- refine (lt_or_eq_of_le h).elim ?_ ?_
-  -- · intro hlt
-  --   have hab_pos : 0 < b - a := sub_pos.mpr hlt
-  --   obtain ⟨n, hn_gt⟩ := exists_nat_gt ((b - a) / δ)
-  --   have h0_le : (0 : ℝ) ≤ (b - a) / δ := div_nonneg (sub_nonneg.mpr h) δ_pos.le
-  --   have hn_pos' : (0 : ℝ) < (n : ℝ) := lt_of_le_of_lt h0_le hn_gt
-  --   have hn_pos : 0 < n := by exact_mod_cast hn_pos'
-  --   have hδ_ne : δ ≠ 0 := ne_of_gt δ_pos
-  --   have hmul_lt : b - a < (n : ℝ) * δ := by
-  --     have := mul_lt_mul_of_pos_right hn_gt δ_pos
-  --     simpa [div_eq_mul_inv, hδ_ne, mul_comm, mul_left_comm, mul_assoc] using this
-  --   let Δ : ℝ := (b - a) / (n : ℝ)
-  --   have hΔ_pos : 0 < Δ := div_pos hab_pos hn_pos'
-  --   have hΔ_nonneg : 0 ≤ Δ := hΔ_pos.le
-  --   have hn_ne_zero : (n : ℝ) ≠ 0 :=
-  --     by exact_mod_cast (Nat.cast_ne_zero.mpr <| ne_of_gt hn_pos)
-  --   have hΔ_lt : Δ < δ := by
-  --     have := mul_lt_mul_of_pos_left hmul_lt (inv_pos.mpr hn_pos')
-  --     simpa [Δ, div_eq_mul_inv, hn_ne_zero, mul_comm, mul_left_comm, mul_assoc] using this
-  --   let t : Fin (n + 1) → Icc a b := fun k =>
-  --     ⟨a + (k : ℝ) * Δ, by
-  --       have hk : (k : ℝ) ≤ n := by exact_mod_cast Fin.le_last k
-  --       refine ⟨?_, ?_⟩
-  --       · exact le_add_of_nonneg_right (mul_nonneg (Nat.cast_nonneg _) hΔ_nonneg)
-  --       · have hk' : (k : ℝ) * Δ ≤ (n : ℝ) * Δ :=
-  --           mul_le_mul_of_nonneg_right hk hΔ_nonneg
-  --         have hN : (n : ℝ) * Δ = b - a := by
-  --           have hn_ne : (n : ℝ) ≠ 0 := hn_ne_zero
-  --           have : ((b - a) / (n : ℝ)) * (n : ℝ) = b - a := by
-  --             field_simp [hn_ne]
-  --           simpa [Δ, mul_comm] using this
-  --         have hk'' := hk'
-  --         simp [hN] at hk''
-  --         simpa [add_comm, add_left_comm, add_assoc, sub_eq_add_neg] using
-  --           add_le_add_left hk'' a⟩
-  --   have ht_strict : StrictMono t := by
-  --     intro i j hij
-  --     change a + (i : ℝ) * Δ < a + (j : ℝ) * Δ
-  --     have hij' : (i : ℝ) < (j : ℝ) := by exact_mod_cast Fin.lt_iff_val_lt_val.mp hij
-  --     exact add_lt_add_left (mul_lt_mul_of_pos_right hij' hΔ_pos) _
-  --   have ht0 : (t 0 : ℝ) = a := by
-  --     simp [t]
-  --   have ht_last : (t (Fin.last n) : ℝ) = b := by
-  --     have hmul : (n : ℝ) * Δ = b - a := by
-  --       have hn_ne : (n : ℝ) ≠ 0 := hn_ne_zero
-  --       have : ((b - a) / (n : ℝ)) * (n : ℝ) = b - a := by
-  --         field_simp [hn_ne]
-  --       simpa [Δ, mul_comm] using this
-  --     have hval : (t (Fin.last n) : ℝ) = a + (n : ℝ) * Δ := by simp [t]
-  --     calc
-  --       (t (Fin.last n) : ℝ)
-  --           = a + (n : ℝ) * Δ := hval
-  --       _ = a + (b - a) := by simp [hmul]
-  --       _ = b := by simp [sub_eq_add_neg]
-  --   have hsucc_diff :
-  --       ∀ i : Fin n, (t i.succ : ℝ) - (t i.castSucc : ℝ) = Δ := by
-  --     intro i
-  --     have hsucc' : (t i.succ : ℝ) = a + (i.succ : ℝ) * Δ := by simp [t]
-  --     have hcast' : (t i.castSucc : ℝ) = a + (i.castSucc : ℝ) * Δ := by simp [t]
-  --     have hcast : (i.castSucc : ℝ) = (i : ℝ) := by simp
-  --     have hisucc : (i.succ : ℝ) = (i : ℝ) + 1 := by simp
-  --     have hcast'' : (t i.castSucc : ℝ) = a + (i : ℝ) * Δ := by simpa [hcast] using hcast'
-  --     have hsucc'' : (t i.succ : ℝ) = a + ((i : ℝ) + 1) * Δ := by simpa [hisucc] using hsucc'
-  --     have histep₁ : (↑↑i + 1) * Δ = (↑↑i : ℝ) * Δ + Δ := by
-  --       simp [add_mul, add_comm]
-  --     have histep : (↑↑i + 1) * Δ = Δ + (↑↑i : ℝ) * Δ := by
-  --       simpa [add_comm] using histep₁
-  --     have hstep :
-  --         (t i.succ : ℝ) = (t i.castSucc : ℝ) + Δ := by
-  --       calc
-  --         (t i.succ : ℝ)
-  --             = a + ((i : ℝ) + 1) * Δ := hsucc''
-  --         _ = a + ((i : ℝ) * Δ + Δ) := by simp [histep₁]
-  --         _ = (a + (i : ℝ) * Δ) + Δ := by ac_rfl
-  --         _ = (t i.castSucc : ℝ) + Δ := by simp [hcast'']
-  --     simp [hstep]
-  --   have hinterval_subset :
-  --       ∀ i : Fin n, Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball (t i.castSucc) δ := by
-  --     intro i x hx
-  --     rw [Metric.mem_ball]
-  --     have hx_left : (t i.castSucc : ℝ) ≤ (x : ℝ) := hx.1
-  --     have hx_right : (x : ℝ) ≤ (t i.succ : ℝ) := hx.2
-  --     have hx_nonneg : 0 ≤ (x : ℝ) - (t i.castSucc : ℝ) := sub_nonneg.mpr hx_left
-  --     have hx_leΔ : (x : ℝ) - (t i.castSucc : ℝ) ≤ Δ := by
-  --       have := sub_le_sub_right hx_right (t i.castSucc : ℝ)
-  --       simpa [hsucc_diff i] using this
-  --     have hx_dist_le : dist x (t i.castSucc) ≤ Δ := by
-  --       change dist (x : ℝ) (t i.castSucc : ℝ) ≤ Δ
-  --       simpa [Real.dist_eq, abs_of_nonneg hx_nonneg] using hx_leΔ
-  --     exact (lt_of_le_of_lt hx_dist_le hΔ_lt)
-  --   have hcover :
-  --       ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
-  --     intro i
-  --     obtain ⟨j, hj⟩ := ball_subset (t i.castSucc) trivial
-  --     exact ⟨j, (hinterval_subset i).trans hj⟩
-  --   exact ⟨n, t, ht_strict, ht0, ht_last, hcover⟩
-  -- · intro h_eq
-  --   subst h_eq
-  --   refine ⟨0, fun _ : Fin 1 => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
-  --   · intro i j hij
-  --     grind
-  --   · simp
-  --   · simp
-  --   · intro i
-  --     exact i.elim0
 
 /-- Finite partition variant: Any open cover of the unit interval can be refined to a finite
 partition with strictly monotone partition points indexed by `Fin (n + 1)`. -/
@@ -702,20 +606,6 @@ lemma exists_strictMono_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set 
   refine ⟨n, t, ht_strict, ?_, ?_, ht_cover⟩
   · ext; exact ht0
   · ext; exact htn
-
-lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι → Set (I × I)}
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
-    ∃ t : ℕ → I, t 0 = 0 ∧ Monotone t ∧ (∃ n, ∀ m ≥ n, t m = 1) ∧
-      ∀ n m, ∃ i, Icc (t n) (t (n + 1)) ×ˢ Icc (t m) (t (m + 1)) ⊆ c i := by
-  obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
-  have hδ := half_pos δ_pos
-  simp_rw [Subtype.ext_iff]
-  have h : (0 : ℝ) ≤ 1 := zero_le_one
-  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
-  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
-    abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
 
 end partition
 
@@ -782,6 +672,7 @@ open NNReal
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

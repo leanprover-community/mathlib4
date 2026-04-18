@@ -360,19 +360,11 @@ lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] {x y : 
       (part.h_mono.monotone i.castSucc_lt_succ.le)) ⊆ T.U i := by
   intro z hz
   obtain ⟨t, rfl⟩ := hz
-  apply hγ.stays_in_U i
   have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
     part.h_mono.monotone i.castSucc_lt_succ.le
-  constructor
-  · apply le_add_of_nonneg_right
-    apply mul_nonneg t.2.1
-    linarith
-  · calc (part.t i.castSucc : ℝ) + t * (part.t i.succ - part.t i.castSucc)
-        ≤ part.t i.castSucc + 1 * (part.t i.succ - part.t i.castSucc) := by
-          apply add_le_add_right
-          apply mul_le_mul_of_nonneg_right t.2.2
-          linarith
-      _ = part.t i.succ := by ring
+  simpa [Path.subpathOn_apply] using
+    hγ.stays_in_U i (Set.Icc.convexCombo (part.t i.castSucc) (part.t i.succ) t)
+      ⟨Set.Icc.le_convexCombo h_mono t, Set.Icc.convexCombo_le h_mono t⟩
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
@@ -411,10 +403,12 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     have hγ_in_inter : γ (t j) ∈ U_inter := by
       simp only [U_inter, Set.mem_iInter]
       intro i hi
-      apply hU_contains i (t j)
+      refine hU_contains i ?_
       cases hi with
-      | inl h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
-      | inr h => constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
+      | inl h =>
+          constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
+      | inr h =>
+          constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
     -- Take the path component of γ(t_j) in the intersection
     refine ⟨pathComponentIn U_inter (γ (t j)),
       ?_, isPathConnected_pathComponentIn hγ_in_inter,
@@ -1035,10 +1029,11 @@ theorem Path.Homotopic.Quotient.discreteTopology
   induction a using Quotient.inductionOn with
   | h p =>
     -- The preimage of {⟦p⟧} is the homotopy class {p' | Homotopic p' p}, which is open
-    rw [isOpen_coinduced]
+    change IsOpen ((Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹'
+      ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)))
     convert isOpen_setOf_homotopic hX p
     ext p'
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq]
+    simp only [Set.mem_preimage, Set.mem_setOf_eq]
     exact Path.Homotopic.Quotient.eq
 
 end
