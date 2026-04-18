@@ -254,6 +254,15 @@ abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
   ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
     (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
 
+lemma residue_comp_pullbackFst (f : A ⟶ C) (g : B ⟶ C) :
+    A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom) =
+      B.residue.comp (f.toAlgHom.pullbackSnd g.toAlgHom) := by
+  ext ⟨_, h⟩
+  simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
+    AlgHom.snd_apply, Subalgebra.coe_val] at h ⊢
+  rw [← DFunLike.congr_fun f.residue_comp, ← DFunLike.congr_fun g.residue_comp,
+    AlgHom.comp_apply, AlgHom.comp_apply, h]
+
 /-- Upgrades the second projection map from the pullback algebra to a morphism in `LocAlgCat`. -/
 abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     ofPullback f g hg ⟶ B :=
@@ -263,15 +272,7 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
   haveI : IsLocalHom (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom :=
     ⟨(RingHom.isLocalHom_pullbackSnd f.toAlgHom.toRingHom g.toAlgHom.toRingHom).map_nonunit⟩
   ⟨f.toAlgHom.pullbackSnd g.toAlgHom, IsLocalRing.maximalIdeal_comap
-    (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom, by
-      change (B.residue.comp (f.toAlgHom.pullbackSnd g.toAlgHom) :
-        ↥(f.toAlgHom.pullback g.toAlgHom) →ₐ[Λ] k) =
-          A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)
-      ext ⟨_, h⟩
-      simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
-        AlgHom.snd_apply, Subalgebra.coe_val] at h ⊢
-      rw [← DFunLike.congr_fun f.residue_comp, ← DFunLike.congr_fun g.residue_comp,
-        AlgHom.comp_apply, AlgHom.comp_apply, ← h]⟩
+    (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom, (residue_comp_pullbackFst f g).symm⟩
 
 lemma pullbackFst_comp_eq_pullbackSnd_comp (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g :=
