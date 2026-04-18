@@ -579,7 +579,7 @@ def irrelevant : HomogeneousIdeal 𝒜 :=
     change (decompose 𝒜 (decompose 𝒜 r _ : A) 0 : A) = 0
     by_cases h : i = 0
     · rw [h, hr, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
-    · rw [decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
+    · rw [coe_decompose_of_mem_ne 𝒜 (SetLike.coe_mem _) h]⟩
 
 @[inherit_doc] scoped notation 𝒜 "₊" => irrelevant 𝒜
 

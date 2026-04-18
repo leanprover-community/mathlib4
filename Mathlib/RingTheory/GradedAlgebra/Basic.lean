@@ -258,7 +258,7 @@ is a ring homomorphism.
 @[simps]
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
-  map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
+  map_one' := coe_decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
   map_zero' := by rw [decompose_zero, zero_apply, ZeroMemClass.coe_zero]
   map_add' _ _ := by rw [decompose_add, add_apply, AddMemClass.coe_add]
   map_mul' := by
@@ -276,8 +276,8 @@ def GradedRing.projZeroRingHom : A →+* A where
             decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero.mp h).2 ▸ hc')]
         · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
           rcases show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero, not_and_or] at h with h' | h'
-          · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
-          · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
+          · simp [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+          · simp [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
     · rintro _ _ ha hb _

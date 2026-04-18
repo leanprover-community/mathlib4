@@ -953,7 +953,8 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, ⟨j, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
   by_cases hfj : f ^ j = 0
   · exact (HH (HomogeneousLocalization.subsingleton _ ⟨_, hfj⟩)).elim
-  have : DirectSum.decompose 𝒜 a n = ⟨a, ha⟩ := Subtype.ext (DirectSum.decompose_of_mem_same 𝒜 ha)
+  have : DirectSum.decompose 𝒜 a n = ⟨a, ha⟩ :=
+    Subtype.ext (DirectSum.coe_decompose_of_mem_same 𝒜 ha)
   simp_rw [← this]
   clear this ha
   have : a ∈ Submodule.span (𝒜 0) (Submonoid.closure (Set.range v)) := by
@@ -971,12 +972,12 @@ theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
       · ext
         simp only [val_mk, Away.val_mk]
         congr
-        refine (DirectSum.decompose_of_mem_same _ ?_).symm
+        refine (DirectSum.coe_decompose_of_mem_same _ ?_).symm
         exact H ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
     · convert zero_mem (Submodule.span (𝒜 0) _)
       ext
       have : (DirectSum.decompose 𝒜 (∏ i : ι', v i ^ ai i) n).1 = 0 := by
-        refine DirectSum.decompose_of_mem_ne _ ?_ H
+        refine DirectSum.coe_decompose_of_mem_ne _ ?_ H
         exact SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i
       simp [this, Localization.mk_zero]
   | zero =>

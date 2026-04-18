@@ -115,12 +115,12 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     by_cases hn' : n = 0
     · rw [DirectSum.decompose_of_mem_same 𝒜 (hn' ▸ hn), sub_self]
       exact zero_mem _
-    · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
+    · rw [DirectSum.coe_decompose_of_mem_ne 𝒜 hn hn', sub_zero]
       exact Ideal.subset_span ⟨_, rfl⟩
   | algebraMap r =>
     convert zero_mem (Ideal.span _)
     rw [sub_eq_zero]
-    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+    exact (DirectSum.coe_decompose_of_mem_same 𝒜 r.2).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›

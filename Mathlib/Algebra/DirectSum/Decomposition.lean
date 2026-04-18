@@ -156,16 +156,24 @@ theorem decompose_of_mem {x : M} {i : ι} (hx : x ∈ ℳ i) :
     decompose ℳ x = DirectSum.of (fun i ↦ ℳ i) i ⟨x, hx⟩ :=
   decompose_coe _ ⟨x, hx⟩
 
-theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_same, Subtype.coe_mk]
+theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) :
+    (decompose ℳ x i) = (⟨x, hx⟩ : ℳ i) := by
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_same]
+
+theorem coe_decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose ℳ x i : M) = x := by
+  simp [decompose_of_mem_same _ hx]
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
+    (decompose ℳ x j) = 0 := by
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm]
+
+theorem coe_decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm, ZeroMemClass.coe_zero]
+  simp [decompose_of_mem_ne _ hx hij]
 
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
-  contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
+  contrapose! hx; rw [← coe_decompose_of_mem_same ℳ hxj, coe_decompose_of_mem_ne ℳ hxi hx]
 
 theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
     m ∈ ℳ i ↔ ∀ j ≠ i, decompose ℳ m j = 0 := by
@@ -187,8 +195,8 @@ lemma Rel.IsPureHomogeneous.isHomogeneous (r : M → M → Prop)
   intro a b h i
   obtain ⟨j, ha, hb⟩ := hr h
   by_cases hij : j = i
-  · simp only [← hij, decompose_of_mem_same, ha, hb, h]
-  · simp only [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
+  · simp [← hij, decompose_of_mem_same, ha, hb, h]
+  · simp [decompose_of_mem_ne _ ha hij, decompose_of_mem_ne _ hb hij, hr0]
 
 open Relation in
 theorem Rel.IsHomogeneous.eqvGenIsHomogeneous (r : M → M → Prop) (hr : Rel.IsHomogeneous ℳ r) :
@@ -286,6 +294,9 @@ section Module
 
 variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
 variable (ℳ : ι → Submodule R M)
+
+theorem coeLinearMap_apply [Decomposition ℳ] (x : ⨁ i, ℳ i) :
+  coeLinearMap ℳ x = (decompose ℳ).symm x := rfl
 
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
