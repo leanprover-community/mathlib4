@@ -126,7 +126,7 @@ def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHom
 
 @[simp]
 lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ :=
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = (.mk x) :=
   rfl
 
 @[simp]
@@ -135,7 +135,7 @@ lemma coe_connectedComponentsEquivZerothHomotopy_symm :
   rfl
 
 lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ :=
+    connectedComponentsEquivZerothHomotopy.symm (.mk x) = ⟦x⟧ :=
   rfl
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
@@ -273,8 +273,7 @@ instance : DiscreteTopology <| ZerothHomotopy X := by
   It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
   canonicalizer; a minimization would help. The original proof was:
   `grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]` -/
-  rw [ZerothHomotopy.preimage_singleton_eq_pathComponent]
-  exact IsOpen.pathComponent x
+  simpa only [← ZerothHomotopy.preimage_singleton_eq_pathComponent] using IsOpen.pathComponent x
 
 /-- A locally path-connected compact space has finitely many path components. -/
 instance [CompactSpace X] : Finite <| ZerothHomotopy X :=
