@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENNReal.Basic
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
@@ -12,8 +14,10 @@ import Mathlib.Data.ENNReal.Basic
 In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some basic lemmas about this map.
 -/
 
+@[expose] public section
 
-open scoped Classical
+assert_not_exists Finset
+
 open NNReal ENNReal
 
 noncomputable section
@@ -23,23 +27,23 @@ namespace ENat
 variable {m n : ℕ∞}
 
 /-- Coercion from `ℕ∞` to `ℝ≥0∞`. -/
-@[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := WithTop.map Nat.cast
+@[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := ENat.map Nat.cast
 
 instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
 
 @[simp]
-theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
+theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
   rfl
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
-  .withTopMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
+  .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 
 @[simp, norm_cast]
 theorem toENNReal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
@@ -49,23 +53,27 @@ theorem toENNReal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
 theorem toENNReal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℕ∞)) : ℝ≥0∞) = OfNat.ofNat n :=
+theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℕ∞) : ℝ≥0∞) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
-theorem toENNReal_coe_eq_iff : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
+theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
   toENNRealOrderEmbedding.eq_iff_eq
 
-@[simp, norm_cast]
+@[simp, norm_cast] lemma toENNReal_eq_top : (n : ℝ≥0∞) = ∞ ↔ n = ⊤ := by simp [← toENNReal_inj]
+@[norm_cast] lemma toENNReal_ne_top : (n : ℝ≥0∞) ≠ ∞ ↔ n ≠ ⊤ := by simp
+
+@[simp, norm_cast, gcongr]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
   toENNRealOrderEmbedding.le_iff_le
 
-@[simp, norm_cast]
+@[simp, norm_cast, gcongr]
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
+
+@[simp, norm_cast]
+lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]
 
 @[mono]
 theorem toENNReal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=
@@ -93,7 +101,7 @@ theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_pow (x : ℕ∞) (n : ℕ) : (x ^ n : ℕ∞) = (x : ℝ≥0∞) ^ n :=
-  RingHom.map_pow toENNRealRingHom x n
+  map_pow toENNRealRingHom x n
 
 @[simp, norm_cast]
 theorem toENNReal_min (m n : ℕ∞) : ↑(min m n) = (min m n : ℝ≥0∞) :=

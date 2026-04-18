@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
 
 /-!
 # Free sheaves of modules
@@ -16,32 +18,54 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
 ## TODO
 
 * In case the category `C` has a terminal object `X`, promote `freeHomEquiv`
-into an adjunction between `freeFunctor` and the evaluation functor at `X`.
-(Alternatively, assuming specific universe parameters, we could show that
-`freeHomEquiv` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
+  into an adjunction between `freeFunctor` and the evaluation functor at `X`.
+  (Alternatively, assuming specific universe parameters, we could show that
+  `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
 
-universe u v' u'
+@[expose] public section
+
+universe u v₁ v₂ u₁ u₂
 open CategoryTheory Limits
 
-variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
-  [HasWeakSheafify J AddCommGrp.{u}] [J.WEqualsLocallyBijective AddCommGrp.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrp.{u})]
+variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
+  [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 namespace SheafOfModules
 
 /-- The free sheaf of modules on a certain type `I`. -/
 noncomputable def free (I : Type u) : SheafOfModules.{u} R := ∐ (fun (_ : I) ↦ unit R)
 
+/-- The inclusions `unit R ⟶ free I`. -/
+noncomputable def ιFree {I : Type u} (i : I) : unit R ⟶ free I :=
+  Sigma.ι (fun (_ : I) ↦ unit R) i
+
+
+/-- The tautological cofan with point `free I : SheafOfModules R`. -/
+noncomputable def freeCofan (I : Type u) : Cofan (fun (_ : I) ↦ unit R) :=
+  Cofan.mk (P := free I) ιFree
+
+@[simp]
+lemma freeCofan_inj {I : Type u} (i : I) :
+    (freeCofan (R := R) I).inj i = ιFree i := rfl
+
+/-- `free I` is the colimit of copies of `unit R` indexed by `I`. -/
+noncomputable def isColimitFreeCofan (I : Type u) :
+    IsColimit (freeCofan (R := R) I) :=
+  coproductIsCoproduct _
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The data of a morphism `free I ⟶ M` from a free sheaf of modules is
 equivalent to the data of a family `I → M.sections` of sections of `M`. -/
 noncomputable def freeHomEquiv (M : SheafOfModules.{u} R) {I : Type u} :
     (free I ⟶ M) ≃ (I → M.sections) where
-  toFun f i := M.unitHomEquiv (Sigma.ι (fun (_ : I) ↦ unit R) i ≫ f)
-  invFun s := Sigma.desc (fun i ↦ M.unitHomEquiv.symm (s i))
-  left_inv s := Sigma.hom_ext _ _ (by simp)
-  right_inv f := by ext1 i; simp
+  toFun f i := M.unitHomEquiv (ιFree i ≫ f)
+  invFun s := Cofan.IsColimit.desc (isColimitFreeCofan I) (fun i ↦ M.unitHomEquiv.symm (s i))
+  left_inv s := Cofan.IsColimit.hom_ext (isColimitFreeCofan I) _ _
+    (fun i ↦ by simp [← freeCofan_inj])
+  right_inv f := by ext1 i; simp [← freeCofan_inj]
 
 lemma freeHomEquiv_comp_apply {M N : SheafOfModules.{u} R} {I : Type u}
     (f : free I ⟶ M) (p : M ⟶ N) (i : I) :
@@ -55,6 +79,16 @@ lemma freeHomEquiv_symm_comp {M N : SheafOfModules.{u} R} {I : Type u} (s : I �
 /-- The tautological section of `free I : SheafOfModules R` corresponding to `i : I`. -/
 noncomputable abbrev freeSection {I : Type u} (i : I) : (free (R := R) I).sections :=
   (free (R := R) I).freeHomEquiv (𝟙 (free I)) i
+
+lemma freeHomEquiv_apply {M : SheafOfModules.{u} R} {I : Type u}
+    (f : free I ⟶ M) (i : I) :
+    freeHomEquiv M f i = sectionsMap f (freeSection i) :=
+  rfl
+
+lemma unitHomEquiv_symm_freeHomEquiv_apply
+    {I : Type u} {M : SheafOfModules.{u} R} (f : free I ⟶ M) (i : I) :
+    M.unitHomEquiv.symm (M.freeHomEquiv f i) = ιFree i ≫ f := by
+  simp [freeHomEquiv]
 
 section
 
@@ -75,15 +109,127 @@ lemma sectionMap_freeMap_freeSection (i : I) :
     sectionsMap (freeMap (R := R) f) (freeSection i) = freeSection (f i) := by
   simp [← freeHomEquiv_comp_apply]
 
+lemma sectionsMap_freeHomEquiv_symm_freeSection
+    {M : SheafOfModules.{u} R} (f : I → M.sections) (i : I) :
+    sectionsMap ((freeHomEquiv M).symm f) (freeSection i) = f i := by
+  obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
+  cat_disch
+
+@[reassoc (attr := simp)]
+lemma ιFree_freeMap (i : I) :
+    ιFree (R := R) i ≫ freeMap f = ιFree (f i) := by
+  rw [← unitHomEquiv_symm_freeHomEquiv_apply, freeHomEquiv_freeMap]
+  dsimp [freeSection]
+  rw [unitHomEquiv_symm_freeHomEquiv_apply, Category.comp_id]
+
 end
 
 /-- The functor `Type u ⥤ SheafOfModules.{u} R` which sends a type `I` to
-`free I` which is a coproduct indexed by `I` of copies of `R` (thought as a
-presheaf of modules over itself). --/
+`free I` which is a coproduct indexed by `I` of copies of `R` (thought of as a
+presheaf of modules over itself). -/
+@[simps]
 noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
-  obj := free
+  obj X := free X
   map f := freeMap f
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
+
+set_option backward.isDefEq.respectTransparency false in
+/- If `C` was in `Type u`, we could show that `freeFunctor` is a left adjoint, and
+deduce that `freeFunctor` preserves all colimits. Instead, we use
+the natural bijection `freeHomEquiv`, which is as close as an adjunction we can get. -/
+instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
+  preservesColimitsOfShape {J} _ := ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    replace hc := (Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩
+    let coconeTypes (s : Cocone (K ⋙ freeFunctor (R := R))) :
+        K.CoconeTypes :=
+      { pt := s.pt.sections
+        ι j := freeHomEquiv _ (s.ι.app j)
+        ι_naturality {j j'} f := by
+          funext x
+          dsimp
+          rw [← s.w f]
+          dsimp
+          rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
+            Function.comp_apply, freeHomEquiv_apply] }
+    exact {
+      desc s := (freeHomEquiv _).symm (hc.desc (coconeTypes s))
+      fac s j := (freeHomEquiv _).injective (by
+        funext x
+        dsimp
+        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
+          sectionsMap_freeHomEquiv_symm_freeSection, dsimp% hc.fac_apply (coconeTypes s) j x])
+      uniq s m hm := (freeHomEquiv _).injective (by
+        funext x
+        obtain ⟨j, x, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
+        replace hm := congr_fun ((freeHomEquiv _).congr_arg (hm j)) x
+        dsimp at hm
+        rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap,
+          Function.comp_apply] at hm
+        rw [freeHomEquiv_apply, freeHomEquiv_apply,
+          sectionsMap_freeHomEquiv_symm_freeSection,
+          Functor.coconeTypesEquiv_symm_apply_ι,
+          dsimp% [-Functor.const_obj_obj] hc.fac_apply (coconeTypes s) j x]
+        dsimp
+        rw [hm]) }⟩⟩⟩
+
+
+section
+
+variable (I J : Type u)
+
+/-- A binary coproduct of free sheaves of modules is the free sheaf
+of modules on the sum type. -/
+noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
+  IsColimit.coconePointUniqueUpToIso
+    (coprodIsCoprod (free (R := R) I) (free J))
+    (mapIsColimitOfPreservesOfIsColimit (freeFunctor (R := R)) _ _
+      (Types.binaryCoproductColimit I J))
+
+@[reassoc (attr := simp)]
+lemma inl_freeSumIso_hom :
+    coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
+
+@[reassoc (attr := simp)]
+lemma inr_freeSumIso_hom :
+    coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom
+    (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
+
+end
+
+section
+
+variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
+  [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
+  (η : F.obj (unit R) ≅ unit S) (I : Type u) (i : I)
+  [PreservesColimitsOfShape (Discrete I) F]
+
+/-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
+If `F` preserves coproducts and `F.obj (unit R) ≅ unit S`, then `F` preserves free sheaves of
+modules. -/
+noncomputable def mapFree : F.obj (free I) ≅ free (R := S) I :=
+  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
+    (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ η).symm
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma ιFree_mapFree_inv :
+    ιFree i ≫ (mapFree F η I).inv = η.inv ≫ F.map (ιFree i) := by
+  simp [mapFree, ← freeCofan_inj, Cofan.inj]
+
+@[reassoc (attr := simp)]
+lemma map_ιFree_mapFree_hom :
+    F.map (ιFree i) ≫ (mapFree F η I).hom = η.hom ≫ ιFree i := by
+  have : η.inv ≫ η.hom ≫ ιFree i = (η.inv ≫ F.map (ιFree i)) ≫ (mapFree F η I).hom := by
+    simp [← ιFree_mapFree_inv]
+  rw [← Iso.hom_inv_id_assoc η (η.hom ≫ ιFree i)]
+  simp [this]
+
+end
 
 end SheafOfModules

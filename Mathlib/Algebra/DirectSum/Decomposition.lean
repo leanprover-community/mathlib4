@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -27,6 +29,8 @@ we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies
 `AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
+
+@[expose] public section
 
 
 variable {ι R M σ : Type*}
@@ -72,6 +76,7 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
   right_inv := DFunLike.congr_fun h_right_inv
 
 /-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
+@[implicit_reducible]
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
     DirectSum.Decomposition ℳ where
   decompose' := (Equiv.ofBijective _ h).symm
@@ -91,9 +96,16 @@ def decompose : M ≃ ⨁ i, ℳ i where
   left_inv := Decomposition.left_inv
   right_inv := Decomposition.right_inv
 
-protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
-    (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
-    ∀ m, p m := by
+omit [AddSubmonoidClass σ M] in
+/-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
+  of `m` are in `p`. -/
+def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
+  ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
+
+@[elab_as_elim]
+protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive 0)
+    (homogeneous : ∀ {i} (m : ℳ i), motive (m : M))
+    (add : ∀ m m' : M, motive m → motive m' → motive (m + m')) : ∀ m, motive m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
@@ -104,7 +116,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (DirectSum.IsInternal.addSubmonoid_iSup_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
   -- Porting note: needs to use @ even though no implicit argument is provided
   exact fun m ↦ @AddSubmonoid.iSup_induction _ _ _ ℳ' _ _ (mem m)
-    (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
+    (fun i m h ↦ homogeneous ⟨m, h⟩) zero add
 --  exact fun m ↦
 --    AddSubmonoid.iSup_induction ℳ' (mem m) (fun i m h ↦ h_homogeneous ⟨m, h⟩) h_zero h_add
 
@@ -128,7 +140,7 @@ theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose �
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij, ZeroMemClass.coe_zero]
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm, ZeroMemClass.coe_zero]
 
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
@@ -136,17 +148,9 @@ theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
--- Porting note: deleted [simps] and added the corresponding lemmas by hand
+@[simps!]
 def decomposeAddEquiv : M ≃+ ⨁ i, ℳ i :=
   AddEquiv.symm { (decompose ℳ).symm with map_add' := map_add (DirectSum.coeAddMonoidHom ℳ) }
-
-@[simp]
-lemma decomposeAddEquiv_apply (a : M) :
-    decomposeAddEquiv ℳ a = decompose ℳ a := rfl
-
-@[simp]
-lemma decomposeAddEquiv_symm_apply (a : ⨁ i, ℳ i) :
-    (decomposeAddEquiv ℳ).symm a = (decompose ℳ).symm a := rfl
 
 @[simp]
 theorem decompose_zero : decompose ℳ (0 : M) = 0 :=
@@ -182,17 +186,26 @@ theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M)
   rw [decompose_symm_sum]
   simp_rw [decompose_symm_of]
 
+theorem AddSubmonoidClass.IsHomogeneous.mem_iff
+    {P : Type*} [SetLike P M] [AddSubmonoidClass P M] (p : P)
+    (hp : SetLike.IsHomogeneous ℳ p) {x} :
+    x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
+  classical
+  refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
+  rw [← DirectSum.sum_support_decompose ℳ x]
+  exact sum_mem (fun i _ ↦ hx i)
+
+theorem AddSubmonoidClass.IsHomogeneous.ext
+    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+    {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
+    (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :
+    p = q := by
+  refine SetLike.ext fun m ↦ ?_
+  rw [AddSubmonoidClass.IsHomogeneous.mem_iff ℳ p hp,
+    AddSubmonoidClass.IsHomogeneous.mem_iff ℳ q hq]
+  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
+
 end AddCommMonoid
-
-/-- The `-` in the statements below doesn't resolve without this line.
-
-This seems to be a problem of synthesized vs inferred typeclasses disagreeing. If we replace
-the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (-decompose ℳ x)`
-instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
-to be found by unification rather than synthesis, then everything works fine without this
-instance. -/
-instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
-    AddCommGroup (⨁ i, ℳ i) := by infer_instance
 
 section AddCommGroup
 
@@ -241,10 +254,10 @@ def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 
-@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+theorem decomposeLinearEquiv_apply (m : M) :
     decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
 
-@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
     (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
 
 @[simp]
@@ -254,6 +267,14 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
 @[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
     (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
   LinearMap.ext <| decompose_symm_of _
+
+@[simp] lemma decomposeLinearEquiv_symm_lof (i : ι) (x : ℳ i) :
+    (decomposeLinearEquiv ℳ).symm (lof R _ _ i x) = x :=
+  congr($(decomposeLinearEquiv_symm_comp_lof ℳ i) x)
+
+@[simp] lemma decomposeLinearEquiv_apply_coe (i : ι) (x : ℳ i) :
+    decomposeLinearEquiv ℳ x = lof R _ _ i x :=
+  (LinearEquiv.eq_symm_apply _).mp (decomposeLinearEquiv_symm_lof ..).symm
 
 /-- Two linear maps from a module with a decomposition agree if they agree on every piece.
 

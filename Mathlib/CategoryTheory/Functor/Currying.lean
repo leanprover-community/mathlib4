@@ -1,9 +1,12 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Curry and uncurry, as functors.
@@ -12,10 +15,17 @@ We define `curry : ((C × D) ⥤ E) ⥤ (C ⥤ (D ⥤ E))` and `uncurry : (C ⥤
 and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
+This is used in `CategoryTheory.Category.Cat.CartesianClosed` to equip the category of small
+categories `Cat.{u, u}` with a Cartesian closed structure.
 -/
 
+@[expose] public section
 
 namespace CategoryTheory
+
+namespace Functor
+
+open scoped Prod
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -37,8 +47,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
-        simp only [prod_comp_fst, prod_comp_snd, Category.comp_id, Category.assoc, Functor.map_id,
-          Functor.map_comp, NatTrans.id_app, NatTrans.comp_app]
+        simp only [Category.assoc]
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
@@ -48,14 +57,14 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [← F.map_comp]}
+      map := fun g => F.map (𝟙 X ×ₘ g)
+      map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp := fun f g => by simp [← F.map_comp] }
   map f :=
-    { app := fun Y => F.map (f, 𝟙 Y)
+    { app := fun Y => F.map (f ×ₘ 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; dsimp; simp [← F.map_comp]
+  map_comp := fun f g => by ext Y; simp [← F.map_comp]
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
@@ -87,16 +96,56 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
       dsimp at f₁ f₂ ⊢
       simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
+/-- The equivalence of functor categories given by flipping. -/
+@[simps!]
+def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
+  functor := flipFunctor _ _ _
+  inverse := flipFunctor _ _ _
+  unitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+
+/-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
+def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulFunctor
+
+/-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulInverse
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Full :=
+  fullyFaithfulCurry.full
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Faithful :=
+  fullyFaithfulCurry.faithful
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
+  fullyFaithfulUncurry.full
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
+  fullyFaithfulUncurry.faithful
+
+/-- Given functors `F₁ : C ⥤ D`, `F₂ : C' ⥤ D'` and `G : D × D' ⥤ E`, this is the isomorphism
+between `curry.obj ((F₁.prod F₂).comp G)` and
+`F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
+@[simps!]
+def curryObjProdComp {C' D' : Type*} [Category* C'] [Category* D']
+    (F₁ : C ⥤ D) (F₂ : C' ⥤ D') (G : D × D' ⥤ E) :
+    curry.obj ((F₁.prod F₂).comp G) ≅
+      F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂ :=
+  NatIso.ofComponents (fun X₁ ↦ NatIso.ofComponents (fun X₂ ↦ Iso.refl _))
+
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents fun d => NatIso.ofComponents fun c => Iso.refl _
+  NatIso.ofComponents fun d => NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/
 @[simps!]
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
-  NatIso.ofComponents fun p => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 variable (B C D E)
 
@@ -107,8 +156,6 @@ applying `whiskeringRight` and currying back
 def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E :=
   uncurry ⋙
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
-
-namespace Functor
 
 variable {B C D E}
 
@@ -122,7 +169,7 @@ lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry
   rw [← uncurry_obj_curry_obj F₁, ← uncurry_obj_curry_obj F₂, h]
 
 lemma curry_obj_uncurry_obj (F : B ⥤ C ⥤ D) : curry.obj (uncurry.obj F) = F :=
-  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by aesop_cat)
+  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by cat_disch)
 
 lemma uncurry_obj_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : uncurry.obj F₁ = uncurry.obj F₂) :
     F₁ = F₂ := by
@@ -145,6 +192,44 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+
+/-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
+@[simps!]
+def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
+    uncurry.obj (F ⋙ G).flip ≅ (𝟭 C).prod F ⋙ uncurry.obj G.flip := .refl _
+
+lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
+    uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ uncurry.obj G.flip := rfl
+
+/-- Natural isomorphism witnessing `comp_flip_curry_eq`. -/
+@[simps!]
+def curryObjCompIso (F : C × B ⥤ D) (G : D ⥤ E) :
+    (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (whiskeringRight _ _ _).obj G := .refl _
+
+lemma curry_obj_comp_flip (F : C × B ⥤ D) (G : D ⥤ E) :
+    (curry.obj (F ⋙ G)).flip =
+      (curry.obj F).flip ⋙ (whiskeringRight _ _ _).obj G := rfl
+
+/-- The equivalence of types of bifunctors giving by flipping the arguments. -/
+@[simps!]
+def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
+  toFun F := F.flip
+  invFun F := F.flip
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The equivalence of types of bifunctors given by currying. -/
+@[simps!]
+def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
+  toFun F := uncurry.obj F
+  invFun G := curry.obj G
+  left_inv := curry_obj_uncurry_obj
+  right_inv := uncurry_obj_curry_obj
+
+/-- The flipped equivalence of types of bifunctors given by currying. -/
+@[simps!]
+def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
+  flippingEquiv.trans curryingEquiv
 
 end Functor
 

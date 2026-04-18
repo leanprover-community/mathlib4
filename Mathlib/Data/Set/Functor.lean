@@ -3,10 +3,13 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.Defs
-import Mathlib.Control.Basic
-import Mathlib.Data.Set.Notation
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Functoriality of `Set`
@@ -14,33 +17,24 @@ import Mathlib.Data.Set.Notation
 This file defines the functor structure of `Set`.
 -/
 
+@[expose] public section
+
 universe u
 
 open Function Set.Notation
 
 namespace Set
 
-variable {α β : Type u} {s : Set α} {f : α → Set β} {g : Set (α → β)}
+variable {α β : Type u} {s : Set α} {f : α → Set β}
 
-/-- The `Set` functor is a monad.
-
-This is not a global instance because it does not have computational content,
-so it does not make much sense using `do` notation in general.
-Plus, this would cause monad-related coercions and monad lifting logic to become activated.
-Either use `attribute [local instance] Set.monad` to make it be a local instance
-or use `SetM.run do ...` when `do` notation is wanted. -/
-protected def monad : Monad.{u} Set where
+instance : Alternative Set where
   pure a := {a}
-  bind s f := ⋃ i ∈ s, f i
-  seq s t := Set.seq s (t ())
+  seq s t := s.seq (t ())
+  seqLeft s t := {a | a ∈ s ∧ (t ()).Nonempty}
+  seqRight s t := {b | s.Nonempty ∧ b ∈ t ()}
   map := Set.image
-
-section with_instance
-attribute [local instance] Set.monad
-
-@[simp]
-theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
-  rfl
+  orElse s t := s ∪ t ()
+  failure := ∅
 
 @[simp]
 theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
@@ -51,7 +45,23 @@ theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
   rfl
 
 @[simp]
+theorem seqLeft_def (s : Set α) (t : Set β) : s <* t = {a | a ∈ s ∧ t.Nonempty} :=
+  rfl
+
+@[simp]
+theorem seqRight_def (s : Set α) (t : Set β) : s *> t = {a | s.Nonempty ∧ a ∈ t} :=
+  rfl
+
+@[simp]
 theorem pure_def (a : α) : (pure a : Set α) = {a} :=
+  rfl
+
+@[simp]
+theorem failure_def : (failure : Set α) = ∅ :=
+  rfl
+
+@[simp]
+theorem orElse_def (s : Set α) (t : Set α) : (s <|> t) = s ∪ t :=
   rfl
 
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
@@ -61,20 +71,48 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   ext
   simp
 
-instance : LawfulMonad Set := LawfulMonad.mk'
-  (id_map := image_id)
-  (pure_bind := biUnion_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
-  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
-  (bind_map := fun _ _ => seq_def.symm)
+instance : LawfulAlternative Set where
+  pure_seq _ _ := Set.singleton_seq
+  seqLeft_eq _ _ := by simp [Set.seq, Set.image2, Set.nonempty_def]
+  seqRight_eq s t := by simp [Set.seq, Set.image2, Set.nonempty_def]
+  map_pure _ _ := Set.image_singleton
+  seq_pure _ _ := Set.seq_singleton
+  seq_assoc _ _ _ := Set.seq_seq
+  map_failure _ := Set.image_empty _
+  failure_seq _ := Set.image2_empty_left
+  orElse_failure _ := Set.union_empty _
+  failure_orElse _ := Set.empty_union _
+  orElse_assoc _ _ _ := Set.union_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := Set.image_union _ _ _
 
-instance : CommApplicative (Set : Type u → Type u) :=
-  ⟨fun s t => prod_image_seq_comm s t⟩
+instance : CommApplicative Set where
+  commutative_prod := prod_image_seq_comm
 
-instance : Alternative Set :=
-  { Set.monad with
-    orElse := fun s t => s ∪ (t ())
-    failure := ∅ }
+/-- The `Set` functor is a monad.
+
+This is not a global instance because it does not have computational content,
+so it does not make much sense using `do` notation in general.
+
+Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
+Either use `attribute [local instance] Set.monad` to make it be a local instance
+or use `SetM.run do ...` when `do` notation is wanted. -/
+@[instance_reducible]
+protected def monad : AlternativeMonad.{u} Set where
+  __ : Alternative Set := inferInstance
+  bind s f := ⋃ i ∈ s, f i
+
+section with_instance
+attribute [local instance] Set.monad
+
+@[simp]
+theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
+  rfl
+
+instance : LawfulMonad Set where
+  bind_pure_comp _ _ := (image_eq_iUnion _ _).symm
+  bind_map _ _ := seq_def.symm
+  pure_bind := biUnion_singleton
+  bind_assoc _ _ _ := by simp only [bind_def, biUnion_iUnion]
 
 /-! ### Monadic coercion lemmas -/
 
@@ -103,9 +141,10 @@ The `Monad` instance gives a coercion using the internal function `Lean.Internal
 In practice this is only used for applying the `Set` functor to `Subtype.val`,
 as was defined in `Data.Set.Notation`. -/
 
+attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
+    @Lean.Internal.coeM Set s α _ _ t = Subtype.val '' t := by
   change ⋃ (x ∈ t), {x.1} = _
   ext
   simp
@@ -115,8 +154,7 @@ variable {β : Set α} {γ : Set β} {a : α}
 theorem mem_image_val_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
   ⟨_, ha', rfl⟩
 
-theorem image_val_subset : (γ : Set α) ⊆ β := by
-  rintro _ ⟨⟨_, ha⟩, _, rfl⟩; exact ha
+theorem image_val_subset : (γ : Set α) ⊆ β := Subtype.coe_image_subset _ _
 
 theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset ha⟩ ∈ γ := by
   rcases ha with ⟨_, ha, rfl⟩; exact ha
@@ -134,7 +172,11 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : Monad SetM := Set.monad
+instance : AlternativeMonad SetM := fast_instance% Set.monad
+
+instance : LawfulMonad SetM := Set.instLawfulMonad
+
+instance : LawfulAlternative SetM := Set.instLawfulAlternative
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/

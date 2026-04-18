@@ -1,13 +1,15 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.IsomorphismClasses
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Zero morphisms and zero objects
@@ -25,18 +27,16 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-universe v u
-
-universe v' u'
+universe w v v' u u'
 
 open CategoryTheory
 
 open CategoryTheory.Category
-
-open scoped Classical
 
 namespace CategoryTheory.Limits
 
@@ -49,11 +49,11 @@ class HasZeroMorphisms where
   /-- Every morphism space has zero -/
   [zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
+  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by cat_disch
   /-- `0` composed with `f` is `0` -/
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by aesop_cat
+  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by cat_disch
 
-attribute [instance] HasZeroMorphisms.zero
+attribute [instance_reducible, instance] HasZeroMorphisms.zero
 
 variable {C}
 
@@ -68,7 +68,7 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 
 instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
-  zero := by aesop_cat
+  zero := by cat_disch
 
 instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   zero X Y := by repeat (constructor)
@@ -144,7 +144,7 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  zero F G := ⟨{ app := fun X => 0 }⟩
+  zero F G := ⟨{ app := fun _ => 0 }⟩
   comp_zero := fun η H => by
     ext X; dsimp; apply comp_zero
   zero_comp := fun F {G H} η => by
@@ -205,25 +205,24 @@ theorem iff_isSplitEpi_eq_zero {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsZero Y
     simp [h]
 
 theorem of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (i : IsZero Y) : IsZero X := by
-  have hf := i.eq_zero_of_tgt f
-  subst hf
+  obtain rfl := i.eq_zero_of_tgt f
   exact IsZero.of_mono_zero X Y
 
 theorem of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (i : IsZero X) : IsZero Y := by
-  have hf := i.eq_zero_of_src f
-  subst hf
+  obtain rfl := i.eq_zero_of_src f
   exact IsZero.of_epi_zero X Y
 
 end IsZero
 
 /-- A category with a zero object has zero morphisms.
 
-    It is rarely a good idea to use this. Many categories that have a zero object have zero
-    morphisms for some other reason, for example from additivity. Library code that uses
-    `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-    the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
-    code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-    asks for an instance of `HasZeroObjects`. -/
+It is rarely a good idea to use this. Many categories that have a zero object have zero
+morphisms for some other reason, for example from additivity. Library code that uses
+`zeroMorphismsOfZeroObject` will then be incompatible with these categories because
+the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
+code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
+asks for an instance of `HasZeroObject`. -/
+@[implicit_reducible]
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
@@ -245,14 +244,15 @@ open ZeroObject
 
 /-- A category with a zero object has zero morphisms.
 
-    It is rarely a good idea to use this. Many categories that have a zero object have zero
-    morphisms for some other reason, for example from additivity. Library code that uses
-    `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
-    the `has_zero_morphisms` instances will not be definitionally equal. For this reason library
-    code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-    asks for an instance of `HasZeroObjects`. -/
+It is rarely a good idea to use this. Many categories that have a zero object have zero
+morphisms for some other reason, for example from additivity. Library code that uses
+`zeroMorphismsOfZeroObject` will then be incompatible with these categories because
+the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
+code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
+asks for an instance of `HasZeroObject`. -/
+@[implicit_reducible]
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
-  zero X Y := { zero := (default : X ⟶ 0) ≫ default }
+  zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
@@ -296,7 +296,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category* B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject
@@ -329,7 +329,7 @@ open ZeroObject
 @[simp]
 theorem id_zero : 𝟙 (0 : C) = (0 : (0 : C) ⟶ 0) := by apply HasZeroObject.from_zero_ext
 
--- This can't be a `simp` lemma because the left hand side would be a metavariable.
+-- This can't be a `simp` lemma because the left-hand side would be a metavariable.
 /-- An arrow ending in the zero object is zero -/
 theorem zero_of_to_zero {X : C} (f : X ⟶ 0) : f = 0 := by ext
 
@@ -341,7 +341,7 @@ theorem zero_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : f = 0 :=
 theorem zero_of_from_zero {X : C} (f : 0 ⟶ X) : f = 0 := by ext
 
 theorem zero_of_source_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) : f = 0 := by
-  have h : f = i.hom ≫ 𝟙 0 ≫ i.inv ≫ f := by simp only [Iso.hom_inv_id_assoc, id_comp, comp_id]
+  have h : f = i.hom ≫ 𝟙 0 ≫ i.inv ≫ f := by simp only [Iso.hom_inv_id_assoc, id_comp]
   simpa using h
 
 theorem zero_of_source_iso_zero' {X Y : C} (f : X ⟶ Y) (i : IsIsomorphic X 0) : f = 0 :=
@@ -365,8 +365,8 @@ def idZeroEquivIsoZero (X : C) : 𝟙 X = 0 ≃ (X ≅ 0) where
     { hom := 0
       inv := 0 }
   invFun i := zero_of_target_iso_zero (𝟙 X) i
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem idZeroEquivIsoZero_apply_hom (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIsoZero X) h).hom = 0 :=
@@ -378,14 +378,14 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
 
 /-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
-def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
+def isoZeroOfMonoZero {X Y : C} (_ : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_mono (0 : X ⟶ Y)).mp (by simp)
 
 /-- If `0 : X ⟶ Y` is an epimorphism, then `Y ≅ 0`. -/
 @[simps]
-def isoZeroOfEpiZero {X Y : C} (h : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
+def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_epi (0 : X ⟶ Y)).mp (by simp)
@@ -393,12 +393,12 @@ def isoZeroOfEpiZero {X Y : C} (h : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
 /-- If a monomorphism out of `X` is zero, then `X ≅ 0`. -/
 def isoZeroOfMonoEqZero {X Y : C} {f : X ⟶ Y} [Mono f] (h : f = 0) : X ≅ 0 := by
   subst h
-  apply isoZeroOfMonoZero ‹_›
+  apply isoZeroOfMonoZero (Y := Y) ‹_›
 
 /-- If an epimorphism in to `Y` is zero, then `Y ≅ 0`. -/
 def isoZeroOfEpiEqZero {X Y : C} {f : X ⟶ Y} [Epi f] (h : f = 0) : Y ≅ 0 := by
   subst h
-  apply isoZeroOfEpiZero ‹_›
+  apply isoZeroOfEpiZero (X := X) ‹_›
 
 /-- If an object `X` is isomorphic to 0, there's no need to use choice to construct
 an explicit isomorphism: the zero morphism suffices. -/
@@ -406,7 +406,7 @@ def isoOfIsIsomorphicZero {X : C} (P : IsIsomorphic X 0) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := by
-    cases' P with P
+    have P := P.some
     rw [← P.hom_inv_id, ← Category.id_comp P.inv]
     apply Eq.symm
     simp only [id_comp, Iso.hom_inv_id, comp_zero]
@@ -422,19 +422,15 @@ variable [HasZeroMorphisms C]
 /-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
 the identities on both `X` and `Y` are zero.
 -/
-@[simps]
 def isIsoZeroEquiv (X Y : C) : IsIso (0 : X ⟶ Y) ≃ 𝟙 X = 0 ∧ 𝟙 Y = 0 where
   toFun := by
     intro i
     rw [← IsIso.hom_inv_id (0 : X ⟶ Y)]
     rw [← IsIso.inv_hom_id (0 : X ⟶ Y)]
-    simp only [eq_self_iff_true,comp_zero,and_self,zero_comp]
-  invFun h := ⟨⟨(0 : Y ⟶ X), by aesop_cat⟩⟩
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
--- Porting note: simp solves these
-attribute [-simp, nolint simpNF] isIsoZeroEquiv_apply isIsoZeroEquiv_symm_apply
+    simp only [comp_zero, and_self, zero_comp]
+  invFun h := ⟨⟨(0 : Y ⟶ X), by cat_disch⟩⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 /-- A zero morphism `0 : X ⟶ X` is an isomorphism if and only if
 the identity on `X` is zero.
@@ -461,8 +457,19 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
     fconstructor
     · exact (idZeroEquivIsoZero X) hX
     · exact (idZeroEquivIsoZero Y) hY
-  · aesop_cat
-  · aesop_cat
+  · cat_disch
+  · cat_disch
+
+/-- A zero morphism `0 : X ⟶ Y` is an isomorphism if and only if
+`X` and `Y` are zero objects.
+-/
+lemma isIsoZero_iff_source_target_isZero (X Y : C) : IsIso (0 : X ⟶ Y) ↔ IsZero X ∧ IsZero Y := by
+  constructor
+  · intro h
+    let h' := isIsoZeroEquivIsoZero _ _ h
+    exact ⟨(isZero_zero _).of_iso h'.1, (isZero_zero _).of_iso h'.2⟩
+  · intro ⟨hX, hY⟩
+    exact (isIsoZeroEquivIsoZero _ _).symm ⟨hX.isoZero, hY.isoZero⟩
 
 theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
     IsIso f := by
@@ -480,7 +487,7 @@ end IsIso
 /-- If there are zero morphisms, any initial object is a zero object. -/
 theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
     HasZeroObject C := by
-  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
+  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
     _ = f ≫ 0 := by congr!; subsingleton
@@ -489,7 +496,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
 /-- If there are zero morphisms, any terminal object is a zero object. -/
 theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C] :
     HasZeroObject C := by
-  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
+  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by cat_disch⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
     _ = 0 ≫ f := by congr!; subsingleton
@@ -523,7 +530,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
-  isImage := { lift := fun F' => 0 }
+  isImage := { lift := fun _ => 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _
@@ -553,31 +560,37 @@ theorem image.ι_zero' [HasEqualizers C] {X Y : C} {f : X ⟶ Y} (h : f = 0) [Ha
 
 end Image
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) :=
-  IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
+    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) := by
+  classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) :=
-  IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
+    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
+  classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inl : X ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc (𝟙 X) 0 }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inr : Y ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc 0 (𝟙 Y) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.fst : X ⨯ Y ⟶ X) :=
   IsSplitEpi.mk' { section_ := prod.lift (𝟙 X) 0 }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
@@ -608,6 +621,26 @@ lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : Is
   (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
     (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
 
+/-- Given a functor `F : D ⥤ C`, zero morphisms on `C` induce zero morphisms on
+`D` by taking preimages. -/
+@[reducible]
+def _root_.CategoryTheory.Functor.FullyFaithful.hasZeroMorphisms (hF : F.FullyFaithful) :
+    HasZeroMorphisms D where
+  zero X Y := ⟨hF.preimage 0⟩
+  comp_zero f _ := by
+    apply hF.map_injective
+    change F.map (f ≫ (hF.preimage _)) = F.map (hF.preimage _)
+    simp
+  zero_comp _ _ _ f := by
+    apply hF.map_injective
+    change F.map ((hF.preimage _) ≫ f) = F.map (hF.preimage _)
+    simp
+
+omit [HasZeroObject C] in
+lemma _root_.CategoryTheory.Functor.FullyFaithful.hasZeroMorphisms_def (hF : F.FullyFaithful)
+    (X Y : D) : letI : HasZeroMorphisms D := hF.hasZeroMorphisms
+    (0 : X ⟶ Y) = hF.preimage 0 := rfl
+
 end
 
 section
@@ -624,4 +657,167 @@ lemma IsInitial.isZero {X : C} (hX : IsInitial X) : IsZero X := by
 
 end
 
-end CategoryTheory.Limits
+section PiIota
+
+variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasProduct f]
+
+/-- In the presence of 0-morphism we can define an inclusion morphism into any product. -/
+def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
+  Pi.lift (Function.update (fun _ ↦ 0) b (𝟙 _))
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp), grind =]
+lemma Pi.ι_π_eq_id (b : β) : Pi.ι f b ≫ Pi.π f b = 𝟙 _ := by
+  simp [Pi.ι]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc, grind =]
+lemma Pi.ι_π_of_ne {b c : β} (h : b ≠ c) : Pi.ι f b ≫ Pi.π f c = 0 := by
+  simp [Pi.ι, Function.update_of_ne h.symm]
+
+@[reassoc]
+lemma Pi.ι_π (b c : β) :
+    Pi.ι f b ≫ Pi.π f c = if h : b = c then eqToHom (congrArg f h) else 0 := by
+  grind [CategoryTheory.eqToHom_refl]
+
+instance (b : β) : Mono (Pi.ι f b) where
+  right_cancellation _ _ e := by simpa using congrArg (· ≫ Pi.π f b) e
+
+end PiIota
+
+section SigmaPi
+
+variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [HasCoproduct f]
+
+/-- In the presence of 0-morphisms we can define a projection morphism from any coproduct. -/
+def Sigma.π (b : β) : ∐ f ⟶ f b :=
+  Limits.Sigma.desc (Function.update (fun _ ↦ 0) b (𝟙 _))
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp), grind =]
+lemma Sigma.ι_π_eq_id (b : β) : Sigma.ι f b ≫ Sigma.π f b = 𝟙 _ := by
+  simp [Sigma.π]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc, grind =]
+lemma Sigma.ι_π_of_ne {b c : β} (h : b ≠ c) : Sigma.ι f b ≫ Sigma.π f c = 0 := by
+  simp [Sigma.π, Function.update_of_ne h]
+
+@[reassoc]
+theorem Sigma.ι_π (b c : β) :
+    Sigma.ι f b ≫ Sigma.π f c = if h : b = c then eqToHom (congrArg f h) else 0 := by
+  grind [CategoryTheory.eqToHom_refl]
+
+instance (b : β) : Epi (Sigma.π f b) where
+  left_cancellation _ _ e := by simpa using congrArg (Sigma.ι f b ≫ ·) e
+
+end SigmaPi
+
+section ProdInlInr
+
+variable [HasZeroMorphisms C] (X Y : C) [HasBinaryProduct X Y]
+
+/-- If a category `C` has 0-morphisms, there is a canonical inclusion from the first component `X`
+into any product of objects `X ⨯ Y`. -/
+def prod.inl : X ⟶ X ⨯ Y :=
+  prod.lift (𝟙 _) 0
+
+/-- If a category `C` has 0-morphisms, there is a canonical inclusion from the second component `Y`
+into any product of objects `X ⨯ Y`. -/
+def prod.inr : Y ⟶ X ⨯ Y :=
+  prod.lift 0 (𝟙 _)
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma prod.inl_fst : prod.inl X Y ≫ prod.fst = 𝟙 X := by
+  simp [prod.inl]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma prod.inl_snd : prod.inl X Y ≫ prod.snd = 0 := by
+  simp [prod.inl]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma prod.inr_fst : prod.inr X Y ≫ prod.fst = 0 := by
+  simp [prod.inr]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma prod.inr_snd : prod.inr X Y ≫ prod.snd = 𝟙 Y := by
+  simp [prod.inr]
+
+instance : Mono (prod.inl X Y) where
+  right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.fst) e
+
+instance : Mono (prod.inr X Y) where
+  right_cancellation _ _ e := by simpa using congrArg (· ≫ prod.snd) e
+
+end ProdInlInr
+
+section CoprodFstSnd
+
+variable [HasZeroMorphisms C] (X Y : C) [HasBinaryCoproduct X Y]
+
+/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
+its first component `X`. -/
+def coprod.fst : X ⨿ Y ⟶ X :=
+  coprod.desc (𝟙 _) 0
+
+/-- If a category `C` has 0-morphisms, there is a canonical projection from a coproduct `X ⨿ Y` to
+its second component `Y`. -/
+def coprod.snd : X ⨿ Y ⟶ Y :=
+  coprod.desc 0 (𝟙 _)
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma coprod.inl_fst : coprod.inl ≫ coprod.fst X Y = 𝟙 X := by
+  simp [coprod.fst]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma coprod.inr_fst : coprod.inr ≫ coprod.fst X Y = 0 := by
+  simp [coprod.fst]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma coprod.inl_snd : coprod.inl ≫ coprod.snd X Y = 0 := by
+  simp [coprod.snd]
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma coprod.inr_snd : coprod.inr ≫ coprod.snd X Y = 𝟙 Y := by
+  simp [coprod.snd]
+
+instance : Epi (coprod.fst X Y) where
+  left_cancellation _ _ e := by simpa using congrArg (coprod.inl ≫ ·) e
+
+instance : Epi (coprod.snd X Y) where
+  left_cancellation _ _ e := by simpa using congrArg (coprod.inr ≫ ·) e
+
+end CoprodFstSnd
+
+end Limits
+
+namespace ObjectProperty
+
+open Limits
+
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] (P : ObjectProperty C)
+
+instance [HasZeroMorphisms C] : HasZeroMorphisms P.FullSubcategory where
+  -- Note: Add zero field explicitly for a better transparency of definitional properties
+  zero _ _ := { zero := P.homMk 0 }
+  __ := P.fullyFaithfulι.hasZeroMorphisms
+
+@[simp]
+lemma homMk_zero (X Y : P.FullSubcategory) :
+    P.homMk (0 : X.obj ⟶ Y.obj) = 0 := rfl
+
+@[simp]
+lemma zero_hom (X Y : P.FullSubcategory) :
+    (0 : X ⟶ Y).hom = 0 := rfl
+
+end ObjectProperty
+
+end CategoryTheory

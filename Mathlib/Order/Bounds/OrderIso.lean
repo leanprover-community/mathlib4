@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Order isomorphisms and bounds.
 -/
+
+public section
 
 open Set
 
@@ -25,7 +29,6 @@ theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds
 theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
   @upperBounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
 
--- Porting note: by simps were `fun _ _ => f.le_iff_le` and `fun _ _ => f.symm.le_iff_le`
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
   ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>
@@ -43,7 +46,7 @@ theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x 
 
 @[simp]
 theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s (f x) := by
-  rw [← f.symm_symm, ← image_eq_preimage, isLUB_image]
+  rw [← f.symm_symm, ← image_eq_preimage_symm, isLUB_image]
 
 theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) ↔ IsLUB s x := by
   rw [isLUB_preimage, f.apply_symm_apply]

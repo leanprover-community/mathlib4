@@ -3,10 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.LocallyFinite
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -48,12 +51,12 @@ and also prove its basic properties.
   a similar statement that uses a basis of entourages of `β` instead of all entourages.
   It is useful, e.g., if `β` is a metric space.
 
-* `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`:
+* `ContinuousMap.tendsto_iff_forall_isCompact_tendstoUniformlyOn`:
   a sequence of functions `Fₙ` in `C(α, β)` converges in the compact-open topology to some `f`
   iff `Fₙ` converges to `f` uniformly on each compact subset `K` of `α`.
 
 * Topology induced by the uniformity described above agrees with the compact-open topology.
-  This is essentially the same as `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`.
+  This is essentially the same as `ContinuousMap.tendsto_iff_forall_isCompact_tendstoUniformlyOn`.
 
   This fact is not available as a separate theorem.
   Instead, we override the projection of `ContinuousMap.compactConvergenceUniformity`
@@ -83,13 +86,12 @@ so that the resulting instance uses the compact-open topology.
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
 
+@[expose] public section
+
+open Filter Set Topology UniformSpace
+open scoped Uniformity UniformConvergence
 
 universe u₁ u₂ u₃
-
-open scoped Uniformity Topology UniformConvergence
-
-open UniformSpace Set Filter
-
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
 variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 
@@ -98,7 +100,7 @@ namespace ContinuousMap
 /-- Compact-open topology on `C(α, β)` agrees with the topology of uniform convergence on compacts:
 a family of continuous functions `F i` tends to `f` in the compact-open topology
 if and only if the `F i` tends to `f` uniformly on all compact sets. -/
-theorem tendsto_iff_forall_compact_tendstoUniformlyOn
+theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f} :
     Tendsto F p (𝓝 f) ↔ ∀ K, IsCompact K → TendstoUniformlyOn (fun i a => F i a) f p K := by
   rw [tendsto_nhds_compactOpen]
@@ -128,7 +130,7 @@ theorem tendsto_iff_forall_compact_tendstoUniformlyOn
     -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `ball (f x) V` as well.
     refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ ?_
     -- Then for `y ∈ s` we have `(f y, f x) ∈ V` and `(f x, F i y) ∈ V`, thus `(f y, F i y) ∈ U`
-    exact hVU ⟨f x, hVsymm.mk_mem_comm.2 <| hmaps hy, hg hy⟩
+    exact hVU ⟨f x, SetRel.symm V <| hmaps hy, hg hy⟩
   · -- Now we prove that uniform convergence on compacts
     -- implies convergence in the compact-open topology
     -- Consider a compact set `K`, an open set `U`, and a continuous map `f` that maps `K` to `U`
@@ -160,21 +162,28 @@ open UniformSpace in
 
 The uniformity comes from `α →ᵤ[{K | IsCompact K}] β` (i.e., `UniformOnFun α β {K | IsCompact K}`)
 which defines topology of uniform convergence on compact sets.
-We use `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`
+We use `ContinuousMap.tendsto_iff_forall_isCompact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance]. -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
-    simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
+    simp_rw [← tendsto_id', tendsto_iff_forall_isCompact_tendstoUniformlyOn,
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl
 
-theorem uniformEmbedding_toUniformOnFunIsCompact :
-    UniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
+theorem isUniformEmbedding_toUniformOnFunIsCompact :
+    IsUniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
   comap_uniformity := rfl
-  inj := DFunLike.coe_injective
+  injective := DFunLike.coe_injective
+
+open UniformOnFun in
+/-- `f : X → C(α, β)` is continuous if any only if it is continuous when reinterpreted as a
+map `f : X → α →ᵤ[{K | IsCompact K}] β`. -/
+theorem continuous_iff_continuous_uniformOnFun {X : Type*} [TopologicalSpace X] (f : X → C(α, β)) :
+    Continuous f ↔ Continuous (fun x ↦ ofFun {K | IsCompact K} (f x)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.isInducing.continuous_iff
 
 -- The following definitions and theorems
 -- used to be a part of the construction of the `UniformSpace C(α, β)` structure
@@ -184,7 +193,7 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
-  rw [← uniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
+  rw [← isUniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
   exact .comap _ <| UniformOnFun.hasBasis_uniformity_of_basis _ _ {K | IsCompact K}
     ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 
@@ -232,7 +241,7 @@ variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 /-- Locally uniform convergence implies convergence in the compact-open topology. -/
 theorem tendsto_of_tendstoLocallyUniformly (h : TendstoLocallyUniformly (fun i a => F i a) f p) :
     Tendsto F p (𝓝 f) := by
-  rw [tendsto_iff_forall_compact_tendstoUniformlyOn]
+  rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn]
   intro K hK
   rw [← tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK]
   exact h.tendstoLocallyUniformlyOn
@@ -245,14 +254,9 @@ see `ContinuousMap.tendsto_of_tendstoLocallyUniformly`. -/
 theorem tendsto_iff_tendstoLocallyUniformly [WeaklyLocallyCompactSpace α] :
     Tendsto F p (𝓝 f) ↔ TendstoLocallyUniformly (fun i a => F i a) f p := by
   refine ⟨fun h V hV x ↦ ?_, tendsto_of_tendstoLocallyUniformly⟩
-  rw [tendsto_iff_forall_compact_tendstoUniformlyOn] at h
+  rw [tendsto_iff_forall_isCompact_tendstoUniformlyOn] at h
   obtain ⟨n, hn₁, hn₂⟩ := exists_compact_mem_nhds x
   exact ⟨n, hn₂, h n hn₁ V hV⟩
-
-@[deprecated tendsto_iff_tendstoLocallyUniformly (since := "2023-09-03")]
-theorem tendstoLocallyUniformly_of_tendsto [WeaklyLocallyCompactSpace α] (h : Tendsto F p (𝓝 f)) :
-    TendstoLocallyUniformly (fun i a => F i a) f p :=
-  tendsto_iff_tendstoLocallyUniformly.1 h
 
 section Functorial
 
@@ -260,27 +264,27 @@ variable {γ δ : Type*} [TopologicalSpace γ] [UniformSpace δ]
 
 theorem uniformContinuous_comp (g : C(β, δ)) (hg : UniformContinuous g) :
     UniformContinuous (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+  isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
     UniformOnFun.postcomp_uniformContinuous hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+      isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
-theorem uniformInducing_comp (g : C(β, δ)) (hg : UniformInducing g) :
-    UniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing.of_comp_iff.mp <|
-    UniformOnFun.postcomp_uniformInducing hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing
+theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
+    IsUniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing.of_comp_iff.mp <|
+    UniformOnFun.postcomp_isUniformInducing hg |>.comp
+      isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
 
-theorem uniformEmbedding_comp (g : C(β, δ)) (hg : UniformEmbedding g) :
-    UniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
-    UniformOnFun.postcomp_uniformEmbedding hg |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact
+theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
+    IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|
+    UniformOnFun.postcomp_isUniformEmbedding hg |>.comp
+      isUniformEmbedding_toUniformOnFunIsCompact
 
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
-  uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
+  isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
     UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
-      uniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
+      isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
 to an isomorphism `C(X, Y) ≃ᵤ C(Z, T)`. -/
@@ -302,25 +306,73 @@ section CompactDomain
 variable [CompactSpace α]
 
 theorem hasBasis_compactConvergenceUniformity_of_compact :
-    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V =>
-      { fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V } :=
+    HasBasis (𝓤 C(α, β)) (fun V : Set (β × β) => V ∈ 𝓤 β) fun V ↦
+      {fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V} :=
   hasBasis_compactConvergenceUniformity.to_hasBasis
-    (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV =>
+    (fun p hp => ⟨p.2, hp.2, fun _fg hfg x _hx => hfg x⟩) fun V hV ↦
     ⟨⟨univ, V⟩, ⟨isCompact_univ, hV⟩, fun _fg hfg x => hfg x (mem_univ x)⟩
+
+theorem _root_.Filter.HasBasis.compactConvergenceUniformity_of_compact
+    {ι : Sort*} {p : ι → Prop} {V : ι → Set (β × β)} (h : (𝓤 β).HasBasis p V) :
+    HasBasis (𝓤 C(α, β)) p fun i ↦ {fg : C(α, β) × C(α, β) | ∀ x, (fg.1 x, fg.2 x) ∈ V i} :=
+  hasBasis_compactConvergenceUniformity_of_compact.to_hasBasis
+    (fun _U hU ↦ (h.mem_iff.mp hU).imp fun _i ⟨hpi, hi⟩ ↦ ⟨hpi, fun _ h a ↦ hi <| h a⟩)
+    fun i hi ↦ ⟨V i, h.mem_of_mem hi, .rfl⟩
+
+open UniformFun in
+theorem isUniformEmbedding_uniformFunOfFun :
+    IsUniformEmbedding ((ofFun ·) : C(α, β) → α →ᵤ β) where
+  comap_uniformity := UniformOnFun.uniformEquivUniformFun β _ isCompact_univ
+    |>.isUniformEmbedding.comp isUniformEmbedding_toUniformOnFunIsCompact
+    |>.comap_uniformity
+  injective := DFunLike.coe_injective
 
 /-- Convergence in the compact-open topology is the same as uniform convergence for sequences of
 continuous functions on a compact space. -/
 theorem tendsto_iff_tendstoUniformly :
     Tendsto F p (𝓝 f) ↔ TendstoUniformly (fun i a => F i a) f p := by
-  rw [tendsto_iff_forall_compact_tendstoUniformlyOn, ← tendstoUniformlyOn_univ]
-  exact ⟨fun h => h univ isCompact_univ, fun h K _hK => h.mono (subset_univ K)⟩
+  simp [isUniformEmbedding_uniformFunOfFun.isInducing.tendsto_nhds_iff,
+    UniformFun.tendsto_iff_tendstoUniformly, Function.comp_def]
+
+open UniformFun in
+/-- When `α` is compact, `f : X → C(α, β)` is continuous if any only if it is continuous when
+reinterpreted as a map `f : X → α →ᵤ β`. -/
+theorem continuous_iff_continuous_uniformFun {X : Type*} [TopologicalSpace X] (f : X → C(α, β)) :
+    Continuous f ↔ Continuous (fun x ↦ ofFun (f x)) :=
+  isUniformEmbedding_uniformFunOfFun.isInducing.continuous_iff
 
 end CompactDomain
+
+section ContinuousOnRestrict
+
+/-- Given functions `F i, f` which are continuous on a compact set `s`, `F` tends to `f`
+uniformly on `s` if and only if the restrictions (as elements of `C(s, β)`) converge. -/
+theorem _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
+    {f : α → β} (hf : ContinuousOn f s) {ι : Type*} {p : Filter ι}
+    {F : ι → α → β} (hF : ∀ i, ContinuousOn (F i) s) :
+    Tendsto (fun i ↦ ⟨_, (hF i).restrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.restrict⟩) ↔
+      TendstoUniformlyOn F f p s := by
+  rw [ContinuousMap.tendsto_iff_tendstoUniformly, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
+  congr!
+
+open UniformOnFun in
+/-- A family `f : X → α → β`, each of which is continuous on a compact set `s : Set α` is
+continuous in the topology `X → α →ᵤ[{s}] β` if and only if the family of continuous restrictions
+`X → C(s, β)` is continuous. -/
+theorem _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun
+    {X : Type*} [TopologicalSpace X] {f : X → α → β} {s : Set α}
+    (hf : ∀ x, ContinuousOn (f x) s) [CompactSpace s] :
+    Continuous (fun x ↦ ⟨_, (hf x).restrict⟩ : X → C(s, β)) ↔
+      Continuous (fun x ↦ ofFun {s} (f x)) := by
+  rw [ContinuousMap.continuous_iff_continuous_uniformFun, UniformOnFun.continuous_rng_iff]
+  simp [Function.comp_def]
+
+end ContinuousOnRestrict
 
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalSpace δ₁]
     [TopologicalSpace δ₂] (φ₁ : C(δ₁, α)) (φ₂ : C(δ₂, α)) (h_proper₁ : IsProperMap φ₁)
     (h_proper₂ : IsProperMap φ₂) (h_cover : range φ₁ ∪ range φ₂ = univ) :
-    (inferInstanceAs <| UniformSpace C(α, β)) =
+    ((inferInstance : UniformSpace C(α, β))) =
       .comap (comp · φ₁) inferInstance ⊓
       .comap (comp · φ₂) inferInstance := by
   -- We check the analogous result for `UniformOnFun` using
@@ -334,7 +386,7 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalS
   have h_preimage₂ : MapsTo (φ₂ ⁻¹' ·) 𝔖 𝔗₂ := fun K ↦ h_proper₂.isCompact_preimage
   have h_cover' : ∀ S ∈ 𝔖, S ⊆ range φ₁ ∪ range φ₂ := fun S _ ↦ h_cover ▸ subset_univ _
   -- ... and we just pull it back.
-  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq,
+  simp_rw +zetaDelta [compactConvergenceUniformSpace, replaceTopology_eq,
     UniformOnFun.uniformSpace_eq_inf_precomp_of_cover _ _ _ _ _
       h_image₁ h_image₂ h_preimage₁ h_preimage₂ h_cover',
     UniformSpace.comap_inf, ← UniformSpace.comap_comap]
@@ -343,7 +395,7 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalS
 theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, TopologicalSpace (δ i)]
     (φ : Π i, C(δ i, α)) (h_proper : ∀ i, IsProperMap (φ i))
     (h_lf : LocallyFinite fun i ↦ range (φ i)) (h_cover : ⋃ i, range (φ i) = univ) :
-    (inferInstanceAs <| UniformSpace C(α, β)) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
+    ((inferInstance : UniformSpace C(α, β))) = ⨅ i, .comap (comp · (φ i)) inferInstance := by
   -- We check the analogous result for `UniformOnFun` using
   -- `UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover`...
   set 𝔖 : Set (Set α) := {K | IsCompact K}
@@ -355,7 +407,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, Topolo
       inter_eq_right.mp ?_⟩
     simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
   -- ... and we just pull it back.
-  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq,
+  simp_rw +zetaDelta [compactConvergenceUniformSpace, replaceTopology_eq,
     UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover _ _ _ h_image h_preimage h_cover',
     UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
   rfl
@@ -365,25 +417,43 @@ section CompleteSpace
 variable [CompleteSpace β]
 
 /-- If the topology on `α` is generated by its restrictions to compact sets, then the space of
-continuous maps `C(α, β)` is complete (wrt the compact convergence uniformity).
+continuous maps `C(α, β)` is complete (w.r.t. the compact convergence uniformity).
 
-Sufficient conditions on `α` to satisfy this condition are (weak) local compactness (see
-`ContinuousMap.instCompleteSpaceOfWeaklyLocallyCompactSpace`) and sequential compactness (see
-`ContinuousMap.instCompleteSpaceOfSequentialSpace`). -/
-lemma completeSpace_of_restrictGenTopology (h : RestrictGenTopology {K : Set α | IsCompact K}) :
+Sufficient conditions on `α` to satisfy this condition are (weak) local compactness and sequential
+compactness. -/
+instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
     CompleteSpace C(α, β) := by
-  rw [completeSpace_iff_isComplete_range uniformEmbedding_toUniformOnFunIsCompact.toUniformInducing,
+  rw [completeSpace_iff_isComplete_range
+    isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
-  exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
-
-instance instCompleteSpaceOfWeaklyLocallyCompactSpace [WeaklyLocallyCompactSpace α] :
-    CompleteSpace C(α, β) :=
-  completeSpace_of_restrictGenTopology RestrictGenTopology.isCompact_of_weaklyLocallyCompact
-
-instance instCompleteSpaceOfSequentialSpace [SequentialSpace α] :
-    CompleteSpace C(α, β) :=
-  completeSpace_of_restrictGenTopology RestrictGenTopology.isCompact_of_seq
+  exact (UniformOnFun.isClosed_setOf_continuous
+    CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
 
 end CompleteSpace
+
+/-- If `C(α, β)` is a complete space, then for any (possibly, discontinuous) function `f`
+and any set `s`, the set of functions `g : C(α, β)` that are equal to `f` on `s`
+is a complete set.
+
+Note that this set does not have to be a closed set when `β` is not T0.
+This lemma is useful to prove that, e.g., the space of paths between two points
+and the space of homotopies between two continuous maps are complete spaces,
+without assuming that the codomain is a Hausdorff space. -/
+theorem isComplete_setOf_eqOn [CompleteSpace C(α, β)] (f : α → β) (s : Set α) :
+    IsComplete {g : C(α, β) | EqOn g f s} := by
+  classical
+  intro l hlc hlf
+  rcases CompleteSpace.complete hlc with ⟨f', hf'⟩
+  have := hlc.1
+  have H₁ : ∀ x ∈ s, Inseparable (f x) (f' x) := fun x hx ↦ by
+    refine tendsto_nhds_unique_inseparable ?_ ((continuous_eval_const x).continuousAt.mono_left hf')
+    refine tendsto_const_nhds.congr' <| .filter_mono ?_ hlf
+    exact fun _ h ↦ (h hx).symm
+  have H₂ (x) : Inseparable (s.piecewise f f' x) (f' x) := by
+    by_cases hx : x ∈ s <;> simp [hx, H₁, Inseparable.refl]
+  set g : C(α, β) :=
+    ⟨s.piecewise f f', (continuous_congr_of_inseparable H₂).mpr <| map_continuous f'⟩
+  refine ⟨g, Set.piecewise_eqOn _ _ _, hf'.trans_eq ?_⟩
+  rwa [eq_comm, ← Inseparable, ← inseparable_coe, inseparable_pi]
 
 end ContinuousMap

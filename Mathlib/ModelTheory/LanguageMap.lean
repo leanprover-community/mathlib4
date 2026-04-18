@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.ModelTheory.Basic
+module
+
+public import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
@@ -31,25 +33,25 @@ For the Flypitch project:
 
 -/
 
+@[expose] public section
 
 universe u v u' v' w w'
 
 namespace FirstOrder
 
-
 namespace Language
 
 open Structure Cardinal
-
-open Cardinal
 
 variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structure M]
 
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
+  /-- The mapping of functions -/
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  /-- The mapping of relations -/
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
@@ -63,6 +65,7 @@ namespace LHom
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
+@[implicit_reducible]
 def reduct (M : Type*) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
   RelMap r xs := RelMap (ϕ.onRelation r) xs
@@ -96,8 +99,8 @@ variable {L L'} {L'' : Language}
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
-  cases' F with Ff Fr
-  cases' G with Gf Gr
+  obtain ⟨Ff, Fr⟩ := F
+  obtain ⟨Gf, Gr⟩ := G
   simp only [mk.injEq]
   exact And.intro h_fun h_rel
 
@@ -109,7 +112,7 @@ instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 
--- Porting note: added ᴸ to avoid clash with function composition
+-- added ᴸ to avoid clash with function composition
 @[inherit_doc]
 local infixl:60 " ∘ᴸ " => LHom.comp
 
@@ -179,6 +182,7 @@ protected structure Injective : Prop where
 
 /-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
+@[implicit_reducible]
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]
@@ -273,24 +277,23 @@ end LHom
 
 /-- A language equivalence maps the symbols of one language to symbols of another bijectively. -/
 structure LEquiv (L L' : Language) where
+  /-- The forward language homomorphism -/
   toLHom : L →ᴸ L'
+  /-- The inverse language homomorphism -/
   invLHom : L' →ᴸ L
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
 
-infixl:10 " ≃ᴸ " => LEquiv
+@[inherit_doc] infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
@@ -324,15 +327,12 @@ def constantsOnFunc : ℕ → Type u'
 /-- A language with constants indexed by a type. -/
 @[simps]
 def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
+deriving IsAlgebraic
 
 variable {α}
 
 theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
-
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
-  unfold constantsOn
-  infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
   inferInstanceAs (IsEmpty PEmpty)
@@ -344,6 +344,7 @@ theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
+@[implicit_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
   funMap := fun {n} c _ =>
     match n, c with
@@ -363,7 +364,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn
@@ -381,7 +382,7 @@ def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 
 @[inherit_doc FirstOrder.Language.withConstants]
-scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
+scoped[FirstOrder] notation:max L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
@@ -389,7 +390,7 @@ theorem card_withConstants :
   rw [withConstants, card_sum, card_constantsOn]
 
 /-- The language map adding constants. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 
@@ -413,6 +414,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
@@ -426,13 +428,13 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
 variable {α} {β : Type*}
 
 @[simp]
-theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
+theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+    {n} {f : L.Functions n} {x : Fin n → M} : @funMap L[[α]] M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
-theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
+theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap L[[α]] M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
 /-- The language map extending the constant set. -/
@@ -451,7 +453,7 @@ instance constantsOnSelfStructure : (constantsOn M).Structure M :=
   constantsOn.structure id
 
 instance withConstantsSelfStructure : L[[M]].Structure M :=
-  Language.sumStructure _ _ M
+  inferInstanceAs <| (L.sum _).Structure M
 
 instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -459,7 +461,7 @@ instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M 
 variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
-  Language.sumStructure _ _ _
+  inferInstanceAs <| (L.sum _).Structure M
 
 instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
@@ -476,9 +478,10 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
     (φ.addConstants α).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ M
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
-    @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
+theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
+    @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
 
@@ -497,6 +500,35 @@ instance constantsOnMap_inclusion_isExpansionOn :
 instance map_constants_inclusion_isExpansionOn :
     (L.lhomWithConstantsMap (Set.inclusion h)).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ _
+
+variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
+
+/-- Type synonym for `N` used to equip it with an `L[[A]]`-structure where the new constants on `A`
+are interpreted via the embedding `f`. -/
+@[nolint unusedArguments]
+def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
+deriving L.Structure
+
+instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
+  constantsOn.structure fun a => f a
+
+instance : L[[A]].Structure (f.withConstants A) := L.withConstantsStructure A
+
+/-- Lifts an embedding to the expanded language with constants. -/
+def Embedding.liftWithConstants :
+    M ↪[L[[A]]] f.withConstants A := by
+  refine ⟨f.toEmbedding, ?_, ?_⟩
+  · intro n g x
+    cases g with
+    | inl g => exact f.map_fun' g x
+    | inr c =>
+      cases n with
+      | zero => rfl
+      | succ n => exact isEmptyElim c
+  · intro n R x
+    cases R with
+    | inl R => exact f.map_rel' R x
+    | inr r => exact isEmptyElim r
 
 end WithConstants
 

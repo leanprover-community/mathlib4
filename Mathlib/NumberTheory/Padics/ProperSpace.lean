@@ -3,9 +3,10 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard
 -/
+module
 
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
 # Properness of the p-adic numbers
@@ -21,19 +22,25 @@ and that `ℚ_[p]` is proper.
 
 ## Notation
 
- - `p` : Is a natural prime.
+- `p` : Is a natural prime.
 
 ## References
 
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
+
+@[expose] public section
+
+assert_not_exists FiniteDimensional
+
 open Metric Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
 namespace PadicInt
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of p-adic integers `ℤ_[p]` is totally bounded. -/
 theorem totallyBounded_univ : TotallyBounded (Set.univ : Set ℤ_[p]) := by
   refine Metric.totallyBounded_iff.mpr (fun ε hε ↦ ?_)
@@ -55,7 +62,7 @@ namespace Padic
 
 /-- The field of p-adic numbers `ℚ_[p]` is a proper metric space. -/
 instance : ProperSpace ℚ_[p] := by
-  suffices LocallyCompactSpace ℚ_[p] from .of_locallyCompactSpace ℚ_[p]
+  suffices LocallyCompactSpace ℚ_[p] from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this

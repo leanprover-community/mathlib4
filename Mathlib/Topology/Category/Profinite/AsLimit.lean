@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.DiscreteQuotient
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Profinite sets as limits of finite sets.
@@ -28,6 +30,8 @@ There are a handful of definitions in this file, given `X : Profinite`:
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -41,11 +45,8 @@ variable (X : Profinite.{u})
 
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
-  obj S := @FintypeCat.of S (Fintype.ofFinite S)
-  map f := DiscreteQuotient.ofLE f.le
-  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
-  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by ext; aesop_cat
+  obj S := FintypeCat.of S
+  map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
@@ -54,7 +55,8 @@ abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
   { pt := X
-    π := { app := fun S => ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
+    π := { app := fun S => CompHausLike.ofHom (Y := X.diagram.obj S) _
+            ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   CompHausLike.isIso_of_bijective _
@@ -66,14 +68,15 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
       · obtain ⟨b, hb⟩ :=
           DiscreteQuotient.exists_of_compat (fun S => a.val S) fun _ _ h => a.prop (homOfLE h)
         use b
-        -- ext S : 3 -- Porting note: `ext` does not work, replaced with following three lines.
+        -- ext S : 3 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` does not work, replaced with following
+        -- three lines.
         apply Subtype.ext
         apply funext
         rintro S
         -- Porting note: end replacement block
-        apply hb
-    )
+        apply hb)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.
 -/
@@ -84,7 +87,7 @@ def isoAsLimitConeLift : X ≅ (limitCone.{u, u} X.diagram).pt :=
 The underlying isomorphism is defeq to `X.isoAsLimitConeLift`.
 -/
 def asLimitConeIso : X.asLimitCone ≅ limitCone.{u, u} _ :=
-  Limits.Cones.ext (isoAsLimitConeLift _) fun _ => rfl
+  Limits.Cone.ext (isoAsLimitConeLift _) fun _ => rfl
 
 /-- `X.asLimitCone` is indeed a limit cone. -/
 def asLimit : CategoryTheory.Limits.IsLimit X.asLimitCone :=

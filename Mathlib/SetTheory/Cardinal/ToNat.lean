@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Projection from cardinal numbers to natural numbers
@@ -12,6 +14,10 @@ In this file we define `Cardinal.toNat` to be the natural projection `Cardinal �
 sending all infinite cardinals to zero.
 We also prove basic lemmas about this definition.
 -/
+
+@[expose] public section
+
+assert_not_exists Field
 
 universe u v
 open Function Set
@@ -54,6 +60,10 @@ theorem toNat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toNat c = 0
 theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c) = (0 : Cardinal) := by
   rw [toNat_apply_of_aleph0_le h, Nat.cast_zero]
 
+theorem cast_toNat_eq_iff_lt_aleph0 {c : Cardinal} : toNat c = c ↔ c < ℵ₀ where
+  mp h := by rw [← h]; simp
+  mpr := cast_toNat_of_lt_aleph0
+
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
   simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
   exact fun _ _ ↦ id
@@ -64,7 +74,7 @@ theorem toNat_injOn : InjOn toNat (Iio ℵ₀) := toNat_strictMonoOn.injOn
 
 /-- Two finite cardinals are equal
 iff they are equal their `Cardinal.toNat` projections are equal. -/
-theorem toNat_eq_iff_eq_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
+theorem toNat_inj_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c = toNat d ↔ c = d :=
   toNat_injOn.eq_iff hc hd
 
@@ -80,24 +90,12 @@ theorem toNat_lt_iff_lt_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
 theorem toNat_le_toNat (hcd : c ≤ d) (hd : d < ℵ₀) : toNat c ≤ toNat d :=
   toNat_monotoneOn (hcd.trans_lt hd) hd hcd
 
-@[deprecated toNat_le_toNat (since := "2024-02-15")]
-theorem toNat_le_of_le_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c ≤ d) :
-    toNat c ≤ toNat d :=
-  toNat_le_toNat hcd hd
-
 theorem toNat_lt_toNat (hcd : c < d) (hd : d < ℵ₀) : toNat c < toNat d :=
   toNat_strictMonoOn (hcd.trans hd) hd hcd
 
-@[deprecated toNat_lt_toNat (since := "2024-02-15")]
-theorem toNat_lt_of_lt_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c < d) : toNat c < toNat d :=
-  toNat_lt_toNat hcd hd
-
-@[deprecated (since := "2024-02-15")] alias toNat_cast := toNat_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    Cardinal.toNat ofNat(n) = OfNat.ofNat n :=
   toNat_natCast n
 
 /-- `toNat` has a right-inverse: coercion. -/
@@ -116,14 +114,13 @@ theorem aleph0_toNat : toNat ℵ₀ = 0 :=
 
 theorem mk_toNat_eq_card [Fintype α] : toNat #α = Fintype.card α := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zero_toNat : toNat 0 = 0 := map_zero _
 
 theorem one_toNat : toNat 1 = 1 := map_one _
 
 theorem toNat_eq_iff {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c = n := by
-  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_nat]
+  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_natCast]
 
 /-- A version of `toNat_eq_iff` for literals -/
 theorem toNat_eq_ofNat {n : ℕ} [Nat.AtLeastTwo n] :
@@ -143,14 +140,9 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
   -- Porting note: Inserted universe hint below
-  rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
+  rw [← toNat_lift, (lift_mk_eq.{_, _, v}).mpr ⟨e⟩, toNat_lift]
 
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
-
-@[deprecated map_prod (since := "2024-02-15")]
-theorem toNat_finset_prod (s : Finset α) (f : α → Cardinal) :
-    toNat (∏ i ∈ s, f i) = ∏ i ∈ s, toNat (f i) :=
-  map_prod toNat _ _
 
 @[simp]
 theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c + toNat d := by
@@ -158,12 +150,24 @@ theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c 
   lift d to ℕ using hd
   norm_cast
 
-@[simp]
 theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ₀) (hb : b < ℵ₀) :
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]
 
-@[deprecated (since := "2024-02-15")]
-alias toNat_add_of_lt_aleph0 := toNat_lift_add_lift
+@[simp]
+lemma natCast_toNat_le (a : Cardinal) : (toNat a : Cardinal) ≤ a := by
+  obtain h | h := lt_or_ge a ℵ₀
+  · simp [cast_toNat_of_lt_aleph0 h]
+  · simp [Cardinal.toNat_apply_of_aleph0_le h]
+
+lemma toNat_le_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat ≤ n ↔ a ≤ n := by
+  nth_rw 1 [← Cardinal.toNat_natCast.{u} n,
+    Cardinal.toNat_le_iff_le_of_lt_aleph0 lt (Cardinal.natCast_lt_aleph0)]
+
+lemma toNat_eq_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat = n ↔ a = n := by
+  nth_rw 2 [← Cardinal.cast_toNat_of_lt_aleph0 lt]
+  exact Nat.cast_inj.symm
 
 end Cardinal

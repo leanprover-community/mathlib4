@@ -3,7 +3,10 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 # Darts in graphs
@@ -11,6 +14,8 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 A `Dart` or half-edge or bond in a graph is an ordered pair of adjacent vertices, regarded as an
 oriented edge. This file defines darts and proves some of their basic properties.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
@@ -36,9 +41,6 @@ theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.t
 theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (Dart.ext_iff d₁ d₂).mpr h
 
--- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
--- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
-
 @[simp]
 theorem Dart.fst_ne_snd (d : G.Dart) : d.fst ≠ d.snd :=
   fun h ↦ G.irrefl (h ▸ d.adj)
@@ -53,16 +55,13 @@ theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V �
 instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
   Fintype.ofEquiv (Σ v, G.neighborSet v)
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.adj⟩
-      left_inv := fun s => by ext <;> simp
-      right_inv := fun d => by ext <;> simp }
+      invFun := fun d => ⟨d.fst, d.snd, d.adj⟩ }
 
 /-- The edge associated to the dart. -/
-def Dart.edge (d : G.Dart) : Sym2 V :=
-  Sym2.mk d.toProd
+def Dart.edge (d : G.Dart) : Sym2 V := s(d.fst, d.snd)
 
 @[simp]
-theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = Sym2.mk p :=
+theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = s(p.1, p.2) :=
   rfl
 
 @[simp]
@@ -80,7 +79,7 @@ theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dar
 
 @[simp]
 theorem Dart.edge_symm (d : G.Dart) : d.symm.edge = d.edge :=
-  Sym2.mk_prod_swap_eq
+  Sym2.eq_swap
 
 @[simp]
 theorem Dart.edge_comp_symm : Dart.edge ∘ Dart.symm = (Dart.edge : G.Dart → Sym2 V) :=
@@ -102,9 +101,9 @@ theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d�
   simp
 
 theorem dart_edge_eq_mk'_iff :
-    ∀ {d : G.Dart} {p : V × V}, d.edge = Sym2.mk p ↔ d.toProd = p ∨ d.toProd = p.swap := by
-  rintro ⟨p, h⟩
-  apply Sym2.mk_eq_mk_iff
+    ∀ {d : G.Dart} {u v : V}, d.edge = s(u, v) ↔ d.toProd = (u, v) ∨ d.toProd = (v, u) := by
+  rintro ⟨p, h⟩ _ _
+  simp
 
 theorem dart_edge_eq_mk'_iff' :
     ∀ {d : G.Dart} {u v : V},

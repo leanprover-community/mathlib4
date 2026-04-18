@@ -1,0 +1,99 @@
+name: Add "ready-to-merge" and "delegated" label
+
+# triggers the action when
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  add_ready_to_merge_label:
+    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
+    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    env:
+      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      COMMENT_EVENT: ${{ github.event.comment.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
+      PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+      HAS_DELEGATED_LABEL: ${{ contains(github.event.issue.labels.*.name, 'delegated') }}
+    name: Add ready-to-merge or delegated label
+    runs-on: ubuntu-latest
+    if: >- # coarse prefilter to avoid running on irrelevant comments/reviews
+      github.repository == 'leanprover-community/mathlib4' &&
+      (github.event_name != 'issue_comment' || github.event.issue.pull_request != null) &&
+      (
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors merge') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors d') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'bors r') ||
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'Build failed:')
+      )
+    steps:
+      - name: Find bors merge/delegate
+        id: merge_or_delegate
+        run: |
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+          if [ "${AUTHOR}" == 'mathlib-bors[bot]' ] && [ "${HAS_DELEGATED_LABEL}" == 'true' ]
+          then
+            m_or_d="$(printf '%s' "${COMMENT}" |
+              sed -n 's=^Build failed:=delegated=p' | head -1)"
+          else
+            m_or_d="$(printf '%s' "${COMMENT}" |
+              sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+          fi
+
+          remove_labels="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
+
+          printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${PR_NUMBER}"
+          printf $'%s' "${PR_NUMBER}" | hexdump -cC
+
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+          printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
+          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ] ||
+             [ "${AUTHOR}" == 'mathlib-bors[bot]' ] ||
+             [ "${AUTHOR}" == 'mathlib-triage[bot]' ]
+          then
+            printf $'bot=true\n'
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
+          else
+            printf $'bot=false\n'
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
+        name: Prepare bridge outputs
+        run: |
+          jq -n \
+            --arg bot "${{ steps.merge_or_delegate.outputs.bot }}" \
+            --arg removeLabels "${{ steps.merge_or_delegate.outputs.removeLabels }}" \
+            --arg mOrD "${{ steps.merge_or_delegate.outputs.mOrD }}" \
+            '{
+              bot: $bot,
+              removeLabels: $removeLabels,
+              mOrD: $mOrD,
+            }' > bridge-outputs.json
+
+      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
+        name: Emit bridge artifact
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          retention_days: 5

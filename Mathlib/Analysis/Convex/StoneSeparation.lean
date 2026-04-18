@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Join
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Join
 
 /-!
 # Stone's separation theorem
@@ -17,10 +19,13 @@ stronger statements: one may find a separating hyperplane, instead of merely a c
 complement is convex.
 -/
 
+public section
+
 
 open Set
 
-variable {𝕜 E ι : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 /-- In a tetrahedron with vertices `x`, `y`, `p`, `q`, any segment `[u, v]` joining the opposite
 edges `[x, p]` and `[y, q]` passes through any triangle of vertices `p`, `q`, `z` where
@@ -46,9 +51,6 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
   · positivity
   · positivity
   · rw [← add_div, div_self]; positivity
-  rw [smul_add, smul_add, add_add_add_comm]
-  nth_rw 2 [add_comm]
-  rw [← mul_smul, ← mul_smul]
   classical
     let w : Fin 3 → 𝕜 := ![az * av * bu, bz * au * bv, au * av]
     let z : Fin 3 → E := ![p, q, az • x + bz • y]
@@ -60,21 +62,17 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg hau hav
     have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
-      · simp [w, Fin.sum_univ_succ, Fin.sum_univ_zero]
-      rw [← one_mul (au * av), ← habz, add_mul, ← add_assoc, add_add_add_comm, mul_assoc, ← mul_add,
-        mul_assoc, ← mul_add, mul_comm av, ← add_mul, ← mul_add, add_comm bu, add_comm bv, habu,
-        habv, one_mul, mul_one]
+      · simp [w, Fin.sum_univ_succ]
+      linear_combination (au * bv - 1 * au) * habz + (-(1 * az * au) + au) * habv + az * av * habu
     have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
     convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
         (by rwa [hw]) fun i _ => hz i : Finset.univ.centerMass w z ∈ _)
-    rw [Finset.centerMass]
-    simp_rw [div_eq_inv_mul, hw, mul_assoc, mul_smul (az * av + bz * au)⁻¹, ← smul_add, add_assoc, ←
-      mul_assoc]
+    rw [Finset.centerMass, hw]
+    trans (az * av + bz * au)⁻¹ •
+      ((az * av * bu) • p + ((bz * au * bv) • q + (au * av) • (az • x + bz • y)))
+    · module
     congr 3
-    rw [← mul_smul, ← mul_rotate, mul_right_comm, mul_smul, ← mul_smul _ av, mul_rotate,
-      mul_smul _ bz, ← smul_add]
-    simp only [w, z, smul_add, List.foldr, Matrix.cons_val_succ', Fin.mk_one,
-      Matrix.cons_val_one, Matrix.head_cons, add_zero]
+    simp [w, z]
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :

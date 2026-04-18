@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Localization of triangulated categories
 
@@ -20,11 +22,15 @@ and that it is triangulated.
 
 -/
 
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D)
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   [HasShift D ℤ] [L.CommShift ℤ]
@@ -33,8 +39,8 @@ namespace MorphismProperty
 
 /-- Given `W` is a class of morphisms in a pretriangulated category `C`, this is the condition
 that `W` is compatible with the triangulation on `C`. -/
-class IsCompatibleWithTriangulation (W : MorphismProperty C)
-    extends W.IsCompatibleWithShift ℤ : Prop where
+class IsCompatibleWithTriangulation (W : MorphismProperty C) : Prop
+    extends W.IsCompatibleWithShift ℤ where
   compatible_with_triangulation (T₁ T₂ : Triangle C)
     (_ : T₁ ∈ distTriang C) (_ : T₂ ∈ distTriang C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : W a) (_ : W b)
@@ -51,7 +57,7 @@ namespace Functor
 /-- Given a functor `C ⥤ D` from a pretriangulated category, this is the set of
 triangles in `D` that are in the essential image of distinguished triangles of `C`. -/
 def essImageDistTriang : Set (Triangle D) :=
-  fun T => ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
+  {T | ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C}
 
 lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
     (h : T₁ ∈ L.essImageDistTriang) : T₂ ∈ L.essImageDistTriang := by
@@ -67,7 +73,7 @@ lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
 
 lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] (T : Triangle D) :
-  T ∈ L.essImageDistTriang ↔ T.rotate ∈ L.essImageDistTriang := by
+    T ∈ L.essImageDistTriang ↔ T.rotate ∈ L.essImageDistTriang := by
   constructor
   · rintro ⟨T', e', hT'⟩
     exact ⟨T'.rotate, (rotate D).mapIso e' ≪≫ L.mapTriangleRotateIso.app T',
@@ -76,6 +82,7 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
       L.mapTriangleInvRotateIso.app T', inv_rot_of_distTriang T' hT'⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
       (a : L.obj (T₁'.obj₁) ⟶ L.obj (T₂'.obj₁)) (b : L.obj (T₁'.obj₂) ⟶ L.obj (T₂'.obj₂))
@@ -120,6 +127,7 @@ namespace Localization
 variable (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
 
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -134,11 +142,12 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
-    Functor.mapArrow_obj_left, Functor.map_id, comp_id]
+    Functor.mapArrow_obj, Arrow.mk_left, Functor.map_id, comp_id]
 
 section
 variable [W.IsCompatibleWithTriangulation]
 
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
@@ -184,6 +193,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 /-- The pretriangulated structure on the localized category. -/
+@[implicit_reducible]
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁
@@ -214,7 +224,7 @@ instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   rw [Localization.functor_additive_iff W.Q W]
   exact Functor.additive_of_iso (W.Q.commShiftIso n)
 
-instance : Pretriangulated W.Localization := pretriangulated W.Q W
+noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 
 instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
 
@@ -226,7 +236,7 @@ instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   rw [Localization.functor_additive_iff W.Q' W]
   exact Functor.additive_of_iso (W.Q'.commShiftIso n)
 
-instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+noncomputable instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
 
 instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
 

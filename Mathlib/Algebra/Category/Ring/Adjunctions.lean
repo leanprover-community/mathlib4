@@ -1,22 +1,33 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl
+Authors: Kim Morrison, Johannes Hölzl, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
-Multivariable polynomials on a type is the left adjoint of the
-forgetful functor from commutative rings to types.
+# Adjunctions in `CommRingCat`
+
+## Main results
+- `CommRingCat.adj`: `σ ↦ ℤ[σ]` is left adjoint to the forgetful functor `CommRingCat ⥤ Type`.
+- `CommRingCat.coyonedaAdj`: `Fun(-, R)` is left adjoint to `Hom_{CRing}(R, -)`.
+- `CommRingCat.monoidAlgebraAdj`: `G ↦ R[G]` as `CommGrpCat ⥤ R-Alg` is left adjoint to `S ↦ Sˣ`.
+- `CommRingCat.unitsAdj`: `G ↦ ℤ[G]` is left adjoint to `S ↦ Sˣ`.
+
 -/
 
+@[expose] public section
 
 noncomputable section
 
-universe u
+universe v u
 
-open MvPolynomial
+open MvPolynomial Opposite
 
 open CategoryTheory
 
@@ -27,31 +38,87 @@ polynomials with variables `x : X`.
 -/
 def free : Type u ⥤ CommRingCat.{u} where
   obj α := of (MvPolynomial α ℤ)
-  map {X Y} f := (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
-  -- TODO these next two fields can be done by `tidy`, but the calls in `dsimp` and `simp` it
-  -- generates are too slow.
-  map_id _ := RingHom.ext <| rename_id
-  map_comp f g := RingHom.ext fun p => (rename_rename f g p).symm
+  map {X Y} f := ofHom (↑(rename f : _ →ₐ[ℤ] _) : MvPolynomial X ℤ →+* MvPolynomial Y ℤ)
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=
   rfl
 
--- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
-theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
+-- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
-/-- The free-forgetful adjunction for commutative rings.
--/
+set_option backward.isDefEq.respectTransparency false in
+/-- The free-forgetful adjunction for commutative rings. -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X R => homEquiv
+    { homEquiv := fun _ _ ↦
+        { toFun := fun f ↦ TypeCat.ofHom (homEquiv f.hom)
+          invFun := fun f ↦ ofHom <| homEquiv.symm f
+          left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
+          right_inv := by cat_disch }
       homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
-        RingHom.ext fun x => eval₂_cast_comp f (Int.castRingHom Y) g x }
+        hom_ext <| RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
 instance : (forget CommRingCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
+
+/-- `Fun(-, -)` as a functor `Type vᵒᵖ ⥤ CommRingCat ⥤ CommRingCat`. -/
+@[simps]
+def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
+  obj n :=
+  { obj R := CommRingCat.of (unop n → R)
+    map {R S} φ := CommRingCat.ofHom (Pi.ringHom (φ.hom.comp <| Pi.evalRingHom _ ·)) }
+  map {m n} f :=
+  { app R := CommRingCat.ofHom (Pi.ringHom (Pi.evalRingHom _ <| f.unop ·)) }
+
+/-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
+def coyonedaAdj (R : CommRingCat.{u}) :
+    (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
+  unit := { app n := TypeCat.ofHom (fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i)) }
+  counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
+
+instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `n` is a singleton, `Hom(n, -)` is the identity in `CommRingCat`. -/
+@[simps!]
+def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
+  NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
+
+/-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/
+@[simps]
+def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where
+  obj G := Under.mk (CommRingCat.ofHom MonoidAlgebra.singleOneRingHom)
+  map f := Under.homMk (CommRingCat.ofHom <| MonoidAlgebra.mapDomainRingHom R f.hom)
+  map_comp f g := by ext : 2; apply MonoidAlgebra.ringHom_ext <;> intro <;> simp
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The adjunction `G ↦ R[G]` and `S ↦ Sˣ` between `CommGrpCat` and `R-Alg`. -/
+def monoidAlgebraAdj (R : CommRingCat.{u}) :
+    monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where
+  unit := { app G := CommMonCat.ofHom (MonoidAlgebra.of R G) }
+  counit :=
+  { app S := Under.homMk (CommRingCat.ofHom (MonoidAlgebra.liftNCRingHom S.hom.hom
+      (.id _) fun _ _ ↦ .all _ _)) (by ext; simp [MonoidAlgebra.liftNCRingHom]),
+    naturality S T f := by
+      ext : 2
+      apply MonoidAlgebra.ringHom_ext <;>
+        intro <;> simp [MonoidAlgebra.liftNCRingHom, ← Under.w f, -Under.w] }
+  left_triangle_components G := by
+    ext : 2
+    apply MonoidAlgebra.ringHom_ext <;> intro <;> simp [MonoidAlgebra.liftNCRingHom]
+  right_triangle_components S := by dsimp; ext; simp [MonoidAlgebra.liftNCRingHom]
+
+/-- The adjunction `G ↦ ℤ[G]` and `R ↦ Rˣ` between `CommGrpCat` and `CommRing`. -/
+def forget₂Adj {R : CommRingCat.{u}} (hR : Limits.IsInitial R) :
+    monoidAlgebra R ⋙ Under.forget R ⊣ forget₂ _ _ :=
+  (monoidAlgebraAdj R).comp (Under.equivalenceOfIsInitial hR).toAdjunction
+
+instance (R : CommRingCat) : (monoidAlgebra.{u, u} R).IsLeftAdjoint :=
+  ⟨_, ⟨CommRingCat.monoidAlgebraAdj R⟩⟩
+
+instance : (forget₂ CommRingCat CommMonCat).IsRightAdjoint :=
+  ⟨_, ⟨CommRingCat.forget₂Adj Limits.initialIsInitial⟩⟩
 
 end CommRingCat

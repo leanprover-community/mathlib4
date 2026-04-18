@@ -3,9 +3,11 @@ Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Data.Finite.Set
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Finite.Set
 
 /-!
 # Ends
@@ -14,10 +16,12 @@ This file contains a definition of the ends of a simple graph, as sections of th
 assigning, to each finite set of vertices, the connected components of its complement.
 -/
 
+@[expose] public section
+
 
 universe u
 
-variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
+variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)
 
 namespace SimpleGraph
 
@@ -50,6 +54,8 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
 
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
+
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
     v ∈ C ↔ ∃ vK : v ∉ K, G.componentComplMk vK = C :=
@@ -78,13 +84,11 @@ for adjacent vertices.
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
-    induction' p with _ u v w a q ih
-    · rintro _
-      rfl
-    · rintro h'
-      exact (h u.prop v.prop a).trans (ih h'.of_cons)
+    induction p with
+    | nil => rintro _; rfl
+    | cons a q ih => rename_i u v w; rintro h'; exact (h u.prop v.prop a).trans (ih h'.of_cons)
 
-@[elab_as_elim] -- Porting note: added
+@[elab_as_elim]
 protected theorem ind {β : G.ComponentCompl K → Prop}
     (f : ∀ ⦃v⦄ (hv : v ∉ K), β (G.componentComplMk hv)) : ∀ C : G.ComponentCompl K, β C := by
   apply ConnectedComponent.ind
@@ -109,7 +113,7 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
   exact fun v ⟨vK, vC⟩ => vC.choose vK
 
-theorem not_mem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
+theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 
 protected theorem pairwise_disjoint :
@@ -179,16 +183,16 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
 
 theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
-  erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
+  rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
-  erw [ConnectedComponent.map_comp, induceHom_comp]
+  rw [ConnectedComponent.map_comp, induceHom_comp]
   rfl
 
 theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :
-    (G.componentComplMk vnL).hom h = G.componentComplMk (Set.not_mem_subset h vnL) :=
+    (G.componentComplMk vnL).hom h = G.componentComplMk (Set.notMem_subset h vnL) :=
   rfl
 
 theorem hom_infinite (C : G.ComponentCompl L) (h : K ⊆ L) (Cinf : (C : Set V).Infinite) :
@@ -253,11 +257,13 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
-    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
-    exact h'
+  map f := TypeCat.ofHom (ComponentCompl.hom (le_of_op_hom f))
+  map_id _ := by
+    ext
+    simp [ComponentCompl.hom_refl]
+  map_comp {_ Y Z} h h' := by
+    ext C
+    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=
@@ -265,7 +271,7 @@ protected def «end» :=
 
 theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
-    s K = G.componentComplMk (Set.not_mem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
+    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
   rw [← sec h, hs]
   apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
 

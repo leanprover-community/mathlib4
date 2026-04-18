@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+module
+
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -32,9 +34,12 @@ We have three ways to construct terms of `ℙ K V`:
 
 -/
 
+@[expose] public section
+
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
+@[implicit_reducible]
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)
 
@@ -68,17 +73,31 @@ instance [Nontrivial V] : Nonempty (ℙ K V) :=
 
 variable {K}
 
+/-- A function on non-zero vectors which is independent of scale, descends to a function on the
+projectivization. -/
+protected def lift {α : Type*} (f : { v : V // v ≠ 0 } → α)
+    (hf : ∀ (a b : { v : V // v ≠ 0 }) (t : K), a = t • (b : V) → f a = f b)
+    (x : ℙ K V) : α :=
+  Quotient.lift f (by rintro ⟨-, hv⟩ ⟨w, hw⟩ ⟨⟨t, -⟩, rfl⟩; exact hf ⟨_, hv⟩ ⟨w, hw⟩ t rfl) x
+
+@[simp]
+protected lemma lift_mk {α : Type*} (f : { v : V // v ≠ 0 } → α)
+    (hf : ∀ (a b : { v : V // v ≠ 0 }) (t : K), a = t • (b : V) → f a = f b)
+    (v : V) (hv : v ≠ 0) :
+    Projectivization.lift f hf (mk K v hv) = f ⟨v, hv⟩ :=
+  rfl
+
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
-  v.out'
+  v.out
 
 theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out'.2
+  v.out.2
 
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
 
-open FiniteDimensional
+open Module
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
@@ -133,8 +152,8 @@ instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
 
 theorem submodule_injective :
     Function.Injective (Projectivization.submodule : ℙ K V → Submodule K V) := fun u v h ↦ by
-  induction' u using ind with u hu
-  induction' v using ind with v hv
+  induction u using ind with | h u hu =>
+  induction v using ind with | h v hv =>
   rw [submodule_mk, submodule_mk, Submodule.span_singleton_eq_span_singleton] at h
   exact ((mk_eq_mk_iff K v u hv hu).2 h).symm
 
@@ -177,7 +196,7 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a
       dsimp at ha ⊢
-      erw [← f.map_smulₛₗ, ha])
+      simp [f.map_smulₛₗ, ← ha, Units.smul_def])
 
 theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=
@@ -187,7 +206,7 @@ theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective
 an injective map on projective spaces. -/
 theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
     (hf : Function.Injective f) : Function.Injective (map f hf) := fun u v h ↦ by
-  induction' u using ind with u hu; induction' v using ind with v hv
+  induction u using ind with | h u hu => induction v using ind with | h v hv =>
   simp only [map_mk, mk_eq_mk_iff'] at h ⊢
   rcases h with ⟨a, ha⟩
   refine ⟨τ a, hf ?_⟩
@@ -198,11 +217,12 @@ theorem map_id : map (LinearMap.id : V →ₗ[K] V) (LinearEquiv.refl K V).injec
   ext ⟨v⟩
   rfl
 
--- Porting note: removed `@[simp]` because of unusable `hg.comp hf` in the LHS
-theorem map_comp {F U : Type*} [Field F] [AddCommGroup U] [Module F U] {σ : K →+* L} {τ : L →+* F}
-    {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W) (hf : Function.Injective f)
-    (g : W →ₛₗ[τ] U) (hg : Function.Injective g) :
-    map (g.comp f) (hg.comp hf) = map g hg ∘ map f hf := by
+@[simp]
+theorem map_comp {F U : Type*} [DivisionRing F] [AddCommGroup U] [Module F U] {σ : K →+* L}
+    {τ : L →+* F} {γ : K →+* F} [RingHomCompTriple σ τ γ] (f : V →ₛₗ[σ] W)
+    (hf : Function.Injective f) (g : W →ₛₗ[τ] U) (hg : Function.Injective g)
+    (hgf : Function.Injective (g.comp f) := hg.comp hf) :
+    map (g.comp f) hgf = map g hg ∘ map f hf := by
   ext ⟨v⟩
   rfl
 

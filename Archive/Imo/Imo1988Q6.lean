@@ -23,10 +23,6 @@ and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
 
-
--- open_locale classical
-attribute [local instance] Classical.propDecidable
-
 attribute [local simp] sq
 
 namespace Imo1988Q6
@@ -42,7 +38,7 @@ under the following conditions:
 * `H_zero` : If an integral point `(x,0)` lies on the hyperbola `H`, then `claim` is true.
 * `H_diag` : If an integral point `(x,x)` lies on the hyperbola `H`, then `claim` is true.
 * `H_desc` : If `(x,y)` is an integral point on the hyperbola `H`,
-with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
+  with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
 
 For reasons of usability, the hyperbola `H` is implemented as an arbitrary predicate.
 (In question 6 of IMO1988, where this proof technique was first developed,
@@ -72,7 +68,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- First of all, we may assume that x ≤ y.
   -- We justify this using H_symm.
   wlog hxy : x ≤ y
-  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_le hxy); assumption'
+  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_ge hxy); assumption'
   -- In fact, we can easily deal with the case x = y.
   by_cases x_eq_y : x = y
   · subst x_eq_y; exact H_diag h₀
@@ -111,7 +107,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       -- We find the other root of the equation, and Vieta's formulas.
       rcases vieta_formula_quadratic hH with ⟨c, h_root, hV₁, hV₂⟩
       -- By substitutions we find that b = 0 or b = a.
-      simp only [hB, add_right_eq_self, add_right_inj] at hV₁
+      simp only [hB, add_eq_left, add_right_inj] at hV₁
       subst hV₁
       rw [← Int.ofNat_zero] at *
       rw [← H_quad] at h_root
@@ -132,7 +128,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- Let m be the smallest element of the nonempty set S.
   let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
   have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S S_nonempty hk
+  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S hk
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim
@@ -143,7 +139,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
   simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
-  push_neg at h_base
+  push Not at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
   rcases h_base with ⟨h_base, hmx, hm_diag, hm_B₁, hm_B₂⟩
@@ -153,12 +149,12 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [H_quad] at h_quad
   -- We find the other root of the equation, and Vieta's formulas.
   rcases vieta_formula_quadratic h_quad with ⟨c, h_root, hV₁, hV₂⟩
-  -- Now we rewrite Vietas formulas a bit, and apply the descent step.
+  -- Now we rewrite Vieta's formulas a bit, and apply the descent step.
   replace hV₁ : c = B mx - my := eq_sub_of_add_eq' hV₁
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
   -- This means that we may assume that c ≥ 0 and c ≤ m_x.
-  cases' Hc with c_nonneg c_lt
+  obtain ⟨c_nonneg, c_lt⟩ := Hc
   -- In other words, c is a natural number.
   lift c to ℕ using c_nonneg
   -- Recall that we are trying find a point (a,b) such that b ∈ S and b < m.
@@ -183,7 +179,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     suffices hc : c ≠ mx from lt_of_le_of_ne (mod_cast c_lt) hc
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
-    contrapose! hm_B₂
+    contrapose hm_B₂
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
@@ -229,7 +225,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- Show the descent step.
     intro x y hx x_lt_y _ _ z h_root _ hV₀
     constructor
-    · have hpos : z * z + x * x > 0 := by
+    · have hpos : 0 < z * z + x * x := by
         apply add_pos_of_nonneg_of_pos
         · apply mul_self_nonneg
         · apply mul_pos <;> exact mod_cast hx
@@ -237,14 +233,14 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos
-      replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.ofNat_zero_le k)
-      replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
+      replace hpos : 0 < z * x + 1 := pos_of_mul_pos_left hpos (Int.natCast_nonneg k)
+      replace hpos : 0 ≤ z * x := Int.le_of_lt_add_one hpos
       apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
-        z * y > x * x := by apply mul_lt_mul' <;> linarith
-        _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
+        z * y > x * x := by apply mul_lt_mul' <;> lia
+        _ ≥ x * x - k := sub_le_self _ (Int.natCast_nonneg k)
   · -- There is no base case in this application of Vieta jumping.
     simp
 
@@ -280,17 +276,16 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     constructor
     · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
-      linarith
+      lia
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
-      push_neg at h_base
+      push Not at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> linarith
-        _ ≥ x * (x + 1) := by apply mul_le_mul <;> linarith
+        z * y > x * y := by gcongr; lia
+        _ ≥ x * (x + 1) := by apply mul_le_mul <;> lia
         _ > x * x + 1 := by
-          rw [mul_add, mul_one]
-          apply add_lt_add_left
-          assumption_mod_cast
+          rw [mul_add]
+          lia
   · -- Show the base case.
     intro x y h h_base
     obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base

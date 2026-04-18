@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Order.SetNotation
 
 /-!
 # Unions of finite sets
@@ -26,8 +28,9 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+@[expose] public section
+
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
@@ -47,12 +50,12 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 
 @[simp] lemma disjiUnion_empty (t : α → Finset β) : disjiUnion ∅ t (by simp) = ∅ := rfl
 
-@[simp] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, disjiUnion_val, Multiset.mem_bind, exists_prop]
+@[simp, grind =] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
+  simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion]
 
 @[simp] lemma disjiUnion_cons (a : α) (s : Finset α) (ha : a ∉ s) (f : α → Finset β) (H) :
     disjiUnion (cons a s ha) f H =
@@ -69,7 +72,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
 lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
     (s.disjiUnion f h1).disjiUnion g h2 =
       s.attach.disjiUnion
-        (fun a ↦ ((f a).disjiUnion g) fun b hb c hc ↦
+        (fun a ↦ ((f a).disjiUnion g) fun _ hb _ hc ↦
             h2 (mem_disjiUnion.mpr ⟨_, a.prop, hb⟩) (mem_disjiUnion.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab ↦
         disjoint_left.mpr fun x hxa hxb ↦ by
@@ -82,21 +85,101 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 
+lemma sUnion_disjiUnion {f : α → Finset (Set β)} (I : Finset α)
+    (hf : (I : Set α).PairwiseDisjoint f) :
+    ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
+  ext
+  simp only [coe_disjiUnion, Set.mem_sUnion, Set.mem_iUnion, mem_coe, exists_prop]
+  tauto
+
+section DecidableEq
+
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
+set_option backward.privateInPublic true in
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
--- `simpNF` claims that the statement can't simplify itself, but it can (as of 2024-02-14)
-@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
   simpa [filter_eq_self]
+
+end DecidableEq
+
+theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
+    (s.map f).disjiUnion t h =
+      s.disjiUnion (fun a => t (f a)) fun _ ha _ hb hab =>
+        h (mem_map_of_mem _ ha) (mem_map_of_mem _ hb) (f.injective.ne hab) :=
+  eq_of_veq <| Multiset.bind_map _ _ _
+
+theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h} :
+    (s.disjiUnion t h).map f =
+      s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
+  eq_of_veq <| Multiset.map_bind _ _ _
+
+@[simp]
+theorem disjiUnion_singleton_eq_self (s : Finset α) :
+    s.disjiUnion singleton (fun _ _ => by simp) = s := by
+  grind
+
+variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
+
+theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
+    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
+  (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
+
+lemma pairwiseDisjoint_filter {f : α → Finset β} (h : Set.PairwiseDisjoint ↑s f)
+    (p : β → Prop) [DecidablePred p] : Set.PairwiseDisjoint ↑s fun a ↦ (f a).filter p :=
+  fun _ h₁ _ h₂ hne ↦ Finset.disjoint_filter_filter (h h₁ h₂ hne)
+
+theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β → Prop) [DecidablePred p] :
+    (s.disjiUnion f h).filter p
+      = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
+
+theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
+    s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
+      s.map ⟨f, hf⟩ := by
+  ext; simp [eq_comm]
+
+lemma disjoint_disjiUnion_left
+    (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
+    Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
+  induction s using Finset.cons_induction <;> simp_all
+
+lemma disjoint_disjiUnion_right
+    (s : Finset β) (t : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint t f) :
+    Disjoint s (t.disjiUnion f hf) ↔ ∀ i ∈ t, Disjoint s (f i) := by
+  simpa only [_root_.disjoint_comm] using disjoint_disjiUnion_left t f hf s
+
+theorem pairwiseDisjoint_disjUnion {f g : α → Finset β}
+    (hfg : ∀ a, Disjoint (f a) (g a))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
+    (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
+    Set.PairwiseDisjoint s (fun a ↦ (f a).disjUnion (g a) (hfg a)) := by
+  intros i hi j hj hij
+  simp [hf hi hj hij, hg hi hj hij, hfg' hi hj hij, (hfg' hj hi hij.symm).symm]
+
+theorem disjiUnion_disjUnion {f g : α → Finset β} (hfg : ∀ a, Disjoint (f a) (g a))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
+    (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
+    s.disjiUnion (fun a ↦ (f a).disjUnion (g a) (hfg a))
+        (pairwiseDisjoint_disjUnion hfg hfg' hf hg) =
+      (s.disjiUnion f hf).disjUnion (s.disjiUnion g hg) (by
+        simp_rw [disjoint_disjiUnion_left, disjoint_disjiUnion_right]
+        intros i hi j hj
+        specialize hfg' hi hj
+        grind) := by
+  grind
 
 end DisjiUnion
 
@@ -114,108 +197,72 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp] lemma biUnion_empty : Finset.biUnion ∅ t = ∅ := rfl
 
-@[simp] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
-  simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind, exists_prop]
+@[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
+  simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
-  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion, iff_self_iff, mem_coe, imp_true_iff]
+  simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
 
 @[simp]
-lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t :=
-  ext fun x ↦ by
-    simp only [mem_biUnion, exists_prop, mem_union, mem_insert, or_and_right, exists_or,
-      exists_eq_left]
+lemma biUnion_insert [DecidableEq α] {a : α} : (insert a s).biUnion t = t a ∪ s.biUnion t := by
+  aesop
 
-lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) : s₁.biUnion t₁ = s₂.biUnion t₂ :=
-  ext fun x ↦ by
-    -- Porting note: this entire proof was `simp [or_and_right, exists_or]`
-    simp_rw [mem_biUnion]
-    apply exists_congr
-    simp (config := { contextual := true }) only [hs, and_congr_right_iff, ht, implies_true]
+lemma biUnion_congr (hs : s₁ = s₂) (ht : ∀ a ∈ s₁, t₁ a = t₂ a) :
+    s₁.biUnion t₁ = s₂.biUnion t₂ := by
+  grind
 
 @[simp]
 lemma disjiUnion_eq_biUnion (s : Finset α) (f : α → Finset β) (hf) :
     s.disjiUnion f hf = s.biUnion f := eq_of_veq (s.disjiUnion f hf).nodup.dedup.symm
 
-lemma biUnion_subset {s' : Finset β} : s.biUnion t ⊆ s' ↔ ∀ x ∈ s, t x ⊆ s' := by
-  simp only [subset_iff, mem_biUnion]
-  exact ⟨fun H a ha b hb ↦ H ⟨a, ha, hb⟩, fun H b ⟨a, ha, hb⟩ ↦ H a ha hb⟩
+lemma biUnion_subset {s' : Finset β} : s.biUnion t ⊆ s' ↔ ∀ x ∈ s, t x ⊆ s' := by grind
 
 @[simp]
-lemma singleton_biUnion {a : α} : Finset.biUnion {a} t = t a := by
-  classical rw [← insert_emptyc_eq, biUnion_insert, biUnion_empty, union_empty]
+lemma singleton_biUnion {a : α} : Finset.biUnion {a} t = t a := by grind
 
 lemma biUnion_inter (s : Finset α) (f : α → Finset β) (t : Finset β) :
-    s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by
-  ext x
-  simp only [mem_biUnion, mem_inter]
-  tauto
+    s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by grind
 
 lemma inter_biUnion (t : Finset β) (s : Finset α) (f : α → Finset β) :
-    t ∩ s.biUnion f = s.biUnion fun x ↦ t ∩ f x := by
-  rw [inter_comm, biUnion_inter]
-  simp [inter_comm]
+    t ∩ s.biUnion f = s.biUnion fun x ↦ t ∩ f x := by grind
 
 lemma biUnion_biUnion [DecidableEq γ] (s : Finset α) (f : α → Finset β) (g : β → Finset γ) :
-    (s.biUnion f).biUnion g = s.biUnion fun a ↦ (f a).biUnion g := by
-  ext
-  simp only [Finset.mem_biUnion, exists_prop]
-  simp_rw [← exists_and_right, ← exists_and_left, and_assoc]
-  rw [exists_comm]
+    (s.biUnion f).biUnion g = s.biUnion fun a ↦ (f a).biUnion g := by grind
 
 lemma bind_toFinset [DecidableEq α] (s : Multiset α) (t : α → Multiset β) :
     (s.bind t).toFinset = s.toFinset.biUnion fun a ↦ (t a).toFinset :=
-  ext fun x ↦ by simp only [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind, exists_prop]
+  ext fun x ↦ by simp only [Multiset.mem_toFinset, mem_biUnion, Multiset.mem_bind]
 
-lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by
-  have : ∀ b a, a ∈ s → b ∈ t₁ a → ∃ a : α, a ∈ s ∧ b ∈ t₂ a := fun b a ha hb ↦
-    ⟨a, ha, Finset.mem_of_subset (h a ha) hb⟩
-  simpa only [subset_iff, mem_biUnion, exists_imp, and_imp, exists_prop]
+lemma biUnion_mono (h : ∀ a ∈ s, t₁ a ⊆ t₂ a) : s.biUnion t₁ ⊆ s.biUnion t₂ := by grind
 
+@[gcongr]
 lemma biUnion_subset_biUnion_of_subset_left (t : α → Finset β) (h : s₁ ⊆ s₂) :
-    s₁.biUnion t ⊆ s₂.biUnion t := fun x ↦ by
-  simp only [and_imp, mem_biUnion, exists_prop]; exact Exists.imp fun a ha ↦ ⟨h ha.1, ha.2⟩
+    s₁.biUnion t ⊆ s₂.biUnion t := by grind
 
-lemma subset_biUnion_of_mem (u : α → Finset β) {x : α} (xs : x ∈ s) : u x ⊆ s.biUnion u :=
-  singleton_biUnion.superset.trans <|
-    biUnion_subset_biUnion_of_subset_left u <| singleton_subset_iff.2 xs
+lemma subset_biUnion_of_mem (u : α → Finset β) {x : α} (xs : x ∈ s) : u x ⊆ s.biUnion u := by grind
 
 @[simp]
 lemma biUnion_subset_iff_forall_subset {α β : Type*} [DecidableEq β] {s : Finset α}
-    {t : Finset β} {f : α → Finset β} : s.biUnion f ⊆ t ↔ ∀ x ∈ s, f x ⊆ t :=
-  ⟨fun h _ hx ↦ (subset_biUnion_of_mem f hx).trans h, fun h _ hx ↦
-    let ⟨_, ha₁, ha₂⟩ := mem_biUnion.mp hx
-    h _ ha₁ ha₂⟩
+    {t : Finset β} {f : α → Finset β} : s.biUnion f ⊆ t ↔ ∀ x ∈ s, f x ⊆ t := by grind
 
 @[simp]
-lemma biUnion_singleton_eq_self [DecidableEq α] : s.biUnion (singleton : α → Finset α) = s :=
-  ext fun x ↦ by simp only [mem_biUnion, mem_singleton, exists_prop, exists_eq_right']
+lemma biUnion_singleton_eq_self [DecidableEq α] : s.biUnion (singleton : α → Finset α) = s := by
+  grind
 
 lemma filter_biUnion (s : Finset α) (f : α → Finset β) (p : β → Prop) [DecidablePred p] :
-    (s.biUnion f).filter p = s.biUnion fun a ↦ (f a).filter p := by
-  ext b
-  simp only [mem_biUnion, exists_prop, mem_filter]
-  constructor
-  · rintro ⟨⟨a, ha, hba⟩, hb⟩
-    exact ⟨a, ha, hba, hb⟩
-  · rintro ⟨a, ha, hba, hb⟩
-    exact ⟨⟨a, ha, hba⟩, hb⟩
+    (s.biUnion f).filter p = s.biUnion fun a ↦ (f a).filter p := by grind
 
 lemma biUnion_filter_eq_of_maps_to [DecidableEq α] {s : Finset α} {t : Finset β} {f : α → β}
-    (h : ∀ x ∈ s, f x ∈ t) : (t.biUnion fun a ↦ s.filter fun c ↦ f c = a) = s := by
-  simpa only [disjiUnion_eq_biUnion] using disjiUnion_filter_eq_of_maps_to h
+    (h : ∀ x ∈ s, f x ∈ t) : (t.biUnion fun a ↦ s.filter fun c ↦ f c = a) = s := by grind
 
 lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
-    (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by
-  ext a
-  simp only [mem_biUnion, not_exists, not_and, mem_erase, ne_eq]
-  tauto
+    (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by grind
 
 @[simp]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
-  rw [exists_swap]
+  rw [exists_comm]
   simp [exists_and_left]
 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
@@ -227,11 +274,32 @@ lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset �
   refine s.induction ?_ ?_
   · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
   · intro i s his ih
-    simp only [disjoint_union_left, biUnion_insert, his, forall_mem_insert, ih]
+    simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
 lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
     Disjoint s (t.biUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_biUnion_left t f s
+
+theorem image_biUnion [DecidableEq γ] {f : α → β} {s : Finset α} {t : β → Finset γ} :
+    (s.image f).biUnion t = s.biUnion fun a => t (f a) :=
+  haveI := Classical.decEq α
+  Finset.induction_on s rfl fun a s _ ih => by simp only [image_insert, biUnion_insert, ih]
+
+theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f : β → γ} :
+    (s.biUnion t).image f = s.biUnion fun a => (t a).image f :=
+  haveI := Classical.decEq α
+  Finset.induction_on s rfl fun a s _ ih => by simp only [biUnion_insert, image_union, ih]
+
+theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
+    ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=
+  biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
+
+lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion t ∪ s₂.biUnion t := by
+  grind
+
+lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
+
+theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
 
 end BUnion
 end Finset

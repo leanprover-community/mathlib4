@@ -3,8 +3,11 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Factors
+module
+
+public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Factors
 
 /-!
 # `p`-adic Valuation
@@ -15,74 +18,85 @@ The `p`-adic valuation on `ℚ` is the difference of the multiplicities of `p` i
 denominator of `q`. This function obeys the standard properties of a valuation, with the appropriate
 assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that on `ℚ`.
 
-The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
+The valuation induces a norm on `ℚ`. This norm is defined in
+`Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 -/
+
+@[expose] public section
+
+assert_not_exists Field
 
 universe u
 
 open Nat
 
-open multiplicity
-
 variable {p : ℕ}
 
-/-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
-that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
-def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
-  if h : p ≠ 1 ∧ 0 < n then (multiplicity p n).get (multiplicity.finite_nat_iff.2 h) else 0
+theorem padicValNat_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
+    padicValNat p n = emultiplicity p n := by
+  rw [eq_comm, emultiplicity_eq_coe, pow_dvd_iff_le_padicValNat hp hn,
+    pow_dvd_iff_le_padicValNat hp hn]
+  simp
+
+@[simp]
+theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = padicValNat p n := by
+  rcases eq_or_ne p 1 with rfl | hp
+  · simp
+  · rcases eq_or_ne n 0 with rfl | hn
+    · simp
+    · simp [← padicValNat_eq_emultiplicity_of_ne_one, *]
+
+theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
+    padicValNat p n = multiplicity p n :=
+  .symm <| multiplicity_eq_of_emultiplicity_eq_some <| .symm <|
+    padicValNat_eq_emultiplicity_of_ne_one hp hn
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
-theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
-    padicValNat p n = (multiplicity p n).get (multiplicity.finite_nat_iff.2 ⟨hp.out.ne_one, hn⟩) :=
-  dif_pos ⟨hp.out.ne_one, hn⟩
+theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    padicValNat p n = multiplicity p n :=
+  padicValNat_def' hp.out.ne_one hn
 
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
-    ↑(padicValNat p n) = multiplicity p n := by simp [padicValNat, hp, hn]
+/-- A simplification of `padicValNat` when one input is prime, by analogy with
+`padicValRat_def`. -/
+theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
+    padicValNat p n = emultiplicity p n :=
+  padicValNat_eq_emultiplicity_of_ne_one hp.out.ne_one hn
 
 namespace padicValNat
 
-open multiplicity
+@[deprecated (since := "2026-03-15")]
+alias maxPowDiv_eq_emultiplicity := padicValNat_eq_emultiplicity
 
-open List
+@[deprecated (since := "2026-03-15")]
+alias maxPowDiv_eq_multiplicity := padicValNat_def'
 
-/-- `padicValNat p 0` is `0` for any `p`. -/
-@[simp]
-protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
+@[deprecated padicValNat_zero_right (since := "2026-03-15")]
+protected theorem zero : padicValNat p 0 = 0 := padicValNat_zero_right p
 
-/-- `padicValNat p 1` is `0` for any `p`. -/
-@[simp]
-protected theorem one : padicValNat p 1 = 0 := by
-  unfold padicValNat
-  split_ifs
-  · simp
-  · rfl
+@[deprecated padicValNat_one_right (since := "2026-03-15")]
+protected theorem one : padicValNat p 1 = 0 := padicValNat_one_right p
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, dite_eq_right_iff, PartENat.get_eq_iff_eq_coe, Nat.cast_zero,
-    multiplicity_eq_zero, and_imp, pos_iff_ne_zero, Ne, ← or_iff_not_imp_left]
+  rcases eq_or_ne n 0 with rfl | hn₀; · simp
+  rcases eq_or_ne p 1 with rfl | hp₁; · simp
+  simpa [*] using pow_dvd_iff_le_padicValNat (k := 1) hp₁ hn₀ |>.symm |>.not
 
 end padicValNat
 
 open List
 
-theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
+theorem le_emultiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
-    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
+    ↑n ≤ emultiplicity a b ↔ replicate n a <+~ b.primeFactorsList :=
   (replicate_subperm_primeFactorsList_iff ha hb).trans
-    multiplicity.pow_dvd_iff_le_multiplicity |>.symm
-
-@[deprecated (since := "2024-07-17")]
-alias le_multiplicity_iff_replicate_subperm_factors :=
-  le_multiplicity_iff_replicate_subperm_primeFactorsList
+    pow_dvd_iff_le_emultiplicity |>.symm
 
 theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
     (hb : b ≠ 0) :
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
-  rw [← le_multiplicity_iff_replicate_subperm_primeFactorsList ha hb,
-    ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
-
-@[deprecated (since := "2024-07-17")]
-alias le_padicValNat_iff_replicate_subperm_factors :=
-  le_padicValNat_iff_replicate_subperm_primeFactorsList
+  rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
+    Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
+      |>.emultiplicity_eq_multiplicity, ← padicValNat_def' ha.ne_one hb,
+    Nat.cast_le]

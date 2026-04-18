@@ -3,8 +3,10 @@ Copyright (c) 2024 Gabin Kolly. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
-import Mathlib.ModelTheory.DirectLimit
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.ModelTheory.DirectLimit
+public import Mathlib.Order.Ideal
 
 /-!
 # Partial Isomorphisms
@@ -34,14 +36,16 @@ This file defines partial isomorphisms between first-order structures.
 
 -/
 
+@[expose] public section
+
 universe u v w w'
 
 namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) (M : Type w) (N : Type w') {P : Type*}
-variable [L.Structure M] [L.Structure N] [L.Structure P]
+variable (L : Language.{u, v}) (M : Type w) (N : Type w')
+variable [L.Structure M] [L.Structure N]
 
 open FirstOrder Structure Substructure
 
@@ -75,6 +79,9 @@ def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
 theorem symm_symm (f : M ≃ₚ[L] N) : f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃ₚ[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem symm_apply (f : M ≃ₚ[L] N) (x : f.cod) : f.symm.toEquiv x = f.toEquiv.symm x :=
   rfl
@@ -94,10 +101,10 @@ theorem le_def (f g : M ≃ₚ[L] N) : f ≤ g ↔ ∃ h : f.dom ≤ g.dom,
 @[gcongr] theorem cod_le_cod {f g : M ≃ₚ[L] N} : f ≤ g → f.cod ≤ g.cod := by
   rintro ⟨_, eq_fun⟩ n hn
   let m := f.toEquiv.symm ⟨n, hn⟩
-  have  : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
-    Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coeSubtype]
+  have : ((subtype _).comp f.toEquiv.toEmbedding) m = n := by simp only [m, Embedding.comp_apply,
+    Equiv.coe_toEmbedding, Equiv.apply_symm_apply, coe_subtype]
   rw [← this, ← eq_fun]
-  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+  simp only [Embedding.comp_apply, coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
     SetLike.coe_mem]
 
 theorem subtype_toEquiv_inclusion {f g : M ≃ₚ[L] N} (h : f ≤ g) :
@@ -131,6 +138,7 @@ theorem le_iff {f g : M ≃ₚ[L] N} : f ≤ g ↔
     rw [le_def]
     exact ⟨dom_le_dom, by ext; change subtype _ (g.toEquiv _) = _; rw [← h_eq]; rfl⟩
 
+-- probably the initial design intended this to be private, just like `le_refl` and `le_antisymm`?
 theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   rintro ⟨le_fg, eq_fg⟩ ⟨le_gh, eq_gh⟩
   refine ⟨le_fg.trans le_gh, ?_⟩
@@ -148,9 +156,9 @@ private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g �
   exact Equiv.injective_toEmbedding ((subtype _).comp_injective (subtype_toEquiv_inclusion le_fg))
 
 instance : PartialOrder (M ≃ₚ[L] N) where
-  le_refl := le_refl
+  le_refl := private le_refl
   le_trans := le_trans
-  le_antisymm := le_antisymm
+  le_antisymm := private le_antisymm
 
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
@@ -236,12 +244,13 @@ def toEmbeddingOfEqTop {f : M ≃ₚ[L] N} (h : f.dom = ⊤) : M ↪[L] N :=
   (h ▸ f.toEmbedding).comp topEquiv.symm.toEmbedding
 
 @[simp]
-theorem toEmbeddingOfEqTop__apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
+theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
     toEmbeddingOfEqTop h m = f.toEquiv ⟨m, h.symm ▸ mem_top m⟩ := by
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
 
+set_option linter.style.nameCheck false in
 /-- Given a partial equivalence which has the whole structure as domain and
   as codomain, returns the corresponding equivalence. -/
 def toEquivOfEqTop {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
@@ -283,7 +292,7 @@ theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
   rfl
 
 @[simp]
-theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.dom = ⊤) :
+theorem toPartialEquiv_toEmbedding {f : M ≃ₚ[L] N} (h : f.dom = ⊤) :
     (PartialEquiv.toEmbeddingOfEqTop h).toPartialEquiv = f := by
   rcases f with ⟨_, _, _⟩
   cases h
@@ -298,18 +307,18 @@ namespace DirectLimit
 
 open PartialEquiv
 
-variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+variable {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
 variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
     (fun _ _ h ↦ Substructure.inclusion (dom_le_dom (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 instance : DirectedSystem (fun i ↦ (S i).cod)
     (fun _ _ h ↦ Substructure.inclusion (cod_le_cod (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 /-- The limit of a directed system of PartialEquivs. -/
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
@@ -318,18 +327,16 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
-      monotone' := monotone_cod.comp S.monotone}
-    ).comp
+      monotone' := monotone_cod.comp S.monotone }).comp
       ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).dom)
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
         (fun i ↦ (S i).toEquiv)
-        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
-      ).comp
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
-          monotone' := monotone_dom.comp S.monotone}).symm)
+          monotone' := monotone_dom.comp S.monotone }).symm)
 
 @[simp]
 theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x).dom) := rfl
@@ -337,6 +344,7 @@ theorem dom_partialEquivLimit : (partialEquivLimit S).dom = iSup (fun x ↦ (S x
 @[simp]
 theorem cod_partialEquivLimit : (partialEquivLimit S).cod = iSup (fun x ↦ (S x).cod) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma partialEquivLimit_comp_inclusion {i : ι} :
     (partialEquivLimit S).toEquiv.toEmbedding.comp (Substructure.inclusion (le_iSup _ i)) =
@@ -345,11 +353,13 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/5020
+    these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
-    simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
+    simp only [cod_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
 
 end DirectLimit
@@ -390,17 +400,14 @@ instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
-    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
-    Inhabited (L.FGEquiv M N) :=
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=
   ⟨⟨⟨⊥, ⊥, {
       toFun := isEmptyElim
       invFun := isEmptyElim
       left_inv := isEmptyElim
       right_inv := isEmptyElim
       map_fun' := fun {n} f x => by
-        cases n
-        · exact isEmptyElim f
-        · exact isEmptyElim (x 0)
+        subsingleton
       map_rel' := fun {n} r x => by
         cases n
         · exact isEmptyElim r
@@ -411,28 +418,53 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
+lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
+/-- An alternate characterization of an extension pair is that every finitely generated partial
+isomorphism can be extended to include any particular element of the domain. -/
+theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
+    L.IsExtensionPair M N ↔
+    ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
+      ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
+        g.comp (Substructure.inclusion le_sup_right) := by
+  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
+    refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
+    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
+        and_self]
+    · ext ⟨x, hx⟩
+      rw [Embedding.subtype_equivRange] at ff'2
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+        Equiv.coe_toEmbedding, coe_subtype, PartialEquiv.toEmbedding_apply]
+  · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+    refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
+      (fg_closure_singleton _).sup f_FG⟩,
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
+    rw [PartialEquiv.toEmbedding] at eq_f'
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coe_subtype,
+      Embedding.equivRange_apply, eq_f']
+
 namespace IsExtensionPair
 
-protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
+protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  mem_gt := fun f => h f m
+  isCofinal := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  mem_gt := fun f => h.cod f n
+  isCofinal := fun f => h.cod f n
 
 end IsExtensionPair
 

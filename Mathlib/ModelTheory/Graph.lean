@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # First-Order Structures in Graph Theory
@@ -21,7 +23,9 @@ This file defines first-order languages, structures, and theories in graph theor
   of the theory of simple graphs.
 -/
 
-universe u v
+@[expose] public section
+
+universe u
 
 namespace FirstOrder
 
@@ -31,7 +35,7 @@ open FirstOrder
 
 open Structure
 
-variable {α : Type u} {V : Type v} {n : ℕ}
+variable {V : Type u} {n : ℕ}
 
 /-! ### Simple Graphs -/
 
@@ -49,6 +53,7 @@ protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
 abbrev adj : Language.graph.Relations 2 := .adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/
+@[implicit_reducible]
 def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V where
   RelMap | .adj => (fun x => G.Adj (x 0) (x 1))
 
@@ -66,7 +71,7 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
-      (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
+      (Std.Irrefl fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] := by
   simp [Theory.simpleGraph]
 
@@ -76,8 +81,7 @@ instance simpleGraph_model (G : SimpleGraph V) :
   rw [Theory.simpleGraph_model_iff]
   exact ⟨G.loopless, G.symm⟩
 
-variable (V)
-
+variable (V) in
 /-- Any model of the theory of simple graphs represents a simple graph. -/
 @[simps]
 def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
@@ -90,8 +94,6 @@ def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGrap
   loopless :=
     Relations.realize_irreflexive.1
       (Theory.realize_sentence_of_mem Theory.simpleGraph (Set.mem_insert _ _))
-
-variable {V}
 
 @[simp]
 theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :

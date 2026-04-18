@@ -3,26 +3,27 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # The complete lattice structure on two-sided ideals
 -/
 
+@[expose] public section
+
 namespace TwoSidedIdeal
 
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
-instance : Sup (TwoSidedIdeal R) where
-  sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
-
-lemma sup_ringCon (I J : TwoSidedIdeal R) : (I ⊔ J).ringCon = I.ringCon ⊔ J.ringCon := rfl
-
 instance : SemilatticeSup (TwoSidedIdeal R) where
-  le_sup_left I J :=  by rw [ringCon_le_iff]; exact le_sup_left
+  sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
+  le_sup_left I J := by rw [ringCon_le_iff]; exact le_sup_left
   le_sup_right I J := by rw [ringCon_le_iff]; exact le_sup_right
   sup_le I J K h1 h2 := by rw [ringCon_le_iff] at h1 h2 ⊢; exact sup_le h1 h2
+
+lemma sup_ringCon (I J : TwoSidedIdeal R) : (I ⊔ J).ringCon = I.ringCon ⊔ J.ringCon := rfl
 
 section sup
 
@@ -58,15 +59,13 @@ lemma mem_sup {I J : TwoSidedIdeal R} {x : R} :
 
 end sup
 
-instance : Inf (TwoSidedIdeal R) where
-  inf := fun I J => { ringCon := I.ringCon ⊓ J.ringCon }
-
-lemma inf_ringCon (I J : TwoSidedIdeal R) : (I ⊓ J).ringCon = I.ringCon ⊓ J.ringCon := rfl
-
 instance : SemilatticeInf (TwoSidedIdeal R) where
+  inf I J := { ringCon := I.ringCon ⊓ J.ringCon }
   inf_le_left I J := by rw [ringCon_le_iff]; exact inf_le_left
   inf_le_right I J := by rw [ringCon_le_iff]; exact inf_le_right
   le_inf I J K h1 h2 := by rw [ringCon_le_iff] at h1 h2 ⊢; exact le_inf h1 h2
+
+lemma inf_ringCon (I J : TwoSidedIdeal R) : (I ⊓ J).ringCon = I.ringCon ⊓ J.ringCon := rfl
 
 lemma mem_inf {I J : TwoSidedIdeal R} {x : R} :
     x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
@@ -83,8 +82,7 @@ lemma iSup_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
   simp only [iSup, sSup_ringCon]; congr; ext; simp
 
 instance : CompleteSemilatticeSup (TwoSidedIdeal R) where
-  sSup_le s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact sSup_le <| by aesop
-  le_sSup s I hI := by rw [ringCon_le_iff]; exact le_sSup <| by aesop
+  isLUB_sSup _ := .of_image ringCon_le_iff.symm (isLUB_sSup _)
 
 instance : InfSet (TwoSidedIdeal R) where
   sInf s := { ringCon := sInf <| TwoSidedIdeal.ringCon '' s }
@@ -97,8 +95,7 @@ lemma iInf_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
   simp only [iInf, sInf_ringCon]; congr!; ext; simp
 
 instance : CompleteSemilatticeInf (TwoSidedIdeal R) where
-  le_sInf s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact le_sInf <| by aesop
-  sInf_le s I hI := by rw [ringCon_le_iff]; exact sInf_le <| by aesop
+  isGLB_sInf _ := .of_image ringCon_le_iff.symm (isGLB_sInf _)
 
 lemma mem_iInf {ι : Type*} {I : ι → TwoSidedIdeal R} {x : R} :
     x ∈ iInf I ↔ ∀ i, x ∈ I i :=
@@ -113,11 +110,15 @@ instance : Top (TwoSidedIdeal R) where
 
 lemma top_ringCon : (⊤ : TwoSidedIdeal R).ringCon = ⊤ := rfl
 
+@[simp]
+lemma mem_top {x : R} : x ∈ (⊤ : TwoSidedIdeal R) := trivial
+
 instance : Bot (TwoSidedIdeal R) where
   bot := { ringCon := ⊥ }
 
 lemma bot_ringCon : (⊥ : TwoSidedIdeal R).ringCon = ⊥ := rfl
 
+@[simp]
 lemma mem_bot {x : R} : x ∈ (⊥ : TwoSidedIdeal R) ↔ x = 0 :=
   Iff.rfl
 
@@ -128,5 +129,17 @@ instance : CompleteLattice (TwoSidedIdeal R) where
   __ := (inferInstance : CompleteSemilatticeInf (TwoSidedIdeal R))
   le_top _ := by rw [ringCon_le_iff]; exact le_top
   bot_le _ := by rw [ringCon_le_iff]; exact bot_le
+
+@[simp]
+lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
+
+@[simp]
+lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
+
+lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
+    (1 : R) ∈ I ↔ I = ⊤ :=
+  ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩
+
+alias ⟨eq_top, one_mem⟩ := one_mem_iff
 
 end TwoSidedIdeal

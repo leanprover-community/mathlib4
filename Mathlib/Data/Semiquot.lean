@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-! # Semiquotients
 
@@ -15,6 +17,8 @@ which return something in a range of values (represented by the
 predicate `S`) but are not completely determined.
 -/
 
+@[expose] public section
+
 
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
   and in the VM is represented by an element of `α`; the relation
@@ -22,11 +26,10 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
-  /-- Set containing some element of `α`-/
+  /-- Set containing some element of `α` -/
   s : Set α
-  /-- Assertion of non-emptiness via `Trunc`-/
+  /-- Assertion of non-emptiness via `Trunc` -/
   val : Trunc s
 
 namespace Semiquot
@@ -42,7 +45,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine ⟨congr_arg _, fun h => ?_⟩
-  cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
+  obtain ⟨_, v₁⟩ := q₁; obtain ⟨_, v₂⟩ := q₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=
@@ -153,9 +156,9 @@ instance : LE (Semiquot α) :=
 
 instance partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
-  le_refl s := Set.Subset.refl _
-  le_trans s t u := Set.Subset.trans
-  le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
+  le_refl _ := Set.Subset.refl _
+  le_trans _ _ _ := Set.Subset.trans
+  le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
@@ -195,6 +198,7 @@ theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by

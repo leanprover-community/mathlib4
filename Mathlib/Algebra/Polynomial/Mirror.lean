@@ -3,8 +3,10 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.Polynomial.RingDivision
+module
+
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # "Mirror" of a univariate polynomial
@@ -24,10 +26,10 @@ divisible by `X`.
 
 -/
 
+@[expose] public section
+
 
 namespace Polynomial
-
-open Polynomial
 
 section Semiring
 
@@ -139,7 +141,7 @@ theorem mirror_leadingCoeff : p.mirror.leadingCoeff = p.trailingCoeff := by
   rw [← p.mirror_mirror, mirror_trailingCoeff, p.mirror_mirror]
 
 theorem coeff_mul_mirror :
-    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.sum fun n => (· ^ 2) := by
+    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.sum fun _ => (· ^ 2) := by
   rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
   refine
     (Finset.sum_congr rfl fun n hn => ?_).trans
@@ -161,17 +163,6 @@ theorem natTrailingDegree_mul_mirror :
   · rw [hp, zero_mul, natTrailingDegree_zero, mul_zero]
   rw [natTrailingDegree_mul hp (mt mirror_eq_zero.mp hp), mirror_natTrailingDegree, two_mul]
 
-end Semiring
-
-section Ring
-
-variable {R : Type*} [Ring R] (p q : R[X])
-
-theorem mirror_neg : (-p).mirror = -p.mirror := by
-  rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
-
-variable [NoZeroDivisors R]
-
 theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
   by_cases hp : p = 0
   · rw [hp, zero_mul, mirror_zero, zero_mul]
@@ -183,6 +174,15 @@ theorem mirror_mul_of_domain : (p * q).mirror = p.mirror * q.mirror := by
 
 theorem mirror_smul (a : R) : (a • p).mirror = a • p.mirror := by
   rw [← C_mul', ← C_mul', mirror_mul_of_domain, mirror_C]
+
+end Semiring
+
+section Ring
+
+variable {R : Type*} [Ring R] (p q : R[X])
+
+theorem mirror_neg : (-p).mirror = -p.mirror := by
+  rw [mirror, mirror, reverse_neg, natTrailingDegree_neg, neg_mul_eq_neg_mul]
 
 end Ring
 

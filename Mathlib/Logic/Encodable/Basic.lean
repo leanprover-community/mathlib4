@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Equiv
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Equiv
+public import Mathlib.Logic.Equiv.Nat
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -35,6 +37,13 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+@[expose] public section
+
+assert_not_exists Monoid
+
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -43,9 +52,7 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  -- Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
-  --explicitly in Lean4
-  /-- Decoding from ℕ to Option α-/
+  /-- Decoding from ℕ to Option α -/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
   encodek : ∀ a, decode (encode a) = some a
@@ -70,36 +77,43 @@ theorem encode_inj [Encodable α] {a b : α} : encode a = encode b ↔ a = b :=
 instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
+theorem surjective_decode_getD (α : Type*) [Encodable α] (d : α) :
+    Surjective fun n => (Encodable.decode n).getD d := fun x =>
+  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]; rfl⟩
+
+@[deprecated surjective_decode_getD (since := "2026-01-05")]
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
-  ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
+    Surjective fun n => ((Encodable.decode n).getD default : α) :=
+  surjective_decode_getD α default
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
 best way to infer decidability. -/
+@[instance_reducible]
 def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
   | _, _ => decidable_of_iff _ encode_inj
 
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
+@[implicit_reducible]
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
   ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
     simp [Encodable.encodek, linv]⟩
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
+@[implicit_reducible]
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
   ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
 
 /-- Encodability is preserved by equivalence. -/
+@[implicit_reducible]
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
--- Porting note: removing @[simp], too powerful
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 
--- Porting note: removing @[simp], too powerful
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
@@ -138,7 +152,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> simp [encodek]⟩
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=
@@ -149,7 +163,7 @@ theorem encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) 
   rfl
 
 @[simp]
-theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
+theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α)) = some none :=
   rfl
 
 @[simp]
@@ -165,8 +179,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simpa [decode₂, bind_eq_some] using
-    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simp [decode₂, Option.bind_eq_some_iff]
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
   mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)
@@ -176,16 +189,17 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 
 @[simp]
 theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
-  ext
-  simp [mem_decode₂, eq_comm, decode₂_eq_some]
+  simp [decode₂_eq_some]
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
   simp_rw [Set.range, Set.mem_setOf_eq, Ne, Option.eq_none_iff_forall_not_mem,
     Encodable.mem_decode₂, not_forall, not_not]
 
-theorem decode₂_is_partial_inv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
+theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
+
+@[deprecated (since := "2026-03-11")] alias decode₂_is_partial_inv := decode₂_isPartialInv
 
 theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=
@@ -195,28 +209,24 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
   mem_decode₂.2 rfl
 
 /-- The encoding function has decidable range. -/
+@[instance_reducible]
 def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
-    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
+    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_isPartialInv (Option.get _ h), Option.some_get]⟩,
       fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
 def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
-  toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
+  toFun a := ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
-  left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
-  right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.eq
-    dsimp
-    conv =>
-      rhs
-      rw [← hx]
-    rw [encode_injective.eq_iff, ← Option.some_inj, Option.some_get, ← hx, encodek₂]
+      (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
+  left_inv _ := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
+  right_inv _ := Subtype.ext <| decode₂_isPartialInv.get_eq _ _
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
+@[implicit_reducible]
 def _root_.Unique.encodable [Unique α] : Encodable α :=
   ⟨fun _ => 0, fun _ => some default, Unique.forall_iff.2 rfl⟩
 
@@ -224,7 +234,6 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
--- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : α ⊕ β → ℕ
   | Sum.inl a => 2 * encode a
@@ -240,12 +249,10 @@ def decodeSum (n : ℕ) : Option (α ⊕ β) :=
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inl (a : α) : @encode (α ⊕ β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inr (b : β) : @encode (α ⊕ β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
@@ -283,7 +290,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
-  cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
+  obtain ⟨m, e⟩ := exists_eq_succ_of_ne_zero (_root_.ne_of_gt this)
   simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -380,10 +387,12 @@ instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
+@[implicit_reducible]
 noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Encodable α :=
-  ofLeftInjection f (partialInv f) fun _ => (partialInv_of_injective hf _ _).2 rfl
+  ofLeftInjection f (partialInv f) hf.isPartialInv.eq
 
 /-- If `α` is countable, then it has a (non-canonical) `Encodable` structure. -/
+@[no_expose, implicit_reducible]
 noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
   Nonempty.some <|
     let ⟨f, hf⟩ := exists_injective_nat α
@@ -445,7 +454,7 @@ theorem down_up {a : ULower α} : down a.up = a :=
 
 @[simp]
 theorem up_down {a : α} : (down a).up = a := by
-  simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
+  simp [up, down, Equiv.symm_apply_apply]
 
 @[simp]
 theorem up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=
@@ -475,19 +484,22 @@ section FindA
 
 variable {α : Type*} (p : α → Prop) [Encodable α] [DecidablePred p]
 
+set_option backward.privateInPublic true in
 private def good : Option α → Prop
   | some a => p a
   | none => False
 
-private def decidable_good : DecidablePred (good p) :=
-  fun n => by
-    cases n <;> unfold good <;> dsimp <;> infer_instance
-attribute [local instance] decidable_good
+set_option backward.privateInPublic true in
+private local instance decidable_good : DecidablePred (good p)
+  | some a => inferInstanceAs <| Decidable (p a)
+  | none => inferInstanceAs <| Decidable False
 
 open Encodable
 
 variable {p}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructive choice function for a decidable subtype of an encodable type. -/
 def chooseX (h : ∃ x, p x) : { a : α // p a } :=
   have : ∃ n, good p (decode n) :=
@@ -522,11 +534,11 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isAntisymm
+instance {α} [Encodable α] : Std.Antisymm (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).antisymm
 
-instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTotal
+instance {α} [Encodable α] : Std.Total (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).total
 
 end Encodable
 
@@ -551,13 +563,13 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' (decode n : Option α) with a
+  rcases (decode n : Option α) with - | a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
+  simp only [Directed.sequence, encodek]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}
@@ -592,7 +604,7 @@ section Quotient
 
 open Encodable Quotient
 
-variable {α : Type*} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
+variable {α : Type*} {s : Setoid α} [DecidableRel (α := α) (· ≈ ·)] [Encodable α]
 
 /-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/
@@ -603,6 +615,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
   choose_spec (exists_rep q)
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
+@[implicit_reducible]
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩

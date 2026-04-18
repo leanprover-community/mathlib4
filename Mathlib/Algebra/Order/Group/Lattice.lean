@@ -3,7 +3,9 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
 
 /-!
 # Lattice ordered groups
@@ -14,8 +16,8 @@ underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 A lattice ordered group is a type `α` satisfying:
 * `Lattice α`
 * `CommGroup α`
-* `CovariantClass α α (· * ·) (· ≤ ·)`
-* `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+* `MulLeftMono α`
+* `MulRightMono α`
 
 This file establishes basic properties of lattice ordered groups. It is shown that when the group is
 commutative, the lattice is distributive. This also holds in the non-commutative case
@@ -35,46 +37,48 @@ in mathlib.
 lattice, order, group
 -/
 
+@[expose] public section
+
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 section Group
 variable [Lattice α] [Group α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 @[to_additive]
-lemma mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mul_sup [MulLeftMono α] (a b c : α) :
     c * (a ⊔ b) = c * a ⊔ c * b :=
   (OrderIso.mulLeft _).map_sup _ _
 
 @[to_additive]
-lemma sup_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma sup_mul [MulRightMono α] (a b c : α) :
     (a ⊔ b) * c = a * c ⊔ b * c :=
   (OrderIso.mulRight _).map_sup _ _
 
 @[to_additive]
-lemma mul_inf [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mul_inf [MulLeftMono α] (a b c : α) :
     c * (a ⊓ b) = c * a ⊓ c * b :=
   (OrderIso.mulLeft _).map_inf _ _
 
 @[to_additive]
-lemma inf_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma inf_mul [MulRightMono α] (a b c : α) :
     (a ⊓ b) * c = a * c ⊓ b * c :=
   (OrderIso.mulRight _).map_inf _ _
 
 @[to_additive]
-lemma sup_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma sup_div [MulRightMono α] (a b c : α) :
     (a ⊔ b) / c = a / c ⊔ b / c :=
   (OrderIso.divRight _).map_sup _ _
 
 @[to_additive]
-lemma inf_div [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma inf_div [MulRightMono α] (a b c : α) :
     (a ⊓ b) / c = a / c ⊓ b / c :=
   (OrderIso.divRight _).map_inf _ _
 
 section
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulLeftMono α] [MulRightMono α]
 
 @[to_additive] lemma inv_sup (a b : α) : (a ⊔ b)⁻¹ = a⁻¹ ⊓ b⁻¹ := (OrderIso.inv α).map_sup _ _
 
@@ -93,7 +97,7 @@ lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLef
 lemma pow_two_semiclosed
     {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
-    rwa [← inf_eq_right, ← mul_right_eq_self]
+    rwa [← inf_eq_right, ← mul_eq_left]
   rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
     inf_assoc, inf_of_le_left ha]
 
@@ -106,7 +110,7 @@ variable [Lattice α] [CommGroup α]
 -- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
 @[to_additive]
-lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
+lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
   calc
     (a ⊓ b) * (a ⊔ b) = (a ⊓ b) * (a * b * (b⁻¹ ⊔ a⁻¹)) := by
       rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
@@ -115,9 +119,10 @@ lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a �
 
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
-@[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
+@[to_additive (attr := implicit_reducible)
+  /-- Every lattice ordered commutative additive group is a distributive lattice -/]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α where
+    [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by
     rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,
       le_inf_iff]

@@ -34,13 +34,6 @@ inductive PropForm (α : Type*)
   | and : PropForm α → PropForm α → PropForm α
   | or : PropForm α → PropForm α → PropForm α
 
-/-!
-The next three functions make it easier to construct functions from a small
-`Fin`.
--/
-
--- Porting note: using `![_, _]` notation instead
-
 namespace PropForm
 
 private def Constructors (α : Type*) :=
@@ -81,7 +74,7 @@ private def finv : (WType fun i => Fin (arity α i)) → PropForm α
   | ⟨cor, fn⟩ => or (finv (fn 0)) (finv (fn 1))
 
 instance [Encodable α] : Encodable (PropForm α) :=
-  haveI : Encodable (Constructors α) := by unfold Constructors; infer_instance
+  haveI : Encodable (Constructors α) := inferInstanceAs <| Encodable (α ⊕ Unit ⊕ Unit ⊕ Unit)
   Encodable.ofLeftInverse f finv (by intro p; induction p <;> simp [f, finv, *])
 
 end PropForm

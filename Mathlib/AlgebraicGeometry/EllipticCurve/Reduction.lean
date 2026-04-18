@@ -1,0 +1,360 @@
+/-
+Copyright (c) 2025 Bryan Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bryan Wang
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.GroupTheory.ArchimedeanDensely
+
+/-!
+# Reduction of Weierstrass curves over local fields
+
+This file defines reduction of Weierstrass curves over local fields, or more generally,
+fraction fields of discrete valuation rings.
+
+## Main definitions
+
+* `IsIntegral`: a predicate expressing that a given Weierstrass equation
+  has integral coefficients.
+* `IsMinimal`: a predicate expressing that a given Weierstrass equation
+  has minimal valuation of discriminant among all isomorphic integral Weierstrass equations.
+* `reduction`: the reduction of a Weierstrass curve given by a minimal Weierstrass equation,
+  which is a Weierstrass curve over the residue field.
+* `IsGoodReduction`: a predicate expressing that a given minimal Weierstrass equation
+  has valuation of its discriminant equal to zero.
+
+## Main statements
+
+* `exists_isIntegral`: any Weierstrass curve is isomorphic to one given by
+  an integral Weierstrass equation.
+* `exists_isMinimal`: any Weierstrass curve is isomorphic to one given by
+  a minimal Weierstrass equation.
+
+## References
+
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+
+## Tags
+
+elliptic curve, weierstrass equation, minimal weierstrass equation, reduction
+-/
+
+@[expose] public section
+
+namespace WeierstrassCurve
+
+section Integral
+
+variable (R : Type*) [CommRing R]
+variable {K : Type*} [Field K] [Algebra R K]
+
+/-- A Weierstrass equation over the fraction field `K` is integral if
+it has coefficients in the ring `R`. -/
+@[mk_iff]
+class IsIntegral (W : WeierstrassCurve K) : Prop where
+  integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
+
+/-- An integral model of an integral Weierstrass curve. -/
+noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    WeierstrassCurve R :=
+  hW.integral.choose
+
+lemma baseChange_integralModel_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    (integralModel R W).baseChange K = W :=
+  hW.integral.choose_spec.symm
+
+lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
+    (h₁ : ∃ r₁, (algebraMap R K) r₁ = W.a₁)
+    (h₂ : ∃ r₂, (algebraMap R K) r₂ = W.a₂)
+    (h₃ : ∃ r₃, (algebraMap R K) r₃ = W.a₃)
+    (h₄ : ∃ r₄, (algebraMap R K) r₄ = W.a₄)
+    (h₆ : ∃ r₆, (algebraMap R K) r₆ = W.a₆) :
+    IsIntegral R W := by
+  use ⟨h₁.choose, h₂.choose, h₃.choose, h₄.choose, h₆.choose⟩
+  ext
+  all_goals simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
+  · apply h₁.choose_spec.symm
+  · apply h₂.choose_spec.symm
+  · apply h₃.choose_spec.symm
+  · apply h₄.choose_spec.symm
+  · apply h₆.choose_spec.symm
+
+lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
+    ∃ r : R, algebraMap R K r = W.Δ := by
+  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+    IsIntegral.integral
+  use W_int.Δ
+  rw [hW_int, map_Δ]
+
+lemma integralModel_a₁_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₁ = W.a₁ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₂ = W.a₂ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₃_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₃ = W.a₃ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₄ = W.a₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_a₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).a₆ = W.a₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₂_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₂ = W.b₂ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₄ = W.b₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₆ = W.b₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_b₈_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).b₈ = W.b₈ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_c₄_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).c₄ = W.c₄ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_c₆_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).c₆ = W.c₆ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).Δ = W.Δ := by
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
+  simp [integralModel]
+
+variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
+
+open ValuationRing
+
+set_option backward.isDefEq.respectTransparency false in
+theorem exists_isIntegral (W : WeierstrassCurve K) :
+    ∃ C : VariableChange K, IsIntegral R (C • W) := by
+  let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
+  let l := l₀.map (fun a ↦ valuation R K a)
+  let lmax : ValueGroup R K :=
+    l.maximum_of_length_pos (by simp [l₀, l])
+  have hlmax_mem : lmax ∈ l :=
+    List.maximum_of_length_pos_mem (by simp [l₀, l])
+  have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
+    List.le_maximum_of_length_pos_of_mem hv (by simp [l₀, l])
+  by_cases hlmax_le_1 : lmax ≤ 1
+  · use ⟨1, 0, 0, 0⟩
+    apply isIntegral_of_exists_lift R
+    all_goals simpa [← mem_integer_iff, variableChange_def, Valuation.mem_integer_iff]
+      using (hlmax _ (by simp [l₀, l])).trans hlmax_le_1
+  · have hlmax_ge_1 : lmax ≥ 1 := le_of_not_ge hlmax_le_1
+    have h : ∃ a : K, valuation R K a = lmax := by
+      let i : ℕ := l.idxOf lmax
+      have hi : i < l.length := List.idxOf_lt_length_of_mem hlmax_mem
+      use l₀[i]
+      have hi₁ : (valuation R K) l₀[i] = l[i] := by simp [l]
+      simpa only [hi₁] using (List.getElem_idxOf hi)
+    choose a ha using h
+    have ha₀ : a ≠ 0 := by
+      by_contra ha₀; simp only [ha₀, map_zero] at ha
+      exact (ha ▸ hlmax_le_1) zero_le_one
+    use ⟨Units.mk0 a ha₀, 0, 0, 0⟩
+    apply isIntegral_of_exists_lift R
+    all_goals
+      apply (mem_integer_iff _ _ _).mp
+      simp only [variableChange_def, Units.val_inv_eq_inv_val, Units.val_mk0, mul_zero, add_zero,
+        inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+      apply (Valuation.mem_integer_iff _ _).mpr
+      simp only [map_mul, map_inv₀, map_pow, ha]
+      refine inv_mul_le_one_of_le₀ ?_ zero_le'
+      refine (hlmax _ (by simp [l₀, l])).trans ?_
+    any_goals
+      apply le_self_pow hlmax_ge_1.le
+      linarith
+    rfl
+
+end Integral
+
+section Minimal
+
+variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+
+open WithZero Multiplicative
+open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
+
+open Classical in
+/-- The valuation of the discriminant of a Weierstrass curve `W`,
+which is at most 1 if `W` is integral. Zero otherwise. -/
+noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :
+    { v : ℤᵐ⁰ // v ≤ 1 } :=
+  if h : IsIntegral R W then
+    ⟨valuation K (maximalIdeal R) W.Δ, by
+      choose r hr using Δ_integral_of_isIntegral R W
+      rw [← hr]
+      exact valuation_le_one (maximalIdeal R) r⟩
+  else ⟨⊥, bot_le⟩
+
+lemma valuation_Δ_aux_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    valuation_Δ_aux R W = valuation K (maximalIdeal R) W.Δ := by
+  simp [valuation_Δ_aux, hW]
+
+/-- A Weierstrass equation over the fraction field `K` is minimal if the (multiplicative) valuation
+of its discriminant is maximal among all isomorphic integral Weierstrass equations.
+We still use 'minimal' for the naming, so as to standardize the naming with Silverman's book. -/
+@[mk_iff]
+class IsMinimal (W : WeierstrassCurve K) : Prop where
+  val_Δ_maximal :
+    MaximalFor
+      (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
+      (fun (C : VariableChange K) ↦ valuation_Δ_aux R (C • W))
+      (1 : VariableChange K)
+
+omit [IsFractionRing R K] in
+instance {W : WeierstrassCurve K} [IsMinimal R W] :
+    IsIntegral R W := by simpa using IsMinimal.val_Δ_maximal.1
+
+theorem exists_isMinimal (W : WeierstrassCurve K) :
+    ∃ C : VariableChange K, IsMinimal R (C • W) := by
+  obtain ⟨C, hC⟩ := exists_maximalFor_of_wellFoundedGT
+    (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
+    (fun (C : VariableChange K) ↦ valuation_Δ_aux R (C • W))
+    (exists_isIntegral R W)
+  refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
+  intro j hj; rw [← smul_assoc] at hj
+  let h := hC.2 hj
+  simp_all only [one_smul]
+  rw [← smul_assoc]
+  exact h
+
+/-- A minimal Weierstrass equation for a given Weierstrass curve over `K`. -/
+noncomputable def minimal (W : WeierstrassCurve K) : WeierstrassCurve K :=
+  (W.exists_isMinimal R).choose • W
+
+instance {W : WeierstrassCurve K} :
+    IsMinimal R (W.minimal R) := (W.exists_isMinimal R).choose_spec
+
+end Minimal
+
+section Reduction
+
+variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+
+open IsDiscreteValuationRing IsLocalRing IsDedekindDomain.HeightOneSpectrum
+
+/-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
+which is a Weierstrass curve over the residue field of `R`. -/
+noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
+    WeierstrassCurve (ResidueField R) :=
+  (integralModel R W).map (residue R)
+
+/-- A minimal Weierstrass equation has good reduction if and only if
+the valuation of its discriminant is 1. -/
+@[mk_iff]
+class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+  goodReduction : valuation K (maximalIdeal R) W.Δ = 1
+
+@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
+
+lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
+    HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
+  refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
+  simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff]
+  have h :
+      ¬(valuation K (maximalIdeal R) (algebraMap R K (integralModel R W).Δ) < 1)
+      ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
+    not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
+  refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
+  simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
+
+@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
+  hasGoodReduction_iff_isElliptic_reduction
+
+/-- A minimal Weierstrass equation has multiplicative reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+@[mk_iff]
+class HasMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  multiplicativeReduction : valuation K (maximalIdeal R) W.c₄ = 1
+
+/-- A minimal Weierstrass equation has additive reduction if and only if
+the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
+@[mk_iff]
+class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+  badReduction : valuation K (maximalIdeal R) W.Δ < 1
+  additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
+
+-- TODO: add characterization in terms of the discriminant when the characteristic is not 2
+open Polynomial in
+/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
+
+To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
+`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
+@[mk_iff]
+class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop
+    extends W.HasMultiplicativeReduction R where
+  splitMultiplicativeReduction : letI I := W.integralModel R
+    Splits <| .map (algebraMap R (ResidueField R)) <|
+      C I.c₄ * X ^ 2 + C (I.a₁ * I.c₄) * X - C (54 * I.b₆ - 3 * I.b₂ * I.b₄ + I.a₂ * I.c₄)
+
+variable {W : WeierstrassCurve K}
+
+theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction [IsMinimal R W] :
+    W.HasGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
+  rw [hasGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
+    ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
+  grind [valuation_le_one]
+
+theorem HasGoodReduction.not_hasMultiplicativeReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasGoodReduction.not_hasAdditiveReduction (hW : W.HasGoodReduction R) :
+    ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.badReduction.ne hW.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasGoodReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
+
+theorem HasAdditiveReduction.not_hasGoodReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasGoodReduction R :=
+  fun h ↦ hW.badReduction.ne h.goodReduction
+
+theorem HasMultiplicativeReduction.not_hasAdditiveReduction (hW : W.HasMultiplicativeReduction R) :
+    ¬ W.HasAdditiveReduction R :=
+  fun h ↦ h.additiveReduction.ne hW.multiplicativeReduction
+
+theorem HasAdditiveReduction.not_hasMultiplicativeReduction (hW : W.HasAdditiveReduction R) :
+    ¬ W.HasMultiplicativeReduction R :=
+  fun h ↦ hW.additiveReduction.ne h.multiplicativeReduction
+
+end Reduction
+
+end WeierstrassCurve

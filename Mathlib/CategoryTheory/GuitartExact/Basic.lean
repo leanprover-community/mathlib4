@@ -3,7 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Functor.TwoSquare
 
 /-!
 # Guitart exact squares
@@ -35,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
@@ -44,6 +47,8 @@ and construct (pointwise) derived functors using this notion
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -55,24 +60,9 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
-/-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
-involving fours functors `T`, `L`, `R`, `B` that are on the
-top/left/right/bottom sides of a square of categories. -/
-def TwoSquare := T ⋙ R ⟶ L ⋙ B
-
 namespace TwoSquare
 
-/-- Constructor for `TwoSquare`. -/
-abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
-
-variable {T L R B}
-
-@[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
-    w = w' :=
-  NatTrans.ext (funext h)
-
-variable (w : TwoSquare T L R B)
+variable {T L R B} (w : TwoSquare T L R B)
 
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
@@ -128,7 +118,6 @@ abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b 
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
-variable (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 variable {w g}
 
 lemma StructuredArrowRightwards.mk_surjective
@@ -181,6 +170,7 @@ def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g w
 
 end EquivalenceJ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
 the obvious equivalence of categories
 `w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
@@ -199,6 +189,7 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
 by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
 @[simps]
@@ -215,8 +206,8 @@ def costructuredArrowDownwardsPrecomp
     dsimp
     rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
     rfl)
-  map_id A := rfl
-  map_comp φ φ' := rfl
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end
 
@@ -273,6 +264,7 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
@@ -286,6 +278,7 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]

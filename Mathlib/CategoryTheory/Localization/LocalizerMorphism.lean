@@ -3,7 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
 # Morphisms of localizers
@@ -24,16 +27,16 @@ localized categories.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u₅ u₅' u₆
 
 namespace CategoryTheory
 
-open Localization
+open Localization Functor
 
-variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
-  {D₁ : Type u₄} {D₂ : Type u₅} {D₃ : Type u₆}
-  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
-  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₃]
+variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
@@ -45,6 +48,15 @@ structure LocalizerMorphism where
   map : W₁ ≤ W₂.inverseImage functor
 
 namespace LocalizerMorphism
+
+variable {W₁ W₂} in
+/-- Constructor for localizer morphisms given by a functor `F : C₁ ⥤ C₂`
+under the stronger assumption that the classes of morphisms `W₁` and `W₂`
+satisfy `W₁ = W₂.inverseImage F`. -/
+@[simps]
+def ofEq {F : C₁ ⥤ C₂} (hW : W₁ = W₂.inverseImage F) : LocalizerMorphism W₁ W₂ where
+  functor := F
+  map := by rw [hW]
 
 /-- The identity functor as a morphism of localizers. -/
 @[simps]
@@ -77,17 +89,16 @@ lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
 
 /-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
-localized categories. --/
+localized categories. -/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
 noncomputable instance liftingLocalizedFunctor :
-    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
-  dsimp [localizedFunctor]
-  infer_instance
+    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) :=
+  inferInstanceAs <| Lifting L₁ W₁ _ (lift _ _ L₁)
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
-functor `Φ.functor`  -/
+functor `Φ.functor` -/
 noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
   CatCommSq.mk (Lifting.iso _ W₁ _ _).symm
 
@@ -103,20 +114,20 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
-it will be so for any choice of localized categoriees. -/
+it will be so for any choice of localized categories. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂
   let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
     calc
       L₁ ⋙ G ⋙ E₂.functor ≅ Φ.functor ⋙ L₂ ⋙ E₂.functor :=
-          (Functor.associator _ _ _).symm ≪≫
+          (associator _ _ _).symm ≪≫
             isoWhiskerRight (CatCommSq.iso Φ.functor L₁ L₂ G).symm E₂.functor ≪≫
-            Functor.associator _ _ _
+            associator _ _ _
       _ ≅ Φ.functor ⋙ L₂' := isoWhiskerLeft Φ.functor (compUniqFunctor L₂ L₂' W₂)
       _ ≅ L₁' ⋙ G' := CatCommSq.iso Φ.functor L₁' L₂' G'
       _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
-            isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
+            isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ associator _ _ _
   have := Functor.isEquivalence_of_iso
     (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e)
   Functor.isEquivalence_of_comp_left E₁.functor G'
@@ -128,7 +139,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 end
 
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
-class IsLocalizedEquivalence : Prop :=
+class IsLocalizedEquivalence : Prop where
   /-- the induced functor on the constructed localized categories is an equivalence -/
   isEquivalence : (Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence
 
@@ -145,6 +156,13 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
   rw [Φ.isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
   exact h.isEquivalence)
 
+instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
+  let G := Φ.localizedFunctor W₁.Q W₂.Q
+  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+    ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
+  have := Φ.isEquivalence W₁.Q W₂.Q G
+  exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
+
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
 instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
@@ -157,7 +175,7 @@ lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
     [(Φ.functor ⋙ L₂).IsLocalization W₁] :
     IsLocalizedEquivalence Φ := by
   have : CatCommSq Φ.functor (Φ.functor ⋙ L₂) L₂ (𝟭 D₂) :=
-    CatCommSq.mk (Functor.rightUnitor _).symm
+    CatCommSq.mk (rightUnitor _).symm
   exact IsLocalizedEquivalence.mk' Φ (Φ.functor ⋙ L₂) L₂ (𝟭 D₂)
 
 /-- When the underlying functor `Φ.functor` of `Φ : LocalizerMorphism W₁ W₂` is
@@ -167,9 +185,9 @@ lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
-      (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
-      ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
-        Functor.leftUnitor _)
+      (asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
+      ((associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
+        leftUnitor _)
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse]
     rw [MorphismProperty.map_isoClosure]
     exact h
@@ -178,6 +196,43 @@ lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
 instance IsLocalizedEquivalence.isLocalization [Φ.IsLocalizedEquivalence] :
     (Φ.functor ⋙ L₂).IsLocalization W₁ :=
   Functor.IsLocalization.of_iso _ ((Φ.catCommSq W₁.Q L₂).iso).symm
+
+lemma isLocalizedEquivalence_of_unit_of_unit (Ψ : LocalizerMorphism W₂ W₁)
+    (ε₁ : 𝟭 C₁ ⟶ Φ.functor ⋙ Ψ.functor) (ε₂ : 𝟭 C₂ ⟶ Ψ.functor ⋙ Φ.functor)
+    (hε₁ : ∀ X₁, W₁ (ε₁.app X₁)) (hε₂ : ∀ X₂, W₂ (ε₂.app X₂)) :
+    Φ.IsLocalizedEquivalence where
+  isEquivalence := by
+    have : IsIso (whiskerRight ε₁ W₁.Q) := by
+      rw [NatTrans.isIso_iff_isIso_app]
+      exact fun _ ↦ Localization.inverts W₁.Q W₁ _ (hε₁ _)
+    have : IsIso (whiskerRight ε₂ W₂.Q) := by
+      rw [NatTrans.isIso_iff_isIso_app]
+      exact fun _ ↦ Localization.inverts W₂.Q W₂ _ (hε₂ _)
+    refine (Localization.equivalence W₁.Q W₁ W₂.Q W₂ (Φ.functor ⋙ W₂.Q)
+      (Φ.localizedFunctor W₁.Q W₂.Q)
+      (Ψ.functor ⋙ W₁.Q) (Ψ.localizedFunctor W₂.Q W₁.Q) ?_ ?_).isEquivalence_functor
+    · exact Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft _ (CatCommSq.iso Ψ.functor W₂.Q W₁.Q _).symm ≪≫
+        (Functor.associator _ _ _).symm ≪≫
+        (asIso (whiskerRight ε₁ W₁.Q)).symm ≪≫ Functor.leftUnitor _
+    · exact Functor.associator _ _ _ ≪≫
+        isoWhiskerLeft _ (CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm ≪≫
+        (Functor.associator _ _ _).symm ≪≫
+        (asIso (whiskerRight ε₂ W₂.Q)).symm ≪≫ Functor.leftUnitor _
+
+instance IsLocalizedEquivalence.id :
+    (id W₁).IsLocalizedEquivalence :=
+  have : ((LocalizerMorphism.id W₁).functor ⋙ W₁.Q).IsLocalization W₁ :=
+    Functor.IsLocalization.of_iso _ (Functor.leftUnitor _).symm
+  of_isLocalization_of_isLocalization _ W₁.Q
+
+instance IsLocalizedEquivalence.comp [Φ.IsLocalizedEquivalence]
+    (Ψ : LocalizerMorphism W₂ W₃)
+    [Ψ.IsLocalizedEquivalence] :
+    (Φ.comp Ψ).IsLocalizedEquivalence :=
+  have : ((Φ.comp Ψ).functor ⋙ W₃.Q).IsLocalization W₁ :=
+    Functor.IsLocalization.of_iso _ (Functor.associator _ _ _).symm
+  of_isLocalization_of_isLocalization _ W₃.Q
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/

@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
-import Mathlib.Init
-import Batteries.Tactic.Lint.Misc
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint.Misc
 
 /-!
 # Bundled types
@@ -16,13 +18,19 @@ We provide `Category` instances for these in
 (for categories with unbundled homs, e.g. topological spaces)
 and in `Mathlib/CategoryTheory/ConcreteCategory/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
+
+Note: this structure will be deprecated in the future in favor of defining the category manually
+and then providing the `ConcreteCategory` instance on top of this. See
+`Mathlib/CategoryTheory/ConcreteCategory/Basic.lean` for more details.
 -/
+
+@[expose] public section
 
 universe u v
 
 namespace CategoryTheory
 
-variable {c d : Type u → Type v} {α : Type u}
+variable {c d : Type u → Type v}
 
 /-- `Bundled` is a type bundled with a type class instance for that type. Only
 the type class is exposed as a parameter. -/

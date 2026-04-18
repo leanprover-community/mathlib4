@@ -3,23 +3,26 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Algebra.Ring.CentroidHom
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Algebra.Star.Subsemiring
-import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Ring.CentroidHom
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Algebra.Star.Subsemiring
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Centroid homomorphisms on Star Rings
 
-When a (non unital, non-associative) semi-ring is equipped with an involutive automorphism the
+When a (nonunital, non-associative) semiring is equipped with an involutive automorphism the
 center of the centroid becomes a star ring in a natural way and the natural mapping of the centre of
-the semi-ring into the centre of the centroid becomes a *-homomorphism.
+the semiring into the centre of the centroid becomes a *-homomorphism.
 
 ## Tags
 
 centroid
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -43,7 +46,7 @@ instance : Star (CentroidHom α) where
 instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_involutive f := ext (fun _ => by
     rw [star_apply, star_apply, star_star, star_star])
-  star_add f g := ext fun _ => star_add _ _
+  star_add _ _ := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
   star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a =>
@@ -58,6 +61,7 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -72,10 +76,7 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
-  map_star' f := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
-    exact rfl
+  map_star' _ := rfl
 
 theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
     star (centerToCentroidCenter z) =
@@ -93,9 +94,7 @@ the center of its centroid. -/
 def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
-  map_star' _ := by
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    exact (star_centerToCentroidCenter _).symm
+  map_star' _ := (star_centerToCentroidCenter _).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
@@ -108,11 +107,10 @@ lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : �
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
 @[reducible]
-def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
+def starRingOfCommCentroidHom (mul_comm : IsMulCommutative (CentroidHom α)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul _ _ := ext (fun _ => by
-    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
+  star_mul _ _ := ext fun _ ↦ by simp [mul_comm']
 
 end NonUnitalNonAssocStarSemiring
 
@@ -124,7 +122,7 @@ variable [NonAssocSemiring α] [StarRing α]
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid
   invFun T :=
-    ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]

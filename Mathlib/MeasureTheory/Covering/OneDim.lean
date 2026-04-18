@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.MeasureTheory.Covering.DensityTheorem
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Covering theorems for Lebesgue measure in one dimension
@@ -13,6 +15,8 @@ We have a general theory of covering theorems for doubling measures, developed n
 in `DensityTheorem.lean`. In this file, we expand the API for this theory in one dimension,
 by showing that intervals belong to the relevant Vitali family.
 -/
+
+public section
 
 
 open Set MeasureTheory IsUnifLocDoublingMeasure Filter
@@ -32,8 +36,7 @@ theorem tendsto_Icc_vitaliFamily_right (x : ℝ) :
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_right hy
   · intro ε εpos
-    have : x ∈ Ico x (x + ε) := ⟨le_refl _, by linarith⟩
-    filter_upwards [Icc_mem_nhdsWithin_Ioi this] with y hy
+    filter_upwards [Icc_mem_nhdsGT <| show x < x + ε by linarith] with y hy
     rw [closedBall_eq_Icc]
     exact Icc_subset_Icc (by linarith) hy.2
 
@@ -48,8 +51,7 @@ theorem tendsto_Icc_vitaliFamily_left (x : ℝ) :
   refine (VitaliFamily.tendsto_filterAt_iff _).2 ⟨?_, ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with y hy using Icc_mem_vitaliFamily_at_left hy
   · intro ε εpos
-    have : x ∈ Ioc (x - ε) x := ⟨by linarith, le_refl _⟩
-    filter_upwards [Icc_mem_nhdsWithin_Iio this] with y hy
+    filter_upwards [Icc_mem_nhdsLT <| show x - ε < x by linarith] with y hy
     rw [closedBall_eq_Icc]
     exact Icc_subset_Icc hy.1 (by linarith)
 

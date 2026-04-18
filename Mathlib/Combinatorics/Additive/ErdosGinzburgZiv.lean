@@ -3,10 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.ChevalleyWarning
-import Mathlib.RingTheory.UniqueFactorizationDomain
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.ChevalleyWarning
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem
@@ -21,8 +22,9 @@ elements of sum zero.
 * `ZMod.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ZMod n`
 -/
 
+public section
+
 open Finset MvPolynomial
-open scoped BigOperators
 
 variable {ι : Type*}
 
@@ -45,14 +47,14 @@ private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
       gcongr <;> apply totalDegree_finsetSum_le <;> rintro i _
       · exact (totalDegree_X_pow ..).le
       · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
-    _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; omega
+    _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; lia
 
 /-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ/pℤ`.
 
 Any sequence of `2 * p - 1` elements of `ZMod p` contains a subsequence of `p` elements whose sum is
 zero. -/
-private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : s.card = 2 * p - 1) :
-    ∃ t ⊆ s, t.card = p ∧ ∑ i ∈ t, a i = 0 := by
+private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 * p - 1) :
+    ∃ t ⊆ s, #t = p ∧ ∑ i ∈ t, a i = 0 := by
   haveI : NeZero p := inferInstance
   classical
   -- Let `N` be the number of common roots of our polynomials `f₁` and `f₂` (`f s ff` and `f s tt`).
@@ -70,8 +72,8 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : s.card =
   obtain ⟨x, hx⟩ := Fintype.exists_ne_of_one_lt_card ((Fact.out : p.Prime).one_lt.trans_le <|
     Nat.le_of_dvd hN₀ hpN) zero_sol
   -- This common root gives us the required subsequence, namely the `i ∈ s` such that `x i ≠ 0`.
-  refine ⟨(s.attach.filter fun a ↦ x.1 a ≠ 0).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
-  · simp (config := { contextual := true }) [subset_iff]
+  refine ⟨({a | x.1 a ≠ 0} : Finset _).map ⟨(↑), Subtype.val_injective⟩, ?_, ?_, ?_⟩
+  · simp +contextual [subset_iff]
   -- From `f₁ x = 0`, we get that `p` divides the number of `a` such that `x a ≠ 0`.
   · rw [card_map]
     refine Nat.eq_of_dvd_of_lt_two_mul (Finset.card_pos.2 ?_).ne' ?_ <|
@@ -82,7 +84,7 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : s.card =
     · rw [← CharP.cast_eq_zero_iff (ZMod p), ← Finset.sum_boole]
       simpa only [f₁, map_sum, ZMod.pow_card_sub_one, map_pow, eval_X] using x.2.1
     -- And it is at most `2 * p - 1`, so it must be `p`.
-    · rw [Finset.card_attach, hs]
+    · rw [univ_eq_attach, card_attach, hs]
       exact tsub_lt_self (mul_pos zero_lt_two (Fact.out : p.Prime).pos) zero_lt_one
   -- From `f₂ x = 0`, we get that `p` divides the sum of the `a ∈ s` such that `x a ≠ 0`.
   · simpa [f₂, ZMod.pow_card_sub_one, Finset.sum_filter] using x.2.2
@@ -91,8 +93,8 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : s.card =
 
 Any sequence of `2 * p - 1` elements of `ℤ` contains a subsequence of `p` elements whose sum is
 divisible by `p`. -/
-private theorem Int.erdos_ginzburg_ziv_prime (a : ι → ℤ) (hs : s.card = 2 * p - 1) :
-    ∃ t ⊆ s, t.card = p ∧ ↑p ∣ ∑ i ∈ t, a i := by
+private theorem Int.erdos_ginzburg_ziv_prime (a : ι → ℤ) (hs : #s = 2 * p - 1) :
+    ∃ t ⊆ s, #t = p ∧ ↑p ∣ ∑ i ∈ t, a i := by
   simpa [← Int.cast_sum, ZMod.intCast_zmod_eq_zero_iff_dvd]
     using ZMod.erdos_ginzburg_ziv_prime (Int.cast ∘ a) hs
 
@@ -105,8 +107,8 @@ variable {n : ℕ} {s : Finset ι}
 
 Any sequence of at least `2 * n - 1` elements of `ℤ` contains a subsequence of `n` elements whose
 sum is divisible by `n`. -/
-theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
-    ∃ t ⊆ s, t.card = n ∧ ↑n ∣ ∑ i ∈ t, a i := by
+theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
+    ∃ t ⊆ s, #t = n ∧ ↑n ∣ ∑ i ∈ t, a i := by
   classical
   -- Do induction on the prime factorisation of `n`. Note that we will apply the induction
   -- hypothesis with `ι := Finset ι`, so we need to generalise.
@@ -126,9 +128,9 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
   -- these sets whose sum is divisible by `m * n`.
   | composite m hm ihm n hn ihn =>
      -- First, show that it is enough to have those `2 * m - 1` sets.
-    suffices ∀ k ≤ 2 * m - 1, ∃ 𝒜 : Finset (Finset ι), 𝒜.card = k ∧
+    suffices ∀ k ≤ 2 * m - 1, ∃ 𝒜 : Finset (Finset ι), #𝒜 = k ∧
       (𝒜 : Set (Finset ι)).Pairwise _root_.Disjoint ∧
-        ∀ ⦃t⦄, t ∈ 𝒜 → t ⊆ s ∧ t.card = n ∧ ↑n ∣ ∑ i ∈ t, a i by
+        ∀ ⦃t⦄, t ∈ 𝒜 → t ⊆ s ∧ #t = n ∧ ↑n ∣ ∑ i ∈ t, a i by
      -- Assume `𝒜` is a family of `2 * m - 1` sets, each of size `n` and sum divisible by `n`.
       obtain ⟨𝒜, h𝒜card, h𝒜disj, h𝒜⟩ := this _ le_rfl
       -- By induction hypothesis on `m`, find a subfamily `ℬ` of size `m` such that the sum over
@@ -137,27 +139,28 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
       -- We are done.
       refine ⟨ℬ.biUnion fun x ↦ x, biUnion_subset.2 fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).1, ?_, ?_⟩
       · rw [card_biUnion (h𝒜disj.mono hℬ𝒜), sum_const_nat fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.1, hℬcard]
-      rwa [sum_biUnion, natCast_mul, mul_comm, ← Int.dvd_div_iff_mul_dvd, Int.sum_div]
+      rwa [sum_biUnion, Int.natCast_mul, mul_comm, ← Int.dvd_div_iff_mul_dvd, Int.sum_div]
       · exact fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
       · exact dvd_sum fun t ht ↦ (h𝒜 <| hℬ𝒜 ht).2.2
       · exact h𝒜disj.mono hℬ𝒜
     -- Now, let's find those `2 * m - 1` sets.
     rintro k hk
     -- We induct on the size `k ≤ 2 * m - 1` of the family we are constructing.
-    induction' k with k ih
+    induction k with
     -- For `k = 0`, the empty family trivially works.
-    · exact ⟨∅, by simp⟩
+    | zero => exact ⟨∅, by simp⟩
+    | succ k ih =>
     -- At `k + 1`, call `𝒜` the existing family of size `k ≤ 2 * m - 2`.
     obtain ⟨𝒜, h𝒜card, h𝒜disj, h𝒜⟩ := ih (Nat.le_of_succ_le hk)
     -- There are at least `2 * (m * n) - 1 - k * n ≥ 2 * m - 1` elements in `s` that have not been
     -- taken in any element of `𝒜`.
-    have : 2 * n - 1 ≤ (s \ 𝒜.biUnion id).card := by
+    have : 2 * n - 1 ≤ #(s \ 𝒜.biUnion id) := by
       calc
-        _ ≤ (2 * m - k) * n - 1 := by gcongr; omega
-        _ = (2 * (m * n) - 1) - ∑ t ∈ 𝒜, t.card := by
+        _ ≤ (2 * m - k) * n - 1 := by gcongr; lia
+        _ = (2 * (m * n) - 1) - ∑ t ∈ 𝒜, #t := by
           rw [tsub_mul, mul_assoc, tsub_right_comm, sum_const_nat fun t ht ↦ (h𝒜 ht).2.1, h𝒜card]
-        _ ≤ s.card - (𝒜.biUnion id).card := by gcongr; exact card_biUnion_le
-        _ ≤ (s \ 𝒜.biUnion id).card := le_card_sdiff ..
+        _ ≤ #s - #(𝒜.biUnion id) := by gcongr; exact card_biUnion_le
+        _ ≤ #(s \ 𝒜.biUnion id) := le_card_sdiff ..
     -- So by the induction hypothesis on `n` we can find a new set `t` of size `n` and sum divisible
     -- by `n`.
     obtain ⟨t₀, ht₀, ht₀card, ht₀sum⟩ := ihn a this
@@ -166,7 +169,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
       rintro h
       obtain rfl : n = 0 := by
         simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id h
-      omega
+      lia
     refine ⟨𝒜.cons t₀ this, by rw [card_cons, h𝒜card], ?_, ?_⟩
     · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symmetric symmetric_disjoint,
         mem_coe, ne_eq]
@@ -178,8 +181,8 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ s.card) :
 
 Any sequence of at least `2 * n - 1` elements of `ZMod n` contains a subsequence of `n` elements
 whose sum is zero. -/
-theorem ZMod.erdos_ginzburg_ziv (a : ι → ZMod n) (hs : 2 * n - 1 ≤ s.card) :
-    ∃ t ⊆ s, t.card = n ∧ ∑ i ∈ t, a i = 0 := by
+theorem ZMod.erdos_ginzburg_ziv (a : ι → ZMod n) (hs : 2 * n - 1 ≤ #s) :
+    ∃ t ⊆ s, #t = n ∧ ∑ i ∈ t, a i = 0 := by
   simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd] using Int.erdos_ginzburg_ziv (ZMod.cast ∘ a) hs
 
 /-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ` for multiset.

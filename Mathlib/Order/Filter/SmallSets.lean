@@ -3,8 +3,10 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.AtTopBot
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The filter of small sets
@@ -19,10 +21,13 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 `f` tends to the Dirac delta distribution.
 -/
 
+assert_not_exists Set.Finite
+
+@[expose] public section
 
 open Filter
 
-open Filter Set
+open Set
 
 variable {α β : Type*} {ι : Sort*}
 
@@ -54,6 +59,21 @@ theorem hasBasis_smallSets (l : Filter α) :
     HasBasis l.smallSets (fun t : Set α => t ∈ l) powerset :=
   l.basis_sets.smallSets
 
+theorem Eventually.exists_mem_basis_of_smallSets {p : ι → Prop} {s : ι → Set α} {P : Set α → Prop}
+    (h₁ : ∀ᶠ t in l.smallSets, P t) (h₂ : HasBasis l p s) : ∃ i, p i ∧ P (s i) :=
+  (h₂.smallSets.eventually_iff.mp h₁).imp fun _i ⟨hpi, hi⟩ ↦ ⟨hpi, hi Subset.rfl⟩
+
+theorem Frequently.smallSets_of_forall_mem_basis {p : ι → Prop} {s : ι → Set α} {P : Set α → Prop}
+    (h₁ : ∀ i, p i → P (s i)) (h₂ : HasBasis l p s) : ∃ᶠ t in l.smallSets, P t :=
+  h₂.smallSets.frequently_iff.mpr fun _ hi => ⟨_, Subset.rfl, h₁ _ hi⟩
+
+theorem Eventually.exists_mem_of_smallSets {p : Set α → Prop}
+    (h : ∀ᶠ t in l.smallSets, p t) : ∃ s ∈ l, p s :=
+  h.exists_mem_basis_of_smallSets l.basis_sets
+
+/-! No `Frequently.smallSets_of_forall_mem (h : ∀ s ∈ l, p s) : ∃ᶠ t in l.smallSets, p t` as
+`Filter.frequently_smallSets_mem : ∃ᶠ t in l.smallSets, t ∈ l` is preferred. -/
+
 /-- `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`. -/
 theorem tendsto_smallSets_iff {f : α → Set β} :
     Tendsto f la lb.smallSets ↔ ∀ t ∈ lb, ∀ᶠ x in la, f x ⊆ t :=
@@ -68,6 +88,12 @@ theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t
   eventually_smallSets.trans <|
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
 
+theorem HasBasis.eventually_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
+    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
+    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q t → q s) :
+    (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ q (s i) := by
+  rw [l.eventually_smallSets' hq, hl.exists_iff hq]
+
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
   l.hasBasis_smallSets.frequently_iff
@@ -75,12 +101,24 @@ theorem frequently_smallSets {p : Set α → Prop} :
 theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
   frequently_smallSets.2 fun t ht => ⟨t, Subset.rfl, ht⟩
 
+theorem frequently_smallSets' {α : Type*} {l : Filter α} {p : Set α → Prop}
+    (hp : ∀ ⦃s t : Set α⦄, s ⊆ t → p s → p t) :
+    (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, p t := by
+  convert not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
+  simp
+
+theorem HasBasis.frequently_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
+    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
+    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q s → q t) :
+    (∃ᶠ s in l.smallSets, q s) ↔ ∀ i, p i → q (s i) := by
+  rw [Filter.frequently_smallSets' hq, hl.forall_iff hq]
+
 @[simp]
 lemma tendsto_image_smallSets {f : α → β} :
     Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun u hu ↦ ?_
-  rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
+  rw [eventually_smallSets' fun s t hst ht ↦ (image_mono hst).trans ht]
   simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
 
 alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets
@@ -150,7 +188,7 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ᶠ x in l', x ∈ s → p x) ↔ ∀ᶠ x in l ⊓ l', p x :=
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
-      eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
+      eventually_smallSets' fun _ _ hst ht => ht.mono fun _ hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 

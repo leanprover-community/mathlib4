@@ -3,13 +3,15 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Complex
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.PartialHomeomorph
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
 # Topology on the upper half plane
@@ -18,55 +20,76 @@ In this file we introduce a `TopologicalSpace` structure on the upper half plane
 various instances.
 -/
 
+@[expose] public section
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
+open Complex Filter Function Set TopologicalSpace Topology
 
-open scoped Filter Topology UpperHalfPlane
+open scoped ComplexConjugate
 
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
-  instTopologicalSpaceSubtype
+  .induced UpperHalfPlane.coe inferInstance
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
-  IsOpen.openEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
+@[fun_prop]
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
+  coe_injective.isEmbedding_induced
 
-theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
-  embedding_subtype_val
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
+  ⟨isEmbedding_coe, by simp [isOpen_upperHalfPlaneSet]⟩
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
+@[fun_prop]
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
 
+@[fun_prop]
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 
-instance : SecondCountableTopology ℍ :=
-  TopologicalSpace.Subtype.secondCountableTopology _
+@[fun_prop]
+theorem _root_.Continuous.upperHalfPlaneMk {X : Type*} [TopologicalSpace X] {f : X → ℂ}
+    (hf : Continuous f) (hf₀ : ∀ x, 0 < (f x).im) :
+    Continuous fun x ↦ mk (f x) (hf₀ x) :=
+  isEmbedding_coe.continuous_iff.mpr hf
 
-instance : T3Space ℍ := Subtype.t3Space
+instance : SecondCountableTopology ℍ :=
+  secondCountableTopology_induced ..
+
+instance : T3Space ℍ := isEmbedding_coe.t3Space
 
 instance : T4Space ℍ := inferInstance
 
-instance : ContractibleSpace ℍ :=
-  (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+instance : ContractibleSpace ℍ := by
+  rw [isEmbedding_coe.toHomeomorph.trans (.setCongr range_coe) |>.contractibleSpace_iff]
+  exact (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ :=
-  locPathConnected_of_isOpen <| isOpen_lt continuous_const Complex.continuous_im
+instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
-instance : NoncompactSpace ℍ := by
-  refine ⟨fun h => ?_⟩
-  have : IsCompact (Complex.im ⁻¹' Ioi 0) := isCompact_iff_isCompact_univ.2 h
-  replace := this.isClosed.closure_eq
-  rw [closure_preimage_im, closure_Ioi, Set.ext_iff] at this
-  exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
+instance : NoncompactSpace ℍ where
+  noncompact_univ h := by
+    have : IsCompact (Complex.im ⁻¹' Ioi 0) := by
+      simpa [isEmbedding_coe.isCompact_iff] using h
+    simpa [closure_preimage_im] using congr(0 ∈ $this.isClosed.closure_eq)
 
 instance : LocallyCompactSpace ℍ :=
-  openEmbedding_coe.locallyCompactSpace
+  isOpenEmbedding_coe.locallyCompactSpace
+
+/-- Each element of `GL(2, ℝ)` defines a continuous map `ℍ → ℍ`. -/
+instance instContinuousGLSMul : ContinuousConstSMul (GL (Fin 2) ℝ) ℍ where
+  continuous_const_smul g := by
+    simp_rw [continuous_induced_rng (f := UpperHalfPlane.coe), Function.comp_def,
+      UpperHalfPlane.coe_smul, UpperHalfPlane.σ]
+    refine .comp ?_ ?_
+    · split_ifs
+      exacts [continuous_id, continuous_conj]
+    · refine .div ?_ ?_ (fun x ↦ denom_ne_zero g x) <;>
+      exact (continuous_const.mul continuous_coe).add continuous_const
 
 section strips
 
@@ -83,11 +106,9 @@ lemma verticalStrip_mono {A B A' B' : ℝ} (hA : A ≤ A') (hB : B' ≤ B) :
   rintro z ⟨hzre, hzim⟩
   exact ⟨hzre.trans hA, hB.trans hzim⟩
 
-@[gcongr]
 lemma verticalStrip_mono_left {A A'} (h : A ≤ A') (B) : verticalStrip A B ⊆ verticalStrip A' B :=
   verticalStrip_mono h le_rfl
 
-@[gcongr]
 lemma verticalStrip_anti_right (A) {B B'} (h : B' ≤ B) : verticalStrip A B ⊆ verticalStrip A B' :=
   verticalStrip_mono le_rfl h
 
@@ -101,31 +122,33 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
 
 theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
     ∃ n : ℤ, ModularGroup.T ^ (N * n) • z ∈ verticalStrip N z.im := by
-  let n := Int.floor (z.re/N)
+  let n := Int.floor (z.re / N)
   use -n
   rw [modular_T_zpow_smul z (N * -n)]
-  refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
-    le_refl])⟩
+  refine ⟨?_, by simp⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
-    simp only [Int.cast_natCast, mul_neg, vadd_re, neg_mul]
+    simp only [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
   rw [h, add_comm]
   simp only [neg_mul, Int.cast_neg, Int.cast_mul, Int.cast_natCast]
   have hnn : (0 : ℝ) < (N : ℝ) := by norm_cast at *
-  have h2 : z.re + -(N * n) =  z.re - n * N := by ring
+  have h2 : z.re + -(N * n) = z.re - n * N := by ring
   rw [h2, abs_eq_self.2 (Int.sub_floor_div_mul_nonneg (z.re : ℝ) hnn)]
   apply (Int.sub_floor_div_mul_lt (z.re : ℝ) hnn).le
 
 end strips
 
-/-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
-def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
+section ofComplex
+
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as an `OpenPartialHomeomorph`. -/
+def ofComplex : OpenPartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toOpenPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
+@[simp]
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
-  OpenEmbedding.toPartialHomeomorph_left_inv ..
+  IsOpenEmbedding.toOpenPartialHomeomorph_left_inv ..
 
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by
@@ -134,7 +157,11 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
   · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
-    exact (a.prop.not_le (by simpa using hw)).elim
+    exact (a.im_pos.not_ge (by simpa using hw)).elim
+
+lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
+    ofComplex z = ⟨z, hz⟩ :=
+  ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -144,28 +171,57 @@ lemma ofComplex_apply_eq_of_im_nonpos {w w' : ℂ} (hw : w.im ≤ 0) (hw' : w'.i
     ofComplex w = ofComplex w' := by
   simp [ofComplex_apply_of_im_nonpos, hw, hw']
 
-lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
+lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕf) z = f z :=
   congrArg _ <| ofComplex_apply z
 
-lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
+lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕf) z = f ⟨z, hz⟩ :=
   congrArg _ <| ofComplex_apply ⟨z, hz⟩
 
-lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
-    (↑ₕ f) z = (↑ₕ f) z' := by
+lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0) :
+    (↑ₕf) z = (↑ₕf) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
+lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
+    UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
+  filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
+
+lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
+  ext
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
+
+end ofComplex
+
+section IsOpenMap
+
+lemma isOpenMap_re : IsOpenMap re :=
+  Complex.isOpenMap_re.comp isOpenEmbedding_coe.isOpenMap
+
+lemma isOpenMap_im : IsOpenMap im :=
+  Complex.isOpenMap_im.comp isOpenEmbedding_coe.isOpenMap
+
+lemma isOpenMap_norm : IsOpenMap (fun τ : ℍ ↦ ‖(τ : ℂ)‖) := by
+  refine .of_nhds_le fun τ U hU ↦ ?_
+  obtain ⟨s, hs, hs'⟩ := Filter.mem_map_iff_exists_image.mp hU
+  simp_rw [← isOpenEmbedding_coe.image_mem_nhds, Metric.mem_nhds_iff] at hs ⊢
+  obtain ⟨ε, hεpos, hεs⟩ := hs
+  refine ⟨ε, hεpos, subset_trans (fun r hr ↦ ?_) hs'⟩
+  have hr' : 0 ≤ r := by
+    by_contra! hr'
+    rw [mem_ball_iff_norm, Real.norm_eq_abs, abs_lt] at hr
+    have : ‖(τ : ℂ)‖ < ε := by linarith
+    have : 0 ∈ Metric.ball (τ : ℂ) ε := by rwa [mem_ball_iff_norm', sub_zero]
+    simpa [UpperHalfPlane.ne_zero] using hεs this
+  have : r / ‖(τ : ℂ)‖ * (τ : ℂ) ∈ Metric.ball (τ : ℂ) ε := by
+    rwa [mem_ball_iff_norm,
+      show r / ‖(τ : ℂ)‖ * (τ : ℂ) - τ = ↑(r / ‖(τ : ℂ)‖ - 1) * (τ : ℂ) by simp; ring,
+      norm_mul, norm_real, ← norm_norm (τ : ℂ), ← norm_mul, sub_mul, norm_norm, one_mul,
+      div_mul_cancel₀ _ (by simpa using τ.ne_zero), ← mem_ball_iff_norm]
+  obtain ⟨ξ, hξs, hξτ⟩ := Set.mem_of_mem_of_subset this hεs
+  use ξ, hξs
+  simp_rw [hξτ, norm_mul, norm_div, norm_real, norm_norm]
+  rw [div_mul_cancel₀ _ (by simpa using τ.ne_zero), Real.norm_of_nonneg hr']
+
+end IsOpenMap
+
 end UpperHalfPlane
-
-lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
-    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
-  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
-  rw [isConnected_iff_connectedSpace]
-  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
-
-lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
-    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
-  rw [← Equiv.star.surjective.image_preimage s]
-  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
-  apply Complex.isConnected_of_upperHalfPlane
-  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
-  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

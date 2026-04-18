@@ -3,11 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Limits and colimits in the over and under categories
@@ -19,6 +19,8 @@ Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further s
 `forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
 `Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -40,8 +42,14 @@ instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
 
+instance [HasFiniteColimits C] : HasFiniteColimits (Over X) where
+  out _ _ _ := inferInstance
+
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
+
+instance [HasFiniteCoproducts C] : HasFiniteCoproducts (Over X) where
+  out := inferInstance
 
 instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
   CostructuredArrow.createsColimitsOfSize
@@ -53,6 +61,7 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 
@@ -63,9 +72,9 @@ instance createsColimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
     CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
   show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
 
-instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+instance preservesColimitsOfSize_map [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
     PreservesColimitsOfSize.{w, w'} (map f) :=
-  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
+  preservesColimits_of_reflects_of_preserves (map f) (forget Y)
 
 /-- If `c` is a colimit cocone, then so is the cocone `c.toOver` with cocone point `𝟙 c.pt`. -/
 def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
@@ -76,6 +85,18 @@ def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit 
 def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] :
     IsColimit (colimit.toOver F) :=
   Over.isColimitToOver (colimit.isColimit F)
+
+/-- Given an arrow `c.pt ⟶ X`, the diagram `J ⥤ C` can be lifted to `Over X ⥤ C`, and
+the cocone `c` also lifts to the diagram on `Over`. -/
+@[simps] def liftCocone {F : J ⥤ C} (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
+    Cocone (Over.lift F (c.ι ≫ (Functor.const J).map f)) where
+  pt := Over.mk f
+  ι.app j := Over.homMk (c.ι.app j)
+
+/-- `Over.liftCocone` is limiting if the original cocone is. -/
+noncomputable def isColimitLiftCocone {F : J ⥤ C} (c : Cocone F) {X : C} (f : c.pt ⟶ X)
+    (hc : IsColimit c) : IsColimit (liftCocone c f) :=
+  isColimitOfReflects (Over.forget _) hc
 
 end CategoryTheory.Over
 
@@ -90,6 +111,7 @@ instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 instance [HasLimits C] : HasLimits (Under X) :=
   ⟨inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
   StructuredArrow.mono_right_of_mono _
 
@@ -110,9 +132,9 @@ instance createLimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
     CreatesLimitsOfSize.{w, w'} (map f ⋙ forget X) :=
   show CreatesLimitsOfSize.{w, w'} (forget Y) from inferInstance
 
-instance preservesLimitsOfSizeMap [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+instance preservesLimitsOfSize_map [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
     PreservesLimitsOfSize.{w, w'} (map f) :=
-  preservesLimitsOfReflectsOfPreserves (map f) (forget X)
+  preservesLimits_of_reflects_of_preserves (map f) (forget X)
 
 /-- If `c` is a limit cone, then so is the cone `c.toUnder` with cone point `𝟙 c.pt`. -/
 def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnder :=
@@ -123,5 +145,17 @@ def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnd
 def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
     IsLimit (limit.toUnder F) :=
   Under.isLimitToUnder (limit.isLimit F)
+
+/-- Given an arrow `X ⟶ c.pt`, the diagram `J ⥤ C` can be lifted to `Under X ⥤ C`, and
+the cone `c` also lifts to the diagram on `Under`. -/
+@[simps] def liftCone {F : J ⥤ C} (c : Cone F) {X : C} (f : X ⟶ c.pt) :
+    Cone (Under.lift F ((Functor.const J).map f ≫ c.π)) where
+  pt := Under.mk f
+  π.app j := Under.homMk (c.π.app j)
+
+/-- `Under.liftCone` is limiting if the original cone is. -/
+noncomputable def isLimitLiftCone {F : J ⥤ C} (c : Cone F) {X : C}
+    (f : X ⟶ c.pt) (hc : IsLimit c) : IsLimit (liftCone c f) :=
+  isLimitOfReflects (Under.forget _) hc
 
 end CategoryTheory.Under

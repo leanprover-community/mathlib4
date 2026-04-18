@@ -3,20 +3,25 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Order.Filter.ListTraverse
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Topology on lists and vectors
 
 -/
 
+@[expose] public section
+
 
 open TopologicalSpace Set Filter
 
-open Topology Filter
+open Topology
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -39,15 +44,14 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       induction hu generalizing s with
       | nil =>
         exists []
-        simp only [List.forall₂_nil_left_iff, exists_eq_left]
+        simp only [List.forall₂_nil_left_iff]
         exact ⟨trivial, hus⟩
-      -- porting note -- renamed reordered variables based on previous types
       | cons ht _ ih =>
         rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
         rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
         exact
           ⟨u::v, List.Forall₂.cons hu hv,
-            Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
+            Subset.trans (Set.seq_mono (Set.image_mono hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
     have : sequence v ∈ traverse 𝓝 l :=
       mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
@@ -56,11 +60,9 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
       refine List.Forall₂.flip ?_
       replace hv := hv.flip
-      #adaptation_note /-- nightly-2024-03-16: simp was
-      simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
-    refine mem_of_superset ?_ hvs
+    grw [← hvs]
     exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 
 @[simp]
@@ -77,7 +79,7 @@ theorem List.tendsto_cons {a : α} {l : List α} :
 theorem Filter.Tendsto.cons {α : Type*} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
     {l : List β} (hf : Tendsto f a (𝓝 b)) (hg : Tendsto g a (𝓝 l)) :
     Tendsto (fun a => List.cons (f a) (g a)) a (𝓝 (b::l)) :=
-  List.tendsto_cons.comp (Tendsto.prod_mk hf hg)
+  List.tendsto_cons.comp (Tendsto.prodMk hf hg)
 
 namespace List
 
@@ -115,10 +117,11 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
     refine Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) ?_
     exact Tendsto.comp ih tendsto_snd
 
-theorem tendsto_insertNth' {a : α} :
+/-- Continuity of `insertIdx` in terms of `Tendsto`. -/
+theorem tendsto_insertIdx' {a : α} :
     ∀ {n : ℕ} {l : List α},
-      Tendsto (fun p : α × List α => insertNth n p.1 p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth n a l))
-  | 0, l => tendsto_cons
+      Tendsto (fun p : α × List α => p.2.insertIdx n p.1) (𝓝 a ×ˢ 𝓝 l) (𝓝 (l.insertIdx n a))
+  | 0, _ => tendsto_cons
   | n + 1, [] => by simp
   | n + 1, a'::l => by
     have : 𝓝 a ×ˢ 𝓝 (a'::l) =
@@ -128,16 +131,16 @@ theorem tendsto_insertNth' {a : α} :
     rw [this, tendsto_map'_iff]
     exact
       (tendsto_fst.comp tendsto_snd).cons
-        ((@tendsto_insertNth' _ n l).comp <| tendsto_fst.prod_mk <| tendsto_snd.comp tendsto_snd)
+        ((@tendsto_insertIdx' _ n l).comp <| tendsto_fst.prodMk <| tendsto_snd.comp tendsto_snd)
 
-theorem tendsto_insertNth {β} {n : ℕ} {a : α} {l : List α} {f : β → α} {g : β → List α}
+theorem tendsto_insertIdx {β} {n : ℕ} {a : α} {l : List α} {f : β → α} {g : β → List α}
     {b : Filter β} (hf : Tendsto f b (𝓝 a)) (hg : Tendsto g b (𝓝 l)) :
-    Tendsto (fun b : β => insertNth n (f b) (g b)) b (𝓝 (insertNth n a l)) :=
-  tendsto_insertNth'.comp (Tendsto.prod_mk hf hg)
+    Tendsto (fun b : β => (g b).insertIdx n (f b)) b (𝓝 (l.insertIdx n a)) :=
+  tendsto_insertIdx'.comp (hf.prodMk hg)
 
-theorem continuous_insertNth {n : ℕ} : Continuous fun p : α × List α => insertNth n p.1 p.2 :=
+theorem continuous_insertIdx {n : ℕ} : Continuous fun p : α × List α => p.2.insertIdx n p.1 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
-    rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertNth'
+    rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx'
 
 theorem tendsto_eraseIdx :
     ∀ {n : ℕ} {l : List α}, Tendsto (eraseIdx · n) (𝓝 l) (𝓝 (eraseIdx l n))
@@ -148,60 +151,58 @@ theorem tendsto_eraseIdx :
     dsimp [eraseIdx]
     exact tendsto_fst.cons ((@tendsto_eraseIdx n l).comp tendsto_snd)
 
-@[deprecated (since := "2024-05-04")] alias tendsto_removeNth := tendsto_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l n :=
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
 
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
-
 @[to_additive]
-theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
+theorem tendsto_prod [MulOneClass α] [ContinuousMul α] {l : List α} :
     Tendsto List.prod (𝓝 l) (𝓝 l.prod) := by
-  induction' l with x l ih
-  · simp (config := { contextual := true }) [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
-  simp_rw [tendsto_cons_iff, prod_cons]
-  have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
-  rw [ContinuousAt, nhds_prod_eq] at this
-  exact this.comp (tendsto_id.prod_map ih)
+  induction l with
+  | nil => simp +contextual [nhds_nil, mem_of_mem_nhds, tendsto_pure_left]
+  | cons x l ih =>
+    simp_rw [tendsto_cons_iff, prod_cons]
+    have := continuous_iff_continuousAt.mp continuous_mul (x, l.prod)
+    rw [ContinuousAt, nhds_prod_eq] at this
+    exact this.comp (tendsto_id.prodMap ih)
 
 @[to_additive]
-theorem continuous_prod [Monoid α] [ContinuousMul α] : Continuous (prod : List α → α) :=
+theorem continuous_prod [MulOneClass α] [ContinuousMul α] : Continuous (prod : List α → α) :=
   continuous_iff_continuousAt.mpr fun _l => tendsto_prod
 
 end List
 
-namespace Vector
+namespace List.Vector
 
-open List
+instance (n : ℕ) : TopologicalSpace (Vector α n) :=
+  inferInstanceAs <| TopologicalSpace (Subtype _)
 
-open Mathlib (Vector)
-
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
-
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 
-theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
+set_option backward.isDefEq.respectTransparency false in
+theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
     ∀ {l : Vector α n},
-      Tendsto (fun p : α × Vector α n => Vector.insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
-        (𝓝 (Vector.insertNth a i l))
+      Tendsto (fun p : α × Vector α n => insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
+        (𝓝 (insertIdx a i l))
   | ⟨l, hl⟩ => by
-    rw [Vector.insertNth, tendsto_subtype_rng]
-    simp only [Vector.insertNth_val]
-    exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
+    rw [insertIdx, tendsto_subtype_rng]
+    simp only [insertIdx_val]
+    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 
-theorem continuous_insertNth' {n : ℕ} {i : Fin (n + 1)} :
-    Continuous fun p : α × Vector α n => Vector.insertNth p.1 i p.2 :=
+/-- Continuity of `Vector.insertIdx`. -/
+theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
+    Continuous fun p : α × Vector α n => Vector.insertIdx p.1 i p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
-    rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertNth
+    rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx
 
-theorem continuous_insertNth {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertNth (f b) i (g b) :=
-  continuous_insertNth'.comp (hf.prod_mk hg : _)
+theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
+  continuous_insertIdx'.comp (hf.prodMk hg)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l
   | ⟨l, hl⟩ => by
@@ -209,12 +210,8 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 
-@[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
-
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 
-@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
-
-end Vector
+end List.Vector

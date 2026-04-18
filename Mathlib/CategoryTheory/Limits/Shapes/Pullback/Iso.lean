@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # The pullback of an isomorphism
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 This file provides some basic results about the pullback (and pushout) of an isomorphism.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -42,7 +45,6 @@ theorem pullbackConeOfLeftIso_fst : (pullbackConeOfLeftIso f g).fst = g ≫ inv 
 @[simp]
 theorem pullbackConeOfLeftIso_snd : (pullbackConeOfLeftIso f g).snd = 𝟙 _ := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
 theorem pullbackConeOfLeftIso_π_app_none : (pullbackConeOfLeftIso f g).π.app none = g := by simp
 
 @[simp]
@@ -61,11 +63,12 @@ theorem hasPullback_of_left_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_left_iso
 
+set_option backward.isDefEq.respectTransparency false in
 instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd f g) := by
   refine ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
   · simp [← pullback.condition_assoc]
-  · simp [pullback.condition_assoc]
+  · simp
 
 @[reassoc (attr := simp)]
 lemma pullback_inv_snd_fst_of_left_isIso :
@@ -93,7 +96,6 @@ theorem pullbackConeOfRightIso_fst : (pullbackConeOfRightIso f g).fst = 𝟙 _ :
 @[simp]
 theorem pullbackConeOfRightIso_snd : (pullbackConeOfRightIso f g).snd = f ≫ inv g := rfl
 
--- Porting note (#10618): simp can prove this; removed simps
 theorem pullbackConeOfRightIso_π_app_none : (pullbackConeOfRightIso f g).π.app none = f := by simp
 
 @[simp]
@@ -113,7 +115,8 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst f g) := by
+set_option backward.isDefEq.respectTransparency false in
+instance pullback_fst_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
   · simp
@@ -145,7 +148,6 @@ theorem pushoutCoconeOfLeftIso_inl : (pushoutCoconeOfLeftIso f g).inl = inv f �
 @[simp]
 theorem pushoutCoconeOfLeftIso_inr : (pushoutCoconeOfLeftIso f g).inr = 𝟙 _ := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
 theorem pushoutCoconeOfLeftIso_ι_app_none : (pushoutCoconeOfLeftIso f g).ι.app none = g := by
   simp
 
@@ -165,11 +167,12 @@ theorem hasPushout_of_left_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_left_iso
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr f g) := by
   refine ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]
-  · simp [pushout.condition_assoc]
+  · simp
 
 @[reassoc (attr := simp)]
 lemma pushout_inl_inv_inr_of_right_isIso :
@@ -197,7 +200,6 @@ theorem pushoutCoconeOfRightIso_inl : (pushoutCoconeOfRightIso f g).inl = 𝟙 _
 @[simp]
 theorem pushoutCoconeOfRightIso_inr : (pushoutCoconeOfRightIso f g).inr = inv g ≫ f := rfl
 
--- Porting note (#10618): simp can prove this; removed simp
 theorem pushoutCoconeOfRightIso_ι_app_none : (pushoutCoconeOfRightIso f g).ι.app none = f := by
   simp
 
@@ -217,10 +219,11 @@ theorem hasPushout_of_right_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_right_iso
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, ?_⟩⟩
   ext
-  · simp [← pushout.condition]
+  · simp
   · simp [pushout.condition]
 
 @[reassoc (attr := simp)]

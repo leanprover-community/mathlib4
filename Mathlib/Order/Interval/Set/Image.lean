@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Directed
 
 /-!
 # Monotone functions on intervals
@@ -13,6 +15,8 @@ import Mathlib.Order.Directed
 This file shows many variants of the fact that a monotone function `f` sends an interval with
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
+
+public section
 
 variable {α β : Type*} {f : α → β}
 
@@ -243,13 +247,13 @@ private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} 
     (h : ∀ {x}, r c x → p a x) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
+    ext; simp +contextual [@and_comm (r _ _), h]
 
 private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
     (h : ∀ {x}, r x c → q x b) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
+    ext; simp +contextual [h]
 
 variable [Preorder α] {p : α → Prop}
 
@@ -312,11 +316,11 @@ lemma image_subtype_val_Ici_Ioi {a : α} (b : Ici a) : Subtype.val '' Ioi b = Io
 
 @[simp]
 lemma image_subtype_val_Iic_Ici {a : α} (b : Iic a) : Subtype.val '' Ici b = Icc b.1 a :=
-  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
+  (Subtype.image_preimage_val (Iic a) (Ici b)).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iic_Ioi {a : α} (b : Iic a) : Subtype.val '' Ioi b = Ioc b.1 a :=
-  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
+  (Subtype.image_preimage_val (Iic a) (Ioi b)).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iic_Iic {a : α} (b : Iic a) : Subtype.val '' Iic b = Iic b.1 :=
@@ -344,7 +348,7 @@ lemma image_subtype_val_Ioi_Iio {a : α} (b : Ioi a) : Subtype.val '' Iio b = Io
 
 @[simp]
 lemma image_subtype_val_Iio_Ici {a : α} (b : Iio a) : Subtype.val '' Ici b = Ico b.1 a :=
-  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
+  (Subtype.image_preimage_val (Iio a) (Ici b)).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iio_Iic {a : α} (b : Iio a) : Subtype.val '' Iic b = Iic b.1 :=
@@ -352,7 +356,7 @@ lemma image_subtype_val_Iio_Iic {a : α} (b : Iio a) : Subtype.val '' Iic b = Ii
 
 @[simp]
 lemma image_subtype_val_Iio_Ioi {a : α} (b : Iio a) : Subtype.val '' Ioi b = Ioo b.1 a :=
-  (Subtype.image_preimage_val _ _).trans <| inter_comm _ _
+  (Subtype.image_preimage_val (Iio a) (Ioi b)).trans <| inter_comm _ _
 
 @[simp]
 lemma image_subtype_val_Iio_Iio {a : α} (b : Iio a) : Subtype.val '' Iio b = Iio b.1 :=

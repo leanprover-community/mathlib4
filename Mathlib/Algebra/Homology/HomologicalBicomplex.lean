@@ -1,9 +1,11 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Bicomplexes
@@ -21,10 +23,12 @@ which is obtained by exchanging the horizontal and vertical directions.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits
 
-variable (C : Type*) [Category C] [HasZeroMorphisms C]
+variable (C : Type*) [Category* C] [HasZeroMorphisms C]
   {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 /-- Given a category `C` and two complex shapes `c₁` and `c₂` on types `I₁` and `I₂`,
@@ -106,7 +110,7 @@ end OfGradedObject
 
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
-the compatibilites with both horizontal and vertical differentials. -/
+the compatibilities with both horizontal and vertical differentials. -/
 @[simps!]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)
@@ -149,7 +153,7 @@ def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ 
   X i :=
     { X := fun j => (K.X j).X i
       d := fun j j' => (K.d j j').f i
-      shape := fun j j' w => K.shape_f _ _ w i }
+      shape := fun _ _ w => K.shape_f _ _ w i }
   d i i' := { f := fun j => (K.X j).d i i' }
   shape i i' w := by
     ext j
@@ -176,16 +180,16 @@ def flipFunctor :
 def flipEquivalenceUnitIso :
     𝟭 (HomologicalComplex₂ C c₁ c₂) ≅ flipFunctor C c₁ c₂ ⋙ flipFunctor C c₂ c₁ :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₁ =>
-    HomologicalComplex.Hom.isoOfComponents (fun i₂ => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+    (by simp)) (by cat_disch)) (by cat_disch)
 
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
     flipFunctor C c₂ c₁ ⋙ flipFunctor C c₁ c₂ ≅ 𝟭 (HomologicalComplex₂ C c₂ c₁) :=
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun i₂ =>
-    HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _)
-    (by aesop_cat)) (by aesop_cat)) (by aesop_cat)
+    HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
+    (by simp)) (by cat_disch)) (by cat_disch)
 
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
@@ -205,7 +209,7 @@ def XXIsoOfEq {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ :
 
 @[simp]
 lemma XXIsoOfEq_rfl (i₁ : I₁) (i₂ : I₂) :
-    K.XXIsoOfEq (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
+    K.XXIsoOfEq _ _ _ (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
 
 
 end HomologicalComplex₂

@@ -1,94 +1,139 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
-Usage: cache [COMMAND]
+Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do no compress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]    Download linked files missing on the local cache and decompress
+  get! [ARGS]    Download all linked files and decompress
+  get- [ARGS]    Download linked files missing to the local cache, but do not decompress
+  pack           Compress non-compressed build files into the local cache
+  pack!          Compress build files into the local cache (no skipping)
+  unpack         Decompress linked already downloaded files
+  unpack!        Decompress linked already downloaded files (no skipping)
+  clean          Delete non-linked files
+  clean!         Delete everything on the local cache
+  lookup [ARGS]  Show information about cache files for the given Lean files
 
   # Privilege required
-  put          Run 'mk' then upload linked files missing on the server
-  put!         Run 'mk' then upload all linked files
-  put-unpacked 'put' only files not already 'pack'ed; intended for CI use
+  put          Run 'pack' then upload linked files missing on the server
+  put!         Run 'pack' then upload all linked files
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
-  collect      TODO
+
+  # Intended for CI use
+  unstage      Copy *.ltar files from the staging directory to the local cache
+  unstage!     Copy *.ltar files from the staging directory to the local cache (overwrite existing files)
+  stage        Move files not already 'pack'ed to an output directory
+  stage!       Move all linked cache files to an output directory
+  put-staged   Upload *.ltar files from the staging directory (privilege required)
+  put-unpacked Run 'put' only for files not already 'pack'ed (privilege required)
+
+Options:
+  --repo=OWNER/REPO  Override the repository to fetch/push cache from
+  --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get' and 'get!'
+# The arguments for 'get', 'get!', 'get-' and 'lookup'
 
-'get' and 'get!' can process list of paths, allowing the user to be more
-specific about what should be downloaded. For example, with automatic glob
-expansion in shell, one can call:
+'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
 
-$ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
+'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
 
-Which will download the cache for:
-* Every Lean file inside 'Mathlib/Algebra/Field/'
-* Every Lean file inside 'Mathlib/Data/'
-* Everything that's needed for the above"
+Valid arguments are:
 
-open Lean System in
-/-- Note that this normalizes the path strings, which is needed when running from a unix shell
-(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
-match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
-    if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
+* Module names like 'Mathlib.Init'
+* File names like 'Mathlib/Init.lean'
+* Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
+* With bash's automatic glob expansion one can also write things like
+  'Mathlib/**/Order/*.lean'.
 
+# Environment variables
+
+* MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
+* MATHLIB_CACHE_USE_CLOUDFLARE  Set to '1' to use Cloudflare instead of Azure
+* MATHLIB_CACHE_GET_URL   Override the download URL
+* MATHLIB_CACHE_PUT_URL   Override the upload URL
+
+See Cache/README.md for more details.
+"
+
+/-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
+  ["get", "get!", "get-", "put", "put!", "put-unpacked", "put-staged", "commit", "commit!"]
 
+/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
+
+/-- Parses an optional `--foo=bar` option. -/
+def parseNamedOpt (opt : String) (args : List String) : IO (Option String) := do
+  let pref := s!"--{opt}="
+  if let some a := args.findRev? (fun a => a.startsWith pref) then
+    let val := a.drop pref.length
+    return some val.toString
+  return none
+
+/-- Parses a boolean `--foo` flag. -/
+def parseFlagOpt (opt : String) (args : List String) : Bool :=
+  args.elem s!"--{opt}"
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
-    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
-    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
-    Process.exit 1
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots := match args with
-  | [] => #[]
-  | _ :: t => t.toArray.map FilePath.mk
   if args.isEmpty then
     println help
     Process.exit 0
   CacheM.run do
-  let hashMemo ← getHashMemo extraRoots
+
+  -- split args and named options
+  let (options, args) := args.partition (·.startsWith "--")
+
+  -- parse relevant options, ignore the rest
+  let repo? ← parseNamedOpt "repo" options
+  let stagingDir? ← parseNamedOpt "staging-dir" options
+
+  let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
+  if roots.isEmpty then do
+    -- No arguments means to start from `Mathlib.lean`
+    -- TODO: could change this to the default-target of a downstream project
+    let mod := `Mathlib
+    let sp := (← read).srcSearchPath
+    let sourceFile ← Lean.findLean sp mod
+    roots := roots.insert mod sourceFile
+
+  let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
-  if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
-    getFiles hashMap force force goodCurl decompress
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
-    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    let repo := repo?.getD MATHLIBREPO
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getUploadAuth)
+  let stage outDir (unpackedOnly := true) := do
+    stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
+  let unstage (overwrite := false) := do
+    if stagingDir?.isNone then IO.println "unstage requires --staging-dir=" return else
+      unstageFiles stagingDir?.get! overwrite
+  let putStaged (stagingDir : FilePath) := do
+    let repo := repo?.getD MATHLIBREPO
+    if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
+    else
+      let fileSet ← getFilesWithExtension stagingDir "ltar"
+      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config")
+        (overwrite := false) (← getUploadAuth)
+
   match args with
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)
@@ -97,6 +142,8 @@ def main (args : List String) : IO Unit := do
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
+  | ["unstage"] => unstage
+  | ["unstage!"] => unstage (overwrite := true)
   | ["clean"] =>
     cleanCache <| hashMap.fold (fun acc _ hash => acc.insert <| CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
@@ -104,12 +151,18 @@ def main (args : List String) : IO Unit := do
   | "put" :: _ => put
   | "put!" :: _ => put (overwrite := true)
   | "put-unpacked" :: _ => put (unpackedOnly := true)
+  | "stage" :: _ => if (stagingDir?.isNone) then IO.println "stage requires --staging-dir=" return else
+    stage stagingDir?.get!
+  | "stage!" :: _ => if (stagingDir?.isNone) then IO.println "stage! requires --staging-dir=" return else
+    stage stagingDir?.get! (unpackedOnly := false)
+  | "put-staged" :: _ => if (stagingDir?.isNone) then IO.println "put-staged requires --staging-dir=" return else
+    putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMap false (← getUploadAuth)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help

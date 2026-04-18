@@ -3,14 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
-zeta and L functions.
+zeta and L-functions.
 
 ### FE-pairs
 
@@ -56,12 +57,14 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 -/
 
+@[expose] public section
 
-/- TODO : Consider extending the results to allow functional equations of the form
+
+/- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
- -/
+-/
 
 noncomputable section
 
@@ -103,19 +106,26 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
+  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
-  field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
+  field [P.hε, (rpow_pos_of_pos hx _).ne']
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
+  f := P.g
+  g := P.f
+  k := P.k
+  ε := P.ε⁻¹
+  f₀ := P.g₀
+  g₀ := P.f₀
   hf_int := P.hg_int
   hg_int := P.hf_int
   hf_top := P.hg_top
   hg_top := P.hf_top
-  hε     := inv_ne_zero P.hε
-  hk     := P.hk
+  hε := inv_ne_zero P.hε
+  hk := P.hk
   h_feq  := P.h_feq'
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
@@ -135,7 +145,7 @@ namespace WeakFEPair
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
-  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
@@ -149,11 +159,10 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]
-    field_simp
+    simp [field]
   · simp_rw [norm_mul, norm_real, one_div, inv_rpow hx.le, rpow_neg hx.le, inv_inv, norm_inv,
       norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_add hx]
-    field_simp
-    ring
+    field
 
 /-- Power asymptotic for `f - f₀` as `x → 0`. -/
 lemma hf_zero' (P : WeakFEPair E) :
@@ -167,7 +176,7 @@ lemma hf_zero' (P : WeakFEPair E) :
     filter_upwards [eventually_le_nhds zero_lt_one] with x hx' (hx : 0 < x)
     apply le_mul_of_one_le_right (norm_nonneg _)
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
-    exact one_le_inv (rpow_pos_of_pos hx _) (rpow_le_one hx.le hx' P.hk.le)
+    exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
 end WeakFEPair
 
@@ -177,12 +186,11 @@ variable (P : StrongFEPair E)
 
 /-- As `x → ∞`, `f x` decays faster than any power of `x`. -/
 lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ r) := by
-  simpa only [P.hf₀, sub_zero] using P.hf_top r
+  simpa [P.hf₀] using P.hf_top r
 
 /-- As `x → 0`, `f x` decays faster than any power of `x`. -/
 lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
-  have := P.hg₀ ▸ P.hf_zero r
-  simpa only [smul_zero, sub_zero]
+  simpa using (P.hg₀ ▸ P.hf_zero r :)
 
 /-!
 ## Main theorems on strong FE-pairs
@@ -226,13 +234,12 @@ theorem functional_equation (s : ℂ) :
   have step3 := mellin_const_smul (fun t ↦ (t : ℂ) ^ (-P.k : ℂ) • P.g (1 / t)) (P.k - s) P.ε
   rw [step2] at step3
   rw [← step3]
-  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr`
-  refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr_fun`
+  refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
   -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
-  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by
-    simpa only [← ofReal_cpow (le_of_lt ht), ofReal_ne_zero] using (rpow_pos_of_pos ht _).ne'
+  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by simpa [← ofReal_cpow ht.le] using (rpow_pos_of_pos ht _).ne'
   field_simp [P.hε]
 
 end StrongFEPair
@@ -261,9 +268,9 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
-    refine (continuousAt_const.mul ?_).smul continuousAt_const
-    exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
+    have : x ≠ 0 ∨ 0 ≤ -P.k := Or.inl hx.ne'
+    fun_prop (discharger := assumption)
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
     refine ⟨s, hs, ?_⟩
@@ -280,41 +287,45 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
   rcases lt_trichotomy 1 x with hx' | rfl | hx'
   · have : 1 / x < 1 := by rwa [one_div_lt hx one_pos, div_one]
-    rw [f_modif, Pi.add_apply, indicator_of_not_mem (not_mem_Ioi.mpr this.le),
+    rw [f_modif, Pi.add_apply, indicator_of_notMem (notMem_Ioi.mpr this.le),
       zero_add, indicator_of_mem (mem_Ioo.mpr ⟨div_pos one_pos hx, this⟩), g_modif, Pi.add_apply,
-      indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_not_mem
-      (not_mem_Ioo_of_ge hx'.le), add_zero, P.h_feq _ hx, smul_sub]
+      indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_notMem
+      (notMem_Ioo_of_ge hx'.le), add_zero, P.h_feq _ hx, smul_sub]
     simp_rw [rpow_neg (one_div_pos.mpr hx).le, one_div, inv_rpow hx.le, inv_inv]
   · simp [f_modif, g_modif]
   · have : 1 < 1 / x := by rwa [lt_one_div one_pos hx, div_one]
     rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr this),
-      indicator_of_not_mem (not_mem_Ioo_of_ge this.le), add_zero, g_modif, Pi.add_apply,
-      indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
-      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), zero_add, P.h_feq _ hx, smul_sub]
-    simp_rw [rpow_neg hx.le, ← mul_smul]
-    field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
+      indicator_of_notMem (notMem_Ioo_of_ge this.le), g_modif, Pi.add_apply,
+      indicator_of_notMem (notMem_Ioi.mpr hx'.le),
+      indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), P.h_feq _ hx]
+    simp_rw [rpow_neg hx.le]
+    match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
+lemma hf_modif_top (r : ℝ) :
+    (fun x ↦ P.f_modif x - 0) =O[atTop] fun x ↦ x ^ r := by
+  refine (P.hf_top r).congr' ?_ (by rfl)
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
+
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where
-  hf_int   := P.hf_modif_int
-  hg_int   := P.symm.hf_modif_int
-  h_feq    := P.hf_modif_FE
-  hε       := P.hε
-  hk       := P.hk
-  hf₀      := rfl
-  hg₀      := rfl
-  hf_top r := by
-    refine (P.hf_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
-  hg_top r := by
-    refine (P.hg_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
-    rfl
+  f := P.f_modif
+  g := P.symm.f_modif
+  k := P.k
+  ε := P.ε
+  f₀ := 0
+  g₀ := 0
+  hf_int := P.hf_modif_int
+  hg_int := P.symm.hf_modif_int
+  h_feq := P.hf_modif_FE
+  hε := P.hε
+  hk := P.hk
+  hf₀ := rfl
+  hg₀ := rfl
+  hf_top := P.hf_modif_top
+  hg_top := P.symm.hf_modif_top
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
@@ -323,37 +334,38 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
   intro x (hx : 0 < x)
   simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
-  · simp_rw [indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
+  · simp_rw [indicator_of_notMem (notMem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩),
-      indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne)]
+      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne)]
     abel
   · simp [add_comm, sub_eq_add_neg]
   · simp_rw [indicator_of_mem (mem_Ioi.mpr hx'),
-      indicator_of_not_mem (not_mem_Ioo_of_ge hx'.le),
-      indicator_of_not_mem (mem_singleton_iff.not.mpr hx'.ne')]
+      indicator_of_notMem (notMem_Ioo_of_ge hx'.le),
+      indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
-    mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
+    mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε / (P.k - s)) • P.g₀ := by
   have h_re1 : -1 < re (s - 1) := by simpa using P.hk.trans hs
   have h_re2 : -1 < re (s - P.k - 1) := by simpa using hs
   calc
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) •
       ((Ioo 0 1).indicator (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x
       + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1) x) :=
-    setIntegral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
+    setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) • ((Ioo 0 1).indicator
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
     refine setIntegral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
         (compl_mem_ae_iff.mpr (subsingleton_singleton.measure_zero _)) (fun x hx _ ↦ ?_))
-    rw [indicator_of_not_mem hx, add_zero]
+    rw [indicator_of_notMem hx, add_zero]
   _ = ∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1) • (P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀) := by
     simp_rw [← indicator_smul, setIntegral_indicator measurableSet_Ioo,
       inter_eq_right.mpr Ioo_subset_Ioi_self, integral_Ioc_eq_integral_Ioo]
   _ = ∫ x : ℝ in Ioc 0 1, ((x : ℂ) ^ (s - 1) • P.f₀ - P.ε • (x : ℂ) ^ (s - P.k - 1) • P.g₀) := by
-    refine setIntegral_congr measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
+    refine setIntegral_congr_fun measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
     rw [ofReal_cpow hx.le, ofReal_neg, smul_sub, ← mul_smul, mul_comm, mul_assoc, mul_smul,
       mul_comm, ← cpow_add _ _ (ofReal_ne_zero.mpr hx.ne'), ← sub_eq_add_neg, sub_right_comm]
   _ = (∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1)) • P.f₀
@@ -369,7 +381,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
       integral_cpow (Or.inl h_re1), integral_cpow (Or.inl h_re2), ofReal_zero, ofReal_one,
       one_cpow, sub_add_cancel, zero_cpow fun h ↦ lt_irrefl _ (P.hk.le.trans_lt (zero_re ▸ h ▸ hs)),
       zero_cpow (sub_ne_zero.mpr (fun h ↦ lt_irrefl _ ((ofReal_re _) ▸ h ▸ hs)) : s - P.k ≠ 0),
-      sub_zero, sub_eq_add_neg (_ •  _), ← mul_smul, ← neg_smul, mul_one_div, ← div_neg, neg_sub]
+      sub_zero, sub_eq_add_neg (_ • _), ← mul_smul, ← neg_smul, mul_one_div, ← div_neg, neg_sub]
 
 /-!
 ## Main theorems on weak FE-pairs
@@ -397,13 +409,13 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
-    · simpa only [one_div] using (differentiableAt_inv' hs).smul_const P.f₀
-    · simpa only [hs, smul_zero] using differentiableAt_const (0 : E)
+    · simpa using (differentiableAt_inv hs).smul_const _
+    · simp [hs]
   · rcases hs' with hs' | hs'
     · apply DifferentiableAt.smul_const
       apply (differentiableAt_const _).div ((differentiableAt_const _).sub (differentiable_id _))
-      rwa [sub_ne_zero, ne_comm]
-    · simpa only [hs', smul_zero] using differentiableAt_const (0 : E)
+      simpa [sub_eq_zero, eq_comm]
+    · simp [hs']
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
 theorem hasMellin [CompleteSpace E]
@@ -427,10 +439,8 @@ theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.�
 /-- Functional equation formulated for `Λ`. -/
 theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
-  have := P.functional_equation₀ s
-  rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
-  rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
-    mul_inv_cancel₀ P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
+  linear_combination (norm := module) P.functional_equation₀ s - P.Λ₀_eq (P.k - s)
+    + congr(P.ε • $(P.symm_Λ₀_eq s)) + congr(($(mul_inv_cancel₀ P.hε) / ((P.k:ℂ) - s)) • P.f₀)
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :
@@ -441,13 +451,12 @@ theorem Λ_residue_k :
     apply ((continuous_sub_right _).smul P.differentiable_Λ₀.continuous).tendsto
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
     refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
-    exact continuousAt_const.div continuousAt_id (ofReal_ne_zero.mpr P.hk.ne')
+    have := ofReal_ne_zero.mpr P.hk.ne'
+    fun_prop (discharger := assumption)
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
-    simp_rw [← mul_smul]
-    congr 1
-    field_simp [sub_ne_zero.mpr hs.symm]
-    ring
+    match_scalars
+    field [sub_ne_zero.mpr hs.symm]
 
 /-- The residue of `Λ` at `s = 0` is equal to `-f₀`. -/
 theorem Λ_residue_zero :
@@ -457,8 +466,8 @@ theorem Λ_residue_zero :
   · exact (continuous_id.smul P.differentiable_Λ₀.continuous).tendsto _
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
-    simp_rw [← mul_smul]
-    field_simp [sub_ne_zero.mpr hs.symm]
+    match_scalars
+    field [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds

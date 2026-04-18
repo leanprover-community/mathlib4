@@ -3,8 +3,9 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.FieldTheory.KummerExtension
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.FieldTheory.KummerExtension
 
 /-!
 # More results on primitive roots of unity
@@ -19,11 +20,13 @@ see `IsPrimitiveRoot.prod_one_sub_pow_eq_order` and its variant
 We use this to deduce that `n` is divisible by `(μ - 1)^k` in `ℤ[μ] ⊆ R` when `k < n`.
 -/
 
+public section
+
 variable {R : Type*} [CommRing R] [IsDomain R]
 
 namespace IsPrimitiveRoot
 
-open Finset Polynomial BigOperators
+open Finset Polynomial
 
 /-- If `μ` is a primitive `n`th root of unity in `R`, then `∏(1≤k<n) (1-μ^k) = n`.
 (Stated with `n+1` in place of `n` to avoid the condition `n ≠ 0`.) -/
@@ -47,14 +50,14 @@ open Algebra in
 /-- If `μ` is a primitive `n`th root of unity in `R` and `k < n`, then `n` is divisible
 by `(μ-1)^k` in `ℤ[μ] ⊆ R`. -/
 lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrimitiveRoot μ n) :
-    ∃ z ∈ adjoin ℤ {μ}, n = z * (μ - 1) ^ k := by
+    ∃ z ∈ ℤ[μ], n = z * (μ - 1) ^ k := by
   let n' + 1 := n
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.le_of_lt_succ hn)
-  have hdvd k : ∃ z ∈ adjoin ℤ {μ}, μ ^ k - 1 = z * (μ - 1) := by
+  have hdvd k : ∃ z ∈ ℤ[μ], μ ^ k - 1 = z * (μ - 1) := by
     refine ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
     exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
   let Z k := Classical.choose <| hdvd k
-  have Zdef k : Z k ∈ adjoin ℤ {μ} ∧ μ ^ k - 1 = Z k * (μ - 1) :=
+  have Zdef k : Z k ∈ ℤ[μ] ∧ μ ^ k - 1 = Z k * (μ - 1) :=
     Classical.choose_spec <| hdvd k
   refine ⟨(-1) ^ (m + k) * (∏ j ∈ range k, Z (j + 1)) * ∏ j ∈ Ico k (m + k), (μ ^ (j + 1) - 1),
     ?_, ?_⟩
@@ -71,7 +74,7 @@ lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrim
     rw [← this, mul_assoc, mul_assoc]
     congr 1
     conv => enter [2, 2, 2]; rw [← card_range k]
-    rw [← prod_range_mul_prod_Ico _ (Nat.le_add_left k m), mul_comm _ (_ ^ card _), ← mul_assoc,
+    rw [← prod_range_mul_prod_Ico _ (Nat.le_add_left k m), mul_comm _ (_ ^ #_), ← mul_assoc,
       prod_mul_pow_card]
     conv => enter [2, 1, 2, j]; rw [← (Zdef _).2]
 

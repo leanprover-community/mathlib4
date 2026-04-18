@@ -3,8 +3,10 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.WittVector.Truncated
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 # Leading terms of Witt vector multiplication
@@ -25,6 +27,8 @@ that needs to happen in characteristic 0.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -35,7 +39,6 @@ variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
--- Porting note: new notation
 local notation "𝕄" => MvPolynomial (Fin 2 × ℕ) ℤ
 
 open Finset MvPolynomial
@@ -76,8 +79,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   · apply Subset.trans (vars_pow _ _)
     apply Subset.trans (wittMul_vars _ _)
     apply product_subset_product (Subset.refl _)
-    simp only [mem_range, range_subset] at hx ⊢
-    exact hx
+    simpa using hx
 
 /-- `remainder p n` represents the remainder term from `mul_polyOfInterest_aux3`.
 `wittPolyProd p (n+1)` will have variables up to `n+1`,
@@ -118,11 +120,10 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
       rw [Finsupp.support_eq_singleton]
-      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne]
+      simp only [and_true, Finsupp.single_eq_same, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
     simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
-      Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, true_or_iff, eq_self_iff_true,
-      Int.cast_pow]
+      Finsupp.single_eq_same, Int.cast_pow]
   · simp only [map_mul, bind₁_X_right]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
@@ -139,9 +140,6 @@ theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     remainder p n := by
   -- a useful auxiliary fact
   have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
-  -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
-  -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
-  -- nearly totally rewritten here and now finishes quite fast.
   rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
@@ -205,11 +203,11 @@ theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
       y.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
       x.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
-  simp only [polyOfInterest, peval, map_natCast, Matrix.head_cons, map_pow,
+  simp only [polyOfInterest, peval,
     Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
     map_sub]
   rw [sub_sub, add_comm (_ * _), ← sub_sub]
-  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, eval₂_rename, mul_coeff, peval, map_natCast,
+  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, mul_coeff, peval, map_natCast,
     map_add, map_pow, map_mul]
 
 variable [CharP k p]
@@ -221,11 +219,11 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
+  simp only [this, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
     not_false_eq_true, reduceCtorEq]
   have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
-    rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
+    rw [Finset.sum_eq_single_of_mem 0] <;> simp +contextual
   congr <;> apply sum_zero_pow_mul_pow_p
 
 variable (k)
@@ -236,30 +234,25 @@ theorem nth_mul_coeff' (n : ℕ) :
       (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
-  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
-  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
+  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars (s := SetLike.coe (univ ×ˢ range (n + 1))) k
+    (polyOfInterest_vars p n)
   let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
     intro x y
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
-    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
-    have ha' : a ∈ S := by
-      convert ha
-      dsimp [S]
-      congr!
-      simp
+    let S : Set (Fin 2 × ℕ) := { a | a.2 = n ∨ a.2 < n }
+    have ha' : a ∈ S := by grind
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha' with ha ha <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> lia
   use f
   intro x y
   dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a
-  cases' a with a ha
-  cases' a with i m
+  obtain ⟨a, ha⟩ := a
+  obtain ⟨i, m⟩ := a
   fin_cases i <;> rfl -- surely this case split is not necessary
 
 theorem nth_mul_coeff (n : ℕ) :

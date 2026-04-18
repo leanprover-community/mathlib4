@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Completion
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.Algebra.UniformRing
-import Mathlib.Topology.Algebra.UniformField
+module
+
+public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # Normed space structure on the completion of a normed space
@@ -20,6 +22,8 @@ We also show that if `A` is a normed algebra over `𝕜`, then so is `UniformSpa
 TODO: Generalise the results here from the concrete `completion` to any `AbstractCompletion`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -27,20 +31,16 @@ namespace UniformSpace
 
 namespace Completion
 
-variable (𝕜 E : Type*) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 E : Type*)
 
-instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
-    UniformContinuousConstSMul 𝕜 E :=
-  ⟨fun c => (lipschitzWith_smul c).uniformContinuous⟩
+instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+    NormedSpace 𝕜 (Completion E) where
+  norm_smul_le := norm_smul_le
 
-instance : NormedSpace 𝕜 (Completion E) :=
-  { Completion.instModule with
-    norm_smul_le := fun c x =>
-      induction_on x
-        (isClosed_le (continuous_const_smul _).norm (continuous_const.mul continuous_norm)) fun y =>
-        by simp only [← coe_smul, norm_coe, norm_smul, le_rfl] }
+section Module
 
 variable {𝕜 E}
+variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
@@ -66,47 +66,33 @@ theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAdd
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 
+end Module
+
 section Algebra
 
-variable (𝕜) (A : Type*)
+variable (A : Type*)
 
-instance [SeminormedRing A] : NormedRing (Completion A) :=
-  { Completion.ring,
-    Completion.instMetricSpace with
-    dist_eq := fun x y => by
-      refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
-      · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
-        exact Continuous.comp Completion.continuous_extension continuous_sub
-      · intro x y
-        rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
-    norm_mul := fun x y => by
-      refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
-      · exact
-          isClosed_le (Continuous.comp continuous_norm continuous_mul)
-            (Continuous.comp _root_.continuous_mul
-              (Continuous.prod_map continuous_norm continuous_norm))
-      · intro x y
-        simp only [← coe_mul, norm_coe]
-        exact norm_mul_le x y }
+instance [SeminormedRing A] : NormedRing (Completion A) where
+  __ : NormedAddCommGroup (Completion A) := inferInstance
+  __ : Ring (Completion A) := inferInstance
+  norm_mul_le x y := by
+    induction x, y using induction_on₂ with
+    | hp => apply isClosed_le <;> fun_prop
+    | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
-instance [SeminormedCommRing A] [NormedAlgebra 𝕜 A] [UniformContinuousConstSMul 𝕜 A] :
-    NormedAlgebra 𝕜 (Completion A) :=
-  { Completion.algebra A 𝕜 with
-    norm_smul_le := fun r x => by
-      refine Completion.induction_on x ?_ ?_ <;> clear x
-      · exact
-          isClosed_le (Continuous.comp continuous_norm (continuous_const_smul r))
-            (Continuous.comp (continuous_mul_left _) continuous_norm)
-      · intro x
-        simp only [← coe_smul, norm_coe]
-        exact norm_smul_le r x }
+instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
+  __ : CommRing (Completion A) := inferInstance
+  __ : NormedRing (Completion A) := inferInstance
+
+instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
+    NormedAlgebra 𝕜 (Completion A) where
+  norm_smul_le := norm_smul_le
 
 instance [NormedField A] [CompletableTopField A] :
     NormedField (UniformSpace.Completion A) where
-  dist_eq x y := by
-    refine induction_on₂ x y ?_ (by simp [← coe_sub, dist_eq_norm])
-    exact isClosed_eq (uniformContinuous_extension₂ _).continuous (by fun_prop)
-  norm_mul' x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
+  __ : NormedCommRing (Completion A) := inferInstance
+  __ : Field (Completion A) := inferInstance
+  norm_mul x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
 end Algebra
 
