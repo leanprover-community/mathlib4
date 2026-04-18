@@ -37,7 +37,7 @@ variable {α β δ ι R : Type*}
 
 namespace MeasureTheory
 
-open Set ENNReal NNReal
+open Set ENNReal NNReal CompleteLinearOrderedAddCommMonoidWithTop
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ μ₁ μ₂ μ₃ ν ν' : Measure α} {s t : Set α}
@@ -150,7 +150,7 @@ lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs
 lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
     ν ≪ Measure.sum μs := by
   refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
-  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
+  simp only [sum_apply _ hs, tsum_eq_zero] at hs0
   exact hνμ (hs0 i)
 
 lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul_left .rfl _

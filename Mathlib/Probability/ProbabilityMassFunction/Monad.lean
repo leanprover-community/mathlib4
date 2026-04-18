@@ -204,7 +204,7 @@ theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   ext
   -- `simp` suffices; squeezed for performance
-  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
+  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, tsum_eq_zero,
     dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
     Set.mem_iUnion]
 
@@ -224,7 +224,7 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
 
 theorem bindOnSupport_eq_zero_iff (b : β) :
     p.bindOnSupport f b = 0 ↔ ∀ (a) (ha : p a ≠ 0), f a ha b = 0 := by
-  simp only [bindOnSupport_apply, ENNReal.tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
+  simp only [bindOnSupport_apply, tsum_eq_zero, mul_eq_zero, or_iff_not_imp_left]
   exact ⟨fun h a ha => Trans.trans (dif_neg ha).symm (h a ha),
     fun h a ha => Trans.trans (dif_neg ha) (h a ha)⟩
 
@@ -251,7 +251,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   dsimp only [bindOnSupport_apply]
   simp only [← tsum_dite_right, ENNReal.tsum_mul_left.symm, ENNReal.tsum_mul_right.symm]
   classical
-  simp only [ENNReal.tsum_eq_zero]
+  simp only [tsum_eq_zero]
   refine tsum_comm.trans (tsum_congr fun a' => tsum_congr fun b => ?_)
   split_ifs with h _ h_1 H h_2
   any_goals ring1

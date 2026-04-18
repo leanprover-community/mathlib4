@@ -56,7 +56,7 @@ protected theorem coe_tsum {f : α → ℝ≥0} : Summable f → ↑(tsum f) = �
 @[deprecated CompleteLinearOrderedAddCommMonoidWithTop.hasSum (since := "2026-04-17")]
 protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) := hasSum
 
-@[simp, deprecated CompleteLinearOrderedAddCommMonoidWithTop.summable (since := "2026-04-17")]
+@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.summable (since := "2026-04-17")]
 protected theorem summable : Summable f := summable
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply summable)
@@ -148,9 +148,8 @@ protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
   summable.le_tsum' a
 
-@[simp]
-protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
-  summable.tsum_eq_zero_iff
+@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_zero (since := "2026-04-17")]
+protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 := tsum_eq_zero
 
 @[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_top_of_eq_top
   (since := "2026-04-17")]
@@ -162,10 +161,8 @@ protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = �
 protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
     a j < ∞ := lt_top_of_tsum_ne_top tsum_ne_top j
 
-@[simp]
-protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=
-  let ⟨a⟩ := ‹Nonempty α›
-  tsum_eq_top_of_eq_top ⟨a, rfl⟩
+@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_top (since := "2026-04-17")]
+protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ := tsum_top
 
 theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞} (hc : c ≠ 0) :
     ∑' _ : α, c = ∞ := by
@@ -185,7 +182,7 @@ protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a
 protected theorem tsum_mul_left : ∑' i, a * f i = a * ∑' i, f i := by
   by_cases hf : ∀ i, f i = 0
   · simp [hf]
-  · rw [← ENNReal.tsum_eq_zero] at hf
+  · rw [← tsum_eq_zero] at hf
     have : Tendsto (fun s : Finset α => ∑ j ∈ s, a * f j) atTop (𝓝 (a * ∑' i, f i)) := by
       simp only [← Finset.mul_sum]
       exact ENNReal.Tendsto.const_mul summable.hasSum (Or.inl hf)
@@ -198,7 +195,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
     ∑' i, a • f i = a • ∑' i, f i := by
   simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
 
-@[simp, deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_iSup_eq (since := "2026-04-17")]
+@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_iSup_eq (since := "2026-04-17")]
 theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _ : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 

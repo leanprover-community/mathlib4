@@ -62,8 +62,7 @@ theorem le_tsum (f : α → E) (a : α) : f a ≤ ∑' a, f a := summable.le_tsu
 theorem le_tsum_of_mem (ha : a ∈ s) : f a ≤ ∑' x : s, f x := by
   exact le_tsum (f ∘ (↑)) (⟨a, ha⟩ : s)
 
-@[simp] theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
-  summable.tsum_eq_zero_iff
+@[simp] theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 := summable.tsum_eq_zero_iff
 
 theorem tsum_eq_top_of_eq_top : (∃ a, f a = ⊤) → ∑' a, f a = ⊤
   | ⟨a, ha⟩ => top_unique <| ha ▸ le_tsum f a
