@@ -619,6 +619,8 @@ Logic and computation:
       ordinal: 'Ordinal'
       Cantor normal forms: 'Ordinal.CNF'
       fundamental sequences: 'Ordinal.IsFundamentalSeq'
+      epsilon numbers: 'Ordinal.epsilon'
+      gamma numbers: 'Ordinal.gamma'
     Cardinals:
       cardinal: 'Cardinal'
       aleph numbers: 'Cardinal.aleph'
