@@ -236,7 +236,7 @@ theorem LinearMap.exists_monic_and_natDegree_eq_and_aeval_eq_zero
     ∃ p : R[X], p.Monic ∧ p.natDegree = (⊤ : Submodule R M).spanFinrank ∧
                 Polynomial.aeval f p = 0 :=
   (LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero R f ⊤ (by simp)).imp
-    fun _ h => h.imp_right (And.imp_right And.right)
+    fun _ h ↦ h.imp_right (And.imp_right And.right)
 
 theorem LinearMap.exists_monic_and_aeval_eq_zero [Module.Finite R M] (f : Module.End R M) :
     ∃ p : R[X], p.Monic ∧ Polynomial.aeval f p = 0 :=
