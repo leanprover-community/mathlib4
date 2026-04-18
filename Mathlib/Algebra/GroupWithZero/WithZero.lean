@@ -364,6 +364,8 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_eq_coe_ofAdd (a : M) : exp a = coe (Multiplicative.ofAdd a) := rfl
+
 lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
   Multiplicative.ofAdd.injective.comp WithZero.coe_injective
 
