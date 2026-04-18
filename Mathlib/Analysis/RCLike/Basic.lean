@@ -662,24 +662,6 @@ variable (K) in
 lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
-section NormedField
-variable [NormedField E] [CharZero E] [NormedSpace K E]
-include K
-
-variable (K) in
-lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
-
-variable (K) in
-lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
-
-@[bound]
-lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
-  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
-
-end NormedField
-
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
@@ -787,6 +769,24 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
 end Instances
 
 namespace RCLike
+
+section NormedField
+variable [NormedField E] [CharZero E] [NormedSpace K E]
+include K
+
+variable (K) in
+lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+
+@[bound]
+lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
+  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
+
+end NormedField
 
 section Order
 

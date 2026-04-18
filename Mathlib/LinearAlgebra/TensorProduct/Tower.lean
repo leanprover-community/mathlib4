@@ -780,7 +780,7 @@ namespace Submodule
 open TensorProduct
 
 variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+  [AddCommMonoid M] [Module R M] (p q : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
@@ -811,6 +811,12 @@ lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [base
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
+
+variable {p q} in
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
+  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
+    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
+  apply LinearMap.range_comp_le_range
 
 @[simp]
 lemma baseChange_span (s : Set M) :
