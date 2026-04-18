@@ -726,9 +726,8 @@ lemma _root_.Function.Injective.bijOn_image (hf : f.Injective) : BijOn f s (f ''
   hf.injOn.bijOn_image
 
 lemma _root_.Function.Surjective.surjOn_preimage (hf : f.Surjective) : SurjOn f (f ⁻¹' t) t := by
-  intro u hu
-  have ⟨a, ha⟩ := hf u
-  grind
+  intro u
+  grind [hf u]
 
 lemma _root_.Function.Bijective.bijOn_preimage (hf : f.Bijective) : BijOn f (f ⁻¹' t) t :=
   ⟨fun _ ↦ id, hf.injective.injOn, hf.surjective.surjOn_preimage⟩
