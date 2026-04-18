@@ -325,8 +325,11 @@ $F (X, Y) → G (X, Y)$ is a power series $α(X) = b_1 X + b_2 X ^ 2 + ⋯$ with
 in $R$ without constant term such that $α(F (X, Y)) = G (α (X), α (Y))$. -/
 @[ext]
 structure FormalGroupHom where
+  /-- The underlying power series of a formal group homomorphism. -/
   toPowerSeries : PowerSeries R
+  /-- Constant coefficient of underlying power series is zero. -/
   zero_constantCoeff : toPowerSeries.constantCoeff = 0
+  /-- The homomorphism condition: $f(F(X,Y))=G(f(X),f(Y))$. -/
   hom : toPowerSeries.subst F = G.toPowerSeries.subst (toPowerSeries.toMvPowerSeries ·)
 
 section FormalGroupIso
@@ -336,9 +339,13 @@ variable (F G) in
 homomorphism $β(X) : G (X, Y) → F (X, Y)$ such that $α ∘ β = id$ and $β ∘ α = id$. -/
 @[ext]
 structure FormalGroupIso where
+  /-- The underlying formal group homomorphism of a formal group isomorphism. -/
   toHom : FormalGroupHom F G
+  /-- The inverse homomorphism of underlying formal group homomorphism. -/
   invHom : FormalGroupHom G F
+  /-- `toHom ∘ invHom = id`. -/
   left_inv : toHom.toPowerSeries.subst ∘ (PowerSeries.subst invHom.toPowerSeries) = id
+  /-- `invHom ∘ toHom = id`. -/
   right_inv : invHom.toPowerSeries.subst ∘ (PowerSeries.subst toHom.toPowerSeries) = id
 
 @[simp]
@@ -411,11 +418,13 @@ lemma FormalGroupHom.map_add (f : FormalGroupHom F G) {x y : F.Point σ} :
 
 /-- A formal group homomorphism $f : F → G$ is a add monoid homomorphism from `F.Point σ` to
 `G.Point σ`. -/
-def FormalGroupHom.toAddMonoidHom (f : FormalGroupHom F G) :
-    F.Point σ →+ G.Point σ where
+def FormalGroupHom.toAddMonoidHom (f : FormalGroupHom F G) :F.Point σ →+ G.Point σ where
   toFun := f.applyPoint
   map_zero' := Subtype.ext <| PowerSeries.subst_zero_of_constantCoeff_zero f.zero_constantCoeff
   map_add' _ _ := f.map_add
+
+lemma FormalGroupHom.toAddMonoidHom_apply (f : FormalGroupHom F G) {x : F.Point σ} :
+    f.toAddMonoidHom x = f.applyPoint x := rfl
 
 end FormalGroupHom
 
