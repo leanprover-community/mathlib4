@@ -56,8 +56,8 @@ def Euler (h : K) (ρ : Stream'.Seq K) : GenContFract K :=
   ⟨h, ρ.enum.map fun (n, ρ) => n.casesOn ⟨ρ, 1⟩ fun _ => ⟨-ρ, 1 + ρ⟩⟩
 
 private def toEulerAux (g : GenContFract K) : Stream'.Seq K :=
-  g.s.enum.map fun (n, c) =>
-    n.casesOn (c.a / c.b) (fun n => - c.a * g.dens n / g.dens (n + 2))
+  g.s.enum.map fun (n, ⟨a, b⟩) =>
+    n.casesOn (a / b) fun n' => - a * g.dens n' / g.dens (n' + 2)
 
 /--
 `toEuler g` is the Euler's continued fraction equivalent to `g`, where `ρ₀` = `a₀ / b₀` and
@@ -82,23 +82,22 @@ theorem exists_euler_s_of_not_terminatedAt_succ
 /-- the denominators of an Euler's continued fraction are all 1. -/
 theorem euler_dens : (Euler h ρ).dens n = 1 := by
   set g := Euler h ρ
-  induction n using Nat.strong_induction_on with
-  | h n ih =>
-    match n with
-    | 0 => exact zeroth_den_eq_one
-    | n + 1 =>
-      rcases Decidable.em <| g.TerminatedAt n with terminatedAt_n | not_terminatedAt_n
-      · specialize ih n <| lt_add_one n
-        rwa [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
-      · rw [euler_terminatedAt_iff_terminatedAt] at not_terminatedAt_n
-        match n with
-        | 0 =>
-          exact first_den_eq <|
-            exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_n |>.choose_spec
-        | n + 1 =>
-          obtain ⟨a, ρ_n_add_one_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
-            exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
-          simp [dens_recurrence ρ_n_add_one_eq rfl rfl, ih]
+  induction n using Nat.strong_induction_on with | h n ih =>
+  match n with
+  | 0 => exact zeroth_den_eq_one
+  | n + 1 =>
+    rcases Decidable.em <| g.TerminatedAt n with terminatedAt_n | not_terminatedAt_n
+    · specialize ih n <| lt_add_one n
+      rwa [dens_stable_of_terminated n.le_succ <| terminatedAt_n]
+    · rw [euler_terminatedAt_iff_terminatedAt] at not_terminatedAt_n
+      match n with
+      | 0 =>
+        exact first_den_eq <|
+          exists_euler_s_of_not_terminatedAt_zero not_terminatedAt_n |>.choose_spec
+      | n + 1 =>
+        obtain ⟨a, s_n_succ_eq⟩ : ∃ a, g.s.get? (n + 1) = some ⟨-a, 1 + a⟩ :=
+          exists_euler_s_of_not_terminatedAt_succ not_terminatedAt_n
+        simp [dens_recurrence s_n_succ_eq, ih]
 
 private theorem euler_nums_aux : (Euler h ρ).nums (n + 1) - (Euler h ρ).nums n =
     ∏ j ∈ Finset.range (n + 1), (ρ.get? j).getD 0 := by
@@ -133,11 +132,6 @@ theorem euler_nums_zero : (Euler h ρ).nums 0 = h := by rfl
 $$
   A_n = h + \sum_{i = 0}^{n - 1} \prod_{j = 0}^i \rho_j
 $$
-for example:
-- `A₀ = h`
-- `A₁ = h + ρ₀`
-- `A₂ = h + ρ₀ + ρ₀ * ρ₁`
-- `A₃ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂`
 -/
 theorem euler_nums :
     (Euler h ρ).nums n =
@@ -154,7 +148,7 @@ for example:
 - `A₀ / B₀ = h`
 - `A₁ / B₁ = h + ρ₀`
 - `A₂ / B₂ = h + ρ₀ + ρ₀ * ρ₁`
-- `A₃ / B₃ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂`
+- `Aₙ / Bₙ = h + ρ₀ + ρ₀ * ρ₁ + ρ₀ * ρ₁ * ρ₂ + ... + ρ₀ * ρ₁ * ρ₂ * ... * ρₙ₋₁`
 -/
 theorem euler_convs {h : K} {ρ : Stream'.Seq K} :
     (Euler h ρ).convs n =
@@ -173,7 +167,9 @@ theorem toEuler_toEuler :
     | 0 =>
       simp only [toEuler, Euler, toEulerAux]
       simp only [neg_mul, Stream'.Seq.map_get?, Stream'.Seq.get?_enum, Option.map_map]
-      congr 1; ext a; simp
+      congr 1
+      ext a
+      simp
     | n + 1 =>
       set g := Euler h ρ
       simp only [toEuler, Euler, toEulerAux]
@@ -240,7 +236,8 @@ theorem convs_eq_toEuler_convs_of_forall_le_dens_nonzero (hB : ∀ m ≤ n, g.de
             Stream'.Seq.nats_get?, Option.map₂_coe_left, Stream'.Seq.get?_mk, Stream'.map,
             Stream'.get, Option.map_map]
           rw [← mul_div_right_comm, mul_div_assoc, mul_div_assoc]
-          congr 1; rcases g.s.get? (i + 1) with _ | c
+          congr 1
+          rcases g.s.get? (i + 1) with _ | c
           · simp
           · simp only [Option.map_some, Option.getD_some, neg_mul, neg_div, Function.comp_apply,
             neg_neg]
