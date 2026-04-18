@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # modular equivalence for submodule
@@ -169,5 +170,29 @@ theorem restrictScalars [SMul S R] [IsScalarTower S R M] : x ≡ y [SMOD U.restr
 
 theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
     x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
+
+section Pointwise
+
+open scoped Pointwise
+
+@[simp]
+theorem _root_.Submodule.vadd_set_subset_vadd_set_iff :
+    x +ᵥ (U : Set M) ⊆ y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] := by
+  rw [SModEq.sub_mem]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub] at h
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h U.zero_mem
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub]
+    intro z hz
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using U.add_mem h hz
+
+@[simp]
+theorem _root_.Submodule.vadd_set_eq_vadd_set_iff :
+    x +ᵥ (U : Set M) = y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] :=
+  ⟨fun h ↦ Submodule.vadd_set_subset_vadd_set_iff.mp h.subset,
+    fun h ↦ Set.Subset.antisymm (Submodule.vadd_set_subset_vadd_set_iff.mpr h)
+      (Submodule.vadd_set_subset_vadd_set_iff.mpr h.symm)⟩
+
+end Pointwise
 
 end SModEq

@@ -73,7 +73,7 @@ so is its topological closure.
 See note [reducible non-instances] -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
-  s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
+  fast_instance% s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
 
 variable [TopologicalSpace B] [Star B] [NonUnitalSemiring B] [Module R B]
     [IsSemitopologicalSemiring B] [ContinuousConstSMul R B] [ContinuousStar B]
@@ -166,16 +166,9 @@ theorem le_iff_mem {x : A} {s : NonUnitalStarSubalgebra R A} (hs : IsClosed (s :
 theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+open scoped IsMulCommutative in
 instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=
-  nonUnitalCommSemiringTopologicalClosure _ <| by
-    letI : NonUnitalCommSemiring (adjoin R {x}) := by
-      refine NonUnitalStarAlgebra.adjoinNonUnitalCommSemiringOfComm R ?_ ?_
-      all_goals
-        intro y hy z hz
-        rw [Set.mem_singleton_iff] at hy hz
-        rw [hy, hz]
-      exact (star_comm_self' x).symm
-    exact fun _ _ => mul_comm _ _
+  fast_instance% nonUnitalCommSemiringTopologicalClosure _ mul_comm
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NonUnitalRing A] [StarRing A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]

@@ -101,9 +101,9 @@
     docs: blueprint.yml
     release-tag: create-release.yml
     update: update.yml
-- github: https://github.com/HEPLean/PhysLean
+- github: https://github.com/leanprover-community/physlib
   default_branch: master
-  name: PhysLean - Physics Formalization
+  name: PhysLib - Physics Formalization
   zulip-contact: Joseph Tooby-Smith
 - github: https://github.com/lecopivo/SciLean
   default_branch: master

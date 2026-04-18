@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
-# Double countings
+# Double counting
 
 This file gathers a few double counting arguments.
 
