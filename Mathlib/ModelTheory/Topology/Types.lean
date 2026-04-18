@@ -72,7 +72,7 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
 
 instance : CompactSpace (T.CompleteType α) := by
   constructor
-  rw[isCompact_iff_ultrafilter_le_nhds]
+  rw [isCompact_iff_ultrafilter_le_nhds]
   intros F _
   refine ⟨⟨{φ | T.typesWith φ ∈ F}, ?_, ?_⟩, ?_⟩
   · intro φ x
