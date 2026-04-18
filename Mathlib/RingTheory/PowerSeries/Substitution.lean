@@ -191,7 +191,7 @@ theorem subst_sub (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f - g) = subst a f - subst a g := by
   rw [← coe_substAlgHom ha, map_sub]
 
-theorem subst_zero {f : PowerSeries R} (hf : f.constantCoeff = 0) :
+theorem subst_zero_of_constantCoeff_zero {f : PowerSeries R} (hf : f.constantCoeff = 0) :
     subst (0 : MvPowerSeries τ S) f = 0 :=
   MvPowerSeries.subst_zero_of_constantCoeff_zero hf
 

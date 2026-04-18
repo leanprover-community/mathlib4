@@ -414,7 +414,7 @@ lemma FormalGroupHom.map_add (f : FormalGroupHom F G) {x y : F.Point σ} :
 def FormalGroupHom.toAddMonoidHom (f : FormalGroupHom F G) :
     F.Point σ →+ G.Point σ where
   toFun := f.applyPoint
-  map_zero' := Subtype.ext <| PowerSeries.subst_zero f.zero_constantCoeff
+  map_zero' := Subtype.ext <| PowerSeries.subst_zero_of_constantCoeff_zero f.zero_constantCoeff
   map_add' _ _ := f.map_add
 
 end FormalGroupHom
