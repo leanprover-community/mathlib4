@@ -66,9 +66,10 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
-end Group.IsFinitelyPresented
-
-open Group
-
-instance : IsFinitelyPresented (Multiplicative ℤ) := by
+instance {α : Type*} [Finite α] : Group.IsFinitelyPresented (FreeGroup α) := by
   sorry
+
+instance : Group.IsFinitelyPresented (Multiplicative ℤ) :=
+  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
+
+end Group.IsFinitelyPresented
