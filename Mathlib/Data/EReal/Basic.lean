@@ -62,6 +62,9 @@ instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
 /-- The coercion `ℝ → EReal` bundled as a monotone map. -/
 def Real.coeOrderEmbedding : ℝ ↪o EReal := WithTop.coeOrderHom.trans WithBot.coeOrderHom
 
+@[simp]
+theorem Real.coeOrderEmbedding_apply (x : ℝ) : Real.coeOrderEmbedding x = x.toEReal := rfl
+
 namespace EReal
 
 -- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
