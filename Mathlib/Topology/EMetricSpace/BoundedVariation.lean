@@ -376,13 +376,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
   apply huv.trans
   rw [Finset.range_eq_Ico, ← Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
-  apply add_le_add
-  · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim id (fun h ↦ ?_)
-    rw [(hv hi.2).antisymm (ht.2 h)]
-    exact hs.1
-  · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim (fun h ↦ ?_) id
-    rw [(hs.2 h).antisymm (hv hi.1)]
-    exact ht.1
+  apply add_le_add <;> refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ ?_
+  · exact (vst i).elim id (fun h ↦ (hv hi.2).antisymm (ht.2 h) ▸ hs.1)
+  · exact (vst i).elim (fun h ↦ (hs.2 h).antisymm (hv hi.1) ▸ ht.1) id
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
