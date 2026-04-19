@@ -364,7 +364,7 @@ instance to_compactlyCoherentSpace [CompactlyGeneratedSpace X] : CompactlyCohere
     fun K _ _ _ f hf ↦ h K f hf
 
 /-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance of_compactlyCoherentSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+instance of_compactlyCoherentSpace_of_t2 [CompactlyCoherentSpace X] :
     CompactlyGeneratedSpace X := by
   apply compactlyGeneratedSpace_of_isClosed_of_t2
   intro s hs

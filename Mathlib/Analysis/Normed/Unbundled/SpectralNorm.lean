@@ -880,7 +880,7 @@ def normedField : NormedField L :=
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[implicit_reducible]
-def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
+def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
