@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 
@@ -126,6 +127,12 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
+instance : IsCyclic (ValueGroupWithZero K)ˣ :=
+  (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
+
+instance : Nontrivial (ValueGroupWithZero K)ˣ :=
+  ValuativeRel.isNontrivial_iff_nontrivial_units.mp inferInstance
+
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 
@@ -149,6 +156,8 @@ section UniformSpace
 
 variable (K : Type*) [Field K] [ValuativeRel K]
   [UniformSpace K] [IsUniformAddGroup K] [IsNonarchimedeanLocalField K]
+
+instance : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).IsRankOneDiscrete := inferInstance
 
 instance : CompleteSpace K :=
   letI : (Valued.v (R := K)).RankOne :=
