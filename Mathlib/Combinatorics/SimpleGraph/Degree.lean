@@ -41,7 +41,7 @@ theorem edegree_eq_zero_iff_isIsolated : G.edegree v = 0 ↔ G.IsIsolated v := b
 
 variable {G u v} in
 theorem Adj.edegree_ne_zero_left (h : G.Adj u v) : G.edegree u ≠ 0 :=
-  edegree_eq_zero_iff_isIsolated.not.mpr <| exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
+  edegree_eq_zero_iff_isIsolated.not.mpr h.not_isIsolated_left
 
 variable {G u v} in
 theorem Adj.edegree_ne_zero_right (h : G.Adj u v) : G.edegree v ≠ 0 :=

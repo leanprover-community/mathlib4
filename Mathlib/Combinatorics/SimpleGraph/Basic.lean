@@ -967,4 +967,12 @@ variable {G} in
 theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
   exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
 
+variable {G} in
+theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
+  exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
+
+variable {G} in
+theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
+  h.symm.not_isIsolated_left
+
 end SimpleGraph
