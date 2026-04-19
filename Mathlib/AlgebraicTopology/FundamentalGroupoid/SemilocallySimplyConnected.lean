@@ -357,8 +357,7 @@ structure PathInTube {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
 lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
     {γ : Path x y} {part : IntervalPartition n} {T : TubeData X x y n}
     (hγ : PathInTube γ part T) (i : Fin n) :
-    Set.range (γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-      (part.h_mono.monotone i.castSucc_lt_succ.le)) ⊆ T.U i := by
+    Set.range (γ.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
   intro z hz
   obtain ⟨t, rfl⟩ := hz
   have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
@@ -699,10 +698,8 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
     (h_rectangles : ∀ (i : Fin n),
         Path.Homotopic
-          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
-          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le)))) :
+          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
+          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)))) :
     Path.Homotopic
       (γ.trans ((α (Fin.last n)).cast
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
@@ -712,9 +709,8 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   open Path.Homotopic.Quotient in
   -- Define intermediate paths: γ_aux i follows γ up to t_i, crosses via α_i, then follows γ'
   let γ_aux : (i : Fin (n + 1)) → Path x y := fun i =>
-    (((γ.subpathOn (part.t 0) (part.t i) (part.h_mono.monotone (Fin.zero_le i))).trans (α i)).trans
-      (γ'.subpathOn (part.t i) (part.t (Fin.last n))
-        (part.h_mono.monotone (Fin.le_last i)))).cast
+    (((γ.subpathOn (part.t 0) (part.t i)).trans (α i)).trans
+      (γ'.subpathOn (part.t i) (part.t (Fin.last n)))).cast
       (by rw [part.h_start, γ.source])
       (by rw [part.h_end, γ'.target])
   -- Base case: γ_aux 0 ≃ α_0 · γ'
@@ -731,8 +727,7 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
         (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
     let B :=
       ((Path.Homotopic.Quotient.mk
-          (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
-            (part.h_mono.monotone (Fin.zero_le (Fin.last n))))).cast
+          (γ'.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
         (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
     have hproof :
@@ -771,8 +766,7 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
     let B :=
       ((Path.Homotopic.Quotient.mk
-          (γ.subpathOn (part.t 0) (part.t (Fin.last n))
-            (part.h_mono.monotone (Fin.zero_le (Fin.last n))))).cast
+          (γ.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
         (show x = γ (part.t 0) by rw [part.h_start, γ.source])
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target]))
     have hproof :
@@ -801,12 +795,11 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   -- This allows simp to apply the rectangle homotopy in context
   have rectangle_with_suffix : ∀ (i : Fin n) {w : X}
       (suffix : Path.Homotopic.Quotient (γ' (part.t i.succ)) w),
-      (Path.Homotopic.Quotient.mk (γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-          (part.h_mono.monotone i.castSucc_lt_succ.le))).trans
+      (Path.Homotopic.Quotient.mk (γ.subpathOn (part.t i.castSucc) (part.t i.succ))).trans
         ((Path.Homotopic.Quotient.mk (α i.succ)).trans suffix) =
       (Path.Homotopic.Quotient.mk (α i.castSucc)).trans
-        ((Path.Homotopic.Quotient.mk (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le))).trans suffix) := by
+        ((Path.Homotopic.Quotient.mk
+          (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))).trans suffix) := by
     intro i w suffix
     induction suffix using Path.Homotopic.Quotient.ind with | mk suffix =>
     simp only [← mk_trans, eq]
@@ -858,10 +851,8 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
     (h_rectangles : ∀ (i : Fin n),
         Path.Homotopic
-          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
-          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le))))
+          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
+          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))))
     (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
       Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
     (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀)
@@ -967,10 +958,8 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
   -- By SLSC property of U_i, we get: γ_i · α_{i+1} ≃ α_i · γ'_i
   have h_rectangles : ∀ (i : Fin n),
       Path.Homotopic
-        ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-          (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
-        ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
-          (part.h_mono.monotone i.castSucc_lt_succ.le))) := by
+        ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
+        ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
     intro i
     apply segment_rung_homotopy (T.U i)
       (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
