@@ -744,11 +744,10 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
   · apply le_antisymm _ (measure_mono inter_subset_left)
     apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
     apply (measure_union_le _ _).trans
-    have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
-      rw [← nonpos_iff_eq_zero, ← hs]
-      gcongr
-      exact fun x hx hfx ↦ ht (hfx ▸ hx)
-    simp only [obs, add_zero, le_refl]
+    suffices μ ((f ⁻¹' t) ∩ sᶜ) = 0 by simp [this]
+    rw [← nonpos_iff_eq_zero, ← hs]
+    gcongr
+    exact fun x hx hfx ↦ ht (hfx ▸ hx)
   · exact NullMeasurableSet.of_null hs
 
 lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
