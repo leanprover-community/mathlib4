@@ -218,9 +218,7 @@ theorem WithTop.isPredPrelimit_iff {x : WithTop α} :
 @[to_dual]
 theorem IsPredLimit.withTopCoe {x : α} (h : IsPredLimit x) :
     IsPredLimit (x : WithTop α) := by
-  constructor
-  · exact WithTop.not_isMax_coe x
-  · simpa [WithTop.isPredPrelimit_iff]
+  simpa [WithTop.isPredPrelimit_iff, IsPredLimit] using h
 
 variable [SuccOrder α]
 
