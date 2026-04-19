@@ -48,7 +48,7 @@ theorem Set.Finite.csInf_coe_compl_le_coe_ncard' {s : Set α} (hfin : s.Finite) 
     sInf sᶜ ≤ (s.ncard : α) := by
   rw [← csSup_Iic (a := s.ncard)]
   grw [← Monotone.csSup_image_le_csSup Nat.mono_cast nonempty_Iic bddAbove_Iic]
-  refine csInf_le_csSup_of_nonempty_inter' ?_ <| finite_Iic _ |>.image _ |>.bddAbove
+  refine csInf_le_csSup_of_nonempty_inter ?_ (ht := finite_Iic _ |>.image _ |>.bddAbove)
   rw [← not_disjoint_iff_nonempty_inter, disjoint_compl_left_iff_subset.not]
   apply (ncard_le_ncard · hfin).mt
   rw [ncard_image_of_injective _ CharZero.cast_injective, ncard_Iic_nat]
