@@ -808,11 +808,10 @@ end AffineIsometryEquiv
 
 namespace AffineSubspace
 
-set_option simps.defeqWarn false in
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
-@[simps linear, simps! toFun]
+@[simps linear]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
   { Equiv.Set.image _ (E : Set P₁) hφ with
@@ -820,6 +819,11 @@ noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E
       (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
     map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
+
+-- The `toFun` simp lemma has an LHS type that is not defeq at
+-- `withReducibleAndInstances` transparency to its RHS, so wrap this separately.
+set_option simps.defeqWarn false in
+attribute [simps! toFun] equivMapOfInjective
 
 /-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
