@@ -98,7 +98,7 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change Monotone (fun a : A => a ^ (q : ℝ))
-  by_cases hq : q = 0
+  obtain hq | hq := eq_zero_or_pos q
   · rw [hq]
     intro a b hab
     by_cases ha : 0 ≤ a
