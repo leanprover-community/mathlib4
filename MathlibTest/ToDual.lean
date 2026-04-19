@@ -382,3 +382,8 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 -/
 #guard_msgs in
 #check eq_of_max_of_min
+
+-- Test that the heuristic applies even when proofs are beta expanded
+@[to_dual (dont_translate := β) le_of_lt_and_le_of_lt']
+theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
+  ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩
