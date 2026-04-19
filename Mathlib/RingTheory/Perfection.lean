@@ -56,7 +56,7 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
 alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
-  fast_instance% (submonoid M p).toCommMonoid
+  inferInstanceAs <| CommMonoid (submonoid M p)
 
 variable (M : Type*) [CommMonoid M] (p : ℕ)
 
@@ -202,7 +202,7 @@ alias _root_.Ring.perfectionSubsemiring := subsemiring
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
-  fast_instance% (subsemiring R p).toCommSemiring
+  inferInstanceAs <| CommSemiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
   CharP.subsemiring _ _ (subsemiring R p)
@@ -376,10 +376,10 @@ alias _root_.Ring.perfectionSubring := subring
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : Ring (Perfection R p) :=
-  fast_instance% (subring R p).toRing
+  inferInstanceAs <| Ring (subring R p)
 
 instance : CommRing (Perfection R p) :=
-  fast_instance% (subring R p).toCommRing
+  inferInstanceAs <| CommRing (subring R p)
 
 end CommRing
 
