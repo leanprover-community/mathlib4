@@ -131,7 +131,7 @@ noncomputable def tensor (d₁ : M₁.QuasicoherentData) (d₂ : M₂.Quasicoher
   X := _
   coversTop := d₁.coversTop.prod d₂.coversTop
   presentation := fun ⟨A, i, i', p, p'⟩ ↦
-    Presentation.of_isIso
+    Presentation.ofIsIso
       (Functor.Monoidal.μIso (overFunctorOfCommRing.{w} R A) M₁ M₂).hom (by
         apply Presentation.tensor
         · exact Presentation.of_isIso
@@ -139,7 +139,7 @@ noncomputable def tensor (d₁ : M₁.QuasicoherentData) (d₂ : M₂.Quasicoher
               (Presentation.map (by exact (d₁.presentation i))
                   (overPullbackOfCommRing R p)
                     (Functor.Monoidal.εIso _).symm)
-        · exact Presentation.of_isIso
+        · exact Presentation.ofIsIso
             ((overFunctorOfCommRingCompOverPullbackOfCommRing.{w} R p').hom.app M₂)
               (Presentation.map (by exact (d₂.presentation i'))
                   (overPullbackOfCommRing R p')

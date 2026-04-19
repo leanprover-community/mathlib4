@@ -230,7 +230,7 @@ end
 
 def BilinearMap.tmul (M₁ M₂ : PresheafOfModules (R ⋙ forget₂ _ _)) :
     BilinearMap M₁ M₂ (M₁ ⊗ M₂) where
-  map.app X := fun (m₁, m₂) ↦ m₁ ⊗ₜ m₂
+  map.app X := TypeCat.ofHom (fun (m₁, m₂) ↦ m₁ ⊗ₜ m₂)
   map.naturality _ _ f := rfl
   map_add _ _ _ := TensorProduct.tmul_add _ _ _
   add_map _ _ _ := TensorProduct.add_tmul _ _ _
@@ -253,14 +253,15 @@ noncomputable instance :
     Module cR.pt (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₁) :=
   inferInstanceAs (Module ((forget₂ _ RingCat).mapCocone cR).pt _)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (cN) in
 noncomputable def coconeDescOfBilinearMapAux :
     Cocone (M₁.presheaf ⋙ forget _ ⊗ M₂.presheaf ⋙ forget _) where
   pt := cN.pt
-  ι.app X := cN.ι.app X ∘ b.map.app X
+  ι.app X := TypeCat.ofHom (cN.ι.app X ∘ b.map.app X)
   ι.naturality V U f := by
     ext ⟨m₁, m₂⟩
-    have := congr_fun (b.map.naturality f) (m₁, m₂)
+    have := b.map.naturality_apply f ⟨m₁, m₂⟩
     dsimp at this ⊢
     rw [this, ← cN.w f]
     rfl
@@ -270,14 +271,14 @@ noncomputable def descOfBilinearMapAux :
     (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcM₂) →
     (ModuleColimit (isColimitOfPreserves (forget₂ _ RingCat) hcR) hcN) :=
   (((isColimitOfPreserves (forget _) hcM₁).tensor
-    (isColimitOfPreserves (forget _) hcM₂)).desc (coconeDescOfBilinearMapAux b cN)).curry
+    (isColimitOfPreserves (forget _) hcM₂)).desc (coconeDescOfBilinearMapAux b cN)).hom.toFun.curry
 
 @[simp]
 lemma descOfBilinearMapAux_apply {X : Cᵒᵖ} (m₁ : M₁.obj X) (m₂ : M₂.obj X) :
     dsimp% descOfBilinearMapAux hcR b hcM₁ hcM₂ hcN (ιM m₁) (ιM m₂) =
       ιM (b.map.app X (m₁, m₂)) :=
-  congr_fun ((((isColimitOfPreserves (forget _) hcM₁).tensor
-    (isColimitOfPreserves (forget _) hcM₂)).fac (coconeDescOfBilinearMapAux b cN)) X) (m₁, m₂)
+  ConcreteCategory.congr_hom ((((isColimitOfPreserves (forget _) hcM₁).tensor
+    (isColimitOfPreserves (forget _) hcM₂)).fac (coconeDescOfBilinearMapAux b cN)) X) ⟨m₁, m₂⟩
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def descOfBilinearMap :
