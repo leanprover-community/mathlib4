@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.Padics.Measure.Basic
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Topologies on spaces of measures

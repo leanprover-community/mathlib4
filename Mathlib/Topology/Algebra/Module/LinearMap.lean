@@ -1090,6 +1090,41 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
 
 end SMul
 
+section lcomp
+
+variable {R U V : Type*} (W : Type*) [CommSemiring R]
+    [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+    [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+    [AddCommGroup W] [Module R W] [TopologicalSpace W]
+    [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
+@[simps]
+def lcomp (f : U →L[R] V) : (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.comp f
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+
+end lcomp
+
+section llcomp
+
+variable (R U V W : Type*) [CommSemiring R]
+  [AddCommGroup U] [Module R U] [TopologicalSpace U]
+  [AddCommGroup V] [Module R V] [TopologicalSpace V]
+  [IsTopologicalAddGroup V] [ContinuousConstSMul R V]
+  [AddCommGroup W] [Module R W] [TopologicalSpace W]
+  [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
+@[simps]
+def llcomp : (U →L[R] V) →ₗ[R] (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.lcomp W
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+end llcomp
+
 section toSpanSingletonLE
 
 variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]

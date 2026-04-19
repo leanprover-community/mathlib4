@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Separation.DisjointCover
@@ -61,5 +62,49 @@ lemma exists_finite_sum_mul_approximation_of_mem_uniformity [Ring R] [UniformSpa
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, R)),
     ∀ x y, (f (x, y), ∑ i, g i x * h i y) ∈ S :=
   exists_finite_sum_smul_approximation_of_mem_uniformity f hS
+
+section prodMul
+
+open scoped TensorProduct
+
+variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+
+/-- The natural bilinear map sending `f, g` to the function `(x, y) ↦ f x * g y` on `X × Y`. -/
+def prodMul : C(X, R) →ₗ[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
+  LinearMap.mk₂ R (fun f g ↦ (f.comp .fst) * (g.comp .snd))
+    (fun f f' g ↦ by ext; simp [add_mul])
+    (fun r f g ↦ by ext; simp)
+    (fun f g g' ↦ by ext; simp [mul_add])
+    (fun r f g ↦ by ext; simp)
+
+@[simp] lemma prodMul_apply (f : C(X, R)) (g : C(Y, R)) (p : X × Y) :
+    f.prodMul g p  = f p.1 * g p.2 :=
+  (rfl)
+
+@[simp] lemma prodMul_def (f : C(X, R)) (g : C(Y, R)) :
+    f.prodMul g  = f.comp .fst * g.comp .snd :=
+  (rfl)
+
+/-- Tensor product version of `ContinuousMap.prodMul`. -/
+@[expose] def tensorHom : C(X, R) ⊗[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
+  TensorProduct.lift prodMul
+
+lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y] [T2Space Y]
+    [TotallyDisconnectedSpace X] :
+    DenseRange (tensorHom : C(X, R) ⊗[R] C(Y, R) → C(X × Y, R)) := by
+  let : UniformSpace R := IsTopologicalAddGroup.rightUniformSpace R
+  let : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+  intro f
+  simp_rw [mem_closure_iff, Set.nonempty_def]
+  intro U hUo hUf
+  have := mem_nhds_uniformity_iff_right.mp (hUo.mem_nhds hUf)
+  obtain ⟨J, hJu, hJ'⟩ := (hasBasis_compactConvergenceUniformity_of_compact).mem_iff.mp this
+  obtain ⟨n, g, h, hgh⟩ := exists_finite_sum_mul_approximation_of_mem_uniformity f hJu
+  have hG := Set.mem_of_subset_of_mem hJ' (a := (f, tensorHom <| ∑ i, g i ⊗ₜ h i))
+  simp only [Prod.forall, Set.mem_setOf_eq, forall_const] at hG
+  simpa using ⟨_, hG <| by simpa [tensorHom] using hgh⟩
+
+end prodMul
 
 end ContinuousMap
