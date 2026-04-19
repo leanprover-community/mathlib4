@@ -144,7 +144,7 @@ lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : Right
     IsMulFreimanIso n B A g where
   bijOn := hf.bijOn.symm ⟨hg₂, InjOn.rightInvOn_of_leftInvOn hf.bijOn.injOn hg₂ hf.bijOn.mapsTo hg₁⟩
   map_prod_eq_map_prod := fun s t hsB htB hs ht => by
-    rw [←hf.map_prod_eq_map_prod _ _ (by simp [hs]) (by simp [ht]), map_map, map_congr rfl, map_id,
+    rw [← hf.map_prod_eq_map_prod _ _ (by simp [hs]) (by simp [ht]), map_map, map_congr rfl, map_id,
       map_map, map_congr rfl, map_id]
     all_goals aesop
 
@@ -161,9 +161,9 @@ lemma IsMulFreimanHom.toIsMulFreimanIso {g : β → α} (h : InvOn g f A B)
     refine ⟨fun h' => ?_, hf.map_prod_eq_map_prod hsA htA hs ht⟩
     have : (map g (map f s)).prod = (map g (map f t)).prod := by
       have := hf.mapsTo
-      refine hg.map_prod_eq_map_prod ?_ ?_ ?_ ?_ h' <;> aesop (add simp MapsTo)
-    rwa [map_map, map_congr rfl fun x hx => ?g1, map_id,
-      map_map, map_congr rfl fun x hx => ?g2, map_id] at this
+      apply hg.map_prod_eq_map_prod <;> simp_all [MapsTo]
+    rwa [map_map, map_congr rfl fun x hx => ?g1, map_id, map_map,
+      map_congr rfl fun x hx => ?g2, map_id] at this
     case g1 => exact h.1 (hsA hx)
     case g2 => exact h.1 (htA hx)
 
