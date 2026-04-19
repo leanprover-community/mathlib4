@@ -188,6 +188,7 @@ variable (A) in
 @[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
   (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
 
+set_option simps.defeqWarn false in
 variable (M A) in
 /-- Each element of the monoid defines a monoid homomorphism. -/
 @[simps]

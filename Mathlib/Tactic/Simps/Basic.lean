@@ -1016,11 +1016,8 @@ def addProjection (defName : Name) (declName : Name) (type lhs rhs : Expr) (args
   let lhsType ← inferType lhs
   let rhsType ← inferType rhs
   let typesMatch ← withReducibleAndInstances <| isDefEq lhsType rhsType
-  let opts ← getOptions
   let disabled := simpsDefeqWarnDisabledExt.getState (← getEnv)
-  -- If the option is explicitly set, use its value.
-  -- Otherwise, warn unless `disable_simps_defeq_warn` is active.
-  let enabled := if opts.contains ``simps.defeqWarn then simps.defeqWarn.get opts else !disabled
+  let enabled := simps.defeqWarn.get (← getOptions) && !disabled
   if enabled then
     unless typesMatch do
       let eqStmt := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
@@ -1256,7 +1253,9 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 If `shortNm` is true, the generated names will only use the last projection name.
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
-    (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
+    (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) := do
+  -- Read `simps.defeqWarn` from the command-level scope, since `set_option ... in` options
+  -- are not visible inside `afterCompilation` attribute handlers via `getOptions`.
   withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   -- We need access to theorem bodies
   let env ← withoutExporting getEnv

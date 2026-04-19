@@ -504,6 +504,7 @@ theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModul
   | hadd x y hx hy => simp only [hx, hy, add_mul, add_smul]
   | hsmul r x hx => simp [← hx]
 
+set_option simps.defeqWarn false in
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/

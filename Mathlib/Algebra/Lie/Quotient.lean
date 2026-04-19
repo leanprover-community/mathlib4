@@ -216,6 +216,7 @@ variable {R L L' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L')
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
 @[simps]

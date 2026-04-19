@@ -161,6 +161,7 @@ def self : Generators R S S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+set_option simps.defeqWarn false in
 /-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
 @[simps]
 noncomputable
@@ -570,6 +571,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/

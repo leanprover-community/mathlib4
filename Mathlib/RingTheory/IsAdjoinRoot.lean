@@ -461,6 +461,7 @@ theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
 include h in
 theorem deg_ne_zero [Nontrivial S] : natDegree f ≠ 0 := h.deg_pos.ne'
 
+set_option simps.defeqWarn false in
 /-- If `f` is monic, the powers of `h.root` form a basis. -/
 @[simps! gen dim basis]
 def powerBasis : PowerBasis R S where

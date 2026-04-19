@@ -438,6 +438,7 @@ namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
 
+set_option simps.defeqWarn false in
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :

@@ -128,6 +128,7 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
     (h : ∀ x, Continuous (g · x)) : Continuous g := by
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
 
+set_option simps.defeqWarn false in
 variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
 convergence topology. -/
@@ -138,6 +139,7 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →
   __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
 
+set_option simps.defeqWarn false in
 variable (E) in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
 convergence topology. -/
@@ -147,6 +149,7 @@ def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L 
   toFun f := L.comp f
   __ := ContinuousLinearMap.postcompUniformConvergenceCLM {(S : Set E) | Finite S} L
 
+set_option simps.defeqWarn false in
 variable (𝕜₂ σ E F) in
 /-- The topology of bounded convergence is stronger than the topology of pointwise convergence. -/
 @[simps!]
@@ -156,6 +159,7 @@ def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁
   cont := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
     (fun _ ↦ Set.Finite.isVonNBounded)
 
+set_option simps.defeqWarn false in
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
 @[simps!]

@@ -41,6 +41,7 @@ namespace Equiv
 variable (L) {M : Type w}
 variable [L.Structure M] {N : Type w'} (g : M ≃ N)
 
+set_option simps.defeqWarn false in
 /-- A type bundled with the structure induced by an equivalence. -/
 @[simps]
 def bundledInduced : CategoryTheory.Bundled.{w'} L.Structure :=
@@ -132,6 +133,7 @@ noncomputable def shrink (M : ModelType.{u, v, w} T) [Small.{w'} M] : ModelType.
 def ulift (M : ModelType.{u, v, w} T) : ModelType.{u, v, max w w'} T :=
   equivInduced (Equiv.ulift.{w', w}.symm : M ≃ _)
 
+set_option simps.defeqWarn false in
 /-- The reduct of any model of `φ.onTheory T` is a model of `T`. -/
 @[simps]
 def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : T.ModelType where
@@ -140,6 +142,7 @@ def reduct {L' : Language} (φ : L →ᴸ L') (M : (φ.onTheory T).ModelType) : 
   nonempty' := M.nonempty'
   is_model := (@LHom.onTheory_model L L' M (φ.reduct M) _ φ _ T).1 M.is_model
 
+set_option simps.defeqWarn false in
 /-- When `φ` is injective, `defaultExpansion` expands a model of `T` to a model of `φ.onTheory T`
   arbitrarily. -/
 @[simps]
@@ -161,6 +164,7 @@ instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType
     L'.Structure M :=
   (LHom.sumInr : L' →ᴸ L.sum L').reduct M
 
+set_option simps.defeqWarn false in
 /-- A model of a theory is also a model of any subtheory. -/
 @[simps]
 def subtheoryModel (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelType where

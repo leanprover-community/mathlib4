@@ -129,6 +129,7 @@ inductive Rels (ι : Type*) (M : Type*)
   | smul (m : ι → M) (i : ι) (r : R) (x : M)
   | alt (m : ι → M) (i j : ι) (hm : m i = m j) (hij : i ≠ j)
 
+set_option simps.defeqWarn false in
 /-- The relations in the standard presentation of `⋀[R]^n M` with generators and relations. -/
 @[simps]
 noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
@@ -191,6 +192,7 @@ noncomputable def isPresentationCore :
 
 end presentation
 
+set_option simps.defeqWarn false in
 /-- The standard presentation of the `R`-module `⋀[R]^n M`. -/
 @[simps! G R relation var]
 noncomputable def presentation : Module.Presentation R (⋀[R]^n M) :=

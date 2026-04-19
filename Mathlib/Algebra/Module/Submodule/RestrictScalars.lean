@@ -100,6 +100,7 @@ variable {R M} in
 lemma restrictScalars_mono {s t : Submodule R M} (hst : s ≤ t) :
     s.restrictScalars S ≤ t.restrictScalars S := restrictScalars_monotone S R M hst
 
+set_option simps.defeqWarn false in
 /-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
 as turning it into a type and adding a module structure. -/
 @[simps +simpRhs]

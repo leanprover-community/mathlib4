@@ -631,6 +631,7 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     · simpa [single_one_mul_apply, one_def] using congr($hax 1)
     · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/

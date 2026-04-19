@@ -33,6 +33,7 @@ variable {A : Type u} [Ring A] {ι : Type w} [DecidableEq ι]
 
 namespace Relations
 
+set_option simps.defeqWarn false in
 /-- The direct sum operations on `Relations A`. Given a family
 `relations : ι → Relations A`, the type of generators and relations
 in `directSum relations` are the corresponding `Sigma` types. -/
@@ -107,6 +108,7 @@ end Relations
 
 namespace Presentation
 
+set_option simps.defeqWarn false in
 /-- The obvious presentation of the module `⨁ i, M i` that is obtained from
 the data of presentations of the module `M i` for each `i`. -/
 @[simps! G R relation]
@@ -124,6 +126,7 @@ section
 variable {N : Type v} [AddCommGroup N] [Module A N]
   (pres : Presentation A N) (ι : Type w) [DecidableEq ι] [DecidableEq N]
 
+set_option simps.defeqWarn false in
 /-- The obvious presentation of the module `ι →₀ N` that is deduced from a presentation
 of the module `N`. -/
 @[simps! G R relation]

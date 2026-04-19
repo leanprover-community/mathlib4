@@ -520,6 +520,7 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHo
     ← (hζ.map_of_injective (Units.map_injective (f := (f : R →* S)) hf)).zpowers_eq,
     MonoidHom.map_zpowers]
 
+set_option simps.defeqWarn false in
 /-- If `R` contains an `n`-th primitive root, and `S/R` is a ring extension,
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/

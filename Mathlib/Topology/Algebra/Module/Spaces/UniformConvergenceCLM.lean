@@ -454,6 +454,7 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 
 variable (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
 
+set_option simps.defeqWarn false in
 variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
@@ -477,6 +478,7 @@ alias precomp_uniformConvergenceCLM := precompUniformConvergenceCLM
 @[deprecated (since := "2026-01-27")]
 alias precomp_uniformConvergenceCLM_apply := precompUniformConvergenceCLM_apply
 
+set_option simps.defeqWarn false in
 /-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the uniform
 convergence topology. -/
 @[simps]

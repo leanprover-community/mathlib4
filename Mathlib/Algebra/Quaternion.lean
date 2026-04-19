@@ -699,6 +699,7 @@ open Quaternion
 def Quaternion.equivProd (R : Type*) [Zero R] [One R] [Neg R] : ℍ[R] ≃ R × R × R × R :=
   QuaternionAlgebra.equivProd _ _ _
 
+set_option simps.defeqWarn false in
 /-- The equivalence between the quaternions over `R` and `Fin 4 → R`. -/
 @[simps! symm_apply]
 def Quaternion.equivTuple (R : Type*) [Zero R] [One R] [Neg R] : ℍ[R] ≃ (Fin 4 → R) :=

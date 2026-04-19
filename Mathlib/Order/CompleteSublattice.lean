@@ -203,6 +203,7 @@ protected def range : CompleteSublattice β :=
 
 theorem range_coe : (f.range : Set β) = range f := rfl
 
+set_option simps.defeqWarn false in
 /-- We can regard a complete lattice homomorphism as an order equivalence to its range. -/
 @[simps! apply] noncomputable def toOrderIsoRangeOfInjective (hf : Injective f) : α ≃o f.range :=
   (orderEmbeddingOfInjective f hf).orderIso

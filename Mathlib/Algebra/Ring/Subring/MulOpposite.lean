@@ -149,6 +149,7 @@ theorem unop_closure (s : Set Rᵐᵒᵖ) : (closure s).unop = closure (MulOppos
 @[simps!]
 def addEquivOp (S : Subring R) : S ≃+ S.op := S.toSubsemiring.addEquivOp
 
+set_option simps.defeqWarn false in
 /-- Bijection between a subring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
 def ringEquivOpMop (S : Subring R) : S ≃+* (S.op)ᵐᵒᵖ := S.toSubsemiring.ringEquivOpMop

@@ -30,6 +30,7 @@ namespace Relations
 
 variable (relations₁ : Relations.{w₁₀, w₁₁} A) (relations₂ : Relations.{w₂₀, w₂₁} A)
 
+set_option simps.defeqWarn false in
 /-- The tensor product of systems of linear equations. -/
 @[simps]
 noncomputable def tensor :
@@ -104,6 +105,7 @@ namespace Presentation
 
 variable (pres₁ : Presentation.{w₁₀, w₁₁} A M₁) (pres₂ : Presentation.{w₂₀, w₂₁} A M₂)
 
+set_option simps.defeqWarn false in
 /-- The presentation of the `A`-module `M₁ ⊗[A] M₂` that is deduced from
 a presentation of `M₁` and a presentation of `M₂`. -/
 @[simps!]

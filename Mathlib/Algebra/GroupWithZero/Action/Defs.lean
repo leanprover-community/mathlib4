@@ -387,6 +387,7 @@ def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
 
 variable (M)
 
+set_option simps.defeqWarn false in
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
 @[simps]
 def DistribMulAction.toAddMonoidEnd :

@@ -39,6 +39,7 @@ theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
     (fun f : Fin 2 → α => (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
   @Fin.preimage_apply_01_prod (fun _ => α) s t
 
+set_option simps.defeqWarn false in
 /-- A product space `α × β` is equivalent to the space `Π i : Fin 2, γ i`, where
 `γ = Fin.cons α (Fin.cons β finZeroElim)`. See also `piFinTwoEquiv` and
 `finTwoArrowEquiv`. -/

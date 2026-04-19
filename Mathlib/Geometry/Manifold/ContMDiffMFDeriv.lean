@@ -394,6 +394,7 @@ end ContMDiffMap
 
 section EquivTangentBundleProd
 
+set_option simps.defeqWarn false in
 variable (I I' M M') in
 /-- The tangent bundle of a product is canonically isomorphic to the product of the tangent
 bundles. -/

@@ -403,6 +403,7 @@ theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
+set_option simps.defeqWarn false in
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
 @[simps -fullyApplied]
 def toEnd : (G →+c[a, a] G) →* Function.End G where

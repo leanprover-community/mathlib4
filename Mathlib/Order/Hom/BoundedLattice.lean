@@ -533,6 +533,7 @@ namespace BoundedLatticeHom
 
 variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [Lattice γ] [BoundedOrder γ]
 
+set_option simps.defeqWarn false in
 /-- Reinterpret a bounded lattice homomorphism as a bounded lattice homomorphism between the dual
 bounded lattices. -/
 @[simps!]

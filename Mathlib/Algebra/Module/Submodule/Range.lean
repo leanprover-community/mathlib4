@@ -137,6 +137,7 @@ lemma range_restrictScalars [SMul R R₂] [Module R₂ M] [Module R M₂] [Compa
 
 end
 
+set_option simps.defeqWarn false in
 /-- The decreasing sequence of submodules consisting of the ranges of the iterates of a linear map.
 -/
 @[simps]

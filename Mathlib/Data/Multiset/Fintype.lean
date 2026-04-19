@@ -233,6 +233,7 @@ theorem prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α
   · intro x
     rfl
 
+set_option simps.defeqWarn false in
 /--
 If `s = t` then there's an equivalence between the appropriate types.
 -/

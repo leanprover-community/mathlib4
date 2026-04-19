@@ -200,6 +200,7 @@ instance : LieModule R L (shiftedGenWeightSpace R L M χ) where
     rw [smul_comm (χ x), ← smul_sub]
     congr
 
+set_option simps.defeqWarn false in
 /-- Forgetting the action of `L`,
 the spaces `genWeightSpace M χ` and `shiftedGenWeightSpace R L M χ` are equivalent. -/
 @[simps!] def shift : genWeightSpace M χ ≃ₗ[R] shiftedGenWeightSpace R L M χ := LinearEquiv.refl R _

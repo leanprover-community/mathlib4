@@ -97,6 +97,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 
 section Construction
 
+set_option simps.defeqWarn false in
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
 @[simps -isSimp Ring σ]
 noncomputable
@@ -108,6 +109,7 @@ def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
   σ x := (h x).choose
   algebraMap_σ x := (h x).choose_spec
 
+set_option simps.defeqWarn false in
 variable (R S) in
 /-- The trivial extension of `S`. -/
 @[simps -isSimp Ring σ]
@@ -282,6 +284,7 @@ def Hom.mapKer (f : P.Hom P')
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- The canonical hom from `P` to its base change `P.baseChange`. -/

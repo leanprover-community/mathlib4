@@ -83,6 +83,7 @@ instance permGroup : Group (Perm α) where
 theorem default_eq : (default : Perm α) = 1 :=
   rfl
 
+set_option simps.defeqWarn false in
 /-- The permutation of a type is equivalent to the units group of the endomorphisms monoid of this
 type. -/
 @[simps]
@@ -92,6 +93,7 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
     ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
   map_mul' _ _ := rfl
 
+set_option simps.defeqWarn false in
 /-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
 `f : G →* Equiv.Perm α`. -/
 @[simps!]

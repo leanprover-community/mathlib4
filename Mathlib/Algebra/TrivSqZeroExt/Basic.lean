@@ -740,6 +740,7 @@ theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
   convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟x)
   convert rfl
 
+set_option simps.defeqWarn false in
 /-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
 form an equivalence, although both sides of the equiv are subsingleton anyway. -/
 @[simps]

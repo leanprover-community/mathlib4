@@ -353,6 +353,7 @@ lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
 @[simp] lemma prod_eq_top [Nonempty α] [Nonempty β] {M : Sublattice β} :
     L.prod M = ⊤ ↔ L = ⊤ ∧ M = ⊤ := by simpa only [← coe_inj] using Set.prod_eq_univ
 
+set_option simps.defeqWarn false in
 /-- The product of sublattices is isomorphic to their product as lattices. -/
 @[simps! toEquiv apply symm_apply]
 def prodEquiv (L : Sublattice α) (M : Sublattice β) : L.prod M ≃o L × M where

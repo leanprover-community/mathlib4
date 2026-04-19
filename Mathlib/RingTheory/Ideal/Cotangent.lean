@@ -46,6 +46,7 @@ deriving instance Module S, IsScalarTower S S', IsScalarTower R (R ⧸ I) for Co
 variable [IsNoetherian R I] in
 deriving instance IsNoetherian R for Cotangent I
 
+set_option simps.defeqWarn false in
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _

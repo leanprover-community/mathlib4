@@ -442,6 +442,7 @@ instance oneUnique : Unique (vectorsProdEqOne G 1) := by
   rw [one_eq]
   exact Set.uniqueSingleton (Vector.nil.cons 1)
 
+set_option simps.defeqWarn false in
 /-- Given a vector `v` of length `n`, make a vector of length `n + 1` whose product is `1`,
 by appending the inverse of the product of `v`. -/
 @[simps]

@@ -35,6 +35,7 @@ instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
 theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
   rfl
 
+set_option simps.defeqWarn false in
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
 @[simps! -fullyApplied]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
