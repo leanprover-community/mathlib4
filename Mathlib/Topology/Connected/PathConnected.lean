@@ -142,7 +142,7 @@ variable {T : Type*} (f : X → T) (hf : ∀ ⦃x y : X⦄ (_ : Path x y), f x =
 
 /-- Constructor for maps from `ZerothHomotopy X`. -/
 def lift : ZerothHomotopy X → T :=
-  Quotient.lift f (by rintro _ _ ⟨p⟩; exact hf p)
+  Quotient.lift f fun _ _ ⟨p⟩ ↦ hf p
 
 @[simp]
 lemma lift_mk (x : X) : lift f hf (.mk x) = f x := rfl
