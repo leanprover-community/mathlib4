@@ -30,6 +30,11 @@ open scoped Manifold
 
 universe u
 
+/- Implementation note: `carrier`, `E`, `H`, and `I` all live in the same `Type u`. This assumption
+is essential to differential geometry because we wish to compare the linear model (`E`, `H`, `I`)
+with the manifold itself. For example, the Whitney Embedding Theorem says that an n-manifold
+should embed into `E^2m`.
+ -/
 /-- The category of `C^n` 𝕜-manifolds. -/
 structure MfldCat (𝕜 : Type u) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
