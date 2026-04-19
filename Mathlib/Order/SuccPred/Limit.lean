@@ -209,7 +209,7 @@ theorem _root_.WithTop.isSuccLimit_top [Nonempty α] [NoMaxOrder α] :
   simp [WithTop.isSuccLimit_iff]
 
 @[to_dual]
-theorem WithTop.isPredPrelimit_iff {x : WithTop α} :
+theorem _root_.WithTop.isPredPrelimit_iff {x : WithTop α} :
     IsPredPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsPredLimit y := by
   cases x with
   | coe x => simp [IsPredPrelimit, IsPredLimit, WithTop.forall]
