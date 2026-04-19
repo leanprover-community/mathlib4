@@ -731,13 +731,20 @@ namespace WithTop
 
 variable [Preorder α] {a b : α}
 
-@[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
+@[to_dual, simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
   Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
 @[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
+
+theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, IsMax b ∧ a = b := by
+  sorry
+
+@[simp]
+theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
+  simp [covBy_top_iff]
 
 @[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
   simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,

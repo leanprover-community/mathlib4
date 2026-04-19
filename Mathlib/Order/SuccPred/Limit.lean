@@ -174,6 +174,18 @@ theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
   obtain ⟨b, hb⟩ := this
   exact ⟨b, hb⟩
 
+@[to_dual]
+theorem _root_.WithTop.isSuccPrelimit_iff [Preorder α] [NoMaxOrder α] {x : WithTop α} :
+    IsSuccPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccPrelimit y where
+  mp h := by
+    sorry
+  mpr := by
+    rintro ⟨rfl, ⟨y, rfl, hy⟩⟩
+    · intro a
+      apply WithTop.not_covBy_top
+
+    #exit
+
 variable [SuccOrder α]
 
 @[to_dual]

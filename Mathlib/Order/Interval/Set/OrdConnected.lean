@@ -165,9 +165,9 @@ instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α 
     {t : ∀ i, Set (α i)} [h : ∀ i, OrdConnected (t i)] : OrdConnected (s.pi t) :=
   ordConnected_pi fun i _ => h i
 
-@[instance]
-theorem ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
-  ⟨fun _ hx _ _ _ hz => le_trans hx hz.1⟩
+@[to_dual]
+instance ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
+  ⟨fun _ hx _ _ _ hz => le_trans (mem_Ici.2 hx) (mem_Icc.2 hz).1⟩
 
 @[instance]
 theorem ordConnected_Iic {a : α} : OrdConnected (Iic a) :=
