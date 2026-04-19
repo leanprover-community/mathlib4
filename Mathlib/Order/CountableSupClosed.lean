@@ -48,7 +48,7 @@ with `ι` nonempty countable and `A n ∈ s` for all `n`.
 
 The definition uses `ι = ℕ`.
 See `CountableSupClosed.iSup_mem` for a supremum over any nonempty countable type. -/
-structure CountableSupClosed [CompleteLattice α] (s : Set α) : Prop where
+structure CountableSupClosed (s : Set α) : Prop where
   iSup_nat_mem : ∀ ⦃A : ℕ → α⦄ (_hA : ∀ n, A n ∈ s), ⨆ n, A n ∈ s
 
 /-- A set `s` is closed under countable infimum if `⨅ n, A n ∈ s` for all `A : ι → α`
