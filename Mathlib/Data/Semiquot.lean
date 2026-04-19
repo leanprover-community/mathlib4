@@ -155,7 +155,6 @@ instance : LE (Semiquot α) :=
   ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
 
 instance partialOrder : PartialOrder (Semiquot α) where
-  le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
   le_refl _ := Set.Subset.refl _
   le_trans _ _ _ := Set.Subset.trans
   le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
