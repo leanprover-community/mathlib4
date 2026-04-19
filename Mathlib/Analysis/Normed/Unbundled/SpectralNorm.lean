@@ -703,7 +703,6 @@ universe u v
 variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
-set_option backward.inferInstanceAs.wrap.data false in
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
@@ -711,9 +710,9 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
     f = spectralAlgNorm K L := by
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
-  set E : Type v := id K⟮x⟯
-  letI hE : Field E := inferInstanceAs (Field K⟮x⟯)
-  letI : Algebra K E := inferInstanceAs (Algebra K K⟮x⟯)
+  let E : Type v := id K⟮x⟯
+  let : Field E := show Field K⟮x⟯ by infer_instance
+  let : Module K E := show Module K K⟮x⟯ by infer_instance
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
   let id2 : E →ₗ[K] K⟮x⟯ := LinearMap.id
   set hs_norm : RingNorm E :=
@@ -729,8 +728,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       eq_zero_of_map_eq_zero' a ha := by
         simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
           map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
-  letI n1 : NormedRing E := RingNorm.toNormedRing hs_norm
-  letI N1 : NormedSpace K E :=
+  let n1 : NormedRing E := RingNorm.toNormedRing hs_norm
+  let N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
       smul_zero e := by simp
@@ -749,8 +748,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       mul_le' a b := map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
         simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
-  letI n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
-  letI N2 : NormedSpace K K⟮x⟯ :=
+  let n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
+  let N2 : NormedSpace K K⟮x⟯ :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
       smul_zero e := by simp
@@ -762,9 +761,9 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
         have : (algebraMap (↥K⟮x⟯) L) (k • y) = k • algebraMap (↥K⟮x⟯) L y := by
           simp [IntermediateField.algebraMap_apply]
         rw [this, map_smul_eq_mul] }
-  haveI hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
+  have hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
     IntermediateField.adjoin.finiteDimensional (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
-  haveI : FiniteDimensional K E := hKx_fin
+  have : FiniteDimensional K E := hKx_fin
   set Id1 : K⟮x⟯ →L[K] E := ⟨id1, id1.continuous_of_finiteDimensional⟩
   set Id2 : E →L[K] K⟮x⟯ := ⟨id2, id2.continuous_of_finiteDimensional⟩
   obtain ⟨C1, hC1_pos, hC1⟩ : ∃ C1 : ℝ, 0 < C1 ∧ ∀ y : K⟮x⟯, ‖id1 y‖ ≤ C1 * ‖y‖ :=
@@ -881,7 +880,7 @@ def normedField : NormedField L :=
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[implicit_reducible]
-def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
+def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)

@@ -69,7 +69,7 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
-  `(tactic| ring_nf -failIfUnchanged $[at $location]?)
+  `(tactic| ring_nf (ifUnchanged := .silent) $[at $location]?)
 
 /-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
 assume commutativity, instead using only the group axioms without any information about which group

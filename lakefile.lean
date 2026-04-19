@@ -6,10 +6,10 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require batteries from git "https://github.com/riccardobrasca/batteries" @ "v4.30.0-rc1-less-choice"
-require "leanprover-community" / "Qq" @ git "v4.30.0-rc1"
-require "leanprover-community" / "aesop" @ git "v4.30.0-rc1"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
+require batteries from git "https://github.com/riccardobrasca/batteries" @ "v4.30.0-rc2-less-choice"
+require "leanprover-community" / "Qq" @ git "v4.30.0-rc2"
+require "leanprover-community" / "aesop" @ git "v4.30.0-rc2"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.98"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."

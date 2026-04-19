@@ -446,7 +446,6 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [StarOrderedRing R] [StarOrderedRing S]
     [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
 
