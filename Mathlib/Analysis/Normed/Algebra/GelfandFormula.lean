@@ -200,8 +200,8 @@ precisely the units. This allows for the application of this isomorphism in broa
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
 `NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`. -/
 @[simps]
-noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
-    [CompleteSpace A] : ℂ ≃ₐ[ℂ] A :=
+noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
+    ℂ ≃ₐ[ℂ] A :=
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A
