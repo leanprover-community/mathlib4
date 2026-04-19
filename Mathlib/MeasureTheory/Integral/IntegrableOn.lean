@@ -829,7 +829,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ioc'
   by_cases hab : a ≤ b
   · rw [← Ioc_union_left hab, integrableOn_union, eq_true (integrableOn_singleton ha'), and_true]
   · rw [Icc_eq_empty hab, Ioc_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Icc_iff_integrableOn_Ico'
@@ -838,7 +838,7 @@ theorem integrableOn_Icc_iff_integrableOn_Ico'
   by_cases hab : a ≤ b
   · rw [← Ico_union_right hab, integrableOn_union, eq_true (integrableOn_singleton hb'), and_true]
   · rw [Icc_eq_empty hab, Ico_eq_empty]
-    contrapose! hab
+    contrapose hab
     exact hab.le
 
 theorem integrableOn_Ico_iff_integrableOn_Ioo'

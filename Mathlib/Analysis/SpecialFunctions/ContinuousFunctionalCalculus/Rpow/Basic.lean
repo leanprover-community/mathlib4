@@ -788,7 +788,7 @@ lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
         inverse_eq_rpow_neg_one, rpow_rpow _ _ _ (by grind)]
     grind only
   · have ha' : ¬IsUnit (sqrt a) := by rwa [CFC.isUnit_sqrt_iff_isStrictlyPositive]
-    obtain (H|H) : ¬0 ≤ a ∨ ¬IsUnit a := by grind
+    obtain (H | H) : ¬0 ≤ a ∨ ¬IsUnit a := by grind
     · rw [sqrt_of_not_nonneg H, inverse_zero]
       by_cases hunit : IsUnit a
       · have h₂ : ¬0 ≤ inverse a := by grind [CFC.ringInverse_nonneg_iff_nonneg_of_isUnit]

@@ -44,7 +44,7 @@ instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   obtain i := Nonempty.some ((inferInstance : Nonempty J))
   let s' : Cocone F := ⟨Under.mk ((F.obj i).hom ≫ s.ι.app i), fun j ↦ Under.homMk (s.ι.app j) (by
     obtain ⟨k, hik, hjk, -⟩ := IsFilteredOrEmpty.cocone_objs i j
-    simp only [Functor.const_obj_obj, Functor.id_obj, Under.mk_right, Under.mk_hom,
+    simp only [Functor.const_obj_obj, Under.mk_right, Under.mk_hom,
       ← s.w hjk, ← s.w hik]
     simp), fun j k e ↦ by ext; simpa using s.w e⟩
   refine ⟨(hc.desc s').right, fun j ↦ congr($(hc.fac s' j).right), fun f hf ↦ ?_⟩

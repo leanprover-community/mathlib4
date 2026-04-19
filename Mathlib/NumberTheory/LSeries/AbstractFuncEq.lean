@@ -124,8 +124,8 @@ def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   hg_int := P.hf_int
   hf_top := P.hg_top
   hg_top := P.hf_top
-  hε     := inv_ne_zero P.hε
-  hk     := P.hk
+  hε := inv_ne_zero P.hε
+  hk := P.hk
   h_feq  := P.h_feq'
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
@@ -317,15 +317,15 @@ def toStrongFEPair : StrongFEPair E where
   ε := P.ε
   f₀ := 0
   g₀ := 0
-  hf_int   := P.hf_modif_int
-  hg_int   := P.symm.hf_modif_int
-  h_feq    := P.hf_modif_FE
-  hε       := P.hε
-  hk       := P.hk
-  hf₀      := rfl
-  hg₀      := rfl
-  hf_top   := P.hf_modif_top
-  hg_top   := P.symm.hf_modif_top
+  hf_int := P.hf_modif_int
+  hg_int := P.symm.hf_modif_int
+  h_feq := P.hf_modif_FE
+  hε := P.hε
+  hk := P.hk
+  hf₀ := rfl
+  hg₀ := rfl
+  hf_top := P.hf_modif_top
+  hg_top := P.symm.hf_modif_top
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)

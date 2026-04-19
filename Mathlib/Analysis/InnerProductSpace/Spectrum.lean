@@ -449,14 +449,8 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_symm : S.IsSymmetric :=
     hT'.restrict_invariant (hT'.orthogonalComplement_iSup_eigenspaces_invariant)
-  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ := by
-    rw [Submodule.eq_bot_iff]
-    intro v hv
-    rw [Subtype.ext_iff, Submodule.coe_zero, ← Submodule.mem_bot 𝕜,
-      ← Submodule.inf_orthogonal_eq_bot (⨆ μ, eigenspace T μ : Submodule 𝕜 E)]
-    refine ⟨Submodule.mem_iSup_of_mem μ ?_, v.2⟩
-    rw [mem_eigenspace_iff] at hv ⊢
-    exact Subtype.ext_iff.mp hv
+  have hS μ : eigenspace (S : Module.End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ = ⊥ :=
+    hT'.orthogonalComplement_iSup_eigenspaces _
   have h μ : HasEigenvalue (S : End 𝕜 (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ) μ → μ = 0 := by
     simp_all [hasEigenvalue_iff]
   rw [eq_zero_of_forall_hasEigenvalue_eq_zero hS_compact hS_symm] at h

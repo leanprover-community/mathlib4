@@ -200,6 +200,9 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `extract-unique-nonascii.lean` is used for updating the list of non-ascii characters in
+  `Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
+  which have an abbreviation provided by the Lean VSCode extension.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
