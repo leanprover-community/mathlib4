@@ -79,7 +79,6 @@ end GeometricPMF
 
 /-- Measure defined by the geometric distribution -/
 @[informal "geometric law"]
-@[informal "geometric law"]
 noncomputable
 def geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : Measure ℕ :=
   (geometricPMF hp_pos hp_le_one).toMeasure

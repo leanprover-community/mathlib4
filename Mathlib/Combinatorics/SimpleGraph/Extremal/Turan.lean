@@ -290,7 +290,6 @@ theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal
 /-- **Turán's theorem**. `turanGraph n r` is, up to isomorphism, the unique
 `r + 1`-cliquefree Turán-maximal graph on `n` vertices. -/
 @[informal "Turán's theorem"]
-@[informal "Turán's theorem"]
 theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩

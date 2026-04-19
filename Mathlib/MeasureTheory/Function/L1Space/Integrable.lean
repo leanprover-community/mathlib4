@@ -54,7 +54,7 @@ namespace MeasureTheory
 
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
-@[informal "vector-valued integrable function (Bochner integral)", informal "vector-valued integrable function (Bochner integral)", fun_prop]
+@[informal "vector-valued integrable function (Bochner integral)", fun_prop]
 def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ

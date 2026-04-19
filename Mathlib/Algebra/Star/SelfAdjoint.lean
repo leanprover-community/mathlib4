@@ -48,7 +48,6 @@ variable {R A : Type*}
 
 /-- An element is self-adjoint if it is equal to its star. -/
 @[informal "self-adjoint operator"]
-@[informal "self-adjoint operator"]
 def IsSelfAdjoint [Star R] (x : R) : Prop :=
   star x = x
 

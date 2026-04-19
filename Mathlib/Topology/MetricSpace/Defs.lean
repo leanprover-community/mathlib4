@@ -67,7 +67,6 @@ This e.g. ensures that we do not get a diamond when doing
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
 @[informal "metric space"]
-@[informal "metric space"]
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 

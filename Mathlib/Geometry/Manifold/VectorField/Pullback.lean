@@ -105,7 +105,6 @@ variable (I I') in
 /-- The pullback of a vector field under a map between manifolds. If the derivative of the map is
 not invertible, then pullback is given the junk value zero. -/
 @[informal "pullback of vector fields"]
-@[informal "pullback of vector fields"]
 def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
     TangentSpace I x :=
   (mfderiv% f x).inverse (V (f x))

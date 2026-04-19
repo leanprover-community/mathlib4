@@ -319,7 +319,6 @@ variable (p n : ℕ) [ExpChar R p]
 
 /-- The Frobenius map `x ↦ x ^ p`. -/
 @[informal "Frobenius morphism"]
-@[informal "Frobenius morphism"]
 def frobenius : R →+* R where
   __ := powMonoidHom p
   map_zero' := zero_pow (expChar_pos R p).ne'

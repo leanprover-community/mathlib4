@@ -65,7 +65,6 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
 @[informal "Test functions"]
-@[informal "Test functions"]
 structure TestFunction : Type _ where
   /-- The underlying function. Use coercion instead. -/
   protected toFun : E → F

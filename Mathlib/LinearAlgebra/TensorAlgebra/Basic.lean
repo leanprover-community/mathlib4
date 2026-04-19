@@ -61,7 +61,6 @@ end TensorAlgebra
 /-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 @[informal "tensor algebra of a commutative ring"]
-@[informal "tensor algebra of a commutative ring"]
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
 deriving Inhabited, Semiring

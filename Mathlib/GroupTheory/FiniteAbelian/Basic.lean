@@ -117,7 +117,6 @@ variable [AddCommGroup G]
 group is the product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some
 prime powers `p i ^ e i`. -/
 @[informal "structure of finitely generated abelian groups"]
-@[informal "structure of finitely generated abelian groups"]
 theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by

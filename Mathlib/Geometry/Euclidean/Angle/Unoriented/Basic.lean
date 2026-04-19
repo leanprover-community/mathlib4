@@ -38,7 +38,6 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
 definition. -/
 @[informal "angle"]
-@[informal "angle"]
 def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 

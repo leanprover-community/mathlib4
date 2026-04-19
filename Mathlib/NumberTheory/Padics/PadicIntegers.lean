@@ -58,7 +58,6 @@ variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 @[informal "$p$-adic integer"]
-@[informal "$p$-adic integer"]
 def PadicInt : Type := {x : ℚ_[p] // ‖x‖ ≤ 1}
 
 /-- The ring of `p`-adic integers. -/

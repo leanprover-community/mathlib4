@@ -162,7 +162,6 @@ end SubringClass
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
 @[informal "subring"]
-@[informal "subring"]
 structure Subring (R : Type u) [NonAssocRing R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/

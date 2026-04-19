@@ -167,7 +167,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton {I : Ideal (MvPolynomial σ K)
     fun ⟨_, hx⟩ => hx ▸ inferInstance⟩
 
 /-- Main statement of the Nullstellensatz -/
-@[informal "Nullstellensatz", informal "Nullstellensatz", simp]
+@[informal "Nullstellensatz", simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
     vanishingIdeal k (zeroLocus K I) = I.radical := by
   refine le_antisymm ?_ (radical_le_vanishingIdeal_zeroLocus _)

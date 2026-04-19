@@ -50,7 +50,7 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
 
 The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
-@[to_additive (attr := informal "Additive energy") (attr := informal "Additive energy") /-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
+@[to_additive (attr := informal "Additive energy") /-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
 
 The notation `E[s, t]` is available in scope `Combinatorics.Additive`. -/]

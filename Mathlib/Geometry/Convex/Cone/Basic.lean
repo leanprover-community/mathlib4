@@ -56,7 +56,6 @@ variable (R M) in
 /-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 @[informal "convex cone"]
-@[informal "convex cone"]
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set M
@@ -295,9 +294,7 @@ variable [AddCommGroup G] [SMul R G] {C C₁ C₂ : ConvexCone R G}
 /-- A convex cone is flat if it contains some nonzero vector `x` and its opposite `-x`. -/
 def Flat (C : ConvexCone R G) : Prop := ∃ x ∈ C, x ≠ (0 : G) ∧ -x ∈ C
 
-/-- A convex cone is salient if it doesn't include `x` and `-
-@[informal "salient cone"]
-` for any nonzero `x`. -/
+/-- A convex cone is salient if it doesn't include `x` and `-x` for any nonzero `x`. -/
 @[informal "salient cone"]
 def Salient (C : ConvexCone R G) : Prop := ∀ x ∈ C, x ≠ (0 : G) → -x ∉ C
 
@@ -623,9 +620,7 @@ variable [Semiring R] [PartialOrder R] [AddCommMonoid M] [PartialOrder M] [IsOrd
   [Module R M] [PosSMulMono R M] {x : M}
 
 variable (R M) in
-/-- The positive cone is the convex cone formed by the
-@[informal "positive cone"]
-set of nonnegative elements in an ordered
+/-- The positive cone is the convex cone formed by the set of nonnegative elements in an ordered
 module. -/
 @[informal "positive cone"]
 def positive : ConvexCone R M where

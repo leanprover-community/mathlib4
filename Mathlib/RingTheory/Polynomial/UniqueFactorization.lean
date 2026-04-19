@@ -129,7 +129,6 @@ private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
       exact Polynomial.uniqueFactorizationMonoid
 
 @[informal "$A[{X_i}]$ is a UFD when $A$ is a UFD"]
-@[informal "$A[{X_i}]$ is a UFD when $A$ is a UFD"]
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]

@@ -49,7 +49,6 @@ variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
 @[informal "dual cone"]
-@[informal "dual cone"]
 def dual (s : Set M) : PointedCone R N where
   carrier := {y | ∀ ⦃x⦄, x ∈ s → 0 ≤ p x y}
   zero_mem' := by simp

@@ -160,7 +160,6 @@ passing through it.
 
 See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/
 @[informal "uniform time existence"]
-@[informal "uniform time existence"]
 lemma exists_isMIntegralCurve_of_isMIntegralCurveOn [BoundarylessManifold I M]
     {v : (x : M) → TangentSpace I x}
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))

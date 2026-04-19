@@ -41,7 +41,6 @@ variable {R : Type u} [CommSemiring R] (x y z w : R)
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
 e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. -/
 @[informal "coprime element"]
-@[informal "coprime element"]
 def IsCoprime : Prop :=
   ∃ a b, a * x + b * y = 1
 

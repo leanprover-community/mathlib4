@@ -63,7 +63,6 @@ variable (T)
 
 /-- A theory is satisfiable if a structure models it. -/
 @[informal "satisfiability"]
-@[informal "satisfiability"]
 def IsSatisfiable : Prop :=
   Nonempty (ModelType.{u, v, max u v} T)
 
@@ -97,9 +96,7 @@ theorem isSatisfiable_onTheory_iff {L' : Language.{w, w'}} {φ : L →ᴸ L'} (h
 theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitelySatisfiable :=
   fun _ => h.mono
 
-/-- The **Compactness Theorem of first-order logic**: A theory is satisfiable if and only if i
-@[informal "Compactness theorem"]
- is
+/-- The **Compactness Theorem of first-order logic**: A theory is satisfiable if and only if it is
 finitely satisfiable. -/
 @[informal "Compactness theorem"]
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
@@ -244,9 +241,7 @@ end
 
 /-- The Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
 and an infinite `L`-structure `M`, then there is an elementary embedding in the appropriate
-dir
-@[informal "Löwenheim-Skolem"]
-ction between then `M` and a structure of cardinality `κ`. -/
+direction between then `M` and a structure of cardinality `κ`. -/
 @[informal "Löwenheim-Skolem"]
 theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :

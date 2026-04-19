@@ -91,7 +91,6 @@ variable [Fintype α]
 
 /-- **Harris-Kleitman inequality**: Any two lower sets of finsets correlate. -/
 @[informal "Harris-Kleitman inequality"]
-@[informal "Harris-Kleitman inequality"]
 theorem IsLowerSet.le_card_inter_finset (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))
     (hℬ : IsLowerSet (ℬ : Set (Finset α))) : #𝒜 * #ℬ ≤ 2 ^ Fintype.card α * #(𝒜 ∩ ℬ) :=
 h𝒜.le_card_inter_finset' hℬ (fun _ _ => subset_univ _) fun _ _ => subset_univ _

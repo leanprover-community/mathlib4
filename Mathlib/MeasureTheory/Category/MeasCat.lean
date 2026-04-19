@@ -41,7 +41,6 @@ universe u v
 
 /-- The category of measurable spaces and measurable functions. -/
 @[informal "the category of measurable spaces"]
-@[informal "the category of measurable spaces"]
 structure MeasCat : Type (u + 1) where
   /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
   of ::

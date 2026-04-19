@@ -63,7 +63,6 @@ variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 @[informal "language"]
-@[informal "language"]
 def Language (α) :=
   Set (List α)
 deriving CompleteAtomicBooleanAlgebra
@@ -308,9 +307,7 @@ instance : KleeneAlgebra (Language α) where
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
   add_le_add
 
-/
-@[informal "Arden's lemma"]
-- **Arden's lemma** -/
+/-- **Arden's lemma** -/
 @[informal "Arden's lemma"]
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
   mp h := by

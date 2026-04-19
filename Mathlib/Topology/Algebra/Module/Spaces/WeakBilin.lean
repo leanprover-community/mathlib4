@@ -86,7 +86,6 @@ variable [AddCommMonoid F] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 @[informal "weak-* topology for dualities"]
-@[informal "weak-* topology for dualities"]
 instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
   TopologicalSpace.induced (fun x y => B x y) Pi.topologicalSpace
 

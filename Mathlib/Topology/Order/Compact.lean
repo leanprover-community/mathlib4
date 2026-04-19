@@ -226,7 +226,6 @@ theorem cocompact_eq_atTop [NoMaxOrder α] [OrderBot α]
 
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 @[informal "extreme value theorem"]
-@[informal "extreme value theorem"]
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩

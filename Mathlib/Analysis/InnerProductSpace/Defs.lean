@@ -104,7 +104,6 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
 @[informal "Inner product space, over $R$ or $C$"]
-@[informal "Inner product space, over $R$ or $C$"]
 class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
     NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/

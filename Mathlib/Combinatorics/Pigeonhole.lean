@@ -362,7 +362,6 @@ More formally, given a function `f` between finite types `α` and `β` and a num
 `card β * n < card α`, there exists an element `y : β` such that its preimage has more than `n`
 elements. -/
 @[informal "strong pigeonhole principle"]
-@[informal "strong pigeonhole principle"]
 theorem exists_lt_card_fiber_of_mul_lt_card (hn : card β * n < card α) :
     ∃ y : β, n < #{x | f x = y} :=
   exists_lt_card_fiber_of_nsmul_lt_card _ hn

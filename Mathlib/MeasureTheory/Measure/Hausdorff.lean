@@ -535,7 +535,6 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 
 /-- Hausdorff measure on an (e)metric space. -/
 @[informal "Hausdorff measure"]
-@[informal "Hausdorff measure"]
 def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 

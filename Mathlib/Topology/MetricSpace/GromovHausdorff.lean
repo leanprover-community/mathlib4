@@ -84,7 +84,6 @@ instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
 
 /-- The Gromov-Hausdorff space -/
 @[informal "Gromov-Hausdorff space"]
-@[informal "Gromov-Hausdorff space"]
 def GHSpace : Type :=
   Quotient IsometryRel.setoid
 

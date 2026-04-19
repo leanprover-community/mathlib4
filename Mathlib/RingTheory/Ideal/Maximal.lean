@@ -44,7 +44,6 @@ variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
 @[informal "maximal ideal"]
-@[informal "maximal ideal"]
 class IsMaximal (I : Ideal α) : Prop where
   /-- The maximal ideal is a coatom in the ordering on ideals; that is, it is not the entire ring,
   and there are no other proper ideals strictly containing it. -/

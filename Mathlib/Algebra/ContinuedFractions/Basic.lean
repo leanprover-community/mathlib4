@@ -228,7 +228,6 @@ variable (α) in
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
 -/
 @[informal "continued fraction"]
-@[informal "continued fraction"]
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
 

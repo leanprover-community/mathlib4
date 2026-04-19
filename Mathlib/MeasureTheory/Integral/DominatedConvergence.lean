@@ -56,7 +56,6 @@ variable {α E G : Type*}
   (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
   is easier. -/
 @[informal "dominated convergence theorem"]
-@[informal "dominated convergence theorem"]
 theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α → G} (bound : α → ℝ)
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ) (bound_integrable : Integrable bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)

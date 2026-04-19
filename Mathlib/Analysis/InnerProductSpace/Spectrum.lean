@@ -328,7 +328,6 @@ theorem apply_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E 
 finite-dimensional inner product space `E` acts diagonally on the identification of `E` with
 Euclidean space induced by an orthonormal basis of eigenvectors of `T`. -/
 @[informal "diagonalization of self-adjoint endomorphisms"]
-@[informal "diagonalization of self-adjoint endomorphisms"]
 theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (v : E) (i : Fin n) :
     (hT.eigenvectorBasis hn).repr (T v) i =

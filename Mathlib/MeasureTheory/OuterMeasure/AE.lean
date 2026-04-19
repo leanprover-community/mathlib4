@@ -45,7 +45,6 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 
 /-- The “almost everywhere” filter of co-null sets. -/
 @[informal "almost sure convergence"]
-@[informal "almost sure convergence"]
 def ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht

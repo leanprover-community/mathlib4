@@ -344,7 +344,6 @@ def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentB
 variable (I I') in
 /-- The derivative, as a map between the tangent bundles -/
 @[informal "tangent map"]
-@[informal "tangent map"]
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
   ⟨f p.1, (mfderiv I I' f p.1 : TangentSpace I p.1 → TangentSpace I' (f p.1)) p.2⟩
 

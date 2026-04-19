@@ -166,7 +166,6 @@ One can think of `FreeAlgebra R α` as the free non-commutative polynomial ring
 with coefficients in `R` and variables indexed by `α`.
 -/
 @[informal "free algebra of a commutative ring"]
-@[informal "free algebra of a commutative ring"]
 def FreeAlgebra :=
   Quot (FreeAlgebra.Rel R X)
 

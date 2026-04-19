@@ -43,7 +43,6 @@ variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
   realizations of formulas. -/
 @[informal "elementary embedding"]
-@[informal "elementary embedding"]
 structure ElementaryEmbedding where
   /-- The underlying embedding -/
   toFun : M → N

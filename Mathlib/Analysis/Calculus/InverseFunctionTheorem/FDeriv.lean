@@ -181,7 +181,6 @@ theorem localInverse_unique (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {
 /-- If `f` has an invertible derivative `f'` at `a` in the sense of strict differentiability `(hf)`,
 then the inverse function `hf.localInverse f` has derivative `f'.symm` at `f a`. -/
 @[informal "inverse function theorem"]
-@[informal "inverse function theorem"]
 theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     HasStrictFDerivAt (hf.localInverse f f' a) (f'.symm : F →L[𝕜] E) (f a) :=
   (hf.toOpenPartialHomeomorph f).hasStrictFDerivAt_symm

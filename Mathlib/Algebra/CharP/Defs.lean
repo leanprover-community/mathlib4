@@ -42,7 +42,7 @@ For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorb
 `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
 This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
-@[informal "characteristic p", informal "characteristic p", mk_iff]
+@[informal "characteristic p", mk_iff]
 class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop where
   cast_eq_zero_iff (R p) : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
 
@@ -149,9 +149,7 @@ lemma existsUnique : ∃! p, CharP R p :=
 end NonAssocSemiring
 end CharP
 
-/-- Noncomputable function that outputs the unique cha
-@[informal "characteristic of a ring"]
-acteristic of a semiring. -/
+/-- Noncomputable function that outputs the unique characteristic of a semiring. -/
 @[informal "characteristic of a ring"]
 noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.existsUnique R)
 

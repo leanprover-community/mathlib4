@@ -317,7 +317,6 @@ inductive BoundedFormula : ℕ → Type max u v u'
 /-- `Formula α` is the type of formulas with free variables indexed by `α` and no bound variables in
 scope. -/
 @[informal "first-order formula"]
-@[informal "first-order formula"]
 abbrev Formula :=
   L.BoundedFormula α 0
 

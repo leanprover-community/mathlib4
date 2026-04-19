@@ -56,7 +56,6 @@ namespace NumberField
 namespace RingOfIntegers
 
 @[informal "Finiteness of the class number"]
-@[informal "Finiteness of the class number"]
 noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (𝓞 K)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite ℚ K AbsoluteValue.absIsAdmissible
 

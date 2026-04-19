@@ -109,7 +109,6 @@ define is independent. `m : ι → MeasurableSpace Ω` is independent with respe
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i ∈ s, μ (f i)`. -/
 @[informal "independent sigma-algebras"]
-@[informal "independent sigma-algebras"]
 def iIndep (m : ι → MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω} (μ : Measure Ω := by volume_tac) :
     Prop :=
   Kernel.iIndep m (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
@@ -122,9 +121,7 @@ def Indep (m₁ m₂ : MeasurableSpace Ω)
   Kernel.Indep m₁ m₂ (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
-independent. For a set `s`, the generated measurable space has
-@[informal "independent events"]
-measurable sets `∅, s, sᶜ, univ`. -/
+independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
 @[informal "independent events"]
 def iIndepSet {_mΩ : MeasurableSpace Ω} (s : ι → Set Ω) (μ : Measure Ω := by volume_tac) : Prop :=
   Kernel.iIndepSet s (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
@@ -137,9 +134,7 @@ def IndepSet {_mΩ : MeasurableSpace Ω} (s t : Set Ω) (μ : Measure Ω := by v
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
 spaces, each with a measurable space structure, is independent if the family of measurable space
 structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
-space structure `m`, t
-@[informal "independence of random variables"]
-e generated measurable space structure is `MeasurableSpace.comap g m`. -/
+space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
 @[informal "independence of random variables"]
 def iIndepFun {_mΩ : MeasurableSpace Ω} {β : ι → Type*} [m : ∀ x : ι, MeasurableSpace (β x)]
     (f : ∀ x : ι, Ω → β x) (μ : Measure Ω := by volume_tac) : Prop :=

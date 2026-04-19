@@ -30,7 +30,6 @@ local notation3 "R≥0" => {c : R // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 @[informal "pointed cone"]
-@[informal "pointed cone"]
 abbrev PointedCone (R E)
     [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E] :=
   Submodule {c : R // 0 ≤ c} E

@@ -40,7 +40,6 @@ namespace AlgebraicGeometry
 
 /-- A `PresheafedSpace C` is a topological space equipped with a presheaf of `C`s. -/
 @[informal "presheafed space"]
-@[informal "presheafed space"]
 structure PresheafedSpace.{u} where
   carrier : TopCat.{u}
   protected presheaf : carrier.Presheaf C

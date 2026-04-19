@@ -101,7 +101,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder where
     ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
-@[informal "ordinal", informal "ordinal", pp_with_univ]
+@[informal "ordinal", pp_with_univ]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 

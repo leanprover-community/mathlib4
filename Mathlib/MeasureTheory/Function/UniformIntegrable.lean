@@ -71,7 +71,6 @@ def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0�
 /-- In probability theory, a family of measurable functions is uniformly integrable if it is
 uniformly integrable in the measure theory sense and is uniformly bounded. -/
 @[informal "uniform integrability"]
-@[informal "uniform integrability"]
 def UniformIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   (∀ i, AEStronglyMeasurable (f i) μ) ∧ UnifIntegrable f p μ ∧ ∃ C : ℝ≥0, ∀ i, eLpNorm (f i) p μ ≤ C
 

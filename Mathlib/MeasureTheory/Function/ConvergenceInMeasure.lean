@@ -55,7 +55,6 @@ variable {α ι κ E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 `ε > 0`, the measure of the set `{x | ε ≤ dist (f i x) (g x)}` tends to 0 as `i` converges along
 some given filter `l`. -/
 @[informal "convergence in probability"]
-@[informal "convergence in probability"]
 def TendstoInMeasure [EDist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
     (l : Filter ι) (g : α → E) : Prop :=
   ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ edist (f i x) (g x) }) l (𝓝 0)

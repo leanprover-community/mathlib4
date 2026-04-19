@@ -41,7 +41,6 @@ variable (C : Type u₁) [Category.{v₁} C]
 - Tη_X ≫ μ_X = 1_X (right unit)
 -/
 @[informal "monad"]
-@[informal "monad"]
 structure Monad extends C ⥤ C where
   /-- The unit for the monad. -/
   η : 𝟭 _ ⟶ toFunctor

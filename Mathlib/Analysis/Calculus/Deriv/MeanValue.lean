@@ -129,7 +129,6 @@ theorem exists_hasDerivAt_eq_slope : ∃ c ∈ Ioo a b, f' c = (f b - f a) / (b 
 include hab hfc hgc hgd hfd in
 /-- Cauchy's Mean Value Theorem, `deriv` version. -/
 @[informal "mean value theorem"]
-@[informal "mean value theorem"]
 theorem exists_ratio_deriv_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * deriv f c = (f b - f a) * deriv g c :=
   exists_ratio_hasDerivAt_eq_ratio_slope f (deriv f) hab hfc

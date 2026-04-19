@@ -278,7 +278,6 @@ topological vector bundle over `B` with fibers isomorphic to `F`,
 then `ContMDiffVectorBundle n F E IB` registers that the bundle is `C^n`, in the sense of having
 `C^n` transition functions. This is a mixin, not carrying any new data. -/
 @[informal "(smooth) vector bundle"]
-@[informal "(smooth) vector bundle"]
 class ContMDiffVectorBundle : Prop where
   protected contMDiffOn_coordChangeL :
     ∀ (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
@@ -584,9 +583,7 @@ end VectorBundleCore
 
 /-! ### The trivial `C^n` vector bundle -/
 
-/-- A trivial vector bundle over a 
-@[informal "(smooth) trivial vector bundle"]
-anifold is a `C^n` vector bundle. -/
+/-- A trivial vector bundle over a manifold is a `C^n` vector bundle. -/
 @[informal "(smooth) trivial vector bundle"]
 instance Bundle.Trivial.contMDiffVectorBundle :
     ContMDiffVectorBundle n F (Bundle.Trivial B F) IB where
@@ -614,9 +611,7 @@ variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E�
 
 variable [IsManifold IB n B]
 
-/-- The dire
-@[informal "(smooth) direct sum of vector bundles"]
-t sum of two `C^n` vector bundles over the same base is a `C^n` vector bundle. -/
+/-- The direct sum of two `C^n` vector bundles over the same base is a `C^n` vector bundle. -/
 @[informal "(smooth) direct sum of vector bundles"]
 instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
   contMDiffOn_coordChangeL := by

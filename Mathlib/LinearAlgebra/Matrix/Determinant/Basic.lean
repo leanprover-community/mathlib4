@@ -57,7 +57,6 @@ def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
 
 /-- The determinant of a matrix given by the Leibniz formula. -/
 @[informal "determinant"]
-@[informal "determinant"]
 def det (M : Matrix n n R) : R :=
   detRowAlternating M
 

@@ -116,7 +116,7 @@ theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
 
 /-- **Noether's first isomorphism theorem** (a definition): the canonical isomorphism between
 `G/(ker φ)` to `range φ`. -/
-@[informal "first isomorphism theorem", informal "first isomorphism theorem", to_additive /-- The first isomorphism theorem (a definition): the canonical isomorphism between
+@[informal "first isomorphism theorem", to_additive /-- The first isomorphism theorem (a definition): the canonical isomorphism between
 `G/(ker φ)` to `range φ`. -/]
 noncomputable def quotientKerEquivRange : G ⧸ ker φ ≃* range φ :=
   MulEquiv.ofBijective (rangeKerLift φ) ⟨rangeKerLift_injective φ, rangeKerLift_surjective φ⟩
@@ -287,7 +287,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
     (quotientKerEquivOfSurjective φ φ_surjective)
 
 /-- **Noether's second isomorphism theorem**: given two subgroups `H` and `N` of a group `G`,
-where `N` is normal, defines an isomorphism betinformal "second isomorphism theorem", ween `H/(H ∩ N)` and `(HN)/N`. -/
+where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
 @[informal "second isomorphism theorem", to_additive /-- Noether's second isomorphism theorem: given two subgroups `H` and `N` of a group
 `G`, where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`. -/]
 noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [hN : N.Normal] :
@@ -326,7 +326,7 @@ theorem quotientQuotientEquivQuotientAux_mk_mk (x : G) :
     quotientQuotientEquivQuotientAux N M h (x : G ⧸ N) = x :=
   QuotientGroup.lift_mk' (M.map (mk' N)) _ x
 
-/-- **Noether's informal "third isomorphism theorem", third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
+/-- **Noether's third isomorphism theorem** for groups: `(G / N) / (M / N) ≃* G / M`. -/
 @[informal "third isomorphism theorem", to_additive
 /-- **Noether's third isomorphism theorem** for additive groups: `(A / N) / (M / N) ≃+ A / M`. -/]
 def quotientQuotientEquivQuotient : (G ⧸ N) ⧸ M.map (QuotientGroup.mk' N) ≃* G ⧸ M :=

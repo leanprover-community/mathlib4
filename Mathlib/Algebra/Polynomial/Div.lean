@@ -499,7 +499,6 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
 make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`. -/
 @[informal "multiplicity"]
-@[informal "multiplicity"]
 def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   letI := Classical.decEq R
   if h0 : p = 0 then 0

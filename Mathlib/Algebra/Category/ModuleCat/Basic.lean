@@ -54,7 +54,6 @@ impose here that the `ℤ`-multiplication field from the module structure is def
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 @[informal "the category of modules over a ring"]
-@[informal "the category of modules over a ring"]
 structure ModuleCat where
   private mk ::
   /-- the underlying type of an object in `ModuleCat R` -/

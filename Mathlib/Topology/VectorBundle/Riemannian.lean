@@ -368,7 +368,6 @@ use `ContinuousRiemannianMetric` or `ContMDiffRiemannianMetric`.
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
 product space structure on the fibers without creating diamonds. -/
 @[informal "Riemannian/bundle metric"]
-@[informal "Riemannian/bundle metric"]
 structure RiemannianMetric where
   /-- The inner product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ

@@ -40,7 +40,7 @@ universe w v v₁ v₂ u₁ u₂
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- The Yoneda embedding, as a functor from `C` into presheaves on `C`. -/
-@[informal "Yoneda embedding", informal "Yoneda embedding", simps obj_obj obj_map map_app, stacks 001O]
+@[informal "Yoneda embedding", simps obj_obj obj_map map_app, stacks 001O]
 def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
     { obj Y := (unop Y) ⟶ X

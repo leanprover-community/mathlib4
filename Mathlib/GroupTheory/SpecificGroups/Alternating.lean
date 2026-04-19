@@ -70,7 +70,6 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 /-- The alternating group on a finite type, realized as a subgroup of `Equiv.Perm`.
   For $A_n$, use `alternatingGroup (Fin n)`. -/
 @[informal "alternating group"]
-@[informal "alternating group"]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
@@ -384,9 +383,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · contradiction
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
-  on its cycle type that its no
-@[informal "A5 is simple"]
-mal closure is all of $A_5$. -/
+  on its cycle type that its normal closure is all of $A_5$. -/
 @[informal "A5 is simple"]
 instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
   ⟨fun H => by
