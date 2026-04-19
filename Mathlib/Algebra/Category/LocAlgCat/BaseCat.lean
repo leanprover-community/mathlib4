@@ -42,7 +42,7 @@ variable {Λ : Type u} [CommRing Λ] {k : Type v} [Field k] [Algebra Λ k]
 /-- The base category for deformation theory over `Λ`. This is the full subcategory of
 `LocAlgCat Λ k` consisting of Artinian local `Λ`-algebras with residue field `k`. -/
 @[stacks 06GC]
-abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type v) [Field k] [Algebra Λ k] :=
+abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type v) [Field k] [Algebra Λ k] : Type _ :=
   ObjectProperty.FullSubcategory fun A : LocAlgCat.{w} Λ k ↦ IsArtinianRing A
 
 namespace BaseCat
@@ -94,13 +94,19 @@ theorem isSmallExtension_of_bijective (h : Bijective f.hom.toAlgHom) : IsSmallEx
     rw [RingHom.injective_iff_ker_eq_bot] at this
     simp [this]⟩
 
+instance IsSmallExtension.hom_iso (e : A ≅ B) : IsSmallExtension e.hom := by
+  apply isSmallExtension_of_bijective
+  rw [bijective_iff_has_inverse]
+  use e.inv.hom.toAlgHom
+  simp [leftInverse_iff_comp, rightInverse_iff_comp, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
+
 theorem IsSmallExtension.toOfQuot_span_singleton (A : BaseCat.{w} Λ k) (x : A.obj)
     [Nontrivial (A.obj ⧸ (Ideal.span {x}))] (h : ∀ y ∈ maximalIdeal A.obj, x * y = 0) :
     IsSmallExtension (A.toOfQuot (Ideal.span {x})) := by
   rw [isSmallExtenstion_iff]
   refine ⟨Ideal.Quotient.mk_surjective, x, ?_, h⟩
-  ext; rw [← Submodule.Quotient.mk_eq_zero]
-  exact Iff.rfl
+  change _ = RingHom.ker (A.obj.toOfQuot (Ideal.span {x})).toAlgHom
+  rw [LocAlgCat.ker_toAlgHom_toOfQuot]
 
 open Submodule in
 @[elab_as_elim, stacks 06GE]

@@ -10,8 +10,10 @@ public import Mathlib.Algebra.Category.LocAlgCat.Defs
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.LocalRing.Length
 
 import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
 # Basic Constructions and Lemmas in `LocAlgCat`
@@ -358,5 +360,55 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
   exact ⟨aeval a r, ⟨aeval b r, by simp [aeval_def, hab]⟩, by simpa [aeval_def, ha]⟩
 
 end ofPullback
+
+section ArtinianRing
+
+variable [IsLocalRing Λ] [Module.Finite Λ k]
+
+open Module in
+@[stacks 06GG]
+theorem length_restrictScalars {M : Type*} [AddCommGroup M] [Module A M] [Module Λ M]
+    [IsScalarTower Λ A M] : length Λ M = finrank (ResidueField Λ) k * length A M := by
+  have : IsLocalHom (algebraMap Λ k) := by
+    apply ((local_hom_TFAE (algebraMap Λ k)).out 0 4).mpr
+    rw [maximalIdeal_eq_bot]
+    exact eq_maximalIdeal (Algebra.ker_algebraMap_isMaximal_of_isIntegral Λ k)
+  rw [IsLocalRing.length_restrictScalars Λ A M, mul_comm, ← length_eq_finrank,
+    (A.residueEquiv.toLinearEquiv.extendScalarsOfSurjective <|
+      IsLocalRing.residue_surjective (R := Λ)).length_eq]
+
+variable (A) in
+theorem isFiniteLength_of_isArtinianRing [IsArtinianRing A] : IsFiniteLength Λ A := by
+  rw [← Module.length_ne_top_iff, length_restrictScalars (A := A)]
+  have (n : ℕ) (s : ENat) (hs : s ≠ ⊤) : n * s ≠ ⊤ := by
+    lift s to ℕ using hs
+    exact WithTop.coe_ne_top
+  exact this _ _ Module.length_ne_top
+
+instance [IsArtinianRing A] : IsNoetherian Λ A :=
+  (isFiniteLength_iff_isNoetherian_isArtinian.mp (isFiniteLength_of_isArtinianRing A)).left
+
+instance [IsArtinianRing A] : IsArtinian Λ A :=
+  (isFiniteLength_iff_isNoetherian_isArtinian.mp (isFiniteLength_of_isArtinianRing A)).right
+
+instance [IsArtinianRing A] [IsArtinianRing B] (f : A ⟶ C) (g : B ⟶ C) :
+    IsArtinianRing (f.toAlgHom.pullback g.toAlgHom) := by
+  set PB := f.toAlgHom.pullback g.toAlgHom
+  rw [isArtinianRing_iff_isFiniteLength, ← Module.length_ne_top_iff]
+  refine ne_top_of_le_ne_top (b := Module.length Λ PB) ?_ ?_
+  · refine ne_top_of_le_ne_top (b := Module.length Λ (A × B)) ?_ ?_
+    · rw [Module.length_prod]
+      exact WithTop.add_ne_top.mpr ⟨Module.length_ne_top, Module.length_ne_top⟩
+    · exact Module.length_le_of_injective (Submodule.subtype PB.toSubmodule)
+        (Submodule.subtype_injective _)
+  have := Submodule.length_le_length_restrictScalars (R := PB) (M := PB) Λ ⊤
+  rwa [Module.length_top, Submodule.restrictScalars_top, Module.length_top] at this
+
+theorem isArtinianRing_ofPullback [IsArtinianRing A] [IsArtinianRing B] (f : A ⟶ C) (g : B ⟶ C)
+    (h : Surjective g.toAlgHom) : IsArtinianRing (ofPullback f g h) := by
+  rw [ofPullback]
+  infer_instance
+
+end ArtinianRing
 
 end LocAlgCat
