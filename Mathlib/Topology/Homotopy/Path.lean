@@ -510,21 +510,21 @@ private theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (hab
       ((γ.subpathOn a (convexCombo a b t) (le_convexCombo hab _)).trans
         (γ.subpathOn (convexCombo a b t) b (convexCombo_le hab _))) := by
   refine ⟨{
-    toFun := fun ⟨u, v⟩ =>
-      ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
-        (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
-    continuous_toFun := by
-      simp only [trans_apply, one_div, subpathOn_apply, convexCombo]
-      simp only [← extend_apply, dite_eq_ite]
-      apply continuous_if_le (hfg := by grind) <;> fun_prop
-    map_zero_left v := by simp [Path.trans_apply]
-    map_one_left v := by simp [Path.trans_apply]
-    prop' u x hx := by
-      rcases hx with rfl | rfl
-      · simp [Path.trans]
-      · simp [Path.trans]
-        norm_num
-  }⟩
+      toFun := fun ⟨u, v⟩ =>
+        ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
+          (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
+      continuous_toFun := by
+        simp only [trans_apply, one_div, subpathOn_apply, convexCombo]
+        simp only [← extend_apply, dite_eq_ite]
+        apply continuous_if_le (hfg := by grind) <;> fun_prop
+      map_zero_left v := by simp [Path.trans_apply]
+      map_one_left v := by simp [Path.trans_apply]
+      prop' u x hx := by
+        rcases hx with rfl | rfl
+        · simp [Path.trans]
+        · simp [Path.trans]
+          norm_num
+    }⟩
 
 /--
 A subpath from a to b composed with a subpath from b to c is homotopic to
