@@ -1142,7 +1142,7 @@ theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
   | zero => exact _root_.zero_le _
-  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
+  | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
@@ -1281,7 +1281,7 @@ theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
-  rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
+  rw [← natCast_add_one_le_iff, ← succ_le_iff, ← Nat.cast_add_one, nat_le_card]
   rfl
 
 @[simp]
