@@ -307,9 +307,8 @@ theorem coe_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 In the next definition `index` we use `Nat.find` to produce the minimal such index.
 -/
 theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1) ∧ i < c.length := by
-  have := c.blocks_sum ▸ h.pos
-  have length_pos : 0 < c.blocks.length := length_pos_of_sum_pos (blocks c) this
-  refine ⟨c.length - 1, ?_, Nat.pred_lt (ne_of_gt length_pos)⟩
+  have length_pos := length_pos_of_sum_pos (blocks c) (h.pos.trans_eq c.blocks_sum.symm)
+  refine ⟨_, ?_, Nat.pred_lt length_pos.ne'⟩
   have : c.length - 1 + 1 = c.length := Nat.succ_pred_eq_of_pos length_pos
   simp [this, h]
 
