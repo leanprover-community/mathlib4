@@ -43,7 +43,7 @@ deriving IsMultiplicative, RespectsIso, IsStableUnderCobaseChange,
   IsStableUnderRetracts, IsStableUnderTransfiniteComposition,
   IsStableUnderCoproducts
 
-lemma anodyneExtensions.of_isIso {X Y : SSet.{u}} (f : X ⟶ Y) [IsIso f] :
+lemma innerAnodyneExtensions.of_isIso {X Y : SSet.{u}} (f : X ⟶ Y) [IsIso f] :
     innerAnodyneExtensions f :=
   MorphismProperty.of_isIso innerAnodyneExtensions f
 
