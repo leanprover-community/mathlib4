@@ -44,7 +44,6 @@ theorem Finset.sInf_coe_compl_le_card (s : Finset ℕ) : sInf sᶜ ≤ s.card :=
 variable {α : Type*} [ConditionallyCompleteLinearOrderBot α]
 variable [AddMonoidWithOne α] [AddLeftMono α] [ZeroLEOneClass α] [CharZero α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Set.Finite.csInf_coe_compl_le_coe_ncard' {s : Set α} (hfin : s.Finite) :
     sInf sᶜ ≤ (s.ncard : α) := by
   rw [← csSup_Iic (a := s.ncard)]
@@ -55,6 +54,5 @@ theorem Set.Finite.csInf_coe_compl_le_coe_ncard' {s : Set α} (hfin : s.Finite) 
   rw [ncard_image_of_injective _ CharZero.cast_injective, ncard_Iic_nat]
   lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Finset.csInf_coe_compl_le_coe_card' (s : Finset α) : sInf sᶜ ≤ (s.card : α) := by
   grw [s.finite_toSet.csInf_coe_compl_le_coe_ncard', ncard_coe_finset s]
