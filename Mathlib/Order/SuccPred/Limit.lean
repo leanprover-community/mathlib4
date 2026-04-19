@@ -148,7 +148,7 @@ theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
 
 @[to_dual]
 theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
-  bot_lt_of_not_isMin h.not_isMin
+  not_isMin_iff_bot_lt.1 h.not_isMin
 
 @[to_dual]
 theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ :=
