@@ -405,8 +405,10 @@ jobs:
           cd tools-branch
           ./.lake/build/bin/cache get
 
-      # Validate the fetched baseline the same way the main build does — a bare
-      # `cache get` does not guarantee a warm/consistent cache.
+      # Validate the fetched baseline over the same scope we intend to diff — a
+      # `--no-build` check of a single module (as used elsewhere in this workflow)
+      # would only prove that the cache contains a prefix; a partial cache could
+      # still produce a bogus "public API changed" result from missing files.
       - name: validate master baseline
         id: validate_master_baseline
         if: ${{ steps.fetch_master_oleans.outcome == 'success' }}
@@ -414,7 +416,7 @@ jobs:
         shell: bash
         run: |
           cd tools-branch
-          lake build --no-build -v Mathlib.Init
+          lake build --no-build Mathlib
 
       - name: diff public oleans against master
         id: public_olean_diff
@@ -462,10 +464,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ github.ref_name }}
+          OWNER: ${{ github.repository_owner }}
           SHA: ${{ github.sha }}
         run: |
-          # For push events we have no PR context, so look up the PR by head branch.
-          pr_json=$(gh pr list --repo "${{ github.repository }}" --head "$BRANCH" \
+          # For push events we have no PR context, so look up the PR by head
+          # branch. Qualify with the owner so we cannot match a same-named
+          # head branch on an unrelated fork.
+          pr_json=$(gh pr list --repo "${{ github.repository }}" --head "$OWNER:$BRANCH" \
             --state open --json number,headRefOid --jq '.[0] // empty')
           if [ -z "$pr_json" ]; then
             echo "pr_number=" >> "$GITHUB_OUTPUT"
