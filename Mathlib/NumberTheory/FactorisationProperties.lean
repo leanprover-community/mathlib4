@@ -127,7 +127,7 @@ theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   rw [not_pseudoperfect_iff_forall]
-  refine Or.inr fun s hs => ne_of_lt (lt_of_le_of_lt ?_ h.one_lt)
+  refine Or.inr fun s hs ↦ ne_of_lt (lt_of_le_of_lt ?_ h.one_lt)
   rw [Prime.properDivisors h] at hs
   simpa using Finset.sum_le_sum_of_subset hs
 
