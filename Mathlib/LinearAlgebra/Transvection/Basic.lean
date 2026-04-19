@@ -108,6 +108,13 @@ theorem of_right_eq_zero (f : Dual R V) :
   ext
   simp [transvection]
 
+theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
+    transvection f (r • v) ∘ₗ transvection f (s • v) =
+      transvection f ((r + s + s * f v * r) • v) := by
+  ext x
+  simp only [LinearMap.comp_apply, apply, map_add, map_smul, add_assoc]
+  simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
+
 theorem pow {f : Dual R V} {v : V} (hf : f v = 0) (n : ℕ) :
     (transvection f v) ^ n = transvection f (n • v) := by
   induction n with
