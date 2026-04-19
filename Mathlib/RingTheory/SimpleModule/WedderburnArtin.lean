@@ -234,7 +234,7 @@ instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
     have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
     (e.mapMatrix (m := n).trans Matrix.piRingEquiv).symm.isSemisimpleRing
 
-instance [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ :=
+instance : IsSemisimpleRing Rᵐᵒᵖ :=
   have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R
   ((e.op.trans (.piMulOpposite _)).trans (.piCongrRight fun _ ↦ .symm .mopMatrix)).symm
     |>.isSemisimpleRing

@@ -260,7 +260,7 @@ instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl
   fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.coe_lt_top _)
 
-instance [IsNoetherianRing R] [IsLocalRing R] : FiniteRingKrullDim R := by
+instance [IsLocalRing R] : FiniteRingKrullDim R := by
   apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
   rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim]
   constructor

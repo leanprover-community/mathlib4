@@ -68,7 +68,7 @@ and `t` are well-ordered. -/
 @[to_additive /-- `Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
 and an element in `t` whose vector addition yields `a`, but its construction requires proofs that
 `s` and `t` are well-ordered. -/]
-noncomputable def SMulAntidiagonal [IsOrderedCancelSMul G P]
+noncomputable def SMulAntidiagonal
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 

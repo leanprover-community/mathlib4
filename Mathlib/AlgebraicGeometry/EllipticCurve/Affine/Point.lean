@@ -655,7 +655,7 @@ variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
