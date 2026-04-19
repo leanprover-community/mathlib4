@@ -26,6 +26,11 @@ Intersections are defined here as the maximal mutual subgraph of the given graph
 This has the effect of, when taking the intersection of non-compatible graphs,
 **any non-compatible edges are removed**.
 
+## TODO
+
++ Add `ConditionallyCompleteCompleteLatticeInf (Graph α β)` after splitting
+  `ConditionallyCompleteCompleteLattice`.
+
 -/
 
 public section
