@@ -79,11 +79,11 @@ theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by simp [cons_zero_e
 variable {s} {y}
 
 theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   rw [← cons_zero y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
-  contrapose! h with c
+  contrapose h with c
   ext a
   simp [← cons_succ a y s, c]
 

@@ -631,7 +631,6 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.privateInPublic true in
 private noncomputable local instance normedAddCommGroupAux :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -685,7 +684,6 @@ private lemma uniformInducing_toMatrixAux :
     lipschitzWith_toMatrixAux.uniformContinuous
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -697,7 +695,6 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
-set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -745,22 +742,19 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
     ContinuousSMul R (CStarMatrix m n A) :=
   inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCoreReplaceAll CStarMatrix.normedSpaceCore
-    CStarMatrix.uniformity_eq_aux.symm
-      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
+where finally
+  exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
 
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
@@ -792,7 +786,6 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
 noncomputable instance instNonUnitalCStarAlgebra :
     NonUnitalCStarAlgebra (CStarMatrix n n A) where

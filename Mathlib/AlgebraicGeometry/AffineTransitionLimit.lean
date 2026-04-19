@@ -707,6 +707,7 @@ section sections
 
 variable [IsCofiltered I]
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
     [∀ i, IsAffine (D.obj i)]
@@ -714,7 +715,9 @@ lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
     ∃ (j : I) (f : j ⟶ i), (D.map f).appTop s = 0 := by
   have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
   obtain ⟨j, f, hj⟩ := (Types.FilteredColimit.isColimit_eq_iff'
-    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s (0 : Γ(D.obj i, ⊤))).mp (by simpa)
+    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s (0 : Γ(D.obj i, ⊤))).mp
+    (by dsimp at hs ⊢; simpa)
+  dsimp at hj
   exact ⟨j.unop, f.unop, by simpa using hj⟩
 
 set_option backward.isDefEq.respectTransparency false in
