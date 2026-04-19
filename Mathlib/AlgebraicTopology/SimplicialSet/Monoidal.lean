@@ -313,15 +313,6 @@ noncomputable def symmIso : (unionProd S T : SSet) ≅ (unionProd T S : SSet) wh
   hom := lift ((unionProd S T).ι ≫ (β_ _ _).hom) (by simp [range_comp])
   inv := lift ((unionProd T S).ι ≫ (β_ _ _).hom) (by simp [range_comp])
 
-set_option backward.isDefEq.respectTransparency false in
-/-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
-`S.ι □ T.ι`. -/
-@[simps! -isSimp]
-noncomputable
-def unionProdιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
-  Arrow.isoMk' _ _ (unionProd.isPushout S T).isoPushout (Iso.refl _)
-    (by apply (unionProd.isPushout S T).hom_ext <;> simp [Functor.PushoutObjObj.ofHasPushout_ι])
-
 end unionProd
 
 end Subcomplex
