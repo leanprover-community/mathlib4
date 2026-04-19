@@ -117,6 +117,7 @@ lemma equivCotangent_apply (e : A ≅ B) (x : CotangentSpace A) :
 lemma equivCotangent_symm_apply (e : A ≅ B) (y : CotangentSpace B) :
     (equivCotangent e).symm y = mapCotangent e.inv y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Surjective (mapCotangent (A.toOfQuot I)) := by
   have : RingHom.ker (algebraMap A (A.ofQuot I)) ≤ maximalIdeal A := le_maximalIdeal (by
@@ -226,13 +227,13 @@ instance [Algebra.IsIntegral Λ k] : IsScalarTower Λ (ResidueField Λ) (Cotange
   .of_algebraMap_smul fun _ _ ↦ by rw [residueField_smul_cotangent,
     ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_smul]
 
-theorem surjective_mapCotangent_toSpecialFiber [IsLocalHom (algebraMap Λ k)] :
+theorem surjective_mapCotangent_toSpecialFiber [Algebra.IsIntegral Λ k] :
     Surjective (mapCotangent A.toSpecialFiber) := surjective_mapCotangent_toOfQuot _
 
 /-- The canonical `k`-linear map from the base-changed cotangent space of `Λ`
 to the cotangent space of `A`, induced by the algebra structure map. -/
-def baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)]
-    (A : LocAlgCat.{w} Λ k) : k ⊗[ResidueField Λ] CotangentSpace Λ →ₗ[k] CotangentSpace A :=
+def baseCotangentMap [Algebra.IsIntegral Λ k] (A : LocAlgCat.{w} Λ k) :
+    k ⊗[ResidueField Λ] CotangentSpace Λ →ₗ[k] CotangentSpace A :=
   letI baseMap : CotangentSpace Λ →ₗ[ResidueField Λ] CotangentSpace A :=
     ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by
       change _ ≤ Ideal.comap (algebraMap Λ A) _
@@ -241,15 +242,15 @@ def baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)]
   TensorProduct.AlgebraTensorModule.lift (LinearMap.toSpanSingleton k _ baseMap)
 
 @[simp]
-lemma baseCotangentMap_tmul [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)]
-    (r : k) (a : CotangentSpace Λ) : A.baseCotangentMap (r ⊗ₜ a) =
-      r • ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by
+lemma baseCotangentMap_tmul [Algebra.IsIntegral Λ k] (r : k) (a : CotangentSpace Λ) :
+    A.baseCotangentMap (r ⊗ₜ a) = r • ((maximalIdeal Λ).mapCotangent (maximalIdeal A)
+      (Algebra.ofId Λ A) (by
         change _ ≤ Ideal.comap (algebraMap Λ A) _
         rw [comap_algebraMap_maximalIdeal]) a) := rfl
 
 @[simp]
-lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)]
-    (f : A ⟶ B) (z : k ⊗[ResidueField Λ] CotangentSpace Λ) :
+lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] (f : A ⟶ B)
+    (z : k ⊗[ResidueField Λ] CotangentSpace Λ) :
     mapCotangent f (A.baseCotangentMap z) = B.baseCotangentMap z := by
   induction z using TensorProduct.induction_on with
   | zero => simp
@@ -259,7 +260,7 @@ lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] [IsLocalHom 
   | add x y hx hy => simp [hx, hy]
 
 open Submodule in
-theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap Λ k)] :
+theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] :
     A.baseCotangentMap.range = (mapCotangent A.toSpecialFiber).ker := ext fun x ↦ by
   rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
   rw [LinearMap.mem_range, LinearMap.mem_ker]
@@ -279,6 +280,7 @@ theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap
     rcases hx with ⟨u, u_in, v, v_in, huv⟩
     simp_rw [← LinearMap.mem_range, ← huv]
     have pow_le : maximalIdeal A ^ 2 ≤ maximalIdeal A := Ideal.pow_le_self (by simp)
+    have : IsLocalHom (algebraMap Λ A) := isLocalHom_algebraMap A
     change (maximalIdeal A).toCotangent ⟨u, pow_le u_in⟩ + (maximalIdeal A).toCotangent
       ⟨v, map_maximalIdeal_le _ v_in⟩ ∈ _
     rw [(Ideal.toCotangent_eq_zero ..).mpr ‹_›, zero_add]
@@ -297,14 +299,14 @@ theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] [IsLocalHom (algebraMap
         ← residue_smul_cotangent]
       exact smul_mem _ _ (ihx hx)
 
-theorem exact_baseCotangentMap_mapCotangent_toSpecialFiber [Algebra.IsIntegral Λ k]
-    [IsLocalHom (algebraMap Λ k)] : Exact A.baseCotangentMap (mapCotangent A.toSpecialFiber) :=
+theorem exact_baseCotangentMap_mapCotangent_toSpecialFiber [Algebra.IsIntegral Λ k] :
+    Exact A.baseCotangentMap (mapCotangent A.toSpecialFiber) :=
   LinearMap.exact_iff.mpr A.range_baseCotangentMap.symm
 
 @[stacks 06S3 "(3) => (2)"]
 theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber [Algebra.IsIntegral Λ k]
-    [IsLocalHom (algebraMap Λ k)] (f : A ⟶ B)
-    (h : Surjective (mapCotangent (mapSpecialFiber f))) : Surjective (mapCotangent f) := by
+    (f : A ⟶ B) (h : Surjective (mapCotangent (mapSpecialFiber f))) :
+    Surjective (mapCotangent f) := by
   intro y
   obtain ⟨x, hx⟩ := h (mapCotangent B.toSpecialFiber y)
   obtain ⟨x, rfl⟩ := surjective_mapCotangent_toSpecialFiber x
