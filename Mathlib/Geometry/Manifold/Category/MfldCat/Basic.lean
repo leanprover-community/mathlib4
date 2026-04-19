@@ -5,6 +5,7 @@ Authors: Jack McCarthy
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
 
@@ -28,22 +29,18 @@ set_option autoImplicit false
 open CategoryTheory
 open scoped Manifold
 
-/- Implementation note: `carrier`, `E`, `H`, and `I` all live in the same `Type u`. This assumption
-is essential (?) to differential geometry because we wish to compare the linear model
-(`E`, `H`, `I`) with the manifold itself. E.g. the tangent bundle should also be a manifold.
-The field `𝕜` lives in a seperate `Type v`, according to the convention of `ModuleCat` -/
-universe u v
+universe u₁ u₂ u₃ u₄
 
 /-- The category of `C^n` 𝕜-manifolds. -/
-structure MfldCat (𝕜 : Type v) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
+structure MfldCat (𝕜 : Type u₁) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
   of ::
   /-- The underlying type. -/
-  carrier : Type u
+  carrier : Type u₂
   /-- The model normed space. -/
-  E : Type u
+  E : Type u₃
   /-- The chart space. -/
-  H : Type u
+  H : Type u₄
   [instNAG : NormedAddCommGroup E]
   [instNS : NormedSpace 𝕜 E]
   [instTopH : TopologicalSpace H]
@@ -72,8 +69,8 @@ initialize_simps_projections MfldCat
 
 namespace MfldCat
 
-variable {𝕜 : Type v} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
-  {X Y Z : Type u} {E E' E'' : Type u} {H H' H'' : Type u}
+variable {𝕜 : Type u₁} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+  {X Y Z : Type u₂} {E E' E'' : Type u₃} {H H' H'' : Type u₄}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [TopologicalSpace H'']
@@ -83,41 +80,41 @@ variable {𝕜 : Type v} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   [TopologicalSpace Y] [ChartedSpace H' Y] [IsManifold I' n Y]
   [TopologicalSpace Z] [ChartedSpace H'' Z] [IsManifold I'' n Z]
 
-instance : CoeSort (MfldCat 𝕜 n) (Type u) := ⟨MfldCat.carrier⟩
+instance : CoeSort (MfldCat 𝕜 n) (Type u₂) := ⟨MfldCat.carrier⟩
 
 attribute [coe] MfldCat.carrier
 
 variable (X E H I) in
-lemma coe_of : (of (n := n) X E H I : Type u) = X := rfl
+lemma coe_of : (of (n := n) X E H I : Type u₂) = X := rfl
 
-lemma of_carrier (M : MfldCat.{u, v} 𝕜 n) : of (n := n) M.carrier M.E M.H M.I = M := rfl
+lemma of_carrier (M : MfldCat 𝕜 n) : of (n := n) M.carrier M.E M.H M.I = M := rfl
 
 /-- The type of morphisms in `MfldCat`. -/
 @[ext]
-structure Hom (M N : MfldCat.{u, v} 𝕜 n) where
+structure Hom (M N : MfldCat.{u₁, u₂, u₃, u₄} 𝕜 n) where
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap M.I N.I M N n
 
-instance : Category (MfldCat.{u, v} 𝕜 n) where
+instance : Category (MfldCat 𝕜 n) where
   Hom M N := Hom M N
   id M := ⟨ContMDiffMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance : ConcreteCategory.{u} (MfldCat.{u, v} 𝕜 n)
+instance : ConcreteCategory (MfldCat 𝕜 n)
     (fun M N => ContMDiffMap M.I N.I M N n) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
 
 /-- Turn a morphism in `MfldCat` back into a `ContMDiffMap`. -/
-abbrev Hom.hom {M N : MfldCat.{u, v} 𝕜 n} (f : Hom M N) :=
-  ConcreteCategory.hom (C := MfldCat.{u, v} 𝕜 n) f
+abbrev Hom.hom {M N : MfldCat 𝕜 n} (f : Hom M N) :=
+  ConcreteCategory.hom (C := MfldCat 𝕜 n) f
 
 /-- Typecheck a `ContMDiffMap` as a morphism in `MfldCat`. -/
 abbrev ofHom (f : ContMDiffMap I I' X Y n) : of (n := n) X E H I ⟶ of (n := n) Y E' H' I' :=
-  ConcreteCategory.ofHom (C := MfldCat.{u, v} 𝕜 n) f
+  ConcreteCategory.ofHom (C := MfldCat 𝕜 n) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (M N : MfldCat.{u, v} 𝕜 n) (f : Hom M N) :=
+def Hom.Simps.hom (M N : MfldCat 𝕜 n) (f : Hom M N) :=
   f.hom
 
 initialize_simps_projections Hom (hom' → hom)
@@ -185,7 +182,7 @@ end ofHom
 
 /-- Morphisms in `MfldCat` are equivalent to `ContMDiffMap`s. -/
 @[simps]
-def Hom.equivContMDiffMap (M N : MfldCat.{u, v} 𝕜 n) :
+def Hom.equivContMDiffMap (M N : MfldCat 𝕜 n) :
     (M ⟶ N) ≃ ContMDiffMap M.I N.I M N n where
   toFun f := f.hom
   invFun f := ofHom f
@@ -207,12 +204,12 @@ instance inhabited : Inhabited (MfldCat 𝕜 n) :=
   ⟨of 𝕜 𝕜 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
 
 /-- A normed space is a `C^n` manifold (modeled on itself). -/
-abbrev ofNormedSpace (n : WithTop ℕ∞) (E : Type u) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
+abbrev ofNormedSpace (n : WithTop ℕ∞) (E : Type u₃) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
     MfldCat 𝕜 n :=
   of E E E (modelWithCornersSelf 𝕜 E)
 
 /-- `MfldCat 𝕜 n` has a forgetful functor to `TopCat`. -/
-instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
+instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u₂} where
   forget₂.obj M := TopCat.of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
@@ -220,7 +217,7 @@ instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
 
 /-- Any diffeomorphism induces an isomorphism in `MfldCat`. -/
 @[simps]
-def isoOfDiffeomorph {M N : MfldCat.{u, v} 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯ N) : M ≅ N where
+def isoOfDiffeomorph {M N : MfldCat 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯ N) : M ≅ N where
   hom := ofHom f.toContMDiffMap
   inv := ofHom f.symm.toContMDiffMap
   hom_inv_id := by ext x; exact f.left_inv x
@@ -228,7 +225,7 @@ def isoOfDiffeomorph {M N : MfldCat.{u, v} 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯
 
 /-- Any isomorphism in `MfldCat` induces a diffeomorphism. -/
 @[simps]
-def diffeomorphOfIso {M N : MfldCat.{u, v} 𝕜 n} (f : M ≅ N) : M ≃ₘ^n⟮M.I, N.I⟯ N where
+def diffeomorphOfIso {M N : MfldCat 𝕜 n} (f : M ≅ N) : M ≃ₘ^n⟮M.I, N.I⟯ N where
   toFun := f.hom
   invFun := f.inv
   left_inv _ := by simp
@@ -249,7 +246,7 @@ theorem of_diffeomorphOfIso {M N : MfldCat 𝕜 n} (f : M ≅ N) :
   rfl
 
 /-- The constant morphism `M ⟶ N` in `MfldCat` given by `y : N`. -/
-def const {M N : MfldCat.{u, v} 𝕜 n} (y : N) : M ⟶ N :=
+def const {M N : MfldCat 𝕜 n} (y : N) : M ⟶ N :=
   ofHom ⟨fun _ ↦ y, contMDiff_const⟩
 
 @[simp]
@@ -258,21 +255,22 @@ lemma const_apply {M N : MfldCat 𝕜 n} (y : N) (x : M) :
 
 section TangentFunctor
 
-variable (M : MfldCat.{u} 𝕜 (n + 1))
+variable (M : MfldCat 𝕜 (n + 1))
 
 local instance : IsManifold M.I 1 M := IsManifold.of_le (n := n + 1) le_add_self
 local instance : IsManifold M.I n M := IsManifold.of_le (n := n + 1) le_self_add
 -- This implies  `TangentBundle M.I M` is a manifold by `Bundle.TotalSpace.isManifold`
-local instance : ContMDiffVectorBundle n M.E (TangentSpace M.I : M → Type u) M.I :=
+local instance : ContMDiffVectorBundle n M.E (TangentSpace M.I : M → Type u₃) M.I :=
   TangentBundle.contMDiffVectorBundle
 
 
 /-- The tangent functor `MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n` -- Sends a `C^(n+1)` manifold to its
 tangent bundle; Sends a `C^(n+1)` map to it's pushforward. -/
-noncomputable def tangentFunctor : MfldCat.{u} 𝕜 (n + 1) ⥤ MfldCat.{u} 𝕜 n where
+noncomputable def tangentFunctor :
+    MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n where
   obj M := of (TangentBundle M.I M) (M.E × M.E) (ModelProd M.H M.E) M.I.tangent
   map {M N} f :=
-    ofHom ⟨tangentMap M.I N.I f.hom, f.hom.contMDiff.contMDiff_tangentMap le_rfl⟩
+    ofHom ⟨tangentMap M.I N.I f.hom, ContMDiff.contMDiff_tangentMap f.hom.contMDiff le_rfl⟩
   map_id _ := Hom.ext <| Subtype.ext tangentMap_id
   map_comp f g := Hom.ext <| Subtype.ext <| tangentMap_comp
     (g.hom.contMDiff.mdifferentiable (by simp))
