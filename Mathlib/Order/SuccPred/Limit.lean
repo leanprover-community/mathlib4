@@ -100,15 +100,15 @@ attribute [to_dual existing]
   IsSuccLimit.mk IsSuccLimit.not_isMin IsSuccLimit.isSuccPrelimit isSuccLimit_iff
 attribute [simp] IsSuccLimit.isSuccPrelimit IsPredLimit.isPredPrelimit
 
-@[to_dual]
-theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
-  rw [isSuccLimit_iff, not_and_or, not_not]
-
 @[to_dual (attr := simp)]
 theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
   simp [isSuccLimit_iff, isPredLimit_iff]
 
 @[to_dual] alias ⟨_, IsPredLimit.dual⟩ := isSuccLimit_toDual_iff
+
+@[to_dual]
+theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
+  rw [isSuccLimit_iff, not_and_or, not_not]
 
 @[deprecated IsPredLimit.isPredPrelimit (since := "2026-02-22")]
 theorem not_isPredLimit_of_not_isPredPrelimit : ¬ IsPredPrelimit a → ¬ IsPredLimit a :=
