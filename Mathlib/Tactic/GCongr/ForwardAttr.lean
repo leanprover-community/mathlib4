@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Heather Macbeth
 module
 
 public import Mathlib.Init
-public meta import Batteries.Tactic.Basic
 
 /-!
 # Environment extension for the forward-reasoning part of the `gcongr` tactic

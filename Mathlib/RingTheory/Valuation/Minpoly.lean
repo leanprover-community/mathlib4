@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Minimal polynomials.
@@ -24,7 +25,7 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   is helpful for defining the valuation on `L` inducing `v`.
 -/
 
-@[expose] public section
+public section
 
 open Module minpoly Polynomial
 

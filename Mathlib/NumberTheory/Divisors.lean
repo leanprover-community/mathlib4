@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.Data.Nat.SuccPred
@@ -173,7 +174,7 @@ lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
+  have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
@@ -193,7 +194,7 @@ lemma swap_mem_divisorsAntidiagonalList {a : ℕ × ℕ} :
 
 lemma reverse_divisorsAntidiagonalList (n : ℕ) :
     n.divisorsAntidiagonalList.reverse = n.divisorsAntidiagonalList.map .swap := by
-  have : IsAsymm (ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
+  have : Std.Asymm (α := ℕ × ℕ) (·.snd < ·.snd) := ⟨fun _ _ ↦ lt_asymm⟩
   refine List.Perm.eq_of_pairwise' pairwise_divisorsAntidiagonalList_snd.reverse
     (pairwise_divisorsAntidiagonalList_fst.map _ fun _ _ ↦ id) ?_
   simp [List.reverse_perm', List.perm_ext_iff_of_nodup nodup_divisorsAntidiagonalList
@@ -422,7 +423,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ_iff, eq_comm]
+  simp [eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id
@@ -551,7 +552,6 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = {p ∈ divisors n | p.Prime} := by
-  ext
   grind
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :
@@ -606,6 +606,14 @@ lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
 
+/-- `Finset.antidiagonal k` embeds as a subset of `Nat.divisorsAntidiagonal (q ^ k)`. -/
+theorem antidiagonal_map_subset_divisorsAntidiagonal_pow {q : ℕ} (hq : 1 < q) (k : ℕ) :
+    letI ι : ℕ ↪ ℕ := ⟨fun k ↦ q ^ k, Nat.pow_right_injective hq⟩
+    (Finset.antidiagonal k).map (.prodMap ι ι) ⊆ (q ^ k).divisorsAntidiagonal := by
+  intro k hk
+  obtain ⟨i, hi, rfl⟩ := Finset.mem_map.mp hk
+  simp [Nat.mem_divisorsAntidiagonal, ← Finset.mem_antidiagonal.mp hi, pow_add, ne_zero_of_lt hq]
+
 end Nat
 
 namespace Int
@@ -630,7 +638,7 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
 @[simp]
 lemma mem_divisorsAntidiag :

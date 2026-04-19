@@ -44,7 +44,7 @@ useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial
 real plane has only finitely many limit cycles).
 -/
 
-@[expose] public section
+public section
 
 open Set Function Filter Asymptotics Metric Complex Bornology
 open scoped Topology Filter Real
@@ -86,7 +86,7 @@ theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
         fun z => expR (B₂ * ‖z‖ ^ c₂) := fun hc hB₀ hB ↦ .of_norm_eventuallyLE <| by
     filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
     simp only [Real.norm_eq_abs, Real.abs_exp]
-    gcongr; assumption
+    gcongr
   rcases hBf with ⟨cf, hcf, Bf, hOf⟩; rcases hBg with ⟨cg, hcg, Bg, hOg⟩
   refine ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), ?_⟩
   refine (hOf.trans <| this ?_ ?_ ?_).sub (hOg.trans <| this ?_ ?_ ?_)
@@ -210,7 +210,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       frontier_Ioo (neg_lt_self hR₀)] at hw
     by_cases him : w.im = a - b ∨ w.im = a + b
     · rw [norm_smul, ← one_mul C]
-      exact mul_le_mul (hg₁ _ him) (him.by_cases (hle_a _) (hle_b _)) (norm_nonneg _) zero_le_one
+      gcongr
+      exacts [hg₁ _ him, him.by_cases (hle_a _) (hle_b _)]
     · replace hw : w ∈ {-R, R} ×ℂ Icc (a - b) (a + b) := hw.resolve_left fun h ↦ him h.2
       have hw' := eq_endpoints_or_mem_Ioo_of_mem_Icc hw.2; rw [← or_assoc] at hw'
       exact hR _ ((abs_eq hR₀.le).2 hw.1.symm) (hw'.resolve_left him)
@@ -678,7 +679,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
   rcases le_or_gt ‖f x₀‖ C with h | h
-  ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
+  · -- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
     replace hmax : IsMaxOn (norm ∘ f) {z | 0 < z.re} x₀ := by
@@ -722,8 +723,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   -- Taking the limit as `ε → 0`, we obtain the required inequality.
   suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C by
     refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
-    apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
-    simp
+    exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
   set g : ℂ → E := fun z => exp (ε * z) • f z; change ‖g z‖ ≤ C
   replace hd : DiffContOnCl ℂ g {z : ℂ | 0 < z.re} :=
@@ -791,7 +791,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
         z.re ≤ ‖z‖ := re_le_norm _
         _ = ‖z‖ ^ (1 : ℝ) := (Real.rpow_one _).symm
         _ ≤ ‖z‖ ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hz (le_max_right _ _)
-    exacts [le_max_left _ _, hz, le_max_left _ _]
+    exacts [le_max_left _ _, le_max_left _ _]
   · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
     exact hre n
   · rw [hg, re_ofReal_mul, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]

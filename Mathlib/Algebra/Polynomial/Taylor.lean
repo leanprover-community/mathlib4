@@ -73,7 +73,7 @@ theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r 
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
       (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
-    push_neg at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
+    push Not at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 
 @[simp]
 theorem taylor_coeff_zero : (taylor r f).coeff 0 = f.eval r := by
@@ -160,12 +160,20 @@ theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r +
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
 
+theorem exists_mul_sq_add_linear_part_eq_eval_add (p : R[X]) (x y : R) :
+    ∃ c : R, c * y ^ 2 + p.derivative.eval x * y + p.eval x = p.eval (x + y) := by
+  have this t :
+      (taylor x p).eval t =
+      ∑ i ∈ Finset.range ((taylor x p).natDegree + 2), (taylor x p).coeff i * t ^ i :=
+    (taylor x p).eval_eq_sum_range' (n := (taylor x p).natDegree + 2) (by lia) t
+  rw [add_comm, ← p.taylor_eval x y, this, Finset.sum_range_succ', Finset.sum_range_succ']
+  use ∑ i ∈ Finset.range p.natDegree, (taylor x p).coeff (i + 2) * y ^ i
+  simp [pow_succ, mul_assoc, Finset.sum_mul]
+
 theorem eval_add_of_sq_eq_zero (p : R[X]) (x y : R) (hy : y ^ 2 = 0) :
     p.eval (x + y) = p.eval x + p.derivative.eval x * y := by
-  rw [add_comm, ← Polynomial.taylor_eval,
-    Polynomial.eval_eq_sum_range' ((Nat.lt_succ_self _).trans (Nat.lt_succ_self _)),
-    Finset.sum_range_succ', Finset.sum_range_succ']
-  simp [pow_succ, mul_assoc, ← pow_two, hy, add_comm (eval x p)]
+  rcases exists_mul_sq_add_linear_part_eq_eval_add p x y with ⟨c, h⟩
+  rw [← h, hy]; ring
 
 theorem aeval_add_of_sq_eq_zero {S : Type*} [CommRing S] [Algebra R S]
     (p : R[X]) (x y : S) (hy : y ^ 2 = 0) :
@@ -178,6 +186,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)

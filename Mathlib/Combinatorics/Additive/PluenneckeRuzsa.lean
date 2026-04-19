@@ -29,7 +29,7 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terence Tao, Van Vu, *Additive Combinatorics][tao-vu]
 
 ## See also
 
@@ -37,7 +37,7 @@ In general non-abelian groups, small doubling doesn't imply small powers anymore
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
-@[expose] public section
+public section
 
 open MulOpposite Nat
 open scoped Pointwise

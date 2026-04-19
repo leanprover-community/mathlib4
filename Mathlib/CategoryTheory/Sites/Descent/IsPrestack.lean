@@ -33,14 +33,6 @@ condition with respect to a Grothendieck topology, and a stack by the effectiven
 of the descent. However, contrary to Laumon and Moret-Bailly in *Champs algébriques* 3.1,
 we do not require that target categories are groupoids.
 
-## TODO
-
-* Relate this notion to the property that for any covering family `f i : X i ⟶ S`
-for `J`, the functor `F.obj S` to the category of objects in `F.obj (X i)` for all `i`
-equipped with a descent datum is fully faithful.
-* Define a typeclass `IsStack` (extending `IsPrestack`?)
-by saying that the functors mentioned above are essentially surjective.
-
 ## References
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
@@ -76,6 +68,7 @@ def pullHom ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.o
     (F.map g.op.toLoc).toFunctor.map φ ≫
       (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).inv.toNatTrans.app _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_eq_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
@@ -88,6 +81,7 @@ lemma map_eq_pullHom
     (F.mapComp' f₂.op.toLoc g.op.toLoc gf₂.op.toLoc (by aesop)).hom.toNatTrans.app _ := by
   simp [Cat.Hom.comp_toFunctor, pullHom, ← reassoc_of% Cat.Hom₂.comp_app, ← Cat.Hom₂.comp_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
     ⦃Y : C⦄ ⦃f₁ : Y ⟶ X₁⦄ ⦃f₂ : Y ⟶ X₂⦄
@@ -96,6 +90,7 @@ lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ 
   simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app,
     ← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullHom_pullHom
     ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ : F.obj (.mk (op X₂))⦄
@@ -121,6 +116,7 @@ section
 
 variable (F) {S : C} (M N : F.obj (.mk (op S)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
@@ -129,8 +125,16 @@ of morphisms $p^* M ⟶ p^* N$. -/
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
     (F.map (.toLoc T.unop.hom.op)).toFunctor.obj N
-  map {T₁ T₂} p f := pullHom f p.unop.left T₂.unop.hom T₂.unop.hom
+  map {T₁ T₂} p := TypeCat.ofHom (fun f ↦ pullHom f p.unop.left T₂.unop.hom T₂.unop.hom)
 
+/-- The bijection `(M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S)))`. -/
+@[simps! -isSimp]
+def presheafHomObjHomEquiv {M N : (F.obj (.mk (op S)))} :
+    (M ⟶ N) ≃ (F.presheafHom M N).obj (op (Over.mk (𝟙 S))) :=
+  Iso.homCongr ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app M)
+    ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app N)
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
     (Over.map q).op ⋙ F.presheafHom M N ≅
@@ -157,7 +161,7 @@ satisfies the descent property for morphisms, i.e. is a prestack.
 (See the terminological note in the introduction of the file `Sites.Descent.IsPrestack`.) -/
 @[stacks 026F "(2)"]
 class IsPrestack (J : GrothendieckTopology C) : Prop where
-  isSheaf {S : C} (M N : F.obj (.mk (op S))) :
+  isSheaf (J) {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
 /-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
@@ -168,8 +172,8 @@ a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :
     Sheaf (J.over S) (Type v') where
-  val := F.presheafHom M N
-  cond := IsPrestack.isSheaf _ _
+  obj := F.presheafHom M N
+  property := IsPrestack.isSheaf _ _ _
 
 end Pseudofunctor
 

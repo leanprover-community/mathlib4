@@ -31,7 +31,7 @@ of localizations.
   the resulting ring only has a single prime ideal.
 -/
 
-@[expose] public section
+public section
 
 
 section
@@ -127,7 +127,7 @@ section
 
 variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 
-theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
+theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := h.1.1
   refine ⟨⟨inferInstance, Ideal.comap_mono h.1.2⟩, ?_⟩
@@ -139,6 +139,9 @@ theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.
   · exact ⟨Ideal.map_isPrime_of_surjective hf this, Ideal.le_map_of_comap_le_of_surjective f hf e₁⟩
   · exact Ideal.map_le_of_le_comap e₂
 
+@[deprecated (since := "2026-04-01")] alias Ideal.minimal_primes_comap_of_surjective :=
+    Ideal.minimalPrimes_comap_of_surjective
+
 theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     (I : Ideal S) : (I.comap f).minimalPrimes = Ideal.comap f '' I.minimalPrimes := by
   ext J
@@ -147,7 +150,7 @@ theorem Ideal.comap_minimalPrimes_eq_of_surjective {f : R →+* S} (hf : Functio
     obtain ⟨p, h, rfl⟩ := Ideal.exists_minimalPrimes_comap_eq f J H
     exact ⟨p, h, rfl⟩
   · rintro ⟨J, hJ, rfl⟩
-    exact Ideal.minimal_primes_comap_of_surjective hf hJ
+    exact Ideal.minimalPrimes_comap_of_surjective hf hJ
 
 lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
     (hf : Function.Surjective f) (I : Ideal R) :
@@ -182,7 +185,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]
@@ -200,5 +203,20 @@ theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
   conv_rhs => rw [← map_comap S A J, minimalPrimes_map S]
   refine (Set.image_preimage_eq_iff.mpr ?_).symm
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
+
+theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
+    (q : Ideal R) [hqp : q.IsPrime] [IsLocalization.AtPrime A q]
+    (I : Ideal R) (hIq : q ∈ I.minimalPrimes) :
+    (I.map (algebraMap R A)).radical = q.map (algebraMap R A) := by
+  have : IsLocalRing A := AtPrime.isLocalRing A q
+  rw [← Ideal.sInf_minimalPrimes, IsLocalization.minimalPrimes_map q.primeCompl A I]
+  refine le_antisymm (sInf_le ?_) (le_sInf fun J hJ ↦ ?_)
+  · rwa [Set.mem_preimage, AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
+  · rw [← IsLocalization.comap_le_comap_iff q.primeCompl A,
+      AtPrime.map_eq_maximalIdeal q A, AtPrime.comap_maximalIdeal A q]
+    apply hIq.2 hJ.1
+    have := hJ.1.1.ne_top
+    rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_comap_iff q.primeCompl A J] at this
+    exact Set.disjoint_compl_left_iff_subset.mp this
 
 end

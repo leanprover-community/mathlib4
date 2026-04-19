@@ -5,13 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -29,7 +29,6 @@ purposes, and the system is set up so that they imply the correct granular typec
 If those are enough for you, you may stop reading here! Else, beware that what
 follows is a bit technical.
 
-## Definitions
 
 In all that follows, `α` and `β` are orders which have a `0` and such that `α` acts on `β` by scalar
 multiplication. Note however that we do not use lawfulness of this action in most of the file. Hence
@@ -84,9 +83,9 @@ used implications are:
 * When `α` is a linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
-* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a semiring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
-* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a ring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
@@ -120,7 +119,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib/Algebra/Order/GroupWithZero/Unbundled.lean` custom typeclasses too.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` custom typeclasses too.
 -/
 
 @[expose] public section
@@ -361,6 +360,12 @@ lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
 @[gcongr] lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
     a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
 
+variable (β) in
+@[gcongr, mono]
+lemma smul_one_mono [One β] [ZeroLEOneClass β] [SMulPosMono α β] :
+    Monotone (fun x : α ↦ x • (1 : β)) :=
+  fun _ _ ha ↦ smul_le_smul_of_nonneg_right ha zero_le_one
+
 @[gcongr] lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
     a₁ • b < a₂ • b := strictMono_smul_right_of_pos hb ha
 
@@ -422,6 +427,13 @@ lemma smul_le_smul' [PosSMulMono α β] [SMulPosMono α β] (ha : a₁ ≤ a₂)
 
 end LeftRight
 end Preorder
+
+variable (β) in
+@[gcongr, mono]
+lemma smul_one_strictMono [Preorder α] [PartialOrder β] [Zero β] [One β] [ZeroLEOneClass β]
+    [NeZero (1 : β)] [SMulPosStrictMono α β] :
+    StrictMono (fun x : α ↦ x • (1 : β)) :=
+  fun _ _ ha ↦ smul_lt_smul_of_pos_right ha (zero_lt_one (α := β))
 
 section PartialOrder
 variable [Semiring α] [PartialOrder α]
@@ -589,6 +601,21 @@ lemma neg_of_smul_neg_right [SMulPosReflectLT α β] (h : a • b < 0) (hb : 0 �
 lemma pos_iff_pos_of_smul_pos [PosSMulReflectLT α β] [SMulPosReflectLT α β] (hab : 0 < a • b) :
     0 < a ↔ 0 < b :=
   ⟨pos_of_smul_pos_left hab ∘ le_of_lt, pos_of_smul_pos_right hab ∘ le_of_lt⟩
+
+lemma IsOrderedModule.of_smul_one_mono
+    [MulOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β]
+    (h : Monotone (fun x : α ↦ x • (1 : β))) : IsOrderedModule α β where
+  smul_le_smul_of_nonneg_left _ ha _ _ hb := by
+    have := mul_le_mul_of_nonneg_left hb (by simpa using h ha)
+    simpa
+  smul_le_smul_of_nonneg_right _ ha _ _ hb := by
+    simpa using mul_le_mul_of_nonneg_right (h hb) ha
+
+theorem isOrderedModule_iff_smul_one_mono
+    [MulOneClass β] [ZeroLEOneClass β] [PosMulMono β] [MulPosMono β] [IsScalarTower α β β] :
+    IsOrderedModule α β ↔ Monotone (fun x : α ↦ x • (1 : β)) where
+  mp _ := smul_one_mono _
+  mpr := IsOrderedModule.of_smul_one_mono
 
 end Preorder
 
@@ -764,7 +791,7 @@ lemma PosSMulMono.of_smul_nonneg [PartialOrder α] [PartialOrder β] [IsOrderedA
     (h : ∀ a : α, 0 ≤ a → ∀ b : β, 0 ≤ b → 0 ≤ a • b) : PosSMulMono α β where
   smul_le_smul_of_nonneg_left _a ha b₁ b₂ := by simpa [sub_nonneg, smul_sub] using h _ ha (b₂ - b₁)
 
-variable [NoZeroSMulDivisors α β]
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 section PartialOrder
 variable [Preorder α] [PartialOrder β]
@@ -774,7 +801,8 @@ lemma PosSMulMono.toPosSMulStrictMono [PosSMulMono α β] : PosSMulStrictMono α
     (smul_right_injective _ ha.ne').ne hb.ne⟩
 
 instance PosSMulReflectLT.toPosSMulReflectLE [PosSMulReflectLT α β] : PosSMulReflectLE α β :=
-  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
+  ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim
+    (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
     (lt_of_smul_lt_smul_left h' ha.le).le⟩
 
 end PartialOrder
@@ -801,7 +829,7 @@ lemma IsOrderedModule.of_smul_nonneg [IsOrderedAddMonoid α] [IsOrderedAddMonoid
   smul_le_smul_of_nonneg_right _b hb a₁ a₂ := by
     simpa [sub_nonneg, sub_smul] using (h (a₂ - a₁) · _ hb)
 
-variable [NoZeroSMulDivisors α β]
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 lemma SMulPosMono.toSMulPosStrictMono [SMulPosMono α β] : SMulPosStrictMono α β :=
   ⟨fun _b hb _a₁ _a₂ ha ↦ (smul_le_smul_of_nonneg_right ha.le hb.le).lt_of_ne <|
@@ -907,7 +935,6 @@ lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
   obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
@@ -925,7 +952,6 @@ lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
   obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :

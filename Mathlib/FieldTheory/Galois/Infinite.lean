@@ -70,7 +70,7 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
       rcases (Set.mem_smul_set.mp hf) with ⟨g, hg, eq⟩
       simp only [Set.mem_compl_iff, SetLike.mem_coe, ← eq]
       apply (mem_fixingSubgroup_iff Gal(K/k)).not.mpr
-      push_neg
+      push Not
       use y
       simp only [yL, smul_eq_mul, AlgEquiv.smul_def, AlgEquiv.mul_apply, ne_eq, true_and]
       have : g y = y := (mem_fixingSubgroup_iff Gal(K/k)).mp hg y <|
@@ -226,15 +226,15 @@ then `Gal(fixedField H / k)` is isomorphic to `Gal(K / k) ⧸ H`. -/
 noncomputable def normalAutEquivQuotient [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] :
     Gal(K/k) ⧸ H.1 ≃* Gal(fixedField H.1/k) :=
-  (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
-    (fixedField H.1).restrictNormalHom_ker.symm)).trans <|
-      QuotientGroup.quotientKerEquivOfSurjective _ <| restrictNormalHom_surjective K
+  QuotientGroup.liftEquiv _ (restrictNormalHom_surjective K)
+    ((fixingSubgroup_fixedField H).symm.trans (fixedField H.1).restrictNormalHom_ker.symm)
 
 open IntermediateField in
 lemma normalAutEquivQuotient_apply [IsGalois k K]
     (H : ClosedSubgroup Gal(K/k)) [H.Normal] (σ : Gal(K/k)) :
     normalAutEquivQuotient H σ = restrictNormalHom (fixedField H.1) σ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open IntermediateField in
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ↔ FiniteDimensional k L := by

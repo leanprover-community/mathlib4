@@ -42,7 +42,7 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -127,28 +127,7 @@ theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit 
 theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
   testBit_bitwise rfl
 
-attribute [simp] testBit_xor
-
 end
-
-@[simp]
-theorem bit_false : bit false = (2 * ·) :=
-  rfl
-
-@[simp]
-theorem bit_true : bit true = (2 * · + 1) :=
-  rfl
-
-@[simp]
-theorem bit_false_apply (n) : bit false n = (2 * n) :=
-  rfl
-
-@[simp]
-theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
-  rfl
-
-theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simp
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
@@ -289,18 +268,6 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 
-@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
-
-@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
-
-@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
-
-@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
-
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by
   set v := a ^^^ b ^^^ c with hv
@@ -355,7 +322,8 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
   cases n with
   | zero => rfl
   | succ n =>
-    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+    simp +instances [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two,
+      div_two_mul_two_of_even h]
 
 @[simp]
 theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
@@ -363,7 +331,7 @@ theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
   | zero =>
     exact not_odd_zero h |>.elim
   | succ n =>
-    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    simp +instances only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
     grind
 
 /-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
@@ -388,9 +356,6 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       apply Nat.xor_self
     | 3 =>
       apply zero_xor
-
-@[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> lia
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

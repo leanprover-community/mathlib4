@@ -70,6 +70,7 @@ namespace Friendship
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 include hG in
 /-- One characterization of a friendship graph is that there is exactly one walk of length 2
@@ -149,7 +150,7 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   intro x
   by_cases hvx : G.Adj v x; swap; · exact (degree_eq_of_not_adj hG hvx).symm
   dsimp only [Theorems100.ExistsPolitician] at hG'
-  push_neg at hG'
+  push Not at hG'
   rcases hG' v with ⟨w, hvw', hvw⟩
   rcases hG' x with ⟨y, hxy', hxy⟩
   by_cases hxw : G.Adj x w

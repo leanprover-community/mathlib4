@@ -43,7 +43,10 @@ variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 @[mk_iff]
 class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
-  diagonal_isClosedImmersion : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+  isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+
+@[deprecated (since := "2026-01-20")]
+alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
 
 namespace IsSeparated
 
@@ -122,6 +125,7 @@ instance {S T : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [IsSeparat
   MorphismProperty.of_isPullback (pullback_map_diagonal_isPullback f g i)
     inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : X ⟶ Y` and `g : Y ⟶ Z` such that `g` is separated, the induced map
 `X ⟶ X ×[Z] Y` is a closed immersion. -/
 instance [IsSeparated g] :
@@ -129,7 +133,7 @@ instance [IsSeparated g] :
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion (pullback.fst f (𝟙 Y))]
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (pullback.congrHom rfl (Category.id_comp g)).inv]
-  convert (inferInstanceAs <| IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
+  convert (inferInstance : IsClosedImmersion (pullback.mapDesc f (𝟙 _) g)) using 1
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated
@@ -140,13 +144,14 @@ open Scheme Pullback
 
 variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     (hf : Function.Injective f) :
     diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
   simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
-    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.mem_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : pullback.fst f f x = pullback.snd f f x :=
     hf (by rw [← Scheme.Hom.comp_apply, ← Scheme.Hom.comp_apply, pullback.condition])
@@ -166,6 +171,7 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f) ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
@@ -238,7 +244,7 @@ instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion
   exact .of_comp _ I.subschemeι
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
-  have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)
+  have : IsClosedImmersion (pullback.diagonal (f ≫ g)) := inferInstance
   rw [pullback.diagonal_comp] at this
   exact ⟨@IsClosedImmersion.of_comp _ _ _ _ _ this inferInstance⟩
 
@@ -260,6 +266,7 @@ variable {f g} in
 lemma IsAffineHom.comp_iff [IsAffineHom g] : IsAffineHom (f ≫ g) ↔ IsAffineHom f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KM]
 instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSeparated Y.hom]
     (f g : X ⟶ Y) : IsClosedImmersion (equalizer.ι f g).left := by
@@ -267,9 +274,10 @@ instance isClosedImmersion_equalizer_ι_left {S : Scheme} {X Y : Over S} [IsSepa
     ((Limits.isPullback_equalizer_prod f g).map (Over.forget _)).flip ?_
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion _
     (Over.prodLeftIsoPullback Y Y).hom]
-  convert (inferInstanceAs (IsClosedImmersion (pullback.diagonal Y.hom)))
+  convert (inferInstance : IsClosedImmersion (pullback.diagonal Y.hom))
   ext1 <;> simp [← Over.comp_left]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `X` is a reduced scheme and that `f g : X ⟶ Y` agree over some separated `Y ⟶ Z`.
 Then `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
@@ -285,14 +293,23 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   let ι' : U' ⟶ X' := Over.homMk ι
   have : IsSeparated Y'.hom := ‹_›
   have : IsDominant (equalizer.ι f' g').left := by
-    apply (config := { allowSynthFailures := true }) IsDominant.of_comp (equalizer.lift ι' ?_).left
+    apply +allowSynthFailures IsDominant.of_comp (equalizer.lift ι' ?_).left
     · rwa [← Over.comp_left, equalizer.lift_ι]
     · ext1; exact hU
   have : Surjective (equalizer.ι f' g').left :=
-    surjective_of_isDominant_of_isClosed_range _ IsClosedImmersion.base_closed.2
+    surjective_of_isDominant_of_isClosed_range _ (Scheme.Hom.isClosedEmbedding _).isClosed_range
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)
+
+lemma ext_of_fromSpecResidueField_eq (f g : X ⟶ Y) (i : Y ⟶ Z) [IsSeparated i] [IsReduced X]
+    (S : Set X) (hS' : Dense S)
+    (H : ∀ x ∈ S, X.fromSpecResidueField x ≫ f = X.fromSpecResidueField x ≫ g)
+    (H' : f ≫ i = g ≫ i) : f = g := by
+  suffices IsDominant (equalizer.ι f g) from
+    ext_of_isDominant_of_isSeparated i H' (equalizer.ι f g) (equalizer.condition _ _)
+  refine ⟨.mono (fun x hx ↦ ⟨equalizer.lift _ (H _ hx) default, ?_⟩) hS'⟩
+  rw [← Scheme.Hom.comp_apply, equalizer.lift_ι, Scheme.fromSpecResidueField_apply]
 
 variable (S) in
 /--
@@ -313,6 +330,7 @@ protected class IsSeparated (X : Scheme.{u}) : Prop where
 
 attribute [instance] IsSeparated.isSeparated_terminal_from
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSeparated_iff_isClosedImmersion_prod_lift {X : Scheme.{u}} :
     X.IsSeparated ↔ IsClosedImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [isSeparated_iff, AlgebraicGeometry.isSeparated_iff, iff_iff_eq,
@@ -329,7 +347,7 @@ instance (priority := low) {X : Scheme.{u}} [X.IsSeparated] : QuasiSeparatedSpac
   quasiSeparatedSpace_of_quasiSeparated (terminal.from X)
 
 instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
-  apply (config := { allowSynthFailures := true }) @IsSeparated.of_comp (g := terminal.from Y)
+  apply +allowSynthFailures @IsSeparated.of_comp (g := terminal.from Y)
   rw [terminal.comp_from]
   infer_instance
 

@@ -27,12 +27,13 @@ section Category
 
 variable {C : Type u} [Category.{v} C]
 
-/-- An object `X` is isomorphic to an object `Y`, if `X ≅ Y` is not empty. -/
+/-- An object `X` is isomorphic to an object `Y` if `X ≅ Y` is nonempty. -/
 def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
 
 variable (C)
 
 /-- `IsIsomorphic` defines a setoid. -/
+@[instance_reducible]
 def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
   iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
@@ -43,21 +44,15 @@ end Category
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
-  map {_ _} F := Quot.map F.toFunctor.obj fun _ _ ⟨f⟩ => ⟨F.toFunctor.mapIso f⟩
+  map {_ _} F := TypeCat.ofHom (Quot.map F.toFunctor.obj fun _ _ ⟨f⟩ => ⟨F.toFunctor.mapIso f⟩)
   map_id {C} := by  -- Porting note: this used to be `tidy`
-    apply funext; intro x
+    ext x
     apply @Quot.recOn _ _ _ x
-    · intro _ _ p
-      simp only [types_id_apply]
-    · intro _
-      rfl
+    all_goals cat_disch
   map_comp {C D E} f g := by -- Porting note(s): idem
-    apply funext; intro x
+    ext x
     apply @Quot.recOn _ _ _ x
-    · intro _ _ _
-      simp only
-    · intro _
-      rfl
+    all_goals cat_disch
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
     IsIsomorphic X Y ↔ Nonempty (X ⟶ Y) :=

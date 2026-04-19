@@ -5,8 +5,9 @@ Authors: Paul Lezeau, Bhavik Mehta
 -/
 module
 
-public meta import Mathlib.NumberTheory.Divisors
-public meta import Mathlib.Util.Qq
+public meta import Mathlib.NumberTheory.Divisors -- Ideally this wouldn't need to be a `meta` import: someone could investigate?
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.Qq
 
 /-! # Divisor Simprocs
 

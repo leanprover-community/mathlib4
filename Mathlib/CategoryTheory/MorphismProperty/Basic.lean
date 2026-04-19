@@ -45,7 +45,7 @@ variable (C : Type u) [CategoryStruct.{v} C]
 
 instance : CompleteBooleanAlgebra (MorphismProperty C) where
   le P₁ P₂ := ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P₁ f → P₂ f
-  __ := inferInstanceAs (CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
+  __ := (inferInstance : CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
 
 lemma le_def {P Q : MorphismProperty C} :
     P ≤ Q ↔ ∀ {X Y : C} (f : X ⟶ Y), P f → Q f := Iff.rfl
@@ -217,6 +217,12 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
 /-- The class of morphisms containing a single morphism. -/
 abbrev single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
 
+lemma iSup_ofHoms {α : Type*} {ι : α → Type*} {A B : ∀ a, ι a → C}
+    (f : ∀ a, ∀ i, A a i ⟶ B a i) :
+    ⨆ (a : α), ofHoms (f a) = ofHoms (fun (j : Σ (a : α), ι a) ↦ f j.1 j.2) := by
+  ext f
+  simp [ofHoms_iff]
+
 end
 
 section
@@ -262,13 +268,13 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
+abbrev isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
 
 /-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
+abbrev monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+abbrev epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 
 @[simp]
 lemma op_isomorphisms : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
@@ -319,6 +325,7 @@ def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
 lemma le_isoClosure (P : MorphismProperty C) : P ≤ P.isoClosure :=
   fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance isoClosure_respectsIso (P : MorphismProperty C) :
     RespectsIso P.isoClosure where
   precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
@@ -352,6 +359,7 @@ theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
   P.arrow_iso_iff e
 
+set_option backward.isDefEq.respectTransparency false in
 theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P where
   precomp {X Y Z} e (he : IsIso e) f hf := by
@@ -505,10 +513,8 @@ theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
 
 end
 
-lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := by
-  ext X Y f
-  simp only [op, isomorphisms.iff]
-  exact ⟨fun _ ↦ inferInstanceAs (IsIso f.unop.op), fun _ ↦ inferInstance⟩
+@[deprecated "Use `op_isomorphisms _` instead." (since := "2026-01-18")]
+lemma isomorphisms_op : (isomorphisms C).op = isomorphisms Cᵒᵖ := op_isomorphisms _
 
 instance RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
   apply RespectsIso.mk <;>

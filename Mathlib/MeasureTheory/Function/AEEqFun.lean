@@ -90,6 +90,7 @@ variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
 measurable functions. -/
+@[implicit_reducible]
 def Measure.aeEqSetoid (μ : Measure α) : Setoid { f : α → β // AEStronglyMeasurable f μ } :=
   ⟨fun f g => (f : α → β) =ᵐ[μ] g, fun {f} => ae_eq_refl f.val, fun {_ _} => ae_eq_symm,
     fun {_ _ _} => ae_eq_trans⟩
@@ -234,6 +235,37 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   rw [compQuasiMeasurePreserving_eq_mk]
   apply coeFn_mk
 
+theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
+    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
+    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' (hf.congr hf' h) := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
+
+@[simp]
+theorem compQuasiMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compQuasiMeasurePreserving g id (.id ν) = g := by
+  ext
+  exact coeFn_compQuasiMeasurePreserving _ _
+
+theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : QuasiMeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : QuasiMeasurePreserving f' μ ν) :
+    compQuasiMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' := by
+  ext
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
+    coeFn_compQuasiMeasurePreserving, comp_assoc]
+
+theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :
+    (compQuasiMeasurePreserving · f hf)^[n] g =
+    compQuasiMeasurePreserving g (f^[n]) (hf.iterate n) := by
+  induction n with
+  | zero => simp
+  | succ n hind =>
+    nth_rewrite 1 [add_comm]
+    simp [iterate_add, hind, ← compQuasiMeasurePreserving_comp]
+
 end compQuasiMeasurePreserving
 
 section compMeasurePreserving
@@ -262,6 +294,28 @@ theorem compMeasurePreserving_eq_mk (g : β →ₘ[ν] γ) (hf : MeasurePreservi
 theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
     g.compMeasurePreserving f hf =ᵐ[μ] g ∘ f :=
   g.coeFn_compQuasiMeasurePreserving _
+
+theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
+    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
+    compMeasurePreserving g f hf = compMeasurePreserving g f' (hf.congr hf' h) :=
+  compQuasiMeasurePreserving_congr _ _ hf' h
+
+@[simp]
+theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :
+    compMeasurePreserving g id (.id ν) = g :=
+  compQuasiMeasurePreserving_id _
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
+    {ξ : Measure γ} (g : γ →ₘ[ξ] δ) {f : β → γ} (hf : MeasurePreserving f ν ξ) {f' : α → β}
+    (hf' : MeasurePreserving f' μ ν) :
+    compMeasurePreserving g (f ∘ f') (hf.comp hf') =
+    compMeasurePreserving (compMeasurePreserving g f hf) f' hf' :=
+  compQuasiMeasurePreserving_comp _ _ _
+
+theorem compMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
+    (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving · f hf)^[n] g = compMeasurePreserving g (f^[n]) (hf.iterate n) :=
+  compQuasiMeasurePreserving_iterate _ _ _
 
 end compMeasurePreserving
 
@@ -889,13 +943,11 @@ variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
 
 /-- Positive part of an `AEEqFun`. -/
 def posPart (f : α →ₘ[μ] γ) : α →ₘ[μ] γ :=
-  comp (fun x => max x 0) (continuous_id.max continuous_const) f
+  comp (fun x => max x 0) (by fun_prop) f
 
 @[simp]
 theorem posPart_mk (f : α → γ) (hf) :
-    posPart (mk f hf : α →ₘ[μ] γ) =
-      mk (fun x => max (f x) 0)
-        ((continuous_id.max continuous_const).comp_aestronglyMeasurable hf) :=
+    posPart (mk f hf : α →ₘ[μ] γ) = mk (fun x ↦ max (f x) 0) (by fun_prop) :=
   rfl
 
 theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=

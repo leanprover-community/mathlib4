@@ -75,7 +75,7 @@ theorem sumIDeriv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
 theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIDeriv p = ∑ i ∈ range (n + 1), derivative^[i] p := by
   dsimp [sumIDeriv]
-  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ_iff, hn]) _ (by simp)
+  exact Finsupp.sum_of_support_subset _ (by simp [hn]) _ (by simp)
 
 @[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
@@ -224,7 +224,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
-    rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
+    rw [range_eq_Ico, range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     rw [← tsub_le_iff_right]
     calc
       q - 1 ≤ q - 1 + p'.natDegree := le_self_add

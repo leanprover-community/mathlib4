@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 module
 
 public meta import Qq.MetaM
-public meta import Mathlib.Logic.Nontrivial.Basic
-public meta import Mathlib.Tactic.Attr.Core
+public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
+public meta import Mathlib.Tactic.ToDual
 
 /-! # The `nontriviality` tactic. -/
 
@@ -58,41 +58,39 @@ def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
     _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
-/-- Attempts to generate a `Nontrivial α` hypothesis.
+/-- `nontriviality α` generates a proof of `Nontrivial α` and adds this as a hypothesis.
 
-The tactic first checks to see that there is not already a `Nontrivial α` instance
-before trying to synthesize one using other techniques.
+The tactic first tries to find a proof of `Nontrivial α` using instance synthesis.
+If this fails, it will derive this proof using `a < b`, `a ≠ b` or `a > b` hypotheses in the
+local context. Otherwise it will perform a case split on `Subsingleton α ∨ Nontrivial α`, and
+attempt to prove `Subsingleton α` implies the main goal using `simp [nontriviality]`.
+If the `Subsingleton` goal cannot be closed automatically, `nontriviality` fails.
 
-If the goal is an (in)equality, the type `α` is inferred from the goal.
-Otherwise, the type needs to be specified in the tactic invocation, as `nontriviality α`.
+This tactic is extensible: tag a lemma with `@[nontriviality]` to use it in the `simp` set for the
+`Subsingleton` case. All `@[simp]` lemmas are automatically used too.
 
-The `nontriviality` tactic will first look for strict inequalities amongst the hypotheses,
-and use these to derive the `Nontrivial` instance directly.
+* `nontriviality` (without the argument `α`) infers the type from the main goal,
+  if the goal is an (in)equality.
+* `nontriviality using h₁, h₂, ..., hₙ` uses `h₁`, ..., `hₙ` as extra arguments to `simp`
+  in the `Subsingleton` case. This supports the typical `simp` argument syntax:
+  `nontriviality using ← h` rewrites right-to-left with this argument;
+  `nontriviality using -h` removes a lemma from the default `simp` set for this tactic invocation.
+  `nontriviality using *` adds all local hypotheses to the `simp` set.
 
-Otherwise, it will perform a case split on `Subsingleton α ∨ Nontrivial α`, and attempt to discharge
-the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is
-a list of additional `simp` lemmas that can be passed to `nontriviality` using the syntax
-`nontriviality α using h₁, h₂, ..., hₙ`.
-
+Examples:
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.
   assumption
-```
 
-```
 example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.
   apply mul_comm
-```
 
-```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : (2 : ℕ) ∣ 4 := by
   nontriviality R -- there is now a `Nontrivial R` hypothesis available.
   dec_trivial
-```
 
-```
 def myeq {α : Type} (a b : α) : Prop := a = b
 
 example {α : Type} (a b : α) (h : a = b) : myeq a b := by

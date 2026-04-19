@@ -24,9 +24,10 @@ variable {C : Type*} [Category* C]
 
 attribute [local instance] IsFiltered.nonempty IsCofiltered.nonempty
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
-  obtain i := Nonempty.some (inferInstanceAs (Nonempty J))
+  obtain i := Nonempty.some ((inferInstance : Nonempty J))
   let s' : Cone F := ⟨Over.mk (s.π.app i ≫ (F.obj i).hom), fun j ↦ Over.homMk (s.π.app j) (by
     obtain ⟨k, hik, hjk, -⟩ := IsCofilteredOrEmpty.cone_objs i j
     simp only [Functor.const_obj_obj, Over.mk_left, Over.mk_hom,
@@ -37,12 +38,13 @@ instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
   exact congr($(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
     fun j ↦ Over.OverMorphism.ext (hf j)).left)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
-  obtain i := Nonempty.some (inferInstanceAs (Nonempty J))
+  obtain i := Nonempty.some ((inferInstance : Nonempty J))
   let s' : Cocone F := ⟨Under.mk ((F.obj i).hom ≫ s.ι.app i), fun j ↦ Under.homMk (s.ι.app j) (by
     obtain ⟨k, hik, hjk, -⟩ := IsFilteredOrEmpty.cocone_objs i j
-    simp only [Functor.const_obj_obj, Functor.id_obj, Under.mk_right, Under.mk_hom,
+    simp only [Functor.const_obj_obj, Under.mk_right, Under.mk_hom,
       ← s.w hjk, ← s.w hik]
     simp), fun j k e ↦ by ext; simpa using s.w e⟩
   refine ⟨(hc.desc s').right, fun j ↦ congr($(hc.fac s' j).right), fun f hf ↦ ?_⟩

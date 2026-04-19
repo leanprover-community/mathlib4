@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -96,12 +97,7 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
 theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
-  ext x
-  by_cases h : p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [h, this]
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [h, this]
+  grind [eq_def, coe_trans]
 
 end subtypeCongr
 
@@ -595,8 +591,11 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
       Subtype.ext (Quotient.sound ((h _ _).1 hab))
-  left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
-  right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
+  left_inv a := by
+    obtain ⟨a, ha⟩ := a
+    induction a using Quotient.inductionOn
+    rfl
+  right_inv a := by induction a using Quotient.inductionOn; rfl
 
 @[simp]
 theorem subtypeQuotientEquivQuotientSubtype_mk (p₁ : α → Prop)

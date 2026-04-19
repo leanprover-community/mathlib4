@@ -123,6 +123,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
     ConcreteCategory.comp_apply, hfg]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive /-- Addition in the colimit is well-defined in the right argument. -/]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
@@ -130,15 +131,15 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   obtain ⟨j₁, y⟩ := y; obtain ⟨j₂, x⟩ := x; obtain ⟨j₃, y'⟩ := y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
-  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
+    TypeCat.Fun.coe_mk] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
   apply M.mk_eq
   use s, α, γ
-  dsimp
-  simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
-    ConcreteCategory.comp_apply, hfg]
+  simp_rw [map_mul, ← comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
+    comp_apply, hfg]
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive /-- Addition in the colimit. See also `colimitAddAux`. -/]
@@ -224,7 +225,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonCat.ext fun x =>
-    congr_fun ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+    ConcreteCategory.congr_hom ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 
 /-- The cocone over the proposed colimit monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive monoid. -/]
@@ -232,6 +233,7 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
 The only thing left to see is that it is a monoid homomorphism.
@@ -246,16 +248,14 @@ noncomputable def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
   { toFun := (F ⋙ forget MonCat).descColimitType
         ((F ⋙ forget MonCat).coconeTypesEquiv.symm ((forget MonCat).mapCocone t))
     map_one' := by
-      rw [colimit_one_eq F IsFiltered.nonempty.some]
-      exact map_one _
+      simp [colimit_one_eq F IsFiltered.nonempty.some]
     map_mul' x y := by
       obtain ⟨i, x, rfl⟩ := x.mk_surjective
       obtain ⟨j, y, rfl⟩ := y.mk_surjective
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp
-      rw [map_mul, t.w_apply, t.w_apply]
-      rfl }
+      rw [map_mul, t.w_apply, t.w_apply] }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddMonCat`. -/]
@@ -295,6 +295,7 @@ In the following, we will show that this has the structure of a _commutative_ mo
 noncomputable abbrev M : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with

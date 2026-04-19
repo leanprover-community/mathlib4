@@ -60,13 +60,19 @@ lemma isSmall_iff_eq_ofHoms :
   · rintro ⟨_, _, _, _, rfl⟩
     infer_instance
 
-lemma iSup_ofHoms {α : Type*} {ι : α → Type t} {A B : ∀ a, ι a → C}
-    (f : ∀ a, ∀ i, A a i ⟶ B a i) :
-    ⨆ (a : α), ofHoms (f a) = ofHoms (fun (j : Σ (a : α), ι a) ↦ f j.1 j.2) := by
-  ext f
-  simp [ofHoms_iff]
+instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
+    [Small.{w} α] [∀ a, IsSmall.{w} (W a)] :
+    IsSmall.{w} (iSup W) where
+  small_toSet := by
+    rw [toSet_iSup]
+    refine small_of_surjective (f := fun (⟨i, f⟩ : Σ i, (W i).toSet) ↦
+      ⟨f, by rw [Set.mem_iUnion]; exact ⟨i, f.prop⟩⟩) ?_
+    rintro ⟨f, hf⟩
+    simp only [Set.mem_iUnion] at hf
+    obtain ⟨i, hf⟩ := hf
+    exact ⟨⟨i, ⟨_, hf⟩⟩, rfl⟩
 
-instance {ι : Type t} [Small.{w} ι] (W : ι → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
+instance {α : Type t} [Small.{w} α] (W : α → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
     IsSmall.{w} (⨆ i, W i) := by
   choose α A B f hf using fun i ↦ (isSmall_iff_eq_ofHoms.{w} (W i)).1 inferInstance
   simp only [hf, iSup_ofHoms]

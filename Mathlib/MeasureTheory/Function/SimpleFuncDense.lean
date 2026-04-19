@@ -35,7 +35,7 @@ by a sequence of simple functions.
 
 @[expose] public section
 
-open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open Set Function Filter TopologicalSpace Metric MeasureTheory
 open scoped Topology ENNReal
 
 variable {α β : Type*}
@@ -97,13 +97,13 @@ theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
   induction N generalizing k with
-  | zero => simp [nonpos_iff_eq_zero.1 hk, le_refl]
+  | zero => simp [nonpos_iff_eq_zero.1 hk]
   | succ N ihN =>
     simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h
     · rcases hk.eq_or_lt with (rfl | hk)
       exacts [le_rfl, (h k (Nat.lt_succ_iff.1 hk)).le]
-    · push_neg at h
+    · push Not at h
       rcases h with ⟨l, hlN, hxl⟩
       rcases hk.eq_or_lt with (rfl | hk)
       exacts [(ihN hlN).trans hxl, ihN (Nat.lt_succ_iff.1 hk)]

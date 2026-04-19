@@ -58,7 +58,7 @@ variable {G} {n k ℓ μ : ℕ}
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
-  regular := bot_degree
+  regular := .bot
   of_adj _ _ h := h.elim
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
@@ -113,7 +113,7 @@ theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
     ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
       (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
-  simpa using ⟨(adj_symm _ h), h⟩
+  simpa using ⟨h, adj_symm _ h⟩
 
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsRegularOfDegree (n - k - 1) := by
@@ -194,9 +194,10 @@ more often found in the literature, where `J` is the all-ones matrix. -/
 theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
     G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
   ext v w
-  simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
+  simp only [adjMatrix_pow_apply_eq_card_walk, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
+  rw [@Fintype.card_congr _ _ (G.fintypeSetWalkLength v w 2) _
+    (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]

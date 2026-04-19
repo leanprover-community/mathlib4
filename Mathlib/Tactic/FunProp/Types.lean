@@ -5,8 +5,8 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`
@@ -68,7 +68,7 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
-  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry]
 
 /-- `fun_prop` configuration -/
 structure Config where
@@ -89,7 +89,7 @@ deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
-  /-- fun_prop config -/
+  /-- `fun_prop` config -/
   config : Config := {}
   /-- Name to unfold -/
   constToUnfold : TreeSet Name Name.quickCmp :=

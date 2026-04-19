@@ -6,7 +6,8 @@ Authors: Yuma Mizuno
 module
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-public meta import Mathlib.Tactic.CategoryTheory.MonoidalComp
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # Expressions for monoidal categories
@@ -431,6 +432,9 @@ def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
+  let e ← instantiateMVars e
+  if e.hasExprMVar then
+    throwError m!"expression contains metavariables:\n{e}"
   if let some f := (← get).cache.find? e then
     return f
   let f ←

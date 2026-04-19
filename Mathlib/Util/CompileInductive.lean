@@ -3,7 +3,7 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
-module
+module  -- shake: keep-downstream (`[csimp]` is not currently tracked)
 
 public import Mathlib.Init
 public meta import Lean.Elab.Command
@@ -25,11 +25,13 @@ Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missin
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
 
-public meta section
+public section
 
 namespace Mathlib.Util
 
 open Lean Meta
+
+meta section
 
 private def replaceConst (repl : AssocList Name Name) (e : Expr) : Expr :=
   e.replace fun | .const n us => repl.find? n |>.map (.const · us) | _ => none
@@ -234,6 +236,8 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
+end
+
 end Mathlib.Util
 
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
@@ -284,5 +288,6 @@ run_cmd Command.liftTermElabM do
 -- were manually implemented as `noncomputable`
 compile_inductive% String
 compile_inductive% Lean.Name
+compile_def% Lean.Name.sizeOf._f
 compile_def% Lean.Name.sizeOf
 compile_def% Lean.instSizeOfName

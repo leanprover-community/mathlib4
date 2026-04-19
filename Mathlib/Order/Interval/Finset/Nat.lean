@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -60,17 +59,18 @@ theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup
 theorem uIcc_eq_range' :
     uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range'⟩ := rfl
 
-theorem Iio_eq_range : Iio = range := by
+theorem Iio_eq_range : Iio a = range a := by
   grind
 
 @[simp]
-theorem Ico_zero_eq_range : Ico 0 = range := by rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
+theorem Ico_zero_eq_range : Ico 0 a = range a := by
+  rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
 
 lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 1) := by
   grind
 
-theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
-  Ico_zero_eq_range.symm
+theorem _root_.Finset.range_eq_Ico : range a = Ico 0 a :=
+  (Ico_zero_eq_range a).symm
 
 theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
   rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
@@ -231,7 +231,7 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, Nat.sub_zero, Nat.sub_self]
 
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
-  rw [Finset.range_eq_Ico, map_eq_image]
+  simp_rw [Finset.range_eq_Ico, map_eq_image]
   convert (Ico_union_Ico_eq_Ico a.zero_le (a.le_add_right b)).symm
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]

@@ -5,7 +5,8 @@ Authors: Kim Morrison, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Pullbacks in the category of types
@@ -19,16 +20,9 @@ We show some additional lemmas for pullbacks in the category of types.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Limits ConcreteCategory
 
 namespace CategoryTheory.Limits.Types
-
--- #synth HasPullbacks.{u} (Type u)
-instance : HasPullbacks.{u} (Type u) :=
-  -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
-  -- https://github.com/leanprover-community/mathlib4/issues/5752
-  -- inferInstance
-  hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
 variable {X Y Z : Type u} {X' Y' Z' : Type v}
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
@@ -47,7 +41,8 @@ example (p : PullbackObj f g) : X × Y :=
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
 abbrev pullbackCone : Limits.PullbackCone f g :=
-  PullbackCone.mk (fun p : PullbackObj f g => p.1.1) (fun p => p.1.2) (funext fun p => p.2)
+  PullbackCone.mk (TypeCat.ofHom (fun p : PullbackObj f g => p.1.1))
+    (TypeCat.ofHom (fun p => p.1.2)) (by ext p; exact p.2)
 
 /-- The explicit pullback in the category of types, bundled up as a `LimitCone`
 for given `f` and `g`.
@@ -56,11 +51,11 @@ for given `f` and `g`.
 def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g) where
   cone := pullbackCone f g
   isLimit :=
-    PullbackCone.isLimitAux _ (fun s x => ⟨⟨s.fst x, s.snd x⟩, congr_fun s.condition x⟩)
+    PullbackCone.isLimitAux _ (fun s => TypeCat.ofHom
+      fun x => ⟨⟨s.fst x, s.snd x⟩, congr_hom s.condition x⟩)
       (by aesop) (by aesop) fun _ _ w =>
-      funext fun x =>
-        Subtype.ext <|
-          Prod.ext (congr_fun (w WalkingCospan.left) x) (congr_fun (w WalkingCospan.right) x)
+      ConcreteCategory.ext <| TypeCat.Fun.ext <| funext fun x => Subtype.ext <|
+        Prod.ext (congr_hom (w WalkingCospan.left) x) (congr_hom (w WalkingCospan.right) x)
 
 end Types
 
@@ -78,13 +73,13 @@ noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
 
 @[simp]
 lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x :=
-  congr_fun (IsLimit.conePointUniqueUpToIso_hom_comp hc
-    (Types.pullbackLimitCone f g).isLimit .left) x
+  (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .left)) x
 
 @[simp]
 lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x :=
-  congr_fun (IsLimit.conePointUniqueUpToIso_hom_comp hc
-    (Types.pullbackLimitCone f g).isLimit .right) x
+  (congr_hom (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .right)) x
 
 @[simp]
 lemma equivPullbackObj_symm_apply_fst (x : Types.PullbackObj f g) :
@@ -110,7 +105,7 @@ variable (c)
 the canonical map `c.pt → Types.PullbackObj f g`. -/
 @[simps coe_fst coe_snd]
 def toPullbackObj (x : c.pt) : Types.PullbackObj f g :=
-  ⟨⟨c.fst x, c.snd x⟩, congr_fun c.condition x⟩
+  ⟨⟨c.fst x, c.snd x⟩, congr_hom c.condition x⟩
 
 /-- A pullback cone `c` in the category of types is limit iff the
 map `c.toPullbackObj : c.pt → Types.PullbackObj f g` is a bijection. -/
@@ -147,23 +142,19 @@ theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd f g) p :=
   PullbackCone.IsLimit.equivPullbackObj_apply_snd (pullbackIsPullback f g) p
 
-@[simp]
-theorem pullbackIsoPullback_inv_fst_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.fst f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x :=
-  PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) x
-
-@[simp]
-theorem pullbackIsoPullback_inv_snd_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.snd f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x :=
-  PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) x
-
-@[simp]
+@[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_fst :
-    (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ = fun p => (p.1 : X × Y).fst := by aesop
+    (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ =
+      TypeCat.ofHom (fun p => (p.1 : X × Y).fst) := by
+  ext
+  exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) _
 
-@[simp]
+@[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_snd :
-    (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd := by aesop
+    (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ =
+      TypeCat.ofHom (fun p => (p.1 : X × Y).snd) := by
+  ext
+  exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) _
 
 end Pullback
 
@@ -182,7 +173,7 @@ lemma range_fst_of_isPullback (h : IsPullback fst snd f g) :
   have : fst = _root_.Prod.fst ∘ Subtype.val ∘ e.hom := by
     ext p
     suffices fst p = pullback.fst f g (h.isoPullback.hom p) by simpa
-    rw [← types_comp_apply h.isoPullback.hom (pullback.fst f g), IsPullback.isoPullback_hom_fst]
+    rw [← comp_apply h.isoPullback.hom (pullback.fst f g), IsPullback.isoPullback_hom_fst]
   rw [this, Set.range_comp, Set.range_comp, Set.range_eq_univ.mpr (surjective_of_epi e.hom)]
   ext
   simp [eq_comm]
@@ -220,6 +211,7 @@ lemma exists_of_isPullback (h : IsPullback t l r b)
   exact ⟨x₁, congr_arg _root_.Prod.fst hx₁,
     congr_arg _root_.Prod.snd hx₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (t l r b) in
 lemma isPullback_iff :
   IsPullback t l r b ↔ t ≫ r = l ≫ b ∧
@@ -229,12 +221,19 @@ lemma isPullback_iff :
   · intro h
     exact ⟨h.w, fun x₁ y₁ ⟨h₁, h₂⟩ ↦ ext_of_isPullback h h₁ h₂, exists_of_isPullback h⟩
   · rintro ⟨w, h₁, h₂⟩
-    let φ : X₁ ⟶ PullbackObj r b := fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_fun w x₁⟩
+    let φ : X₁ ⟶ PullbackObj r b := TypeCat.ofHom fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_hom w x₁⟩
     have hφ : IsIso φ := by
       rw [isIso_iff_bijective]
-      grind [Function.Bijective, Function.Injective, Function.Surjective]
+      constructor
+      · intro _ _ h
+        simp [φ] at h
+        grind
+      · intro x
+        obtain ⟨a, ha⟩ := h₂ x.1.1 x.1.2 (by grind)
+        cat_disch
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
+
 end
 
 end CategoryTheory.Limits.Types

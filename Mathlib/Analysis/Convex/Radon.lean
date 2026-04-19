@@ -28,7 +28,7 @@ compactness of sets (see `helly_theorem_compact`).
 convex hull, affine independence, Radon, Helly
 -/
 
-@[expose] public section
+public section
 
 open Fintype Finset Set
 
@@ -46,7 +46,7 @@ are affinely dependent (see `finrank_vectorSpan_le_iff_not_affineIndependent`). 
 theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
     ∃ I, (convexHull 𝕜 (f '' I) ∩ convexHull 𝕜 (f '' Iᶜ)).Nonempty := by
   rw [affineIndependent_iff] at h
-  push_neg at h
+  push Not at h
   obtain ⟨s, w, h_wsum, h_vsum, nonzero_w_index, h1, h2⟩ := h
   let I : Finset ι := {i ∈ s | 0 ≤ w i}
   let J : Finset ι := {i ∈ s | w i < 0}
@@ -116,7 +116,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   use p
   apply mem_biInter
   intro i hi
-  let i : s := ⟨i, hi⟩
+  lift i to s using hi
   /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
   hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
@@ -132,13 +132,8 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
-  · apply biInter_subset_of_mem
-    simp only [erase_val]
-    suffices h : i.val ∈ s.erase j by assumption
-    simp only [mem_erase]
-    constructor
-    · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
-    · assumption
+  · apply iInter₂_subset
+    simp [mem_erase, ne_of_mem_of_not_mem hi hj]
   · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.

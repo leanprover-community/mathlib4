@@ -38,6 +38,8 @@ instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R wher
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
+
 instance RingCone.instRingConeClass (R : Type*) [Ring R] :
     RingConeClass (RingCone R) R where
   add_mem {C} := C.add_mem'
@@ -74,8 +76,6 @@ def nonneg : RingCone T where
 instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRing T] :
     HasMemOrNegMem (nonneg T) where
   mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
-
-@[deprecated (since := "2025-08-21")] alias nonneg.isMaxCone := nonneg.hasMemOrNegMem
 
 end RingCone
 

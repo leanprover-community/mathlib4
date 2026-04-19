@@ -147,6 +147,7 @@ namespace Classical
 open PSet ZFSet
 
 /-- All functions are classically definable. -/
+@[implicit_reducible]
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
   out xs := (F (mk <| xs ·)).out
 
@@ -166,29 +167,29 @@ theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
 theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
   Quotient.exact
 
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ (· ∈ ·) fun _ _ _ _ hx hy =>
-    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
+def toSet (x : ZFSet) : Set ZFSet :=
+  {y | Quotient.lift₂ (· ∈ ·) (fun _ _ _ _ hx hy =>
+    propext ((Mem.congr_left hx).trans (Mem.congr_right hy))) y x}
 
-instance : Membership ZFSet ZFSet where
-  mem t s := ZFSet.Mem s t
+private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+
+instance : SetLike ZFSet.{u} ZFSet.{u} where
+  coe := toSet
+  coe_injective' x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
+
+/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
+@[deprecated "use `∈` notation" (since := "2026-03-16")]
+protected def Mem : ZFSet → ZFSet → Prop := (· ∈ ·)
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 
-@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : SetLike ZFSet.{u} ZFSet.{u} where
-  coe x := {y | y ∈ x}
-  coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
-
-/-- Convert a ZFC set into a `Set` of ZFC sets -/
-@[deprecated SetLike.coe (since := "2025-11-05")]
-def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
-  { x | x ∈ u }
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
 
 @[deprecated SetLike.mem_coe (since := "2025-11-05")]
 theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=
@@ -231,7 +232,7 @@ instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
 
-instance : IsRefl ZFSet (· ⊆ ·) :=
+instance : @Std.Refl ZFSet (· ⊆ ·) :=
   ⟨fun _ _ => id⟩
 
 instance : IsTrans ZFSet (· ⊆ ·) :=
@@ -256,7 +257,7 @@ theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u
 @[deprecated SetLike.coe_set_eq (since := "2025-11-05")]
 lemma toSet_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_set_eq
 
-instance : IsAntisymm ZFSet (· ⊆ ·) :=
+instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
 
 instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
@@ -438,12 +439,12 @@ def powerset : ZFSet → ZFSet :=
   Quotient.map PSet.powerset
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun p =>
-        ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
+        ⟨{ b | ∃ a, a ∈ p ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
           let ⟨b, ab⟩ := αβ a
           ⟨⟨b, a, pa, ab⟩, ab⟩,
           fun ⟨_, a, pa, ab⟩ => ⟨⟨a, pa⟩, ab⟩⟩,
         fun q =>
-        ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
+        ⟨{ a | ∃ b, b ∈ q ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
           let ⟨a, ab⟩ := βα b
           ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩
 
@@ -782,7 +783,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
 
 instance : Definable₁ ({·}) := .mk ({·}) (fun _ ↦ rfl)
 instance : Definable₂ insert := .mk insert (fun _ _ ↦ rfl)
-instance : Definable₂ pair := by unfold pair; infer_instance
+instance : Definable₂ pair := inferInstanceAs <| Definable₂ fun x y ↦ {{x}, {x, y}}
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
 def map (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=

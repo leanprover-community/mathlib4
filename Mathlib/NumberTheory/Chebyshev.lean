@@ -78,6 +78,11 @@ theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
 theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
   sum_nonneg fun n hn ↦ log_nonneg (by aesop)
 
+theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
+  refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
+  · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
+  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ x)).2 hy, Nat.prime_two⟩
+
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
   rw [psi, ← add_sum_Ioc_eq_sum_Icc] <;> simp
@@ -128,14 +133,14 @@ theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := 
   unfold theta primorial
   rw [cast_prod, log_prod (fun p hp ↦ mod_cast (mem_filter.mp hp).2.pos.ne')]
   congr 1 with p
-  simp_all [Nat.Prime.pos, Nat.lt_add_one_iff]
+  simp_all [Nat.Prime.pos]
 
 /-- Chebyshev's upper bound: `θ x ≤ c x` with the constant `c = log 4`. -/
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [theta_eq_log_primorial]
   trans log (4 ^ ⌊x⌋₊)
   · apply log_le_log <;> norm_cast
-    exacts [primorial_pos _, primorial_le_4_pow _]
+    exacts [primorial_pos _, primorial_le_four_pow _]
   rw [Real.log_pow, mul_comm]
   gcongr
   exact floor_le hx
@@ -218,10 +223,10 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
   apply le_trans <| abs_sum_le_sum_abs ..
   simp_rw [abs_of_nonneg <| theta_nonneg _]
   trans ∑ i ∈ Icc 2 ⌊log x / log 2⌋₊, log 4 * x.sqrt
-  · apply sum_le_sum fun i hi ↦ ?_
+  · gcongr with i hi
     apply le_trans (theta_le_log4_mul_x (rpow_nonneg (by linarith) _))
     rw [sqrt_eq_rpow]
-    gcongr <;> simp_all
+    gcongr; simp_all
   simp only [sum_const, card_Icc, reduceSubDiff, nsmul_eq_mul]
   calc
   _ ≤ (log x / log 2) * (log 4 * √x) := by
@@ -310,7 +315,7 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     · simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (f := fun n ↦ (log n)⁻¹) (by simp [a]) (by simp [a]),
     ← intervalIntegral.integral_of_le hx]
-  · -- Rewrite the derivative inside the intigral
+  · -- Rewrite the derivative inside the integral
     have int_deriv (f : ℝ → ℝ) :
         ∫ u in 2..x, deriv (fun x ↦ (log x)⁻¹) u * f u =
         ∫ u in 2..x, f u * -(u * log u ^ 2)⁻¹ :=
@@ -329,6 +334,31 @@ theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     have : log z ^ 2 ≠ 0 := by
       refine pow_ne_zero 2 <| log_ne_zero_of_pos_of_ne_one ?_ ?_ <;> linarith
     exact ContinuousAt.continuousWithinAt <| by fun_prop (disch := assumption)
+
+/-- Expresses the Chebyshev theta function `ϑ` in terms of `π` by using Abel summation. -/
+theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
+    θ x = π ⌊x⌋₊ * log x - ∫ t in 2..x, π ⌊t⌋₊ / t := by
+  -- Rewrite in a form to which Abel summation can be applied
+  rw [theta_eq_sum_Icc, sum_filter]
+  let a : ℕ → ℝ := Set.indicator (setOf Nat.Prime) (fun n ↦ 1)
+  trans ∑ n ∈ Icc 0 ⌊x⌋₊, log n * a n
+  · refine sum_congr rfl fun n hn ↦ ?_
+    split_ifs with h <;> simp [a, h]
+  rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
+    (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
+    ← intervalIntegral.integral_of_le hx]
+  case hint =>
+    rw [deriv_log']
+    refine ContinuousOn.integrableOn_Icc ?_
+    fun_prop (disch := grind)
+  -- Rewrite the derivative inside the integral
+  simp only [primeCounting, primeCounting', count_eq_card_filter_range]
+  have int_deriv (f : ℝ → ℝ) :
+      ∫ u in 2..x, deriv (fun x ↦ log x) u * f u =
+      ∫ u in 2..x, f u / u :=
+    intervalIntegral.integral_congr fun u _ ↦ by rw [deriv_log, mul_comm, div_eq_mul_inv]
+  rw [int_deriv]
+  simp [a, Set.indicator_apply, Nat.range_succ_eq_Icc_zero, mul_comm]
 
 theorem intervalIntegrable_one_div_log_sq {a b : ℝ} (one_lt_a : 1 < a) (one_lt_b : 1 < b) :
     IntervalIntegrable (fun x ↦ 1 / log x ^ 2) MeasureTheory.volume a b := by
@@ -365,9 +395,9 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
 -- Somewhat arbitrary bound which we use to estimate the second term.
 private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
-  apply isLittleO_mul_iff_isLittleO_div _|>.mp
+  apply isLittleO_mul_iff_isLittleO_div _ |>.mp
   · conv => arg 2; ext; rw [mul_comm]
-    apply isLittleO_mul_iff_isLittleO_div _|>.mpr
+    apply isLittleO_mul_iff_isLittleO_div _ |>.mpr
     · simp_rw [div_sqrt, sqrt_eq_rpow, ← rpow_two]
       apply isLittleO_log_rpow_rpow_atTop _ (by norm_num)
     filter_upwards [eventually_gt_atTop 0] with x hx using sqrt_ne_zero'.mpr hx
@@ -376,7 +406,7 @@ private theorem sqrt_isLittleO :
 
 theorem integral_one_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, 1 / log t ^ 2) =O[atTop] (fun x ↦ x / log x ^ 2) := by
-  trans (fun x ↦  4 * x / log x ^ 2 + √x / log 2 ^ 2)
+  trans (fun x ↦ 4 * x / log x ^ 2 + √x / log 2 ^ 2)
   · apply IsBigO.of_bound'
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)

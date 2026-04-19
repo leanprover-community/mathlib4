@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
@@ -180,7 +180,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
-@[aesop 10% apply]
+@[aesop 10% apply, grind ←]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   .mono hx <| .zero R
 
@@ -409,7 +409,7 @@ instance : IsOrderedModule R A where
     obtain ⟨r, hr, rfl⟩ := hrs
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
+variable [IsDomain R] [IsCancelAdd A] [Module.IsTorsionFree R A]
 
 instance : PosSMulStrictMono R A where
   smul_lt_smul_of_pos_left r hr a b hab := by
@@ -426,10 +426,6 @@ instance [IsCancelAdd R] : IsStrictOrderedModule R A where
     obtain ⟨r, hr₀, hr, rfl⟩ := hrs
     obtain ⟨ha₀, ha⟩ := ha
     exact ⟨r • a, smul_ne_zero hr₀ ha₀, smul_mem_closure_star_mul hr ha, add_smul ..⟩
-
-@[deprecated smul_lt_smul_of_pos_left (since := "2025-08-24")]
-lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b)
-    (hc : 0 < c) : c • a < c • b := smul_lt_smul_of_pos_left hab hc
 
 end StarModule
 
@@ -450,9 +446,7 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [NonUnitalSemiring R] [StarRing R] [StarOrderedRing R] [NonUnitalSemiring S]
-    [StarRing S] [StarOrderedRing S] [NonUnitalRingHomClass F R S]
-    [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
+    [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
 
 instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]

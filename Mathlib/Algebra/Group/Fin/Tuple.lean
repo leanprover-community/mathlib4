@@ -13,7 +13,7 @@ public import Mathlib.Data.Fin.VecNotation
 # Algebraic properties of tuples
 -/
 
-@[expose] public section
+public section
 
 namespace Fin
 variable {n : ℕ} {α : Fin (n + 1) → Type*}

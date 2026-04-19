@@ -22,7 +22,7 @@ This file contains basic results on the natural-valued floor and ceiling functio
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -157,10 +157,9 @@ theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋
   rw [le_div_iff_mul_le (zero_lt_of_ne_zero hn), le_floor_iff (mul_nonneg ha (cast_nonneg' n)),
     le_floor_iff ha, cast_mul, mul_le_mul_iff_of_pos_right (cast_pos'.mpr (zero_lt_of_ne_zero hn))]
 
-theorem cast_mul_floor_div_cancel {R : Type*} [CommSemiring R] [LinearOrder R]
-    [IsStrictOrderedRing R] [FloorSemiring R] {n : ℕ} (hn : n ≠ 0) (a : R) :
+theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) :
     ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, mul_cast_floor_div_cancel hn]
+  rw [Nat.cast_comm, mul_cast_floor_div_cancel hn]
 
 end floor
 
@@ -207,7 +206,7 @@ theorem ceil_le_floor_add_one (a : R) : ⌈a⌉₊ ≤ ⌊a⌋₊ + 1 := by
   exact (lt_floor_add_one a).le
 
 @[simp]
-theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
     [FloorSemiring R] (z : ℤ) :
     ⌈(z : R)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by

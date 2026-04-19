@@ -36,6 +36,7 @@ variable {α : Type*} {s t : Set α} {a : α}
 /-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the scope `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
+@[instance_reducible]
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
 
 scoped[Pointwise] attribute [instance] Set.star
@@ -53,7 +54,7 @@ theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Non
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
   nonempty_star.2 h
 
-@[simp]
+@[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]

@@ -220,10 +220,9 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
   | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
   | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-theorem linearCombination_smul [DecidableEq α] [Module R S] [Module S M] [IsScalarTower R S M]
-    {w : α' → S} :
+theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
-      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
+      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (curryLinearEquiv R).toLinearMap := by
   ext; simp
 
 @[simp]
@@ -273,7 +272,7 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
-  contrapose! h
+  contrapose h
   simp [h]
 
 variable [Module S M] [SMulCommClass R S M]
@@ -404,6 +403,22 @@ theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
     exact l.support.sum_coe_sort fun a ↦ l a • v a
   · rw [← hx]
     exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
+
+theorem Submodule.mem_span_image_finset_iff_exists_fun {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
+  rw [← mem_span_range_iff_exists_fun, image_eq_range]
+  rfl
+
+theorem Submodule.mem_span_image_finset_iff_exists_fun' {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : α → R, ∑ i ∈ s, c i • v i = x := by
+  classical
+  rw [Submodule.mem_span_image_finset_iff_exists_fun]
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, fun ⟨c, hc⟩ ↦ ?_⟩
+  · refine ⟨fun i ↦ if h : i ∈ s then c ⟨i, h⟩ else 0, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
+    simp
+  · refine ⟨fun i ↦ c i, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
 
 theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by

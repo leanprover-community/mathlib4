@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.UnitBall
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -29,66 +28,76 @@ variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [Seminorm
 
 section ClosedBall
 
-instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
+instance : SMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_ball_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
           mul_lt_mul' (mem_closedBall_zero_iff.1 c.2) (mem_ball_zero_iff.1 x.2) (norm_nonneg _)
             one_pos⟩
+
+instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 : E) r) where
   one_smul _c₂ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
-instance mulActionClosedBallClosedBall :
-    MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
+instance : SMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_closedBall_zero_iff.2 <| by
         simpa only [norm_smul, one_mul] using
           mul_le_mul (mem_closedBall_zero_iff.1 c.2) (mem_closedBall_zero_iff.1 x.2) (norm_nonneg _)
             zero_le_one⟩
+
+instance mulActionClosedBallClosedBall :
+    MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul 𝕜 _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_closedBall :
     ContinuousSMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end ClosedBall
 
 section Sphere
 
-instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
+instance : SMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
+
+instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
+
+instance : SMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
+  smul c x := inclusion sphere_subset_closedBall c • x
 
 instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
-  smul c x := inclusion sphere_subset_closedBall c • x
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_closedBall :
     ContinuousSMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
-instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
+instance : SMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_sphere_zero_iff_norm.2 <| by
         rw [norm_smul, mem_sphere_zero_iff_norm.1 c.coe_prop, mem_sphere_zero_iff_norm.1 x.coe_prop,
           one_mul]⟩
+
+instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   one_smul _ := Subtype.ext <| one_smul _ _
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end Sphere
 
@@ -177,7 +186,7 @@ variable [CharZero 𝕜]
 
 include 𝕜 in
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x :=
-  have : IsAddTorsionFree E := .of_noZeroSMulDivisors 𝕜 E
+  have : IsAddTorsionFree E := .of_isTorsionFree 𝕜 E
   fun h => ne_zero_of_mem_sphere hr x (self_eq_neg.mp (by (conv_lhs => rw [h]); rfl))
 
 include 𝕜 in

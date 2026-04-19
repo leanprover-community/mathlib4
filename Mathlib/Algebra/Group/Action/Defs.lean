@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Tactic.Spread
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Definitions of group actions
@@ -56,7 +57,7 @@ attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instS
 
 -- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18")]
+@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
@@ -152,7 +153,7 @@ export AddSemigroupAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note2 «bundled maps over different rings» /--
+library_note «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -382,13 +383,24 @@ lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 variable [SMul M α]
 
 @[to_additive]
+lemma SemiconjBy.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {x a b : α}
+    (h : SemiconjBy x a b) (r : M) : SemiconjBy x (r • a) (r • b) := by
+  rw [SemiconjBy, mul_smul_comm, smul_mul_assoc, h.eq]
+
+@[to_additive]
+lemma SemiconjBy.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {x a b : α}
+    (h : SemiconjBy x a b) (r : M) : SemiconjBy (r • x) a b := by
+  rw [SemiconjBy, mul_smul_comm, smul_mul_assoc, h.eq]
+
+@[to_additive]
 lemma Commute.smul_right [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
     (h : Commute a b) (r : M) : Commute a (r • b) :=
-  (mul_smul_comm _ _ _).trans ((congr_arg _ h).trans <| (smul_mul_assoc _ _ _).symm)
+  SemiconjBy.smul_right h r
 
 @[to_additive]
 lemma Commute.smul_left [Mul α] [SMulCommClass M α α] [IsScalarTower M α α] {a b : α}
-    (h : Commute a b) (r : M) : Commute (r • a) b := (h.symm.smul_right r).symm
+    (h : Commute a b) (r : M) : Commute (r • a) b :=
+  SemiconjBy.smul_left h r
 
 end
 
@@ -490,11 +502,23 @@ lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smu
 section Mul
 variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {a b : H}
 
-@[simp] lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
-  ⟨fun h ↦ inv_smul_smul g b ▸ h.smul_right g⁻¹, fun h ↦ h.smul_right g⟩
+@[to_additive (attr := simp)]
+lemma SemiconjBy.smul_right_iff {a b x : H} {r : G} :
+    SemiconjBy x (r • a) (r • b) ↔ SemiconjBy x a b :=
+  ⟨fun h ↦ by simpa using h.smul_right r⁻¹, (smul_right · r)⟩
 
-@[simp] lemma Commute.smul_left_iff : Commute (g • a) b ↔ Commute a b := by
-  rw [Commute.symm_iff, Commute.smul_right_iff, Commute.symm_iff]
+@[to_additive (attr := simp)]
+lemma SemiconjBy.smul_left_iff {a b x : H} {r : G} :
+    SemiconjBy (r • x) a b ↔ SemiconjBy x a b :=
+  ⟨fun h ↦ by simpa using h.smul_left r⁻¹, (smul_left · r)⟩
+
+@[to_additive (attr := simp)]
+lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
+  SemiconjBy.smul_right_iff
+
+@[to_additive (attr := simp)]
+lemma Commute.smul_left_iff : Commute (g • a) b ↔ Commute a b :=
+  SemiconjBy.smul_left_iff
 
 end Mul
 
@@ -595,10 +619,10 @@ but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
 export MulDistribMulAction (smul_one)
 
@@ -613,6 +637,7 @@ end MulDistribMulAction
 section IsCancelSMul
 
 variable (G P : Type*)
+-- TODO: IsRightCancelSmul
 
 /-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
 class IsLeftCancelVAdd [VAdd G P] : Prop where
@@ -628,7 +653,7 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
     a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
-instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+instance [Mul G] [IsLeftCancelMul G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right.

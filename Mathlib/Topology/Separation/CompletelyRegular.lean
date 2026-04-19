@@ -150,6 +150,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by
@@ -211,7 +212,7 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   refine ⟨f ⁻¹' Iio r, ⟨hrclopen ▸ isClosed_Iic.preimage hfc, isOpen_Iio.preimage hfc⟩, ?_, ?_⟩
   · simp [hf₀, hrclopen]
   · refine preimage_subset_iff.mpr (fun x ↦ ?_)
-    contrapose!; intro hxs
+    contrapose; intro hxs
     simpa [hf₁ hxs] using le_one'
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/

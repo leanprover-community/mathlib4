@@ -16,13 +16,13 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 /-!
 # The category of `R`-modules
 
-If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-modules with carrier
-in the universe `v`. We  show that it is preadditive and show that being an isomorphism and
+If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-semimodules with carrier
+in the universe `v`. We show that it is preadditive and show that being an isomorphism and
 monomorphism are equivalent to being a linear equivalence and an injective linear map respectively.
 
 ## Implementation details
 
-To construct an object in the category of `R`-modules from a type `M` with an instance of the
+To construct an object in the category of `R`-semimodules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
 The roundtrip `↑(of R M)` is definitionally equal to `M` itself (when `M` is a type with `Module`
 instance), and so is `of R ↑M` (when `M : SemimoduleCat R M`).
@@ -46,7 +46,7 @@ universe v u
 variable (R : Type u) [Semiring R]
 
 set_option backward.privateInPublic true in
-/-- The category of R-modules and their morphisms.
+/-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
 impose here that the `ℕ`-multiplication field from the module structure is defeq to the one coming
@@ -192,11 +192,12 @@ end
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
-lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj M = M := rfl
+lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
+  rfl
 
-@[simp]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
 lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = f :=
+    (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
@@ -270,9 +271,10 @@ end CategoryTheory.Iso
 in `SemimoduleCat` -/
 @[simps]
 def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ SemimoduleCat.of R X ≅ SemimoduleCat.of R Y where
-  hom e := e.toModuleIsoₛ
-  inv i := i.toLinearEquivₛ
+    [Module R Y] : (X ≃ₗ[R] Y) ≅
+      ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
+  hom := TypeCat.ofHom (fun e ↦ e.toModuleIsoₛ)
+  inv := TypeCat.ofHom (fun i ↦ i.toLinearEquivₛ)
 
 end
 
@@ -297,10 +299,9 @@ instance : SMul ℕ (M ⟶ N) where
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
-instance : SMul ℕ (M ⟶ N) where
-  smul n f := ⟨n • f.hom⟩
-
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+-- There is no `ℤ`-smul operation on a general semimodule!
+@[deprecated (since := "2026-01-06")]
+alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)

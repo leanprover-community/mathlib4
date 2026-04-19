@@ -7,13 +7,15 @@ module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
 # Smooth algebras have Noetherian models
 
 In this file, we show if `S` is a smooth `R`-algebra, there exists a `ℤ`-subalgebra of finite type
 `R₀` and a smooth `R₀`-algebra `S₀` such that `S ≃ₐ R ⊗[R₀] S₀`.
+
+The analogous result for etale algebras is also provided.
 -/
 
 universe u
@@ -48,7 +50,7 @@ variable (D : DescentAux A B)
 
 variable (R)
 
-/-- (Implementation detail): The finite type `ℤ`-algebra. -/
+/-- (Implementation detail): The finite type `R`-algebra. -/
 def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
@@ -57,16 +59,20 @@ def subalgebra (D : DescentAux A B) : Subalgebra R A :=
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
 instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
+
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
-instance [Finite D.vars] [Finite D.rels] : Algebra.FiniteType R (D.subalgebra R) := by
-  dsimp only [subalgebra]
-  refine Algebra.FiniteType.trans (S := R) inferInstance <| .adjoin_of_finite ?_
+lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
+  refine Subalgebra.fg_def.mpr ⟨_, ?_, rfl⟩
   refine .union ?_ (.union (.union ?_ ?_) ?_)
   · exact Presentation.finite_coeffs
   · refine Set.finite_iUnion fun i ↦ Finset.finite_toSet _
@@ -75,38 +81,67 @@ instance [Finite D.vars] [Finite D.rels] : Algebra.FiniteType R (D.subalgebra R)
   · refine Set.finite_iUnion fun i ↦ ?_
     exact Set.Finite.biUnion (Finset.finite_toSet _) (fun i hi ↦ Finset.finite_toSet _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
-    grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+    rw [Subalgebra.setRange_algebraMap]
+    grind [subalgebra, Algebra.subset_adjoin]
 
 set_option quotPrecheck false in
 local notation "f₀" =>
   Ideal.Quotient.mkₐ (D.subalgebra R)
     (Ideal.span <| .range <| D.P.relationOfHasCoeffs (D.subalgebra R))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.subalgebra R) A) := by
   have : ((D.h i).coeffs : Set _) ⊆ ⋃ i, ((D.h i).coeffs : Set A) :=
     Set.subset_iUnion_of_subset i subset_rfl
-  grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
     ↑(D.p i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro p hp
   have : (p.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.p i).coeffs, ↑x.coeffs :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset p hp subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_q_subset (i) :
     ↑(D.q i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro q hq
   have : (q.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.q i).coeffs, ↑(coeffs x) :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset q hq subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
         MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
@@ -154,15 +189,16 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and a smooth `A₀`-algebra `B₀` such that
 `B ≃ₐ A ⊗[A₀] B₀`.
 See `Algebra.Smooth.exists_finiteType` for a version in terms of `Function.Injective`.
 -/
-public theorem exists_subalgebra_finiteType [Smooth A B] :
+public theorem exists_subalgebra_fg [Smooth A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
-      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+      A₀.FG ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   let P := Presentation.ofFinitePresentation A B
   let f : P.Ring →ₐ[A] B := IsScalarTower.toAlgHom _ _ _
   have hkerf : RingHom.ker f = Ideal.span (.range P.relation) :=
@@ -197,14 +233,21 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
   have : P.HasCoeffs (D.subalgebra R) := D.hasCoeffs R
   obtain ⟨σ₀, hσ₀⟩ := D.exists_kerSquareLift_comp_eq_id R
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
-    inferInstance, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
+    D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
+
+@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
+public theorem exists_subalgebra_finiteType [Smooth A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
+  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
 with `A₀ → A` injective.
-See `Algebra.Smooth.exists_subalgebra_finiteType` for a version in terms of `Subalgebra`.
+See `Algebra.Smooth.exists_subalgebra_fg` for a version in terms of `Subalgebra`.
 -/
 @[stacks 00TP]
 public theorem exists_finiteType [Smooth A B] :
@@ -212,8 +255,31 @@ public theorem exists_finiteType [Smooth A B] :
       (_ : Algebra R A₀) (_ : Algebra A₀ A) (_ : Algebra A₀ B₀),
       Function.Injective (algebraMap A₀ A) ∧ FiniteType R A₀ ∧ Smooth A₀ B₀ ∧
       Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
-  obtain ⟨A₀, B₀, _, _, _, _, _⟩ := exists_subalgebra_finiteType R A B
+  obtain ⟨A₀, B₀, _, _, hA₀, _, _⟩ := exists_subalgebra_fg R A B
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
-    Subtype.val_injective, inferInstance, inferInstance
+    Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
+
+public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
+    (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      A₀.FG ∧ IsStandardSmoothOfRelativeDimension n A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨ι, σ, _, _, P, hP⟩ := IsStandardSmoothOfRelativeDimension.out (n := n) (R := A) (S := B)
+  let A₀ := Algebra.adjoin R P.coeffs
+  have : P.HasCoeffs A₀ := ⟨by simp [A₀]⟩
+  exact ⟨A₀, (P.ModelOfHasCoeffs A₀:), inferInstance, inferInstance,
+    ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
+      P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
+
+/--
+Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
+`R`-subalgebra of finite type `A₀` of `A` and an etale `A₀`-algebra `B₀` such that
+`B ≃ₐ A ⊗[A₀] B₀`.
+-/
+@[stacks 00U2 "(8)"]
+public theorem _root_.Algebra.Etale.exists_subalgebra_fg [Etale A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      A₀.FG ∧ Etale A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  simp only [Etale.iff_isStandardSmoothOfRelativeDimension_zero] at *
+  exact IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg ..
 
 end Algebra.Smooth

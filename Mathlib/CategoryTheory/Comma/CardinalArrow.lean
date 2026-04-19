@@ -15,7 +15,7 @@ public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 # Cardinal of Arrow
 
 We obtain various results about the cardinality of `Arrow C`. For example,
-If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
+if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
 
@@ -62,6 +62,9 @@ lemma hasCardinalLT_arrow_discrete_iff {X : Type u} (κ : Cardinal.{w}) :
     HasCardinalLT (Arrow (Discrete X)) κ ↔ HasCardinalLT X κ :=
   hasCardinalLT_iff_of_equiv (Arrow.discreteEquiv X) κ
 
+instance (X : Type u) [Finite X] : Finite (Arrow (Discrete X)) :=
+  Finite.of_equiv _ (Arrow.discreteEquiv X).symm
+
 lemma small_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arrow C)] :
     Small.{w} C :=
   small_of_injective (f := fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
@@ -73,6 +76,7 @@ lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arro
       change (Arrow.mk f).hom = (Arrow.mk g).hom
       congr)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where

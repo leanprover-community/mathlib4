@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.Limits.Presentation
 
+import Mathlib.CategoryTheory.Adjunction.Limits
+
 /-!
 # Objects that are colimits of objects satisfying a certain property
 
@@ -35,12 +37,12 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
 ## TODO
 
 * refactor `ObjectProperty.ind` by saying that it is the supremum
-of `P.colimitsOfShape J` for a filtered category `J`
-(generalize also to `κ`-filtered categories?)
+  of `P.colimitsOfShape J` for a filtered category `J`
+  (generalize also to `κ`-filtered categories?)
 * formalize the closure of `P` under finite colimits (which require
-iterating over `ℕ`), and more generally the closure under colimits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
+  iterating over `ℕ`), and more generally the closure under colimits
+  indexed by a category whose type of arrows has a cardinality
+  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -52,7 +54,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category* C] (P : ObjectProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -67,6 +69,13 @@ lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictColimitsOfShape J ≤ Q.strictColimitsOfShape J := by
   rintro _ ⟨F, hF⟩
   exact ⟨F, fun j ↦ h _ (hF j)⟩
+
+@[simp]
+lemma strictColimitsOfShape_bot [Nonempty J] :
+    strictColimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+  rw [eq_bot_iff]
+  rintro _ ⟨_, h⟩
+  exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the colimit of a functor
 `diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
@@ -109,6 +118,7 @@ noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.F
   toColimitPresentation := h.toColimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
 @[simps]
@@ -134,6 +144,12 @@ lemma strictColimitsOfShape_le_colimitsOfShape :
     P.strictColimitsOfShape J ≤ P.colimitsOfShape J := by
   rintro X ⟨F, hF⟩
   exact ⟨.colimit F hF⟩
+
+@[simp]
+lemma colimitsOfShape_bot [Nonempty J] : colimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+  rw [eq_bot_iff]
+  rintro X ⟨⟨_, h⟩⟩
+  exact h (Classical.arbitrary J)
 
 instance : (P.colimitsOfShape J).IsClosedUnderIsomorphisms where
   of_iso := by rintro _ _ e ⟨h⟩; exact ⟨h.ofIso e⟩
@@ -188,6 +204,12 @@ lemma IsClosedUnderColimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
     rw [← isoClosure_strictColimitsOfShape]
     exact monotone_isoClosure h
 
+instance [Nonempty J] : IsClosedUnderColimitsOfShape (⊥ : ObjectProperty C) J where
+  colimitsOfShape_le := by rw [colimitsOfShape_bot]
+
+instance : IsClosedUnderColimitsOfShape (⊤ : ObjectProperty C) J where
+  colimitsOfShape_le _ _ := by trivial
+
 export IsClosedUnderColimitsOfShape (colimitsOfShape_le)
 
 section
@@ -230,6 +252,21 @@ lemma IsClosedUnderColimitsOfShape.of_equivalence (e : J ≌ J')
     [P.IsClosedUnderColimitsOfShape J] :
     P.IsClosedUnderColimitsOfShape J' := by
   rwa [← P.isClosedUnderColimitsOfShape_iff_of_equivalence e]
+
+instance IsClosedUnderColimitsOfShape.inverseImage
+    (P : ObjectProperty D) (F : C ⥤ D) [P.IsClosedUnderColimitsOfShape J]
+    [PreservesColimitsOfShape J F] : (P.inverseImage F).IsClosedUnderColimitsOfShape J :=
+  ⟨fun _ ⟨c, H⟩ ↦ ColimitOfShape.prop (P := P) ⟨c.map F, H⟩⟩
+
+lemma isClosedUnderColimitsOfShape_inverseImage_iff (P : ObjectProperty D)
+    [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
+    (P.inverseImage e.functor).IsClosedUnderColimitsOfShape J ↔
+      P.IsClosedUnderColimitsOfShape J := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  convert (inferInstance :
+    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderColimitsOfShape J)
+  ext X
+  simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
 lemma colimitsOfShape_eq_unop_limitsOfShape :
     P.colimitsOfShape J = (P.op.limitsOfShape Jᵒᵖ).unop := by
@@ -353,6 +390,7 @@ instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
     P.IsStableUnderRetracts where
   of_retract {X Y} h hY := by
@@ -365,13 +403,4 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
 
 end ObjectProperty
 
-namespace Limits
-
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape :=
-  ObjectProperty.IsClosedUnderColimitsOfShape
-@[deprecated (since := "2025-09-22")] alias closedUnderColimitsOfShape_of_colimit :=
-  ObjectProperty.IsClosedUnderColimitsOfShape.mk'
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape.colimit :=
-  ObjectProperty.prop_colimit
-
-end CategoryTheory.Limits
+end CategoryTheory

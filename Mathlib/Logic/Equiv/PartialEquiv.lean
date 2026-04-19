@@ -79,11 +79,6 @@ This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attr
 new file to become functional.
 -/
 
-/-- Common `@[simps]` configuration options used for manifold-related declarations. -/
-@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-meta def mfld_cfg : Simps.Config where
-  fullyApplied := false
-
 namespace Tactic.MfldSetTac
 
 /-- A very basic tactic to show that sets showing up in manifolds coincide or are included
@@ -677,7 +672,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> grind [EqOnSource, EqOn]
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -754,6 +749,7 @@ theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.
 
 section Prod
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The product of two partial equivalences, as a partial equivalence on the product. -/
 def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α × γ) (β × δ) where
   source := e.source ×ˢ e'.source
@@ -962,6 +958,15 @@ theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialE
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
+@[simp]
+lemma coe_transPartialEquiv {f : α ≃ β} {g : PartialEquiv β γ} : f.transPartialEquiv g = g ∘ f :=
+  rfl
+
+@[simp]
+lemma coe_transPartialEquiv_symm {f : α ≃ β} {g : PartialEquiv β γ} :
+    (f.transPartialEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
+
 end Equiv
 
 namespace PartialEquiv
@@ -986,5 +991,12 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc]
+
+@[simp] lemma coe_transEquiv {f : PartialEquiv α β} {g : β ≃ γ} : f.transEquiv g = g ∘ f := rfl
+
+@[simp]
+lemma coe_transEquiv_symm {f : PartialEquiv α β} {g : β ≃ γ} :
+    (f.transEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
 
 end PartialEquiv

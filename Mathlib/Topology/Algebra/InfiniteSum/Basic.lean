@@ -6,10 +6,14 @@ Authors: Johannes Hölzl, Mitchell Lee
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 public import Mathlib.Order.Filter.AtTopBot.BigOperators
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
@@ -21,7 +25,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -35,10 +39,10 @@ variable [CommMonoid α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
-@[to_additive /-- Constant zero function has sum `0` -/]
+@[to_additive (attr := simp) /-- Constant zero function has sum `0` -/]
 theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd, tendsto_const_nhds]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
@@ -46,11 +50,11 @@ theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
   convert hasProd_one
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
 
@@ -133,13 +137,19 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   rwa [hs.coe_toFinset] at this
 
 @[to_additive]
-theorem multipliable_of_finite_mulSupport [L.HasSupport] (h : (mulSupport f).Finite) :
+theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
+@[deprecated (since := "2026-03-03")] alias
+  multipliable_of_finite_mulSupport := multipliable_of_hasFiniteMulSupport
+
+@[deprecated (since := "2026-03-03")] alias
+  summable_of_finite_support := summable_of_hasFiniteSupport
+
 @[to_additive]
 lemma Multipliable.of_finite [Finite β] [L.HasSupport] {f : β → α} : Multipliable f L :=
-  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+  multipliable_of_hasFiniteMulSupport <| Set.finite_univ.subset (Set.subset_univ _)
 
 @[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1)
@@ -246,7 +256,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
   · by_cases h : Multipliable f L
     · exact h.map_tprod g hge.continuous
     · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      contrapose! h
+      contrapose h
       -- need to show `g ∘ f` multipliable implies `g` multipliable
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
@@ -278,7 +288,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     · by_cases hL : L.NeBot
       · exact ⟨_, hf.map_tprod g hg.continuous⟩
       · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
-        · simp [tprod_bot hL, finprod_eq_prod, hfs, ← map_prod]
+        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← map_prod]
         · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
@@ -313,6 +323,16 @@ theorem HasProd.mul (hf : HasProd f a L) (hg : HasProd g b L) :
 theorem Multipliable.mul (hf : Multipliable f L) (hg : Multipliable g L) :
     Multipliable (fun b ↦ f b * g b) L :=
   (hf.hasProd.mul hg.hasProd).multipliable
+
+@[to_additive]
+lemma HasProd.pow (hf : HasProd f a L) (n : ℕ) : HasProd (f · ^ n) (a ^ n) L := by
+  induction n with
+  | zero => simp
+  | succ n hn => simpa [pow_succ] using hn.mul hf
+
+@[to_additive]
+lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ n) L :=
+  (hf.hasProd.pow n).multipliable
 
 @[to_additive]
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
@@ -417,9 +437,10 @@ theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x 
   tprod_congr_set_coe f <| Set.ext h
 
 @[to_additive]
-theorem tprod_eq_finprod [L.LeAtTop] (hf : (mulSupport f).Finite) :
+theorem tprod_eq_finprod [L.LeAtTop] (hf : HasFiniteMulSupport f) :
     ∏'[L] b, f b = ∏ᶠ b, f b := by
-  simp [tprod_def, multipliable_of_finite_mulSupport hf, hf, show L.HasSupport by infer_instance]
+  simp [tprod_def, multipliable_of_hasFiniteMulSupport hf, show Set.Finite _ from hf,
+    show L.HasSupport by infer_instance]
 
 @[to_additive]
 theorem tprod_eq_prod' [L.LeAtTop] {s : Finset β} (hf : mulSupport f ⊆ s) :
@@ -499,6 +520,7 @@ theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
 @[to_additive]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by
@@ -529,6 +551,14 @@ theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' 
 theorem tprod_comp_neg {β : Type*} [InvolutiveNeg β] (f : β → α) :
     ∏' d, f (-d) = ∏' d, f d :=
   (Equiv.neg β).tprod_eq f
+
+@[to_additive]
+theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
+    (h_closed : IsClosed (s : Set α)) {f : ι → α} (h : ∀ i, f i ∈ s) :
+    ∏' i, f i ∈ s := by
+  by_cases hf : Multipliable f
+  · exact h_closed.mem_of_tendsto hf.hasProd <| .of_forall fun _ => prod_mem fun i _ => h i
+  · simp [tprod_eq_one_of_not_multipliable hf, one_mem]
 
 /-! ### `tprod` on subsets - part 1 -/
 
@@ -607,6 +637,42 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
   have : mulSupport (extend g f 1) ⊆ Set.range g := mulSupport_subset_iff'.2 <| extend_apply' _ _
   simp_rw [← hg.tprod_eq this, hg.extend_apply]
 
+@[to_additive]
+lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f : β → α)
+    (i : β) (hi : i ∈ ⋃ d, s d) (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) :
+    ∏' d, (s d).mulIndicator f i = f i := by
+  obtain ⟨j, hj⟩ := Set.mem_iUnion.mp hi
+  rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})]
+  · aesop
+  · exact Set.mulSupport_subset_subsingleton_of_disjoint_on_mulSupport f hs i j hj
+
+@[to_additive]
+lemma tprod_mulIndicator_of_mem_union_disjoint (s : γ → Set β) (f : β → α)
+    (hs : Pairwise (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
+    ∏' d, (s d).mulIndicator f i = f i :=
+  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise_disjoint_mono hs
+    <| fun _ _ hi ↦ hi.1)
+
+@[to_additive]
+lemma tprod_mulIndicator_of_notMem (s : γ → Set β) (f : β → α) (i : β) (hi : ∀ d, i ∉ s d) :
+    ∏' d, (s d).mulIndicator f i = 1 := by
+  aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport (s : γ → Set β) (f : β → α)
+    (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
+    (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
+  by_cases h₀ : i ∈ ⋃ d, s d
+  · simp only [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
+  · aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_pairwise_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s))
+    (f : β → α) : (⋃ d, s d).mulIndicator f = fun i ↦ ∏' d, (s d).mulIndicator f i := by
+  ext i
+  exact mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport s f (pairwise_disjoint_mono hs
+    <| fun _ _ hi ↦ hi.1) i
+
 variable [T2Space α]
 
 @[to_additive]
@@ -631,6 +697,13 @@ protected theorem Multipliable.tprod_mul [L.NeBot]
     (hf : Multipliable f L) (hg : Multipliable g L) :
     ∏'[L] b, (f b * g b) = (∏'[L] b, f b) * ∏'[L] b, g b :=
   (hf.hasProd.mul hg.hasProd).tprod_eq
+
+@[to_additive]
+lemma Multipliable.tprod_pow [L.NeBot] (hf : Multipliable f L) (n : ℕ) :
+    ∏'[L] b, (f b) ^ n = (∏'[L] b, f b) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [pow_succ, (hf.pow n).tprod_mul hf, hn]
 
 @[to_additive]
 protected theorem Multipliable.tprod_finsetProd [L.NeBot] {f : γ → β → α} {s : Finset γ}

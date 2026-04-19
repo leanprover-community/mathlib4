@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 # Behavior of the Lebesgue integral under maps
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -58,6 +58,11 @@ theorem lintegral_map_le (f : β → ℝ≥0∞) (g : α → β) :
 theorem lintegral_comp {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂map g μ :=
   (lintegral_map hf hg).symm
+
+/-- Generalization of `lintegral_comp` to ae-measurable functions. -/
+theorem lintegral_comp' {f : β → ℝ≥0∞} {g : α → β} (hf : AEMeasurable f (μ.map g))
+    (hg : AEMeasurable g μ) : lintegral μ (f ∘ g) = ∫⁻ a, f a ∂μ.map g :=
+  (lintegral_map' hf hg).symm
 
 theorem setLIntegral_map {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
     (hs : MeasurableSet s) (hf : Measurable f) (hg : Measurable g) :

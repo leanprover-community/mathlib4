@@ -189,7 +189,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
   induction n with
-  | zero => simp only [ascPochhammer_zero, smeval_one, one_smul]
+  | zero => simp only [ascPochhammer_zero, smeval_one]
   | succ n hn =>
     simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
@@ -460,8 +460,6 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
-
-@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
 
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by

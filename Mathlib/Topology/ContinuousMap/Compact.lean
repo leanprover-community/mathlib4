@@ -171,8 +171,8 @@ open BoundedContinuousFunction
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
+    mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
@@ -344,6 +344,48 @@ end
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
+section NormSum
+
+variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
+
+open BoundedContinuousFunction
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using congr($h x)
+  simpa using BoundedContinuousFunction.norm_add_eq_max h
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma nnnorm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
+
+lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnnorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
+open scoped Function in
+/-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
+of their sum is the maximum of their norms. -/
+lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
+    (h : Pairwise ((· * · = 0) on f)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
+
+end NormSum
+
 section
 
 variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
@@ -388,10 +430,6 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
 end UniformContinuity
 
 end ContinuousMap
-
-section CompLeft
-
-end CompLeft
 
 namespace ContinuousMap
 

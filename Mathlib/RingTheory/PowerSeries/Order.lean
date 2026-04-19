@@ -176,7 +176,13 @@ theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
 
-@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
+theorem le_order_map {S : Type*} [Semiring S] (f : R →+* S) :
+    φ.order ≤ (φ.map f).order :=
+  le_order _ _ fun i hi => by simp [coeff_of_lt_order i hi]
+
+theorem le_order_smul {a : R} :
+    φ.order ≤ (a • φ).order :=
+  le_order _ φ.order fun i hi => by simp [coeff_of_lt_order i hi]
 
 /-- The order of the product of two formal power series
 is at least the sum of their orders. -/
@@ -206,17 +212,26 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
-theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
-    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+theorem one_le_order_iff_constCoeff_eq_zero :
+    1 ≤ φ.order ↔ φ.constantCoeff = 0 := by
   constructor
   · intro h
-    rw [← PowerSeries.coeff_zero_eq_constantCoeff]
+    rw [← coeff_zero_eq_constantCoeff]
     apply coeff_of_lt_order
-    simpa using pos_of_ne_zero h
+    simpa using Order.one_le_iff_pos.mp h
   · intro h
-    refine ENat.one_le_iff_ne_zero.mp <| PowerSeries.le_order _ _ fun d hd ↦ ?_
+    refine le_order _ _ fun d hd ↦ ?_
     rw [Nat.cast_lt_one] at hd
     simp [hd, h]
+
+theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+
+theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : φ.constantCoeff = 0) :
+    n ≤ (φ ^ n).order := by
+  refine .trans ?_ (le_order_pow _ n)
+  simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
@@ -303,7 +318,7 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by

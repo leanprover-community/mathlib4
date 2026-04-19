@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Adjoin.FG
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise
@@ -40,12 +40,7 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     ext x
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
-  ext x
-  constructor
-  · rintro ⟨y, hy⟩
-    exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
-  · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
-    exact ⟨z, Eq.trans h1 h2⟩
+  simp
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]

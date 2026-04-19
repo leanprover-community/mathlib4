@@ -9,9 +9,10 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Substs
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -105,13 +106,6 @@ instance : EquivLike (α ≃ β) α β where
   left_inv := Equiv.left_inv
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
-
-/-- Deprecated helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`. -/
-@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
-def instFunLike : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
 
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
@@ -902,6 +896,7 @@ def finTwoEquiv : Fin 2 ≃ Bool where
   right_inv b := by grind
 
 namespace Equiv
+
 variable {α β : Type*}
 
 /-- The left summand of `α ⊕ β` is equivalent to `α`. -/
@@ -917,5 +912,47 @@ def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
   toFun x := x.1.getRight x.2
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
+
+variable (e : α ≃ β)
+
+/-- Transfer `LE` across an `Equiv`. -/
+protected abbrev le [LE β] : LE α where
+  le a b := e a ≤ e b
+
+lemma le_def [LE β] (a b : α) :
+    letI := e.le
+    e a ≤ e b ↔ a ≤ b := Iff.rfl
+
+/-- Transfer `LT` across an `Equiv`. -/
+protected abbrev lt [LT β] : LT α where
+  lt a b := e a < e b
+
+lemma lt_def [LT β] (a b : α) :
+    letI := e.lt
+    e a < e b ↔ a < b := Iff.rfl
+
+/-- Transfer `Max` across an `Equiv`. -/
+protected abbrev max [Max β] : Max α where
+  max a b := e.symm (max (e a) (e b))
+
+lemma max_def [Max β] (a b : α) :
+    letI := e.max
+    max a b = e.symm (max (e a) (e b)) := rfl
+
+/-- Transfer `Min` across an `Equiv`. -/
+protected abbrev min [Min β] : Min α where
+  min a b := e.symm (min (e a) (e b))
+
+lemma min_def [Min β] (a b : α) :
+    letI := e.min
+    min a b = e.symm (min (e a) (e b)) := rfl
+
+/-- Transfer `Ord` across an `Equiv`. -/
+protected abbrev ord [Ord β] : Ord α where
+  compare a b := compare (e a) (e b)
+
+lemma ord_def [Ord β] (a b : α) :
+    letI := e.ord
+    compare a b = compare (e a) (e b) := rfl
 
 end Equiv

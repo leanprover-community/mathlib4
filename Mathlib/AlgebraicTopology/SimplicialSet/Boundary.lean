@@ -27,7 +27,7 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe u
 
-open Simplicial
+open CategoryTheory Simplicial Opposite
 
 namespace SSet
 
@@ -46,5 +46,75 @@ lemma boundary_eq_iSup (n : ℕ) :
   ext
   simp [stdSimplex.face_obj, boundary, Function.Surjective]
   tauto
+
+instance {n : ℕ} : HasDimensionLT (boundary n) n := by
+  rw [boundary_eq_iSup, hasDimensionLT_iSup_iff]
+  intro i
+  exact stdSimplex.hasDimensionLT_face _ _ (by simp [Finset.card_compl])
+
+lemma face_singleton_compl_le_boundary {n : ℕ} (i : Fin (n + 1)) :
+    stdSimplex.face.{u} {i}ᶜ ≤ boundary n := by
+  rw [boundary_eq_iSup]
+  exact le_iSup (fun (i : Fin (n +1)) ↦ stdSimplex.face {i}ᶜ) i
+
+lemma stdSimplex.notMem_boundary (n : ℕ) :
+    stdSimplex.objMk (m := op ⦋n⦌) .id ∉ (boundary.{u} n).obj (op ⦋n⦌) := by
+  rw [boundary_eq_iSup, Subfunctor.iSup_obj, Set.mem_iUnion, not_exists]
+  intro i hi
+  simpa using @hi i (by aesop)
+
+lemma boundary_lt_top (n : ℕ) :
+    boundary.{u} n < ⊤ :=
+  lt_of_le_not_ge (by simp) (fun h ↦ stdSimplex.notMem_boundary n (h _ (by simp)))
+
+lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
+    (boundary.{u} n).obj (op ⦋m⦌) = .univ := by
+  ext x
+  obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+  simp only [Set.mem_univ, iff_true]
+  obtain _ | n := n
+  · simp at h
+  · obtain ⟨i, q, rfl⟩ := SimplexCategory.eq_comp_δ_of_not_surjective f (fun hf ↦ by
+      rw [← SimplexCategory.epi_iff_surjective] at hf
+      have : n + 1 ≤ m := SimplexCategory.len_le_of_epi f
+      lia)
+    apply face_singleton_compl_le_boundary i
+    rw [stdSimplex.face_singleton_compl, stdSimplex.objEquiv_symm_comp,
+      ← Subcomplex.ofSimplex_le_iff]
+    apply Subcomplex.ofSimplex_map_le
+
+namespace stdSimplex
+
+variable {n : ℕ} (A : (Δ[n] : SSet.{u}).Subcomplex)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
+    HasDimensionLT A n where
+  degenerate_eq_top i hi := by
+    ext ⟨a, ha⟩
+    rw [A.mem_degenerate_iff]
+    simp only [Subfunctor.toFunctor_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    obtain hi | rfl := hi.lt_or_eq
+    · simp [Δ[n].degenerate_eq_univ_of_hasDimensionLT (n + 1) i]
+    · rw [mem_degenerate_iff_notMem_nonDegenerate, nonDegenerate_top_dim]
+      rintro rfl
+      exact h (le_antisymm (by simp) (by simpa [← ofSimplex_objEquiv_symm_id]))
+
+set_option backward.isDefEq.respectTransparency false in
+lemma le_boundary_iff :
+    A ≤ boundary.{u} n ↔ A ≠ ⊤ := by
+  refine ⟨fun h ↦ ?_, fun hA ↦ ?_⟩
+  · rintro rfl
+    exact lt_irrefl _ (lt_of_le_of_lt h (boundary_lt_top n))
+  · have := subcomplex_hasDimensionLT_of_neq_top A hA
+    rw [Subcomplex.le_iff_contains_nonDegenerate]
+    rintro m ⟨x, h₁⟩ h₂
+    dsimp at h₂ ⊢
+    by_cases! h₃ : m < n
+    · simp [boundary_obj_eq_univ m n h₃]
+    · simp [← A.mem_nonDegenerate_iff ⟨x, h₂⟩,
+        nonDegenerate_eq_empty_of_hasDimensionLT _ _ _ h₃] at h₁
+
+end stdSimplex
 
 end SSet

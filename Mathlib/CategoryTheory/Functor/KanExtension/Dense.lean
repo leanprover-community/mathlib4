@@ -36,7 +36,7 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Opposite Presheaf
+open Limits Opposite Presheaf ConcreteCategory
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {C' : Type u₃} [Category.{v₃} C']
@@ -97,8 +97,10 @@ lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
   map_injective h :=
     (F.denseAt _).hom_ext' (fun X p ↦ by
-      simpa using ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
+      simpa using ULift.up_injective (ConcreteCategory.congr_hom (CC := fun X ↦ X)
+        (NatTrans.congr_app h (op X)) (ULift.up p)))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
   map_surjective {Y Z} f := by
     let c : Cocone (CostructuredArrow.proj F Y ⋙ F) :=
@@ -108,13 +110,14 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
             naturality g₁ g₂ φ := by
               simpa [uliftFunctor, uliftYoneda,
                 restrictedULiftYoneda, ← ULift.down_inj] using
-                (congr_fun (f.naturality φ.left.op) (ULift.up g₂.hom)).symm }}
+                ((f.naturality_apply φ.left.op) (ULift.up g₂.hom)).symm } }
     refine ⟨(F.denseAt Y).desc c, ?_⟩
     ext ⟨X⟩ ⟨x⟩
     have := (F.denseAt Y).fac c (.mk x)
     dsimp [c] at this
     simpa using ULift.down_injective this
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
     (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
@@ -122,26 +125,27 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
   isDenseAt Y := by
     let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
         (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
-      { app := fun ⟨X⟩ ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
+      { app := fun ⟨X⟩ ↦ TypeCat.ofHom fun ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
         naturality := by
           rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f⟩
           ext ⟨x⟩
           let α : CostructuredArrow.mk (F.map f ≫ x) ⟶ CostructuredArrow.mk x :=
             CostructuredArrow.homMk f
-          simp [uliftYoneda, ← s.w α, α] }
+          exact ULift.down_injective (s.w α).symm }
     have hφ (s) (j) : (restrictedULiftYoneda F).map j.hom ≫ φ s =
         (restrictedULiftYoneda F).map (s.ι.app j) := by
       ext ⟨X⟩ ⟨x⟩
       let α : .mk (x ≫ j.hom) ⟶ j := CostructuredArrow.homMk (F.preimage x)
       have := s.w α
       dsimp [uliftYoneda, φ, α] at this ⊢
-      rw [← this, map_preimage]
+      apply ULift.down_injective
+      simpa using this.symm
     exact
       ⟨{desc s := (h.preimage (φ s))
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
-          ext ⟨X⟩ ⟨x⟩
-          simp [uliftYoneda, φ, ← hm])}⟩
+          ext ⟨_⟩ ⟨_⟩
+          simp [φ, ← hm]) }⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=

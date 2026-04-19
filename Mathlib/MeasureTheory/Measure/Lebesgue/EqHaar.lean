@@ -658,10 +658,9 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   apply C.congr' _
   filter_upwards [self_mem_nhdsWithin]
   rintro r (rpos : 0 < r)
-  calc
-    μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u)) =
-        μ (closedBall x r) * (μ (closedBall x r))⁻¹ * (μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) :=
-      by simp only [div_eq_mul_inv]; ring
+  calc μ (s ∩ ({x} + r • t)) / μ (closedBall x r) * (μ (closedBall x r) / μ ({x} + r • u))
+    _ = μ (closedBall x r) * (μ (closedBall x r))⁻¹ *
+        (μ (s ∩ ({x} + r • t)) / μ ({x} + r • u)) := by simp only [div_eq_mul_inv]; ring
     _ = μ (s ∩ ({x} + r • t)) / μ ({x} + r • u) := by
       rw [ENNReal.mul_inv_cancel (measure_closedBall_pos μ x rpos).ne'
           measure_closedBall_lt_top.ne,
@@ -724,7 +723,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
       refine tendsto_measure_iInter_atTop
         (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet) (fun m n hmn ↦ ?_) N
-      exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
+      exact diff_subset_diff Subset.rfl (by gcongr)
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
         iUnion_closedBall_nat, compl_univ, inter_empty]
@@ -834,7 +833,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
   congr 1
   apply measure_toMeasurable_inter_of_sFinite
   simp only [image_add_left, singleton_add]
-  apply (continuous_add_left (-x)).measurable (ht.const_smul₀ r)
+  apply (continuous_const_add (-x)).measurable (ht.const_smul₀ r)
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` intersects the rescaled copies `{x} + r • t` of a given

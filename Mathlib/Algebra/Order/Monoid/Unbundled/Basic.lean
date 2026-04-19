@@ -11,6 +11,7 @@ public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Ordered monoids
@@ -275,15 +276,22 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[to_additive]
-theorem mul_left_cancel'' [MulLeftReflectLE α] {a b c : α} (h : a * b = a * c) :
-    b = c :=
-  (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
+instance [MulLeftReflectLE α] : IsLeftCancelMul α where
+  mul_left_cancel _ _ _ h := (le_of_mul_le_mul_left' h.le).antisymm (le_of_mul_le_mul_left' h.ge)
+
+@[deprecated (since := "2026-03-14")]
+alias add_left_cancel'' := add_left_cancel
+@[to_additive existing, deprecated (since := "2026-03-14")]
+alias mul_left_cancel'' := mul_left_cancel
 
 @[to_additive]
-theorem mul_right_cancel'' [MulRightReflectLE α] {a b c : α}
-    (h : a * b = c * b) :
-    a = c :=
-  (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
+instance [MulRightReflectLE α] : IsRightCancelMul α where
+  mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
+
+@[deprecated (since := "2026-03-14")]
+alias add_right_cancel'' := add_right_cancel
+@[to_additive existing, deprecated (since := "2026-03-14")]
+alias mul_right_cancel'' := mul_right_cancel
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
@@ -1111,23 +1119,19 @@ variable [PartialOrder α]
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `LeftCancelSemigroup`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddLeftCancelSemigroup`
 (i.e. `c + a < c + b → a < b`) is a `AddLeftCancelSemigroup`. -/]
-def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
-    LeftCancelSemigroup α :=
-  { ‹Semigroup α› with mul_left_cancel := fun _ _ _ => mul_left_cancel'' }
+def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] : LeftCancelSemigroup α where
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
 to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `RightCancelSemigroup`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- An additive semigroup with a partial order and satisfying `AddRightCancelSemigroup`
 (`a + c < b + c → a < b`) is a `AddRightCancelSemigroup`. -/]
-def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] :
-    RightCancelSemigroup α :=
-  { ‹Semigroup α› with mul_right_cancel := fun _ _ _ => mul_right_cancel'' }
+def Contravariant.toRightCancelSemigroup [MulRightReflectLE α] : RightCancelSemigroup α where
 
 end PartialOrder
 
@@ -1391,14 +1395,13 @@ protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancell
   ha.Injective.eq_iff
 
 @[to_additive]
-protected theorem injective_left [Mul α] [i : @Std.Commutative α (· * ·)] [PartialOrder α] {a : α}
-    (ha : MulLECancellable a) :
-    Injective (· * a) := fun b c h => ha.Injective <| by dsimp; rwa [i.comm a, i.comm a]
+protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : Injective (· * a) :=
+  fun b c h ↦ ha.Injective <| by dsimp; rwa [mul_comm' a, mul_comm' a]
 
 @[to_additive]
-protected theorem inj_left [Mul α] [@Std.Commutative α (· * ·)] [PartialOrder α] {a b c : α}
-    (hc : MulLECancellable c) :
-    a * c = b * c ↔ a = b :=
+protected theorem inj_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a b c : α}
+    (hc : MulLECancellable c) : a * c = b * c ↔ a = b :=
   hc.injective_left.eq_iff
 
 variable [LE α]
@@ -1409,9 +1412,9 @@ protected theorem mul_le_mul_iff_left [Mul α] [MulLeftMono α] {a b c : α}
   ⟨fun h => ha h, fun h => mul_le_mul_right h a⟩
 
 @[to_additive]
-protected theorem mul_le_mul_iff_right [Mul α] [i : @Std.Commutative α (· * ·)]
-    [MulLeftMono α] {a b c : α} (ha : MulLECancellable a) :
-    b * a ≤ c * a ↔ b ≤ c := by rw [i.comm b, i.comm c, ha.mul_le_mul_iff_left]
+protected theorem mul_le_mul_iff_right [Mul α] [IsMulCommutative α] [MulLeftMono α] {a b c : α}
+    (ha : MulLECancellable a) : b * a ≤ c * a ↔ b ≤ c := by
+  rw [mul_comm' b, mul_comm' c, ha.mul_le_mul_iff_left]
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [MulLeftMono α]
@@ -1426,14 +1429,14 @@ protected theorem mul_le_iff_le_one_right [MulOneClass α] [MulLeftMono α]
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
 
 @[to_additive]
-protected theorem le_mul_iff_one_le_left [MulOneClass α] [i : @Std.Commutative α (· * ·)]
-    [MulLeftMono α] {a b : α} (ha : MulLECancellable a) :
-    a ≤ b * a ↔ 1 ≤ b := by rw [i.comm, ha.le_mul_iff_one_le_right]
+protected theorem le_mul_iff_one_le_left [MulOneClass α] [IsMulCommutative α] [MulLeftMono α]
+    {a b : α} (ha : MulLECancellable a) : a ≤ b * a ↔ 1 ≤ b := by
+  rw [mul_comm', ha.le_mul_iff_one_le_right]
 
 @[to_additive]
-protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : @Std.Commutative α (· * ·)]
-    [MulLeftMono α] {a b : α} (ha : MulLECancellable a) :
-    b * a ≤ a ↔ b ≤ 1 := by rw [i.comm, ha.mul_le_iff_le_one_right]
+protected theorem mul_le_iff_le_one_left [MulOneClass α] [IsMulCommutative α] [MulLeftMono α]
+    {a b : α} (ha : MulLECancellable a) : b * a ≤ a ↔ b ≤ 1 := by
+  rw [mul_comm', ha.mul_le_iff_le_one_right]
 
 @[to_additive] lemma mul [Semigroup α] {a b : α} (ha : MulLECancellable a)
     (hb : MulLECancellable b) : MulLECancellable (a * b) :=

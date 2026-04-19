@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-! # Basic properties of the simplex category
 
@@ -162,7 +162,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
     monotone' := fun
-      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 0, _ | 1, 1, _ | 2, 2, _ => le_rfl
       | 0, 1, _ => h₁
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂
@@ -296,7 +296,6 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     δ (Fin.castSucc i) ≫ σ i = 𝟙 ⦋n⦌ := by
   rcases i with ⟨i, hi⟩
   ext ⟨j, hj⟩
-  simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_def, Fin.dite_val, Fin.ite_val, Fin.val_pred]
   split_ifs
@@ -599,6 +598,12 @@ lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 @[simp]
 lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
+lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% ⇑(δ i) = Fin.succAbove i := rfl
+
+lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% ⇑(σ i) = Fin.predAbove i := rfl
+
 end Concrete
 
 section EpiMono
@@ -657,17 +662,15 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                   apply not_le.mpr h'
                   convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
-                    exact (congr_hom (Iso.inv_hom_id
+                    exact (ConcreteCategory.congr_hom (Iso.inv_hom_id
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
-          ext1
-          ext1
-          exact Iso.hom_inv_id (asIso ((forget _).map f))
+          ext x : 3
+          exact Iso.hom_inv_id_apply (asIso ((forget _).map f)) x
         inv_hom_id := by
-          ext1
-          ext1
-          exact Iso.inv_hom_id (asIso ((forget _).map f)) }⟩
+          ext x : 3
+          exact Iso.inv_hom_id_apply (asIso ((forget _).map f)) x }⟩
 
 theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
@@ -714,10 +717,8 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext : 2
-  convert congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
-  ext i : 2
-  rfl
+  ext : 4
+  exact DFunLike.congr_fun (eq₁.trans eq₂.symm) _
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
@@ -790,22 +791,13 @@ theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ �
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
 
-theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ := by
-  suffices IsIso i by
-    apply eq_id_of_isIso
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true]
-  infer_instance
+theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ :=
+  have := (isIso_iff_of_mono i).mpr rfl
+  eq_id_of_isIso _
 
-theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
-  suffices IsIso i from eq_id_of_isIso _
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true]
-  infer_instance
+theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
+  have := (isIso_iff_of_epi i).mpr rfl
+  eq_id_of_isIso _
 
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by

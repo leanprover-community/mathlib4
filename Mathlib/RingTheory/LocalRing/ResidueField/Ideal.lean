@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.SurjectiveOnStalks
 
@@ -47,6 +47,14 @@ lemma Ideal.ResidueField.map_algebraMap (I : Ideal R) [I.IsPrime] (J : Ideal S) 
   simp [IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
   rfl
 
+lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
+    {f : R →+* S} (H : f.SurjectiveOnStalks)
+    (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime] (hf : I = J.comap f) :
+    Function.Bijective (Ideal.ResidueField.map I J f hf) := by
+  subst hf
+  exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+    (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
+
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
@@ -78,8 +86,11 @@ noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
   (Ideal.Quotient.liftₐ I (Algebra.ofId _ _)
     fun _ ↦ Ideal.algebraMap_residueField_eq_zero.mpr).toRingHom.toAlgebra
 
-instance : IsScalarTower R (R ⧸ I) I.ResidueField :=
-  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+instance (I : Ideal A) [I.IsPrime] : IsScalarTower R (A ⧸ I) I.ResidueField :=
+  .of_algebraMap_eq' rfl
+
+instance (I : Ideal R) [I.IsPrime] : (⊥ : Ideal I.ResidueField).LiesOver I :=
+  ⟨I.ker_algebraMap_residueField.symm⟩
 
 @[simp]
 lemma Ideal.algebraMap_quotient_residueField_mk (x) :
@@ -121,6 +132,14 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
 
+lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
+    Function.Surjective (algebraMap R I.ResidueField) := by
+  rw [IsScalarTower.algebraMap_eq R (R ⧸ I) _]
+  exact I.bijective_algebraMap_quotient_residueField.surjective.comp Ideal.Quotient.mk_surjective
+
+instance (I : Ideal R) [I.IsMaximal] : Module.Finite R I.ResidueField :=
+  .of_surjective (Algebra.linearMap _ _) I.algebraMap_residueField_surjective
+
 lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
     (algebraMap R I.ResidueField).SurjectiveOnStalks :=
   (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective).comp
@@ -129,6 +148,15 @@ lemma Ideal.surjectiveOnStalks_residueField (I : Ideal R) [I.IsPrime] :
 instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
+
+instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
+  .comp _ (Localization.AtPrime p) _
+
+instance [Algebra.EssFiniteType R A]
+    (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
+    Algebra.EssFiniteType p.ResidueField q.ResidueField := by
+  have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
+  refine .of_comp R _ _
 
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift

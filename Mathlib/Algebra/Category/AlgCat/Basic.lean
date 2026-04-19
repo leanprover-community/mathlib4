@@ -150,15 +150,16 @@ instance : Inhabited (AlgCat R) :=
 
 lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = A := rfl
 
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-03")]
 lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    (forget (AlgCat.{v} R)).map f = f :=
+    (forget (AlgCat.{v} R)).map f = (f : _ → _) :=
   rfl
 
 instance {S : AlgCat.{v} R} : Ring ((forget (AlgCat R)).obj S) :=
-  (inferInstance : Ring S.carrier)
+  inferInstanceAs <| Ring S.carrier
 
 instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
-  (inferInstance : Algebra R S.carrier)
+  inferInstanceAs <| Algebra R S.carrier
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
@@ -186,14 +187,15 @@ def free : Type u ⥤ AlgCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
-        { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.hom
+        { toFun := fun f ↦ TypeCat.ofHom ((FreeAlgebra.lift _).symm f.hom)
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
-          right_inv := fun f ↦ by simp [forget_obj] } }
+          right_inv := fun f ↦ by aesop } }
 
 instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -226,9 +228,9 @@ end CategoryTheory.Iso
 `AlgCat`. -/
 @[simps]
 def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
-    (X ≃ₐ[R] Y) ≅ AlgCat.of R X ≅ AlgCat.of R Y where
-  hom e := e.toAlgebraIso
-  inv i := i.toAlgEquiv
+    (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
+  hom := TypeCat.ofHom (fun e ↦ e.toAlgebraIso)
+  inv := TypeCat.ofHom (fun i ↦ i.toAlgEquiv)
 
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by

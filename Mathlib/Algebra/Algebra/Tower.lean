@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
+
 /-!
 # Towers of algebras
 
@@ -41,7 +42,7 @@ variable {A}
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
 on the `B`-module `M`.
 
-This is a stronger version of `DistribMulAction.toLinearMap`, and could also have been
+This is a stronger version of `DistribSMul.toLinearMap`, and could also have been
 called `Algebra.toModuleEnd`.
 
 The typeclasses correspond to the situation where the types act on each other as
@@ -65,7 +66,7 @@ example : Aᵐᵒᵖ →ₐ[R] Module.End A A := Algebra.lsmul R A A
 respectively; though `LinearMap.mulLeft` and `LinearMap.mulRight` can also be used here.
 -/
 def lsmul : A →ₐ[R] Module.End B M where
-  toFun := DistribMulAction.toLinearMap B M
+  toFun := DistribSMul.toLinearMap B M
   map_one' := LinearMap.ext fun _ => one_smul A _
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
@@ -265,11 +266,13 @@ variable {R}
 
 /-- Any `f : A ≃ₐ[R] B` is also an `R ⧸ I`-algebra isomorphism if the `R`-algebra structure on
 `A` and `B` factors via `R ⧸ I`. -/
-@[simps! apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
   toRingEquiv := f
   commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
+
+@[simp] lemma coe_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : A ≃ₐ[R] B) : ⇑(extendScalarsOfSurjective h f) = f := rfl
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
@@ -305,6 +308,22 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
   congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+
+/--
+Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
+`IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
+isomorphism `Submodule S M ≃o Submodule R M`.
+-/
+@[simps apply symm_apply]
+def orderIsoOfAlgebraMapSurjective
+    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
+  toFun N := N.restrictScalars R
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := .rfl
 
 end Submodule
 
@@ -384,11 +403,11 @@ section Ring
 
 namespace Algebra
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+variable [CommSemiring R] [Semiring A] [IsDomain A] [Semiring B] [Algebra R A] [Algebra R B]
 variable [AddCommGroup M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
-theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
+theorem lsmul_injective [Module.IsTorsionFree A M] {x : A} (hx : x ≠ 0) :
     Function.Injective (lsmul R B M x) :=
   smul_right_injective M hx
 

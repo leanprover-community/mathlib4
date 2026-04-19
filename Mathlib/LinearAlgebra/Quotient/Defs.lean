@@ -44,6 +44,7 @@ version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
   Iff.trans
     (by
@@ -98,7 +99,7 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
-  QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
+  inferInstanceAs <| AddCommGroup (M ⧸ p.toAddSubgroup)
 
 @[simp]
 theorem mk_add : (mk (x + y) : M ⧸ p) = mk x + mk y :=
@@ -170,7 +171,7 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) := fast_instance%
-  Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+  Function.Surjective.distribSMul { toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
@@ -178,7 +179,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) := fast_instance%
-  Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+  Function.Surjective.distribMulAction { toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
@@ -186,7 +187,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) := fast_instance%
-  Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
+  Function.Surjective.module _ { toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl }
     Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=

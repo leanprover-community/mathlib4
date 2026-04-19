@@ -30,7 +30,7 @@ This file proves analysis theorems for Pochhammer polynomials.
   for `Nat.choose`.
 -/
 
-@[expose] public section
+public section
 
 
 section DescPochhammer
@@ -59,14 +59,11 @@ lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :
     intro a ha b hb hab
     rw [Set.mem_Ioi, Nat.cast_add_one, add_sub_cancel_right] at ha hb
     simp_rw [deriv_descPochhammer_eval_eq_sum_prod_range_erase]
-    apply Finset.sum_le_sum; intro i hi
-    apply Finset.prod_le_prod
-    · intro j hj
-      rw [Finset.mem_erase, Finset.mem_range] at hj
-      apply sub_nonneg_of_le
-      exact ha.le.trans' (mod_cast Nat.le_pred_of_lt hj.2)
-    · intro j hj
-      rwa [← sub_le_sub_iff_right (j : ℝ)] at hab
+    gcongr with i hi
+    intro j hj
+    rw [Finset.mem_erase, Finset.mem_range] at hj
+    apply sub_nonneg_of_le
+    exact ha.le.trans' (mod_cast Nat.le_pred_of_lt hj.2)
 
 /-- `descPochhammer ℝ n` is convex on `[n-1, ∞)`. -/
 theorem convexOn_descPochhammer_eval (n : ℕ) :

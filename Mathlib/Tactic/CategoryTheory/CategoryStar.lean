@@ -5,12 +5,7 @@ Authors: Adam Topaz, Thomas R. Murrills
 -/
 module
 
-public import Lean.Util.CollectLevelParams
-public import Lean.Elab.Term.TermElabM
-public import Batteries.Data.Array.Basic
 public import Mathlib.Init
-public import Mathlib.Lean.Elab.Term
-meta import Batteries.Data.Array.Basic
 
 /-!
 # Support for `Category* C`.
@@ -35,6 +30,7 @@ variable (C : Type*) [Category* C]
 ```
 -/
 
+namespace Mathlib.Tactic.CategoryStar
 open Lean Meta Elab Term
 
 /--
@@ -57,3 +53,5 @@ elab "Category*" ppSpace C:term:arg : term => commitIfNoEx <| withoutErrToSorry 
   let us := (collectLevelParams (collectLevelParams {} cExpr) tpCExpr).params
   let v ← mkFreshLevelParam `v (insertAfterLevels us)
   return .app (.const `CategoryTheory.Category [v, u]) cExpr
+
+end Mathlib.Tactic.CategoryStar

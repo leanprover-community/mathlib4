@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Yaël Dillies
+Authors: Yury Kudryashov, Yaël Dillies, Louis (Yiyang) Liu
 -/
 module
 
@@ -33,7 +33,7 @@ function, we provide a convenience lemma `MeasureTheory.Integrable.to_average`.
 
 ## Tags
 
-integral, center mass, average value
+integral, center mass, average value, set average
 -/
 
 @[expose] public section
@@ -151,8 +151,7 @@ theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   · rw [laverage_eq]
-    have := measure_univ_ne_zero.2 hμ
-    finiteness
+    finiteness [measure_univ_ne_zero.2 hμ]
 
 theorem setLAverage_lt_top : ∫⁻ x in s, f x ∂μ ≠ ∞ → ⨍⁻ x in s, f x ∂μ < ∞ :=
   laverage_lt_top
@@ -236,6 +235,31 @@ theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → �
 theorem setLIntegral_setLAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ _x in s, ⨍⁻ a in s, f a ∂μ ∂μ = ∫⁻ x in s, f x ∂μ :=
   lintegral_laverage _ _
+
+@[gcongr]
+theorem laverage_mono_ae (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    ⨍⁻ a, f a ∂μ ≤ ⨍⁻ a, g a ∂μ :=
+  lintegral_mono_ae <| h.filter_mono <| Measure.ae_mono' Measure.smul_absolutelyContinuous
+
+@[gcongr]
+theorem setLAverage_mono_ae (s : Set α) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
+    ⨍⁻ a in s, f a ∂μ ≤ ⨍⁻ a in s, g a ∂μ :=
+  laverage_mono_ae <| h.filter_mono <| ae_mono Measure.restrict_le_self
+
+theorem setLAverage_le_essSup (s : Set α) (f : α → ℝ≥0∞) : ⨍⁻ x in s, f x ∂μ ≤ essSup f μ := by
+  by_cases hμ : IsFiniteMeasure (μ.restrict s); swap
+  · simp [laverage, not_isFiniteMeasure_iff.mp hμ]
+  by_cases hμ0 : μ s = 0
+  · rw [laverage, ← setLIntegral_univ]
+    exact le_of_eq_of_le (setLIntegral_measure_zero univ f <| by simp [hμ0]) (zero_le (essSup f μ))
+  apply le_of_le_of_eq (laverage_mono_ae <| Eventually.filter_mono ae_restrict_le ae_le_essSup)
+  have : NeZero (μ.restrict s) :=
+    have : NeZero (μ s) := { out := hμ0 }
+    restrict.neZero
+  exact laverage_const (μ.restrict s) _
+
+theorem laverage_le_essSup (f : α → ℝ≥0∞) : ⨍⁻ x, f x ∂μ ≤ essSup f μ := by
+  simpa using setLAverage_le_essSup univ f
 
 end ENNReal
 
@@ -796,5 +820,21 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
   have := L0.add (hg.smul_const c)
   simp only [one_smul, zero_add] at this
   exact Tendsto.congr' I this
+
+/-- If `s` is a connected set of finite, nonzero `μ`-measure and `f : α → ℝ` is continuous on `s`
+and integrable on `s` w.r.t. `μ`, then `f` attains its `μ`-average on `s`. -/
+theorem exists_eq_setAverage
+    [TopologicalSpace α] {f : α → ℝ} (hs : IsConnected s) (hf : ContinuousOn f s)
+    (hint : IntegrableOn f s μ) (hμfin : μ s ≠ ⊤) (hμ0 : μ s ≠ 0) :
+    ∃ c ∈ s, f c = ⨍ x in s, f x ∂μ := by
+  let ave := ⨍ x in s, f x ∂μ
+  let S₁ : Set α := {x | x ∈ s ∧ f x ≤ ave}
+  let S₂ : Set α := {x | x ∈ s ∧ ave ≤ f x}
+  have hS₁ : 0 < μ S₁ := measure_le_setAverage_pos hμ0 hμfin hint
+  have hS₂ : 0 < μ S₂ := measure_setAverage_le_pos hμ0 hμfin hint
+  rcases nonempty_of_measure_ne_zero hS₁.ne' with ⟨c₁, hc₁⟩
+  rcases nonempty_of_measure_ne_zero hS₂.ne' with ⟨c₂, hc₂⟩
+  apply hs.isPreconnected.intermediate_value hc₁.1 hc₂.1 hf
+  grind
 
 end MeasureTheory

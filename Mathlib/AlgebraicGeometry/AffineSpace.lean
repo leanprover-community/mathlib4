@@ -202,6 +202,7 @@ def isoOfIsAffine [IsAffine S] :
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 @[simp]
 lemma isoOfIsAffine_hom_appTop [IsAffine S] :
     (isoOfIsAffine n S).hom.appTop =
@@ -233,14 +234,8 @@ lemma SpecIso_hom_appTop (R : CommRingCat.{max u v}) :
     (SpecIso n R).hom.appTop = (Scheme.ΓSpecIso _).hom ≫
       CommRingCat.ofHom (eval₂Hom ((Scheme.ΓSpecIso _).inv ≫
         (𝔸(n; Spec R) ↘ Spec R).appTop).hom (coord (Spec R))) := by
-  simp only [SpecIso, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom,
-    Scheme.Spec_map, Quiver.Hom.unop_op, TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app,
-    isoOfIsAffine_hom_appTop, Scheme.ΓSpecIso_naturality_assoc]
-  congr 1
-  ext : 1
-  apply ringHom_ext'
-  · ext; simp
-  · simp
+  ext i
+  simp [SpecIso]
 
 @[simp]
 lemma SpecIso_inv_appTop_coord (R : CommRingCat.{max u v}) (i) :
@@ -312,8 +307,6 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
-@[deprecated (since := "2025-10-07")] alias map_Spec_map := map_SpecMap
-
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
 def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
@@ -321,6 +314,7 @@ def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
       Arrow.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.map (σ := n) φ.hom))) :=
   Arrow.isoMk (SpecIso n S) (SpecIso n R) (by have := (SpecIso n R).inv_hom_id; simp [map_SpecMap])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
     IsPullback (map n f) (𝔸(n; S) ↘ S) (𝔸(n; T) ↘ T) f := by
   refine (IsPullback.paste_horiz_iff (.flip <| .of_hasPullback _ _) (map_over f)).mp ?_
@@ -347,15 +341,9 @@ lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
   ext1 <;> simp
 
 @[simp, reassoc]
-lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ → n₂) (j : n₂ → n₃) (S : Scheme.{max u v}) :
-    reindex (j ∘ i) S = reindex j S ≫ reindex i S := by
-  have H₁ : reindex (j ∘ i) S ≫ 𝔸(n₁; S) ↘ S = (reindex j S ≫ reindex i S) ≫ 𝔸(n₁; S) ↘ S := by
-    simp
-  have H₂ (k) : (reindex (j ∘ i) S).appTop (coord S k) =
-      (reindex j S).appTop ((reindex i S).appTop (coord S k)) := by
-    rw [reindex_appTop_coord, reindex_appTop_coord, reindex_appTop_coord]
-    rfl
-  exact hom_ext H₁ H₂
+lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ ⟶ n₂) (j : n₂ ⟶ n₃) (S : Scheme.{max u v}) :
+    reindex (i ≫ j) S = reindex j S ≫ reindex i S := by
+  ext k <;> simp
 
 @[reassoc (attr := simp)]
 lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u v}} (f : S ⟶ T) :
@@ -367,8 +355,8 @@ lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u 
 def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
   map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
-  map_id n := by ext: 2; exact reindex_id _
-  map_comp f g := by ext: 2; dsimp; exact reindex_comp _ _ _
+  map_id n := by ext : 2; exact reindex_id _
+  map_comp f g := by ext : 2; dsimp; exact reindex_comp _ _ _
 
 end functorial
 section instances
@@ -387,7 +375,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstanceAs (Algebra.FinitePresentation (ULift ℤ) ℤ[n]))
+  convert (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by

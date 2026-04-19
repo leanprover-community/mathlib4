@@ -7,10 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 
@@ -41,50 +42,6 @@ universe v' u' v u
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
 variable {K : Type*} [Category* K] {D : Type*} [Category* D]
 
-section NatTrans
-
-/-- A natural transformation is equifibered if every commutative square of the following form is
-a pullback.
-```
-F(X) → F(Y)
- ↓      ↓
-G(X) → G(Y)
-```
--/
-def NatTrans.Equifibered {F G : J ⥤ C} (α : F ⟶ G) : Prop :=
-  ∀ ⦃i j : J⦄ (f : i ⟶ j), IsPullback (F.map f) (α.app i) (α.app j) (G.map f)
-
-theorem NatTrans.equifibered_of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Equifibered α :=
-  fun _ _ f => IsPullback.of_vert_isIso ⟨NatTrans.naturality _ f⟩
-
-theorem NatTrans.Equifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Equifibered α)
-    (hβ : Equifibered β) : Equifibered (α ≫ β) :=
-  fun _ _ f => (hα f).paste_vert (hβ f)
-
-theorem NatTrans.Equifibered.whiskerRight {F G : J ⥤ C} {α : F ⟶ G} (hα : Equifibered α)
-    (H : C ⥤ D) [∀ (i j : J) (f : j ⟶ i), PreservesLimit (cospan (α.app i) (G.map f)) H] :
-    Equifibered (whiskerRight α H) :=
-  fun _ _ f => (hα f).map H
-
-theorem NatTrans.Equifibered.whiskerLeft {K : Type*} [Category* K] {F G : J ⥤ C} {α : F ⟶ G}
-    (hα : Equifibered α) (H : K ⥤ J) : Equifibered (whiskerLeft H α) :=
-  fun _ _ f => hα (H.map f)
-
-theorem mapPair_equifibered {F F' : Discrete WalkingPair ⥤ C} (α : F ⟶ F') :
-    NatTrans.Equifibered α := by
-  rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩
-  all_goals
-    dsimp; simp only [Discrete.functor_map_id]
-    exact IsPullback.of_horiz_isIso ⟨by simp only [Category.comp_id, Category.id_comp]⟩
-
-theorem NatTrans.equifibered_of_discrete {ι : Type*} {F G : Discrete ι ⥤ C}
-    (α : F ⟶ G) : NatTrans.Equifibered α := by
-  rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩
-  simp only [Discrete.functor_map_id]
-  exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
-
-end NatTrans
-
 /-- A (colimit) cocone over a diagram `F : J ⥤ C` is universal if it is stable under pullbacks. -/
 def IsUniversalColimit {F : J ⥤ C} (c : Cocone F) : Prop :=
   ∀ ⦃F' : J ⥤ C⦄ (c' : Cocone F') (α : F' ⟶ F) (f : c'.pt ⟶ c.pt)
@@ -106,11 +63,12 @@ theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKa
     IsUniversalColimit c :=
   fun _ c' α f h hα => (H c' α f h hα).mpr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A universal colimit is a colimit. -/
 noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
   refine ((h c (𝟙 F) (𝟙 c.pt :) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
-    (NatTrans.equifibered_of_isIso _)) fun j => ?_).some
+    (.of_isIso _)) fun j => ?_).some
   haveI : IsIso (𝟙 c.pt) := inferInstance
   exact IsPullback.of_vert_isIso ⟨by simp⟩
 
@@ -119,6 +77,7 @@ noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsVanKampenColimit c) : IsColimit c :=
   h.isUniversal.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : IsInitial X) :
     IsVanKampenColimit (asEmptyCocone X) := by
   intro F' c' α f hf hα
@@ -126,7 +85,7 @@ theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : Is
   subst this
   haveI := h.isIso_to f
   refine ⟨by rintro _ ⟨⟨⟩⟩,
-    fun _ => ⟨IsColimit.ofIsoColimit h (Cocones.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
+    fun _ => ⟨IsColimit.ofIsoColimit h (Cocone.ext (asIso f).symm <| by rintro ⟨⟨⟩⟩)⟩⟩
 
 section Functor
 
@@ -151,39 +110,39 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
-  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocones.forget _) e.inv
+  haveI : IsIso e.inv.hom := Functor.map_isIso (Cocone.forget _) e.inv
   exact (IsPullback.of_vert_isIso ⟨by simp⟩).paste_vert_iff (NatTrans.congr_app h j).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsVanKampenColimit c) :
-    IsVanKampenColimit ((Cocones.precompose α).obj c) := by
+    IsVanKampenColimit ((Cocone.precompose α).obj c) := by
   intro F' c' α' f e hα
-  refine (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
-    (hα.comp (NatTrans.equifibered_of_isIso _))).trans ?_
+  refine (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e) (hα.comp (.of_isIso _))).trans ?_
   apply forall_congr'
   intro j
   simp only [Functor.const_obj_obj, NatTrans.comp_app,
-    Cocones.precompose_obj_pt, Cocones.precompose_obj_ι]
+    Cocone.precompose_obj_pt, Cocone.precompose_obj_ι]
   have : IsPullback (α.app j ≫ c.ι.app j) (α.app j) (𝟙 _) (c.ι.app j) :=
     IsPullback.of_vert_isIso ⟨Category.comp_id _⟩
   rw [← IsPullback.paste_vert_iff this _, Category.comp_id]
   exact (congr_app e j).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsUniversalColimit c) :
-    IsUniversalColimit ((Cocones.precompose α).obj c) := by
+    IsUniversalColimit ((Cocone.precompose α).obj c) := by
   intro F' c' α' f e hα H
-  apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
-    (hα.comp (NatTrans.equifibered_of_isIso _)))
+  apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e) (hα.comp (.of_isIso _)))
   intro j
   simp only [Functor.const_obj_obj, NatTrans.comp_app]
   rw [← Category.comp_id f]
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨Category.comp_id _⟩)
 
 theorem IsVanKampenColimit.precompose_isIso_iff {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
-    {c : Cocone G} : IsVanKampenColimit ((Cocones.precompose α).obj c) ↔ IsVanKampenColimit c :=
+    {c : Cocone G} : IsVanKampenColimit ((Cocone.precompose α).obj c) ↔ IsVanKampenColimit c :=
   ⟨fun hc ↦ IsVanKampenColimit.of_iso (IsVanKampenColimit.precompose_isIso (inv α) hc)
-    (Cocones.ext (Iso.refl _) (by simp)),
+    (Cocone.ext (Iso.refl _) (by simp)),
     IsVanKampenColimit.precompose_isIso α⟩
 
 theorem IsUniversalColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
@@ -208,20 +167,22 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
   · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
   · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}
     [G.IsEquivalence] : IsVanKampenColimit (G.mapCocone c) ↔ IsVanKampenColimit c :=
   ⟨IsVanKampenColimit.of_mapCocone G, fun hc ↦ by
     let e : F ⋙ G ⋙ Functor.inv G ≅ F := NatIso.hcomp (Iso.refl F) G.asEquivalence.unitIso.symm
     apply IsVanKampenColimit.of_mapCocone G.inv
     apply (IsVanKampenColimit.precompose_isIso_iff e.inv).mp
-    exact hc.of_iso (Cocones.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
+    exact hc.of_iso (Cocone.ext (G.asEquivalence.unitIso.app c.pt) (fun j => (by simp [e])))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsUniversalColimit c) :
     IsUniversalColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα H
   convert hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-    ((hα.whiskerLeft _).comp (NatTrans.equifibered_of_isIso _)) ?_ using 1
+    ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · convert congr_arg (whiskerLeft e.inverse) e'
     ext
@@ -235,14 +196,15 @@ theorem IsUniversalColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e :
     {F : K ⥤ C} {c : Cocone F} :
     IsUniversalColimit (c.whisker e.functor) ↔ IsUniversalColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
-      (Cocones.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
+      (Cocone.ext (Iso.refl _) (by simp)), IsUniversalColimit.whiskerEquivalence e⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J ≌ K)
     {F : K ⥤ C} {c : Cocone F} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit (c.whisker e.functor) := by
   intro F' c' α f e' hα
   convert hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-    ((hα.whiskerLeft _).comp (NatTrans.equifibered_of_isIso _)) using 1
+    ((hα.whiskerLeft _).comp (.of_isIso _)) using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · simp only [Functor.const_obj_obj, Functor.comp_obj, Cocone.whisker_pt, Cocone.whisker_ι,
       whiskerLeft_app, NatTrans.comp_app, Equivalence.invFunIdAssoc_hom_app, Functor.id_obj]
@@ -266,7 +228,7 @@ theorem IsVanKampenColimit.whiskerEquivalence_iff {K : Type*} [Category* K] (e :
     {F : K ⥤ C} {c : Cocone F} :
     IsVanKampenColimit (c.whisker e.functor) ↔ IsVanKampenColimit c :=
   ⟨fun hc ↦ ((hc.whiskerEquivalence e.symm).precompose_isIso (e.invFunIdAssoc F).inv).of_iso
-      (Cocones.ext (Iso.refl _) (by simp)), IsVanKampenColimit.whiskerEquivalence e⟩
+      (Cocone.ext (Iso.refl _) (by simp)), IsVanKampenColimit.whiskerEquivalence e⟩
 
 theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J D] (F : J ⥤ C ⥤ D)
     (c : Cocone F) (hc : ∀ x : C, IsVanKampenColimit (((evaluation C D).obj x).mapCocone c)) :
@@ -291,6 +253,7 @@ end Functor
 
 section reflective
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsUniversalColimit.map_reflective
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)}
@@ -305,7 +268,7 @@ theorem IsUniversalColimit.map_reflective
     ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
       (IsPullback.of_hasPullback _ _).isLimit⟩⟩
   let α' := α ≫ (Functor.associator _ _ _).hom ≫ whiskerLeft F adj.counit ≫ F.rightUnitor.hom
-  have hα' : NatTrans.Equifibered α' := hα.comp (NatTrans.equifibered_of_isIso _)
+  have hα' : NatTrans.Equifibered α' := hα.comp (.of_isIso _)
   have hadj : ∀ X, Gl.map (adj.unit.app X) = inv (adj.counit.app _) := by
     intro X
     apply IsIso.eq_inv_of_inv_hom_id
@@ -340,7 +303,7 @@ theorem IsUniversalColimit.map_reflective
         rw [adj.counit_naturality, ← Category.assoc, Gr.map_comp_assoc]
         congr 1
         exact c.w _
-  let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
+  let cf : (Cocone.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
     · exact inv <| adj.counit.app c'.pt
     · simp [← cancel_mono (adj.counit.app <| Gl.obj c.pt)]
@@ -350,9 +313,8 @@ theorem IsUniversalColimit.map_reflective
       all_goals simp only [c'', PreservesPullback.iso_hom_fst, PreservesPullback.iso_hom_snd,
           pullback.lift_fst, pullback.lift_snd, Category.assoc,
           Functor.mapCocone_ι_app, ← Gl.map_comp]
-      · rw [IsIso.comp_inv_eq, adj.counit_naturality]
-        dsimp [β]
-        rw [Category.comp_id]
+      · dsimp [β]
+        simp only [IsIso.comp_inv_eq, adj.counit_naturality, Category.comp_id]
       · rw [Gl.map_comp, hα'', Category.assoc, hc'']
         dsimp [β]
         rw [Category.comp_id, Category.assoc]
@@ -361,7 +323,7 @@ theorem IsUniversalColimit.map_reflective
     simp only [cf, IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc,
       pullback.lift_fst_assoc]
   have : IsIso cf := by
-    apply @Cocones.cocone_iso_of_hom_iso (i := ?_)
+    apply @Cocone.cocone_iso_of_hom_iso (i := ?_)
     rw [← IsIso.eq_comp_inv] at this
     rw [this]
     infer_instance
@@ -388,6 +350,7 @@ theorem IsUniversalColimit.map_reflective
     · dsimp [c'']
       simp only [pullback.lift_snd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     {F : J ⥤ D} {c : Cocone (F ⋙ Gr)} (H : IsVanKampenColimit c)
@@ -401,7 +364,7 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
   refine ⟨?_, H.isUniversal.map_reflective adj c' α f h hα⟩
   intro ⟨hc'⟩ j
   let α' := α ≫ (Functor.associator _ _ _).hom ≫ whiskerLeft F adj.counit ≫ F.rightUnitor.hom
-  have hα' : NatTrans.Equifibered α' := hα.comp (NatTrans.equifibered_of_isIso _)
+  have hα' : NatTrans.Equifibered α' := hα.comp (.of_isIso _)
   have hα'' : ∀ j, Gl.map (Gr.map <| α'.app j) = adj.counit.app _ ≫ α.app j := by
     intro j
     rw [← cancel_mono (adj.counit.app <| F.obj j)]
@@ -458,7 +421,7 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
         rcases (Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
       refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> simp)
-        (mapPair_equifibered _) ?_).some
+        (.of_discrete _) ?_).some
       rintro ⟨⟨⟩⟩ <;> dsimp <;>
         exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
 
@@ -467,13 +430,13 @@ theorem isVanKampenColimit_of_isEmpty [HasStrictInitialObjects C] [IsEmpty J] {F
   have : IsInitial c.pt := by
     have := (IsColimit.precomposeInvEquiv (Functor.uniqueFromEmpty _) _).symm
       (hc.whiskerEquivalence (equivalenceOfIsEmpty (Discrete PEmpty.{1}) J))
-    exact IsColimit.ofIsoColimit this (Cocones.ext (Iso.refl c.pt) (fun {X} ↦ isEmptyElim X))
+    exact IsColimit.ofIsoColimit this (Cocone.ext (Iso.refl c.pt) (fun {X} ↦ isEmptyElim X))
   replace this := IsInitial.isVanKampenColimit this
   apply (IsVanKampenColimit.whiskerEquivalence_iff
     (equivalenceOfIsEmpty (Discrete PEmpty.{1}) J)).mp
   exact (this.precompose_isIso (Functor.uniqueFromEmpty
     ((equivalenceOfIsEmpty (Discrete PEmpty.{1}) J).functor ⋙ F)).hom).of_iso
-    (Cocones.ext (Iso.refl _) (by simp))
+    (Cocone.ext (Iso.refl _) (by simp))
 
 end Initial
 
@@ -488,7 +451,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
         Nonempty (IsColimit c') ↔ IsPullback c'.inl αX f c.inl ∧ IsPullback c'.inr αY f c.inr := by
   constructor
   · introv H hαX hαY
-    rw [H c' (mapPair αX αY) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> assumption) (mapPair_equifibered _)]
+    rw [H c' (mapPair αX αY) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> assumption) (.of_discrete _)]
     constructor
     · intro H
       exact ⟨H _, H _⟩
@@ -512,6 +475,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     · intro H
       exact ⟨H _, H _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     (cofans : ∀ X Y : C, BinaryCofan X Y) (colimits : ∀ X Y, IsColimit (cofans X Y))
     (cones : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), PullbackCone f g)
@@ -555,7 +519,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
     (h : IsVanKampenColimit c) : Mono c.inr := by
   refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
   refine (h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
-      (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.right⟩
+      (.of_discrete _)).mp ⟨?_⟩ ⟨WalkingPair.right⟩
   · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
@@ -564,7 +528,7 @@ theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : Binary
 theorem BinaryCofan.isPullback_initial_to_of_isVanKampen [HasInitial C] {c : BinaryCofan X Y}
     (h : IsVanKampenColimit c) : IsPullback (initial.to _) (initial.to _) c.inl c.inr := by
   refine ((h (BinaryCofan.mk (initial.to Y) (𝟙 Y)) (mapPair (initial.to X) (𝟙 Y)) c.inr ?_
-      (mapPair_equifibered _)).mp ⟨?_⟩ ⟨WalkingPair.left⟩).flip
+      (.of_discrete _)).mp ⟨?_⟩ ⟨WalkingPair.left⟩).flip
   · ext ⟨⟨⟩⟩ <;> simp
   · exact ((BinaryCofan.isColimit_iff_isIso_inr initialIsInitial _).mpr (by
       dsimp
@@ -574,6 +538,7 @@ end BinaryCoproduct
 
 section FiniteCoproducts
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsUniversalColimit c₁) (t₂ : IsUniversalColimit c₂)
@@ -588,8 +553,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
       simp [F']
   have t₁' := @t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩))
     (Cofan.mk (pullback c₂.inr i) fun j ↦ pullback.lift (α.app _ ≫ c₁.inj _) (c.ι.app _) ?_)
-    (Discrete.natTrans fun i ↦ α.app _) (pullback.fst _ _) ?_
-    (NatTrans.equifibered_of_discrete _) ?_
+    (Discrete.natTrans fun i ↦ α.app _) (pullback.fst _ _) ?_ (.of_discrete _) ?_
   rotate_left
   · simpa only [Functor.const_obj_obj, pair_obj_right, Discrete.functor_obj, Category.assoc,
       extendCofan_pt, Functor.const_obj_obj, NatTrans.comp_app, extendCofan_ι_app,
@@ -608,7 +572,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   obtain ⟨H₁⟩ := t₁'
   have t₂' := @t₂ (pair (F.obj ⟨0⟩) (pullback c₂.inr i))
     (BinaryCofan.mk (c.ι.app ⟨0⟩) (pullback.snd _ _)) (mapPair (α.app _) (pullback.fst _ _)) i ?_
-    (mapPair_equifibered _) ?_
+    (.of_discrete _) ?_
   rotate_left
   · ext ⟨⟨⟩⟩
     · simpa [mapPair] using congr_app e ⟨0⟩
@@ -624,7 +588,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   clear_value F'
   subst this
   refine ⟨IsColimit.ofIsoColimit (extendCofanIsColimit
-    (fun i ↦ (Discrete.functor F').obj ⟨i⟩) H₁ H₂) <| Cocones.ext (Iso.refl _) ?_⟩
+    (fun i ↦ (Discrete.functor F').obj ⟨i⟩) H₁ H₂) <| Cocone.ext (Iso.refl _) ?_⟩
   dsimp
   rintro ⟨j⟩
   simp only [limit.lift_π, PullbackCone.mk_pt,
@@ -633,6 +597,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     {c₁ : Cofan fun i : Fin n ↦ f i.succ} {c₂ : BinaryCofan (f 0) c₁.pt}
     (t₁ : IsVanKampenColimit c₁) (t₂ : IsVanKampenColimit c₂)
@@ -644,8 +609,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   intro ⟨Hc⟩ ⟨j⟩
   have t₂' := (@t₂ (pair (F.obj ⟨0⟩) (∐ fun (j : Fin n) ↦ F.obj ⟨j.succ⟩))
     (BinaryCofan.mk (P := c.pt) (c.ι.app _) (Sigma.desc fun b ↦ c.ι.app _))
-    (mapPair (α.app _) (Sigma.desc fun b ↦ α.app _ ≫ c₁.inj _)) i ?_
-    (mapPair_equifibered _)).mp ⟨?_⟩
+    (mapPair (α.app _) (Sigma.desc fun b ↦ α.app _ ≫ c₁.inj _)) i ?_ (.of_discrete _)).mp ⟨?_⟩
   rotate_left
   · ext ⟨⟨⟩⟩
     · simpa only [pair_obj_left, Functor.const_obj_obj, pair_obj_right, Discrete.functor_obj,
@@ -693,7 +657,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   | succ j _ =>
     have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
       fun i ↦ α.app _) (Sigma.desc (fun j ↦ α.app _ ≫ c₁.inj _)) ?_
-      (NatTrans.equifibered_of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
+      (.of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
     rotate_left
     · ext ⟨j⟩
       dsimp
@@ -715,7 +679,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
     (fun k ↦ if h : k = i then (eqToHom <| if_pos h) else (eqToHom <| if_neg h) ≫ initial.to _))
     (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (if_pos h).trans
       (congr_arg X h.symm)) else (eqToHom <| if_neg h) ≫ initial.to _))
-    (c.inj i) ?_ (NatTrans.equifibered_of_discrete _)).mp ⟨?_⟩ ⟨j⟩
+    (c.inj i) ?_ (.of_discrete _)).mp ⟨?_⟩ ⟨j⟩
   · ext ⟨k⟩
     simp only [Discrete.functor_obj, Functor.const_obj_obj, NatTrans.comp_app,
       Discrete.natTrans_app, Cofan.mk_pt, Cofan.mk_ι_app, Functor.const_map_app]
@@ -745,6 +709,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
   exact (if_neg (mt Discrete.ext hi.symm)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
     {c : Cocone F} (hc : IsVanKampenColimit c) (i : Discrete ι) : Mono (c.ι.app i) := by
   classical
@@ -783,9 +748,8 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
       (s i).fst ((s i).snd ≫ a.inj i) (by simp [hu, (s i).condition])) :=
     Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
-  refine hau _ (Discrete.natTrans fun i ↦ (s i.as).snd) t.snd ?_ ?_ fun j ↦ ?_
+  refine hau _ (Discrete.natTrans fun i ↦ (s i.as).snd) t.snd ?_ (.of_discrete _) fun j ↦ ?_
   · ext; simp [Cofan.inj]
-  · exact NatTrans.equifibered_of_discrete _
   · simp only [Discrete.functor_obj_eq_as, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app,
       Discrete.natTrans_app]
     rw [← Cofan.inj]
@@ -810,6 +774,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_left
   hau.nonempty_isColimit_of_pullbackCone_left f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
 
+set_option backward.isDefEq.respectTransparency false in
 include hau hP in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
 `∐ (B ×[S] Xᵢ) ≅ B ×[S] (∐ Xᵢ)`. -/
@@ -846,9 +811,8 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
       ((s i).fst ≫ a.inj i) ((s i).snd) (by simp [hu, (s i).condition])) :=
     Cofan.ext e <| fun p ↦ PullbackCone.IsLimit.hom_ext ht (by simp [he₁]) (by simp [he₂])
   rw [(IsColimit.equivIsoColimit iso).nonempty_congr]
-  refine hau _ (Discrete.natTrans fun i ↦ (s i.as).fst) t.fst ?_ ?_ fun j ↦ ?_
+  refine hau _ (Discrete.natTrans fun i ↦ (s i.as).fst) t.fst ?_ (.of_discrete _) fun j ↦ ?_
   · ext; simp [Cofan.inj]
-  · exact NatTrans.equifibered_of_discrete _
   · simp only [Discrete.functor_obj_eq_as, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app,
       Discrete.natTrans_app]
     rw [← Cofan.inj]
@@ -873,6 +837,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_right
   hau.nonempty_isColimit_of_pullbackCone_right f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
 
+set_option backward.isDefEq.respectTransparency false in
 include hau hP in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
 `∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
@@ -899,6 +864,7 @@ variable {Y : ι' → C} {b : Cofan Y} (hbu : IsUniversalColimit b)
   (f : ∀ i, X i ⟶ S) (g : ∀ i, Y i ⟶ S) (u : a.pt ⟶ S) (v : b.pt ⟶ S)
   [∀ i, HasPullback (f i) v]
 
+set_option backward.isDefEq.respectTransparency false in
 include hau hbu in
 /-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
 `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
@@ -945,6 +911,7 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_isPullback
   IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone hau hbu f g u v
     (fun i j ↦ (hP i j).cone) (fun i j ↦ (hP i j).isLimit) h.cone h.isLimit e
 
+set_option backward.isDefEq.respectTransparency false in
 include hau hbu in
 lemma IsUniversalColimit.isPullback_prod_of_isColimit [HasPullback u v]
     {P : ι × ι' → C} {q₁ : ∀ i j, P (i, j) ⟶ X i} {q₂ : ∀ i j, P (i, j) ⟶ Y j}

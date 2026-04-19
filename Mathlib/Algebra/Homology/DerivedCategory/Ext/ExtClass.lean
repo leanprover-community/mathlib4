@@ -81,13 +81,14 @@ noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
   change SmallHom W (S').X₃ ((S').X₁⟦(1 : ℤ)⟧)
   exact (SmallHom.mkInv qis hqis).comp (SmallHom.mk W δ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
   change SmallShiftedHom.equiv W Q hS.extClass = _
   dsimp [extClass, SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  dsimp [singleδ, triangleOfSESδ]
+  dsimp [-Q_obj_single_obj, singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
     singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom,
     NatTrans.id_app, Category.id_comp, NatTrans.id_app]
@@ -125,6 +126,14 @@ lemma extClass_comp_assoc {Y : C} {n : ℕ} (γ : Ext S.X₂ Y n) {n' : ℕ} {h 
     hS.extClass.comp ((Ext.mk₀ S.f).comp γ (zero_add n)) h = 0 := by
   rw [← Ext.comp_assoc (a₁₂ := 1) _ _ _ (by lia) (by lia) (by lia),
     extClass_comp, Ext.zero_comp]
+
+lemma extClass_naturality {S₁ S₂ : ShortComplex C}
+    (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
+    h₁.extClass.comp (Ext.mk₀ f.τ₁) (add_zero 1) =
+      (Ext.mk₀ f.τ₃).comp h₂.extClass (zero_add 1) := by
+  letI := HasDerivedCategory.standard C
+  ext
+  simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using (singleTriangle.map h₁ h₂ f).comm₃
 
 end ShortExact
 

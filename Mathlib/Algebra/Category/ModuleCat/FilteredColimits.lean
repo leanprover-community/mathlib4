@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
@@ -68,13 +68,15 @@ lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :
 def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
+    TypeCat.Fun.coe_mk] at hfg
   simp [hfg]
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
@@ -151,10 +153,12 @@ def colimitCocone : Cocone F where
   pt := colimit F
   ι :=
     { app := coconeMorphism F
-      naturality := fun _ _' f =>
-        hom_ext <| LinearMap.coe_injective
-          ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using (Types.TypeMax.colimitCocone
+          (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
 We already know that this is a morphism between additive groups. The only thing left to see is that
 it is a linear map, i.e. preserves scalar multiplication.
@@ -163,7 +167,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
-    congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
+    congr_hom ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
       map_smul' := fun r x => by
@@ -176,14 +180,15 @@ lemma ι_colimitDesc (t : Cocone F) (j : J) :
   (forget₂ _ AddCommGrpCat).map_injective
     ((AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _)).fac _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget _).congr_map (h j)) x).trans
-      (congr_fun ((forget _).congr_map (ι_colimitDesc F t j)) x).symm
+    exact (congr_hom ((forget (ModuleCat _)).congr_map (h j)) _).trans
+      (congr_hom ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where

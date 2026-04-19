@@ -12,62 +12,97 @@ jobs:
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
-      - name: Download artifact
-        id: download-artifact
-        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
+      - name: Consume bridge artifact
+        id: bridge
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: workflow-data
+          source_workflow: Maintainer merge
+          require_event: issue_comment,pull_request_review,pull_request_review_comment
+          fail_on_missing: false
+          token: ${{ github.token }}
+          extract: |
+            author=event.comment.user.login|event.review.user.login
+            pr_author=event.issue.user.login|event.pull_request.user.login
+            pr_number=meta.pr_number
+            comment=event.comment.body|event.review.body
+            pr_title=event.issue.title|event.pull_request.title
+            pr_url=event.issue.html_url|event.pull_request.html_url
+            event_name=meta.event_name
+            mOrD=outputs.mOrD
+
+      - name: Download legacy artifact (fallback)
+        id: download-legacy-artifact
+        if: ${{ steps.bridge.outputs.pr_number == '' }}
+        uses: dawidd6/action-download-artifact@8a338493df3d275e4a7a63bcff3b8fe97e51a927 # v19
         with:
           workflow: maintainer_merge.yml
           name: workflow-data
           path: ./artifacts
           if_no_artifact_found: ignore
-          # Use the workflow run that triggered this workflow
           run_id: ${{ github.event.workflow_run.id }}
 
-      - if: ${{ steps.download-artifact.outputs.found_artifact == 'true' }}
-        name: Extract data from JSON artifact
-        id: extract-data
+      - name: Extract legacy artifact data (fallback)
+        id: legacy
+        if: ${{ steps.bridge.outputs.pr_number == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
         run: |
-          # Read the JSON artifact file and extract data
-          if [ -f "./artifacts/artifact-data.json" ]; then
-            echo "JSON artifact found, extracting data..."
-            echo "Full JSON artifact content:"
-            cat ./artifacts/artifact-data.json
-
-            # Extract specific values using jq
-            author=$(jq -r '.author' ./artifacts/artifact-data.json)
-            pr_author=$(jq -r '.pr_author' ./artifacts/artifact-data.json)
-            pr_number=$(jq -r '.pr_number' ./artifacts/artifact-data.json)
-            comment=$(jq -r '.comment' ./artifacts/artifact-data.json)
-            pr_title=$(jq -r '.pr_title' ./artifacts/artifact-data.json)
-            pr_url=$(jq -r '.pr_url' ./artifacts/artifact-data.json)
-            event_name=$(jq -r '.event_name' ./artifacts/artifact-data.json)
-            m_or_d=$(jq -r '.m_or_d' ./artifacts/artifact-data.json)
-
-            # Set as step outputs for use in later steps
-            {
-              echo "author=$author"
-              echo "pr_author=$pr_author"
-              echo "pr_number=$pr_number"
-
-              echo "comment<<EOF"
-              echo "$comment"
-              echo "EOF"
-
-              echo "pr_title<<EOF"
-              echo "$pr_title"
-              echo "EOF"
-
-              echo "pr_url=$pr_url"
-              echo "event_name=$event_name"
-              echo "mOrD=$m_or_d"
-            } | tee -a "$GITHUB_OUTPUT"
-          else
-            echo "JSON artifact file not found!"
-            exit 1
+          data_file="./artifacts/artifact-data.json"
+          if [ ! -f "${data_file}" ]
+          then
+            echo "Legacy artifact not found at ${data_file}."
+            exit 0
           fi
+          {
+            echo "author=$(jq -r '.author // empty' "${data_file}")"
+            echo "pr_author=$(jq -r '.pr_author // empty' "${data_file}")"
+            echo "pr_number=$(jq -r '.pr_number // empty' "${data_file}")"
+            echo "pr_title=$(jq -r '.pr_title // empty' "${data_file}")"
+            echo "pr_url=$(jq -r '.pr_url // empty' "${data_file}")"
+            echo "event_name=$(jq -r '.event_name // empty' "${data_file}")"
+            echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
+          } | tee -a "$GITHUB_OUTPUT"
+          comment="$(jq -r '.comment // empty' "${data_file}")"
+          printf 'comment<<EOF\n%s\nEOF\n' "${comment}" | tee -a "$GITHUB_OUTPUT"
 
-      - if: ${{ ! steps.extract-data.outputs.mOrD == '' }}
+      - name: Select bridge or legacy inputs
+        id: inputs
+        if: ${{ steps.bridge.outputs.pr_number != '' || steps.legacy.outputs.pr_number != '' }}
+        env:
+          INPUT_AUTHOR: ${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}
+          INPUT_PR_AUTHOR: ${{ steps.bridge.outputs.pr_author }}${{ steps.legacy.outputs.pr_author }}
+          INPUT_PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}
+          INPUT_PR_TITLE: ${{ steps.bridge.outputs.pr_title }}${{ steps.legacy.outputs.pr_title }}
+          INPUT_PR_URL: ${{ steps.bridge.outputs.pr_url }}${{ steps.legacy.outputs.pr_url }}
+          INPUT_EVENT_NAME: ${{ steps.bridge.outputs.event_name }}${{ steps.legacy.outputs.event_name }}
+          INPUT_MORD: ${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}
+          INPUT_SOURCE: ${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}
+          INPUT_COMMENT: ${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}
+        run: |
+          {
+            echo "author=${INPUT_AUTHOR}"
+            echo "pr_author=${INPUT_PR_AUTHOR}"
+            echo "pr_number=${INPUT_PR_NUMBER}"
+            echo "pr_title=${INPUT_PR_TITLE}"
+            echo "pr_url=${INPUT_PR_URL}"
+            echo "event_name=${INPUT_EVENT_NAME}"
+            echo "mOrD=${INPUT_MORD}"
+            echo "input_source=${INPUT_SOURCE}"
+          } | tee -a "$GITHUB_OUTPUT"
+          printf 'comment<<EOF\n%s\nEOF\n' "${INPUT_COMMENT}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Note legacy artifact fallback
+        if: ${{ steps.inputs.outputs.input_source == 'legacy' }}
+        run: |
+          echo "::notice::Using legacy workflow-data artifact fallback from maintainer_merge.yml"
+          echo "Using legacy workflow-data artifact fallback from maintainer_merge.yml" >> "$GITHUB_STEP_SUMMARY"
+
+      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
@@ -75,46 +110,61 @@ jobs:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
                   # Organization to get membership from.
           team: 'mathlib-reviewers'
-          username: ${{ steps.extract-data.outputs.author }}
+          username: ${{ steps.inputs.outputs.author }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - name: Checkout
+      - name: Checkout local actions
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: master
-          sparse-checkout: |
-            scripts/get_tlabel.py
-            scripts/maintainer_merge_message.py
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: determine_topic
         run: |
-          ./scripts/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          PR_NUMBER: ${{ steps.extract-data.outputs.pr_number }}
+          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
 
       - name: Form the message
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: form_the_message
         run: |
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.extract-data.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
+            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.inputs.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
           )"
+          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_run_url="${{ github.event.workflow_run.html_url }}"
+          wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          legacy_suffix=""
+          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
+          then
+            legacy_suffix=" (legacy)"
+          fi
+          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          echo "${metadata}"
+          # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
-          AUTHOR: ${{ steps.extract-data.outputs.author }}
-          EVENT_NAME: ${{ steps.extract-data.outputs.event_name }}
-          PR_NUMBER: ${{ steps.extract-data.outputs.pr_number }}
-          PR_URL: ${{ steps.extract-data.outputs.pr_url }}
-          PR_TITLE: ${{ steps.extract-data.outputs.pr_title }}
-          COMMENT: ${{ steps.extract-data.outputs.comment }}
-          PR_AUTHOR: ${{ steps.extract-data.outputs.pr_author }}
+          AUTHOR: ${{ steps.inputs.outputs.author }}
+          EVENT_NAME: ${{ steps.inputs.outputs.event_name }}
+          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
+          PR_URL: ${{ steps.inputs.outputs.pr_url }}
+          PR_TITLE: ${{ steps.inputs.outputs.pr_title }}
+          COMMENT: ${{ steps.inputs.outputs.comment }}
+          PR_AUTHOR: ${{ steps.inputs.outputs.pr_author }}
 
       - name: Send message on Zulip
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        continue-on-error: true
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -125,23 +175,54 @@ jobs:
           topic: ${{ steps.determine_topic.outputs.topic }}
           content: ${{ steps.form_the_message.outputs.title }}
 
+      - name: Compose PR comment body
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        id: pr_comment
+        run: |
+          body="🚀 Pull request has been placed on the maintainer queue by ${{ steps.inputs.outputs.author }}."
+          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_run_url="${{ github.event.workflow_run.html_url }}"
+          wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          legacy_suffix=""
+          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
+          then
+            legacy_suffix=" (legacy)"
+          fi
+          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          echo "${metadata}"
+          # body="${body}"$'\n\n---\n'"${metadata}"
+          printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
+
       - name: Add comment to PR
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        continue-on-error: true
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set
-          issue-number: ${{ steps.extract-data.outputs.pr_number }}
-          body: |
-            🚀 Pull request has been placed on the maintainer queue by ${{ steps.extract-data.outputs.author }}.
+          issue-number: ${{ steps.inputs.outputs.pr_number }}
+          body: ${{ steps.pr_comment.outputs.body }}
+
+      - if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        name: Generate app token
+        id: app-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-triage-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Add label to PR
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        continue-on-error: true
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
-          github-token: ${{secrets.TRIAGE_TOKEN}}
+          # This token is masked by the token minting action and will not be logged accidentally.
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
-            const issue_number = ${{ steps.extract-data.outputs.pr_number }};
+            const issue_number = ${{ steps.inputs.outputs.pr_number }};
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

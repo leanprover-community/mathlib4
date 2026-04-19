@@ -92,14 +92,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_hom_apply]
+@[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
-  map f := CompHausLike.ofHom _ ⟨f, by continuity⟩
+  map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f.hom.hom.1)
+  preimage f := InducedCategory.homMk (TypeCat.ofHom (f.hom.hom.1))
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -109,10 +109,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
 
-instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
-  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Finite X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (LightProfinite.of X) :=
+  inferInstanceAs (Finite X)
 
 end DiscreteTopology
 
@@ -196,6 +197,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
   rw [isIso_iff_bijective] at hf
   exact LightProfinite.isIso_of_bijective _ hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
@@ -229,7 +231,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
 instance : lightToProfinite.PreservesEpimorphisms where
@@ -253,10 +255,10 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
 instance : Category LightDiagram :=
-  inferInstanceAs (Category (InducedCategory _ toProfinite))
+  inferInstanceAs <| Category (InducedCategory _ toProfinite)
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
-  InducedCategory.concreteCategory toProfinite
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toProfinite) _
 
 end LightDiagram
 
@@ -319,6 +321,7 @@ def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := InducedCategory.homMk f.hom.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
   functor := lightProfiniteToLightDiagram
@@ -331,7 +334,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
       apply lightDiagramToProfinite.map_injective
       apply InducedCategory.hom_ext
       simp only [Functor.map_comp, Functor.map_preimage]
-      simp )
+      simp)
   functor_unitIso_comp _ := by simpa using lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=

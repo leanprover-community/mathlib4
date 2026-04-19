@@ -54,20 +54,20 @@ results for general rings are instead stated about `Ring.inverse`:
 
 ## TODO
 
-* Show that `Matrix.det (NormedSpace.exp 𝕂 A) = NormedSpace.exp 𝕂 (Matrix.trace A)`
+* Show that `Matrix.det (NormedSpace.exp A) = NormedSpace.exp (Matrix.trace A)`
 
 ## References
 
 * https://en.wikipedia.org/wiki/Matrix_exponential
 -/
 
-@[expose] public section
+public section
 
 open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable (𝕂 : Type*) {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
 
 namespace Matrix
 
@@ -76,40 +76,40 @@ section Topological
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
-  [∀ i, DecidableEq (n' i)] [Field 𝕂] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
-  [Algebra 𝕂 𝔸] [T2Space 𝔸]
+  [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
+  [T2Space 𝔸]
 
-theorem exp_diagonal (v : m → 𝔸) : exp 𝕂 (diagonal v) = diagonal (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
+theorem exp_diagonal [Algebra ℚ 𝔸] (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
+  simp_rw [exp_eq_tsum_rat, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
 
-theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
-    exp 𝕂 (blockDiagonal v) = blockDiagonal (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
+theorem exp_blockDiagonal [Algebra ℚ 𝔸] (v : m → Matrix n n 𝔸) :
+    exp (blockDiagonal v) = blockDiagonal (exp v) := by
+  simp_rw [exp_eq_tsum_rat, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
 
-theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
-    exp 𝕂 (blockDiagonal' v) = blockDiagonal' (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
+theorem exp_blockDiagonal' [Algebra ℚ 𝔸] (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
+    exp (blockDiagonal' v) = blockDiagonal' (exp v) := by
+  simp_rw [exp_eq_tsum_rat, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
-    exp 𝕂 Aᴴ = (exp 𝕂 A)ᴴ :=
+    exp Aᴴ = (exp A)ᴴ :=
   (star_exp A).symm
 
 theorem IsHermitian.exp [StarRing 𝔸] [ContinuousStar 𝔸] {A : Matrix m m 𝔸} (h : A.IsHermitian) :
-    (exp 𝕂 A).IsHermitian :=
-  (exp_conjTranspose _ _).symm.trans <| congr_arg _ h
+    (exp A).IsHermitian :=
+  (exp_conjTranspose _).symm.trans <| congr_arg _ h
 
 end Ring
 
 section CommRing
 
-variable [Fintype m] [DecidableEq m] [Field 𝕂] [CommRing 𝔸] [TopologicalSpace 𝔸]
-  [IsTopologicalRing 𝔸] [Algebra 𝕂 𝔸] [T2Space 𝔸]
+variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
+  [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
 
-theorem exp_transpose (A : Matrix m m 𝔸) : exp 𝕂 Aᵀ = (exp 𝕂 A)ᵀ := by
-  simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
+theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
+  simp_rw [exp_eq_tsum_rat, transpose_tsum, transpose_smul, transpose_pow]
 
-theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp 𝕂 A).IsSymm :=
-  (exp_transpose _ _).symm.trans <| congr_arg _ h
+theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp A).IsSymm :=
+  (exp_transpose _).symm.trans <| congr_arg _ h
 
 end CommRing
 
@@ -117,34 +117,38 @@ end Topological
 
 section Normed
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable [Fintype m] [DecidableEq m] [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
+set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
-    exp 𝕂 (A + B) = exp 𝕂 A * exp 𝕂 B :=
+    exp (A + B) = exp A * exp B :=
   open scoped Norms.Operator in exp_add_of_commute h
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
-    exp 𝕂 (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp 𝕂 (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp 𝕂 :=
+    exp (∑ i ∈ s, f i) =
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp :=
   open scoped Norms.Operator in exp_sum_of_commute s f h
 
-nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = exp 𝕂 A ^ n :=
+set_option backward.isDefEq.respectTransparency false in
+nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp (n • A) = exp A ^ n :=
   open scoped Norms.Operator in exp_nsmul n A
 
-nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) :=
-  open scoped Norms.Operator in isUnit_exp _ A
+set_option backward.isDefEq.respectTransparency false in
+nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) :=
+  open scoped Norms.Operator in isUnit_exp A
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
 -- and zulip discussion at
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Coercion.20instance.20problems.20with.20matrix.20exponential/with/539770030
 attribute [-instance] Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup in
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
-  open scoped Norms.Operator in exp_units_conj _ U A
+    exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
+  open scoped Norms.Operator in exp_units_conj U A
 
 -- TODO: without disabling this instance we get a timeout, see lean4#10414:
 -- https://github.com/leanprover/lean4/issues/10414
@@ -152,35 +156,36 @@ nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Coercion.20instance.20problems.20with.20matrix.20exponential/with/539770030
 attribute [-instance] Matrix.SpecialLinearGroup.hasCoeToGeneralLinearGroup in
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
-  exp_units_conj 𝕂 U⁻¹ A
+    exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
+  exp_units_conj U⁻¹ A
 
 end Normed
 
 section NormedComm
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable [Fintype m] [DecidableEq m]
+  [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
-theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
+set_option backward.isDefEq.respectTransparency false in
+theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ringInverse]
-  open scoped Norms.Operator in exact (Ring.inverse_exp _ A).symm
+  open scoped Norms.Operator in exact (Ring.inverse_exp A).symm
 
-theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
+theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · rw [zpow_natCast, natCast_zsmul, exp_nsmul]
-  · have : IsUnit (exp 𝕂 A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _ _)
+  · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _)
     rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg, natCast_zsmul, exp_nsmul]
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
+    exp (U * A * U⁻¹) = U * exp A * U⁻¹ :=
   let ⟨u, hu⟩ := hy
-  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj 𝕂 u A
+  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj u A
 
 theorem exp_conj' (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :
-    exp 𝕂 (U⁻¹ * A * U) = U⁻¹ * exp 𝕂 A * U :=
+    exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
   let ⟨u, hu⟩ := hy
-  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' 𝕂 u A
+  hu ▸ by simpa only [Matrix.coe_units_inv] using exp_units_conj' u A
 
 end NormedComm
 

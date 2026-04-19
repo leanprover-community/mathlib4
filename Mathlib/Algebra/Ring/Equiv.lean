@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Util.Delaborators
 
 /-!
 # (Semi)ring equivs
@@ -115,12 +116,6 @@ def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEqu
   { (f : α ≃* β), (f : α ≃+ β) with }
 
 end RingEquivClass
-
-/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
-`RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
-    CoeTC F (α ≃+* β) :=
-  ⟨RingEquivClass.toRingEquiv⟩
 
 namespace RingEquiv
 

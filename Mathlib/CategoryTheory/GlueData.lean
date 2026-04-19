@@ -39,6 +39,7 @@ variable (C : Type u₁) [Category.{v} C] {C' : Type u₂} [Category.{v} C']
 3. An object `V i j` for each `i j : J`.
 4. A monomorphism `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -182,9 +183,7 @@ variable [HasColimits C]
 def π : D.sigmaOpens ⟶ D.glued :=
   Multicoequalizer.sigmaπ D.diagram
 
-instance π_epi : Epi D.π := by
-  unfold π
-  infer_instance
+instance π_epi : Epi D.π := inferInstanceAs <| Epi (Multicoequalizer.sigmaπ D.diagram)
 
 end
 
@@ -196,14 +195,12 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
-  --have := colimit.isoColimitCocone (Types.coproductColimitCocone _)
-  rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone.{v, v} _)).inv _ = x' from
-      ConcreteCategory.congr_hom
-        (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
+  rw [← dsimp% ConcreteCategory.congr_hom
+    (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
-  exact ⟨i, y, by
-    simp
-    rfl ⟩
+  refine ⟨i, y, ?_⟩
+  simp
+  rfl
 
 variable (F : C ⥤ C')
 
@@ -233,6 +230,7 @@ def mapGlueData : GlueData C' where
     simp only [Category.assoc, Iso.hom_inv_id_assoc, ← Functor.map_comp_assoc, D.cocycle,
       Iso.inv_hom_id, CategoryTheory.Functor.map_id, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The diagram of the image of a `GlueData` under a functor `F` is naturally isomorphic to the
 original diagram of the `GlueData` via `F`.
 -/
@@ -286,25 +284,30 @@ attribute [local instance] hasColimit_multispan_comp
 
 variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
   hasColimit_of_iso (D.diagramIso F).symm
 
 attribute [local instance] hasColimit_mapGlueData_diagram
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, we obtain an iso between the glued objects. -/
 def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
   preservesColimitIso F D.diagram.multispan ≪≫ Limits.HasColimit.isoOfNatIso (D.diagramIso F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   erw [ι_preservesColimitIso_hom_assoc]
   simp [GlueData.ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).inv = F.map (D.ι i) := by
   rw [Iso.comp_inv_eq, ι_gluedIso_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` preserves the gluing, and reflects the pullback of `U i ⟶ glued` and `U j ⟶ glued`,
 then `F` reflects the fact that `V_pullback_cone` is a pullback. -/
 def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι j)) F]
@@ -320,7 +323,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
-  refine Cones.ext (Iso.refl _) ?_
+  refine Cone.ext (Iso.refl _) ?_
   rintro (_ | _ | _)
   all_goals simp [e]; rfl
 
@@ -387,11 +390,11 @@ instance (D : GlueData' C) (i : D.J) :
 instance (D : GlueData' C) (i j k : D.J) :
     HasPullback (D.f' i j) (D.f' i k) := by
   if hij : i = j then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_left_iso
+    apply +allowSynthFailures hasPullback_of_left_iso
     simp only [GlueData'.f', dif_pos hij]
     infer_instance
   else if hik : i = k then
-    apply (config := { allowSynthFailures := true }) hasPullback_of_right_iso
+    apply +allowSynthFailures hasPullback_of_right_iso
     simp only [GlueData'.f', dif_pos hik]
     infer_instance
   else
@@ -413,7 +416,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
     have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
-      apply (config := { allowSynthFailures := true }) pullback_snd_iso_of_left_iso
+      apply +allowSynthFailures pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
     pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
@@ -426,6 +429,7 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only

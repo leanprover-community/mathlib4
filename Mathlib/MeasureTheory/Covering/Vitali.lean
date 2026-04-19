@@ -263,8 +263,8 @@ theorem exists_disjoint_covering_ae
       intro a hav
       apply dist_le_add_of_nonempty_closedBall_inter_closedBall
       refine hav.2.mono ?_
-      apply inter_subset_inter _ ball_subset_closedBall
-      exact hB a (ut (vu hav))
+      gcongr
+      exacts [hB a (ut (vu hav)), ball_subset_closedBall]
     set R0 := sSup (r '' v) with R0_def
     have R0_bdd : BddAbove (r '' v) := by
       refine ⟨1, fun r' hr' => ?_⟩
@@ -343,7 +343,8 @@ theorem exists_disjoint_covering_ae
     have ax : B a ⊆ ball x (R x) := by
       refine (hB a hat).trans ?_
       refine Subset.trans ?_ (hd.trans Set.diff_subset)
-      exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
+      gcongr
+      exact ad.trans (min_le_left _ _)
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
     obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
       hu a ⟨hat, ad.trans (min_le_right _ _)⟩
@@ -360,7 +361,8 @@ theorem exists_disjoint_covering_ae
       have : (ball x (R x) \ k ∩ k).Nonempty := by
         apply ab.mono (inter_subset_inter _ b'k)
         refine ((hB _ hat).trans ?_).trans hd
-        exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
+        gcongr
+        exact ad.trans (min_le_left _ _)
       simpa only [diff_inter_self, Set.not_nonempty_empty]
     let b'' : { a // a ∉ w } := ⟨b', b'_notmem_w⟩
     -- since `a` and `b` have comparable diameters, it follows that `z` belongs to the
@@ -386,6 +388,33 @@ theorem exists_disjoint_covering_ae
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
 
+/-- The measurable **Vitali covering theorem**, filter version.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
+measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
+
+For more flexibility, we give a statement with a parameterized family of sets.
+-/
+theorem exists_disjoint_covering_ae'
+    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
+    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
+    (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
+    (hf : ∀ x ∈ s, ∃ᶠ ε in 𝓝[>] 0, ∃ a ∈ t, r a = ε ∧ c a = x) :
+    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
+  suffices ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x from
+    exists_disjoint_covering_ae μ s t C r c B hB μB ht h't this
+  intro x hx ε hε
+  specialize hf x hx
+  rw [frequently_nhdsWithin_iff, frequently_nhds_iff] at hf
+  obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
+  exact ⟨a, ha₁, by grind, ha₃⟩
+
 /-- Assume that around every point there are arbitrarily small scales at which the measure is
 doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
@@ -402,8 +431,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
-    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩,
-      closedBall_subset_closedBall rε⟩
+    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩, by gcongr⟩
     exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   covering := by
     intro s f fsubset ffine

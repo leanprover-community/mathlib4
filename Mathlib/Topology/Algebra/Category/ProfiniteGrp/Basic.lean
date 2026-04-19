@@ -43,7 +43,7 @@ set with a topological group structure.
 @[pp_with_univ]
 structure ProfiniteGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The group structure. -/
   [group : Group toProfinite]
   /-- The above data together form a topological group. -/
@@ -56,7 +56,7 @@ set with a topological additive group structure.
 @[pp_with_univ]
 structure ProfiniteAddGrp where
   /-- The underlying profinite topological space. -/
-  toProfinite : Profinite
+  toProfinite : Profinite.{u}
   /-- The additive group structure. -/
   [addGroup : AddGroup toProfinite]
   /-- The above data together form a topological additive group. -/
@@ -227,13 +227,19 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : IsTopologicalGroup G := {}
   of G
 
+/-- A morphism of `FiniteGrp` induces a morphism of the associated profinite groups. -/
+@[to_additive /-- A morphism of `FiniteAddGrp` induces a morphism of the associated profinite
+additive groups. -/]
+def ofFiniteGrpHom {G H : FiniteGrp.{u}} (f : G ⟶ H) : ofFiniteGrp G ⟶ ofFiniteGrp H :=
+  ConcreteCategory.ofHom ⟨f.hom.hom, by fun_prop⟩
+
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map f := ⟨f.hom.hom, by continuity⟩ }
+    map := ofFiniteGrpHom }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp GrpCat where
@@ -271,7 +277,8 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
-    ConcreteCategory.hom_ext _ _ (CategoryTheory.congr_fun h) }
+    ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
+
 
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -312,6 +319,7 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
@@ -367,6 +375,7 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)

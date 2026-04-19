@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Conv
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Groups with an adjoined zero element
@@ -107,6 +108,7 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
+@[implicit_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
   uniq := eq_zero_of_zero_eq_one h
@@ -139,6 +141,77 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 
 end
 
+section Nilpotent
+
+variable {R S : Type*} {x y : R}
+
+/-- An element is said to be nilpotent if some natural-number-power of it equals zero.
+
+Note that we require only the bare minimum assumptions for the definition to make sense. Even
+`MonoidWithZero` is too strong since nilpotency is important in the study of rings that are only
+power-associative. -/
+def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
+  ∃ n : ℕ, x ^ n = 0
+
+theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
+  ⟨n, e⟩
+
+@[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
+  ⟨0, Subsingleton.elim _ _⟩
+
+@[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
+  ⟨1, pow_one 0⟩
+
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
+lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) :=
+  have ⟨N, hN⟩ := hx
+  ⟨N, by rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]⟩
+
+theorem IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
+    (h : IsNilpotent (x ^ m)) : IsNilpotent x :=
+  have ⟨n, h⟩ := h
+  ⟨m * n, by rw [← h, pow_mul x m n]⟩
+
+lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
+    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
+  cases n with
+  | zero => contradiction
+  | succ => exact IsNilpotent.pow_succ _ hx
+
+@[simp]
+lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S} (hn : n ≠ 0) :
+    IsNilpotent (x ^ n) ↔ IsNilpotent x :=
+  ⟨of_pow, (pow_of_pos · hn)⟩
+
+/-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
+@[mk_iff]
+class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
+  /-- A reduced structure has no nonzero nilpotent elements. -/
+  eq_zero : ∀ x : R, IsNilpotent x → x = 0
+
+theorem eq_zero_of_pow_eq_zero [Zero R] [Pow R ℕ] [IsReduced R] {n : ℕ} (h : x ^ n = 0) :
+    x = 0 := IsReduced.eq_zero x ⟨n, h⟩
+
+instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
+    IsReduced R :=
+  ⟨fun _ _ => Subsingleton.elim ..⟩
+
+theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
+  IsReduced.eq_zero x h
+
+@[simp]
+theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
+  ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
+
+lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
+    ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
+  simpa [isReduced_iff, not_forall, and_comm] using h
+
+end Nilpotent
+
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
 
@@ -168,16 +241,17 @@ lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
   rw [show n = n - m + m by lia, pow_add, mul_assoc, h]
   simp
 
-variable [NoZeroDivisors M₀]
+instance (priority := 900) isReduced_of_noZeroDivisors [NoZeroDivisors M₀] :
+    IsReduced M₀ :=
+  ⟨fun a ⟨n, ha⟩ ↦ by
+    induction n with
+    | zero => simpa using congr_arg (a * ·) ha
+    | succ n ih => rw [pow_succ, mul_eq_zero] at ha; exact ha.elim ih id⟩
 
-lemma eq_zero_of_pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
-  | 0, ha => by simpa using congr_arg (a * ·) ha
-  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim eq_zero_of_pow_eq_zero id
-
-@[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
+variable [IsReduced M₀]
 
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨eq_zero_of_pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
+  ⟨eq_zero_of_pow_eq_zero, (·.symm ▸ zero_pow hn)⟩
 
 lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
 
@@ -187,8 +261,15 @@ instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out�
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
 
+/-- A variant of `pow_eq_zero_iff` assuming `M₀` is not trivial. -/
 @[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
   obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero := eq_zero_of_pow_eq_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff := pow_eq_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero_iff := pow_ne_zero_iff
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_ne_zero := pow_ne_zero
+@[deprecated (since := "2026-01-08")] alias IsReduced.pow_eq_zero_iff' := pow_eq_zero_iff'
 
 theorem exists_right_inv_of_exists_left_inv {α} [MonoidWithZero α]
     (h : ∀ a : α, a ≠ 0 → ∃ b : α, b * a = 1) {a : α} (ha : a ≠ 0) : ∃ b : α, a * b = 1 := by
@@ -203,53 +284,45 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
+variable {a b c : M₀}
+variable [MulZeroOneClass M₀]
 
--- see Note [lower instance priority]
-instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
-  ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
-    ab0.trans (mul_zero _).symm⟩
-
-@[simp]
-theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
-  by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
-
-@[simp]
-theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
-  by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
-
-theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
+theorem mul_right_eq_self₀ [IsLeftCancelMulZero M₀] : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 
-theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
+theorem mul_left_eq_self₀ [IsRightCancelMulZero M₀] : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
     a * b = b ↔ a * b = 1 * b := by rw [one_mul]
     _ ↔ a = 1 ∨ b = 0 := mul_eq_mul_right_iff
 
 @[simp]
-theorem mul_eq_left₀ (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
+theorem mul_eq_left₀ [IsLeftCancelMulZero M₀] (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
   rw [Iff.comm, ← mul_right_inj' ha, mul_one]
 
 @[simp]
-theorem mul_eq_right₀ (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
+theorem mul_eq_right₀ [IsRightCancelMulZero M₀] (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
   rw [Iff.comm, ← mul_left_inj' hb, one_mul]
 
 @[simp]
-theorem left_eq_mul₀ (ha : a ≠ 0) : a = a * b ↔ b = 1 := by rw [eq_comm, mul_eq_left₀ ha]
+theorem left_eq_mul₀ [IsLeftCancelMulZero M₀] (ha : a ≠ 0) : a = a * b ↔ b = 1 := by
+  rw [eq_comm, mul_eq_left₀ ha]
 
 @[simp]
-theorem right_eq_mul₀ (hb : b ≠ 0) : b = a * b ↔ a = 1 := by rw [eq_comm, mul_eq_right₀ hb]
+theorem right_eq_mul₀ [IsRightCancelMulZero M₀] (hb : b ≠ 0) : b = a * b ↔ a = 1 := by
+  rw [eq_comm, mul_eq_right₀ hb]
 
-/-- An element of a `CancelMonoidWithZero` fixed by right multiplication by an element other
-than one must be zero. -/
-theorem eq_zero_of_mul_eq_self_right (h₁ : b ≠ 1) (h₂ : a * b = a) : a = 0 :=
+/-- An element of a left-cancellative `MulZeroOneClass` fixed by right multiplication by
+an element other than one must be zero. -/
+theorem eq_zero_of_mul_eq_self_right [IsLeftCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : a * b = a) :
+    a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_left_cancel₀ ha <| h₂.symm ▸ (mul_one a).symm
 
-/-- An element of a `CancelMonoidWithZero` fixed by left multiplication by an element other
-than one must be zero. -/
-theorem eq_zero_of_mul_eq_self_left (h₁ : b ≠ 1) (h₂ : b * a = a) : a = 0 :=
+/-- An element of a right-cancellative `MulZeroOneClass` fixed by left multiplication by
+an element other than one must be zero. -/
+theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : b * a = a) :
+    a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_right_cancel₀ ha <| h₂.symm ▸ (one_mul a).symm
 
 end CancelMonoidWithZero
@@ -304,12 +377,11 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 
 -- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
-  { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero {x} hx y z h := by
-      dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero {x} hx y z h := by
-      dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z] }
+instance (priority := 10) : IsCancelMulZero G₀ where
+  mul_left_cancel_of_ne_zero {x} hx y z h := by
+    dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z]
+  mul_right_cancel_of_ne_zero {x} hx y z h := by
+    dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z]
 
 end GroupWithZero
 
