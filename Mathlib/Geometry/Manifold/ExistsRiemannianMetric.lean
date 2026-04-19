@@ -45,6 +45,21 @@ section tangentSpaceEquiv
 
 variable [∀ x, NormedSpace ℝ (E x)]
 
+/-- `VectorSpaceAux x φ hpos hsymm hdef` is a copy of the fiber `E x` equipped with the norm
+induced by the positive definite bilinear form `φ`.
+
+Mathlib's type class system doesn't support having multiple norm structures on the same type.
+
+As the Mathlib documentation states (`Mathlib.Analysis.Normed.Module.FiniteDimension`):
+> "The fact that all norms are equivalent is not written explicitly, as it would mean having
+> two norms on a single space, which is not the way type classes work. However, if one has a
+> finite-dimensional vector space `E` with a norm, and a copy `E'` of this type with another
+> norm, then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
+> `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence."
+> (https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/FiniteDimension.html)
+
+It is well known that all norms on a finite-dimensional space are equivalent.
+In Mathlib, making this work requires explicit construction and proof. -/
 structure VectorSpaceAux
   (x : B) (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
   (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) where
