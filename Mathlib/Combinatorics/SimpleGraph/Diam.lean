@@ -64,7 +64,7 @@ lemma eccent_eq_zero_of_subsingleton [Subsingleton α] (u : α) : G.eccent u = 0
 
 lemma eccent_ne_zero [Nontrivial α] (u : α) : G.eccent u ≠ 0 := by
   obtain ⟨v, huv⟩ := exists_ne ‹_›
-  contrapose! huv
+  contrapose huv
   simp only [eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact (huv v).symm
 
@@ -160,7 +160,7 @@ lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
 
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
-  contrapose! huv
+  contrapose huv
   simp only [ediam, eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact huv u v
 

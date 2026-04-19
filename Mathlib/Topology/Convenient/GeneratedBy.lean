@@ -151,7 +151,7 @@ section
 variable [IsGeneratedBy X Y]
 
 /-- The homeomorphism `WithGeneratedByTopology X Y ≃ₜ Y` when `Y` is `X`-generated. -/
-def homeomorph [IsGeneratedBy X Y] : WithGeneratedByTopology X Y ≃ₜ Y where
+def homeomorph : WithGeneratedByTopology X Y ≃ₜ Y where
   toEquiv := WithGeneratedByTopology.equiv
   continuous_toFun := by dsimp; fun_prop
   continuous_invFun := by dsimp; fun_prop
