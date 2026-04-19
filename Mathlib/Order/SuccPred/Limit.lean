@@ -363,15 +363,30 @@ protected theorem IsSuccPrelimit.isMin (h : IsSuccPrelimit a) : IsMin a := fun b
   exact H hc
 
 @[to_dual (attr := simp)]
-theorem isSuccPrelimit_iff : IsSuccPrelimit a ↔ IsMin a :=
+theorem isSuccPrelimit_iff_isMin : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin, IsMin.isSuccPrelimit⟩
 
+@[deprecated (since := "2026-04-19")]
+alias isSuccPrelimit_iff := isSuccPrelimit_iff_isMin
+@[deprecated (since := "2026-04-19")]
+alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
+
 @[to_dual (attr := simp)]
-theorem not_isSuccLimit : ¬ IsSuccLimit a :=
+theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
   fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
 
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredLimit := not_isPredLimit_of_isPredArchimedean
+
 @[to_dual]
-theorem not_isSuccPrelimit [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+theorem not_isSuccPrelimit_of_isSuccArchimedean [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit := not_isSuccPrelimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredPrelimit := not_isPredPrelimit_of_isPredArchimedean
 
 end IsSuccArchimedean
 
