@@ -59,42 +59,43 @@ public section
 
 open ENNReal Set MeasureTheory VectorMeasure ContinuousLinearMap
 
-namespace MeasureTheory
-
-section cbmApplyMeasure
-
 variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F)
+
+namespace MeasureTheory
+
+section cbmApplyMeasure
 
 /-- Given a set `s`, return the continuous linear map `fun x : E => B x (μ s)`, where the `B` is a
 `G`-valued bilinear form on `E × F` and `μ` is an `F`-valued vector measure. The extension of that
 set function through `setToL1` gives the pairing integral of L1 functions. -/
-noncomputable def cbmApplyMeasure (s : Set X) : E →L[ℝ] G where
+noncomputable def cbmApplyMeasure (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) (s : Set X) :
+    E →L[ℝ] G where
   toFun x := μ.mapRange B.flip.toAddMonoidHom B.flip.continuous s x
   map_add' _ _ := map_add₂ ..
   map_smul' _ _ := map_smulₛₗ₂ ..
 
 @[simp]
-theorem cbmApplyMeasure_apply (s : Set X) (x : E) : cbmApplyMeasure B μ s x = B x (μ s) := by
+theorem cbmApplyMeasure_apply (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) (s : Set X) (x : E) :
+    cbmApplyMeasure B μ s x = B x (μ s) := by
   rfl
 
-theorem cbmApplyMeasure_union {s t : Set X} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hdisj : Disjoint s t) :
+theorem cbmApplyMeasure_union (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) {s t : Set X}
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
     cbmApplyMeasure B μ (s ∪ t) = cbmApplyMeasure B μ s + cbmApplyMeasure B μ t := by
   ext x
   simp [cbmApplyMeasure_apply, of_union hdisj hs ht, (B x).map_add]
 
-theorem dominatedFinMeasAdditive_cbmApplyMeasure :
+theorem dominatedFinMeasAdditive_cbmApplyMeasure (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) :
     DominatedFinMeasAdditive (μ.mapRange B.flip.toAddMonoidHom B.flip.continuous).variation
     (cbmApplyMeasure B μ : Set X → E →L[ℝ] G) 1 := by
   refine ⟨fun s t hs ht _ _ hdisj => cbmApplyMeasure_union B μ hs ht hdisj, ?_⟩
   intro s hs hsf
   simpa using norm_measure_le_variation hsf.ne
 
-theorem norm_cbmApplyMeasure_le (s : Set X) :
+theorem norm_cbmApplyMeasure_le (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) (s : Set X) :
     ‖cbmApplyMeasure B μ s‖ ≤ ‖B‖ * ‖μ s‖ := by
   rw [opNorm_le_iff (by positivity)]
   intro x
@@ -106,11 +107,7 @@ open SimpleFunc L1
 
 section
 
-variable (X E F G : Type*) [mX : MeasurableSpace X]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
-
+variable (X E F G) [mX] in
 /-- The structure containing a continuous linear pairing and a vector measure,
 enabling the dot notation `VectorMeasureWithParing.integral`. -/
 structure VectorMeasureWithPairing where
@@ -123,30 +120,24 @@ end
 
 namespace VectorMeasureWithPairing
 
-variable {X E F G : Type*} {mX : MeasurableSpace X}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
-  (Bμ : VectorMeasureWithPairing X E F G)
-  (μ : VectorMeasure X E)
-
 /-- The composition of the vector-measure part with the paring part, giving the reference
 vector measure. -/
 @[expose]
-noncomputable def transpose : VectorMeasure X (E →L[ℝ] G) :=
+noncomputable def transpose (Bμ : VectorMeasureWithPairing X E F G) : VectorMeasure X (E →L[ℝ] G) :=
   Bμ.vectorMeasure.mapRange Bμ.pairing.flip.toAddMonoidHom Bμ.pairing.flip.continuous
 
-lemma transpose_def :
+lemma transpose_def (Bμ : VectorMeasureWithPairing X E F G) :
     Bμ.transpose =
     Bμ.vectorMeasure.mapRange Bμ.pairing.flip.toAddMonoidHom Bμ.pairing.flip.continuous := by rfl
 
 /-- `f : X → E` is said to be integrable with respect to `Bμ` if it is integrable with respect to
 `Bμ.transpose.variation`. -/
-abbrev Integrable (f : X → E) : Prop := MeasureTheory.Integrable f Bμ.transpose.variation
+abbrev Integrable (Bμ : VectorMeasureWithPairing X E F G) (f : X → E) : Prop :=
+  MeasureTheory.Integrable f Bμ.transpose.variation
 
 open Classical in
 /-- The pairing integral in L1 space as a continuous linear map. -/
-noncomputable def integral (f : X → E) : G :=
+noncomputable def integral (Bμ : VectorMeasureWithPairing X E F G) (f : X → E) : G :=
   if _ : CompleteSpace G then
   setToFun Bμ.transpose.variation Bμ.transpose
     (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
@@ -155,84 +146,80 @@ noncomputable def integral (f : X → E) : G :=
 @[inherit_doc integral]
 notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂"Bμ:70 => integral Bμ r
 
-@[inherit_doc integral]
+/-- The special case of the pairing integral where the pairing is just the scalar multiplication by
+`ℝ` and the `F`-valued vector measure is denoted by `μ`, and the resulting integral is `F`-valued.-/
 local notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral
   (VectorMeasureWithPairing.mk (lsmul (E := E) ℝ ℝ) μ) r
 
+variable {Bμ : VectorMeasureWithPairing X E F G}
+
 @[integral_simps]
-theorem integral_fun_add (f g : X → E) (hf : Bμ.Integrable f)
-    (hg : Bμ.Integrable g) :
-    Bμ.integral (fun x => f x + g x) = Bμ.integral f + Bμ.integral g := by
+theorem integral_fun_add (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+    ∫ᵛ x, (fun x => f x + g x) x ∂Bμ = ∫ᵛ x, f x ∂Bμ + ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_add (f g : X → E) (hf : Bμ.Integrable f)
-    (hg : Bμ.Integrable g) :
-    Bμ.integral (f + g) = Bμ.integral f + Bμ.integral g := by
+theorem integral_add (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+    ∫ᵛ x, (f + g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ + ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
   · simp [integral, hG]
 
+variable (Bμ) in
 @[integral_simps]
-theorem integral_fun_neg (f : X → E) :
-  Bμ.integral (fun x => -f x) = -Bμ.integral f := by
+theorem integral_fun_neg (f : X → E) : ∫ᵛ x, (fun x => -f x) x ∂Bμ = -∫ᵛ x, f x ∂Bμ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
+  · simp [integral, hG]
+
+variable (Bμ) in
+@[integral_simps]
+theorem integral_neg (f : X → E) : ∫ᵛ x, (-f) x ∂Bμ = -∫ᵛ x, f x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_neg (f : X → E) :
-  Bμ.integral (-f) = -Bμ.integral f := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
-  · simp [integral, hG]
-
-@[integral_simps]
-theorem integral_fun_sub (f g : X → E) (hf : Bμ.Integrable f)
-    (hg : Bμ.Integrable g) :
-    Bμ.integral (fun x => f x - g x) = Bμ.integral f - Bμ.integral g := by
+theorem integral_fun_sub (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+    ∫ᵛ x, (fun x => f x - g x) x ∂Bμ = ∫ᵛ x, f x ∂Bμ - ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_sub (f g : X → E) (hf : Bμ.Integrable f)
-    (hg : Bμ.Integrable g) :
-    Bμ.integral (f - g) = Bμ.integral f - Bμ.integral g := by
+theorem integral_sub (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+    ∫ᵛ x, (f - g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ - ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
   · simp [integral, hG]
 
+variable (Bμ) in
 @[integral_simps]
 theorem integral_smul (c : ℝ) (f : X → E) :
-    Bμ.integral (c • f) = c • Bμ.integral f := by
+    ∫ᵛ x, (fun x => c • f x) x ∂Bμ = c • ∫ᵛ x, f x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
       (by simp) c f
   · simp [integral, hG]
 
-variable [hG : CompleteSpace G]
-
-@[simp]
-lemma integral_apply (f : (X → E)) (hf : Bμ.Integrable f) :
-    have : MeasureTheory.Integrable f
-        (Bμ.vectorMeasure.mapRange Bμ.pairing.flip.toAddMonoidHom
-        Bμ.pairing.flip.continuous).variation := by
-      simpa [transpose_def] using hf
-    Bμ.integral f =
-    L1.setToL1 (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
-    (this.toL1 f) := by
-  simp only [hG, integral, setToFun, ↓reduceDIte, hf]
-  rfl
+variable (Bμ) in
+@[integral_simps]
+theorem integral_fun_smul (c : ℝ) (f : X → E) :
+    ∫ᵛ x, c • f x ∂Bμ = c • ∫ᵛ x, f x ∂Bμ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG]
+    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
+      (by simp) c f
+  · simp [integral, hG]
 
 end VectorMeasureWithPairing
 
