@@ -123,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
@@ -150,7 +150,7 @@ namespace IsAlgebraic
 
 theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
   by_cases inj : Function.Injective (algebraMap R A); swap
-  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+  · rw [injective_iff_map_eq_zero] at inj; push Not at inj
     have ⟨r, eq, ne⟩ := inj
     exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz
@@ -222,7 +222,6 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     e, ← Algebra.smul_def, mul_comm, mul_smul]
   exact isIntegral_trans _ (int_s.smul _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars [Algebra.IsAlgebraic R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   have ⟨p, hp, eval0⟩ := h
@@ -240,8 +239,8 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
   have : IsAlgebraic (integralClosure R S) a := by
     refine ⟨p, ?_, ?_⟩
-    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
-        p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
+    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) (p := p)
+        Subtype.val_injective, p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,
       map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]
@@ -379,7 +378,6 @@ theorem Subalgebra.algebraicClosure_eq_integralClosure {K} [Field K] [Algebra K 
     algebraicClosure K S = integralClosure K S :=
   SetLike.ext fun _ ↦ isAlgebraic_iff_isIntegral
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsDomain R] : Algebra.IsAlgebraic R (Subalgebra.algebraicClosure R S) :=
   (Subalgebra.isAlgebraic_iff _).mp fun _ ↦ id
 
@@ -410,7 +408,6 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivis
   rw [mul_right_comm, eq, ← Algebra.smul_def] at this
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
 
-set_option backward.isDefEq.respectTransparency false in
 open Algebra in
 omit [Algebra R A] [IsScalarTower R S A] in
 theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
@@ -457,11 +454,9 @@ end
 variable [NoZeroDivisors S] {a : S} (ha : Transcendental R a)
 include ha
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma integralClosure : Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subalgebraAlgebraicClosure [IsDomain R] :
     Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 
@@ -601,18 +596,15 @@ theorem Polynomial.exists_dvd_map_of_isAlgebraic [NoZeroDivisors S] {f : S[X]} (
     ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
   (Algebra.IsAlgebraic.isAlgebraic f).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
 
-set_option backward.isDefEq.respectTransparency false in
 instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isAlgebraic R S ..
 
-set_option backward.isDefEq.respectTransparency false in
 instance {σ} [NoZeroDivisors S] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) := by
   by_cases h : Function.Injective (algebraMap R S)
   · have := h.noZeroDivisors _ (map_zero _) (map_mul _); infer_instance
   rw [← MvPolynomial.map_injective_iff] at h
   exact Algebra.isAlgebraic_of_not_injective h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MvPolynomial.exists_dvd_map_of_isAlgebraic {σ}
     [NoZeroDivisors S] {f : MvPolynomial σ S} (hf : f ≠ 0) :
     ∃ g : MvPolynomial σ R, g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
@@ -627,12 +619,10 @@ instance : Algebra.IsPushout R (FractionRing R[X]) S (FractionRing S[X]) :=
 
 instance : Algebra.IsPushout R S (FractionRing R[X]) (FractionRing S[X]) := .symm inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance {σ : Type*} :
     Algebra.IsPushout R (FractionRing (MvPolynomial σ R)) S (FractionRing (MvPolynomial σ S)) :=
   (Algebra.IsPushout.comp_iff _ (MvPolynomial σ R) _ (MvPolynomial σ S)).mpr inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance {σ : Type*} :
     Algebra.IsPushout R S (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) :=
   .symm inferInstance
@@ -644,7 +634,6 @@ namespace Algebra.IsAlgebraic
   have := IsDomain.of_faithfulSMul R S
   rw [rank_fractionRing, rank_polynomial_polynomial]
 
-set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 @[stacks 0G1M] theorem rank_fractionRing_mvPolynomial (σ : Type u) :
     Module.rank (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) =

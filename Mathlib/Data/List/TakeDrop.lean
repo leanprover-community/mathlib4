@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # `Take` and `Drop` lemmas for lists
@@ -80,6 +81,12 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
     · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
+
+/-- Applying `tail` to a list `n` times is equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih => cases l <;> simp [*]
 
 section TailDropLast
 

@@ -698,7 +698,6 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
     · norm_num
   · exact add_nonneg two_pos.le (sqrtTwoAddSeries_zero_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
@@ -823,7 +822,7 @@ theorem quadratic_root_cos_pi_div_five :
   suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
   have hs : s ≠ 0 := by
     rw [ne_eq, sin_eq_zero_iff, hθ]
-    push_neg
+    push Not
     intro n hn
     replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     lia
@@ -838,13 +837,11 @@ theorem quadratic_root_cos_pi_div_five :
                  _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
                  _ = s * (4 * c ^ 2 - 1) := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 open Polynomial in
 theorem Polynomial.isRoot_cos_pi_div_five :
     (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by
   simpa using quadratic_root_cos_pi_div_five
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cosine of `π / 5` is `(1 + √5) / 4`. -/
 @[simp]
 theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by

@@ -31,7 +31,7 @@ public import Mathlib.RingTheory.Etale.Locus
 
 ## Note
 
-For the converse that smooth imples flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
+For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
 
 -/
 
@@ -155,7 +155,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
   -/
   classical
   obtain ⟨n, f₀, hf₀⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
-    (inferInstanceAs (Algebra.FiniteType R P))
+    (inferInstance : Algebra.FiniteType R P)
   let M' := M.comap f₀
   let P' := Localization M'
   let fP : P' →ₐ[R] S := IsLocalization.liftAlgHom (M := M')
@@ -188,7 +188,6 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 -- It is not hard to generalize the proof to get the full generality of the stacks tag.
 -- The hard part is figuring out the right way to state the result. Hence we refrain from this
 -- generalization until we have an application.
@@ -227,7 +226,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
       ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
       ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
-      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul _ _ _ _)
+      (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=

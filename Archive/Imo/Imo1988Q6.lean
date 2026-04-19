@@ -128,7 +128,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- Let m be the smallest element of the nonempty set S.
   let m : ℕ := WellFounded.min Nat.lt_wfRel.wf S S_nonempty
   have m_mem : m ∈ S := WellFounded.min_mem Nat.lt_wfRel.wf S S_nonempty
-  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S S_nonempty hk
+  have m_min : ∀ k ∈ S, ¬k < m := fun k hk => WellFounded.not_lt_min Nat.lt_wfRel.wf S hk
   -- It suffices to show that there is point (a,b) with b ∈ S and b < m.
   rsuffices ⟨p', p'_mem, p'_small⟩ : ∃ p' : ℕ × ℕ, p'.2 ∈ S ∧ p'.2 < m
   · solve_by_elim
@@ -139,7 +139,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
   simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
-  push_neg at h_base
+  push Not at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
   rcases h_base with ⟨h_base, hmx, hm_diag, hm_B₁, hm_B₂⟩
@@ -149,7 +149,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [H_quad] at h_quad
   -- We find the other root of the equation, and Vieta's formulas.
   rcases vieta_formula_quadratic h_quad with ⟨c, h_root, hV₁, hV₂⟩
-  -- Now we rewrite Vietas formulas a bit, and apply the descent step.
+  -- Now we rewrite Vieta's formulas a bit, and apply the descent step.
   replace hV₁ : c = B mx - my := eq_sub_of_add_eq' hV₁
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
@@ -179,7 +179,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     suffices hc : c ≠ mx from lt_of_le_of_ne (mod_cast c_lt) hc
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
-    contrapose! hm_B₂
+    contrapose hm_B₂
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
@@ -188,7 +188,6 @@ end Imo1988Q6
 
 open Imo1988Q6
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Question 6 of IMO1988. If a and b are two natural numbers
 such that a*b+1 divides a^2 + b^2, show that their quotient is a perfect square. -/
 theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
@@ -245,7 +244,6 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
   · -- There is no base case in this application of Vieta jumping.
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-
 The following example illustrates the use of constant descent Vieta jumping
 in the presence of a non-trivial base case.
@@ -281,9 +279,9 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       lia
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
-      push_neg at h_base
+      push Not at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> lia
+        z * y > x * y := by gcongr; lia
         _ ≥ x * (x + 1) := by apply mul_le_mul <;> lia
         _ > x * x + 1 := by
           rw [mul_add]

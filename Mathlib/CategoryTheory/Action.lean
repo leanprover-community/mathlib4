@@ -35,22 +35,19 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
-@[simps]
+@[simps obj map]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map := (· • ·)
-  map_id _ := funext <| MulAction.one_smul
-  map_comp f g := funext fun x => (smul_smul g f x).symm
+  map f := TypeCat.ofHom (f • ·)
+  map_id _ := by ext; exact MulAction.one_smul _
+  map_comp f g := by ext x; exact (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
 from x to y is a scalar taking x to y. Due to implementation details, the object type
 of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
   (actionAsFunctor M X).Elements
-
-instance : Category (ActionCategory M X) := by
-  dsimp only [ActionCategory]
-  infer_instance
+deriving Category
 
 namespace ActionCategory
 
@@ -163,9 +160,6 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   cases inv_smul_eq_iff.mpr h.symm
   rfl
 
-@[deprecated (since := "2025-08-21")]
-alias cases' := ActionCategory.cases
-
 variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
@@ -189,7 +183,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       · exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `G` acting on `X`, a group homomorphism `φ : G →* (X → H) ⋊ G` can be uncurried to
 a functor from the action groupoid to `H`, provided that `φ g = (_, g)` for all `g`. -/
 @[simps]

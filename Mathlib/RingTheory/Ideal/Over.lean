@@ -55,11 +55,7 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
   ext x
   rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← Quotient.eq_zero_iff_mem, Quotient.mk_algebraMap,
     IsScalarTower.algebraMap_apply R (R ⧸ p) (S ⧸ P), Quotient.algebraMap_eq]
-  constructor
-  · intro hx
-    exact (injective_iff_map_eq_zero (algebraMap (R ⧸ p) (S ⧸ P))).mp h _ hx
-  · intro hx
-    rw [hx, map_zero]
+  exact map_eq_zero_iff _ h
 
 variable [Algebra R S]
 
@@ -136,6 +132,10 @@ theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
 
 lemma ne_top_iff_of_liesOver [P.LiesOver p] : P ≠ ⊤ ↔ p ≠ ⊤ := (eq_top_iff_of_liesOver ..).ne
 
+lemma isPrime_of_liesOver [P.LiesOver p] [P.IsPrime] : p.IsPrime := by
+  rw [over_def P p]
+  exact IsPrime.under A P
+
 variable {P}
 
 theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
@@ -147,8 +147,8 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
 
 theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
-  rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
-  exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
+  rw [← show _ = P.map σ from comap_symm (RingEquivClass.toRingEquiv σ)] at h
+  exact of_eq_comap p (AlgEquivClass.toAlgEquiv σ : B ≃ₐ[A] C).symm h
 
 variable {p} in
 instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
@@ -245,7 +245,7 @@ instance bot_liesOver_bot : (⊥ : Ideal B).LiesOver (⊥ : Ideal A) where
 
 variable {A B} in
 theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver p] : P ≠ ⊥ := by
-  contrapose! hp
+  contrapose hp
   rw [over_def P p, hp, under_bot]
 
 end CommRing
@@ -294,7 +294,7 @@ variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
-  __ := quotientEquiv P Q σ h
+  __ := quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h
   commutes' := by
     rintro ⟨x⟩
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
@@ -333,7 +333,6 @@ lemma ker_stabilizerHom :
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]

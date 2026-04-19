@@ -107,7 +107,6 @@ instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
     rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]
@@ -322,6 +321,12 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
   refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
   exact measure_mono inter_subset_left
+
+instance [TopologicalSpace α] (μ : Measure α) [hμ : IsLocallyFiniteMeasure μ] :
+    IsLocallyFiniteMeasure (μ.restrict s) where
+  finiteAtNhds x := by
+    obtain ⟨t, ht, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨t, ht, lt_of_le_of_lt (restrict_apply_le s t) hmus⟩
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/
 class IsFiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop where

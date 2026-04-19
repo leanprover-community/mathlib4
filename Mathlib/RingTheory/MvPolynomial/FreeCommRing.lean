@@ -40,13 +40,12 @@ open MvPolynomial FreeCommRing
 `genericPolyMap monoms` is an indexed collection of elements of the `FreeCommRing`,
 that can be evaluated to any collection `p : ι → MvPolynomial κ R` of
 polynomials such that `∀ i, (p i).support ⊆ monoms i`. -/
-def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
+noncomputable def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
     ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ κ) :=
   fun i => (monoms i).attach.sum
     (fun m => FreeCommRing.of (Sum.inl ⟨i, m⟩) *
       Finsupp.prod m.1 (fun j n => FreeCommRing.of (Sum.inr j) ^ n))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Collections of `MvPolynomial`s, `p : ι → MvPolynomial κ R` such
 that `∀ i, (p i).support ⊆ monoms i` can be identified with functions
 `(Σ i, monoms i) → R` by using the coefficient function -/

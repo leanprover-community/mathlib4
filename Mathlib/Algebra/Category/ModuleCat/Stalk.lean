@@ -36,6 +36,7 @@ variable {C : Type*} [SmallCategory C] [IsFiltered C] (R : C ⥤ RingCat) (M : C
     [∀ i, Module (R.obj i) (M.obj i)]
     (H : ∀ {i j} (f : i ⟶ j) r m, M.map f (r • m) = R.map f r • M.map f m)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The scalar multiplication function on `ColimitType`. -/
 protected noncomputable
 def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).ColimitType) :
@@ -49,17 +50,19 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
       bowtie (leftToMax U V₁) (leftToMax U V₂)
         (rightToMax U V₁) (f ≫ rightToMax U V₂)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+    simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
   · rintro ⟨U₁, a₁⟩ ⟨U₂, a₂⟩ ⟨V, b⟩ ⟨f : U₁ ⟶ U₂, rfl : a₂ = R.map _ a₁⟩
     obtain ⟨s, α, β, h₁, h₂⟩ :=
       bowtie (leftToMax U₁ V) (f ≫ leftToMax U₂ V)
         (rightToMax U₁ V) (rightToMax U₂ V)
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
-    simp [*, ← elementwise_of% R.map_comp, ← elementwise_of% M.map_comp, -Functor.map_comp]
+    simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
-#adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here -/
+#adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here,
+and as of nightly-2026-02-23, we also need `backward.whnf.reducibleClassField`
+to avoid needing even more. -/
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 600000 in --
+set_option maxHeartbeats 700000 in --
 set_option synthInstance.maxHeartbeats 40000 in
 /-- (Implementation). The module structure on `AddCommGrpCat.FilteredColimits.colimit`. -/
 noncomputable abbrev filteredColimitsModule : Module (RingCat.FilteredColimits.colimit R)
@@ -144,7 +147,7 @@ lemma IsColimit.ι_smul {cR : Cocone R} (hcR : IsColimit cR) {cM : Cocone M}
     (β := AddCommGrpCat.FilteredColimits.colimit M)
     ((cR.ι.app i ≫ β.hom) r) ((cM.ι.app i ≫ α.hom) m))
   simp only [Functor.const_obj_obj, comp_coconePointUniqueUpToIso_hom, α, β]
-  obtain ⟨s, α, H⟩ :=  IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
+  obtain ⟨s, α, H⟩ := IsFilteredOrEmpty.cocone_maps (leftToMax i i) (rightToMax i i)
   refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ (leftToMax _ _ ≫ α) α ?_
   dsimp
   simp only [← ConcreteCategory.comp_apply, ← Functor.map_comp, *]

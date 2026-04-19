@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
@@ -23,16 +24,18 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_open_point`, `geometric_hahn_banach_point_open`: One set is open, the
   other is a singleton. Weak separation.
 * `geometric_hahn_banach_open_open`: Both sets are open. Semistrict separation.
+* `geometric_hahn_banach_of_nonempty_interior'`: One set has nonempty interior. Nonstrict
+  separation.
+* `geometric_hahn_banach_of_nonempty_interior`: One set has nonempty interior, the other one is
+  nonempty. Nonstrict separation by a nonzero functional.
+* `geometric_hahn_banach_of_nonempty_interior_point`: One set has nonempty interior, the other one
+  is a singleton outside this interior. Nonstrict separation, with the maximum attained at the
+  singleton.
 * `geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`: One set is closed,
   the other one is compact. Strict separation.
 * `geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`: One set is closed, the
   other one is a singleton. Strict separation.
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
-
-## TODO
-
-* Eidelheit's theorem
-* `Convex ℝ s → interior (closure s) ⊆ s`
 -/
 
 @[expose] public section
@@ -75,7 +78,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
-  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
+  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, RingHom.id_apply, le_mul_iff_one_le_right h]
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
@@ -144,6 +147,49 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
+/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a nonzero
+continuous linear functional weakly separates `s` and `t`. The proof first separates `interior s`
+from `t`, then extends the inequality from `interior s` to all of `s` using
+`closure (interior s) = closure s`. -/
+theorem geometric_hahn_banach_of_nonempty_interior
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
+    ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
+  obtain ⟨f, u, hfA, hfB⟩ :=
+    geometric_hahn_banach_open hs.interior isOpen_interior ht hst
+  refine ⟨f, u, ?_, fun a ha ↦ ?_, hfB⟩
+  · obtain ⟨a, ha⟩ := hsint
+    obtain ⟨b, hb⟩ := htne
+    intro hzero
+    have ha' : (0 : ℝ) < u := by simpa [hzero] using hfA a ha
+    have hb' : u ≤ (0 : ℝ) := by simpa [hzero] using hfB b hb
+    linarith
+  · apply closure_minimal (fun x hx => le_of_lt (hfA x hx)) <| isClosed_Iic.preimage f.continuous
+    simpa [hs.closure_interior_eq_closure_of_nonempty_interior hsint] using subset_closure ha
+
+/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
+linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
+`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
+theorem geometric_hahn_banach_of_nonempty_interior'
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
+  by_cases htne : t.Nonempty
+  · obtain ⟨f, u, -, hs', ht'⟩ :=
+      geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
+    exact ⟨f, u, hs', ht'⟩
+  · exact ⟨0, 0, by simp⟩
+
+/-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
+continuous linear functional whose maximum on `A` is attained at `x`. -/
+theorem geometric_hahn_banach_of_nonempty_interior_point
+    {A : Set E} (hA : Convex ℝ A) (hxA : x ∉ interior A) (hAint : (interior A).Nonempty) :
+    ∃ f : StrongDual ℝ E, f ≠ 0 ∧ ∀ a ∈ A, f a ≤ f x := by
+  obtain ⟨f, u, hfne, hA', hx'⟩ :=
+    geometric_hahn_banach_of_nonempty_interior hA (convex_singleton x)
+      (disjoint_singleton_right.2 hxA) hAint (singleton_nonempty x)
+  exact ⟨f, hfne, fun a ha => (hA' a ha).trans (hx' x (mem_singleton _))⟩
+
 variable [LocallyConvexSpace ℝ E]
 
 /-- A version of the **Hahn-Banach theorem**: given disjoint convex sets `s`, `t` where `s` is
@@ -188,7 +234,7 @@ theorem geometric_hahn_banach_closed_point (hs₁ : Convex ℝ s) (hs₂ : IsClo
       (disjoint_singleton_right.2 disj)
   ⟨f, s, ha, hst.trans <| hb x <| mem_singleton _⟩
 
-/-- See also `NormedSpace.eq_iff_forall_dual_eq`. -/
+/-- See also `SeparatingDual.eq_iff_forall_dual_eq`. -/
 theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
     ∃ f : StrongDual ℝ E, f x < f y := by
   obtain ⟨f, s, t, hs, st, ht⟩ :=
@@ -210,24 +256,6 @@ end
 namespace RCLike
 
 variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
-
-/-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
-noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] : StrongDual ℝ E →ₗ[ℝ] StrongDual 𝕜 E :=
-  letI to𝕜 (fr : StrongDual ℝ E) : StrongDual 𝕜 E :=
-    { toLinearMap := LinearMap.extendTo𝕜' fr
-      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
-  have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
-  { toFun := to𝕜
-    map_add' := by intros; ext; simp [h]; ring
-    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
-
-@[simp]
-lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : StrongDual ℝ E) (x : E) :
-    re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
-  have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
-  simp only [h, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
-    sub_self, sub_zero]
-
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem separate_convex_open_set {s : Set E}
@@ -235,26 +263,23 @@ theorem separate_convex_open_set {s : Set E}
     ∃ f : StrongDual 𝕜 E, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
-  use extendTo𝕜'ₗ g
-  simp only [re_extendTo𝕜'ₗ]
-  exact hg
+  use g.extendRCLikeₗ
+  simpa [g.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
     ∀ b ∈ t, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact Exists.intro u h
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : StrongDual 𝕜 E, ∀ a ∈ s, re (f a) < re (f x) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact fun a a_1 ↦ h a a_1
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : StrongDual 𝕜 E, ∀ b ∈ t, re (f x) < re (f b) :=
@@ -266,9 +291,47 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
-  use extendTo𝕜'ₗ f
-  simp only [re_extendTo𝕜'ₗ]
-  exact Exists.intro u h
+  use f.extendRCLikeₗ
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
+
+theorem geometric_hahn_banach_of_nonempty_interior
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
+    ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, u, hfne, hA', hB'⟩ :=
+    _root_.geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
+  refine ⟨f.extendRCLikeₗ, u, fun hzero ↦ ?_, ?_, ?_⟩
+  · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
+  · simpa [f.extendRCLikeₗ_apply] using hA'
+  · simpa [f.extendRCLikeₗ_apply] using hB'
+
+/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
+`𝕜`-linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
+`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
+theorem geometric_hahn_banach_of_nonempty_interior'
+  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
+    (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
+  by_cases htne : t.Nonempty
+  · have hsep :
+        ∃ (f : StrongDual 𝕜 E) (u : ℝ),
+          f ≠ 0 ∧ (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) :=
+        geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
+    obtain ⟨f, u, -, hs', ht'⟩ := hsep
+    exact ⟨f, u, hs', ht'⟩
+  · exact ⟨0, 0, by simp⟩
+
+/-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
+continuous `𝕜`-linear functional whose real part attains its maximum on `A` at `x`. -/
+theorem geometric_hahn_banach_of_nonempty_interior_point
+    {A : Set E} (hA : Convex ℝ A) (hxA : x ∉ interior A) (hAint : (interior A).Nonempty) :
+    ∃ f : StrongDual 𝕜 E, f ≠ 0 ∧ ∀ a ∈ A, re (f a) ≤ re (f x) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, hfne, hA'⟩ := _root_.geometric_hahn_banach_of_nonempty_interior_point hA hxA hAint
+  refine ⟨f.extendRCLikeₗ, fun hzero ↦ ?_, ?_⟩
+  · exact hfne <| (StrongDual.extendRCLikeₗ (𝕜 := 𝕜)).injective (by simpa using hzero)
+  · simpa [f.extendRCLikeₗ_apply] using hA'
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -277,9 +340,8 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
     ∃ (f : StrongDual 𝕜 E) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
-  use extendTo𝕜'ₗ g
-  simp only [re_extendTo𝕜'ₗ, exists_and_left]
-  exact ⟨u, h1.1, v, h1.2⟩
+  use g.extendRCLikeₗ
+  simpa [g.extendRCLikeₗ_apply, exists_and_left] using ⟨u, h1.1, v, h1.2⟩
 
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
@@ -316,5 +378,27 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+
+theorem iInter_halfSpaces_eq' (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ⋂ (l : StrongDual 𝕜 E) (c : ℝ) (_ : ∀ y ∈ s, re (l y) ≤ c), { x | re (l x) ≤ c } = s := by
+  simp_rw [Set.iInter_setOf]
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l c hc => hc x hx
+  by_contra h
+  obtain ⟨l, c, hls, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
+  exact (hl.trans_le (hx l c (fun y hy ↦ (hls y hy).le))).false
+
+theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E]
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ∃ l : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ, ⋂ n, { x | re (l n x) ≤ c n } = s := by
+  set ι := Σ (l : StrongDual 𝕜 E), { c : ℝ // ∀ y ∈ s, re (l y) ≤ c }
+  set l : ι → StrongDual 𝕜 E := fun lc ↦ lc.1
+  set c : ι → ℝ := fun lc ↦ lc.2.val
+  set hc : ∀ i, ∀ y ∈ s, re (l i y) ≤ c i := fun lc ↦ lc.2.prop
+  have : Nonempty ι := ⟨0, 0, fun _ _ ↦ by simp⟩
+  have : ⋂ i : ι, { x | re (l i x) ≤ c i } = s := by
+    simpa only [ι, iInter_sigma, iInter_subtype, l, c] using iInter_halfSpaces_eq' hs₁ hs₂
+  obtain ⟨k, hk⟩ := eq_closed_inter_nat (fun i : ι ↦ { x | re (l i x) ≤ c i })
+    (fun i ↦ isClosed_le (continuous_re.comp (l i).continuous) continuous_const)
+  exact ⟨l ∘ k, c ∘ k, hk.trans this⟩
 
 end RCLike

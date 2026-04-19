@@ -57,22 +57,20 @@ lemma symm (ht : IsSl2Triple h e f) : IsSl2Triple (-h) f e where
 @[simp] lemma symm_iff : IsSl2Triple (-h) f e ↔ IsSl2Triple h e f :=
   ⟨fun t ↦ neg_neg h ▸ t.symm, symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_h_e_smul (t : IsSl2Triple h e f) : ⁅h, e⁆ = (2 : R) • e := by
   simp [t.lie_h_e_nsmul, two_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_lie_smul_f (t : IsSl2Triple h e f) : ⁅h, f⁆ = -((2 : R) • f) := by
   simp [t.lie_h_f_nsmul, two_smul]
 
 lemma e_ne_zero (t : IsSl2Triple h e f) : e ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 lemma f_ne_zero (t : IsSl2Triple h e f) : f ≠ 0 := by
   have := t.h_ne_zero
-  contrapose! this
+  contrapose this
   simpa [this] using t.lie_e_f.symm
 
 variable {R}
@@ -227,5 +225,23 @@ lemma pow_toEnd_f_eq_zero_of_eq_nat [IsDomain R] [CharZero R] [IsNoetherian R M]
   exact this.ne (Int.cast_injective (α := R) <| by simpa [sub_eq_iff_eq_add] using hm)
 
 end HasPrimitiveVectorWith
+
+variable {m : M} {μ : R}
+local notation "φ " n => ((toEnd R L M e) ^ n) m
+
+lemma lie_e_pow_toEnd_e (n : ℕ) :
+    ⁅e, φ n⁆ = φ (n + 1) := by
+  simp [pow_succ']
+
+lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
+    (hm : ⁅h, m⁆ = μ • m) (n : ℕ) :
+    ⁅h, φ n⁆ = (μ + 2 * n) • φ n := by
+  induction n with
+  | zero => simpa using hm
+  | succ n ih =>
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+      leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
+    congr 1
+    ring
 
 end IsSl2Triple

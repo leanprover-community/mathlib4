@@ -208,9 +208,8 @@ omit [CompactSpace M] [BoundarylessManifold I M] in
 @[simp, mfld_simps]
 lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
 
-instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M := by
-  unfold SingularManifold.empty
-  infer_instance
+instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M :=
+  inferInstanceAs <| IsEmpty M
 
 variable (M I) in
 /-- A smooth manifold induces a singular manifold on the one-point space. -/

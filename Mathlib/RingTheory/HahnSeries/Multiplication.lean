@@ -281,12 +281,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : R⟦Γ⟧}
     rw [coeff_smul_left hwf Set.subset_union_right,
       coeff_smul_left hwf Set.subset_union_left]
     simp only [sum_add_distrib]
-  · intro b
-    simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
-      HahnSeries.coeff_add, ne_eq, Set.mem_union]
-    contrapose!
-    intro h
-    rw [h.1, h.2, add_zero]
+  · exact support_add_subset _ _
 
 theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnModule Γ' R V}
     {a : Γ'} {b : Γ} :
@@ -359,7 +354,6 @@ theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x 
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   exact support_smul_subset_vadd_support'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
     [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : R⟦Γ⟧}
     [VAdd (WithTop Γ) (WithTop Γ')] {y : HahnModule Γ' R V}
@@ -639,7 +633,6 @@ instance [CommRing R] : CommRing R⟦Γ⟧ where
 
 end Ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
     [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : R⟦Γ⟧} {n : ℕ} :
     n • x.orderTop ≤ (x ^ n).orderTop := by
@@ -674,13 +667,11 @@ theorem orderTop_self_sub_one_pos_iff [LinearOrder Γ] [Zero Γ] [NonAssocRing R
       orderTop_sub_ne h.1 orderTop_one ?_
     rw [h.2, leadingCoeff_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orderTop_sub_pos [PartialOrder Γ] [Zero Γ] [AddCommGroup R] [One R] {g : Γ} (hg : 0 < g)
     (r : R) :
     0 < ((1 + single g r) - 1).orderTop := by
   by_cases hr : r = 0 <;> simp [hr, hg]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The group of invertible Hahn series close to 1, i.e., those series such that subtracting 1
   yields a series with strictly positive `orderTop`. -/
 def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
@@ -739,7 +730,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
-  inferInstanceAs (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
+  (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
   mul_smul := mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
@@ -751,16 +742,17 @@ instance [Zero R] {S : Type*} [Zero S] [SMul R S] [SMulWithZero R V] [SMulWithZe
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring R] [Module R V] : IsScalarTower R R⟦Γ⟧ (HahnModule Γ' R V) where
   smul_assoc r x a := by
     rw [← HahnSeries.single_zero_mul_eq_smul, mul_smul', ← single_zero_smul_eq_smul Γ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance SMulCommClass [CommSemiring R] [Module R V] :
     SMulCommClass R R⟦Γ⟧ (HahnModule Γ' R V) where
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V] [AddCommMonoid Γ]
     [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Module R V] [Module.IsTorsionFree R V] :
     Module.IsTorsionFree R⟦Γ⟧ (HahnModule Γ R V) :=

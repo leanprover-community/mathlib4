@@ -181,12 +181,8 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
   bot_le _ _ _ h := h.elim
   inf_compl_le_bot _ _ _ h := absurd h.1 h.2
   top_le_sup_compl G v w _ := by tauto
-  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
-  sSup_le s G hG a b := by
-    rintro ⟨H, hH, hab⟩
-    exact hG _ hH hab
-  sInf_le _ _ hG _ _ hab := hab hG
-  le_sInf _ _ hG _ _ hab _ hH := hG _ hH hab
+  isLUB_sSup _ := ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
+  isGLB_sInf _ := ⟨fun _ hG _ _ hab ↦ hab hG, fun _ hG _ _ hab _ hH ↦ hG hH hab⟩
   iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial

@@ -56,7 +56,6 @@ section IsUnit
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
@@ -166,12 +165,12 @@ instance : Fintype (torsion K) := by
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
 /-- The torsion subgroup is cyclic. -/
-instance : IsCyclic (torsion K) := subgroup_units_cyclic _
+instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Fintype.card (torsion K)
 
-instance [NumberField K] : NeZero (torsionOrder K) :=
+instance : NeZero (torsionOrder K) :=
   inferInstanceAs (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :

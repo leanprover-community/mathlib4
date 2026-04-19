@@ -82,7 +82,7 @@ lemma relation_mem_ker (i) : P.relation i ∈ P.ker := by
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
-def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
+noncomputable def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
   Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) (g := P.σ) <| fun x ↦ by
     rw [Algebra.ofId_apply, P.algebraMap_apply, P.aeval_val_σ]
 
@@ -160,7 +160,7 @@ section Construction
 
 /-- Transport a presentation along an algebra isomorphism. -/
 @[simps toGenerators relation]
-def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+noncomputable def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
     (e : S ≃ₐ[R] T) :
     Presentation R T ι σ where
   __ := Generators.ofAlgEquiv P.toGenerators e
@@ -245,7 +245,6 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -258,7 +257,7 @@ private lemma span_range_relation_eq_ker_baseChange :
     rw [map_zero] at Z
     simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy,
       TensorProduct.includeRight_apply]
-    erw [aeval_map_algebraMap T (P.baseChange T).val (P.relation y)]
+    rw [aeval_map_algebraMap T (P.baseChange T).val (P.relation y)]
     change _ = TensorProduct.includeRight.toRingHom _
     rw [map_aeval, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
       TensorProduct.includeRight.comp_algebraMap]
@@ -404,7 +403,6 @@ private lemma aux_eq_comp : Q.aux P =
   ext i : 1
   cases i <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma aux_ker :
     RingHom.ker (Q.aux P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
   rw [aux_eq_comp, ← AlgHom.comap_ker, MvPolynomial.ker_mapAlgHom]

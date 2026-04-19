@@ -330,7 +330,6 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
     (H' : Commute e₁ e₂) :
@@ -420,7 +419,6 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
   __ := he
   complete := by rwa [he.prod_one_sub, sub_eq_zero, eq_comm] at he'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A family of complete orthogonal idempotents induces an isomorphism `R ≃+* ∏ R ⧸ ⟨1 - eᵢ⟩` -/
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
@@ -538,22 +536,25 @@ def NonUnitalRing.corner [NonUnitalRing R] : NonUnitalSubring R where
   neg_mem' := by rintro _ ⟨a, rfl⟩; exact ⟨-a, by simp_rw [mul_neg, neg_mul]⟩
 
 instance [NonUnitalSemiring R] (idem : IsIdempotentElem e) : Semiring idem.Corner where
-  __ : NonUnitalSemiring (NonUnitalSubsemiring.corner e) := inferInstance
+  __ : NonUnitalSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalSemiring (NonUnitalSubsemiring.corner e)
   one := ⟨e, e, by simp_rw [idem.eq]⟩
   one_mul r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).1
   mul_one r := Subtype.ext ((Subsemigroup.mem_corner_iff idem).mp r.2).2
 
 instance [NonUnitalCommSemiring R] (idem : IsIdempotentElem e) : CommSemiring idem.Corner where
-  __ : NonUnitalCommSemiring (NonUnitalSubsemiring.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalCommSemiring idem.Corner :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.corner e)
 
 instance [NonUnitalRing R] (idem : IsIdempotentElem e) : Ring idem.Corner where
-  __ : NonUnitalRing (NonUnitalRing.corner e) := inferInstance
   __ : Semiring idem.Corner := inferInstance
+  __ : NonUnitalRing idem.Corner := inferInstanceAs <| NonUnitalRing (NonUnitalRing.corner e)
 
 instance [NonUnitalCommRing R] (idem : IsIdempotentElem e) : CommRing idem.Corner where
-  __ : NonUnitalCommRing (NonUnitalRing.corner e) := inferInstance
-  __ : Semiring idem.Corner := inferInstance
+  __ : Ring idem.Corner := inferInstance
+  __ : NonUnitalCommRing idem.Corner :=
+    inferInstanceAs <| NonUnitalCommRing (NonUnitalRing.corner e)
 
 variable {I : Type*} [Fintype I] {e : I → R}
 

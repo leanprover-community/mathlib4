@@ -55,7 +55,7 @@ variable {s : SignedMeasure α} {i j : Set α}
 
 section ExistsSubsetRestrictNonpos
 
-/-! ### exists_subset_restrict_nonpos
+/-! ### `exists_subset_restrict_nonpos`
 
 In this section we will prove that a set `i` whose measure is negative contains a negative subset
 `j` with respect to the signed measure `s` (i.e. `s ≤[j] 0`), whose measure is negative. This lemma
@@ -217,7 +217,6 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
@@ -232,7 +231,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   classical
   by_cases h : s ≤[i] 0
   · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
-  push_neg at hn
+  push Not at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
@@ -310,7 +309,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
   refine ⟨A, A_meas, Set.diff_subset, ?_, h₂.trans_lt hi⟩
   by_contra hnn
-  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg at hnn
+  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push Not at hnn
   obtain ⟨E, hE₁, hE₂, hE₃⟩ := hnn
   have : ∃ k, 1 ≤ bdd k ∧ 1 / (bdd k : ℝ) < s E := by
     rw [tendsto_atTop_atTop] at h₄
@@ -323,11 +322,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
       rw [one_div] at this ⊢
       exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
-  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
-    apply Set.diff_subset_diff_right
-    intro x; simp only [Set.mem_iUnion]
-    rintro ⟨n, _, hn₂⟩
-    exact ⟨n, hn₂⟩
+  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l :=
+    Set.diff_subset_diff_right (Set.iUnion₂_subset_iUnion _ _)
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩

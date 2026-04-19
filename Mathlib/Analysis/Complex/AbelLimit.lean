@@ -55,7 +55,7 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
   rw [stolzSet, Set.mem_setOf, Set.mem_empty_iff_false, iff_false, not_and, not_lt, ← sub_pos]
   intro zn
   calc
-    _ ≤ 1 * (1 - ‖z‖) := mul_le_mul_of_nonneg_right hM zn.le
+    _ ≤ 1 * (1 - ‖z‖) := by gcongr
     _ = ‖(1 : ℂ)‖ - ‖z‖ := by rw [one_mul, norm_one]
     _ ≤ _ := norm_sub_norm_le _ _
 
@@ -71,7 +71,6 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- An ugly technical lemma
 private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
@@ -157,7 +156,6 @@ lemma abel_aux (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {
     apply Tendsto.add (Tendsto.div_const (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hz) (z - 1))
     simp only [zero_div, zero_add, tendsto_const_nhds_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet

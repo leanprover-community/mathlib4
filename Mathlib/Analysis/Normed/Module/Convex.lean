@@ -89,7 +89,6 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
   | top => simp [convex_univ]
   | coe r => simp [closedEBall_coe, convex_closedBall]
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :

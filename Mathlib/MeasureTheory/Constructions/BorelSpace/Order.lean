@@ -817,7 +817,7 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     exact ne_of_lt (hy.2.trans_le (h₀ _))
   · refine .of_mem_nhdsGT_aux h ?_
     simp only [IsTop] at H
-    push_neg at H
+    push Not at H
     exact H
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :

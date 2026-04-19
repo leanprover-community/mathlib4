@@ -35,6 +35,12 @@ instance : Pow ℕ∞ ℕ∞ where
     | x, some y => x ^ y
     | x, ⊤ => if x = 0 then 0 else if x = 1 then 1 else ⊤
 
+lemma epow_def {x y : ℕ∞} :
+    x ^ y = if y < ⊤ then x ^ y.toNat else if x = 0 then 0 else if x = 1 then 1 else ⊤ := by
+  cases y with
+  | top => simp only [lt_self_iff_false, ↓reduceIte]; rfl
+  | coe n => simp only [coe_lt_top, ↓reduceIte, toNat_coe]; rfl
+
 @[simp, norm_cast]
 lemma epow_natCast {y : ℕ} : x ^ (y : ℕ∞) = x ^ y := rfl
 
@@ -69,7 +75,8 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
-  simp +instances only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+  have : (0 : ℕ∞) ≤ 1 := zero_le_one
+  rw [epow_def, if_neg, if_neg, if_neg] <;> grind
 
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z

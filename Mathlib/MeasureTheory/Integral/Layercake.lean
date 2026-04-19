@@ -97,7 +97,6 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -184,7 +183,6 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
     mble₀.nullMeasurableSet
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions.
@@ -270,7 +268,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   sets `{ω | f ω > uₙ}` for `uₙ` a sequence decreasing to `M`. Therefore,
   this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
-    contrapose! H1
+    contrapose H1
     have : ∀ (n : ℕ), g =ᵐ[volume.restrict (Ioc (0 : ℝ) n)] 0 := by
       intro n
       rcases not_bddAbove_iff.1 H1 n with ⟨s, hs, ns⟩

@@ -138,7 +138,6 @@ lemma compl_prod_eq_union {α β : Type*} (s : Set α) (t : Set β) :
     (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
   simp_rw [disjoint_left, mem_prod, Prod.forall]
@@ -600,21 +599,14 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
--- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
-set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
   simp only [mem_offDiag, mem_union, ne_eq, mem_prod]
   constructor
   · rintro ⟨h0 | h0, h1 | h1, h2⟩ <;> simp [h0, h1, h2]
-  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;> simp [*]
-    · rintro h3
-      rw [h3] at h0
-      exact Set.disjoint_left.mp h h0 h1
-    · rintro h3
-      rw [h3] at h0
-      exact (Set.disjoint_right.mp h h0 h1).elim
+  · rintro (((⟨h0, h1, h2⟩ | ⟨h0, h1, h2⟩) | ⟨h0, h1⟩) | ⟨h0, h1⟩) <;>
+      simp [*, h.ne_of_mem, Ne.symm]
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
   grind
@@ -666,7 +658,7 @@ theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty :=
 
 theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
-  push_neg
+  push Not
   refine exists_congr fun i => ?_
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_notMem]
 
@@ -678,7 +670,6 @@ theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
 theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α i)) = ∅ :=
   univ_pi_eq_empty_iff.2 <| h.elim fun x => ⟨x, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
@@ -695,7 +686,6 @@ variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
@@ -973,7 +963,7 @@ lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
 lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
 
 @[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
-  simp [Set.ext_iff, forall_swap, EqOn]
+  simp [Set.ext_iff, forall_comm, EqOn]
 
 lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by

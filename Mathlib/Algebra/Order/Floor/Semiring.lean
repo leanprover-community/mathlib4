@@ -157,10 +157,9 @@ theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋
   rw [le_div_iff_mul_le (zero_lt_of_ne_zero hn), le_floor_iff (mul_nonneg ha (cast_nonneg' n)),
     le_floor_iff ha, cast_mul, mul_le_mul_iff_of_pos_right (cast_pos'.mpr (zero_lt_of_ne_zero hn))]
 
-theorem cast_mul_floor_div_cancel {R : Type*} [CommSemiring R] [LinearOrder R]
-    [IsStrictOrderedRing R] [FloorSemiring R] {n : ℕ} (hn : n ≠ 0) (a : R) :
+theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) :
     ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, mul_cast_floor_div_cancel hn]
+  rw [Nat.cast_comm, mul_cast_floor_div_cancel hn]
 
 end floor
 
@@ -207,7 +206,7 @@ theorem ceil_le_floor_add_one (a : R) : ⌈a⌉₊ ≤ ⌊a⌋₊ + 1 := by
   exact (lt_floor_add_one a).le
 
 @[simp]
-theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
     [FloorSemiring R] (z : ℤ) :
     ⌈(z : R)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
@@ -314,7 +313,6 @@ theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem floor_sub_natCast [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : ℕ) :
     ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
@@ -363,7 +361,6 @@ theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
 
 variable [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
   obtain han | hna := le_total a n
   · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]

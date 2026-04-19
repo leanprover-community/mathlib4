@@ -196,7 +196,6 @@ private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)�
 
 open Nat.Primes
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma summable_F'' : Summable F'' := by
   have hp₀ (p : Nat.Primes) : 0 < (p : ℝ)⁻¹ := inv_pos_of_pos (Nat.cast_pos.mpr p.prop.pos)
   have hp₁ (p : Nat.Primes) : (p : ℝ)⁻¹ < 1 :=
@@ -277,7 +276,6 @@ lemma residueClass_eq (ha : IsUnit a) :
   simpa only [Pi.smul_apply, Finset.sum_apply, smul_eq_mul, ← mul_assoc]
     using residueClass_apply ha n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the von Mangoldt function restricted to the residue class `a` mod `q`
 with `a` invertible in `ZMod q` is a linear combination of logarithmic derivatives of
 L-functions of the Dirichlet characters mod `q` (on `re s > 1`). -/
@@ -432,7 +430,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
   have H₁ {x : ℝ} (hx : 1 < x) : ∑' n, residueClass a n / (n : ℝ) ^ x ≤ C := by
     refine Summable.tsum_le_tsum (fun n ↦ ?_) ?_ key
     · rcases n.eq_zero_or_pos with rfl | hn
-      · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
+      · simp
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
         conv_lhs => rw [← Real.rpow_one n]
         exact Real.rpow_le_rpow_of_exponent_le (by norm_cast) hx.le
@@ -478,7 +476,7 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra! H
   exact not_summable_residueClass_prime_div ha <|
-    summable_of_finite_support <| support_residueClass_prime_div a ▸ H
+    summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
 
 @[deprecated (since := "2025-11-01")]
 alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod

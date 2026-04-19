@@ -57,7 +57,7 @@ variable {S T : Submodule R M}
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
 lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
-    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+    m ∈ S ∨ r ∈ (S.colon Set.univ).radical :=
   h.right hrm
 
 protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
@@ -114,7 +114,6 @@ section CommRing
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →
       ∃ n : ℕ, r ^ n • (⊤ : Submodule R (M ⧸ S)) = ⊥ := by

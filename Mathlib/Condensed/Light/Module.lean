@@ -46,9 +46,21 @@ abbrev LightCondMod := LightCondensed.{u} (ModuleCat.{u} R)
 noncomputable instance : Abelian (LightCondMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from light condensed `R`-modules to light condensed sets. -/
-@[simps! obj_val_map map_val_app]
 def LightCondensed.forget : LightCondMod R ⥤ LightCondSet :=
   sheafCompose _ (CategoryTheory.forget _)
+
+@[simp]
+lemma LightCondensed.forget_obj_obj_map_hom_apply (X : LightCondMod R)
+    {S T : LightProfiniteᵒᵖ} (f : S ⟶ T) (a : ((sheafToPresheaf _ _).obj X).obj S) :
+    ((forget R).obj X).obj.map f a = X.obj.map f a :=
+  rfl
+
+@[simp]
+lemma LightCondensed.forget_map_hom_app_hom_apply
+    {X Y : LightCondMod R} (f : X ⟶ Y) (S : LightProfiniteᵒᵖ)
+    (a : ((sheafToPresheaf _ _).obj X).obj S) :
+    ((forget R).map f).hom.app S a = f.hom.app S a :=
+  rfl
 
 /--
 The left adjoint to the forgetful functor. The *free light condensed `R`-module* on a light
@@ -62,6 +74,12 @@ def LightCondensed.free : LightCondSet ⥤ LightCondMod R :=
 noncomputable
 def LightCondensed.freeForgetAdjunction : free R ⊣ forget R := Sheaf.adjunction _ (ModuleCat.adj R)
 
+open LightCondensed
+
+instance : (LightCondensed.free R).IsLeftAdjoint := freeForgetAdjunction R |>.isLeftAdjoint
+
+instance : (LightCondensed.forget R).IsRightAdjoint := freeForgetAdjunction R |>.isRightAdjoint
+
 /--
 The category of light condensed abelian groups, defined as sheaves of `ℤ`-modules over
 `LightProfinite.{0}` with respect to the coherent Grothendieck topology.
@@ -73,7 +91,7 @@ noncomputable example : Abelian LightCondAb := inferInstance
 namespace LightCondMod
 
 lemma hom_naturality_apply {X Y : LightCondMod.{u} R} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
-    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
-  NatTrans.naturality_apply f.val g x
+    (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
 
 end LightCondMod

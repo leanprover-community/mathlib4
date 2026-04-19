@@ -157,7 +157,8 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
     a / (b * e) ≤ c / (d * e) := by
   rw [div_mul_eq_div_mul_one_div, div_mul_eq_div_mul_one_div]
-  exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 he)
+  gcongr
+  exact one_div_nonneg.2 he
 
 omit [IsStrictOrderedRing α] in
 theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
@@ -507,12 +508,10 @@ theorem one_div_le_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a ≤ 1 / b �
 theorem one_div_lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a < 1 / b ↔ b < a := by
   simpa [one_div] using inv_lt_inv_of_neg ha hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_div_lt_neg_one (h1 : a < 0) (h2 : -1 < a) : 1 / a < -1 :=
   suffices 1 / a < 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_lt_one_div_of_neg_of_lt h1 h2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
   suffices 1 / a ≤ 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_le_one_div_of_neg_of_le h1 h2
@@ -662,10 +661,11 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
-@[simp]
+@[simp, grind =]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
+@[grind =]
 theorem abs_div (a b : α) : |a / b| = |a| / |b| :=
   map_div₀ (absHom : α →*₀ α) a b
 
@@ -684,8 +684,9 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   obtain h | h := (abs_nonneg (q - r)).eq_or_lt
   · simpa only [← h, zero_mul] using hε
   refine (lt_of_le_of_lt ?_ <| lt_add_of_pos_left _ h).trans_le hqr.2
-  refine mul_le_mul_of_nonneg_left (pow_le_pow_left₀ ((abs_nonneg _).trans le_sup_left) ?_ _)
-    (mul_nonneg (abs_nonneg _) n.cast_nonneg)
+  gcongr
+  · exact mul_nonneg (abs_nonneg _) n.cast_nonneg
+  · exact (abs_nonneg _).trans le_sup_left
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 

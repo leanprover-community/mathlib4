@@ -28,7 +28,7 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 ## Main Definitions
 
 - `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
-element of `G`, where `G` is a group that acts on `F`.
+  element of `G`, where `G` is a group that acts on `F`.
 
 -/
 
@@ -187,7 +187,6 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 
 namespace minpoly
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monic : (minpoly G F x).Monic := by
   simp only [minpoly]
   rw [Polynomial.monic_toSubring]
@@ -203,12 +202,10 @@ theorem eval₂' :
     Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x (minpoly G F x) = 0 :=
   eval₂ G F x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) := fun H =>
   have := eval₂ G F x
   (one_ne_zero : (1 : F) ≠ 0) <| by rwa [H, Polynomial.eval₂_one] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
@@ -226,7 +223,6 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Why is this so slow?
 theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Monic) (hg : g.Monic)
     (hfg : f * g = minpoly G F x) : f = 1 ∨ g = 1 := by
@@ -276,7 +272,6 @@ section Finite
 
 variable [Finite G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
   splits' x := by
@@ -285,7 +280,6 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
     exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
-set_option backward.isDefEq.respectTransparency false in
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
   exact ⟨fun x => by
@@ -392,10 +386,10 @@ theorem toAlgAut_surjective [Finite G] :
     MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
-  have : FaithfulSMul Q F := ⟨by
-    intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
-    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
+  have : FaithfulSMul Q F := ⟨fun {q₁ q₂} ↦ by
+    induction q₁, q₂ using Quotient.inductionOn₂ with | _ g₁ g₂
+    intro h
+    rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))

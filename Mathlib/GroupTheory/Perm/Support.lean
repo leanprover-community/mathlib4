@@ -136,13 +136,7 @@ theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disj
 
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
     (h2 : l.Pairwise Disjoint) : l.Nodup := by
-  refine List.Pairwise.imp_of_mem ?_ h2
-  intro τ σ h_mem _ h_disjoint _
-  subst τ
-  suffices (σ : Perm α) = 1 by
-    rw [this] at h_mem
-    exact h1 h_mem
-  exact ext fun a => or_self_iff.mp (h_disjoint a)
+  grind [List.Pairwise.imp_of_mem, disjoint_refl_iff]
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
   | 0 => rfl
@@ -273,7 +267,6 @@ theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
 
 theorem notMem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
   ext
   simp
@@ -299,7 +292,6 @@ theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) 
   simp only [mem_support, not_iff_not, ← mul_apply]
   rw [← hgc, mul_apply, Equiv.apply_eq_iff_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ⊔ g.support := fun x => by
   simp only [sup_eq_union]
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
@@ -327,7 +319,6 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne, Ne, apply_eq_iff_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The support of a permutation is invariant -/
 theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
     c x ∈ s ↔ x ∈ s := by
@@ -335,7 +326,6 @@ theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support
   · simp only [hcs hx', hcs (apply_mem_support.mpr hx')]
   · rw [notMem_support.mp hx']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A permutation c is the extension of a restriction of g to s
   iff its support is contained in s and its restriction is that of g -/
 lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
@@ -368,6 +358,10 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, ofSubtype_apply_of_not_mem u hx]
+
+theorem mem_support_ofSubtype {p : α → Prop} [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
+    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by
+  simp [support_ofSubtype]
 
 theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
     {s : Finset α} {f : α → Perm β}
@@ -406,7 +400,6 @@ theorem disjoint_iff_disjoint_support : Disjoint f g ↔ _root_.Disjoint f.suppo
 theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support g.support :=
   disjoint_iff_disjoint_support.1 h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support ∪ g.support := by
   refine le_antisymm (support_mul_le _ _) fun a => ?_
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
@@ -453,24 +446,18 @@ theorem support_zpow_le (σ : Perm α) (n : ℤ) : (σ ^ n).support ≤ σ.suppo
 
 @[simp]
 theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := by
-  ext z
-  by_cases hx : z = x
-  any_goals simpa [hx] using h.symm
-  by_cases hy : z = y
-  · simpa [swap_apply_of_ne_of_ne, hx, hy] using h
-  · simp [swap_apply_of_ne_of_ne, hx, hy]
+  grind [support]
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine ⟨fun h => ?_, fun h => support_swap h⟩
   rintro rfl
   simp [Finset.ext_iff] at h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
   simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
     and_self_iff, List.nodup_nil] at h
-  push_neg at h
+  push Not at h
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
@@ -481,13 +468,12 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
     f.support \ {x, y} ≤ (swap x y * f).support := by
   intro
   simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,
     mem_singleton]
-  push_neg
+  push Not
   rintro ha ⟨hx, hy⟩ H
   rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
   exact ha H
@@ -538,7 +524,6 @@ theorem Disjoint.mono {x y : Perm α} (h : Disjoint f g) (hf : x.support ≤ f.s
   rw [disjoint_iff_disjoint_support] at h ⊢
   exact h.mono hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwise Disjoint) :
     f.support ≤ l.prod.support := by
   intro x hx
@@ -642,7 +627,6 @@ end Card
 
 end support
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_subtypePerm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = ({x | f x ≠ x} : Finset s) := by

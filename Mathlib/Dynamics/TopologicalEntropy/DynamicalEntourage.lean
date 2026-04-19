@@ -22,7 +22,7 @@ about these objects.
 ## Main definitions
 
 - `dynEntourage`: dynamical entourage associated with a given transformation `T`, entourage `U`
-and time `n`.
+  and time `n`.
 
 ## Tags
 

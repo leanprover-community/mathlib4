@@ -112,6 +112,25 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
     Measure.restrict_toOuterMeasure_eq_toOuterMeasure_restrict hs,
     OuterMeasure.restrict_apply s t _, toOuterMeasure_apply]
 
+theorem _root_.IsCountablySpanning.null_of_forall_inter_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (ht : ∀ t ∈ C, μ (s ∩ t) = 0) :
+    μ s = 0 := by
+  obtain ⟨t, ht1, ht2⟩ := hC
+  rw [show s = ⋃ n, s ∩ t n by rw [← inter_iUnion, ht2, inter_univ], measure_iUnion_null_iff]
+  exact fun i => ht (t i) (ht1 i)
+
+theorem forall_measure_inter_isCountablySpanning_eq_zero {C : Set (Set α)}
+    (hC : IsCountablySpanning C) : (∀ t ∈ C, μ (s ∩ t) = 0) ↔ μ s = 0 where
+  mp := hC.null_of_forall_inter_null
+  mpr h t _ := measure_inter_null_of_null_left t h
+
+theorem _root_.IsCountablySpanning.null_of_forall_restrict_null {C : Set (Set α)}
+    (hC : IsCountablySpanning C) (hm : C ⊆ MeasurableSet) (ht : ∀ t ∈ C, μ.restrict t s = 0) :
+    μ s = 0 := by
+  rw [← forall_measure_inter_isCountablySpanning_eq_zero hC]
+  refine fun t htc => ?_
+  simpa [← μ.restrict_apply' (hm htc)] using ht t htc
+
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
@@ -360,9 +379,6 @@ theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
   | insert i s _ hs =>
     simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
     rw [restrict_union_congr, ← hs]
-
-@[deprecated (since := "2025-08-28")]
-alias restrict_finset_biUnion_congr := restrict_biUnion_finset_congr
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
@@ -625,6 +641,10 @@ theorem ae_restrict_of_forall_mem {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x :=
   (ae_restrict_mem hs).mono h
 
+lemma _root_.Set.EqOn.aeEq_restrict {α β : Type*} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    {f g : α → β} (h : s.EqOn f g) (hs : MeasurableSet s) : f =ᵐ[μ.restrict s] g :=
+  ae_restrict_of_forall_mem hs h
+
 theorem ae_restrict_of_ae {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ, p x) : ∀ᵐ x ∂μ.restrict s, p x :=
   h.filter_mono (ae_mono Measure.restrict_le_self)
 
@@ -703,12 +723,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
   simp only [ae_restrict_eq hs, mem_principal, mem_inf_iff]
   exact ⟨_, univ_mem, s, Subset.rfl, (univ_inter s).symm⟩
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
-/-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
+/-- If two measurable sets are `ae_eq` then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
 theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=
@@ -1065,7 +1085,6 @@ end IndicatorFunction
 
 section Sum
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- An upper bound on a sum of restrictions of a measure `μ`. This can be used to compare
 `∫ x ∈ X, f x ∂μ` with `∑ i, ∫ x ∈ (s i), f x ∂μ`, where `s` is a cover of `X`. -/

@@ -254,7 +254,6 @@ theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 :
   rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
   simp_rw [funext_iff, one_smul, mem_fixedBy]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
@@ -263,7 +262,7 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute. -/]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
-  contrapose! ne_one with comm
+  contrapose ne_one with comm
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
 
