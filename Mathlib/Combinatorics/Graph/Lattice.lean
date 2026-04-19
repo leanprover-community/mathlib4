@@ -87,7 +87,7 @@ lemma inf_isNonloopAt_iff : (G ⊓ H).IsNonloopAt e x ↔ ∃ y ≠ x, G.IsLink 
   simp [IsNonloopAt]
 
 @[simp]
-lemma disjoint_iff_vertexSet_disjoint : Disjoint G₁ G₂ ↔ Disjoint V(G₁) V(G₂) := by
+lemma disjoint_iff : Disjoint G₁ G₂ ↔ Disjoint V(G₁) V(G₂) := by
   rw [disjoint_iff, ← vertexSet_eq_empty_iff, vertexSet_inf, disjoint_iff_inter_eq_empty]
 
 protected lemma Compatible.edgeSet_inf (h : G.Compatible H) : E(G ⊓ H) = E(G) ∩ E(H) := by
