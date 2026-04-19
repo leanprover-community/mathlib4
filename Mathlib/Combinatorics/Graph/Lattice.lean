@@ -35,10 +35,10 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 public section
 
+open Function Set
+
 variable {α β ι : Type*} {x y : α} {e : β} {G G₁ G₂ H : Graph α β} {F F₀ : Set β} {X : Set α}
   {Gs : Set (Graph α β)} (Gι : ι → Graph α β) [Nonempty ι]
-
-open Set Function
 
 namespace Graph
 
