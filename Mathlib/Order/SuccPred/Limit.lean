@@ -54,6 +54,11 @@ def IsSuccPrelimit (a : α) : Prop :=
 theorem not_isSuccPrelimit_iff (a : α) : ¬IsSuccPrelimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccPrelimit]
 
+/-- The lemma formerly named `not_isSuccPrelimit_iff` is now
+`not_isSuccPrelimit_iff_of_succOrder` -/
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit_iff_exists_covBy := not_isSuccPrelimit_iff
+
 @[to_dual (attr := simp)]
 theorem IsSuccPrelimit.of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
 
