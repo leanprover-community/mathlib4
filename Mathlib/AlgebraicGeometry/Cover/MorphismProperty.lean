@@ -171,9 +171,6 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
     rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁
-
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.f x)] :
@@ -185,9 +182,6 @@ lemma Cover.pullbackHom_map [P.IsStableUnderBaseChange] [IsJointlySurjectivePres
     {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X)
     [∀ (x : 𝒰.I₀), HasPullback f (𝒰.f x)] (i) :
     𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullback₁ f).f i ≫ f := pullback.condition.symm
-
-@[deprecated (since := "2025-10-02")]
-alias Cover.pullbackCover' := Precoverage.ZeroHypercover.pullback₂
 
 /--
 An affine cover of `X` consists of a jointly surjective family of maps into `X` from
