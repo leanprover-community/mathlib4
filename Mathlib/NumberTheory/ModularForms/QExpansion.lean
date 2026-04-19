@@ -53,7 +53,6 @@ variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) �
 
 local notation "I∞" => comap Complex.im atTop
 local notation "𝕢" => Periodic.qParam
-local notation "ℍₒ" => upperHalfPlaneSet
 
 namespace UpperHalfPlane
 
