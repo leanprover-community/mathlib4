@@ -118,8 +118,8 @@ end UpperHalfPlane
 
 namespace SlashInvariantFormClass
 
-theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k]
-    (hΓ : h ∈ Γ.strictPeriods) : Periodic (f ∘ ofComplex) h := by
+theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ.strictPeriods) :
+    Periodic (f ∘ ofComplex) h := by
   intro w
   by_cases! hw : 0 < im w
   · have : 0 < im (w + h) := by simp [hw]
