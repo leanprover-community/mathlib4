@@ -18,7 +18,8 @@ variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where
   comm := by simpa only [star_mul, star_star] using fun g =>
     congr_arg star ((mem_center_iff.1 ha).comm <| star g).symm
-  left_assoc b c := by simpa using congr(star $(ha.right_assoc (star c) (star b)))
+  left_assoc b c := by
+    simpa only [star_mul, star_star] using congr_arg star (ha.right_assoc (star c) (star b))
   right_assoc b c := by simpa using congr(star $(ha.left_assoc (star c) (star b)))
 
 theorem Set.star_centralizer : star s.centralizer = (star s).centralizer := by
