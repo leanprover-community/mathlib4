@@ -6,7 +6,7 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Pullbacks and pushouts in a monoidal category
