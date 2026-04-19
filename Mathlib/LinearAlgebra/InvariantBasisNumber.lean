@@ -304,8 +304,8 @@ There are two stronger results in mathlib:
     and hence that nontrivial commutative rings satisfy the strong rank condition
     (by `strongRankCondition_of_orzechProperty`).
 2.  `rankCondition_of_nontrivial_of_commSemiring` in
-    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that any
-    nontrivial commutative semiring satisfies the rank condition.
+    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that
+    any nontrivial commutative semiring satisfies the rank condition.
 
 We prove this instance here anyway to reduce the required imports.
 -/
