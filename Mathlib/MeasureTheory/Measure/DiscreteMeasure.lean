@@ -79,36 +79,38 @@ lemma toMeasure_apply' [MeasurableSpace α] (μ : DiscreteMeasure α) {s : Set �
   rw [toMeasure, sum_apply (hs := hs)]
   simp_rw [smul_apply]
 
-lemma toMeasure_apply [MeasurableSpace α] [MeasurableSingletonClass α] (μ : DiscreteMeasure α)
-    {s : Set α} (hs : MeasurableSet s) : μ.toMeasure s = ∑' (i : α), μ i * s.indicator 1 i := by
+lemma toMeasure_apply_eq_tsum_mul [MeasurableSpace α] [MeasurableSingletonClass α]
+    (μ : DiscreteMeasure α) {s : Set α} (hs : MeasurableSet s) :
+    μ.toMeasure s = ∑' (i : α), μ i * s.indicator 1 i := by
   rw [μ.toMeasure_apply' hs]
   simp
 
-lemma toMeasure_apply₁ [MeasurableSpace α] [MeasurableSingletonClass α] (μ : DiscreteMeasure α)
+lemma toMeasure_apply [MeasurableSpace α] [MeasurableSingletonClass α] (μ : DiscreteMeasure α)
     {s : Set α} (hs : MeasurableSet s) : μ.toMeasure s = ∑' (i : α), s.indicator μ i := by
-  simp [μ.toMeasure_apply hs]
+  simp [μ.toMeasure_apply_eq_tsum_mul hs]
 
-lemma toMeasure_apply₂ [MeasurableSpace α] [MeasurableSingletonClass α] (μ : DiscreteMeasure α)
-    {s : Set α} (hs : MeasurableSet s) : μ.toMeasure s = ∑' (a : s), (μ a) := by
-  simp [μ.toMeasure_apply hs, _root_.tsum_subtype]
+lemma toMeasure_apply_tsum_subtype [MeasurableSpace α] [MeasurableSingletonClass α]
+    (μ : DiscreteMeasure α) {s : Set α} (hs : MeasurableSet s) :
+    μ.toMeasure s = ∑' (a : s), (μ a) := by
+  simp [μ.toMeasure_apply_eq_tsum_mul hs, _root_.tsum_subtype]
 
 @[simp]
 lemma toMeasure_apply_singleton [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : DiscreteMeasure α) (a : α) : μ.toMeasure {a} = μ a := by
-  simp only [μ.toMeasure_apply (measurableSet_singleton a), Set.indicator.mul_indicator_eq,
+  simp only [μ.toMeasure_apply_eq_tsum_mul (measurableSet_singleton a), Set.indicator.mul_indicator_eq,
     ←tsum_subtype, tsum_singleton]
 
 theorem toMeasure_apply_eq_zero_iff [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s : Set α} (hs : MeasurableSet s) :
     μ.toMeasure s = 0 ↔ Disjoint μ.weight.support s := by
-  rw [toMeasure_apply₁ (hs := hs), ENNReal.tsum_eq_zero]
+  rw [toMeasure_apply (hs := hs), ENNReal.tsum_eq_zero]
   exact funext_iff.symm.trans Set.indicator_eq_zero'
 
 @[simp]
 theorem toMeasure_apply_inter_support [MeasurableSpace α] [MeasurableSingletonClass α]
-  {μ : DiscreteMeasure α} {s u : Set α} (hs : MeasurableSet s) (hu : MeasurableSet u)
+    {μ : DiscreteMeasure α} {s u : Set α} (hs : MeasurableSet s) (hu : MeasurableSet u)
     (h : μ.weight.support ⊆ u) : μ.toMeasure (s ∩ u) = μ.toMeasure s := by
-  simp only [toMeasure_apply (hs := hs), toMeasure_apply (hs := MeasurableSet.inter hs hu)]
+  simp only [toMeasure_apply_eq_tsum_mul (hs := hs), toMeasure_apply_eq_tsum_mul (hs := MeasurableSet.inter hs hu)]
   apply tsum_congr (fun a ↦ ?_)
   repeat rw [Set.indicator.mul_indicator_eq, Set.indicator]
   simp only [support_subset_iff, weight_eq, ne_eq] at h
@@ -127,22 +129,22 @@ but to arbitrary ones. -/
 lemma toMeasure_additive [MeasurableSpace α] [MeasurableSingletonClass α] (μ : DiscreteMeasure α)
     {s : δ → Set α} (h₀ : ∀ d, MeasurableSet (s d)) (h₁ : MeasurableSet (⋃ d, s d))
     (hs : Pairwise (Disjoint on s)) : μ.toMeasure (⋃ d, s d) = ∑' (d : δ), μ.toMeasure (s d) := by
-  simp only [toMeasure_apply (hs := h₁), Set.indicator.mul_indicator_eq]
-  conv => right; left; intro d; rw [toMeasure_apply (hs := h₀ _)]
+  simp only [toMeasure_apply_eq_tsum_mul (hs := h₁), Set.indicator.mul_indicator_eq]
+  conv => right; left; intro d; rw [toMeasure_apply_eq_tsum_mul (hs := h₀ _)]
   simp_rw [Set.indicator.mul_indicator_eq]
   rw [ENNReal.tsum_comm]
   apply tsum_congr <| fun b ↦ by rw [indicator_iUnion_of_pairwise_disjoint s hs μ]
 
 theorem toMeasure_apply_finset [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s : Finset α} : μ.toMeasure s = ∑ x ∈ s, μ x := by
-  rw [toMeasure_apply₁ (hs := by measurability), tsum_eq_sum (s := s)]
+  rw [toMeasure_apply (hs := by measurability), tsum_eq_sum (s := s)]
   · exact Finset.sum_indicator_subset μ fun ⦃a⦄ a_1 => a_1
   · exact fun b a => Set.indicator_of_notMem a μ
 
 @[simp]
 theorem toMeasure_apply_fintype [MeasurableSpace α] [MeasurableSingletonClass α]
     {μ : DiscreteMeasure α} {s : Set α} [Fintype α] : μ.toMeasure s = ∑ x, s.indicator μ x := by
-  rw [μ.toMeasure_apply₁ (by measurability)]
+  rw [μ.toMeasure_apply (by measurability)]
   exact tsum_fintype (s.indicator μ)
 
 lemma toMeasure_apply_univ [MeasurableSpace α] [MeasurableSingletonClass α]
