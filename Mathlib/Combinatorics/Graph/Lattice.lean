@@ -37,8 +37,7 @@ public section
 
 open Function Set
 
-variable {α β ι : Type*} {x y : α} {e : β} {G G₁ G₂ H : Graph α β} {F F₀ : Set β} {X : Set α}
-  {Gs : Set (Graph α β)} (Gι : ι → Graph α β) [Nonempty ι]
+variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β}
 
 namespace Graph
 
@@ -87,7 +86,7 @@ lemma inf_isNonloopAt_iff : (G ⊓ H).IsNonloopAt e x ↔ ∃ y ≠ x, G.IsLink 
   simp [IsNonloopAt]
 
 @[simp]
-lemma disjoint_iff : Disjoint G₁ G₂ ↔ Disjoint V(G₁) V(G₂) := by
+protected lemma disjoint_iff : Disjoint G H ↔ Disjoint V(G) V(H) := by
   rw [disjoint_iff, ← vertexSet_eq_empty_iff, vertexSet_inf, disjoint_iff_inter_eq_empty]
 
 protected lemma Compatible.edgeSet_inf (h : G.Compatible H) : E(G ⊓ H) = E(G) ∩ E(H) := by
