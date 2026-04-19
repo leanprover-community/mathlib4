@@ -77,6 +77,8 @@ an epimorphism `P ↠ X`. -/
 class EnoughProjectives : Prop where
   presentation : ∀ X : C, Nonempty (ProjectivePresentation X)
 
+attribute [instance low] EnoughProjectives.presentation
+
 end
 
 namespace Projective
@@ -113,7 +115,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
-    ⟨fun x => (he (f x)).choose, funext fun x ↦ (he (f x)).choose_spec⟩
+    ⟨TypeCat.ofHom (fun x => (he (f x)).choose), by ext x; exact (he (f x)).choose_spec⟩
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
@@ -266,5 +268,11 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
       (Nonempty.some (H.presentation (F.functor.obj X)))
 
 end Equivalence
+
+lemma Retract.projective {X Y : C} (h : Retract X Y) [p : Projective Y] : Projective X := by
+  refine Projective.mk (fun {A B} f e _ ↦ ?_)
+  rcases p.factors (h.r ≫ f) e with ⟨g, hg⟩
+  use h.i ≫ g
+  simp [hg]
 
 end CategoryTheory

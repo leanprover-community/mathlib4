@@ -28,9 +28,9 @@ The equational criterion for flatness can be stated in the following form
 conditions are equivalent:
 * $M$ is flat.
 * For finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 
 Of course, the module $R^l$ in this statement can be replaced by an arbitrary free module
 (`Module.Flat.exists_factorization_of_apply_eq_zero_of_free`).
@@ -109,9 +109,9 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
 * For all finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
-linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
-that $x = y \circ a$ and $a(f) = 0$.
+  $x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+  linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+  that $x = y \circ a$ and $a(f) = 0$.
 -/
 @[stacks 00HK, stacks 058D "(1) ↔ (2)"]
 theorem tfae_equational_criterion : List.TFAE [
@@ -234,14 +234,13 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 := by
   have (K' : Submodule R K) (hK' : K'.FG) : ∃ (k : ℕ) (a : (Fin n →₀ R) →ₗ[R] (Fin k →₀ R))
       (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
-    revert n
-    apply Submodule.fg_induction (N := K') (hN := hK')
-    · intro k n f x hfx
-      have : x (f k) = 0 := by simpa using LinearMap.congr_fun hfx k
+    induction K', hK' using Submodule.fg_induction generalizing n with
+    | singleton k =>
+      have : x (f k) = 0 := by simpa using LinearMap.congr_fun h k
       simpa using exists_factorization_of_apply_eq_zero_of_free this
-    · intro K₁ K₂ ih₁ ih₂ n f x hfx
-      obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ hfx
-      have : y₁ ∘ₗ (a₁ ∘ₗ f) = 0 := by rw [← comp_assoc, hfx]
+    | sup K₁ K₂ _ _ ih₁ ih₂ =>
+      obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ h
+      have : y₁ ∘ₗ (a₁ ∘ₗ f) = 0 := by rw [← comp_assoc, h]
       obtain ⟨k₂, a₂, y₂, rfl, ha₂⟩ := ih₂ this
       use k₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
@@ -266,7 +265,6 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], by
     rwa [comp_assoc]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]

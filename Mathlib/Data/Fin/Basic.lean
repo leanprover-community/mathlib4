@@ -251,7 +251,9 @@ attribute [fin_omega] Fin.lt_iff_val_lt_val Fin.le_iff_val_le_val
 attribute [fin_omega] val_one
 
 /--
-Preprocessor for `omega` to handle inequalities in `Fin`.
+`fin_omega` is a preprocessor for `omega` to handle inequalities in `Fin`.
+It rewrites all hypotheses and the goal, turning statements about addition, subtraction and
+inequalities in `Fin n` into statements that `omega` can use/solve.
 Note that this involves a lot of case splitting, so may be slow.
 -/
 -- Further adjustment to the simp set can probably make this more powerful.
@@ -323,7 +325,8 @@ lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
     haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
+  simp [coe_sub_iff_le.mpr (Fin.le_of_lt hij)]
+  lia
 
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
     haveI := k.neZero
@@ -442,6 +445,14 @@ section Rec
 ### recursion and induction principles
 -/
 
+@[elab_as_elim]
+lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
+    (h : ∀ (j : Fin n) (_ : ∀ (k : Fin n), k < j → motive k), motive j) (i : Fin n) :
+    motive i := by
+  obtain ⟨i, hi⟩ := i
+  induction i using Nat.strong_induction_on with
+  | h j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+
 end Rec
 
 open scoped Relator in
@@ -527,14 +538,6 @@ section Mul
 /-!
 ### mul
 -/
-
-@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
-
-@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
-
-@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
-
-@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
 
 end Mul
 

@@ -365,6 +365,10 @@ theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧
 
 @[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
 
+theorem coe_map (f : α → β) (z : Sym2 α) : z.map f = f '' z := by
+  cases z
+  simp [Set.image_pair]
+
 /-- Given an element of the unordered pair, give the other element using `Classical.choose`.
 See also `Mem.other'` for the computable version.
 -/
@@ -557,7 +561,7 @@ instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePre
   IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
-  contrapose! hd
+  contrapose hd
   have h' := Sym2.other_spec h
   rw [hd] at h'
   rw [← h']
@@ -586,17 +590,8 @@ theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
   ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
 
+@[gcongr]
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
-
-/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
-def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
-  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
-
-@[simp]
-theorem fromRel_eq_fromRell_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
-    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
-  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderEmbedding.eq_iff_eq]
-  rfl
 
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
@@ -625,21 +620,19 @@ lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmet
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
   ext ⟨a, b⟩; simp
 
-@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
-  simp [Set.subset_def, Sym2.forall, Reflexive]
+@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
+  simp [Set.subset_def, Sym2.forall, refl_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
-  refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
-  simp [Set.disjoint_left, Sym2.forall]
+  simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
-    Reflexive r ↔ diagSet ⊆ fromRel sym := by simp
+    Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
@@ -683,6 +676,40 @@ theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 
+theorem toRel_mono_iff (s₁ s₂ : Set (Sym2 α)) : ToRel s₁ ≤ ToRel s₂ ↔ s₁ ⊆ s₂ :=
+  ⟨(Sym2.ind ·), (@· s(·, ·))⟩
+
+@[gcongr]
+alias ⟨_, toRel_mono⟩ := toRel_mono_iff
+
+variable (α) in
+/-- `ToRel` induces an order embedding from `Sym2` sets to relations -/
+def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
+  .ofMapLEIff ToRel toRel_mono_iff
+
+variable (α) in
+/-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
+@[simps]
+def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 α) where
+  toFun r := fromRel r.prop
+  invFun s := ⟨ToRel s, toRel_symmetric s⟩
+  left_inv r := by simp [toRel_fromRel]
+  right_inv s := by simp [fromRel_toRel]
+  map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+@[deprecated fromRelOrderIso (since := "2026-03-11")]
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  fromRelOrderIso α |>.toOrderEmbedding
+
+@[simp]
+theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
+    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
+  rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderIso α |>.eq_iff_eq]
+  rfl
+
+@[deprecated (since := "2026-03-11")] alias fromRel_eq_fromRell_iff_eq := fromRel_eq_fromRel_iff_eq
+
 end Relations
 
 section ToMultiset
@@ -718,6 +745,10 @@ def toFinset (z : Sym2 α) : Finset α := (z.toMultiset : Multiset α).toFinset
 @[simp]
 theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
+
+@[simp]
+theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ := by
+  exact Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]

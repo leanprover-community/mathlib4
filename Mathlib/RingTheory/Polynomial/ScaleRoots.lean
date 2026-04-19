@@ -51,12 +51,10 @@ theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s �
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_scaleRoots_le (p : R[X]) (s : R) : (scaleRoots p s).support ≤ p.support := by
   intro
   simpa using left_ne_zero_of_mul
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) :
     (scaleRoots p s).support = p.support :=
   le_antisymm (support_scaleRoots_le p s)
@@ -335,7 +333,7 @@ lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
   obtain rfl | hp := eq_or_ne p 0
   · simp
   obtain ⟨q, e, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp a
-  have hq0 : q ≠ 0 := by contrapose! hp; simp_all
+  have hq0 : q ≠ 0 := by contrapose hp; simp_all
   conv_lhs => rw [e]
   rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
     rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]

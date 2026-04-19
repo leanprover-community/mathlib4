@@ -319,11 +319,10 @@ noncomputable def toKer (E : Extension R M L) :
 instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
   (lie_abelian_iff_equiv_lie_abelian E.toKer.symm).mpr inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `L`-module
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by
@@ -339,7 +338,6 @@ noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingM
     rw [← map_add, EquivLike.apply_eq_iff_eq, LieEquiv.apply_symm_apply, LieEquiv.apply_symm_apply,
       leibniz_lie, aux]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringModuleOf_bracket_proj [IsLieAbelian M] (E : Extension R M L) (y : M) (z : E.L) :
     letI := E.ringModuleOf
     ⁅E.proj z, y⁆ = E.toKer.symm ⁅z, E.toKer y⁆ := by
@@ -351,7 +349,6 @@ lemma ringModuleOf_bracket_proj [IsLieAbelian M] (E : Extension R M L) (y : M) (
     Subtype.ext_iff, LieSubmodule.coe_bracket, lie_toKer_apply, ZeroMemClass.coe_zero, ← hx,
     LieHom.coe_toLinearMap, ← LieHom.map_lie, trivial_lie_zero M M x y, map_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `R`-linear
 `L`-module structure. We do not make this an instance, because we may have to work with more than
 one extension. -/
@@ -372,14 +369,12 @@ lemma toKer_bracket [IsLieAbelian M] (E : Extension R M L) (x : E.proj.ker) (y :
     E.toKer ⁅y, E.toKer.symm x⁆ = ⁅E.proj_surjective.hasRightInverse.choose y, x⁆ := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lie_apply_proj_of_leftInverse_eq [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : LeftInverse E.proj s) (x : E.L) (y : E.proj.ker) :
     ⁅s (E.proj x), y⁆ = ⁅x, y⁆ := by
   rw [← sub_eq_zero, ← sub_lie]
   exact trivial_lie_zero E.proj.ker E.proj.ker ⟨_, (by simp [hs.eq])⟩ y
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- A preparatory function for making a 2-cocycle from a linear splitting of an extension. -/
 private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
@@ -392,7 +387,6 @@ private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
   map_add' x y := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The 2-cocycle attached to an extension with a linear section. -/
@@ -427,7 +421,6 @@ noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →
       sub_add_cancel_right, map_add, neg_add_rev]
     abel_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 1-cochain attached to a pair of splittings of an extension. -/
 @[simps]
 noncomputable def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
@@ -442,7 +435,6 @@ noncomputable def oneCochainOfTwoSplitting (E : Extension R M L) {s₁ s₂ : L 
     rw [RingHom.id_apply, ← map_smul, EquivLike.apply_eq_iff_eq, SetLike.mk_smul_of_tower_mk,
       Subtype.mk_eq_mk, LinearMap.map_smul_of_tower, smul_sub, LinearMap.map_smul_of_tower]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s₁ s₂ : L →ₗ[R] E.L}
     (hs₁ : LeftInverse E.proj s₁) (hs₂ : LeftInverse E.proj s₂) :
     letI := E.ringModuleOf

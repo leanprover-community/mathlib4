@@ -653,8 +653,7 @@ def LeftExtension.isUniversalPrecomp₂
         (hα.fac <| LeftExtension.mk _ <|
           y.hom ≫ (L.associator L' y.right).hom) t
     dsimp at hb_fac_app hα_fac_app
-    simp only [precomp₂_obj_left, const_obj_obj, whiskeringLeft_obj_obj,
-      comp_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
+    simp only [whiskeringLeft_obj_obj, comp_obj,
       precomp₂_obj_right, whiskeringLeft_obj_map, NatTrans.comp_app,
       precomp₂_obj_hom_app, whiskerLeft_app, assoc] at a_w_t
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
@@ -673,31 +672,21 @@ def LeftExtension.isUniversalOfPrecomp₂
   letI (y : L'.LeftExtension F₁) : Unique (b ⟶ y) := by
     let u : (LeftExtension.precomp₂ L' α).obj b ⟶
       (LeftExtension.precomp₂ L' α).obj y := hb.to _
-    haveI := u.w
-    simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-      whiskeringLeft_obj_obj, StructuredArrow.left_eq_id, const_obj_map, id_comp,
-      whiskeringLeft_obj_map] at this
     refine
       ⟨⟨StructuredArrow.homMk u.right <| by
           apply hα.hom_ext
           ext t
           have := congr_app u.w t
-          simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-            whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
-            const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
-            NatTrans.comp_app, whiskerLeft_app, assoc] at this
+          dsimp at this
+          simp only [precomp₂_obj_hom_app, assoc] at this
           simp [this]⟩, fun a => ?_⟩
-    dsimp
     ext1
     apply hb.hom_ext
     ext t
     have := congr_app u.w t
-    have a_w := a.w
-    simp only [precomp₂_obj_left, const_obj_obj, precomp₂_obj_right,
-      whiskeringLeft_obj_obj, comp_obj, StructuredArrow.left_eq_id,
-      const_obj_map, id_comp, precomp₂_obj_hom_app, whiskeringLeft_obj_map,
-      NatTrans.comp_app, whiskerLeft_app, assoc] at this a_w
-    simp [← this, a_w]
+    dsimp at this
+    simp only [precomp₂_obj_hom_app, assoc] at this
+    simp [this, ← a.w]
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -872,7 +861,7 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     (fun y ↦ StructuredArrow.homMk <| α.inv ≫ y.hom ≫ y.right.leftUnitor.hom) ?_
   intro y m
   ext x
-  simpa using α.inv.app x ≫= congr_app m.w.symm x
+  simpa using α.inv.app x ≫= congr_app m.w x
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)

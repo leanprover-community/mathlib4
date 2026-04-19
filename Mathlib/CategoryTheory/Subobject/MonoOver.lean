@@ -382,7 +382,6 @@ section
 
 variable (X)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]

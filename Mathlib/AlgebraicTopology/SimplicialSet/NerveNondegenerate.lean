@@ -27,12 +27,13 @@ namespace PartialOrder
 
 variable {X : Type*} [PartialOrder X] {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
     s ∈ Set.range ((nerve X).σ i) ↔
       s.obj i.castSucc = s.obj i.succ := by
   constructor
   · rintro ⟨s, rfl⟩
-    simp [nerve.σ_obj]
+    simp [-nerve_obj, nerve.σ_obj]
   · intro h
     refine ⟨(nerve X).δ i.castSucc s, ?_⟩
     ext j
@@ -42,7 +43,7 @@ lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
       rw [Fin.predAbove_of_castSucc_lt _ _ h₁, Fin.pred_succ,
         Fin.succAbove_of_le_castSucc _ _ (Fin.le_castSucc_iff.2 h₁)]
     · simp only [not_lt] at h₁
-      grind [SimplexCategory.len_mk, → Fin.succAbove_of_castSucc_lt,
+      grind [→ Fin.succAbove_of_castSucc_lt,
         → Fin.predAbove_of_le_castSucc, Fin.castSucc_castPred, Fin.castPred_castSucc,
         Fin.succAbove_castSucc_self, → LE.le.lt_or_eq]
 
@@ -51,7 +52,7 @@ lemma mem_nerve_degenerate_of_eq (s : (nerve X) _⦋n + 1⦌) {i : Fin (n + 1)}
     (hi : s.obj i.castSucc = s.obj i.succ) :
     s ∈ (nerve X).degenerate (n + 1) := by
   simp only [nerve_obj, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
-  exact ⟨i, by rwa [mem_range_nerve_σ_iff]⟩
+  exact ⟨i, by rwa [← mem_range_nerve_σ_iff] at hi⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
@@ -64,7 +65,7 @@ lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     apply exists_congr
     intro i
     have := s.monotone i.castSucc_le_succ
-    grind [SimplexCategory.len_mk, lt_self_iff_false, LE.le.lt_or_eq]
+    grind [lt_self_iff_false, LE.le.lt_or_eq]
 
 lemma mem_nerve_nonDegenerate_iff_injective (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ Function.Injective s.obj := by

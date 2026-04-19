@@ -45,8 +45,6 @@ def cartesianComon : C ⥤ Comon C where
     this argument was provided by the auto_param. -/
     simp +instances)
 
-@[deprecated (since := "2025-09-15")] alias cartesianComon_ := cartesianComon
-
 variable {C}
 
 @[simp] theorem counit_eq_toUnit (A : C) [ComonObj A] : ε[A] = toUnit _ := by ext
@@ -64,8 +62,6 @@ the canonical comonoid structure on the underlying object.
 @[simps] def isoCartesianComon (A : Comon C) : A ≅ (cartesianComon C).obj A.X :=
   { hom := .mk' (𝟙 _)
     inv := .mk' (𝟙 _) }
-
-@[deprecated (since := "2025-09-15")] alias iso_cartesianComon_ := isoCartesianComon
 
 set_option backward.isDefEq.respectTransparency false in
 /--

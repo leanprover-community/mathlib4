@@ -29,9 +29,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 
 universe u v w
 
-variable {R : Type u} {M : Type v} [CommRing R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
-
 open Matrix Polynomial
 
 noncomputable section
@@ -39,6 +36,9 @@ noncomputable section
 open Module.Free Polynomial Matrix
 
 namespace LinearMap
+
+variable {R : Type u} {M : Type v} [CommRing R]
+variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
 section Basic
 
@@ -75,8 +75,9 @@ theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 
 open Module in
-lemma charpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
+lemma charpoly_natDegree [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 end Coeff
@@ -103,7 +104,7 @@ theorem minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddCommGroup M
 /-- Any endomorphism polynomial `p` is equivalent under evaluation to `p %ₘ f.charpoly`; that is,
 `p` is equivalent to a polynomial with degree less than the dimension of the module. -/
 theorem aeval_eq_aeval_mod_charpoly (p : R[X]) : aeval f p = aeval f (p %ₘ f.charpoly) :=
-  (aeval_modByMonic_eq_self_of_root f.charpoly_monic f.aeval_self_charpoly).symm
+  (aeval_modByMonic_eq_self_of_root f.aeval_self_charpoly).symm
 
 /-- Any endomorphism power can be computed as the sum of endomorphism powers less than the
 dimension of the module. -/
@@ -133,3 +134,26 @@ theorem minpoly_coeff_zero_of_injective [Nontrivial R] (hf : Function.Injective 
 end CayleyHamilton
 
 end LinearMap
+
+section Algebra
+variable {R M} [CommRing R] [Ring M] [Algebra R M]
+  [Module.Finite R M] [Module.Free R M]
+
+theorem Algebra.aeval_self_charpoly_lmul (α : M) :
+    aeval α (Algebra.lmul R M α).charpoly = 0 :=
+  Algebra.lmul_injective (R := R) <| by
+    simpa [← aeval_algHom_apply] using LinearMap.aeval_self_charpoly <| Algebra.lmul _ _ α
+
+theorem minpoly.natDegree_le (α : M) :
+    (minpoly R α).natDegree ≤ Module.finrank R M := by
+  nontriviality R
+  let f := Algebra.lmul R _ α
+  have : (minpoly R α).natDegree ≤ f.charpoly.natDegree := natDegree_le_natDegree <|
+    minpoly.min _ _ f.charpoly_monic (Algebra.aeval_self_charpoly_lmul α)
+  simpa [← (Algebra.lmul _ _ α).charpoly_natDegree]
+
+theorem minpoly.degree_le (α : M) :
+    (minpoly R α).degree ≤ Module.finrank R M :=
+  degree_le_of_natDegree_le (minpoly.natDegree_le α)
+
+end Algebra

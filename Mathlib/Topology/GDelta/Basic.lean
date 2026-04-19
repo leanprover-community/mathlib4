@@ -31,9 +31,9 @@ In this file we define `Gδ` sets and prove their basic properties.
 We prove that finite or countable intersections of Gδ sets are Gδ sets.
 
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
-its complement is open and dense
+  its complement is open and dense
 - `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
-union of nowhere dense sets
+  union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 See `Mathlib/Topology/GDelta/MetrizableSpace.lean` for the proof that
@@ -106,7 +106,7 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
-  simpa [@forall_swap ι'] using hTo
+  simpa [@forall_comm ι'] using hTo
 
 theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
@@ -235,7 +235,6 @@ lemma isNowhereDense_iff_disjoint {s : Set X} :
   ⟨fun H ↦ H ▸ disjoint_empty _, fun H ↦
     H.closure_left isOpen_interior |>.mono_left interior_subset |>.eq_bot_of_self⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To check that `s` is nowhere dense, it suffices to check that `closure s` is not a
 neighborhood of any point of `s`. -/
 lemma isNowhereDense_iff_forall_notMem_nhds {s : Set X} :

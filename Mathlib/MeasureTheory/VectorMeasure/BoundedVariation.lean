@@ -231,7 +231,7 @@ theorem vectorMeasure_Ioi (hf : BoundedVariationOn f univ) (a : α) :
 theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Iic a) = f.rightLim a - limUnder atBot f := by
   have : Nonempty α := ⟨a⟩
-  have hlim : Tendsto f atBot (𝓝 (limUnder atBot f)) :=  hf.tendsto_atBot_limUnder
+  have hlim : Tendsto f atBot (𝓝 (limUnder atBot f)) := hf.tendsto_atBot_limUnder
   obtain ⟨u, u_anti, hu⟩ : ∃ u, Antitone u ∧ Tendsto u atTop atBot :=
     Filter.exists_seq_antitone_tendsto_atTop_atBot α
   have A : Tendsto (fun n ↦ hf.vectorMeasure (Icc (u n) a)) atTop

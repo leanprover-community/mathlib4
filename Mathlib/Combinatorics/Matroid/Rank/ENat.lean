@@ -251,7 +251,7 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
   rw [← hI.eRk_eq_encard, eRank_def]
   exact M.eRk_mono hI.subset_ground
 
-/-- A version of `erk_eq_zero_iff'` with no supportedness hypothesis. -/
+/-- A version of `eRk_eq_zero_iff'` with no ground-set hypothesis. -/
 lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
@@ -627,7 +627,6 @@ lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
 lemma IsBase.encard_compl_eq (hB : M.IsBase B) : (M.E \ B).encard = M✶.eRank :=
   (hB.compl_isBase_dual).encard_eq_eRank
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subtraction-free formula for the rank of a set in the dual matroid. -/
 lemma eRk_dual_add_eRank (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     M✶.eRk X + M.eRank = M.eRk (M.E \ X) + X.encard := by

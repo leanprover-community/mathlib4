@@ -190,7 +190,7 @@ theorem isWeightedHomogeneous_monomial (w : σ → M) (d : σ →₀ ℕ) (r : R
     exact hm
   · contradiction
 
-/-- A polynomial of weightedTotalDegree `⊥` is weighted_homogeneous of degree `⊥`. -/
+/-- A polynomial of weightedTotalDegree `⊥` is weighted homogeneous of degree `⊥`. -/
 theorem isWeightedHomogeneous_of_total_degree_zero [SemilatticeSup M] [OrderBot M] (w : σ → M)
     {p : MvPolynomial σ R} (hp : weightedTotalDegree w p = (⊥ : M)) :
     IsWeightedHomogeneous w p (⊥ : M) := by
@@ -398,7 +398,7 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
   exact lt_of_le_of_lt (le_weightedTotalDegree w hd.1) h
 
 theorem weightedHomogeneousComponent_finsupp :
-    (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
+    (fun m => weightedHomogeneousComponent w m φ).HasFiniteSupport := by
   apply ((fun d : σ →₀ ℕ => (weight w) d) '' (φ.support : Set (σ →₀ ℕ))).toFinite.subset
   intro m hm
   by_contra hm'
@@ -471,14 +471,6 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     split_ifs with h1
     · rfl
     · simp only [coeff_zero]
-
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_same
-
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
 
 variable (R w)
 
@@ -631,6 +623,7 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
+@[implicit_reducible]
 def weightedDecomposition [DecidableEq M] :
     DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
@@ -656,6 +649,7 @@ def weightedDecomposition [DecidableEq M] :
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
+@[implicit_reducible]
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w

@@ -176,7 +176,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a morphism `f : A ⟶ B` and subobjects `A' ⟶ A` and `B' ⟶ B`, we have a canonical morphism
 `(A' ⊓ (Subobject.pullback f).obj B') ⟶ ((«exists» f).obj A' ⊓ B')`.
-This morphism is part of a StrongEpiMonoFactorosation of
+This morphism is part of a `StrongEpiMonoFactorisation` of
 `(A' ⊓ (Subobject.pullback f).obj B').arrow ≫ f`, see `frobeniusStrongEpiMonoFactorisation`.
 -/
 noncomputable def frobeniusMorphism :
@@ -196,7 +196,7 @@ lemma frobeniusMorphism_isPullback :
   apply IsPullback.of_right (t := (inf_isPullback ((«exists» f).obj A') B').flip)
     (p := by simp [frobeniusMorphism])
   simpa [frobeniusMorphism, IsPullback.lift_fst, ← imageFactorisation_F_m,
-    (isPullback f B').paste_horiz_iff ] using
+    (isPullback f B').paste_horiz_iff] using
     (inf_isPullback A' ((Subobject.pullback f).obj B')).flip
 
 set_option backward.isDefEq.respectTransparency false in

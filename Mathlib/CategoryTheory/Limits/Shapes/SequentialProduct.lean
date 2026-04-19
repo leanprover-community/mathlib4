@@ -38,7 +38,7 @@ lemma functorObj_eq_pos {n m : ℕ} (h : m < n) :
 lemma functorObj_eq_neg {n m : ℕ} (h : ¬(m < n)) :
     (fun i ↦ if _ : i < n then M i else N i) m = N m := dif_neg h
 
-variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasProductsOfShape ℕ C]
+variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasCountableProducts C]
 
 variable (M N) in
 /-- The product of the `m` first objects of `M` and the rest of the rest of `N` -/
@@ -181,8 +181,7 @@ noncomputable def isLimit : IsLimit (cone f) where
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
       have hh : m + 1 ≤ n := by lia
       rw [← s.w (homOfLE hh).op]
-      simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-        Category.assoc]
+      simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Category.assoc]
       congr
       induction hh using Nat.leRec with
       | refl => simp
@@ -218,7 +217,7 @@ noncomputable def isLimit : IsLimit (cone f) where
 
 section
 
-variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasCountableProducts C] [∀ n, Epi (f n)]
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [∀ n, Epi (f n)]
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 

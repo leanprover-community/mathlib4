@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
+import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
+import Mathlib.RingTheory.Finiteness.Prod
+
 /-!
 # Finite-dimensional subspaces of affine spaces.
 
@@ -42,54 +45,46 @@ open AffineSubspace Module
 
 variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of a finite set is finite-dimensional. -/
 theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
   .span_of_finite k <| h.vsub h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The vector span of a singleton is finite-dimensional. -/
 instance finiteDimensional_vectorSpan_singleton (p : P) :
     FiniteDimensional k (vectorSpan k {p}) :=
   finiteDimensional_vectorSpan_of_finite _ (Set.finite_singleton p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
     FiniteDimensional k (vectorSpan k (Set.range p)) :=
   finiteDimensional_vectorSpan_of_finite k (Set.finite_range _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of a subset of a family indexed by a `Fintype`
 is finite-dimensional. -/
 instance finiteDimensional_vectorSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
     FiniteDimensional k (vectorSpan k (p '' s)) :=
   finiteDimensional_vectorSpan_of_finite k (Set.toFinite _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of a finite set is
 finite-dimensional. -/
 theorem finiteDimensional_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ finiteDimensional_vectorSpan_of_finite k h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of a singleton is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_singleton (p : P) :
     FiniteDimensional k (affineSpan k {p}).direction := by
   rw [direction_affineSpan]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_range [Finite ι] (p : ι → P) :
     FiniteDimensional k (affineSpan k (Set.range p)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.finite_range _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of a subset of a family indexed
 by a `Fintype` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
@@ -112,7 +107,6 @@ theorem finite_set_of_fin_dim_affineIndependent [FiniteDimensional k V] {s : Set
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The supremum of two finite-dimensional affine subspaces is finite-dimensional. -/
 instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
     [FiniteDimensional k s₁.direction] [FiniteDimensional k s₂.direction] :
@@ -124,7 +118,6 @@ instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
   rw [AffineSubspace.direction_sup hp₁ hp₂]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of a finite-dimensional affine subspace under an affine map is finite-dimensional. -/
 instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
     [AffineSpace V₂ P₂] (s : AffineSubspace k P) [FiniteDimensional k s.direction]
@@ -257,7 +250,6 @@ lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : A
   exact (affineIndependent_iff_le_finrank_vectorSpan _ _
     (tsub_add_cancel_of_le <| Nat.one_le_iff_ne_zero.2 Fintype.card_ne_zero).symm).1 hp
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- If an affine independent finset is contained in the affine span of another finset, then its
 cardinality is at most the cardinality of that finset. -/
@@ -278,7 +270,6 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- If the affine span of an affine independent finset is strictly contained in the affine span of
 another finset, then its cardinality is strictly less than the cardinality of that finset. -/
@@ -299,7 +290,6 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   erw [hs.finrank_vectorSpan_add_one] at finrank_lt
   simpa using finrank_lt.trans_le <| finrank_vectorSpan_range_add_one_le _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its
 cardinality, it equals that submodule. -/
@@ -310,7 +300,6 @@ theorem AffineIndependent.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
     vectorSpan k (s.image p : Set P) = sm :=
   Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan_image_finset hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `vectorSpan` of a finite affinely independent
 family lies in a submodule with dimension one less than its
 cardinality, it equals that submodule. -/
@@ -320,7 +309,6 @@ theorem AffineIndependent.vectorSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
     vectorSpan k (Set.range p) = sm :=
   Submodule.eq_of_le_of_finrank_eq hle <| hi.finrank_vectorSpan hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `affineSpan` of a finite subset of an affinely independent
 family lies in an affine subspace whose direction has dimension one
 less than its cardinality, it equals that subspace. -/
@@ -337,7 +325,6 @@ theorem AffineIndependent.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_ad
   rw [direction_affineSpan] at hd ⊢
   exact hi.vectorSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hd hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the `affineSpan` of a finite affinely independent family lies
 in an affine subspace whose direction has dimension one less than its
 cardinality, it equals that subspace. -/
@@ -350,7 +337,6 @@ theorem AffineIndependent.affineSpan_eq_of_le_of_card_eq_finrank_add_one [Fintyp
   rw [← Set.image_univ, ← Finset.coe_univ, ← Finset.coe_image] at hle ⊢
   exact hi.affineSpan_image_finset_eq_of_le_of_card_eq_finrank_add_one hle hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `affineSpan` of a finite affinely independent family is `⊤` iff the
 family's cardinality is one more than that of the finite-dimensional space. -/
 theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteDimensional k V]
@@ -372,7 +358,6 @@ theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine
   rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of adding a point to a finite-dimensional subspace is finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
     [FiniteDimensional k s.direction] (p : P) :
@@ -385,7 +370,6 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
   · rw [affineSpan_coe, direction_affineSpan_insert hp₀]
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of adding a point to a finite-dimensional subspace is
 finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_insert (s : AffineSubspace k P)
@@ -395,7 +379,6 @@ instance finiteDimensional_direction_affineSpan_insert (s : AffineSubspace k P)
 
 variable (k)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of adding a point to a set with a finite-dimensional `vectorSpan` is
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional k (vectorSpan k s)]
@@ -405,7 +388,6 @@ instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional 
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   exact finiteDimensional_vectorSpan_insert (affineSpan k s) p
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of adding a point to a set with a set with finite-dimensional
 direction of the `affineSpan` is finite-dimensional. -/
 instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
@@ -426,7 +408,6 @@ theorem collinear_iff_rank_le_one (s : Set P) :
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A set of points, whose `vectorSpan` is finite-dimensional, is
 collinear if and only if their `vectorSpan` has dimension at most
 `1`. -/
@@ -442,14 +423,12 @@ alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
 theorem Collinear.subset {s₁ s₂ : Set P} (hs : s₁ ⊆ s₂) (h : Collinear k s₂) : Collinear k s₁ :=
   (Submodule.rank_mono (vectorSpan_mono k hs)).trans h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of collinear points is finite-dimensional. -/
 theorem Collinear.finiteDimensional_vectorSpan {s : Set P} (h : Collinear k s) :
     FiniteDimensional k (vectorSpan k s) :=
   IsNoetherian.iff_fg.1
     (IsNoetherian.iff_rank_lt_aleph0.2 (lt_of_le_of_lt h Cardinal.one_lt_aleph0))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of collinear points is finite-dimensional. -/
 theorem Collinear.finiteDimensional_direction_affineSpan {s : Set P} (h : Collinear k s) :
     FiniteDimensional k (affineSpan k s).direction :=
@@ -471,7 +450,6 @@ theorem collinear_singleton (p : P) : Collinear k ({p} : Set P) := by
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `p₀` in a set of points, that set is collinear if and
 only if the points can all be expressed as multiples of the same
 vector, added to `p₀`. -/
@@ -696,20 +674,17 @@ variable (k) in
 def Coplanar (s : Set P) : Prop :=
   Module.rank k (vectorSpan k s) ≤ 2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `vectorSpan` of coplanar points is finite-dimensional. -/
 theorem Coplanar.finiteDimensional_vectorSpan {s : Set P} (h : Coplanar k s) :
     FiniteDimensional k (vectorSpan k s) := by
   refine IsNoetherian.iff_fg.1 (IsNoetherian.iff_rank_lt_aleph0.2 (lt_of_le_of_lt h ?_))
   exact Cardinal.lt_aleph0.2 ⟨2, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The direction of the affine span of coplanar points is finite-dimensional. -/
 theorem Coplanar.finiteDimensional_direction_affineSpan {s : Set P} (h : Coplanar k s) :
     FiniteDimensional k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ h.finiteDimensional_vectorSpan
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A set of points, whose `vectorSpan` is finite-dimensional, is coplanar if and only if their
 `vectorSpan` has dimension at most `2`. -/
 theorem coplanar_iff_finrank_le_two {s : Set P} [FiniteDimensional k (vectorSpan k s)] :
@@ -761,7 +736,6 @@ open AffineSubspace Module Module
 
 variable [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adding a point to a finite-dimensional subspace increases the dimension by at most one. -/
 theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     finrank k (vectorSpan k (insert p (s : Set P))) ≤ finrank k s.direction + 1 := by
@@ -802,7 +776,6 @@ theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
     ← direction_affineSpan _ s]
   exact finrank_vectorSpan_insert_le ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adding a point to a collinear set produces a coplanar set. -/
 theorem Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :
     Coplanar k (insert p s) := by
@@ -875,3 +848,26 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
 end DivisionRing
 
 end AffineBasis
+
+namespace AffineMap
+
+variable {R S V W P : Type*} [Ring R] [Ring S]
+  [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] [AddTorsor V P]
+  [AddCommGroup W] [Module R W] [Module S W] [Module.Finite S W] [SMulCommClass R S W]
+
+instance : Module.Finite S (P →ᵃ[R] W) :=
+  have ⟨p⟩ : Nonempty P := inferInstance
+  .equiv <| (AffineMap.toConstProdLinearMap S).symm ≪≫ₗ (AffineEquiv.vaddConst R p).congrLeftₗ S W
+
+theorem finrank_eq [Module.Free S W] [StrongRankCondition R] [StrongRankCondition S] :
+    Module.finrank S (P →ᵃ[R] W) = (Module.finrank R V + 1) * Module.finrank S W :=
+  calc
+    _ = Module.finrank S (V →ᵃ[R] W) :=
+      have ⟨p⟩ : Nonempty P := inferInstance
+      AffineEquiv.vaddConst R p |>.symm.congrLeftₗ S W |>.finrank_eq
+    _ = Module.finrank S (W × (V →ₗ[R] W)) := (AffineMap.toConstProdLinearMap S).finrank_eq
+    _ = (Module.finrank R V + 1) * Module.finrank S W := by
+      rw [Module.finrank_prod, Module.finrank_linearMap]
+      ring
+
+end AffineMap

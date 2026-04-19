@@ -87,9 +87,7 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   Z := h.Z
   left := e.inv.right ≫ h.left
   right := e.inv.right ≫ h.right
-  w := by
-    have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
-    simp_rw [← reassoc_of% this, h.w]
+  w := by simp only [← (Arrow.w_mk_assoc e.inv), h.w]
   isLimit := Fork.isLimitOfIsos _ h.isLimit _
     (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
@@ -210,7 +208,6 @@ def RegularMono.lift' {W : C} {f : X ⟶ Y} (hf : RegularMono f) (k : W ⟶ Y)
     { l : W ⟶ X // l ≫ f = k } :=
   Fork.IsLimit.lift' hf.isLimit _ h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second leg of a pullback cone is a regular monomorphism if the right component is too.
 
 See also `Pullback.sndOfMono` for the basic monomorphism version, and
@@ -239,7 +236,7 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
     have := hr.mono
     apply (PullbackCone.mk f g comm).equalizer_ext
     · simp only [PullbackCone.mk_π_app, ← cancel_mono h]
-      grind [Fork.ι_ofι]
+      grind [Fork.ofι, PullbackCone.mk]
     · exact z
 
 /-- The first leg of a pullback cone is a regular monomorphism if the left component is too.
@@ -449,6 +446,7 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   w := pullback.condition
   isColimit := hc
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
     (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
       ∃ (u : B ⟶ Z), f ≫ u = g) :
@@ -518,7 +516,6 @@ lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
     IsRegularEpi f ↔ EffectiveEpi f :=
   ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `p : Y ⟶ X` be an effective epimorphism, `p₁ : Z ⟶ Y` and `p₂ : Z ⟶ Y` two
 morphisms which make `Z` the pullback of two copies of `Y` over `X`.
 Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
@@ -549,7 +546,6 @@ def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
 
 See also `Pushout.sndOfEpi` for the basic epimorphism version, and

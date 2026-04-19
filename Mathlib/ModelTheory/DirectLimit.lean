@@ -227,7 +227,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
 noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient (DirectLimit.setoid G f))
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
@@ -310,7 +310,6 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every finitely generated substructure of the direct limit corresponds to some
 substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
