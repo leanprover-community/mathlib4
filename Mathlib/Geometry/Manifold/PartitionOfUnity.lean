@@ -290,6 +290,43 @@ f.contMDiff_finsum_smul fun i _ hx ↦ (hg i).contMDiffAt <| (ho i).mem_nhds (hf
 
 end IsSubordinate
 
+/--
+Let `ρ` be a smooth partition of unity subordinate to an open cover `U`.
+Let `s_loc` be a family of local sections, where each `s_loc i` is $C^n$ smooth on `U i`
+(when viewed as a map to the total space of the bundle).
+Then the global section `x ↦ ∑ᶠ i, ρ i x • s_loc i x`, when viewed as a map to the total space,
+is $C^n$ smooth.
+-/
+theorem contMDiff_totalSpace_weighted_sum_of_local_sections
+    {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM}
+      [TopologicalSpace M] [ChartedSpace H M]
+    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
+    {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
+    (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
+    (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
+    ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
+  intro x₀
+  apply (Bundle.contMDiffAt_section x₀).mpr
+  let e₀ := trivializationAt F_fiber V x₀
+  apply ContMDiffAt.congr_of_eventuallyEq
+  · apply ρ.contMDiffAt_finsum
+    · intro j hx₀
+      have := h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
+      rwa [Bundle.contMDiffAt_section] at this
+  · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
+      e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
+    filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
+    have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
+      refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
+      have : ρ i x ≠ 0 ∧ s_loc i x ≠ 0 := by simpa using hi_smul_ne_zero
+      exact this.1
+    simpa using e₀.linearEquivAt ℝ x hx_base |>.toAddMonoidHom.map_finsum hfin
+
 end SmoothPartitionOfUnity
 
 namespace BumpCovering
