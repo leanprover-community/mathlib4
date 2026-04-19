@@ -138,11 +138,11 @@ theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.I
   obtain ⟨c, hbc, hca⟩ := (not_covBy_iff hb).1 (h b)
   exact ⟨⟨c, hca⟩, hbc⟩
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
   isMin_bot.not_isSuccLimit
 
@@ -175,16 +175,52 @@ theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
   exact ⟨b, hb⟩
 
 @[to_dual]
-theorem _root_.WithTop.isSuccPrelimit_iff [Preorder α] [NoMaxOrder α] {x : WithTop α} :
-    IsSuccPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccPrelimit y where
-  mp h := by
-    sorry
-  mpr := by
-    rintro ⟨rfl, ⟨y, rfl, hy⟩⟩
-    · intro a
-      apply WithTop.not_covBy_top
+theorem _root_.WithTop.isSuccPrelimit_iff [NoMaxOrder α] {x : WithTop α} :
+    IsSuccPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccPrelimit y := by
+  cases x with
+  | coe x => simp [IsSuccPrelimit, WithTop.forall]
+  | top => simp [IsSuccPrelimit]
 
-    #exit
+@[to_dual]
+theorem IsSuccPrelimit.withTopCoe [NoMaxOrder α] {x : α} (h : IsSuccPrelimit x) :
+    IsSuccPrelimit (x : WithTop α) := by
+  simpa [WithTop.isSuccPrelimit_iff]
+
+@[to_dual (attr := simp)]
+theorem _root_.WithTop.isSuccPrelimit_top [NoMaxOrder α] : IsSuccPrelimit (⊤ : WithTop α) := by
+  simp [WithTop.isSuccPrelimit_iff]
+
+@[to_dual]
+theorem _root_.WithTop.isSuccLimit_iff [Nonempty α] [NoMaxOrder α] {x : WithTop α} :
+    IsSuccLimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccLimit y := by
+  cases x with
+  | coe x => simp [IsSuccLimit, WithTop.isSuccPrelimit_iff, WithTop.exists]
+  | top => simp [IsSuccLimit, WithTop.exists]
+
+@[to_dual]
+theorem IsSuccLimit.withTopCoe [NoMaxOrder α] {x : α} (h : IsSuccLimit x) :
+    IsSuccLimit (x : WithTop α) := by
+  have : Nonempty α := ⟨x⟩
+  simpa [WithTop.isSuccLimit_iff]
+
+@[to_dual]
+theorem _root_.WithTop.isSuccLimit_top [Nonempty α] [NoMaxOrder α] :
+    IsSuccLimit (⊤ : WithTop α) := by
+  simp [WithTop.isSuccLimit_iff]
+
+@[to_dual]
+theorem WithTop.isPredPrelimit_iff {x : WithTop α} :
+    IsPredPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsPredLimit y := by
+  cases x with
+  | coe x => simp [IsPredPrelimit, IsPredLimit, WithTop.forall]
+  | top => simp
+
+@[to_dual]
+theorem IsPredLimit.withTopCoe {x : α} (h : IsPredLimit x) :
+    IsPredLimit (x : WithTop α) := by
+  constructor
+  · exact WithTop.not_isMax_coe x
+  · simpa [WithTop.isPredPrelimit_iff]
 
 variable [SuccOrder α]
 

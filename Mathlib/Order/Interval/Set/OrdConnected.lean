@@ -167,11 +167,7 @@ instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α 
 
 @[to_dual]
 instance ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
-<<<<<<< HEAD
-  ⟨fun _ hx _ _ _ hz => le_trans (mem_Ici.2 hx) (mem_Icc.2 hz).1⟩
-=======
   ⟨fun _ hx _ _ _ hz => le_trans hx hz.1⟩
->>>>>>> orddual
 
 @[to_dual]
 instance ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=

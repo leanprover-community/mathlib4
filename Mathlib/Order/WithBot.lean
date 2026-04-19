@@ -429,6 +429,10 @@ theorem le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by simp [le
 protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
   fun x ↦ by cases x <;> simp; simpa using @h _
 
+@[to_dual (attr := simp)]
+theorem not_isMin_coe (a : α) : ¬ IsMin (a : WithBot α) :=
+  fun h ↦ not_coe_le_bot a (h bot_le)
+
 @[to_dual (attr := simp) untop_le_iff]
 lemma le_unbot_iff (hx : x ≠ ⊥) : a ≤ unbot x hx ↔ a ≤ x := by lift x to α using hx; simp
 @[to_dual (attr := simp) le_untop_iff]
