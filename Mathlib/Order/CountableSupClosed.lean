@@ -51,6 +51,18 @@ See `CountableSupClosed.iSup_mem` for a supremum over any nonempty countable typ
 structure CountableSupClosed [CompleteLattice α] (s : Set α) : Prop where
   iSup_nat_mem : ∀ ⦃A : ℕ → α⦄ (_hA : ∀ n, A n ∈ s), ⨆ n, A n ∈ s
 
+/-- A set `s` is closed under countable infimum if `⨅ n, A n ∈ s` for all `A : ι → α`
+with `ι` nonempty countable and `A n ∈ s` for all `n`.
+
+The definition uses `ι = ℕ`.
+See `CountableInfClosed.iInf_mem` for an infimum over any nonempty countable type. -/
+@[to_dual existing]
+structure CountableInfClosed (s : Set α) : Prop where
+  iInf_nat_mem : ∀ ⦃A : ℕ → α⦄, (∀ n, A n ∈ s) → ⨅ n, A n ∈ s
+
+attribute [to_dual existing] CountableSupClosed
+
+@[to_dual]
 lemma CountableSupClosed.iSup_mem [hι : Countable ι] [Nonempty ι]
     (hs : CountableSupClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
     ⨆ n, A n ∈ s := by
@@ -59,30 +71,36 @@ lemma CountableSupClosed.iSup_mem [hι : Countable ι] [Nonempty ι]
   rw [this]
   exact hs.iSup_nat_mem (fun n ↦ hA (g n))
 
+@[to_dual]
 lemma CountableSupClosed.sSup_mem (hs : CountableSupClosed s)
     (A : Set α) [Countable A] [Nonempty A] (hA : ∀ a ∈ A, a ∈ s) :
     sSup A ∈ s := by
   rw [sSup_eq_iSup']
   exact hs.iSup_mem fun a ↦ hA a a.2
 
+@[to_dual]
 lemma CountableSupClosed.supClosed (hs : CountableSupClosed s) : SupClosed s := by
   intro a ha b hb
   simpa using  hs.sSup_mem (A := {a, b}) (by grind)
 
-@[simp] lemma countableSupClosed_singleton_bot : CountableSupClosed ({⊥} : Set α) where
+@[to_dual (attr := simp)] lemma countableSupClosed_singleton_bot :
+    CountableSupClosed ({⊥} : Set α) where
   iSup_nat_mem A hA := by simpa using hA
 
-@[simp] lemma CountableSupClosed.univ : CountableSupClosed (univ : Set α) where
+@[to_dual (attr := simp)] lemma CountableSupClosed.univ : CountableSupClosed (univ : Set α) where
   iSup_nat_mem A hA := by simp
 
+@[to_dual]
 lemma CountableSupClosed.inter (hs : CountableSupClosed s) (ht : CountableSupClosed t) :
     CountableSupClosed (s ∩ t) where
   iSup_nat_mem _ hA := ⟨hs.iSup_nat_mem (fun n ↦ (hA n).1), ht.iSup_nat_mem (fun n ↦ (hA n).2)⟩
 
+@[to_dual]
 lemma CountableSupClosed.sInter (hS : ∀ s ∈ S, CountableSupClosed s) :
     CountableSupClosed (⋂₀ S) where
   iSup_nat_mem _ hA := fun _s hs ↦ (hS _ hs).iSup_mem fun n ↦ hA n _ hs
 
+@[to_dual]
 lemma CountableSupClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableSupClosed (f i)) :
     CountableSupClosed (⋂ i, f i) :=
   CountableSupClosed.sInter <| forall_mem_range.2 hf
@@ -90,6 +108,7 @@ lemma CountableSupClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableSupClo
 lemma CountableSupClosed.directedOn (hs : CountableSupClosed s) : DirectedOn (· ≤ ·) s :=
   hs.supClosed.directedOn
 
+@[to_dual]
 lemma CountableSupClosed.prod {t : Set β} (hs : CountableSupClosed s) (ht : CountableSupClosed t) :
     CountableSupClosed (s ×ˢ t) where
   iSup_nat_mem _ hA := ⟨by rw [Prod.fst_iSup]; exact hs.iSup_nat_mem (fun n ↦ (hA n).1),
@@ -100,82 +119,15 @@ end Set
 section Finset
 variable {ι : Type*} {f : ι → α} {t : Finset ι}
 
+@[to_dual]
 lemma CountableSupClosed.finsetSup'_mem (hs : CountableSupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
   hs.supClosed.finsetSup'_mem ht
 
+@[to_dual]
 lemma CountableSupClosed.finsetSup_mem (hs : CountableSupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   Finset.sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
-
-end Finset
-
-section Set
-open Set
-
-/-- A set `s` is closed under countable infimum if `⨅ n, A n ∈ s` for all `A : ι → α`
-with `ι` nonempty countable and `A n ∈ s` for all `n`.
-
-The definition uses `ι = ℕ`.
-See `CountableInfClosed.iInf_mem` for an infimum over any nonempty countable type. -/
-structure CountableInfClosed (s : Set α) : Prop where
-  iInf_nat_mem : ∀ ⦃A : ℕ → α⦄, (∀ n, A n ∈ s) → ⨅ n, A n ∈ s
-
-lemma CountableInfClosed.iInf_mem [hι : Countable ι] [Nonempty ι]
-    (hs : CountableInfClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
-    (⨅ n, A n) ∈ s := by
-  obtain ⟨g, hg⟩ := countable_iff_exists_surjective.mp hι
-  have : ⨅ i, A i = ⨅ n, A (g n) := by rw [Function.Surjective.iInf_comp hg]
-  rw [this]
-  exact hs.iInf_nat_mem (fun n ↦ hA (g n))
-
-lemma CountableInfClosed.sInf_mem (hs : CountableInfClosed s)
-    (A : Set α) [Countable A] [Nonempty A] (hA : ∀ a ∈ A, a ∈ s) :
-    sInf A ∈ s := by
-  rw [sInf_eq_iInf']
-  exact hs.iInf_mem fun a ↦ hA a a.2
-
-lemma CountableInfClosed.infClosed (hs : CountableInfClosed s) : InfClosed s := by
-  intro a ha b hb
-  have : a ⊓ b = sInf {a, b} := by simp
-  rw [this]
-  exact hs.sInf_mem _ (by grind)
-
-@[simp] lemma countableInfClosed_singleton_top : CountableInfClosed ({⊤} : Set α) where
-  iInf_nat_mem _ hA := by simpa using hA
-
-@[simp] lemma CountableInfClosed.univ : CountableInfClosed (univ : Set α) where
-  iInf_nat_mem _ hA := by simp
-
-lemma CountableInfClosed.inter (hs : CountableInfClosed s) (ht : CountableInfClosed t) :
-    CountableInfClosed (s ∩ t) where
-  iInf_nat_mem _ hA := ⟨hs.iInf_mem (fun n ↦ (hA n).1), ht.iInf_mem (fun n ↦ (hA n).2)⟩
-
-lemma CountableInfClosed.sInter (hS : ∀ s ∈ S, CountableInfClosed s) :
-    CountableInfClosed (⋂₀ S) where
-  iInf_nat_mem _ hA := fun _s hs ↦ (hS _ hs).iInf_mem fun n ↦ hA n _ hs
-
-lemma CountableInfClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableInfClosed (f i)) :
-    CountableInfClosed (⋂ i, f i) :=
-  CountableInfClosed.sInter <| forall_mem_range.2 hf
-
-lemma CountableInfClosed.prod {t : Set β} (hs : CountableInfClosed s) (ht : CountableInfClosed t) :
-    CountableInfClosed (s ×ˢ t) where
-  iInf_nat_mem _ hA := ⟨by rw [Prod.fst_iInf]; exact hs.iInf_mem (fun n ↦ (hA n).1),
-    by rw [Prod.snd_iInf]; exact ht.iInf_mem (fun n ↦ (hA n).2)⟩
-
-end Set
-
-section Finset
-variable {ι : Type*} {f : ι → α} {t : Finset ι}
-
-lemma CountableInfClosed.finsetInf'_mem (hs : CountableInfClosed s) (ht : t.Nonempty) :
-    (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
-  hs.infClosed.finsetInf'_mem ht
-
-lemma CountableInfClosed.finsetInf_mem (hs : CountableInfClosed s) (ht : t.Nonempty) :
-    (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
-  Finset.inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
 
 end Finset
 
