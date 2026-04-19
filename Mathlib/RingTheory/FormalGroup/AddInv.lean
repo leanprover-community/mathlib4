@@ -229,4 +229,7 @@ instance : AddGroup (F.Point σ) where
     rw [← _root_.add_zero (- x + x), ← F.add_neg_cancel (- x), ← _root_.add_assoc,
       _root_.add_assoc (-x), F.add_neg_cancel, _root_.add_zero]
 
+instance [F.IsComm] : AddCommGroup (F.Point σ) where
+  add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
+
 end FormalGroup

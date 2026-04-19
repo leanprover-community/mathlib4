@@ -99,6 +99,14 @@ lemma FormalGroup.assoc' (F : FormalGroup R) {f₀ f₁ f₂ : MvPowerSeries σ 
         congr! 2 with s
         fin_cases s <;> simp [subst]
 
+lemma FormalGroup.comm' (F : FormalGroup R) [F.IsComm] {f g : MvPowerSeries σ R}
+    (hf : PowerSeries.HasSubst f) (hg : PowerSeries.HasSubst g) :
+    F.toPowerSeries.subst ![f, g] = F.toPowerSeries.subst ![g, f] := by
+  nth_rw 1 [IsComm.comm]
+  rw [subst_comp_subst_apply HasSubst.X_X <| hasSubst_of_constantCoeff_nilpotent (by simp [hf, hg])]
+  congr! 2 with s
+  fin_cases s <;> simp [subst]
+
 namespace FormalGroup
 
 variable {σ : Type*} (F : FormalGroup R)
@@ -127,8 +135,6 @@ instance : Zero (F.Point σ) where
 
 @[simp]
 lemma zero_apply : (0 : F.Point σ).val = 0 := rfl
-
-/- TODO : Zero, SMul, Inv instance. -/
 
 /-- Additive formal group law `𝔾ₐ(X,Y) = X + Y`. -/
 @[simps]
