@@ -808,7 +808,6 @@ end AffineIsometryEquiv
 
 namespace AffineSubspace
 
-set_option simps.defeqWarn false in
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/

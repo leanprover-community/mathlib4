@@ -43,7 +43,6 @@ noncomputable def integralPositiveLinearMap (μ : Measure X)
       map_smul' c f := integral_smul c f }
     fun _ ↦ integral_nonneg
 
-set_option simps.defeqWarn false in
 /-- Integration as a positive linear functional on `C_c(X, ℝ≥0)`. -/
 -- Note: the default generated `simps` lemma uses `Subtype.val` instead of `NNReal.toReal`.
 @[simps! apply]
