@@ -89,7 +89,7 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects whe
   projective_obj {M} proj := by
     have := small_lift R
     rw [← IsProjective.iff_projective]
-    exact Module.Projective.of_equiv ULift.moduleEquiv.symm
+    exact Module.Projective.ulift
 
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects where
   injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
