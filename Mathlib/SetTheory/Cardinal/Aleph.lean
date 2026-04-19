@@ -625,7 +625,7 @@ theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSu
     rw [← preBeth_succ] at this
     exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
   · apply iff_of_false _ H
-    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
+    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff_mem_range_succ] at H
     obtain ho | ⟨a, rfl⟩ := H
     · simp [ho.eq_bot]
     · intro h

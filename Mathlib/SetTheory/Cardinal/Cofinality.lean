@@ -307,7 +307,7 @@ theorem cof_succ (o) : cof (succ o) = 1 :=
 
 theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
   rw [← not_iff_not, not_lt, Cardinal.le_one_iff, isSuccLimit_iff,
-    not_and_or, not_ne_iff, not_isSuccPrelimit_iff', cof_eq_zero, cof_eq_one_iff]
+    not_and_or, not_ne_iff, not_isSuccPrelimit_iff_mem_range_succ, cof_eq_zero, cof_eq_one_iff]
 
 @[simp]
 theorem cof_lt_aleph0_iff {o : Ordinal} : cof o < ℵ₀ ↔ cof o ≤ 1 := by
