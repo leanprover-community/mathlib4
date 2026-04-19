@@ -42,8 +42,9 @@ namespace AbsolutelyMonotoneOn
 /-- A globally smooth function all of whose iterated derivatives are nonnegative on a set `s`
 satisfying `UniqueDiffOn` is absolutely monotone on `s`. Such sets `s` include open sets,
 `Set.Ici`, and convex sets with nonempty interior. -/
-theorem of_contDiff {f : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ ∞ f)
-    (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDeriv n f x) : AbsolutelyMonotoneOn f s where
+theorem of_contDiff {f : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s)
+    (hf : ContDiff ℝ ∞ f) (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDeriv n f x) :
+    AbsolutelyMonotoneOn f s where
   contDiffOn := hf.contDiffOn
   nonneg n x hx := by
     rw [iteratedDerivWithin_eq_iteratedDeriv hs (hf.contDiffAt.of_le (by exact_mod_cast le_top))
@@ -52,23 +53,26 @@ theorem of_contDiff {f : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s) (h
 
 /-! ### Basic closure properties -/
 
-theorem add {f g : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s) (hf : AbsolutelyMonotoneOn f s)
-    (hg : AbsolutelyMonotoneOn g s) : AbsolutelyMonotoneOn (f + g) s where
+theorem add {f g : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s)
+    (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :
+    AbsolutelyMonotoneOn (f + g) s where
   contDiffOn := hf.contDiffOn.add hg.contDiffOn
   nonneg n x hx := by
     rw [iteratedDerivWithin_add hx hs ((hf.contDiffOn x hx).of_le (by exact_mod_cast le_top))
       ((hg.contDiffOn x hx).of_le (by exact_mod_cast le_top))]
     exact add_nonneg (hf.nonneg n x hx) (hg.nonneg n x hx)
 
-theorem smul {f : ℝ → ℝ} {s : Set ℝ} {c : ℝ} (hf : AbsolutelyMonotoneOn f s) (hc : 0 ≤ c) :
+theorem smul {f : ℝ → ℝ} {s : Set ℝ} {c : ℝ}
+    (hf : AbsolutelyMonotoneOn f s) (hc : 0 ≤ c) :
     AbsolutelyMonotoneOn (c • f) s where
   contDiffOn := hf.contDiffOn.const_smul c
   nonneg n x hx := by
     rw [iteratedDerivWithin_const_smul_field c f]
     exact smul_nonneg hc (hf.nonneg n x hx)
 
-theorem mul {f g : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s) (hf : AbsolutelyMonotoneOn f s)
-    (hg : AbsolutelyMonotoneOn g s) : AbsolutelyMonotoneOn (f * g) s where
+theorem mul {f g : ℝ → ℝ} {s : Set ℝ} (hs : UniqueDiffOn ℝ s)
+    (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :
+    AbsolutelyMonotoneOn (f * g) s where
   contDiffOn := hf.contDiffOn.mul hg.contDiffOn
   nonneg n x hx := by
     rw [iteratedDerivWithin_mul hx hs ((hf.contDiffOn x hx).of_le (by exact_mod_cast le_top))
