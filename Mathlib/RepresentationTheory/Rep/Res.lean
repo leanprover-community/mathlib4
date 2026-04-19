@@ -19,7 +19,7 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 universe t w u v v1 v2
 
-variable {k : Type u} [CommRing k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
+variable {k : Type u} [Semiring k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
 
 open CategoryTheory
 
@@ -72,7 +72,7 @@ instance : (resFunctor (k := k) f).Additive where
     simp only [add_hom, Representation.IntertwiningMap.add_toLinearMap]
     rfl
 
-instance : (resFunctor (k := k) f).Linear k where
+instance {k : Type u} [CommSemiring k] : (resFunctor (k := k) f).Linear k where
   map_smul {X Y} l r := by
     ext : 2;
     rw [smul_hom, Representation.IntertwiningMap.toLinearMap_smul,

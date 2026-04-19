@@ -84,8 +84,6 @@ structure Grp where
   X : C
   [grp : GrpObj X]
 
-@[deprecated (since := "2025-10-13")] alias Grp_ := Grp
-
 attribute [instance] Grp.grp AddGrp.addGrp
 
 namespace Grp

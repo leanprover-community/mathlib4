@@ -6,6 +6,7 @@ Authors: Michal Staromiejski
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 
