@@ -361,11 +361,14 @@ theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b
 instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
-instance [Std.Symm r] : Std.Symm (ReflGen r) where
-  symm a b h := by
-    induction h with
-    | refl => exact refl
-    | single h => exact single (symm_of r h)
+lemma symmetric (h' : Symmetric r) : Symmetric (ReflGen r) := by
+  intro a b h
+  induction h with
+  | refl => exact refl
+  | single h => exact single (h' h)
+
+instance [H : Std.Symm r] : Std.Symm (ReflGen r) where
+  symm := symmetric H.symm
 
 instance [IsTrans α r] : IsTrans α (ReflGen r) where
   trans a b c h₁ h₂ := by
@@ -439,6 +442,9 @@ theorem symmetric (h : Symmetric r) : Symmetric (ReflTransGen r) := by
   | refl => rfl
   | tail _ b c => apply Relation.ReflTransGen.head (h b) c
 
+instance [H : Std.Symm r] : Std.Symm (ReflTransGen r) where
+  symm := symmetric H.symm
+
 theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c ∧ r c b :=
   (cases_tail_iff r a b).1
 
@@ -484,12 +490,6 @@ theorem total_of_right_unique (U : Relator.RightUnique r) (ab : ReflTransGen r a
       · cases U bd be
         exact Or.inl ec
     · exact Or.inr (IH.tail bd)
-
-instance [Std.Symm r] : Std.Symm (ReflTransGen r) where
-  symm _ _ h := by
-    induction h with
-    | refl => exact refl
-    | tail h h' ih => exact ih.head (symm h')
 
 end ReflTransGen
 
@@ -569,7 +569,7 @@ instance [Std.Refl r] : Std.Refl (TransGen r) where
   refl x := .single (refl x)
 
 instance [H : Std.Symm r] : Std.Symm (TransGen r) where
-  symm _ _ h := h.symmetric H.symm
+  symm := symmetric H.symm
 
 end TransGen
 
