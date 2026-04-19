@@ -116,7 +116,9 @@ lemma cuspFunction_apply_zero {f : ℍ → ℂ} (hh : 0 < h)
 
 end UpperHalfPlane
 
-theorem SlashInvariantFormClass.periodic_comp_ofComplex [SlashInvariantFormClass F Γ k]
+namespace SlashInvariantFormClass
+
+theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k]
     (hΓ : h ∈ Γ.strictPeriods) : Periodic (f ∘ ofComplex) h := by
   intro w
   by_cases! hw : 0 < im w
@@ -128,27 +130,33 @@ theorem SlashInvariantFormClass.periodic_comp_ofComplex [SlashInvariantFormClass
   · have : im (w + h) ≤ 0 := by simpa using hw
     simp [ofComplex_apply_of_im_nonpos this, ofComplex_apply_of_im_nonpos hw]
 
-protected theorem SlashInvariantFormClass.eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
+protected theorem eq_cuspFunction [SlashInvariantFormClass F Γ k] (τ : ℍ)
     (hΓ : h ∈ Γ.strictPeriods) (hh : h ≠ 0) : cuspFunction h f (𝕢 h τ) = f τ :=
   eq_cuspFunction τ hh (SlashInvariantFormClass.periodic_comp_ofComplex f hΓ)
 
+end SlashInvariantFormClass
+
 open SlashInvariantFormClass
 
+namespace ModularFormClass
+
 @[deprecated ModularFormClass.bdd_at_infty (since := "2026-04-19")]
-theorem ModularFormClass.bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k]
-    (hi : IsCusp OnePoint.infty Γ) : BoundedAtFilter I∞ (f ∘ ofComplex) :=
+theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
+    BoundedAtFilter I∞ (f ∘ ofComplex) :=
   (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
 
-protected theorem ModularFormClass.differentiableAt_cuspFunction [ModularFormClass F Γ k]
+protected theorem differentiableAt_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction h f) q :=
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
   differentiableAt_cuspFunction hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f) hq
 
-protected lemma ModularFormClass.analyticAt_cuspFunction_zero [ModularFormClass F Γ k] (hh : 0 < h)
+protected lemma analyticAt_cuspFunction_zero [ModularFormClass F Γ k] (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) : AnalyticAt ℂ (cuspFunction h f) 0 :=
   have : Fact (IsCusp OnePoint.infty Γ) := ⟨Γ.isCusp_of_mem_strictPeriods hh hΓ⟩
   analyticAt_cuspFunction_zero hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f)
+
+end ModularFormClass
 
 namespace UpperHalfPlane
 
@@ -620,8 +628,10 @@ end ring
 
 section uniqueness
 
+namespace UpperHalfPlane
+
 /-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
-lemma UpperHalfPlane.hasFPowerSeries_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
+lemma hasFPowerSeries_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) :
     HasFPowerSeriesOnBall (cuspFunction h f) (qExpansionFormalMultilinearSeries h f) 0 1 := by
@@ -631,13 +641,15 @@ lemma UpperHalfPlane.hasFPowerSeries_cuspFunction {c : ℕ → ℂ} (hh : 0 < h)
       using hfanalytic.hasFPowerSeriesAt
   simpa [h1.eq_formalMultilinearSeries h2] using hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf
 
-lemma UpperHalfPlane.qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
+lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     (hfanalytic : AnalyticAt ℂ (cuspFunction h f) 0)
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
     c m = (qExpansion h f).coeff m := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
   have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
   simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+
+end UpperHalfPlane
 
 protected lemma ModularFormClass.qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     (hΓ : h ∈ Γ.strictPeriods) {f : F} [ModularFormClass F Γ k]
