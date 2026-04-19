@@ -378,6 +378,103 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
+      # Fetch `master`'s cached oleans into `tools-branch` so we can compare public `.olean`
+      # files against the PR's build. With the module system, only changes that affect
+      # exported information (signatures, axioms, exposed definition bodies) touch the
+      # public `.olean`; proof-only changes leave it byte-identical and only update
+      # `.olean.private`. See scripts/public_olean_diff.sh for the comparison logic.
+      - name: fetch master oleans for public-olean diff
+        id: fetch_master_oleans
+        if: ${{ steps.build.outcome == 'success' && github.event_name == 'push' && github.ref != 'refs/heads/master' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd tools-branch
+          ./.lake/build/bin/cache get
+
+      - name: diff public oleans against master
+        id: public_olean_diff
+        if: ${{ steps.fetch_master_oleans.outcome == 'success' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          bash pr-branch/scripts/public_olean_diff.sh \
+            tools-branch/.lake/build/lib/lean \
+            pr-branch/.lake/build/lib/lean \
+            public-olean-diff.txt
+          diff_status=$?
+          echo "diff_status=${diff_status}" >> "$GITHUB_OUTPUT"
+          if [ "${diff_status}" = "0" ]; then
+            echo "matches_master=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "matches_master=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "::group::public_olean_diff output"
+          head -n 200 public-olean-diff.txt || true
+          echo "::endgroup::"
+          exit 0
+
+      - name: upload public-olean-diff artifact
+        if: ${{ always() && steps.public_olean_diff.outcome != 'skipped' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: public-olean-diff
+          path: public-olean-diff.txt
+          if-no-files-found: ignore
+
+      - name: look up PR number for label management
+        id: pr_lookup
+        if: ${{ steps.public_olean_diff.outcome != 'skipped' && github.event_name == 'push' && github.repository == 'leanprover-community/mathlib4' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          # For push events we have no PR context, so look up the PR by head branch.
+          pr_number=$(gh pr list --repo "${{ github.repository }}" --head "$BRANCH" \
+            --state open --json number --jq '.[0].number // empty')
+          echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
+
+      - name: manage no-public-api-changes label
+        if: ${{ steps.pr_lookup.outcome == 'success' && steps.pr_lookup.outputs.pr_number != '' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr_lookup.outputs.pr_number }}
+          MATCHES: ${{ steps.public_olean_diff.outputs.matches_master }}
+        run: |
+          if [ "$MATCHES" = "true" ]; then
+            gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" \
+              --add-label "no-public-api-changes"
+          else
+            gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" \
+              --remove-label "no-public-api-changes"
+          fi
+
+      - name: enforce expect-no-public-api-changes label
+        if: ${{ steps.pr_lookup.outcome == 'success' && steps.pr_lookup.outputs.pr_number != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.pr_lookup.outputs.pr_number }}
+          MATCHES: ${{ steps.public_olean_diff.outputs.matches_master }}
+        run: |
+          expected=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" \
+            --json labels --jq '.labels[].name' | grep -Fx "expect-no-public-api-changes" || true)
+          if [ -n "$expected" ] && [ "$MATCHES" != "true" ]; then
+            echo "❌ This PR is labelled \`expect-no-public-api-changes\`, but the public"
+            echo "   \`.olean\` files differ from master. If these changes are intentional,"
+            echo "   remove the \`expect-no-public-api-changes\` label; otherwise update the"
+            echo "   PR so that only proofs/non-exported information change."
+            echo ""
+            echo "Differing public oleans (truncated to 50):"
+            head -n 50 public-olean-diff.txt || true
+            exit 1
+          fi
+
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
       # even when they are not touched.
