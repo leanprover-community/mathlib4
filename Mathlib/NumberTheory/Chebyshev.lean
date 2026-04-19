@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.PrimeCounting
-public import Mathlib.NumberTheory.Primorial
+public import Mathlib.NumberTheory.PrimorialLowerBound
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
@@ -45,9 +45,6 @@ functions.
 
 Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 
-## TODOS
-
-- Prove Chebyshev's lower bound.
 -/
 @[expose] public section
 
@@ -144,6 +141,67 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [Real.log_pow, mul_comm]
   gcongr
   exact floor_le hx
+
+/-- `√2 ^ n ≤ n#` for `n ≥ 2`. Real-valued form of the Chebyshev lower bound. -/
+theorem sqrt_two_pow_le_primorial {n : ℕ} (hn : 2 ≤ n) :
+    Real.sqrt 2 ^ n ≤ (primorial n : ℝ) := by
+  have hnat : 2 ^ ((n + 1) / 2) ≤ primorial n := two_pow_half_succ_le_primorial hn
+  -- √2^n = 2^(n/2 : ℝ) ≤ 2^((n+1)/2 : ℕ) ≤ n#
+  -- since (n : ℝ)/2 ≤ ((n+1)/2 : ℕ) [nat ceil of n/2]
+  have hexp : (n : ℝ) / 2 ≤ ((n + 1) / 2 : ℕ) := by
+    have h : n ≤ 2 * ((n + 1) / 2 : ℕ) := by lia
+    rw [div_le_iff₀ (by norm_num : (0 : ℝ) < 2)]
+    have : (↑n : ℝ) ≤ ↑(2 * ((n + 1) / 2)) := Nat.cast_le.mpr h
+    push_cast at this ⊢; linarith [mul_comm 2 (↑((n + 1) / 2) : ℝ)]
+  calc (Real.sqrt 2 ^ n : ℝ)
+      = (2 : ℝ) ^ ((n : ℝ) / 2) := by
+        rw [Real.sqrt_eq_rpow, ← Real.rpow_natCast, ← Real.rpow_mul (by positivity)]
+        ring_nf
+    _ ≤ (2 : ℝ) ^ ((n + 1) / 2 : ℕ) := by
+        rw [← Real.rpow_natCast (2 : ℝ) ((n + 1) / 2)]
+        exact Real.rpow_le_rpow_of_exponent_le (by norm_num) (by exact_mod_cast hexp)
+    _ ≤ primorial n := by exact_mod_cast hnat
+
+/-- Chebyshev's lower bound: `log 2 / 2 * x ≤ θ x` for `3 ≤ x`. -/
+theorem log2_div_two_mul_le_theta {x : ℝ} (hx : 3 ≤ x) : Real.log 2 / 2 * x ≤ θ x := by
+  rw [theta_eq_log_primorial]
+  have hfloor3 : 3 ≤ ⌊x⌋₊ := by
+    have := Nat.floor_le_floor hx; norm_num at this; exact this
+  by_cases hfloor5 : 5 ≤ ⌊x⌋₊
+  · -- Case ⌊x⌋₊ ≥ 5: use two_pow_half_add_one_le_primorial
+    trans Real.log (2 ^ (⌊x⌋₊ / 2 + 1))
+    · rw [Real.log_pow, show Real.log 2 / 2 * x = x / 2 * Real.log 2 from by ring]
+      gcongr
+      -- x / 2 ≤ ↑(⌊x⌋₊ / 2 + 1): from x < ⌊x⌋₊ + 1 ≤ 2 * (⌊x⌋₊ / 2 + 1)
+      have hle : (↑(⌊x⌋₊ + 1) : ℝ) ≤ ↑(2 * (⌊x⌋₊ / 2 + 1)) :=
+        Nat.cast_le.mpr (by lia)
+      have hlt : x < ↑⌊x⌋₊ + 1 := Nat.lt_floor_add_one x
+      push_cast at hle ⊢; linarith
+    · exact Real.log_le_log (by positivity)
+        (by exact_mod_cast two_pow_half_add_one_le_primorial hfloor5)
+  · -- Case ⌊x⌋₊ ∈ {3, 4}: primorial = 6, x < 5
+    have hfloor4 : ⌊x⌋₊ ≤ 4 := by lia
+    have hx5 : x < 5 := by
+      linarith [Nat.lt_floor_add_one x,
+        show (↑⌊x⌋₊ : ℝ) ≤ 4 from Nat.cast_le.mpr hfloor4]
+    have h6 : (6 : ℕ) ≤ primorial ⌊x⌋₊ := by
+      rcases show ⌊x⌋₊ = 3 ∨ ⌊x⌋₊ = 4 from by lia with h | h <;>
+        simp only [h] <;> decide
+    -- 5/2 * log 2 ≤ log 6, from 2^3 ≤ 3^2 (i.e. 8 ≤ 9)
+    have h52 : 5 / 2 * Real.log 2 ≤ Real.log 6 := by
+      have h23 : 3 * Real.log 2 ≤ 2 * Real.log 3 := by
+        have h := Real.log_le_log (show (0:ℝ) < 2 ^ 3 from by positivity)
+          (show (2:ℝ) ^ 3 ≤ 3 ^ 2 from by norm_num)
+        rwa [Real.log_pow, Real.log_pow] at h
+      rw [show (6 : ℝ) = 2 * 3 from by norm_num,
+          Real.log_mul (by norm_num : (2 : ℝ) ≠ 0) (by norm_num : (3 : ℝ) ≠ 0)]
+      linarith
+    calc Real.log 2 / 2 * x
+        ≤ Real.log 2 / 2 * 5 := by gcongr
+      _ = 5 / 2 * Real.log 2 := by ring
+      _ ≤ Real.log 6 := h52
+      _ ≤ Real.log ↑(primorial ⌊x⌋₊) :=
+          Real.log_le_log (by positivity) (by exact_mod_cast h6)
 
 /-!
 ## Relating `ψ` and `θ`
