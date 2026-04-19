@@ -378,7 +378,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, rfl⟩ : ∃ N, N < m ∧ v N = x := xv
+  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
   calc
     (∑ j ∈ Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
@@ -387,12 +387,22 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
       rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ zero_le hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
-      apply add_le_add
-      · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim id (fun h ↦ ?_)
-        rw [(hv hi.2).antisymm (ht.2 h)]
+      refine add_le_add ?_ ?_
+      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
+        rcases vst i with (h | h); · exact h
+        have : v i = x := by
+          apply le_antisymm
+          · rw [← Nx]; exact hv hi.2
+          · exact ht.2 h
+        rw [this]
         exact hs.1
-      · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim (fun h ↦ ?_) id
-        rw [(hs.2 h).antisymm (hv hi.1)]
+      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
+        rcases vst i with (h | h); swap; · exact h
+        have : v i = x := by
+          apply le_antisymm
+          · exact hs.2 h
+          · rw [← Nx]; exact hv hi.1
+        rw [this]
         exact ht.1
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
