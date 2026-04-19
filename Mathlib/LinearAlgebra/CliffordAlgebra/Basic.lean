@@ -260,7 +260,7 @@ theorem ι_mul_ι_comm (a b : M) :
 theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
     (x * ι Q a) * (ι Q b * y) =
       algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
-  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm,  mul_assoc,
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm, mul_assoc,
     mul_assoc]
 
 section isOrtho

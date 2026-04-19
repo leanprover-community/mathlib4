@@ -84,7 +84,6 @@ private def coneLift : Cone K ⥤ Cone (liftFromOver.obj K) where
     | of a => by simp [← Comma.comp_left]
   }
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cone of an extended functor
@@ -94,16 +93,11 @@ with morphisms. This same object is a cone of the original functor `K : J ⥤ Ov
 private def coneBack : Cone (liftFromOver.obj K) ⥤ Cone K where
   obj t := {
     pt := .mk (t.π.app star)
-    π.app a := {
-      left := t.π.app (of a)
-      right := 𝟙 _
-      w := by simpa using t.w (homFrom a)
-    }
-    π.naturality a b f := by ext; simpa using t.π.naturality (incl.map f)
-  }
-  map {t₁ t₂ f} := {
-    hom := Over.homMk f.hom
-  }
+    π.app a := Over.homMk (t.π.app (of a)) (t.w (homFrom a))
+    π.naturality _ _ f := by ext; simpa using (t.w (incl.map f)).symm }
+  map {t₁ t₂ f} :=
+    { hom := Over.homMk f.hom (by simp [dsimp% f.w star] )
+      w j := by ext; simp [dsimp% f.w (of j)] }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -205,7 +199,6 @@ private def coconeLift : Cocone K ⥤ Cocone (liftFromUnder.obj K) where
     | of a => by simp [← Comma.comp_right]
   }
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- This is the inverse of the previous construction: a cocone of an extended functor
@@ -215,16 +208,11 @@ with morphisms. This same object is a cocone of the original functor `K : J ⥤ 
 private def coconeBack : Cocone (liftFromUnder.obj K) ⥤ Cocone K where
   obj t := {
     pt := .mk (t.ι.app star)
-    ι.app a := {
-      left := 𝟙 _
-      right := t.ι.app (of a)
-      w := by simpa using (t.w (homTo a)).symm
-    }
-    ι.naturality a b f := by ext; simpa using t.ι.naturality (incl.map f)
-  }
-  map {t₁ t₂ f} := {
-    hom := Under.homMk f.hom
-  }
+    ι.app a := Under.homMk (t.ι.app (of a)) (t.w (homTo a))
+    ι.naturality _ _ f := by ext; simpa using t.ι.naturality (incl.map f) }
+  map {t₁ t₂ f} :=
+    { hom := Under.homMk f.hom (f.w .star)
+      w j := by ext; simp [dsimp% f.w (of j)] }
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

@@ -663,8 +663,14 @@ deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance algebra : Algebra K (CyclotomicField n K) :=
-  inferInstanceAs <| Algebra K (cyclotomic n K).SplittingField
+variable [Algebra A K] in
+deriving instance Algebra A, IsScalarTower A K for CyclotomicField n K
+
+instance algebra : Algebra K (CyclotomicField n K) := inferInstance
+
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
+
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -715,17 +721,6 @@ section IsDomain
 variable [Algebra A K]
 
 section CyclotomicRing
-
-/-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
--/
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.instAlgebra (cyclotomic n K)
-
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
-
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.instIsScalarTower _
 
 instance [IsDomain A] [IsFractionRing A K] : Module.IsTorsionFree A (CyclotomicField n K) := by
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
@@ -801,7 +796,6 @@ instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : �
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units := fun ⟨x, hx⟩ => by

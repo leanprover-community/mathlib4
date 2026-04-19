@@ -107,14 +107,9 @@ example below.
 def cone (S : LightProfinite) :
     Cone (StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G) where
   pt := G.obj S
-  π := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
-      have := f.w
-      simp only [const_obj_obj, StructuredArrow.left_eq_id, const_obj_map, Category.id_comp,
-        StructuredArrow.w] at this
-      simp only [const_obj_obj, comp_obj, StructuredArrow.proj_obj, const_obj_map, Category.id_comp,
-        Functor.comp_map, StructuredArrow.proj_map, ← map_comp, StructuredArrow.w]) }
+  π :=
+    { app i := G.map i.hom
+      naturality _ _ f := by simp [← Functor.map_comp] }
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
