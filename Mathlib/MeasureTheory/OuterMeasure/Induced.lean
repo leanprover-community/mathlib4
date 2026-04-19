@@ -365,9 +365,9 @@ theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _
 
 @[simp]
-theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
-  ext fun s => by simpa [← nonpos_iff_eq_zero] using
-    (measure_mono (subset_univ s)).trans_eq <| trim_eq _ .univ
+theorem trim_zero : (0 : OuterMeasure α).trim = 0 := by
+  ext s
+  exact nonpos_iff_eq_zero.1 <| (measure_mono (subset_univ s)).trans_eq <| trim_eq _ .univ
 
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by

@@ -370,7 +370,6 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
 theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht : IsLeast t x) :
     eVariationOn f (s ∪ t) = eVariationOn f s + eVariationOn f t := by
-  classical
   apply le_antisymm _ (eVariationOn.add_le_union f fun a ha b hb => le_trans (hs.2 ha) (ht.2 hb))
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, ust⟩⟩
@@ -388,15 +387,13 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
       rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ zero_le hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine add_le_add ?_ ?_
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h)
-        · exact h
-        · exact (hv hi.2).antisymm (ht.2 h) ▸ hs.1
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h)
-        · exact (hs.2 h).antisymm (hv hi.1) ▸ ht.1
-        · exact h
+      apply add_le_add
+      · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim id (fun h ↦ ?_)
+        rw [(hv hi.2).antisymm (ht.2 h)]
+        exact hs.1
+      · refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ (vst i).elim (fun h ↦ ?_) id
+        rw [(hs.2 h).antisymm (hv hi.1)]
+        exact ht.1
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
