@@ -89,7 +89,6 @@ theorem mapOfEq_apply (p : Path x x) :
   FundamentalGroupoid.conj_eqToHom ..
 
 /-- The fundamental group map applied to a path class equals the class of the mapped path. -/
-@[simp]
 theorem map_fromPath (f : C(X, Y)) {x : X} (γ : Path x x) :
     map f x (fromPath ⟦γ⟧) = fromPath ⟦γ.map f.continuous⟧ :=
   rfl
