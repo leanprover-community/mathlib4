@@ -1054,7 +1054,7 @@ For `n = ω`, we require the function to be analytic. The precise
 definition we give (all the derivatives should be analytic) is more involved to work around issues
 when the space is not complete, but it is equivalent when the space is complete.
 -/
-@[fun_prop]
+@[informal "$C^k$ function", fun_prop]
 def ContDiff (n : ℕ∞ω) (f : E → F) : Prop :=
   match n with
   | ω => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo ⊤ f p

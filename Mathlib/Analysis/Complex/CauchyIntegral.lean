@@ -545,6 +545,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ}
 /-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on an open disc and is
 continuous on its closure, then for any `w` in this open ball we have
 $\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$. -/
+@[informal "Cauchy integral formula"]
 theorem _root_.DiffContOnCl.circleIntegral_sub_inv_smul {R : ℝ} {c w : ℂ} {f : ℂ → E}
     (h : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w :=
@@ -627,6 +628,7 @@ protected theorem _root_.DifferentiableOn.hasFPowerSeriesOnBall {R : ℝ≥0} {c
 
 /-- If `f : ℂ → E` is complex differentiable on some set `s`, then it is analytic at any point `z`
 such that `s ∈ 𝓝 z` (equivalently, `z ∈ interior s`). -/
+@[informal "analyticity of holomorphic functions"]
 protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → E} {z : ℂ}
     (hd : DifferentiableOn ℂ f s) (hz : s ∈ 𝓝 z) : AnalyticAt ℂ f z := by
   rcases nhds_basis_closedBall.mem_iff.1 hz with ⟨R, hR0, hRs⟩

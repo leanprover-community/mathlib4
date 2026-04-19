@@ -343,6 +343,7 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ}
 /-- The characterization of weak convergence of probability measures by the usual (defining)
 condition that the integrals of every continuous bounded function converge to the integral of the
 function against the limit measure. -/
+@[informal "convergence in distribution"]
 theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔

@@ -651,6 +651,7 @@ end Ordnode
 maintain that the tree is balanced and correctly stores subtree sizes at each level. The
 correctness property of the tree is baked into the type, so all operations on this type are correct
 by construction. -/
+@[informal "ordered set"]
 def Ordset (α : Type*) [Preorder α] :=
   { t : Ordnode α // t.Valid }
 

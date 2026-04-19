@@ -292,6 +292,7 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 
 /-- A generalization of **Sylow's second theorem**.
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
+@[informal "second Sylow theorem"]
 instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
     IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
@@ -321,6 +322,7 @@ variable (p) (G)
 
 /-- A generalization of **Sylow's third theorem**.
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`. -/
+@[informal "third Sylow theorem"]
 theorem card_sylow_modEq_one [Fact p.Prime] [Finite (Sylow p G)] :
     Nat.card (Sylow p G) ≡ 1 [MOD p] := by
   refine Sylow.nonempty.elim fun P : Sylow p G => ?_
@@ -648,6 +650,7 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
 
 /-- A generalisation of **Sylow's first theorem**. If `p ^ n` divides
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
+@[informal "first Sylow theorem"]
 theorem exists_subgroup_card_pow_prime [Finite G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ Nat.card G) : ∃ K : Subgroup G, Nat.card K = p ^ n :=
   let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥

@@ -140,6 +140,7 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
   convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
 /-- The orthogonal projection onto a complete subspace. -/
+@[informal "orthogonal projection"]
 def orthogonalProjection : E →L[𝕜] K :=
   LinearMap.mkContinuous
     { toFun := fun v => ⟨K.orthogonalProjectionFn v, orthogonalProjectionFn_mem v⟩

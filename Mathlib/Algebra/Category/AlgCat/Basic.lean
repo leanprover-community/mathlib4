@@ -28,6 +28,7 @@ variable (R : Type u) [CommRing R]
 
 set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
+@[informal "the category of algebras over a ring"]
 structure AlgCat where
   private mk ::
   /-- The underlying type. -/

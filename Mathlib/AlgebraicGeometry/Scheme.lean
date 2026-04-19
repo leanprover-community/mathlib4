@@ -39,6 +39,7 @@ so that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
+@[informal "scheme"]
 structure Scheme extends LocallyRingedSpace where
   local_affine :
     ∀ x : toLocallyRingedSpace,

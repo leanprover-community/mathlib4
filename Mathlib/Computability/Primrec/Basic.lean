@@ -172,6 +172,7 @@ end Primcodable
 
 /-- `Primrec f` means `f` is primitive recursive (after
   encoding its input and output as natural numbers). -/
+@[informal "primitive recursive function"]
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
   Nat.Primrec fun n => encode ((@decode α _ n).map f)
 

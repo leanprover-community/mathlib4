@@ -84,6 +84,7 @@ section Seminormed
 variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
+@[informal "isometric inclusion in double dual"]
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
   { inclusionInDoubleDual 𝕜 E with
     norm_map' x := by

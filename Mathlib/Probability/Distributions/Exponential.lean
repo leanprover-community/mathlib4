@@ -90,6 +90,7 @@ end ExponentialPDF
 open MeasureTheory
 
 /-- Measure defined by the exponential distribution -/
+@[informal "exponential law"]
 noncomputable
 def expMeasure (r : ℝ) : Measure ℝ := gammaMeasure 1 r
 

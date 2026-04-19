@@ -129,6 +129,7 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+@[informal "characteristic polynomial"]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
@@ -208,6 +209,7 @@ This holds over any commutative ring.
 
 See `LinearMap.aeval_self_charpoly` for the equivalent statement about endomorphisms.
 -/
+@[informal "Cayley-Hamilton theorem"]
 theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- We begin with the fact $χ_M(t) I = adjugate (t I - M) * (t I - M)$,
   -- as an identity in `Matrix n n R[X]`.

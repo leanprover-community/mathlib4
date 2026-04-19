@@ -55,6 +55,7 @@ lemma contMDiff_val : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) n (val : Rˣ → R) 
   contMDiff_isOpenEmbedding Units.isOpenEmbedding_val
 
 /-- The units of a complete normed ring form a Lie group. -/
+@[informal "general linear group as a Lie group"]
 instance : LieGroup 𝓘(𝕜, R) n Rˣ where
   contMDiff_mul := by
     apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val

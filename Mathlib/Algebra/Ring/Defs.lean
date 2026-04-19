@@ -143,6 +143,7 @@ addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
+@[informal "ring"]
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 /-!

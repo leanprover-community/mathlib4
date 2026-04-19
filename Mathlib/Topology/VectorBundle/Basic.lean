@@ -355,6 +355,7 @@ variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module
 vector space) has a topological vector space structure with fiber `F` (denoted with
 `VectorBundle R F E`) if around every point there is a fiber bundle trivialization which is linear
 in the fibers. -/
+@[informal "topological vector bundle"]
 class VectorBundle : Prop where
   trivialization_linear' : ∀ (e : Trivialization F (π F E)) [MemTrivializationAtlas e], e.IsLinear R
   continuousOn_coordChange' :

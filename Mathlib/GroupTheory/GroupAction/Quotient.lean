@@ -222,7 +222,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 
 /-- **Class formula**. This is a special case of
 `MulAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/
-@[to_additive
+@[informal "class formula", to_additive
       /-- **Class formula**. This is a special case of
       `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α ⧸ stabilizer α ω.out :=
@@ -256,7 +256,7 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) �
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
 elements fixed by each `g ∈ G` is the number of orbits. -/
-@[to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
+@[informal "Burnside lemma", to_additive AddAction.sum_card_fixedBy_eq_card_orbits_mul_card_addGroup
       /-- **Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. -/]
 theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]

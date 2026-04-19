@@ -124,6 +124,7 @@ variable {R S}
 /-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined
 via the closed sets of the topology: they are exactly those sets that are the zero locus
 of a subset of the ring. -/
+@[informal "Zariski topology"]
 instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
   TopologicalSpace.ofClosed (Set.range PrimeSpectrum.zeroLocus) ⟨Set.univ, by simp⟩
     (by

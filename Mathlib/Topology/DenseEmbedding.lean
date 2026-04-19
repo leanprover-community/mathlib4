@@ -137,6 +137,7 @@ variable [TopologicalSpace γ]
 /-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =
   IsDenseInducing.extend di f : β → γ`. If `γ` is Hausdorff and `f` has a continuous extension, then
   `g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
+@[informal "extension by continuity"]
 def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
 

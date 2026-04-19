@@ -27,6 +27,7 @@ variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
   `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
   sequences, because if `a : ℕ → α` then the filter of sets containing
   cofinitely many of the `a n` is Cauchy iff `a` is a Cauchy sequence. -/
+@[informal "Cauchy filter"]
 def Cauchy (f : Filter α) :=
   NeBot f ∧ f ×ˢ f ≤ 𝓤 α
 
@@ -182,6 +183,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
 is general enough to cover both ℕ and ℝ, which are the main motivating examples. -/
+@[informal "Cauchy sequence"]
 def CauchySeq [Preorder β] (u : β → α) :=
   Cauchy (atTop.map u)
 
@@ -365,6 +367,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
 
 /-- A complete space is defined here using uniformities. A uniform space
   is complete if every Cauchy filter converges. -/
+@[informal "completeness"]
 class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x

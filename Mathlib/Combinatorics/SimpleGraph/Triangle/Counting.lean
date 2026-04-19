@@ -148,6 +148,7 @@ variable [Fintype α]
 /-- The **Triangle Counting Lemma**. If `G` is a graph and `s`, `t`, `u` are disjoint sets of
 vertices such that each pair is `ε`-uniform and `2 * ε`-dense, then `G` contains at least
 `(1 - 2 * ε) * ε ^ 3 * |s| * |t| * |u|` triangles. -/
+@[informal "Triangle counting lemma"]
 lemma triangle_counting
     (dst : 2 * ε ≤ G.edgeDensity s t) (ust : G.IsUniform ε s t) (hst : Disjoint s t)
     (dsu : 2 * ε ≤ G.edgeDensity s u) (usu : G.IsUniform ε s u) (hsu : Disjoint s u)

@@ -380,6 +380,7 @@ protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
 
 /-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
 only if it is sequentially compact. -/
+@[informal "sequential compactness is equivalent to compactness (Bolzano-Weierstrass)"]
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 

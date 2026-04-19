@@ -42,6 +42,7 @@ open scoped ENNReal NNReal
 namespace ProbabilityTheory
 
 /-- A measure is Gaussian if its map by every continuous linear form is a real Gaussian measure. -/
+@[informal "Gaussian measures"]
 class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
     {mE : MeasurableSpace E} (μ : Measure E) : Prop where
   map_eq_gaussianReal (L : StrongDual ℝ E) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal

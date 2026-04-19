@@ -94,6 +94,7 @@ First part of the First Main Theorem, quantitative version: If `f` is meromorphi
 plane, then the difference between the characteristic functions of `f` and `f⁻¹` is bounded by an
 explicit constant.
 -/
+@[informal "First Main Theorem of Value Distribution Theory"]
 theorem characteristic_sub_characteristic_inv_le (hf : Meromorphic f) :
     |characteristic f ⊤ R - characteristic f⁻¹ ⊤ R|
       ≤ max |log ‖f 0‖| |log ‖meromorphicTrailingCoeffAt f 0‖| := by
