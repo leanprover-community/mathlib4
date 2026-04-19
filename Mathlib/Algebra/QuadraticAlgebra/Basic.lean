@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.Star.Unitary
 
+import Mathlib.Tactic.Field
+
 /-! # Quadratic algebras : involution and norm.
 
 Let `R` be a commutative ring. We define:
@@ -332,7 +334,7 @@ lemma norm_eq_zero_iff_eq_zero {z : QuadraticAlgebra R a b} :
 
 /-- If `R` is a field and there is no `r : R` such that `r ^ 2 = a + b * r`,
 then `QuadraticAlgebra R a b` is a field. -/
-instance : Field (QuadraticAlgebra R a b) where
+instance instField : Field (QuadraticAlgebra R a b) where
   inv z := (norm z)⁻¹ • star z
   mul_inv_cancel z hz := by
     rw [ne_eq, ← norm_eq_zero_iff_eq_zero] at hz
@@ -340,10 +342,34 @@ instance : Field (QuadraticAlgebra R a b) where
     rw [← C_mul_eq_smul, C_eq_algebraMap, ← algebraMap_norm_eq_mul_star, ← map_mul,
       inv_mul_cancel₀ hz, map_one]
   inv_zero := by simp
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
+  nnratCast q := .C q
+  nnratCast_def q := by
+    change .C q = q.num * (norm q.den : R)⁻¹ • star (q.den : QuadraticAlgebra R a b)
+    rw [norm_natCast, star_natCast, ← map_natCast (algebraMap R (QuadraticAlgebra R a b)),
+      ← map_natCast (algebraMap R (QuadraticAlgebra R a b)), Algebra.smul_def, ← map_mul,
+      ← map_mul, C_eq_algebraMap]
+    exact congr(algebraMap R _ $((Field.nnratCast_def q).trans (by field)))
+  ratCast q := .C q
+  ratCast_def q := by
+    change .C q = q.num * (norm q.den : R)⁻¹ • star (q.den : QuadraticAlgebra R a b)
+    rw [norm_natCast, star_natCast, ← map_natCast (algebraMap R (QuadraticAlgebra R a b)),
+      Algebra.smul_def, ← map_mul, ← map_intCast (algebraMap R (QuadraticAlgebra R a b)),
+      ← map_mul, C_eq_algebraMap]
+    exact congr(algebraMap R _ $((Field.ratCast_def q).trans (by field)))
+  nnqsmul q x := q • x
+  nnqsmul_def q x := by
+    change q • x = .C q * x
+    cases x with
+    | mk re im =>
+      rw [smul_mk, C_mul_eq_smul, smul_mk, NNRat.smul_def, NNRat.smul_def,
+        smul_eq_mul, smul_eq_mul]
+  qsmul q x := q • x
+  qsmul_def q x := by
+    change q • x = .C q * x
+    cases x with
+    | mk re im =>
+      rw [smul_mk, C_mul_eq_smul, smul_mk, Rat.smul_def, Rat.smul_def,
+        smul_eq_mul, smul_eq_mul]
 
 end field
 

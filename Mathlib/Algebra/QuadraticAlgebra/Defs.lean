@@ -25,7 +25,8 @@ and define some algebraic structures on it.
 If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic
 zero then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where
 `R` is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
-`QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal. This is a
+`QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal
+at reducible-and-instances transparency. This is a
 known diamond for characteristic zero fields. If you are working in this setting you should start
 your file with
 ```
@@ -452,7 +453,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_assoc _ _ _ := by ext <;> simp <;> ring
   mul_comm _ _ := by ext <;> simp <;> ring
 
-instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
+instance instAlgebra [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
