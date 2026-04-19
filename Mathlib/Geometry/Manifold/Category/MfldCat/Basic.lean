@@ -8,7 +8,9 @@ module
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
@@ -29,7 +31,7 @@ finite-dimensional vector spaces over `𝕜`.
 set_option autoImplicit false
 
 open CategoryTheory
-open scoped Manifold
+open scoped Manifold ContDiff
 
 universe u
 
@@ -273,5 +275,29 @@ def const {M N : MfldCat.{u} 𝕜 n} (y : N) : M ⟶ N :=
 @[simp]
 lemma const_apply {M N : MfldCat.{u} 𝕜 n} (y : N) (x : M) :
     const y x = y := rfl
+
+section TangentFunctor
+
+variable (M : MfldCat.{u} 𝕜 (n + 1))
+
+local instance : IsManifold M.I 1 M := IsManifold.of_le (n := n + 1) le_add_self
+local instance : IsManifold M.I n M := IsManifold.of_le (n := n + 1) le_self_add
+-- This implies  `TangentBundle M.I M` is a manifold by `Bundle.TotalSpace.isManifold`
+local instance : ContMDiffVectorBundle n M.E (TangentSpace M.I : M → Type u) M.I :=
+  TangentBundle.contMDiffVectorBundle
+
+
+/-- The tangent functor `MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n` -- Sends a `C^(n+1)` manifold to its
+tangent bundle; Sends a `C^(n+1)` map to it's pushforward. -/
+noncomputable def tangentFunctor : MfldCat.{u} 𝕜 (n + 1) ⥤ MfldCat.{u} 𝕜 n where
+  obj M := of (TangentBundle M.I M) (M.E × M.E) (ModelProd M.H M.E) M.I.tangent
+  map {M N} f :=
+    ofHom ⟨tangentMap M.I N.I f.hom, f.hom.contMDiff.contMDiff_tangentMap le_rfl⟩
+  map_id _ := Hom.ext <| Subtype.ext tangentMap_id
+  map_comp f g := Hom.ext <| Subtype.ext <| tangentMap_comp
+    (g.hom.contMDiff.mdifferentiable (by simp))
+    (f.hom.contMDiff.mdifferentiable (by simp))
+
+end TangentFunctor
 
 end MfldCat
