@@ -425,6 +425,9 @@ theorem dilatransvection.coe_toLinearMap {f : Dual R V} {v : V} {h : IsUnit (1 +
     (dilatransvection h).toLinearMap = LinearMap.transvection f v :=
   rfl
 
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
 theorem dilatransvection.apply {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} {x : V} :
     dilatransvection h x = x + f x • v := by
   simp [dilatransvection, LinearMap.transvection.apply]
