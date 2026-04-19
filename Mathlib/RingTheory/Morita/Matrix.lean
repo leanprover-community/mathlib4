@@ -76,8 +76,8 @@ variable {R} in
   from `M` to `N`. -/
 @[simps!]
 def fromMatrixLinear {N : Type*} [AddCommGroup N] [Module (Matrix ι ι R) N] (i : ι)
-    [Module R N] [IsScalarTower R (Matrix ι ι R) N] [IsScalarTower R (Matrix ι ι R) M]
-    (f : M →ₗ[Matrix ι ι R] N) : toModuleCatObj R M i →ₗ[R] toModuleCatObj R N i :=
+    [Module R N] [IsScalarTower R (Matrix ι ι R) N] (f : M →ₗ[Matrix ι ι R] N) :
+    toModuleCatObj R M i →ₗ[R] toModuleCatObj R N i :=
   f.restrictScalars R |>.restrict fun x hx => by
     obtain ⟨y, rfl⟩ := mem_toModuleCatObj i |>.1 hx
     exact ⟨f y, map_smul _ _ _ |>.symm⟩
