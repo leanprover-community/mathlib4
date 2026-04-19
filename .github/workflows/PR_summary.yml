@@ -2,6 +2,7 @@ name: Post PR summary comment
 
 on:
   pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -13,7 +14,10 @@ jobs:
   build:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      github.event.action != 'labeled' &&
+      github.event.action != 'unlabeled'
 
     steps:
     - name: Checkout code
@@ -293,3 +297,75 @@ jobs:
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/file-removed \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
         fi
+
+  # This job gates merging via the `blocked-by-large-import` label in bors.toml.
+  #
+  # Why a separate label instead of putting `large-import` directly in
+  # block_labels?  Because bors's block_labels has no conditional logic: if
+  # the label exists, merge is blocked, period.  We need "blocked unless a
+  # reviewer has added `allow-large-import`", which requires a label whose
+  # presence tracks the *conjunction* of `large-import` AND NOT
+  # `allow-large-import`.  That is `blocked-by-large-import`.
+  #
+  # Three labels, each managed by exactly one actor — no fighting:
+  #   - `large-import`            — managed by the `build` job (import analysis)
+  #   - `blocked-by-large-import` — managed by this job (label logic)
+  #   - `allow-large-import`      — managed by the reviewer
+  #
+  # On opened/synchronize/reopened events this job waits for the `build` job
+  # (which manages `large-import`) so there is no race condition.
+  #
+  # On labeled/unlabeled events the `build` job is skipped, but this job still
+  # runs (if: always()) so that adding `allow-large-import` immediately
+  # removes the block.
+  check-large-import:
+    name: "Check large import"
+    needs: build
+    runs-on: ubuntu-latest
+    if: always() && github.repository == 'leanprover-community/mathlib4'
+
+    steps:
+    - name: Check for large-import label
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        labels=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels --jq '.labels[].name')
+
+        has_large_import=false
+        has_allow=false
+
+        if printf '%s\n' "$labels" | grep -qx "large-import"; then
+          has_large_import=true
+        fi
+
+        if printf '%s\n' "$labels" | grep -qx "allow-large-import"; then
+          has_allow=true
+        fi
+
+        if [ "$has_large_import" = true ] && [ "$has_allow" = false ]; then
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label blocked-by-large-import
+          echo "::error::This PR significantly increases transitive imports. Add the 'allow-large-import' label after review to unblock."
+          echo ""
+          echo "This PR has the 'large-import' label, indicating that it significantly"
+          echo "increases transitive imports for one or more files."
+          echo ""
+          echo "To unblock this PR, a reviewer should:"
+          echo "  1. Check whether the import increase is reasonable."
+          echo "  2. Consider whether the PR could be improved by:"
+          echo "     - splitting large files into smaller, more focused modules"
+          echo "     - rearranging material to reduce cross-module dependencies"
+          echo "     - creating new intermediate files to break dependency chains"
+          echo "  3. If the increase is acceptable, add the 'allow-large-import' label."
+          echo ""
+          echo "Note: the 'large-import' criteria are heuristic (>2% increase in transitive"
+          echo "imports for any modified file) and are not perfect. If you believe this is a"
+          echo "false positive, please report it on the mathlib4 Zulip channel:"
+          echo "https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/large-import.20label"
+          exit 1
+        else
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --remove-label blocked-by-large-import
+        fi
+
+        echo "Import check passed."
