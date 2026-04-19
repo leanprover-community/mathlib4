@@ -99,6 +99,64 @@ def powZero [BraidedCategory C] {I : C} (t : IsInitial I) [MonoidalClosed C] : I
     apply t.hom_ext
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pushout (f ▷ I) (A ◁ (∅ ⟶ W)) ≅ A ⊗ W` in a CCC with pushouts and an
+initial object. -/
+@[simps]
+noncomputable def MonoidalCategory.Limits.pushout.isInitialWhiskerLeftIso
+    [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pushout (f ▷ I) (A ◁ i.to W) ≅ A ⊗ W where
+  hom := pushout.desc ((i.ofIso (zeroMul i).symm).to _) (𝟙 _)
+    ((i.ofIso (zeroMul i).symm).hom_ext _ _)
+  inv := pushout.inr _ _
+  hom_inv_id := pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pushout  ((∅ ⟶ W) ▷ A) (I ◁ f) ≅ W ⊗ A` in a braided CCC with pushouts and
+an initial object. -/
+@[simps]
+noncomputable def MonoidalCategory.Limits.pushout.isInitialWhiskerRightIso
+    [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pushout (i.to W ▷ A) (I ◁ f) ≅ W ⊗ A where
+  hom := pushout.desc (𝟙 _) ((i.ofIso (mulZero i).symm).to _)
+    ((i.ofIso (mulZero i).symm).hom_ext _ _)
+  inv := pushout.inl _ _
+  hom_inv_id := pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pullback (A ⟹ W ⟶ A ⟹ ⋆) (B ⟹ ⋆ ⟶ A ⟹ ⋆) ≅ A ⟹ W` in a monoidal closed
+category with pullbacks and a terminal object. -/
+@[simps]
+noncomputable def Limits.pullback.ihomMapIsTerminalIso
+    [HasPullbacks C] [MonoidalCategory C] [MonoidalClosed C]
+    {A B : C} (f : A ⟶ B) {T : C} (t : IsTerminal T) {W : C} :
+    pullback ((ihom A).map (t.from W)) ((pre f).app T) ≅ (ihom A).obj W where
+  hom := pullback.fst _ _
+  inv := pullback.lift (𝟙 _) (curry (t.from _))
+    (by rw [curry_pre_app, eq_curry_iff]; apply t.hom_ext)
+  hom_inv_id :=
+    have : (ihom B).IsRightAdjoint := Closed.adj.isRightAdjoint
+    pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom B) T t).hom_ext _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The isomorphism `pullback (∅ ⟹ A ⟶ ∅ ⟹ B) (W ⟹ B ⟶ ∅ ⟹ B) ≅ W ⟹ B` in a braided CCC
+with pullbacks and an initial object. -/
+@[simps]
+noncomputable def Limits.pullback.preAppIsInitialIso
+    [HasPullbacks C] [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
+    {A B : C} (f : A ⟶ B) {I : C} (i : IsInitial I) {W : C} :
+    pullback ((ihom I).map f) ((pre (i.to W)).app B) ≅ (ihom W).obj B where
+  hom := pullback.snd _ _
+  inv := pullback.lift (curry ((i.ofIso (mulZero i).symm).to _)) (𝟙 _) (by
+      rw [← curry_natural_right, curry_eq_iff]
+      exact (i.ofIso (mulZero i).symm).hom_ext _ _)
+  hom_inv_id := pullback.hom_ext (by
+    simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
+      ← curry_natural_left, curry_eq_iff]
+    exact (i.ofIso (mulZero i).symm).hom_ext _ _) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/

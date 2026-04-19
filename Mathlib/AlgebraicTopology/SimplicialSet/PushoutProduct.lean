@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 /-!
 # Pushout-products of simplicial sets
 
+Results about pushout-products and pullback-homs in the category of simplicial sets.
 
 -/
 
