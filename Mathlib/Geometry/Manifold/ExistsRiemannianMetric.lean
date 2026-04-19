@@ -158,7 +158,14 @@ noncomputable instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : �
     (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
   NormedAddCommGroup (VectorSpaceAux x φ hpos hsymm hdef) where
   norm v := seminormOfBilinearForm φ hpos hsymm v.val
-  dist_eq := by intros; rfl
+  dist_eq := by
+    intros x y
+    simp only [Neg.neg, Add.add, HAdd.hAdd]
+    have : Add.add (-x.val) y.val = y.val - x.val := by
+      rw [Add.add_eq_hAdd]
+      exact neg_add_eq_sub x.val y.val
+    rw [show Add.add (-x.val) y.val = y.val - x.val from this]
+    exact seminormOfBilinearForm_sub_comm φ hpos hsymm hdef x y
   add_assoc u v w := VectorSpaceAux.ext_iff _ _ _ _ _ _|>.mpr (add_assoc u.val v.val w.val)
   zero_add u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (zero_add u.val)
   add_zero u := VectorSpaceAux.ext_iff _ _ _ _ _ _ |>.mpr (add_zero u.val)
@@ -260,8 +267,7 @@ theorem g_bilin_symm_aux (i p : B) (v w : E p) :
     ((g_bilin_aux F i p).toFun w).toFun v := by
   unfold g_bilin_aux
   simp only [ContinuousLinearMap.coe_comp, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-    LinearMap.coe_comp, ContinuousLinearMap.coe_coe, continuousLinearMapAt_apply,
-    Function.comp_apply]
+    ContinuousLinearMap.coe_coe]
   exact real_inner_comm _ _
 
 instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ v v)
@@ -484,9 +490,9 @@ lemma g_bilin_smooth_on_chart (i : B) :
   simp only [Function.comp_apply]
   ext
   · rfl
-  · simp only [innerAtP, heq_eq_eq]
+  · simp only [innerAtP]
     rw [Trivialization.symm_apply ψ _ (innerSL ℝ)]
-    · simp [cast_eq]
+    · simp
     · exact (mk_mem_target ψ).mp (h5 hy)
 
 noncomputable def g_global_bilin (f : SmoothPartitionOfUnity B IB B) (p : B) :
@@ -576,6 +582,7 @@ lemma g_global_bilin_eq
       have h3 : (f j) p • g_bilin_aux F (E := E) j p = 0 :=
         smul_eq_zero_of_left h (g_bilin_aux F j p)
       rw [h2, h3]
+      rfl
     · have hp : p ∈ tsupport (f j) := by
         rw [tsupport]
         exact subset_closure h
