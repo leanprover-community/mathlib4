@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Basic
 public import Mathlib.RingTheory.Length
+public import Mathlib.RingTheory.AdicCompletion.Noetherian
 
 import Mathlib.RingTheory.HopkinsLevitzki
 
@@ -47,7 +48,7 @@ abbrev BaseCat (Λ : Type u) [CommRing Λ] (k : Type v) [Field k] [Algebra Λ k]
 
 namespace BaseCat
 
-variable {A B : BaseCat.{w} Λ k} {f : A ⟶ B}
+variable {A B C : BaseCat.{w} Λ k} {f : A ⟶ B}
 
 instance (A : BaseCat Λ k) : IsArtinianRing A.obj := A.property
 
@@ -172,5 +173,77 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
     rw [Module.length_top, restrictScalars_top, Module.length_top] at this
     rw [← ENat.coe_lt_coe, ← hlen, ← hm]
     exact lt_of_le_of_lt this (length_quotient_lt (Ideal.span {x}) (by simpa))
+
+section IsLocalRing
+
+variable [IsLocalRing Λ] [Module.Finite Λ k]
+
+/-- Given morphisms `f : A ⟶ C` and `g : B ⟶ C` in `BaseCat` where `g.hom.toAlgHom` is surjective,
+`ofPullback` is the object in `BaseCat` obtained from the pullback of the underlying
+algebra homomorphisms`. -/
+@[stacks 06GH "(1)"]
+def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) : BaseCat.{w} Λ k :=
+  ⟨.ofPullback f.hom g.hom hg, LocAlgCat.isArtinianRing_ofPullback ..⟩
+
+/-- Upgrades the first projection map from the pullback algebra to a morphism in `BaseCat`. -/
+abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
+    ofPullback f g hg ⟶ A := ObjectProperty.homMk (LocAlgCat.pullbackFst f.hom g.hom hg)
+
+/-- Upgrades the second projection map from the pullback algebra to a morphism in `BaseCat`. -/
+abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
+    ofPullback f g hg ⟶ B := ObjectProperty.homMk (LocAlgCat.pullbackSnd f.hom g.hom hg)
+
+@[stacks 06GH "(2)"]
+instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :
+    IsSmallExtension (pullbackFst f g (IsSmallExtension.surjective g)) := by
+  obtain ⟨x, x_span, hx⟩ := ((isSmallExtenstion_iff (f := g)).mp ‹_›).right
+  rw [isSmallExtenstion_iff]; constructor
+  · exact f.hom.toAlgHom.surjective_pullbackFst_of_surjective g.hom.toAlgHom
+      (IsSmallExtension.surjective g)
+  · have : (0, x) ∈ f.hom.toAlgHom.pullback g.hom.toAlgHom := by
+      simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
+        map_zero, AlgHom.snd_apply]
+      rw [eq_comm, ← RingHom.mem_ker, ← x_span]
+      exact Ideal.mem_span_singleton_self x
+    refine ⟨⟨(0, x), this⟩, ?_, fun ⟨⟨a, b⟩, hab⟩ h ↦ ?_⟩
+    · change (Ideal.span {⟨(0, x), this⟩} : Ideal (f.hom.toAlgHom.pullback g.hom.toAlgHom)) =
+        RingHom.ker (AlgHom.pullbackFst ..)
+      ext ⟨⟨u, v⟩, h⟩
+      simp only [Ideal.mem_span_singleton', eq_comm, Subtype.exists,
+        MulMemClass.mk_mul_mk, Subtype.mk.injEq, AlgHom.mem_equalizer, AlgHom.coe_comp,
+        Function.comp_apply, AlgHom.fst_apply, AlgHom.snd_apply, exists_prop, Prod.exists,
+        Prod.mk_mul_mk, mul_zero, Prod.mk.injEq, and_left_comm, exists_and_left, RingHom.mem_ker,
+        Subalgebra.coe_val, and_iff_left_iff_imp]
+      intro u_eq
+      simp only [u_eq, AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply,
+        AlgHom.fst_apply, map_zero, AlgHom.snd_apply] at h
+      rw [eq_comm, ← RingHom.mem_ker, ← x_span, Ideal.mem_span_singleton'] at h
+      rcases h with ⟨w, hw⟩
+      rcases LocAlgCat.exists_mem_maximalIdeal_toAlgHom_apply_add_eq g.hom f.hom
+        w (IsSmallExtension.surjective g) with ⟨z, m, m_in, hm⟩
+      exact ⟨z, w + m, hm.symm, by rw [add_mul, hw, mul_comm, hx m m_in, add_zero]⟩
+    · rw [mem_maximalIdeal, mem_nonunits_iff] at h
+      change ¬ IsUnit (⟨(a, b), hab⟩ : f.hom.toAlgHom.pullback g.hom.toAlgHom) at h
+      rw [AlgHom.isUnit_pullback_mk_iff, not_and] at h
+      change (⟨(0, x), this⟩ * ⟨(a, b), hab⟩ : f.hom.toAlgHom.pullback g.hom.toAlgHom) = 0
+      suffices ¬ IsUnit b by simpa [← Subtype.val_inj] using hx b this
+      intro hb
+      simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
+        AlgHom.snd_apply] at hab
+      have : IsUnit ((LocAlgCat.Hom.toAlgHom f.hom) a) := hab ▸ IsUnit.map g.hom.toAlgHom hb
+      apply f.hom.isLocalHom_toAlgHom.map_nonunit at this
+      exact (iff_false_intro (h this)).mp hb
+
+/-- When `Λ` is a local ring and `k / ResidueField Λ` is
+a finite separable field extension, `ofPullbackOfIsSeparable` is the object in `BaseCat`
+obtained from the pullback of the underlying algebra homomorphisms of two morphisms. -/
+def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
+    BaseCat Λ k :=
+  haveI : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
+    isLocalRing_algHomPullback _ _ g.hom.isLocalHom_toAlgHom
+  ⟨.of Λ k (f.hom.toAlgHom.pullback g.hom.toAlgHom)
+    (LocAlgCat.surjective_residue_comp_pullbackFst_of_isSeparable f.hom g.hom), inferInstance⟩
+
+end IsLocalRing
 
 end BaseCat

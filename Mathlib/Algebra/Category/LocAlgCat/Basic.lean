@@ -393,7 +393,7 @@ instance [IsArtinianRing A] : IsArtinian Λ A :=
 
 instance [IsArtinianRing A] [IsArtinianRing B] (f : A ⟶ C) (g : B ⟶ C) :
     IsArtinianRing (f.toAlgHom.pullback g.toAlgHom) := by
-  set PB := f.toAlgHom.pullback g.toAlgHom
+  let PB := f.toAlgHom.pullback g.toAlgHom
   rw [isArtinianRing_iff_isFiniteLength, ← Module.length_ne_top_iff]
   refine ne_top_of_le_ne_top (b := Module.length Λ PB) ?_ ?_
   · refine ne_top_of_le_ne_top (b := Module.length Λ (A × B)) ?_ ?_
@@ -410,5 +410,16 @@ theorem isArtinianRing_ofPullback [IsArtinianRing A] [IsArtinianRing B] (f : A �
   infer_instance
 
 end ArtinianRing
+
+lemma exists_mem_maximalIdeal_toAlgHom_apply_add_eq (f : A ⟶ C) (g : B ⟶ C) (a : A)
+    (hf : Surjective f.toAlgHom) : ∃ (b : B) (m : A), m ∈ maximalIdeal A ∧
+      f.toAlgHom (a + m) = g.toAlgHom b := by
+  rcases B.residue_surjective (residue A a) with ⟨b, hb⟩
+  rw [← g.residue_comp, ← f.residue_comp, AlgHom.comp_apply, AlgHom.comp_apply, ← sub_eq_zero,
+    ← map_sub, residue_eq_zero_iff, ← map_maximalIdeal_of_surjective (f.toAlgHom : A →+* C) hf,
+    Ideal.mem_map_iff_of_surjective (f.toAlgHom : A →+* C) hf] at hb
+  rcases hb with ⟨m, hm⟩
+  simp only [RingHom.coe_coe, eq_sub_iff_add_eq', ← map_add] at hm
+  exact ⟨b, m, hm⟩
 
 end LocAlgCat
