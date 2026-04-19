@@ -18,7 +18,6 @@ This file defines the lattice-like structures on graphs.
 
 ## Main results
 
-- `ConditionallyCompletePartialOrderInf (Graph α β)`
 - `SemilatticeInf (Graph α β)`
 
 ## Implementation notes
@@ -29,93 +28,14 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β ι : Type*} {x y : α} {e : β} {G G₁ G₂ H : Graph α β} {F F₀ : Set β} {X : Set α}
   {Gs : Set (Graph α β)} (Gι : ι → Graph α β) [Nonempty ι]
 
-open Set Function WithTop
+open Set Function
 
 namespace Graph
-
-noncomputable instance : ConditionallyCompletePartialOrderInf (Graph α β) where
-  sInf Gs :=
-    letI : DecidablePred (Set.Nonempty : Set (Graph α β) → _) := Classical.decPred _
-    if hne : Gs.Nonempty then {
-    vertexSet := ⋂ G ∈ Gs, V(G)
-    edgeSet := {e | ∃ x y, ∀ G ∈ Gs, G.IsLink e x y}
-    IsLink e x y := ∀ G ∈ Gs, G.IsLink e x y
-    isLink_symm e he x y := by simp [isLink_comm]
-    eq_or_eq_of_isLink_of_isLink e _ _ _ _ h h' := by
-      obtain ⟨G, hG⟩ := hne
-      exact (h G hG).left_eq_or_eq (h' G hG)
-    left_mem_of_isLink e x y h := by
-      simp only [mem_iInter]
-      exact fun G hG ↦ (h G hG).left_mem} else ⊥
-  isGLB_csInf_of_directed Gs hGs hGsne hGsBddB := by
-    refine ⟨fun G hG ↦ ?_, fun H hH ↦ ?_⟩ <;> simp only [hGsne, ↓reduceDIte]
-    · exact ⟨iInter₂_subset G hG, fun e x y => (· G hG)⟩
-    refine ⟨?_, fun e x y hHxy G hG ↦ (hH hG).isLink_mono hHxy⟩
-    simp only [subset_iInter_iff]
-    exact fun _ hG ↦ (hH hG).vertexSet_mono
-
-lemma isGLB_sInf_of_nonempty (hGsne : Gs.Nonempty) : IsGLB Gs (sInf Gs) := by
-  refine ⟨fun G hG ↦ ?_, fun H hH ↦ ?_⟩ <;> simp only [sInf, hGsne, ↓reduceDIte]
-  · exact ⟨iInter₂_subset G hG, fun e x y => (· G hG)⟩
-  refine ⟨?_, fun e x y hHxy G hG ↦ (hH hG).isLink_mono hHxy⟩
-  simp only [subset_iInter_iff]
-  exact fun _ hG ↦ (hH hG).vertexSet_mono
-
-@[grind =]
-lemma vertexSet_sInf_eq_ite (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
-    V(sInf Gs) = if Gs.Nonempty then ⋂ G ∈ Gs, V(G) else ∅ := by
-  simp only [sInf]
-  split_ifs with hne <;> rfl
-
-@[simp]
-lemma vertexSet_sInf_of_nonempty (hGsne : Gs.Nonempty) : V(sInf Gs) = ⋂ G ∈ Gs, V(G) := by
-  classical
-  grind
-
-@[grind =]
-lemma edgeSet_sInf_eq_ite (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
-    E(sInf Gs) = if Gs.Nonempty then {e | ∃ x y, ∀ G ∈ Gs, G.IsLink e x y} else ∅ := by
-  simp only [sInf]
-  split_ifs with hne <;> rfl
-
-@[simp]
-lemma edgeSet_sInf_of_nonempty (hGsne : Gs.Nonempty) :
-    E(sInf Gs) = {e | ∃ x y, ∀ G ∈ Gs, G.IsLink e x y} := by
-  classical
-  grind
-
-@[grind =]
-lemma sInf_isLink (Gs : Set (Graph α β)) [Decidable Gs.Nonempty] :
-    (sInf Gs).IsLink e x y ↔ if Gs.Nonempty then ∀ G ∈ Gs, G.IsLink e x y else False := by
-  simp only [sInf]
-  split_ifs with hne <;> rfl
-
-@[simp]
-lemma sInf_isLink_of_nonempty (hGsne : Gs.Nonempty) :
-    (sInf Gs).IsLink e x y ↔ ∀ G ∈ Gs, G.IsLink e x y := by
-  classical
-  grind
-
-lemma isGLB_iInf_of_nonempty : IsGLB (range Gι) (iInf Gι) :=
-  isGLB_sInf_of_nonempty <| range_nonempty_iff_nonempty.mpr ‹Nonempty ι›
-
-@[simp]
-lemma vertexSet_iInf : V(iInf Gι) = ⋂ i, V(Gι i) := by
-  rw [iInf, vertexSet_sInf_of_nonempty <| range_nonempty_iff_nonempty.mpr ‹Nonempty ι›]
-  exact iInf_range
-
-@[simp]
-lemma edgeSet_iInf : E(iInf Gι) = {e | ∃ x y, ∀ i, (Gι i).IsLink e x y} := by
-  simp [iInf, edgeSet_sInf_of_nonempty <| range_nonempty_iff_nonempty.mpr ‹Nonempty ι›]
-
-@[simp]
-lemma iInf_isLink : (iInf Gι).IsLink e x y ↔ ∀ i, (Gι i).IsLink e x y := by
-  simp [iInf, sInf_isLink_of_nonempty <| range_nonempty_iff_nonempty.mpr ‹Nonempty ι›]
 
 /-- The infimum of two graphs `G` and `H`. The edges are precisely those on which `G` and `H` agree,
 and the edge set is a subset of `E(G) ∩ E(H)`, with equality if `G` and `H` are compatible. -/
@@ -161,17 +81,9 @@ lemma inf_isLoopAt_iff : (G ⊓ H).IsLoopAt e x ↔ G.IsLoopAt e x ∧ H.IsLoopA
 lemma inf_isNonloopAt_iff : (G ⊓ H).IsNonloopAt e x ↔ ∃ y ≠ x, G.IsLink e x y ∧ H.IsLink e x y := by
   simp [IsNonloopAt]
 
-@[simp] protected lemma sInf_insert (G : Graph α β) {Hs : Set (Graph α β)} (hHs : Hs.Nonempty) :
-    sInf (insert G Hs) = G ⊓ sInf Hs := by
-  ext <;> simp [hHs]
-
-@[simp]
-lemma inf_eq_bot_iff : G₁ ⊓ G₂ = ⊥ ↔ V(G₁) ∩ V(G₂) = ∅ := by
-  rw [← vertexSet_eq_empty_iff, vertexSet_inf]
-
 @[simp]
 lemma disjoint_iff_vertexSet_disjoint : Disjoint G₁ G₂ ↔ Disjoint V(G₁) V(G₂) := by
-  rw [disjoint_iff, inf_eq_bot_iff, disjoint_iff_inter_eq_empty]
+  rw [disjoint_iff, ← vertexSet_eq_empty_iff, vertexSet_inf, disjoint_iff_inter_eq_empty]
 
 lemma Compatible.edgeSet_inf (h : G.Compatible H) : E(G ⊓ H) = E(G) ∩ E(H) := by
   rw [G.edgeSet_inf]
