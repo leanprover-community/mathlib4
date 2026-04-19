@@ -100,7 +100,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
       exact measure_mul_le_scalingConstantOf_mul _
         ⟨zero_lt_three.trans_le (le_max_right _ _), le_rfl⟩ hr
   · refine ⟨_, H, ?_⟩
-    grw [scalingConstantOf, ← ENNReal.one_le_coe_iff.2 (le_max_right ..), one_mul,
+    grw [scalingConstantOf, ← le_max_right, ENNReal.coe_one, one_mul,
       closedBall_subset_closedBall' (y := y)]
     have A : y ∈ closedBall y r := mem_closedBall_self rpos.le
     have B := mem_closedBall'.1 (H A)
