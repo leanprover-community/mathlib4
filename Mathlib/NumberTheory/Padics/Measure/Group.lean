@@ -107,6 +107,7 @@ instance : Ring D(G, R) where
   one_mul _ := by ext; simp [mul_apply, convolveFunRight_apply_one]
   mul_one _ := by ext; simp [mul_apply]
 
+/-- The canonical map `G → D(G, R)`, packaged as a multiplicative homomorphism. -/
 @[expose] def diracHom : G →* D(G, R) where
   toFun := dirac R
   map_one' := by ext; simp
@@ -120,8 +121,8 @@ noncomputable instance : Algebra R D(G, R) := Algebra.ofModule
 def monoidAlgebraHom : MonoidAlgebra R G →ₐ[R] D(G, R) :=
   MonoidAlgebra.lift R _ G diracHom
 
-@[simp] lemma monoidAlgebraHom_of (g : G) :
-    monoidAlgebraHom (.of _ _ g) = dirac R g := by
+@[simp] lemma monoidAlgebraHom_single (g : G) :
+    monoidAlgebraHom (.single g 1) = dirac R g := by
   simp [monoidAlgebraHom, diracHom]
 
 instance : Module D(G, R) C(G, R) where

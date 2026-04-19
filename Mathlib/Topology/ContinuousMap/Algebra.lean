@@ -615,6 +615,7 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
     map_smul' := coe_smul }
 
 variable (M) in
+/-- Composition on the right by a continuous map, as a `ContinuousLinearMap`. -/
 @[simps]
 def compCLM (f : C(α, β)) : C(β, M) →L[R] C(α, M) where
   toFun g := g.comp f

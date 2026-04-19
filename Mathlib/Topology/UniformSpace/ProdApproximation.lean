@@ -82,7 +82,7 @@ def prodMul : C(X, R) →ₗ[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
     f.prodMul g p  = f p.1 * g p.2 :=
   (rfl)
 
-@[simp] lemma prodMul_def (f : C(X, R)) (g : C(Y, R)) :
+lemma prodMul_def (f : C(X, R)) (g : C(Y, R)) :
     f.prodMul g  = f.comp .fst * g.comp .snd :=
   (rfl)
 
