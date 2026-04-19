@@ -343,6 +343,10 @@ noncomputable def dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v))
     nth_rewrite 1 [← mul_one (-h.unit⁻¹), Units.val_mul, Units.val_one, ← mul_add]
     simp
 
+@[simp]
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
 open Pointwise in
 theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
