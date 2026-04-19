@@ -5,10 +5,6 @@ Authors: Peter Nelson, Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Combinatorics.Graph.Subgraph
 
 /-!
