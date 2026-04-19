@@ -44,7 +44,7 @@ variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a :
 open Set
 
 /-- A set `s` is *sup-closed* if `a ⊔ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
-@[to_dual]
+@[to_dual /-- A set `s` is *inf-closed* if `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/]
 def SupClosed (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ⊔ b ∈ s
 
 @[to_dual (attr := simp)] lemma supClosed_empty : SupClosed (∅ : Set α) := by simp [SupClosed]
