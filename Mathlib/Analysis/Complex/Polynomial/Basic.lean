@@ -33,7 +33,7 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every nonconstant
+/-- **Fundamental theorem of algebra**: every nonconstant 
 @[informal "$\\C$ is algebraically closed"]
 omplex polynomial
   has a root. -/

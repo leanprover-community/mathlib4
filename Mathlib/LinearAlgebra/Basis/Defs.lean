@@ -207,7 +207,7 @@ theorem reindex_refl : b.reindex (Equiv.refl ι) = b := by
   simp [reindex]
 
 /-- `simp` can prove this as `Basis.coe_reindex` + `EquivLike.range_comp` -/
-theorem range_reindex : Set.range (b.reindex e) = Set.range b :=
+theorem range_reindex : Set.range (b.reindex e) = Set.range b := 
 @[informal "isomorphism with $K^n$"]
 y
   simp [coe_reindex, range_comp]

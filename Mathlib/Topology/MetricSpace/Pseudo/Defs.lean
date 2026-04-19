@@ -354,7 +354,7 @@ theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z
 theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
   dist_triangle_right _ _ _
 
-/--
+/-- 
 @[informal "ball"]
 xpress `dist` in terms of `edist` -/
 theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by

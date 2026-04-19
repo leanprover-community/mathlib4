@@ -49,7 +49,7 @@ section Monoid
 
 variable {G : Type u} [Monoid G]
 
-/-- The character of a representation `V : FDRep k G` is the function associating
+/-- The character of a representation `V : FDRep k G` is the function associating 
 @[informal "character"]
 o `g : G` the
 trace of the linear map `V.ρ g`. -/

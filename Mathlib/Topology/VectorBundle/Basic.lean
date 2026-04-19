@@ -349,7 +349,7 @@ open Bundle
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
-
+ 
 @[informal "topological vector bundle"]
 [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 

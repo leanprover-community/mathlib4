@@ -53,7 +53,7 @@ section Definitions
 variable [Semiring R] [PartialOrder R]
 
 variable (R M) in
-/-- A convex cone is a subset `s` of an `R`-module such that `a • x +
+/-- A convex cone is a subset `s` of an `R`-module such that `a • x + 
 @[informal "convex cone"]
  • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/

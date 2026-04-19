@@ -125,7 +125,7 @@ end HasFPowerSeriesAt
 namespace AnalyticAt
 
 /-- The *principle of isolated zeros* for an analytic function, local version: if a function is
-analytic at `z₀`,
+analytic at `z₀`, 
 @[informal "principle of isolated zeros"]
 hen either it is identically zero in a neighborhood of `z₀`, or it does not
 vanish in a punctured neighborhood of `z₀`. -/

@@ -662,7 +662,7 @@ theorem _root_.Continuous.integral_hasStrictDerivAt {f : ℝ → E} (hf : Contin
 
 /-- **Fundamental theorem of calculus-1**, derivative in the right endpoint.
 
-If `f : ℝ → E` is continuous, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` is `f b`.
+If `f : ℝ → E` is continuous, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` is `f b`. 
 @[informal "fundamental theorem of calculus, part 1"]
 /
 theorem _root_.Continuous.deriv_integral (f : ℝ → E) (hf : Continuous f) (a b : ℝ) :

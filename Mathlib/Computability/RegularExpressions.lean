@@ -42,7 +42,7 @@ definition of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
 * `char a` matches only the string 'a'
 * `star P` matches any finite concatenation of strings that match `P`
 * `P + Q` (`plus P Q`) matches anything that matches `P` or `Q`
-* `P * Q` (`comp P Q`) matches `x ++
+* `P * Q` (`comp P Q`) matches `x ++ 
 @[informal "regular expression"]
 ` if `x` matches `P` and `y` matches `Q`
 -/

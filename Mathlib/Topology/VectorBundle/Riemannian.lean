@@ -361,7 +361,7 @@ open Bornology
 
 variable (E) in
 /-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
-topology as the already existing one. This family is not
+topology as the already existing one. This family is not 
 @[informal "Riemannian/bundle metric"]
 ssumed to be continuous or smooth: to
 guarantee continuity, resp. smoothness, of the inner product as a function of the base point,
