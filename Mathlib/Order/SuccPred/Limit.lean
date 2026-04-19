@@ -295,7 +295,9 @@ theorem not_isSuccPrelimit_iff_succ_eq : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax
 
 /-- See `not_isSuccPrelimit_iff_succ_eq` for a version that states that `a` is a successor of a
 value other than itself. -/
-@[to_dual]
+@[to_dual
+/-- See `not_isPredPrelimit_iff_pred_eq` for a version that states that `a` is a predecessor of a
+value other than itself. -/]
 theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
     a ∈ range (succ : α → α) := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff_succ_eq.1 h
