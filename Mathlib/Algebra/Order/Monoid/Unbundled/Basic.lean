@@ -1106,8 +1106,8 @@ protected theorem Injective [Mul α] [PartialOrder α] (ha : MulLECancellable a)
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
 
 @[to_additive]
-protected theorem isLeftRegular [Mul α] [PartialOrder α] {a : α}
-    (ha : MulLECancellable a) : IsLeftRegular a :=
+protected theorem isLeftRegular [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
+    IsLeftRegular a :=
   ha.Injective
 
 @[to_additive]
@@ -1116,7 +1116,7 @@ protected theorem inj [Mul α] [PartialOrder α] (ha : MulLECancellable a) :
   ha.Injective.eq_iff
 
 @[to_additive]
-protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α] {a : α}
+protected theorem injective_left [Mul α] [IsMulCommutative α] [PartialOrder α]
     (ha : MulLECancellable a) : Injective (· * a) :=
   fun b c h ↦ ha.Injective <| by dsimp; rwa [mul_comm' a, mul_comm' a]
 
