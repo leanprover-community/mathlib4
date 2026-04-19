@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.SmallObject.Basic
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
@@ -106,6 +105,7 @@ variable {G} (hG : IsSeparator G)
 
 include hG
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `p : X ⟶ Y` is a monomorphism that is not an isomorphism, there exists
 a subobject `X'` of `Y` containing `X` (but different from `X`) such that
 the inclusion `X ⟶ X'` is a pushout of a monomorphism in the family
@@ -177,6 +177,7 @@ lemma le_largerSubobject (A : Subobject X) :
     simp only [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
       (generatingMonomorphisms G).pushouts
         (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
@@ -203,9 +204,8 @@ lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot 
 lemma exists_ordinal (A₀ : Subobject X) :
     ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : OrderBot κ.ord.ToType := Ordinal.toTypeOrderBot (by
-    simp only [ne_eq, Cardinal.ord_eq_zero]
-    apply Cardinal.succ_ne_zero)
+  have : Nonempty κ.ord.ToType := by simp [κ]
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
 
 section
@@ -264,6 +264,7 @@ end
 
 variable {A : C} {f : A ⟶ X} [Mono f]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤`,
 then the monomorphism `f` is a transfinite composition of pushouts of
 monomorphisms in the family `generatingMonomorphisms G`. -/
@@ -291,8 +292,8 @@ lemma exists_transfiniteCompositionOfShape :
         (_ : WellFoundedLT J),
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
-  letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
-    simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
+  have : Nonempty o.ToType := ⟨j⟩
+  have : OrderBot o.ToType := WellFoundedLT.toOrderBot _
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
@@ -317,7 +318,8 @@ variable [IsGrothendieckAbelian.{w} C]
 instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
   obtain ⟨κ, hκ', hκ⟩ := HasCardinalLT.exists_regular_cardinal.{w} (Subobject G)
   have : Fact κ.IsRegular := ⟨hκ'⟩
-  letI := Cardinal.toTypeOrderBot hκ'.ne_zero
+  have : Nonempty κ.ord.ToType := by simpa using hκ'.ne_zero
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   exact ⟨κ, inferInstance, inferInstance,
     { preservesColimit {A B X Y} i hi f hf := by
         let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.ToType f :=

@@ -52,6 +52,8 @@ example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+example (x y : ℕ) : x • y = y • x := by ring
+example (x y : ℤ) : x • y = y • x := by ring
 
 section Rat
 
@@ -166,6 +168,7 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
 
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
+example (a : ℚ) (m n : ℕ) : (a ^ (m + 1)) ^ n = a ^ (n * (m + 1)) := by ring
 
 -- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
@@ -226,9 +229,21 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 
 end
 
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
-/-- error: ring_nf made no progress at h -/
+/-- error: `ring_nf` made no progress at `h` -/
 #guard_msgs in
 example {R : Type*} [CommSemiring R] {x y : R} : True := by
   have h : x + y = 3 := test_sorry
@@ -243,16 +258,16 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
   to use `fail_if_success` since the instances could change without warning.
   -/
   have : x = y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : x - y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x = f y := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   have : f x - f y = 0 := by
-    ring_nf -failIfUnchanged
+    ring_nf (ifUnchanged := .silent)
     ring_nf!
   trivial
 
@@ -262,3 +277,27 @@ example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
 
 -- Test that `ring` works for division without subtraction
 example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring
+
+theorem test_axioms {R : Type} [CommRing R] (a b : R) :
+    (a + b) ^ 2 + (a * b) ^ 3 = a ^ 2 + (2 : R) * a * b + b ^ 2 + a ^ 3 * b ^ 3 := by
+  ring
+
+/-!
+Test that `ring` does not depend on the axiom of choice.
+-/
+/--
+info: 'test_axioms' depends on axioms: [propext]
+-/
+#guard_msgs in
+#print axioms test_axioms
+
+-- Test that the normalization of `ring_nf` does the right thing
+/--
+trace: a b c d : ℝ
+⊢ a - b - c - d = 0
+-/
+#guard_msgs in
+example (a b c d : ℝ) : a - b - c - d = 0 := by
+  ring_nf
+  trace_state
+  exact test_sorry

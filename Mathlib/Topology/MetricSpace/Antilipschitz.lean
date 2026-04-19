@@ -32,7 +32,8 @@ open scoped NNReal ENNReal Uniformity
 variable {α β γ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
-`edist x y ≤ K * edist (f x) (f y)`. -/
+`edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
+linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 
@@ -155,6 +156,18 @@ lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace �
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
 
+theorem comap_nhds_le (hf : AntilipschitzWith K f) (x : α) : (𝓝 (f x)).comap f ≤ 𝓝 x := by
+  simp only [nhds_eq_comap_uniformity]
+  grw [← hf.comap_uniformity_le]
+  simp [comap_comap, Function.comp_def]
+
+theorem isInducing (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsInducing f :=
+  isInducing_iff_nhds.mpr fun x ↦ le_antisymm (hfc.tendsto x).le_comap <| hf.comap_nhds_le _
+
+lemma isEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
+    (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsEmbedding f :=
+  hf.isInducing hfc |>.isEmbedding
+
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.isUniformInducing hfc).isComplete_range
@@ -180,6 +193,13 @@ theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f 
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
   ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
+
+/-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
+protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
+    (hf : AntilipschitzWith K f) : 0 < K := by
+  by_contra! h₀
+  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith
 

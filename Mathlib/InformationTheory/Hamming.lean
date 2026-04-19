@@ -195,13 +195,12 @@ end Zero
 
 /-- Corresponds to `dist_eq_norm`. -/
 theorem hammingDist_eq_hammingNorm [∀ i, AddGroup (β i)] (x y : ∀ i, β i) :
-    hammingDist x y = hammingNorm (x - y) := by
-  simp_rw [hammingNorm, hammingDist, Pi.sub_apply, sub_ne_zero]
+    hammingDist x y = hammingNorm (-x + y) := by
+  simp_rw [hammingNorm, hammingDist, Pi.add_apply, Pi.neg_apply, ne_eq, neg_add_eq_zero]
 
 end HammingDistNorm
 
 /-! ### The `Hamming` type synonym -/
-
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
@@ -215,49 +214,50 @@ variable {α ι : Type*} {β : ι → Type*}
 /-! Instances inherited from normal Pi types. -/
 
 instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
-  ⟨fun _ => default⟩
+  inferInstanceAs <| Inhabited (∀ i, β i)
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
-  Pi.instFintype
+  inferInstanceAs <| Fintype (∀ i, β i)
 
 instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
-  Pi.nontrivial
+  inferInstanceAs <| Nontrivial (∀ i, β i)
 
 instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) :=
-  Fintype.decidablePiFintype
+  inferInstanceAs <| DecidableEq (∀ i, β i)
 
 instance [∀ i, Zero (β i)] : Zero (Hamming β) :=
-  Pi.instZero
+  inferInstanceAs <| Zero (∀ i, β i)
 
 instance [∀ i, Neg (β i)] : Neg (Hamming β) :=
-  Pi.instNeg
+  inferInstanceAs <| Neg (∀ i, β i)
 
 instance [∀ i, Add (β i)] : Add (Hamming β) :=
-  Pi.instAdd
+  inferInstanceAs <| Add (∀ i, β i)
 
 instance [∀ i, Sub (β i)] : Sub (Hamming β) :=
-  Pi.instSub
+  inferInstanceAs <| Sub (∀ i, β i)
 
 instance [∀ i, SMul α (β i)] : SMul α (Hamming β) :=
-  Pi.instSMul
+  inferInstanceAs <| SMul α (∀ i, β i)
 
 instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) :=
-  Pi.smulWithZero _
+  inferInstanceAs <| SMulWithZero α (∀ i, β i)
 
 instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
-  Pi.addMonoid
+  inferInstanceAs <| AddMonoid (∀ i, β i)
 
-instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) := Pi.addGroup
+instance [∀ i, AddGroup (β i)] : AddGroup (Hamming β) :=
+  inferInstanceAs <| AddGroup (∀ i, β i)
 
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (∀ i, β i)
 
 instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup (∀ i, β i)
 
 instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module α (∀ i, β i)
 
 /-! API to/from the type synonym. -/
 

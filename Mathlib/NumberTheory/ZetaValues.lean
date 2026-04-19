@@ -113,10 +113,8 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
-  simp +contextual [
-    integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      (intervalIntegrable_bernoulliFun k _ _),
-    bernoulliFun_eval_one, ← sub_div, ite_div]
+  simp +contextual [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
+      (intervalIntegrable_bernoulliFun k _ _), bernoulliFun_eval_one, ← sub_div, ite_div]
 
 variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
@@ -461,7 +459,8 @@ theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π 
   simp [Nat.factorial]; ring
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
-  convert hasSum_zeta_nat two_ne_zero using 1; norm_num
+  convert hasSum_zeta_nat two_ne_zero using 1
+  simp only [Nat.reduceAdd, Nat.reduceMul, Nat.add_one_sub_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring
   · decide

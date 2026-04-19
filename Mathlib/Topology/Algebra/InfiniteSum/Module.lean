@@ -18,12 +18,12 @@ open Filter Finset Function
 
 section ConstSMul
 
-variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
+variable [TopologicalSpace α] [AddCommMonoid α] [DistribSMul γ α]
   [ContinuousConstSMul γ α] {f : β → α} {L : SummationFilter β}
 
 theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a L) :
     HasSum (fun i ↦ b • f i) (b • a) L :=
-  hf.map (DistribMulAction.toAddMonoidHom α _) <| continuous_const_smul _
+  hf.map (DistribSMul.toAddMonoidHom α _) <| continuous_const_smul _
 
 theorem Summable.const_smul (b : γ) (hf : Summable f L) : Summable (fun i ↦ b • f i) L :=
   (hf.hasSum.const_smul _).summable
@@ -40,8 +40,9 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
     [T2Space α] (g : γ) :
     ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i :=
   ((Homeomorph.smul g).isClosedEmbedding.map_tsum f (g := show α ≃+ α from
-    { AddMonoidHom.smulLeft g with
-      invFun := AddMonoidHom.smulLeft g⁻¹, left_inv a := by simp, right_inv a := by simp })).symm
+    { DistribSMul.toAddMonoidHom _ g with
+      invFun := DistribSMul.toAddMonoidHom _ g⁻¹
+      left_inv a := by simp, right_inv a := by simp })).symm
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionSemiring`; no summability hypothesis. This could be made to work for a
@@ -101,7 +102,7 @@ theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
   let ⟨_u, hu⟩ := hfg
   (hf.smul_eq hg hu).symm ▸ hu
 
-/-- Scalar product of two infinites sums indexed by arbitrary types. -/
+/-- Scalar product of two infinite sums indexed by arbitrary types. -/
 theorem tsum_smul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 • g x.2) :
     ((∑' x, f x) • ∑' y, g y) = ∑' z : ι × κ, f z.1 • g z.2 :=
@@ -207,8 +208,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
-  intro b
+  induction x using Quotient.inductionOn with | _ b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a • b) = π b := by
@@ -226,8 +226,7 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β �
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
-  intro b
+  induction x using Quotient.inductionOn with | _ b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
   have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by

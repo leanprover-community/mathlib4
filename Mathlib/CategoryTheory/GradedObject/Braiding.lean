@@ -160,8 +160,8 @@ variable
 noncomputable instance braidedCategory [BraidedCategory C] :
     BraidedCategory (GradedObject I C) where
   braiding X Y := Monoidal.braiding X Y
-  braiding_naturality_left _ _:= Monoidal.braiding_naturality_left _ _
-  braiding_naturality_right _ _ _ _  := Monoidal.braiding_naturality_right _ _
+  braiding_naturality_left _ _ := Monoidal.braiding_naturality_left _ _
+  braiding_naturality_right _ _ _ _ := Monoidal.braiding_naturality_right _ _
   hexagon_forward _ _ _ := Monoidal.hexagon_forward _ _ _
   hexagon_reverse _ _ _ := Monoidal.hexagon_reverse _ _ _
 

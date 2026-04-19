@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
+import Mathlib.Algebra.Group.Equiv.Basic
+
 /-!
 # Kernel and range of group homomorphisms
 
@@ -230,8 +232,10 @@ theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
-theorem div_mem_ker_iff (f : G →* N) {x y : G} : x / y ∈ ker f ↔ f x = f y := by
-  rw [mem_ker, map_div, div_eq_one]
+theorem div_mem_ker_iff (f : G →* M) {x y : G} : x / y ∈ ker f ↔ f x = f y := by
+  constructor <;> intro h
+  · rw [← div_mul_cancel x y, map_mul, mem_ker.mp h, one_mul]
+  · rw [mem_ker, div_eq_mul_inv, map_mul, h, ← map_mul, mul_inv_cancel, map_one]
 
 @[to_additive]
 theorem coe_ker (f : G →* M) : (f.ker : Set G) = (f : G → M) ⁻¹' {1} :=
@@ -257,12 +261,26 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
     g.ker.comap f = (g.comp f).ker :=
   rfl
 
+/-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
+the homomorphism mapped by the inverse isomorphism. -/
+@[to_additive (attr := simp)]
+lemma ker_comp_mulEquiv {P : Type*} [MulOneClass P] (g : N →* P) (iso : G ≃* N) :
+    (g.comp iso).ker = map (iso.symm : N →* G) g.ker := by
+  rw [← comap_ker, comap_equiv_eq_map_symm]
+
+/-- Composing with an isomorphism on the codomain does not change the kernel. -/
+@[to_additive (attr := simp)]
+lemma ker_mulEquiv_comp {P : Type*} [MulOneClass P] (f : G →* N) (iso : N ≃* P) :
+    ((iso : N →* P).comp f).ker = f.ker := by
+  ext
+  simp
+
 @[to_additive (attr := simp)]
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem ker_restrict (f : G →* N) : (f.restrict K).ker = f.ker.subgroupOf K :=
+theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -307,7 +325,7 @@ theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g
   SetLike.ext fun _ => Prod.mk_eq_one
 
 @[to_additive]
-theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
+theorem range_le_ker_iff (f : G →* G') (g : G' →* M) : f.range ≤ g.ker ↔ g.comp f = 1 :=
   ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
@@ -498,6 +516,11 @@ theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
   Function.LeftInverse.injective <| comap_map_eq_self_of_injective h
 
+@[to_additive]
+theorem map_subtype_inj {H : Subgroup G} {K L : Subgroup H} :
+    K.map H.subtype = L.map H.subtype ↔ K = L :=
+  (map_injective H.subtype_injective).eq_iff
+
 /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/
 @[to_additive /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/]
 theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ker ≤ K)
@@ -544,4 +567,30 @@ theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
   rw [codisjoint_iff, ← subgroupOf_sup, subgroupOf_self]
   exacts [le_sup_left, le_sup_right]
 
+variable {M : Type*} [CommGroup M]
+
+@[to_additive]
+lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
+    (map (powMonoidHom n) S).subgroupOf S = (powMonoidHom n).range := by
+  ext : 1
+  simp [mem_subgroupOf]
+  grind
+
 end Subgroup
+
+namespace MulEquiv
+
+@[to_additive (attr := simp)]
+lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
+  MonoidHom.range_eq_top.mpr e.surjective
+
+variable {M N : Type*} [CommGroup M] [CommGroup N]
+
+open MonoidHom in
+@[to_additive]
+lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
+    (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
+  have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
+  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+
+end MulEquiv

@@ -7,11 +7,12 @@ module
 
 public meta import Lean.Elab.DefView
 public meta import Lean.Util.CollectAxioms
-public meta import ImportGraph.Imports
-public meta import ImportGraph.RequiredModules
+public meta import ImportGraph.Imports.Redundant
+public meta import ImportGraph.Imports.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Elab.DeclModifiers
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -62,6 +63,13 @@ public meta section
 open Lean Elab Command
 
 namespace Mathlib.Command.MinImports
+
+/-- Returns `true` if `n` is `Init` or a descendant of `Init`. These imports are always available
+in ordinary Mathlib files, so they are omitted from user-facing `#min_imports` output. -/
+partial def isInitImport : Name → Bool
+  | `Init => true
+  | .str p _ => isInitImport p
+  | _ => false
 
 /-- `getSyntaxNodeKinds stx` takes a `Syntax` input `stx` and returns the `NameSet` of all the
 `SyntaxNodeKinds` and all the identifiers contained in `stx`. -/
@@ -250,8 +258,8 @@ It is used to provide the internally generated name for "nameless" `instance`s.
 -/
 def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
     let tot := getIrredundantImports (← getEnv) (← getAllImports stx id)
-    let fileNames := tot.toArray.qsort Name.lt
-    logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
+    let fileNames := (tot.toArray.filter (!isInitImport ·)).qsort Name.lt
+    logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"public import {·}")).toList}"
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/

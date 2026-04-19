@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 # # Integral closure as a characteristic predicate
 
@@ -22,7 +24,7 @@ We prove basic properties of `IsIntegralClosure`.
 
 @[expose] public section
 
-open Polynomial Submodule
+open Module Polynomial Submodule
 
 section inv
 
@@ -33,9 +35,9 @@ variable {R S : Type*}
 /-- A nonzero element in a domain integral over a field is a unit. -/
 theorem IsIntegral.isUnit [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
     (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
-  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
-  (FiniteDimensional.isUnit R (K := adjoin R {x})
-    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
+  have : FiniteDimensional R (R[x]) := .of_fg int.fg_adjoin_singleton
+  (FiniteDimensional.isUnit R (K := R[x])
+    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (R[x]).val
 
 /-- A commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
@@ -49,12 +51,12 @@ theorem isField_of_isIntegral_of_isField' [CommRing R] [CommRing S] [IsDomain S]
 
 variable [Field R] [DivisionRing S] [Algebra R S] {x : S} {A : Subalgebra R S}
 
-theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
+theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ R[x] := by
   obtain rfl | h0 := eq_or_ne x 0
   · rw [inv_zero]; exact Subalgebra.zero_mem _
-  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  have : FiniteDimensional R (R[x]) := .of_fg int.fg_adjoin_singleton
   obtain ⟨⟨y, hy⟩, h1⟩ := FiniteDimensional.exists_mul_eq_one R
-    (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
+    (K := R[x]) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
   rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel₀ h0).symm)]
 
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
@@ -357,11 +359,10 @@ protected theorem isIntegral [Algebra R A] [IsScalarTower R A B] (x : A) : IsInt
 theorem isIntegral_algebra [Algebra R A] [IsScalarTower R A B] : Algebra.IsIntegral R A :=
   ⟨fun x => IsIntegralClosure.isIntegral R B x⟩
 
-theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
-    NoZeroSMulDivisors R A := by
+lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsTorsionFree R A := by
   refine
-    Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => ?_
+    Function.Injective.moduleIsTorsionFree _ (IsIntegralClosure.algebraMap_injective A R B)
+      fun _ _ => ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
@@ -403,6 +404,14 @@ theorem isField [Algebra R A] [IsScalarTower R A B] [IsDomain A] (hR : IsField R
     IsField A :=
   have := IsIntegralClosure.isIntegral_algebra R (A := A) B
   isField_of_isIntegral_of_isField' hR
+
+theorem of_algEquiv {S : Type*} [CommRing S] [Algebra A S] [Algebra R S]
+    (f : B ≃ₐ[R] S) (h : ∀ x, algebraMap A S x = f (algebraMap A B x)) :
+    IsIntegralClosure A R S where
+  algebraMap_injective :=
+    funext_iff.2 h ▸ f.injective.comp (IsIntegralClosure.algebraMap_injective A R B)
+  isIntegral_iff {x} := by simp [← isIntegral_algEquiv f.symm,
+    IsIntegralClosure.isIntegral_iff (A := A), h, ← f.symm.injective.eq_iff]
 
 section lift
 
@@ -463,6 +472,7 @@ variable [CommRing R] [CommRing A] [Ring B] [CommRing S] [CommRing T]
 variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A] [IsScalarTower R A B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If A is an R-algebra all of whose elements are integral over R,
 and x is an element of an A-algebra that is integral over A, then x is integral over R. -/
 theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) :
@@ -475,12 +485,12 @@ theorem isIntegral_trans [Algebra.IsIntegral R A] (x : B) (hx : IsIntegral A x) 
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
     convert hp; apply p.map_toSubring S.toSubring⟩
-  let Sx := Subalgebra.toSubmodule (adjoin S {x})
+  let Sx := Subalgebra.toSubmodule (S[x])
   let MSx : Module S Sx := SMulMemClass.toModule _ -- the next line times out without this
-  have : Module.Finite S Sx := ⟨(Submodule.fg_top _).mpr hSx.fg_adjoin_singleton⟩
-  refine .of_mem_of_fg ((adjoin S {x}).restrictScalars R) ?_ _
+  have : Module.Finite S Sx := .of_fg hSx.fg_adjoin_singleton
+  refine .of_mem_of_fg ((S[x]).restrictScalars R) ?_ _
     ((Subalgebra.mem_restrictScalars R).mpr <| subset_adjoin rfl)
-  rw [← Submodule.fg_top, ← Module.finite_def]
+  rw [← Module.Finite.iff_fg]
   letI : SMul S Sx := { MSx with } -- need this even though MSx is there
   have : IsScalarTower R S Sx :=
     Submodule.isScalarTower Sx -- Lean looks for `Module A Sx` without this
@@ -531,8 +541,8 @@ nonrec theorem RingHom.IsIntegral.tower_bot (hg : Function.Injective g)
 variable (T) in
 /-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
   then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
-theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
-    [NoZeroSMulDivisors S T] [Nontrivial T] [IsScalarTower R S T]
+theorem Algebra.IsIntegral.tower_bot [IsDomain S] [Algebra R S] [Algebra R T] [Algebra S T]
+    [IsTorsionFree S T] [Nontrivial T] [IsScalarTower R S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
@@ -619,6 +629,14 @@ theorem isField_of_isIntegral_of_isField (hRS : Function.Injective (algebraMap R
 theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
+
+variable (R)
+theorem Algebra.ker_algebraMap_isMaximal_of_isIntegral (k : Type*) [Field k] [Algebra R k]
+    [Algebra.IsIntegral R k] : (RingHom.ker (algebraMap R k)).IsMaximal := by
+  have := Ideal.bot_isMaximal (K := k)
+  rw [RingHom.ker, Ideal.Quotient.maximal_ideal_iff_isField_quotient]
+  exact isField_of_isIntegral_of_isField Ideal.algebraMap_quotient_injective
+    (Ideal.Quotient.field _).toIsField
 
 end Algebra
 

@@ -103,6 +103,7 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
+set_option backward.isDefEq.respectTransparency false in
 include sq' in
 @[reassoc]
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
@@ -140,7 +141,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α sq' := sq'.map α.unop
+  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
 
 variable [F.IsWellOrderContinuous]
 
@@ -149,6 +150,7 @@ namespace wellOrderInductionData
 variable {p c f g} {j : J} (hj : Order.IsSuccLimit j)
   (s : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ sqFunctor c p f g).sections)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `transfiniteComposition.wellOrderInductionData`. -/
 noncomputable def liftHom : F.obj j ⟶ X :=
   (F.isColimitOfIsWellOrderContinuous j hj).desc
@@ -193,6 +195,7 @@ section
 variable (hF : ∀ (j : J) (_ : ¬IsMax j),
   HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
+set_option backward.isDefEq.respectTransparency false in
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :
@@ -214,6 +217,7 @@ include hF hc
 
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
   replace hs := congr_arg SqStruct.f' hs
@@ -249,6 +253,7 @@ namespace MorphismProperty
 variable (W : MorphismProperty C)
   (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
 
+set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderTransfiniteCompositionOfShape_llp :
     W.llp.IsStableUnderTransfiniteCompositionOfShape J := by
   rw [isStableUnderTransfiniteCompositionOfShape_iff]
@@ -258,6 +263,8 @@ instance isStableUnderTransfiniteCompositionOfShape_llp :
       (hc := h.isColimit) (fun j hj ↦ h.map_mem j hj _ hp)
   exact (MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
+
+instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} W.llp where
 
 lemma transfiniteCompositionsOfShape_le_llp_rlp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
@@ -283,7 +290,7 @@ lemma transfiniteCompositions_le_llp_rlp :
 
 lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts) ≤ W.rlp.llp := by
-  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} W).pushouts
+  simpa using transfiniteCompositions_le_llp_rlp.{w} (coproducts.{w} W).pushouts
 
 lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts).retracts ≤ W.rlp.llp := by

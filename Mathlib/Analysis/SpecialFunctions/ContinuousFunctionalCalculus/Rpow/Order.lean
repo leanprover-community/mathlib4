@@ -66,7 +66,7 @@ lemma monotone_nnrpow {p : ℝ≥0} (hp : p ∈ Icc 0 1) :
   · have hb : 0 ≤ b := ha.trans hab
     have hIcc : Icc (0 : ℝ≥0) 1 = Ioo 0 1 ∪ {0} ∪ {1} := by ext; simp
     rw [hIcc] at hp
-    obtain (hp|hp)|hp := hp
+    obtain (hp | hp) | hp := hp
     · exact monotoneOn_nnrpow_Ioo hp ha hb hab
     · simp_all [mem_singleton_iff]
     · simp_all [mem_singleton_iff, nnrpow_one a, nnrpow_one b]

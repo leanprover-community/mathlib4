@@ -13,10 +13,10 @@ public import Mathlib.RingTheory.Localization.Defs
 
 # Extension of algebras
 
-## Main definition
+## Main definitions
 
 - `Algebra.Extension`: An extension of an `R`-algebra `S` is an `R` algebra `P` together with a
-surjection `P →ₐ[R] R`.
+  surjection `P →ₐ[R] R`.
 
 - `Algebra.Extension.Hom`: Given a commuting square
   ```
@@ -79,6 +79,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
@@ -150,7 +151,7 @@ def localization (P : Extension.{w} R S) : Extension R S' where
 
 end Localization
 
-variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {T} [CommRing T] [Algebra R T]
 
 /-- The base change of an `R`-extension of `S` to `T` gives a `T`-extension of `T ⊗[R] S`. -/
 noncomputable
@@ -160,6 +161,26 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Extension R S) : Extension T 
     (IsScalarTower.toAlgHom _ _ _)) (LinearMap.lTensor_surjective T
     (g := (IsScalarTower.toAlgHom R P.Ring S).toLinearMap) P.algebraMap_surjective)
 
+variable (T) in
+lemma ker_baseChange :
+    (P.baseChange (T := T)).ker = P.ker.map Algebra.TensorProduct.includeRight.toRingHom :=
+  Algebra.TensorProduct.lTensor_ker (A := T) (IsScalarTower.toAlgHom R P.Ring S)
+    P.algebraMap_surjective
+
+variable (T) in
+/--
+The ring `T ⊗[R] P.Ring` underlying the extension `P.baseChange T` is a `P.Ring`-algebra
+by action on the right. This causes a (mathematical) diamond when `T = P.Ring`, so it is
+not an instance.
+-/
+@[instance_reducible]
+noncomputable def algebraBaseChange : Algebra P.Ring (P.baseChange (T := T)).Ring :=
+  fast_instance% TensorProduct.rightAlgebra
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] algebraBaseChange in
+instance : IsScalarTower R P.Ring (P.baseChange (T := T)).Ring :=
+  .of_algebraMap_eq fun x ↦ by simp [baseChange, RingHom.algebraMap_toAlgebra]; rfl
 
 end Construction
 
@@ -206,6 +227,26 @@ def Hom.toAlgHom [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') :
 lemma Hom.toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') (x) :
     f.toAlgHom x = f.toRingHom x := rfl
 
+/-- A hom of extensions `P → P'` can be constructed from an algebra map
+`P.Ring →ₐ[R] P'.Ring`. -/
+@[simps]
+def Hom.ofAlgHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    (f : P.Ring →ₐ[R] P'.Ring)
+    (H : (IsScalarTower.toAlgHom R P'.Ring S').comp f =
+      (IsScalarTower.toAlgHom R S S').comp (IsScalarTower.toAlgHom R P.Ring S)) :
+    P.Hom P' where
+  toRingHom := f.toRingHom
+  toRingHom_algebraMap := f.commutes'
+  algebraMap_toRingHom x := congr($H x)
+
+@[simp]
+lemma Hom.toAlgHom_ofAlgHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    (f : P.Ring →ₐ[R] P'.Ring)
+    (H : (IsScalarTower.toAlgHom R P'.Ring S').comp f =
+      (IsScalarTower.toAlgHom R S S').comp (IsScalarTower.toAlgHom R P.Ring S)) :
+    (Hom.ofAlgHom f H).toAlgHom = f :=
+  rfl
+
 variable (P P')
 
 /-- The identity hom. -/
@@ -240,6 +281,16 @@ def Hom.mapKer (f : P.Hom P')
   toFun x := ⟨f.toRingHom x, by simp [show algebraMap P.Ring S x = 0 from x.2]⟩
   map_add' _ _ := Subtype.ext (map_add _ _ _)
   map_smul' := by simp [Algebra.smul_def, ← halg]
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- The canonical hom from `P` to its base change `P.baseChange`. -/
+@[simps]
+noncomputable def toBaseChange (T : Type*) [CommRing T] [Algebra R T] :
+    P.Hom (P.baseChange (T := T)) where
+  toRingHom := TensorProduct.includeRight.toRingHom
+  toRingHom_algebraMap x := by simp [baseChange]
+  algebraMap_toRingHom x := rfl
 
 end
 
@@ -315,7 +366,7 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_zero := fun r ↦ ext (smul_zero (P.σ r))
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
+    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
@@ -355,6 +406,14 @@ lemma Cotangent.val_smul' (r : P.Ring) (x : P.Cotangent) : (r • x).val = r •
 @[simp]
 lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.val := by
   rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
+
+/-- `Cotangent.val` as a linear isomorphism. -/
+@[simps]
+def cotangentEquivCotangentKer : P.Cotangent ≃ₗ[P.Ring] P.ker.Cotangent where
+  toFun := Cotangent.val
+  invFun := Cotangent.of
+  map_add' x y := by simp
+  map_smul' x y := by simp
 
 /-- The quotient map from the kernel of `P → S` onto the cotangent space. -/
 noncomputable def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
@@ -439,7 +498,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
-  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _

@@ -63,6 +63,9 @@ theorem subsingleton_iff_singleton {x} (hx : x ∈ s) : s.Subsingleton ↔ s = {
 theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ ∃ x, s = {x} :=
   s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
 
+theorem subsingleton_iff_eq_empty_or_singleton : s.Subsingleton ↔ s = ∅ ∨ ∃ x, s = {x} :=
+  ⟨Subsingleton.eq_empty_or_singleton, by rintro (_ | ⟨_, rfl⟩) <;> simp_all⟩
+
 theorem Subsingleton.induction_on {p : Set α → Prop} (hs : s.Subsingleton) (he : p ∅)
     (h₁ : ∀ x, p {x}) : p s := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
@@ -107,6 +110,14 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
+
+theorem eq_empty_or_singleton_of_subsingleton [Subsingleton α] (s : Set α) :
+    s = ∅ ∨ ∃ a, s = {a} :=
+  subsingleton_of_subsingleton.eq_empty_or_singleton
+
+theorem eq_empty_or_singleton_of_unique [Unique α] (s : Set α) :
+    s = ∅ ∨ s = {default} :=
+  s.eq_empty_or_singleton_of_subsingleton.imp_right fun ⟨a, ha⟩ => Unique.eq_default a ▸ ha
 
 /-- `s`, coerced to a type, is a subsingleton type if and only if `s` is a subsingleton set. -/
 @[simp, norm_cast]

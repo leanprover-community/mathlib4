@@ -47,8 +47,8 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := b
 
 theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
   rw [← SetLike.mem_coe, ← not_iff_not]
-  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm,
-    ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
+  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm]
+  rw [Set.subset_compl_comm, ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
 
 theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
   rw [← Submodule.span_nat_eq_addSubmonoidClosure]
@@ -59,7 +59,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   refine .symm ⟨?_, fun h ↦ or_iff_not_imp_left.mpr fun h0 ↦ or_iff_not_imp_right.mpr fun hsp ↦
     (le_maximalIdeal h.ne_top).antisymm fun n hn ↦ ?_⟩
   · rintro (rfl | rfl | ⟨p, hp, rfl⟩)
-    · exact bot_prime
+    · exact isPrime_bot
     · exact (maximalIdeal.isMaximal ℕ).isPrime
     · rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff]
   rw [← le_bot_iff, SetLike.not_le_iff_exists] at h0
@@ -70,7 +70,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by lia)
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
-  push_neg at hsp
+  push Not at hsp
   have ⟨q, hq, hqp⟩ := SetLike.exists_of_lt
     ((P.span_singleton_le_iff_mem.mpr hp).lt_of_ne (hsp p prime).symm)
   obtain rfl | hn1 := eq_or_ne n 0

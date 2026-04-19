@@ -274,8 +274,8 @@ instance (priority := 100) {F A B : Type*} [NonUnitalNonAssocSemiring A] [Star A
 @[coe]
 def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
     [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) : A ≃⋆+* B :=
-  { (f : A ≃+* B) with
-    map_star' := map_star f}
+  { (RingEquivClass.toRingEquiv f : A ≃+* B) with
+    map_star' := map_star f }
 
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
@@ -313,7 +313,9 @@ instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective' := DFunLike.coe_injective
 
-@[simp]
+instance : CoeOut (A ≃⋆+* B) (A ≃+* B) where coe := toRingEquiv
+
+@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
 theorem toRingEquiv_eq_coe (e : A ≃⋆+* B) : e.toRingEquiv = e :=
   rfl
 

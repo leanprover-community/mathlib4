@@ -6,7 +6,7 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -32,7 +32,7 @@ variable [SMulCommClass R A A] [IsScalarTower R A A]
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
 
 A weaker version of this for semirings exists as `AddMonoidHom.mul`. -/
-@[simps!]
+@[instance_reducible, simps!]
 def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
@@ -164,7 +164,7 @@ variable (R A) in
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
   __ := mul' R A
   map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
-    (by simp+contextual [mul_add])
+    (by simp +contextual [mul_add])
 
 end Semiring
 

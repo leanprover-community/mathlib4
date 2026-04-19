@@ -80,7 +80,7 @@ protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
 open scoped List in
 @[simp, mono]
 theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
-  refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h
+  induction m, m' using Quotient.inductionOn₂ with | _ xs ys
   suffices xs <+~ ys from this.sym2
   simpa only [quot_mk_to_coe, coe_le, sym2_coe] using h
 

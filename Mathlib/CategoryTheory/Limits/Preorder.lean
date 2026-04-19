@@ -48,7 +48,7 @@ lemma conePt_mem_lowerBounds (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.ob
 lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
   ⟨(conePt_mem_lowerBounds F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
 
-/-- If the point of cone is a glb, the cone is a limi.t -/
+/-- If the point of cone is a glb, the cone is a limit. -/
 def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
   lift d := (h.2 (conePt_mem_lowerBounds F d)).hom
 
@@ -104,11 +104,13 @@ section
 variable [Preorder C]
 
 /-- A terminal object in a preorder `C` is top element for `C`. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.Limits.IsTerminal.orderTop {X : C} (t : IsTerminal X) : OrderTop C where
   top := X
   le_top Y := leOfHom (t.from Y)
 
 /-- A preorder with a terminal object has a greatest element. -/
+@[implicit_reducible]
 noncomputable def orderTopOfHasTerminal [HasTerminal C] : OrderTop C :=
   IsTerminal.orderTop terminalIsTerminal
 
@@ -119,11 +121,13 @@ def isTerminalTop [OrderTop C] : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
 instance (priority := low) [OrderTop C] : HasTerminal C := hasTerminal_of_unique ⊤
 
 /-- An initial object in a preorder `C` is bottom element for `C`. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.Limits.IsInitial.orderBot {X : C} (t : IsInitial X) : OrderBot C where
   bot := X
   bot_le Y := leOfHom (t.to Y)
 
 /-- A preorder with an initial object has a least element. -/
+@[implicit_reducible]
 noncomputable def orderBotOfHasInitial [HasInitial C] : OrderBot C :=
   IsInitial.orderBot initialIsInitial
 
@@ -142,6 +146,7 @@ variable [PartialOrder C]
 /--
 A family of limiting binary fans on a partial order induces an inf-semilattice structure on it.
 -/
+@[implicit_reducible]
 def semilatticeInfOfIsLimitBinaryFan
     (c : ∀ (X Y : C), BinaryFan X Y) (h : (X Y : C) → IsLimit (c X Y)) : SemilatticeInf C where
   inf X Y := (c X Y).pt
@@ -151,6 +156,7 @@ def semilatticeInfOfIsLimitBinaryFan
 
 variable (C) in
 /-- If a partial order has binary products, then it is an inf-semilattice -/
+@[implicit_reducible]
 noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
   semilatticeInfOfIsLimitBinaryFan
     (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)
@@ -158,6 +164,7 @@ noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : Semi
 /--
 A family of colimiting binary cofans on a partial order induces a sup-semilattice structure on it.
 -/
+@[implicit_reducible]
 def semilatticeSupOfIsColimitBinaryCofan
     (c : ∀ (X Y : C), BinaryCofan X Y) (h : (X Y : C) → IsColimit (c X Y)) : SemilatticeSup C where
   sup X Y := (c X Y).pt
@@ -167,6 +174,7 @@ def semilatticeSupOfIsColimitBinaryCofan
 
 variable (C) in
 /-- If a partial order has binary coproducts, then it is a sup-semilattice -/
+@[implicit_reducible]
 noncomputable def semilatticeSupOfHasBinaryCoproducts [HasBinaryCoproducts C] : SemilatticeSup C :=
   semilatticeSupOfIsColimitBinaryCofan
     (fun _ _ ↦ BinaryCofan.mk coprod.inl coprod.inr) (fun X Y ↦ coprodIsCoprod X Y)

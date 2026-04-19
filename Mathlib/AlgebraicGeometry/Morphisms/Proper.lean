@@ -110,11 +110,13 @@ instance : MorphismProperty.HasOfPostcompProperty @IsProper @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
     fun _ _ _ _ ↦ inferInstanceAs (IsProper _)
 
+instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
+  have : UniversallyClosed (f.toImage ≫ f.imageι) := by simpa
+  .of_comp_of_isSeparated _ f.imageι
+
 @[stacks 01W6 "(2)"]
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
-
-@[deprecated (since := "2025-10-15")] alias IsProper.of_comp_of_isSeparated := IsProper.of_comp
 
 lemma IsProper.comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsProper g] :
     IsProper (f ≫ g) ↔ IsProper f :=
@@ -161,7 +163,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))
     (g := (X.presheaf.map (homOfLE le_top).op).hom)
-  exact LocallyOfFiniteType.finiteType_of_affine_subset ⟨⊤, isAffineOpen_top _⟩ ⟨U, hU⟩ (by simp)
+  exact f.finiteType_appLE (isAffineOpen_top _) hU (by simp)
 
 end GlobalSection
 

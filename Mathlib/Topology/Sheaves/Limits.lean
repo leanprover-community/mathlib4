@@ -39,7 +39,7 @@ instance [HasColimitsOfShape J C] (X : TopCat) : HasColimitsOfShape J (Presheaf 
 instance [HasColimits.{v, u} C] (X : TopCat.{t}) : HasColimitsOfSize.{v, v} (Presheaf C X) where
 
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : CreatesLimitsOfShape J (Sheaf.forget C X) :=
-  Sheaf.createsLimitsOfShape
+  inferInstanceAs <| CreatesLimitsOfShape J (sheafToPresheaf _ _)
 
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : HasLimitsOfShape J (Sheaf C X) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Sheaf.forget C X)
@@ -48,6 +48,7 @@ instance [HasLimits C] (X : TopCat) : CreatesLimits.{v, v} (Sheaf.forget C X) wh
 
 instance [HasLimits C] (X : TopCat.{v}) : HasLimitsOfSize.{v, v} (Sheaf.{v} C X) where
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) {c : Cone F} (hc : IsLimit c) : c.pt.IsSheaf := by
   let F' : J ⥤ Sheaf C X :=

@@ -80,11 +80,12 @@ theorem grade_eq_lsingle_range (m : M) :
   Submodule.ext (mem_grade_iff' R m)
 
 theorem single_mem_gradeBy {R} [CommSemiring R] (f : M → ι) (m : M) (r : R) :
-    Finsupp.single m r ∈ gradeBy R f (f m) := by
+    single m r ∈ gradeBy R f (f m) := by
   intro x hx
   rw [Finset.mem_singleton.mp (Finsupp.support_single_subset hx)]
 
-theorem single_mem_grade {R} [CommSemiring R] (i : M) (r : R) : Finsupp.single i r ∈ grade R i :=
+theorem single_mem_grade {R} [CommSemiring R] (i : M) (r : R) :
+    single i r ∈ grade R i :=
   single_mem_gradeBy _ _ _
 
 end
@@ -109,6 +110,7 @@ instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :
 
 variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M →+ ι)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition; the canonical grade decomposition, used to provide
 `DirectSum.decompose`. -/
 def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
@@ -121,7 +123,7 @@ def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
           (by congr 2 <;> simp)
       map_mul' := fun i j => by
         symm
-        dsimp only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
+        dsimp +instances only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
           OneHom.coe_mk, toAdd_mul]
         convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
         repeat { rw [map_add] }
@@ -140,6 +142,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   rw [mul_one]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x := by
   classical
@@ -174,9 +177,6 @@ instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
       rw [decomposeAux_single, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by rw [decomposeAux_coe f x]
 
--- Lean can't find this later without us repeating it
-instance gradeBy.decomposition : DirectSum.Decomposition (gradeBy R f) := by infer_instance
-
 @[simp]
 theorem decomposeAux_eq_decompose :
     ⇑(decomposeAux f : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i) =
@@ -190,11 +190,7 @@ theorem GradesBy.decompose_single (m : M) (r : R) :
   decomposeAux_single _ _ _
 
 instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) :=
-  AddMonoidAlgebra.gradeBy.gradedAlgebra (AddMonoidHom.id _)
-
--- Lean can't find this later without us repeating it
-instance grade.decomposition : DirectSum.Decomposition (grade R : ι → Submodule _ _) := by
-  infer_instance
+  inferInstanceAs <| GradedAlgebra (gradeBy R (AddMonoidHom.id ι))
 
 theorem grade.decompose_single (i : ι) (r : R) :
     DirectSum.decompose (grade R : ι → Submodule _ _) (Finsupp.single i r : AddMonoidAlgebra _ _) =

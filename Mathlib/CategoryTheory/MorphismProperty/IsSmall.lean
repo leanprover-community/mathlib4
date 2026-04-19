@@ -60,6 +60,18 @@ lemma isSmall_iff_eq_ofHoms :
   · rintro ⟨_, _, _, _, rfl⟩
     infer_instance
 
+instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)
+    [Small.{w} α] [∀ a, IsSmall.{w} (W a)] :
+    IsSmall.{w} (iSup W) where
+  small_toSet := by
+    rw [toSet_iSup]
+    refine small_of_surjective (f := fun (⟨i, f⟩ : Σ i, (W i).toSet) ↦
+      ⟨f, by rw [Set.mem_iUnion]; exact ⟨i, f.prop⟩⟩) ?_
+    rintro ⟨f, hf⟩
+    simp only [Set.mem_iUnion] at hf
+    obtain ⟨i, hf⟩ := hf
+    exact ⟨⟨i, ⟨_, hf⟩⟩, rfl⟩
+
 end MorphismProperty
 
 end CategoryTheory

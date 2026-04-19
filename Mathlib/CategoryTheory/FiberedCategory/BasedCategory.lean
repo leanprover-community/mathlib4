@@ -206,6 +206,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
@@ -278,7 +279,7 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
 
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
-  Hom 𝒳 𝒴 :=  𝒳 ⥤ᵇ 𝒴
+  Hom 𝒳 𝒴 := 𝒳 ⥤ᵇ 𝒴
   id 𝒳 := 𝟭 𝒳
   comp F G := F ⋙ G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴

@@ -5,9 +5,10 @@ Authors: Thomas Browning, Patrick Massot
 -/
 module
 
-public meta import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Group.Commutator  -- shake: keep (tactic dependency)
+public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
 public meta import Mathlib.Tactic.FailIfNoProgress
-public meta import Mathlib.Algebra.Group.Commutator
+public import Mathlib.Tactic.Ring
 
 /-!
 # `group` tactic
@@ -21,7 +22,7 @@ some `ring` invocations.
 
 ## Tags
 
-group_theory
+group theory
 -/
 
 public meta section
@@ -68,13 +69,16 @@ syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
-  `(tactic| ring_nf -failIfUnchanged $[at $location]?)
+  `(tactic| ring_nf (ifUnchanged := .silent) $[at $location]?)
 
-/-- Tactic for normalizing expressions in multiplicative groups, without assuming
-commutativity, using only the group axioms without any information about which group
-is manipulated.
+/-- `group` normalizes expressions in multiplicative groups that occur in the goal. `group` does not
+assume commutativity, instead using only the group axioms without any information about which group
+is manipulated. If the goal is an equality, and after normalization the two sides are equal, `group`
+closes the goal.
 
-(For additive commutative groups, use the `abel` tactic instead.)
+For additive commutative groups, use the `abel` tactic instead.
+
+* `group at l1 l2 ...` normalizes at the given locations.
 
 Example:
 ```lean

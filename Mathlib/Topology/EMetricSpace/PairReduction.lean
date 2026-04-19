@@ -181,7 +181,7 @@ variable [DecidableEq T]
     the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
-  | 0 => {finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c}
+  | 0 => { finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c }
   | n + 1 =>
     let V' := (logSizeBallSeq J hJ a c n).finset \ ((logSizeBallSeq J hJ a c n).smallBall c)
     let t' := if hV' : V'.Nonempty then hV'.choose else (logSizeBallSeq J hJ a c n).point

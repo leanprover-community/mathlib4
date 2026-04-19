@@ -299,18 +299,17 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
-  -- TODO: this is defeq abuse: `p` is not a `List`.
-  match p with
-  | [] => rw [FreeAddMonoid.toList_nil, List.map_nil, List.sum_nil]; rfl
-  | x :: ps =>
-    rw [FreeAddMonoid.toList_cons, List.map_cons, List.sum_cons, ← List.singleton_append,
-      ← toPiTensorProduct ps, ← tprodCoeff_eq_smul_tprod]
+  induction p using FreeAddMonoid.inductionOn' with
+  | zero => rfl
+  | add_of b a ih =>
+    rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih, ← tprodCoeff_eq_smul_tprod]
     rfl
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
   {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
 if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
 `(a, m)` of `p`.
@@ -325,11 +324,14 @@ lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
   existsi Quot.out x
   simp [lifts, ← AddCon.quot_mk_eq_coe]
 
+instance (x : ⨂[R] i, s i) : Nonempty ↑x.lifts := nonempty_subtype.mpr (nonempty_lifts x)
+
 /-- The empty list lifts the element `0` of `⨂[R] i, s i`.
 -/
 lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
   rw [mem_lifts_iff, FreeAddMonoid.toList_zero, List.map_nil, List.sum_nil]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If elements `p,q` of `FreeAddMonoid (R × Π i, s i)` lift elements `x,y` of `⨂[R] i, s i`
 respectively, then `p + q` lifts `x + y`.
 -/
@@ -657,7 +659,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
   toFun := piTensorHomMapFun₂
   map_add' x y := piTensorHomMapFun₂_add x y
-  map_smul' x y :=  piTensorHomMapFun₂_smul x y
+  map_smul' x y := piTensorHomMapFun₂_smul x y
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
@@ -711,6 +713,7 @@ theorem lift_reindex_symm
     lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
   LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
     (reindex R s e).trans (reindex R _ e') = reindex R s (e.trans e') := by
@@ -732,14 +735,11 @@ theorem reindex_symm (e : ι ≃ ι₂) :
   ext x
   simp [reindex]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
-  apply LinearEquiv.toLinearMap_injective
   ext
-  simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
-    LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
-    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
-  simp
+  simp [reindex, domDomCongrLinearEquiv']
 
 variable {t : ι → Type*}
 variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]

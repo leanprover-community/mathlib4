@@ -76,8 +76,11 @@ its category structure.
 def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
 deriving
   Category,
-  [Inhabited C] → Inhabited _,
-  (α : Sort _) → [CoeSort C α] → CoeSort _ α
+  [Inhabited C] → Inhabited _
+
+-- Without this we get errors in Mathlib/RingTheory/PicardGroup.lean
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance (α : Sort _) → [CoeSort C α] → CoeSort _ α for Skeleton C
 
 end
 
@@ -122,7 +125,7 @@ variable (C)
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
   map {X Y} f :=
-    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv  }
+    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv }
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 
@@ -178,12 +181,13 @@ lemma mapSkeleton_obj_toSkeleton (X : C) :
     F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
   congr_toSkeleton_of_iso <| F.mapIso <| fromSkeletonToSkeletonIso X
 
-instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
+instance [F.Full] : F.mapSkeleton.Full := inferInstanceAs <| (_ ⋙ _).Full
 
-instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
+instance [F.Faithful] : F.mapSkeleton.Faithful := inferInstanceAs <| (_ ⋙ _).Faithful
 
-instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
+instance [F.EssSurj] : F.mapSkeleton.EssSurj := inferInstanceAs <| (_ ⋙ _).EssSurj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
 the square formed by these 4 objects and 4 functors commutes. -/

@@ -176,12 +176,11 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
     · rw [add_comm, pow_succ'] at H0
       exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
-variable [IsDomain R]
-
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+theorem toUniqueFactorizationMonoid [IsCancelMulZero R]
+    (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
@@ -231,7 +230,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
+theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
@@ -302,8 +301,8 @@ theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsD
     [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
     (e : E) : IsDiscreteValuationRing B where
   principal := (isPrincipalIdealRing_iff _).1 <|
-    IsPrincipalIdealRing.of_surjective _ (e : A ≃+* B).surjective
-  __ : IsLocalRing B := (e : A ≃+* B).isLocalRing
+    .of_surjective _ (EquivLike.surjective e)
+  __ : IsLocalRing B := (RingEquivClass.toRingEquiv e).isLocalRing
   not_a_field' := by
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
       <| IsDiscreteValuationRing.not_a_field A)
@@ -341,6 +340,21 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   obtain ⟨u, rfl⟩ := hn.symm
   use n, u
   apply mul_comm
+
+/--
+If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
+expressed as `u • (algebraMap R K ϖ) ^ n` for some `u : Rˣ` and `n : ℤ`.
+-/
+lemma exists_units_eq_smul_zpow_of_irreducible
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    {ϖ : R} (hϖ : Irreducible ϖ) {x : K} (hx : x ≠ 0) :
+    ∃ (n : ℤ) (u : Rˣ), x = u • algebraMap R K ϖ ^ n := by
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible (x := x) (by simp_all) hϖ
+  obtain ⟨m, v, rfl⟩ := eq_unit_mul_pow_irreducible (by simpa using hy) hϖ
+  have hϖ' : algebraMap R K ϖ ≠ 0 := by simpa using hϖ.ne_zero
+  refine ⟨n - m, u / v, ?_⟩
+  simp [hϖ', zpow_sub₀, div_smul_div_comm, Units.smul_def u, Units.smul_def v, Algebra.smul_def]
 
 open Submodule.IsPrincipal
 
@@ -470,8 +484,31 @@ lemma addVal_eq_zero_iff {x : R} :
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   simp [isUnit_pow_iff_of_not_isUnit hϖ.not_isUnit, hϖ]
 
+lemma addVal_eq_iff_associated (x y : R) :
+    addVal R x = addVal R y ↔ Associated x y := by
+  constructor
+  · intro h
+    by_cases hx : x = 0
+    · simp_all only [AddValuation.map_zero]
+      rw [addVal_eq_top_iff.mp h.symm]
+    by_cases hy : y = 0
+    · simp_all only [AddValuation.map_zero, associated_zero_iff_eq_zero]
+      exact hx (addVal_eq_top_iff.mp h)
+    obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+    obtain ⟨m, α, hx'⟩ := eq_unit_mul_pow_irreducible hx hϖ
+    obtain ⟨n, β, hy'⟩ := eq_unit_mul_pow_irreducible hy hϖ
+    simp only [hx', AddValuation.map_mul, addVal_eq_zero_of_unit, AddValuation.map_pow,
+      nsmul_eq_mul, zero_add, hy', associated_unit_mul_right_iff,
+      associated_unit_mul_left_iff] at h ⊢
+    simp only [addVal_uniformizer hϖ, mul_one, ENat.coe_inj] at h
+    rw [h]
+    exact Associates.mk_eq_mk_iff_associated.mp rfl
+  · rintro ⟨u, rfl⟩
+    simp_all
+
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
@@ -533,6 +570,7 @@ variable (R) in
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
 step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
+@[implicit_reducible]
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   quotient_zero x := by simp [quotient]

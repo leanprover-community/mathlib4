@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Tactic.Common
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Divisibility
@@ -120,7 +121,7 @@ theorem dvd_refl (a : α) : a ∣ a :=
 
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 
-instance : IsRefl α (· ∣ ·) :=
+instance : @Std.Refl α (· ∣ ·) :=
   ⟨dvd_refl⟩
 
 theorem one_dvd (a : α) : 1 ∣ a :=
