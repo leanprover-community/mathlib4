@@ -174,7 +174,7 @@ lemma IsMulFreimanIso.isMulFreimanIso_invFunOn (hf : IsMulFreimanIso n A B f) :
 
 /-- A version of the Freiman homomorphism condition expressed using `Finset`s, for practicality. -/
 @[to_additive] lemma IsMulFreimanHom.prod_apply (hf : IsMulFreimanHom n A B f) {s t : Finset α}
-    {hsA : s.toSet ⊆ A} {htA : t.toSet ⊆ A}
+    {hsA : (s : Set α) ⊆ A} {htA : (t : Set α) ⊆ A}
     (hs : s.card = n) (ht : t.card = n) :
     ∏ i ∈ s, i = ∏ i ∈ t, i → ∏ i ∈ s, f i = ∏ i ∈ t, f i := by
   simpa using hf.map_prod_eq_map_prod hsA htA hs ht
