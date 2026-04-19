@@ -39,6 +39,8 @@ variable {G v} in
 theorem edegree_eq_zero_iff_isIsolated : G.edegree v = 0 ↔ G.IsIsolated v := by
   simp [← encard_neighborSet]
 
+alias ⟨_, IsIsolated.edegree_eq⟩ := edegree_eq_zero_iff_isIsolated
+
 variable {G u v} in
 theorem Adj.edegree_ne_zero_left (h : G.Adj u v) : G.edegree u ≠ 0 :=
   edegree_eq_zero_iff_isIsolated.not.mpr h.not_isIsolated_left
