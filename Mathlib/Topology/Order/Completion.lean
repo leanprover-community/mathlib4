@@ -8,31 +8,25 @@ module
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Topology.Order.Basic
-
 public import Mathlib.Order.UpperLower.CompleteLattice
 public import Mathlib.Order.Completion
 
-
 import Mathlib.Algebra.Order.Field.Basic
 
-/-! # Dense and continuous completion of a linear order
+/-!
+# Dense and continuous completion of a linear order
 
 Let `α` be a linear order.
 
-* `DedekindCut.continuous_principal` : the canonical map
-`DedekindCut.principal : α → DedekindCut α` is continuous for the order topologies.
-
-* `Order.Fill α` : a dense and linear order that extends `α`
-
-* `Order.Fill.some`: the ordered embedding `α ↪o Order.Fill α`
-
-* `Order.Fill.continuous_some` : the map `⇑Order.Fill.some`
-is continuous for the order topologies.
-
-* `Order.exists_dense_continuous_completion` :
-any linear order embeds continuously (for the order topologies)
-into a a dense and complete linear order.
-
+* `DedekindCut.continuous_principal`: the canonical map
+  `DedekindCut.principal : α → DedekindCut α` is continuous for the order topologies.
+* `Order.Fill α`: a dense linear order that extends `α`.
+* `Order.Fill.some`: the order embedding `α ↪o Order.Fill α`/.
+* `Order.Fill.continuous_some`: the map `⇑Order.Fill.some`
+  is continuous for the order topologies.
+* `Order.exists_dense_continuous_completion`:
+  any linear order embeds continuously (for the order topologies)
+  into a dense and complete linear order.
 -/
 
 @[expose] public section
@@ -40,29 +34,20 @@ into a a dense and complete linear order.
 open Set
 
 variable {α : Type*} [LinearOrder α]
+
 theorem DedekindCut.continuous_principal [TopologicalSpace α] [OrderTopology α]
   [TopologicalSpace (DedekindCut α)] [OrderTopology (DedekindCut α)] :
     Continuous (fun a : α ↦ principal a) := by
   rw [OrderTopology.continuous_iff]
-  intro c
-  simp only [isOpen_iff_nhds]
-  refine ⟨fun a ↦ ?_, fun a ↦ ?_⟩
-  · simp only [mem_preimage, mem_Ioi, Filter.le_principal_iff]
-    rw [lt_principal_iff]
-    rintro ⟨b, hb, hba⟩
-    rw [mem_nhds_iff]
-    use Ioi b
-    refine ⟨fun x ↦ ?_, isOpen_Ioi, mem_Ioi.mpr hba⟩
-    simp only [mem_Ioi, mem_preimage, lt_principal_iff]
-    exact fun h ↦ ⟨b, ⟨hb, h⟩⟩
-  · simp only [mem_preimage, mem_Iio, Filter.le_principal_iff]
-    rw [principal_lt_iff]
-    rintro ⟨b, hb, hba⟩
-    rw [mem_nhds_iff]
-    use Iio b
-    refine ⟨fun x ↦ ?_, isOpen_Iio, mem_Iio.mpr hba⟩
-    simp only [mem_Iio, mem_preimage, principal_lt_iff]
-    refine fun h ↦ ⟨b, ⟨hb, h⟩⟩
+  refine fun c ↦ ⟨?_, ?_⟩
+  · have : IsOpen (⋃ a ∈ c.right, Ioi a) := isOpen_biUnion fun _ _ ↦ isOpen_Ioi
+    convert this
+    ext
+    simp [lt_principal_iff]
+  · have : IsOpen (⋃ a ∈ c.left, Iio a) := isOpen_biUnion fun _ _ ↦ isOpen_Iio
+    convert this
+    ext
+    simp [principal_lt_iff]
 
 namespace Order
 
@@ -128,19 +113,15 @@ end Fill
 
 universe u
 
+/-- Every linear order embeds continuously in a dense complete linear order. -/
 theorem exists_dense_continuous_completion
     (α : Type u) [LinearOrder α] [TopologicalSpace α] [OrderTopology α] :
-    ∃ (β : Type u) (_ : LinearOrder β) (_ : DenselyOrdered β) (_ : TopologicalSpace β)
-      (_ : OrderTopology β) (ι : α ↪o β), Continuous ι := by
-  let : TopologicalSpace (Fill α) := inferInstance
-  let : OrderTopology (Fill α) := inferInstance
-  set β := DedekindCut (Fill α)
-  let : TopologicalSpace β := Preorder.topology β
-  have orderTop : OrderTopology β := ⟨rfl⟩
-  let ι : α ↪o β := Fill.some.trans DedekindCut.principalEmbedding
-  refine ⟨DedekindCut (Fill α), inferInstance, inferInstance, inferInstance, orderTop,
-    Fill.some.trans DedekindCut.principalEmbedding, ?_⟩
-  simp only [RelEmbedding.coe_trans]
-  exact Continuous.comp DedekindCut.continuous_principal Fill.continuous_some
+    ∃ (β : Type u) (_ : CompleteLinearOrder β) (_ : DenselyOrdered β) (_ : TopologicalSpace β)
+      (_ : OrderTopology β) (ι : α ↪o β), Continuous ι :=
+  let : TopologicalSpace (DedekindCut (Fill α)) := Preorder.topology _
+  have : OrderTopology (DedekindCut (Fill α)) := ⟨rfl⟩
+  ⟨_, inferInstance, inferInstance, inferInstance, inferInstance,
+    Fill.some.trans DedekindCut.principalEmbedding,
+    DedekindCut.continuous_principal.comp Fill.continuous_some⟩
 
 end Order
