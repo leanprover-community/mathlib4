@@ -188,23 +188,21 @@ private partial def foldKeysAsNamesAux {α} (acc : α) (pfx : Name) (f : α → 
 def _root_.Lean.Json.foldKeysAsNames {α} (json : Json) (f : α → Name → String → α) (init : α) : α :=
   foldKeysAsNamesAux init .anonymous f json
 
+@[inline] private def mathOverviewPath : IO System.FilePath :=
+  return (← IO.currentDir) / "docs" / "overview.json"
+
+@[inline] private def readMathOverviewJson : IO Json := do
+  let file ← IO.FS.readFile <|← mathOverviewPath
+  match Json.parse file with
+  | .ok json => pure json
+  | .error e => throw <| .userError e
+
 /-- `overview.json` as a `NameMap` from the decls that are the values in the json to the path of
 keys that lead to them, represented as a `Name`. The innermost key is the last component of the
 name. Not sure it's great to parse the whole file on every file load. -/
 initialize mathOverview : NameMap Name ← do
   initSearchPath (← findSysroot)
-  let some oleanSearchPath := (← IO.getEnv "LEAN_PATH").map System.SearchPath.parse
-    | throw (.userError "`LEAN_PATH` is not set.")
-  -- `*/mathlib4/.lake/build/lib/lean`. Fragile.
-  let some mathlibRoot := oleanSearchPath.findSome? fun p => do
-      let root ← (p.parent.bind (·.parent.bind (·.parent.bind (·.parent))))
-      guard <| root.fileName.isEqSome "mathlib4"
-      return root
-    | throw (.userError "Could not find `*/mathlib4` in `LEAN_PATH`.")
-  let file ← IO.FS.readFile <| mathlibRoot / "docs" / "overview.json"
-  let json ← match Json.parse file with
-    | .ok json => pure json
-    | .error e => throw <| .userError e
+  let json ← readMathOverviewJson
   return json.foldKeysAsNames (init := {}) fun m k v => m.insert v.toName k
 
 /-- This should exist somewhere, right? -/
@@ -279,6 +277,32 @@ elab "#check_overview" : command => do
       msgs := m!"Decalarations which could not be found:\n\
         {m!"\n".joinSep unknownMsgs.toList}}" :: msgs
     logWarning (m!"\n\n".joinSep msgs)
+
+private def _root_.Lean.Name.stringComponentsRevAux (acc : List String) : Name → List String
+  | .str pre str => stringComponentsRevAux (str :: acc) pre
+  | .num pre _ => stringComponentsRevAux acc pre
+  | .anonymous => acc
+
+private def _root_.Lean.Name.stringComponents (n : Name) : List String :=
+  n.stringComponentsRevAux [] |>.reverse
+
+private def _root_.Lean.Json.modifyObjVal! (json : Json) (key : String) (f : Json → Json) : Json :=
+  match json with
+  | .obj kvs => .obj <| kvs.modify key f
+  | _        => panic! "Json.setObjVal!: not an object: {json}"
+
+private def _root_.Lean.Json.setObjValAtPath! (base : Json) (keyPath : List String) (new : Json) :
+    Json :=
+  match keyPath with
+  | s :: rest => base.modifyObjVal! s (setObjValAtPath! · rest new)
+  | [] => new
+
+elab "#update_overview" : command => do
+  let mut json ← readMathOverviewJson
+  for (name, keyPath) in mathOverview do
+    if let some newName := Linter.getDeprecatedNewName (← getEnv) name then
+      json := json.setObjValAtPath! keyPath.stringComponents newName.toString
+  IO.FS.writeFile (← mathOverviewPath) (json.pretty 100)
 
 /-- The `stacksTag` attribute.
 Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
