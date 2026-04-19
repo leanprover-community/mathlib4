@@ -438,8 +438,7 @@ theorem exists_Icc_mem_subset_of_mem_nhdsGE {a : α} {s : Set α} (hs : s ∈ �
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hc⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
-    · rw [mem_Ioo] at hc
-      exact ⟨c, hc.1.le, Icc_mem_nhdsGE hc.1, (Icc_subset_Ico_right hc.2).trans hbs⟩
+    · exact ⟨c, hc.1.le, Icc_mem_nhdsGE hc.1, (Icc_subset_Ico_right hc.2).trans hbs⟩
 
 theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
@@ -534,15 +533,21 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α}
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
-@[to_dual hasBasis_nhds_Ioc_of_exists_gt]
+@[to_dual hasBasis_nhds_Ico_of_exists_gt]
 theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [SuccOrder α] {a : α} (ha : ∃ l, l < a) :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
 
-@[to_dual hasBasis_nhds_Ioc]
+@[deprecated (since := "2026-04-19")]
+alias PredOrder.hasBasis_nhds_Ioc_of_exists_gt := PredOrder.hasBasis_nhds_Ico_of_exists_gt
+
+@[to_dual]
 theorem SuccOrder.hasBasis_nhds_Ioc [SuccOrder α] {a : α} [NoMinOrder α] :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
+
+@[deprecated (since := "2026-04-19")]
+alias PredOrder.hasBasis_nhds_Ioc := PredOrder.hasBasis_nhds_Ico
 
 variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
@@ -594,7 +599,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
-  suffices H : Ioc (z x) x = Ioo (z x) (y x) from H ▸ isOpen_Ioo
+  suffices H : Ioc (z x) x = Ioo (z x) (y x) by rw [H]; exact isOpen_Ioo
   apply (Ioc_subset_Ioo_right (hy x hx.1).lt).antisymm
   simp_rw [subset_def, mem_Ioo, mem_Ioc]
   exact fun u hu ↦ ⟨hu.1, Hy _ _ hx.1 hu.2⟩
