@@ -103,7 +103,7 @@ lemma CountableSupClosed.sInter (hS : ∀ s ∈ S, CountableSupClosed s) :
 @[to_dual]
 lemma CountableSupClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableSupClosed (f i)) :
     CountableSupClosed (⋂ i, f i) :=
-  CountableSupClosed.sInter <| forall_mem_range.2 hf
+  .sInter <| forall_mem_range.2 hf
 
 lemma CountableSupClosed.directedOn (hs : CountableSupClosed s) : DirectedOn (· ≤ ·) s :=
   hs.supClosed.directedOn
