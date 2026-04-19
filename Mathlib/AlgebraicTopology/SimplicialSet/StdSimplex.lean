@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
@@ -194,7 +195,36 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
       X.map f.op x :=
   rfl
 
+lemma opObjEquiv_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X.op _⦋0⦌) :
+    opObjEquiv (n := op n) (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv x)) := rfl
+
+lemma opObjEquiv_symm_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X _⦋0⦌) :
+    (opObjEquiv (n := op n)).symm (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv.symm x)) := rfl
+
 namespace stdSimplex
+
+set_option backward.isDefEq.respectTransparency false in
+lemma map_comp_yonedaEquiv_symm {X : SSet.{u}} {n m : SimplexCategory} (f : n ⟶ m)
+    (x : X.obj (op m)) :
+    stdSimplex.map f ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.map f.op x) := by
+  simp [yonedaEquiv, stdSimplex, ← dsimp% uliftYonedaEquiv_symm_map f.op]
+
+lemma δ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
+    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
+  map_comp_yonedaEquiv_symm ..
+
+lemma yonedaEquiv_map_comp
+    {X : SSet.{u}} {n m : SimplexCategory} (f : n ⟶ m) (g : stdSimplex.obj m ⟶ X) :
+    yonedaEquiv (stdSimplex.map f ≫ g) = X.map f.op (yonedaEquiv g) :=
+  yonedaEquiv.symm.injective (by simp [← map_comp_yonedaEquiv_symm])
+
+lemma yonedaEquiv_δ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  yonedaEquiv_map_comp ..
 
 @[simp]
 lemma objEquiv_yonedaEquiv_id (n : ℕ) :
