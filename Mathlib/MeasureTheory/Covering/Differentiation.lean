@@ -493,7 +493,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   exact eventually_atTop.2 ⟨1, A⟩
 
 /-- The points with `v.limRatioMeas hρ x = 0` have measure `0` for `ρ`. -/
-theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
+theorem measure_limRatioMeas_zero : ρ (v.limRatioMeas hρ ⁻¹' {0}) = 0 := by
   refine measure_null_of_locally_null _ fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
@@ -539,9 +539,10 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     apply (ae_restrict_iff' M).2
     exact Eventually.of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
-    apply (withDensity_absolutelyContinuous μ _ _).le.trans zero_le
-    rw [← nonpos_iff_eq_zero]
-    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
+    rw [withDensity_absolutelyContinuous μ]
+    · exact zero_le
+    · rw [← nonpos_iff_eq_zero]
+      exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
     ∀ n : ℤ,
       ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
@@ -597,8 +598,9 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let ν := μ.withDensity (v.limRatioMeas hρ)
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
-  have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) :=
-    (measure_mono inter_subset_right).trans ((v.measure_limRatioMeas_zero hρ).le.trans zero_le)
+  have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) := by
+    grw [measure_mono inter_subset_right, v.measure_limRatioMeas_zero hρ]
+    exact zero_le
   have B : ρ (s ∩ f ⁻¹' {∞}) ≤ (t • ν) (s ∩ f ⁻¹' {∞}) := by
     apply (hρ _).le.trans zero_le
     rw [← nonpos_iff_eq_zero]

@@ -746,7 +746,8 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
     apply (measure_union_le _ _).trans
     have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
       rw [← nonpos_iff_eq_zero, ← hs]
-      exact measure_mono (inter_subset_inter_left _ fun x hx hfx ↦ ht (hfx ▸ hx))
+      gcongr
+      exact fun x hx hfx ↦ ht (hfx ▸ hx)
     simp only [obs, add_zero, le_refl]
   · exact NullMeasurableSet.of_null hs
 
