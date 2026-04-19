@@ -648,7 +648,7 @@ lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
 
 /--
 In the power series expansion of `℘(z) = ∑ᵢ aᵢ (z - x)ⁱ` at some `x ∉ L`,
-each `aᵢ` can be writen as a sum over `l ∈ L`, i.e.
+each `aᵢ` can be written as a sum over `l ∈ L`, i.e.
 `aᵢ = ∑ₗ, (i + 1) * (l - x)⁻ⁱ⁻²` for `i ≠ 0` and `a₀ = ∑ₗ, (l - x)⁻² - l⁻²`.
 
 We show that the double sum converges if `z` falls in a ball centered at `x` that doesn't touch `L`.

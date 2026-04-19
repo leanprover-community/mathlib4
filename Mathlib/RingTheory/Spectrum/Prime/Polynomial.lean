@@ -25,7 +25,8 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X̲] → Spec R` is an open map.
+- `MvPolynomial.isOpenMap_comap_C`:
+  The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
 
 -/
 
@@ -35,7 +36,6 @@ open Polynomial TensorProduct PrimeSpectrum
 
 variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
 prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`. -/
 lemma isNilpotent_tensor_residueField_iff
@@ -138,7 +138,6 @@ end PrimeSpectrum
 
 namespace Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     x ∈ comap C '' basicOpen f ↔ ∃ i, f.coeff i ∉ x.asIdeal := by
   trans f.map (algebraMap R x.asIdeal.ResidueField) ≠ 0

@@ -111,7 +111,7 @@ jobs:
             }' > bridge-outputs.json
 
       - name: Emit bridge artifact
-        uses: leanprover-community/privilege-escalation-bridge/emit@d3bd99c50a4cf8c5350a211e8e3ba07ac19067d8 # v1.1.0
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
           outputs_file: bridge-outputs.json

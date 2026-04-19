@@ -10,7 +10,7 @@ public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -335,7 +335,6 @@ def idealOpensGI :
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]

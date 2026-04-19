@@ -136,13 +136,8 @@ lemma range_cfc_nnreal
   rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
     ← range_cfc _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   rintro _ ⟨f, hf, rfl⟩
-  simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
-  obtain (⟨h₁, h₂⟩ | h | h) := by
-    simpa only [not_and_or] using em (ContinuousOn f (spectrum ℝ a) ∧ IsSelfAdjoint a)
-  · refine ⟨f, ?_, rfl⟩
-    rwa [cfc_nonneg_iff f a] at hf
-  · exact ⟨0, by simp, by simp [cfc_apply_of_not_continuousOn a h]⟩
-  · exact ⟨0, by simp, by simp [cfc_apply_of_not_predicate a h]⟩
+  exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
+    ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
 
 end Unital
 
@@ -225,7 +220,6 @@ variable [SMulCommClass ℝ A A] [TopologicalSpace A]
 variable [IsTopologicalRing A] [T2Space A] [PartialOrder A] [NonnegSpectrumClass ℝ A]
 variable [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x} := by
@@ -240,7 +234,6 @@ lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real
 
 variable [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal_subset
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) ⊆ {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
@@ -248,7 +241,6 @@ lemma range_cfcₙ_nnreal_subset
     ← range_cfcₙ_subset _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   exact Set.image_mono fun _ ↦ cfcₙ_nonneg
 
-set_option backward.isDefEq.respectTransparency false in
 lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (a : A) (ha : 0 ≤ a := by cfc_tac) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by

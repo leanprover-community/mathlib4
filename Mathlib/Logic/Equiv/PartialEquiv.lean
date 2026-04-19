@@ -958,6 +958,15 @@ theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialE
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
+@[simp]
+lemma coe_transPartialEquiv {f : α ≃ β} {g : PartialEquiv β γ} : f.transPartialEquiv g = g ∘ f :=
+  rfl
+
+@[simp]
+lemma coe_transPartialEquiv_symm {f : α ≃ β} {g : PartialEquiv β γ} :
+    (f.transPartialEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
+
 end Equiv
 
 namespace PartialEquiv
@@ -982,5 +991,12 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc]
+
+@[simp] lemma coe_transEquiv {f : PartialEquiv α β} {g : β ≃ γ} : f.transEquiv g = g ∘ f := rfl
+
+@[simp]
+lemma coe_transEquiv_symm {f : PartialEquiv α β} {g : β ≃ γ} :
+    (f.transEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
 
 end PartialEquiv
