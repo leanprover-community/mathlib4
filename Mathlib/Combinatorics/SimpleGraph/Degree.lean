@@ -153,6 +153,14 @@ theorem minEDegree_eq_zero_iff_support_ne : G.minEDegree = 0 ↔ G.support ≠ .
   simp [minEDegree_eq_iInf, Set.ne_univ_iff_exists_notMem, notMem_support_iff_isIsolated]
 
 variable {G} in
+theorem maxEDegree_eq_top_iff_lt : G.maxEDegree = ⊤ ↔ ∀ n : ℕ, ∃ v, n < G.edegree v :=
+  WithTop.iSup_eq_top_iff_lt
+
+variable {G} in
+theorem maxEDegree_eq_top_iff_le : G.maxEDegree = ⊤ ↔ ∀ n : ℕ, ∃ v, n ≤ G.edegree v :=
+  WithTop.iSup_eq_top_iff_le
+
+variable {G} in
 theorem minEDegree_eq_top_iff : G.minEDegree = ⊤ ↔ ∀ v, G.edegree v = ⊤ :=
   iInf_eq_top
 

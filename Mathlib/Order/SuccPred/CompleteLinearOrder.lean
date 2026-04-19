@@ -154,4 +154,69 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
 
+@[to_dual lt_sInf_iff_of_not_isSuccPrelimit]
+theorem sSup_lt_iff_of_not_isSuccPrelimit {l : α} (h : ¬IsSuccPrelimit l) :
+    sSup s < l ↔ ∀ a ∈ s, a < l := by
+  have ⟨l', hl'⟩ := not_forall_not.mp h
+  simp_rw [← hl'.le_iff_lt_left]
+  exact sSup_le_iff
+
+@[to_dual lt_iInf_iff_of_not_isSuccPrelimit]
+theorem iSup_lt_iff_of_not_isSuccPrelimit {l : α} (h : ¬IsSuccPrelimit l) :
+    iSup f < l ↔ ∀ i, f i < l :=
+  sSup_lt_iff_of_not_isSuccPrelimit h |>.trans forall_mem_range
+
+@[to_dual sInf_le_iff_of_not_isSuccPrelimit]
+theorem le_sSup_iff_of_not_isSuccPrelimit {l : α} (h : ¬IsSuccPrelimit l) :
+    l ≤ sSup s ↔ ∃ a ∈ s, l ≤ a := by
+  have ⟨l', hl'⟩ := not_forall_not.mp h
+  simp_rw [hl'.le_iff_lt_right]
+  exact lt_sSup_iff
+
+@[to_dual iInf_le_iff_of_not_isSuccPrelimit]
+theorem le_iSup_iff_of_not_isSuccPrelimit {l : α} (h : ¬IsSuccPrelimit l) :
+    l ≤ iSup f ↔ ∃ i, l ≤ f i :=
+  le_sSup_iff_of_not_isSuccPrelimit h |>.trans exists_range_iff
+
+theorem Order.IsSuccPrelimit.le_sSup_iff {l : α} (h : IsSuccPrelimit l) :
+    l ≤ sSup s ↔ IsCofinalFor (Iio l) s := by
+  refine ⟨fun hls b hbl ↦ ?_, fun hls ↦ ?_⟩
+  · have ⟨a, has, hba⟩ := lt_sSup_iff.mp <| hbl.trans_le hls
+    exact ⟨a, has, hba.le⟩
+  · rw [← h.sSup_Iio]
+    exact sSup_le_sSup_of_isCofinalFor hls
+
+theorem Order.IsSuccPrelimit.le_iSup_iff {l : α} (h : IsSuccPrelimit l) :
+    l ≤ iSup f ↔ ∀ a < l, ∃ i, a ≤ f i :=
+  h.le_sSup_iff.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
+
 end CompleteLinearOrder
+
+namespace WithTop
+
+@[to_dual]
+theorem isSuccPrelimit_top [LT α] [NoMaxOrder α] : IsSuccPrelimit (⊤ : WithTop α) := by
+  intro a ha
+  obtain ⟨a, rfl⟩ := ne_top_iff_exists.mp <| WithTop.lt_top_iff_ne_top.mp ha.lt
+  have ⟨b, hab⟩ := NoMaxOrder.exists_gt a
+  exact ha.right (coe_lt_coe.mpr hab) (coe_lt_top b)
+
+variable [ConditionallyCompleteLinearOrderBot α]
+
+theorem sSup_eq_top_iff_lt {s : Set (WithTop α)} : sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a < b := by
+  rw [sSup_eq_top]
+  exact forall_lt_top
+
+theorem iSup_eq_top_iff_lt {f : ι → WithTop α} : iSup f = ⊤ ↔ ∀ a : α, ∃ i, a < f i :=
+  sSup_eq_top_iff_lt.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+theorem sSup_eq_top_iff_le [NoMaxOrder α] {s : Set (WithTop α)} :
+    sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a ≤ b := by
+  rw [eq_top_iff, isSuccPrelimit_top.le_sSup_iff]
+  exact forall_lt_top
+
+theorem iSup_eq_top_iff_le [NoMaxOrder α] {f : ι → WithTop α} :
+    iSup f = ⊤ ↔ ∀ a : α, ∃ i, a ≤ f i :=
+  sSup_eq_top_iff_le.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+end WithTop
