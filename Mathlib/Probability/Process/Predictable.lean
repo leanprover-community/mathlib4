@@ -183,18 +183,13 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
 lemma IsStronglyPredictable.measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h𝓕 : IsStronglyPredictable 𝓕 u) (n : ℕ) : StronglyMeasurable[𝓕 n] (u (n + 1)) := by
-  -- approximating sequence
-  let Y k := (Function.curry @(h𝓕.approx k).toFun (n + 1))
-  use (fun k ↦ @SimpleFunc.mk _ (𝓕 n) _ (Y k) ?_ ?_)
-  · exact fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩
+  let X k := (Function.curry @(h𝓕.approx k).toFun (n + 1))
+  refine ⟨(fun k ↦ @SimpleFunc.mk _ (𝓕 n) _ (X k) ?_ ?_), (fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩)⟩
   · intro s
-    have : Y k ⁻¹' {s} = {ω | (n + 1, ω) ∈ @(h𝓕.approx k).toFun ⁻¹' {s}} := by
-      aesop
-    rw [this]
+    rw [(by aesop : X k ⁻¹' {s} = {ω | (n + 1, ω) ∈ @(h𝓕.approx k).toFun ⁻¹' {s}})]
     apply measurableSet_prodMk_add_one_of_predictable
     apply @(h𝓕.approx k).measurableSet_fiber
-  · have := @(h𝓕.approx k).finite_range
-    apply this.subset
+  · apply (@(h𝓕.approx k).finite_range).subset
     rw [Set.range_subset_iff]
     aesop
 
