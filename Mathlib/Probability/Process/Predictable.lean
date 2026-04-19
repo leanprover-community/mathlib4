@@ -60,7 +60,7 @@ end Filtration
 
 /-- A process is said to be predictable if it is measurable with respect to the predictable
 σ-algebra. -/
-def IsPredictable (𝓕 : Filtration ι m) (u : ι → Ω → E) :=
+def IsStronglyPredictable (𝓕 : Filtration ι m) (u : ι → Ω → E) :=
   StronglyMeasurable[𝓕.predictable] <| Function.uncurry u
 
 end
@@ -97,7 +97,7 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   · exact hm'bot A hA
   · exact hm' i A hA
 
-namespace IsPredictable
+namespace IsStronglyPredictable
 
 open Filtration
 
@@ -106,10 +106,10 @@ variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace �
     [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 /-- A predictable process is progressively measurable. -/
-lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
+lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     ProgMeasurable 𝓕 u := by
   refine fun i ↦ Measurable.stronglyMeasurable ?_
-  rw [IsPredictable, stronglyMeasurable_iff_measurable, measurable_iff_comap_le] at h𝓕
+  rw [IsStronglyPredictable, stronglyMeasurable_iff_measurable, measurable_iff_comap_le] at h𝓕
   rw [measurable_iff_comap_le, (by aesop : (fun (p : Set.Iic i × Ω) ↦ u (p.1) p.2)
       = Function.uncurry u ∘ (fun p ↦ (p.1, p.2))), ← MeasurableSpace.comap_comp]
   refine (MeasurableSpace.comap_mono h𝓕).trans <| MeasurableSpace.comap_le_iff_le_map.2 <|
@@ -127,7 +127,7 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
     · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 /-- A predictable process is adapted. -/
-lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
+lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     StronglyAdapted 𝓕 u :=
   h𝓕.progMeasurable.stronglyAdapted
 
@@ -170,13 +170,13 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
 
 omit [SecondCountableTopology E] in
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
-lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} (h𝓕 : IsPredictable 𝓕 u) (n : ℕ) :
-    Measurable[𝓕 n] (u (n + 1)) := by
+lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u)
+    (n : ℕ) : Measurable[𝓕 n] (u (n + 1)) := by
   intro s hs
   rw [(by aesop : u (n + 1) ⁻¹' s = {ω | (n + 1, ω) ∈ (Function.uncurry u) ⁻¹' s})]
   exact measurableSet_prodMk_add_one_of_predictable (h𝓕.measurable hs) n
 
-end IsPredictable
+end IsStronglyPredictable
 
 section
 
@@ -194,7 +194,7 @@ lemma measurableSet_predictable_singleton_prod
 lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : Measurable[𝓕 0] (u 0)) (h : ∀ n, Measurable[𝓕 n] (u (n + 1))) :
-    IsPredictable 𝓕 u := by
+    IsStronglyPredictable 𝓕 u := by
   refine Measurable.stronglyMeasurable ?_
   intro s hs
   rw [(by aesop : Function.uncurry u ⁻¹' s = ⋃ n : ℕ, {n} ×ˢ (u n ⁻¹' s))]
@@ -208,7 +208,7 @@ lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
 `u 0` is `𝓕 0`-measurable. -/
 lemma isPredictable_iff_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
-    IsPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
+    IsStronglyPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
   ⟨fun h𝓕 ↦ ⟨(h𝓕.adapted 0).measurable, fun n ↦ h𝓕.measurable_add_one (n)⟩,
     fun h ↦ isPredictable_of_measurable_add_one h.1 h.2⟩
 
