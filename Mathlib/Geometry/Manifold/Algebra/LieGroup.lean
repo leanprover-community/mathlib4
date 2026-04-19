@@ -67,7 +67,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
   contMDiff_neg : CMDiff n fun a : G ↦ -a
 
 -- See note [Design choices about smooth algebraic structures]
-/-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same timinformal "Lie group", e in which
+/-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
 the multiplication and inverse operations are `C^n`. -/
 @[to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]

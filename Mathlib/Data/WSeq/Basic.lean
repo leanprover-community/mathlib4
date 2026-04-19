@@ -33,9 +33,7 @@ universe u v w
 
   This model is appropriate for Haskell style lazy lists, and is closed
   under most interesting computation patterns on infinite lists,
-  but conversely it is diffic
-@[informal "weak sequence"]
-lt to extract elements from it. -/
+  but conversely it is difficult to extract elements from it. -/
 def WSeq (α) :=
   Seq (Option α)
 

@@ -176,7 +176,7 @@ See also note [forgetful inheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
-@[informal "field", stacks 09FD "first part"]
+@[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]

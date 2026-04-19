@@ -467,8 +467,7 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
   rw [← log_le_log_iff (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
-    di@[informal "Behrend's construction"]
-v_le_iff₀ (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| one_lt_two.trans_le hN), div_sqrt,
+    div_le_iff₀ (Real.sqrt_pos.2 <| log_pos <| one_lt_cast.2 <| one_lt_two.trans_le hN), div_sqrt,
     sqrt_le_left zero_le_four, log_le_iff_le_exp (cast_pos.2 (zero_lt_two.trans_le hN))]
   norm_num1
   apply le_trans _ four_zero_nine_six_lt_exp_sixteen.le

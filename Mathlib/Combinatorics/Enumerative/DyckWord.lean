@@ -59,7 +59,7 @@ lemma DyckStep.dichotomy (s : DyckStep) : s = U ∨ s = D := by cases s <;> taut
 
 open DyckStep
 
-/-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and informal "Dyck words", with every prefix having
+/-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and with every prefix having
 at least as many `U`s as `D`s. -/
 @[ext]
 structure DyckWord where

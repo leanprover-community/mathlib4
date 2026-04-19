@@ -28,9 +28,7 @@ open scoped NNReal Nat
 
 namespace ProbabilityTheory
 
-/-- The poisson measure with rate `r : ℝ≥
-@[informal "Poisson law"]
-` as a measure over `ℕ`. -/
+/-- The poisson measure with rate `r : ℝ≥0` as a measure over `ℕ`. -/
 noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ :=
   Measure.sum (fun n ↦ ENNReal.ofReal (exp (-r) * r ^ n / (n)!) • (.dirac n))

@@ -114,7 +114,7 @@ theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
   use mk g
   rfl
 
-/-- **Noethinformal "first isomorphism theorem", er's first isomorphism theorem** (a definition): the canonical isomorphism between
+/-- **Noether's first isomorphism theorem** (a definition): the canonical isomorphism between
 `G/(ker φ)` to `range φ`. -/
 @[to_additive /-- The first isomorphism theorem (a definition): the canonical isomorphism between
 `G/(ker φ)` to `range φ`. -/]
@@ -283,7 +283,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       use ⟨h, hh⟩
       refine Quotient.eq.mpr ?_
       simp [leftRel_apply, inclusion, mem_subgroupOf, hn]
-  (quotiinformal "second isomorphism theorem", entMulEquivOfEq (by simp [φ, ← comap_ker])).trans
+  (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 
 /-- **Noether's second isomorphism theorem**: given two subgroups `H` and `N` of a group `G`,
@@ -318,7 +318,7 @@ def quotientQuotientEquivQuotientAux : (G ⧸ N) ⧸ M.map (mk' N) →* G ⧸ M 
 
 @[to_additive (attr := simp)]
 theorem quotientQuotientEquivQuotientAux_mk (x : G ⧸ N) :
-    quotientQuotientEquivQuotientAux N M h x = QuotientGroup.map N M (MonoidHom.informal "third isomorphism theorem", id G) h x :=
+    quotientQuotientEquivQuotientAux N M h x = QuotientGroup.map N M (MonoidHom.id G) h x :=
   QuotientGroup.lift_mk' _ _ x
 
 @[to_additive]

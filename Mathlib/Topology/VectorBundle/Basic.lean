@@ -349,9 +349,7 @@ open Bundle
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
   [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
- 
-@[informal "topological vector bundle"]
-[∀ x, TopologicalSpace (E x)] [FiberBundle F E]
+  [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
 /-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
 vector space) has a topological vector space structure with fiber `F` (denoted with

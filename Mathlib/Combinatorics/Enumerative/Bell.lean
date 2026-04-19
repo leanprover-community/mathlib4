@@ -49,7 +49,6 @@ namespace Multiset
 
 /-- Number of partitions of a set of cardinality `m.sum`
 whose parts have cardinalities given by `m` -/
-@[informal "Bell numbers"]
 def bell (m : Multiset ℕ) : ℕ :=
   Nat.multinomial m.toFinset (fun k ↦ k * m.count k) *
     ∏ k ∈ m.toFinset.erase 0, ∏ j ∈ .range (m.count k), (j * k + k - 1).choose (k - 1)

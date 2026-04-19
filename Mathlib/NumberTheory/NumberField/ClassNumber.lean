@@ -49,8 +49,7 @@ open Module NumberField InfinitePlace Ideal Nat
 variable (K : Type*) [Field K] [NumberField K]
 
 local notation "M " K:70 => (4 / π) ^ nrComplexPlaces K *
-  ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)@[informal "Finiteness of the class number"]
-
+  ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)
 
 namespace NumberField
 

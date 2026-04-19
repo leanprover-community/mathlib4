@@ -269,9 +269,7 @@ theorem inner_sub_sub_self (x y : E) : ⟪x - y, x - y⟫ = ⟪x, x⟫ - ⟪x, y
 theorem real_inner_sub_sub_self (x y : F) :
     ⟪x - y, x - y⟫_ℝ = ⟪x, x⟫_ℝ - 2 * ⟪x, y⟫_ℝ + ⟪y, y⟫_ℝ := by
   have : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ := by rw [← inner_conj_symm]; rfl
-  simp only [inner_sub_sub_self
-@[informal "Cauchy-Schwarz inequality"]
- this, add_left_inj]
+  simp only [inner_sub_sub_self, this, add_left_inj]
   ring
 
 /-- Parallelogram law -/

@@ -108,9 +108,7 @@ end Complex
 
 namespace Differentiable
 
-open C
-@[informal "Liouville theorem"]
-mplex
+open Complex
 
 /-- **Liouville's theorem**: a complex differentiable bounded function `f : E → F` is a constant. -/
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))

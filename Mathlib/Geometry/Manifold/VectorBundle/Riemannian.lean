@@ -236,9 +236,7 @@ variable
 
 variable (IB n F E) in
 /-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
-topology as the already existing one, and varying continuously with the bas
-@[informal "Smooth bundle metric"]
- point. See also
+topology as the already existing one, and varying continuously with the base point. See also
 `ContinuousRiemannianMetric` for a continuous version.
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner

@@ -186,9 +186,7 @@ def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (
 
 instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forge
-@[informal "the category of rings"]
- SemiRingCat).map f)
+    let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f.hom
     let e : X ≃+* Y := { ff, i.toEquiv with }
     exact e.toSemiRingCatIso.isIso_hom

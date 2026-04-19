@@ -491,7 +491,6 @@ theorem continuous_integral_integral :
   `integrable_prod_iff` can be useful to show that the function in question in integrable.
   `MeasureTheory.Integrable.integral_prod_right` is useful to show that the inner integral
   of the right-hand side is integrable. -/
-@[informal "Fubini's theorem"]
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp only [integral, dif_neg hE]

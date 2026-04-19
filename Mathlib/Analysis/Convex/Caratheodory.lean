@@ -146,7 +146,6 @@ end Caratheodory
 variable {s : Set E}
 
 /-- **Carathéodory's convexity theorem** -/
-@[informal "Carathéodory's theorem"]
 theorem convexHull_eq_union : convexHull 𝕜 s =
     ⋃ (t : Finset E) (_ : ↑t ⊆ s) (_ : AffineIndependent 𝕜 ((↑) : t → E)), convexHull 𝕜 ↑t := by
   apply Set.Subset.antisymm

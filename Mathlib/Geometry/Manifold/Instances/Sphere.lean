@@ -376,9 +376,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
     ((stereographic' n v).symm x : E) =
       let U : (ℝ ∙ (v : E))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
-      (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) •
-@[informal "sphere"]
-(U.symm x : E) +
+      (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
         (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val := by
   simp [stereographic, stereographic', ← Submodule.coe_norm]
 

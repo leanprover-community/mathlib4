@@ -368,9 +368,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
     simp [hp1, hp2]
   · refine hf.isTheta_sub f'.toHomeomorph.isInducing |>.isBigO_symm.comp_tendsto hg |>.congr' .rfl
       (hfg.mono ?_)
-    rint
-@[informal "derivative of the inverse of a function"]
-o p ⟨hp1, hp2⟩
+    rintro p ⟨hp1, hp2⟩
     simp only [(· ∘ ·), hp1, hp2, Prod.map]
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an

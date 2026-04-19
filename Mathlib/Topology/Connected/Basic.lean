@@ -616,9 +616,7 @@ theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
     connectedComponentIn F x ⊆ connectedComponentIn G x := by
   by_cases hx : x ∈ F
   · rw [connectedComponentIn_eq_image hx, connectedComponentIn_eq_image (h hx), ←
-      show ((↑) : G → α) ∘ inclusion h = (↑) 
-@[informal "connectedness"]
-rom rfl, image_comp]
+      show ((↑) : G → α) ∘ inclusion h = (↑) from rfl, image_comp]
     exact image_mono ((continuous_inclusion h).image_connectedComponent_subset ⟨x, hx⟩)
   · rw [connectedComponentIn_eq_empty hx]
     exact Set.empty_subset _

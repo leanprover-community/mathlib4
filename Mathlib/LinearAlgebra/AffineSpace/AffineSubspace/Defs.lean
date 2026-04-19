@@ -144,9 +144,7 @@ theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p‚Ç
 
 end
 
-/-- An `AffineSubspace k P`
-@[informal "affine subspace"]
-is a subset of an `AffineSpace V P` that, if not empty, has an affine
+/-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
 space structure induced by a corresponding subspace of the `Module k V`. -/
 structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
@@ -409,9 +407,7 @@ theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
   Iff.rfl
 
 @[simp]
-theorem toAffineSubspace_direction (s : Submodule k V) : s.
-@[informal "affine span"]
-oAffineSubspace.direction = s := by
+theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
   ext x; simp [‚Üê s.toAffineSubspace.vadd_mem_iff_mem_direction _ s.zero_mem]
 
 end Submodule

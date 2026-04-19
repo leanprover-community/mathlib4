@@ -30,9 +30,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 
 assert_not_exists Finset Module Submonoid FloorRing
 
-/-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy s
-@[informal "real number"]
-quences of rational
+/-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
 structure Real where ofCauchy ::
   /-- The underlying Cauchy completion -/

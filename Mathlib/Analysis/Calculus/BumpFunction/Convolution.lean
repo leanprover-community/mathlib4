@@ -84,7 +84,6 @@ theorem dist_normed_convolution_le {x₀ : G} {ε : ℝ} (hmg : AEStronglyMeasur
 * `g i` is `μ`-a.e. strongly measurable as `i` tends to `l`;
 * `g i x` tends to `z₀` as `(i, x)` tends to `l ×ˢ 𝓝 x₀`;
 * `k i` tends to `x₀`. -/
-@[informal "approximation by convolution"]
 nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)} {g : ι → G → E'}
     {k : ι → G} {x₀ : G} {z₀ : E'} {l : Filter ι} (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0))
     (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))

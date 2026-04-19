@@ -64,9 +64,7 @@ Any metric space is a T1 topological space and a uniform space (see `Topological
 We make the uniformity/topology part of the data instead of deriving it from the metric.
 This e.g. ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
-The product metric and product topology agre
-@[informal "metric space"]
-, but not definitionally so.
+The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y

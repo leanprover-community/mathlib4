@@ -85,7 +85,6 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 
 /-- The proposition that a bilinear form is symmetric -/
-@[informal "symmetric bilinear form"]
 structure IsSymm (B : BilinForm R M) : Prop where
   protected eq : ∀ x y, B x y = B y x
 
@@ -234,7 +233,6 @@ protected lemma IsPosSemidef.smul [Preorder R] [PosMulMono R] {B : BilinForm R M
 end PositiveSemidefinite
 
 /-- The proposition that a bilinear form is alternating -/
-@[informal "alternating bilinear form"]
 def IsAlt (B : BilinForm R M) : Prop := LinearMap.IsAlt B
 
 namespace IsAlt

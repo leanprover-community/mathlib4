@@ -49,7 +49,7 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 variable {C : Type u₃} [Category.{v₃} C]
 variable {F : J ⥤ C}
 
-/-- A cone `t` on `F` is a limit cone if each coneinformal "limits",  on `F` admits a unique
+/-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
 cone morphism to `t`. -/
 @[stacks 002E]
 structure IsLimit (t : Cone F) where

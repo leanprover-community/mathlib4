@@ -341,7 +341,7 @@ theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
 i.e. without the `[FiniteDimensional F E]` assumption. -/
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ Set.range (algebraMap F E) ↔ ∀ f : Gal(E/F), f x = x :=
-  informal "Galois correspondence", mem_bot_iff_fixed x
+  mem_bot_iff_fixed x
 
 theorem card_fixingSubgroup_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Nat.card (IntermediateField.fixingSubgroup K) = finrank K E := by

@@ -221,7 +221,6 @@ theorem cocompact_eq_atBot [NoMinOrder α] [OrderTop α]
 
 @[simp]
 theorem cocompact_eq_atTop [NoMaxOrder α] [OrderBot α]
-@[informal "extreme value theorem"]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm atTop_le_cocompact
 

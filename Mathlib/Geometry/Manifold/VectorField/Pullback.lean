@@ -102,9 +102,7 @@ def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set
   (mfderiv[s] f x).inverse (V (f x))
 
 variable (I I') in
-/-- The pullback of a vector field under a map between m
-@[informal "pullback of vector fields"]
-nifolds. If the derivative of the map is
+/-- The pullback of a vector field under a map between manifolds. If the derivative of the map is
 not invertible, then pullback is given the junk value zero. -/
 def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
     TangentSpace I x :=

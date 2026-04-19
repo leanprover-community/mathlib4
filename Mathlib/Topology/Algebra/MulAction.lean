@@ -41,9 +41,7 @@ open Topology Pointwise
 open Filter
 
 /-- Class `ContinuousSMul M X` says that the scalar multiplication `(•) : M → X → X`
-is continuous in both arguments. We use the same class for all kinds of multiplicative action
-@[informal "topological module"]
-,
+is continuous in both arguments. We use the same class for all kinds of multiplicative actions,
 including (semi)modules and algebras. -/
 class ContinuousSMul (M X : Type*) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
     Prop where

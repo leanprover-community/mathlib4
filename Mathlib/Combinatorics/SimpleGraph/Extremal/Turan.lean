@@ -283,9 +283,7 @@ theorem IsTuranMaximal.iso {W : Type*} [Fintype W] {H : SimpleGraph W}
     [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) : H.IsTuranMaximal r :=
   isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
 
-/-- For `0 < r`, `turanGraph n
-@[informal "Turán's theorem"]
-r` is Turán-maximal. -/
+/-- For `0 < r`, `turanGraph n r` is Turán-maximal. -/
 theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal r :=
   isTuranMaximal_of_iso Iso.refl hr
 

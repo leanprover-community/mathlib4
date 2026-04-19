@@ -562,9 +562,7 @@ theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimension
   simp_rw [← continuousWithinAt_univ, continuousWithinAt_clm_apply]
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Conti
-@[informal "Heine-Borel theorem (finite-dimensional normed spaces are proper)"]
-uous (f · y) := by
+    {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by
   simp_rw [← continuousOn_univ, continuousOn_clm_apply]
 
 end CompleteField

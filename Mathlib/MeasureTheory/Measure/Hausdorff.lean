@@ -522,9 +522,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
 `MeasureTheory.Measure.mkMetric`) of a set, one may use coverings with maximum diameter tending to
 `0`, indexed by any sequence of finite types. -/
-theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι 
-@[informal "Hausdorff measure"]
- ∀ n, Fintype (ι n)] (s : Set X)
+theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fintype (ι n)] (s : Set X)
     {l : Filter β} (r : β → ℝ≥0∞) (hr : Tendsto r l (𝓝 0)) (t : ∀ n : β, ι n → Set X)
     (ht : ∀ᶠ n in l, ∀ i, ediam (t n i) ≤ r n) (hst : ∀ᶠ n in l, s ⊆ ⋃ i, t n i) (m : ℝ≥0∞ → ℝ≥0∞) :
     mkMetric m s ≤ liminf (fun n => ∑ i, m (ediam (t n i))) l := by

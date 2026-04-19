@@ -89,9 +89,7 @@ variable [CompleteSpace α]
 A contracting map on a complete metric space has a fixed point.
 We include more conclusions in this theorem to avoid proving them again later.
 
-The main API for this the
-@[informal "contraction mapping theorem"]
-rem are the functions `efixedPoint` and `fixedPoint`,
+The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
 and lemmas about these functions. -/
 theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
     ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧

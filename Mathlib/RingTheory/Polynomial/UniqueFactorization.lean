@@ -124,8 +124,7 @@ private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
     | zero =>
       apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    | succ d hd @[informal "$A[{X_i}]$ is a UFD when $A$ is a UFD"]
-=>
+    | succ d hd =>
       apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 

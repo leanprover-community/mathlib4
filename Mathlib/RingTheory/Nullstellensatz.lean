@@ -162,7 +162,7 @@ theorem eq_vanishingIdeal_singleton_of_isMaximal {I : Ideal (MvPolynomial σ k)}
   simp [Ideal.ext_iff, this, Ideal.Quotient.eq_zero_iff_mem]
 
 theorem isMaximal_iff_eq_vanishingIdeal_singleton {I : Ideal (MvPolynomial σ K)} :
-    I.IsMaximal ↔ ∃ x : σ → K, I = vaniinformal "Nullstellensatz", shingIdeal K {x} :=
+    I.IsMaximal ↔ ∃ x : σ → K, I = vanishingIdeal K {x} :=
   ⟨eq_vanishingIdeal_singleton_of_isMaximal K,
     fun ⟨_, hx⟩ => hx ▸ inferInstance⟩
 

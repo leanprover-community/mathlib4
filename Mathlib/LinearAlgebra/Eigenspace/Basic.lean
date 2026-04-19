@@ -401,9 +401,7 @@ such that `f x = μ • x`. (Def 5.52 of [axler2024]). -/
 abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
-l
-@[informal "eigenvector"]
-mma eigenspace_def {f : End R M} {μ : R} :
+lemma eigenspace_def {f : End R M} {μ : R} :
     f.eigenspace μ = LinearMap.ker (f - μ • 1) := by
   rw [eigenspace, genEigenspace_one]
 
@@ -411,9 +409,7 @@ mma eigenspace_def {f : End R M} {μ : R} :
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
   simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
 
-/-- A nonzero element of an eigenspace is an eig
-@[informal "eigenvalue"]
-nvector. (Def 5.8 of [axler2024]) -/
+/-- A nonzero element of an eigenspace is an eigenvector. (Def 5.8 of [axler2024]) -/
 abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   HasUnifEigenvector f μ 1 x
 

@@ -75,9 +75,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] {A A₁ A₂ : Set α}
   {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {n : ℕ}
 
-/-- An additive `n`-Freiman homomorphism 
-@[informal "Freiman homomorphisms"]
-rom a set `A` to a set `B` is a map which preserves sums
+/-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves sums
 of `n` elements. -/
 structure IsAddFreimanHom [AddCommMonoid α] [AddCommMonoid β] (n : ℕ) (A : Set α) (B : Set β)
     (f : α → β) : Prop where

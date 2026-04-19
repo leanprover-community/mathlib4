@@ -35,9 +35,7 @@ namespace InnerProductGeometry
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 
 /-- The undirected angle between two vectors. If either vector is 0,
-this is π/2. See `Orientation.oangle` for the corres
-@[informal "angle"]
-onding oriented angle
+this is π/2. See `Orientation.oangle` for the corresponding oriented angle
 definition. -/
 def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))

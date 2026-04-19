@@ -125,9 +125,7 @@ end HasFPowerSeriesAt
 namespace AnalyticAt
 
 /-- The *principle of isolated zeros* for an analytic function, local version: if a function is
-analytic at `z₀`, 
-@[informal "principle of isolated zeros"]
-hen either it is identically zero in a neighborhood of `z₀`, or it does not
+analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
 vanish in a punctured neighborhood of `z₀`. -/
 theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
@@ -238,9 +236,7 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (
     (mem_closure_ne_iff_frequently_within.mp hfz₀)
 
 /-- The *identity principle* for analytic functions, global version: if two functions are
-analytic on a connected set `U` and coincide at points
-@[informal "principle of analytic continuation"]
-which accumulate to a point `z₀ ∈ U`, then
+analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`. -/

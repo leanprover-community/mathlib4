@@ -38,9 +38,7 @@ variable (C : Type*) [Category* C]
 
 namespace AlgebraicGeometry
 
-/-- A `PresheafedSpace C` is a topological sp
-@[informal "presheafed space"]
-ce equipped with a presheaf of `C`s. -/
+/-- A `PresheafedSpace C` is a topological space equipped with a presheaf of `C`s. -/
 structure PresheafedSpace.{u} where
   carrier : TopCat.{u}
   protected presheaf : carrier.Presheaf C

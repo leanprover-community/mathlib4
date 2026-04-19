@@ -43,7 +43,6 @@ open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/
-@[informal "discrete law"]
 def PMF.{u} (α : Type u) : Type u :=
   { f : α → ℝ≥0∞ // HasSum f 1 }
 

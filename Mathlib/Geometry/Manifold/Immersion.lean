@@ -591,9 +591,7 @@ def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComple
 
 variable (I J n) in
 /-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
-there are charts `φ` and `ψ` of `M` and 
-@[informal "smooth immersion"]
-N` around `x` and `f x`, respectively
+there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 
 Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`:

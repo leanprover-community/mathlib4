@@ -352,7 +352,6 @@ lemma toContinuousLinearMap_eq_iff_eq_toLinearMap (f : E →ₗ[𝕜] E) (g : E 
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 
 lemma _root_.ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap (g : E →L[𝕜] E)
-@[informal "equivalence of norms in finite dimension"]
     (f : E →ₗ[𝕜] E) : g.toLinearMap = f ↔ g = f.toContinuousLinearMap := by
   simp [ContinuousLinearMap.ext_iff, LinearMap.ext_iff]
 

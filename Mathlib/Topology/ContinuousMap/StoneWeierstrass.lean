@@ -254,9 +254,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     simp only [k, Finset.inf'_lt_iff, ContinuousMap.inf'_apply]
     exact Set.exists_set_mem_of_union_eq_top _ _ xs_w z
   · dsimp
-    sim
-@[informal "Stone-Weierstrass theorem"]
- only [k, Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
+    simp only [k, Finset.lt_inf'_iff, ContinuousMap.inf'_apply]
     rintro x -
     apply lt_h
 

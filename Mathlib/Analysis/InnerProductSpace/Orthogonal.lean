@@ -40,7 +40,6 @@ namespace Submodule
 variable (K : Submodule 𝕜 E)
 
 /-- The subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
-@[informal "orthogonal complement"]
 def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _

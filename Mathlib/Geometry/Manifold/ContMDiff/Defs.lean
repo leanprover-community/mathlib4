@@ -197,7 +197,6 @@ def ContMDiffOn (n : ℕ∞ω) (f : M → M') (s : Set M) :=
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable in the charts
-@[informal "smooth map between manifolds"]
 around these points.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/

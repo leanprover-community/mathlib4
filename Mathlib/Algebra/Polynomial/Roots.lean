@@ -52,9 +52,7 @@ variable [CommRing R] [IsDomain R] {p q : R[X]}
 
 section Roots
 
-/-- `roots p` noncomputably gives a multiset containing al
-@[informal "roots of a polynomial"]
- the roots of `p`,
+/-- `roots p` noncomputably gives a multiset containing all the roots of `p`,
 including their multiplicities. -/
 noncomputable def roots (p : R[X]) : Multiset R :=
   haveI := Classical.decEq R

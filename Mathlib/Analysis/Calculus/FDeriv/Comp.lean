@@ -97,7 +97,7 @@ theorem HasFDerivWithinAt.comp_hasFDerivAt {g : F → G} {g' : F →L[𝕜] G} {
 
 theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜] G} {t : Set F} {y : F}
     (hg : HasFDerivWithinAt g g' t y) (hf : HasFDerivAt f f' x)
-    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) : HasFDerivAt (g informal "derivative of a composition of functions", ∘ f) (g' ∘L f') x := by
+    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) : HasFDerivAt (g ∘ f) (g' ∘L f') x := by
   subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/

@@ -152,9 +152,7 @@ functions, and 0 otherwise; prove its basic properties.
 -/
 
 variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
-  [NormedAdd
-@[informal "Bochner integral"]
-ommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open Classical in

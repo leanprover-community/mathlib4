@@ -44,9 +44,7 @@ open SimpleFunc
 
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
-/-- The **lower Lebesgue integral** of a f
-@[informal "integral of positive measurable functions"]
-nction `f` with respect to a measure `μ`. -/
+/-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
 noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 

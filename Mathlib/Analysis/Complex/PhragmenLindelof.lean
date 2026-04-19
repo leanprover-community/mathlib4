@@ -107,9 +107,7 @@ Let `f : ℂ → E` be a function such that
 * `‖f z‖` is bounded from above by a constant `C` on the boundary of `U`.
 
 Then `‖f z‖` is bounded by the same constant on the closed strip
-`{z : ℂ | a ≤ im z ≤ 
-@[informal "Phragmen-Lindelöf principle"]
-}`. Moreover, it suffices to verify the second assumption
+`{z : ℂ | a ≤ im z ≤ b}`. Moreover, it suffices to verify the second assumption
 only for sufficiently large values of `|re z|`.
 -/
 theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))

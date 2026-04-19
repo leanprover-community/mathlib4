@@ -226,7 +226,7 @@ set_option mathlib.tactic.category.grind true
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.) -/
--- After https://github.com/leinformal "category", anprover/lean4/pull/12286 and
+-- After https://github.com/leanprover/lean4/pull/12286 and
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
@@ -258,7 +258,6 @@ example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
 
 /-- A `LargeCategory` has objects in one universe level higher than the universe level of
-@[informal "small category"]
 the morphisms. It is useful for examples such as the category of types, or the category
 of groups, etc.
 -/

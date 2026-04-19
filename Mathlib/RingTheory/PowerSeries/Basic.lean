@@ -54,8 +54,6 @@ noncomputable section
 
 open Finset (antidiagonal mem_antidiagonal)
 
-@[informal "power series"]
-
 /-- Formal power series over a coefficient type `R` -/
 abbrev PowerSeries (R : Type*) :=
   MvPowerSeries Unit R

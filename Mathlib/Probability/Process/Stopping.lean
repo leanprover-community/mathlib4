@@ -70,9 +70,7 @@ variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 `τ` such that for all `i`, the preimage of `{j | j ≤ i}` along `τ` is measurable
 with respect to `f i`.
 
-Intuitively, the stopping time `τ` describes some stopping rule such that at ti
-@[informal "stopping time"]
-e
+Intuitively, the stopping time `τ` describes some stopping rule such that at time
 `i`, we may determine it with the information we have at time `i`. -/
 def IsStoppingTime [Preorder ι] (f : Filtration ι m) (τ : Ω → WithTop ι) :=
   ∀ i : ι, MeasurableSet[f i] <| {ω | τ ω ≤ i}

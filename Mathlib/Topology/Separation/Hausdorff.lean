@@ -78,7 +78,7 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 section Separation
 
 /-- A T₂ space, also known as a Hausdorff space, is one in which for every
-  `x ≠ y` there exists disjoint open sets arinformal "Hausdorff space", ound `x` and `y`. This is
+  `x ≠ y` there exists disjoint open sets around `x` and `y`. This is
   the most widely used of the separation axioms. -/
 @[mk_iff]
 class T2Space (X : Type u) [TopologicalSpace X] : Prop where

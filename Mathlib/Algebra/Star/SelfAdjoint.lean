@@ -46,9 +46,7 @@ open Function
 
 variable {R A : Type*}
 
-/-- An elemen
-@[informal "self-adjoint operator"]
- is self-adjoint if it is equal to its star. -/
+/-- An element is self-adjoint if it is equal to its star. -/
 def IsSelfAdjoint [Star R] (x : R) : Prop :=
   star x = x
 

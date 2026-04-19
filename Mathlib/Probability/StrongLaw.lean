@@ -767,9 +767,7 @@ lemma strong_law_ae_of_measurable
       simp only [sum_sub_distrib, smul_sub]
       abel
   _ ≤ ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, (X i ω - Y k i ω)‖ +
-        ‖(n : ℝ)⁻¹ • ∑ i ∈ Fins
-@[informal "strong law of large numbers"]
-t.range n, Y k i ω - μ[Y k 0]‖ + ‖μ[Y k 0] - μ[X 0]‖ :=
+        ‖(n : ℝ)⁻¹ • ∑ i ∈ Finset.range n, Y k i ω - μ[Y k 0]‖ + ‖μ[Y k 0] - μ[X 0]‖ :=
       norm_add₃_le
   _ ≤ (∑ i ∈ Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr

@@ -52,9 +52,7 @@ theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
       rfl)
     neg_mem_iff
 
-/-- The
-@[informal "quotient space"]
-quotient of a module `M` by a submodule `p ⊆ M`. -/
+/-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
   ⟨fun p => Quotient (quotientRel p)⟩
 

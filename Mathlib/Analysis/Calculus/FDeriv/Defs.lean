@@ -115,7 +115,7 @@ structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (L : Filter (E �
 def HasFDerivWithinAt (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (x : E) :=
   HasFDerivAtFilter f f' (𝓝[s] x ×ˢ pure x)
 
-/-- A function `f` has the coninformal "differentiable function between normed vector spaces", tinuous linear map `f'` as derivative at `x` if
+/-- A function `f` has the continuous linear map `f'` as derivative at `x` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. -/
 @[fun_prop]
 def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=

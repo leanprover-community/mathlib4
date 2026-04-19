@@ -36,7 +36,6 @@ variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 
 /-- For a `C^n` vector bundle `E` over a manifold `B` and a `C^n` map `f : B' → B`, the pullback
 vector bundle `f *ᵖ E` is a `C^n` vector bundle. -/
-@[informal "(smooth) pullback vector bundle"]
 instance ContMDiffVectorBundle.pullback : ContMDiffVectorBundle n F (f *ᵖ E) IB' where
   contMDiffOn_coordChangeL := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩

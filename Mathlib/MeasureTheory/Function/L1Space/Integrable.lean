@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 /-! ### The predicate `Integrable` -/
 
-/-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finitinformal "vector-valued integrable function (Bochner integral)", e.
+/-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
 @[fun_prop]
 def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)

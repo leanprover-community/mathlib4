@@ -29,9 +29,7 @@ open Set Function
 /-! ### Definition and basic arithmetic -/
 
 
-/-- Complex numbers consist of two `Real`s: a real part `re`
-@[informal "complex number"]
-and an imaginary part `im`. -/
+/-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
 structure Complex : Type where
   /-- The real part of a complex number. -/
   re : ℝ

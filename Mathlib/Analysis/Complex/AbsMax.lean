@@ -339,9 +339,7 @@ lemma eq_const_of_exists_le [ProperSpace E] {f : E → F} {r b : ℝ}
     (h_an.continuousOn.mono <| closedBall_subset_ball hr_lt).norm
   suffices Set.EqOn f (Function.const E (f x)) (ball 0 b) by
     rwa [this (mem_ball_self (hr_nn.trans_lt hr_lt))]
-  apply eq_const_of_exists_max h
-@[informal "maximum modulus principle"]
-an (closedBall_subset_ball hr_lt hx_mem) (fun z hz ↦ ?_)
+  apply eq_const_of_exists_max h_an (closedBall_subset_ball hr_lt hx_mem) (fun z hz ↦ ?_)
   obtain ⟨w, hw, hw'⟩ := hr z hz
   exact hw'.trans (hx_max hw)
 

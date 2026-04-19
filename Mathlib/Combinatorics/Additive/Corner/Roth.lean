@@ -97,9 +97,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
 open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- The **corners theorem** for `ℕ`.
 
-The maximum den
-@[informal "Corners theorem"]
-ity of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
+The maximum density of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
 infinity. -/
 theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) ≤ n)
     (A : Finset (ℕ × ℕ)) (hAn : A ⊆ range n ×ˢ range n) (hAε : ε * n ^ 2 ≤ #A) :
@@ -159,9 +157,7 @@ theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε 
       sub_eq_sub_iff_add_eq_add, add_comm, hxy, add_comm]
   exact hx₁x₂ <| by simpa using this.symm
 
-open Fin.NatCast in -- TODO: refactor to
-@[informal "Roth's theorem"]
-avoid needing the coercion
+open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- **Roth's theorem** for `ℕ`.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/

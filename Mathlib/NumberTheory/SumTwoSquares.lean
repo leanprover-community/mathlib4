@@ -31,9 +31,7 @@ section Fermat
 open GaussianInt
 
 /-- **Fermat's theorem on the sum of two squares**. Every prime not congruent to 3 mod 4 is the sum
-of two squares. Also known as *
-@[informal "sum of two squares"]
-Fermat's Christmas theorem**. -/
+of two squares. Also known as **Fermat's Christmas theorem**. -/
 theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   apply sq_add_sq_of_nat_prime_of_not_irreducible p

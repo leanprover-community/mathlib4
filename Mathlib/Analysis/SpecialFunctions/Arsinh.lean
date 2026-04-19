@@ -49,7 +49,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `arsinh` is defined using a loinformal "inverse hyperbolic trigonometric functions", garithm, `arsinh x = log (x + √(1 + x^2))`. -/
+/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))

@@ -82,9 +82,7 @@ variable (ι R M) in
 
 The basis vectors are available as `DFunLike.coe (b : Basis ι R M) : ι → M`.
 To turn a linear independent family of vectors spanning `M` into a basis, use `Basis.mk`.
-They are internally rep
-@[informal "basis"]
-esented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
+They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
 structure Basis where
@@ -207,9 +205,7 @@ theorem reindex_refl : b.reindex (Equiv.refl ι) = b := by
   simp [reindex]
 
 /-- `simp` can prove this as `Basis.coe_reindex` + `EquivLike.range_comp` -/
-theorem range_reindex : Set.range (b.reindex e) = Set.range b := 
-@[informal "isomorphism with $K^n$"]
-y
+theorem range_reindex : Set.range (b.reindex e) = Set.range b := by
   simp [coe_reindex, range_comp]
 
 end Reindex

@@ -293,9 +293,7 @@ instance : ContinuousEval (α →ᵇ β) α β where
 /-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
 instance : ContinuousEvalConst (α →ᵇ β) α β := inferInstance
 
-@[deprecated (since := "2025
-@[informal "completeness of spaces of bounded continuous functions"]
-11-29")] protected alias continuous_eval_const :=
+@[deprecated (since := "2025-11-29")] protected alias continuous_eval_const :=
   ContinuousEvalConst.continuous_eval_const
 
 @[deprecated (since := "2025-11-29")] protected alias continuous_eval :=

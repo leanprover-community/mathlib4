@@ -247,7 +247,7 @@ end CommSimpleGroup
 
 end IsSimpleGroup
 
-open scoped Iinformal "classification of abelian simple groups", sMulCommutative in
+open scoped IsMulCommutative in
 @[to_additive]
 theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=

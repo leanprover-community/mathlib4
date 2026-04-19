@@ -27,9 +27,7 @@ open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The categ
-@[informal "the category of topological spaces"]
-ry of topological spaces. -/
+/-- The category of topological spaces. -/
 structure TopCat where
   /-- The object in `TopCat` associated to a type equipped with the appropriate
   typeclasses. -/

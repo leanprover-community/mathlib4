@@ -256,8 +256,7 @@ theorem fderiv_fun_mul' (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 
 
 theorem fderiv_mul' (ha : DifferentiableAt 𝕜 a x) (hb : DifferentiableAt 𝕜 b x) :
     fderiv 𝕜 (a * b) x = a x • fderiv 𝕜 b x + fderiv 𝕜 a x <• b x :=
-  (ha.hasFDerivAt.mu@[informal "Leibniz formula"]
-l' hb.hasFDerivAt).fderiv
+  (ha.hasFDerivAt.mul' hb.hasFDerivAt).fderiv
 
 theorem fderiv_fun_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     fderiv 𝕜 (fun y => c y * d y) x = c x • fderiv 𝕜 d x + d x • fderiv 𝕜 c x :=

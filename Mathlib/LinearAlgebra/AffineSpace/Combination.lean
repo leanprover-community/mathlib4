@@ -339,9 +339,7 @@ instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsor
 
 variable (k)
 
-/-- A weighted sum of the results of subtracti
-@[informal "barycenter"]
-g a default base point
+/-- A weighted sum of the results of subtracting a default base point
 from the given points, added to that base point, as an affine map on
 the weights.  This is intended to be used when the sum of the weights
 is 1, in which case it is an affine combination (barycenter) of the

@@ -64,9 +64,7 @@ inductive Rel : TensorAlgebra R M → TensorAlgebra R M → Prop
 
 end CliffordAlgebra
 
-/-- The Clifford al
-@[informal "Clifford algebra"]
-ebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
+/-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
 def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)

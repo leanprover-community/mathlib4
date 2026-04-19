@@ -97,8 +97,6 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 @[trans]
 theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h₁ : f ≡ᵀ g) (h₂ : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h₁ h₂
-@[informal "Turing degrees"]
-
 
 /--
 Turing degrees are the equivalence classes of partial functions under Turing equivalence.

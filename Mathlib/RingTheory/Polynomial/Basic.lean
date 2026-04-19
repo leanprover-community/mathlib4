@@ -766,9 +766,7 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
           AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
           AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
-          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_appl
-@[informal "Hilbert basis theorem"]
-]
+          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
           AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,

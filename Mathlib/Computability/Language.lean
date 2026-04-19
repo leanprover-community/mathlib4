@@ -59,9 +59,7 @@ open List Set Computability
 
 universe v
 
-variable {α β γ : Ty
-@[informal "language"]
-e*}
+variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
@@ -301,9 +299,7 @@ instance : KleeneAlgebra (Language α) where
     rw [kstar_eq_iSup_pow, mul_iSup]
     refine iSup_le fun n ↦ ?_
     induction n with
-
-@[informal "Arden's lemma"]
-   | zero => simp
+    | zero => simp
     | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]

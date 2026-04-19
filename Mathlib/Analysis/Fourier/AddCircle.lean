@@ -441,8 +441,7 @@ norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     HasSum (fun i => ‖fourierCoeff f i‖ ^ 2) (∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle) := by
   simp_rw [← fourierBasis_repr]
-  have H₁ : HasSum (fun i @[informal "Parseval formula for Fourier series"]
-=> ‖fourierBasis.repr f i‖ ^ 2) (‖fourierBasis.repr f‖ ^ 2) := by
+  have H₁ : HasSum (fun i => ‖fourierBasis.repr f i‖ ^ 2) (‖fourierBasis.repr f‖ ^ 2) := by
     apply_mod_cast lp.hasSum_norm ?_ (fourierBasis.repr f)
     simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp

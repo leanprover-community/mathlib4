@@ -73,9 +73,7 @@ lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
 
 @[fun_prop]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
-  stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFR
-@[informal "geometric law"]
-al
+  stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
 
 end GeometricPMF
 

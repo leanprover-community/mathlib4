@@ -45,9 +45,7 @@ section
 
 variable (k G V : Type*) [Semiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
-/-- A representation of `G` on the `k`-module `V`
-@[informal "representation"]
-is a homomorphism `G →* (V →ₗ[k] V)`.
+/-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
 abbrev Representation :=
   G →* V →ₗ[k] V

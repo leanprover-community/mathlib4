@@ -125,9 +125,7 @@ def toDualEquiv : M ≃ₗ[R] Dual R M :=
 
 -- `simps` times out when generating this
 @[simp]
-theore
-@[informal "dual basis"]
- toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
+theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
   rfl
 
 /-- Maps a basis for `V` to a basis for the dual space. -/

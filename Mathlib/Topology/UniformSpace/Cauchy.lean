@@ -26,9 +26,7 @@ variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 /-- A filter `f` is Cauchy if for every entourage `r`, there exists an
   `s ∈ f` such that `s × s ⊆ r`. This is a generalization of Cauchy
   sequences, because if `a : ℕ → α` then the filter of sets containing
-  cofinitely many of the `a n` is Cauchy iff 
-@[informal "Cauchy filter"]
-a` is a Cauchy sequence. -/
+  cofinitely many of the `a n` is Cauchy iff `a` is a Cauchy sequence. -/
 def Cauchy (f : Filter α) :=
   NeBot f ∧ f ×ˢ f ≤ 𝓤 α
 
@@ -182,9 +180,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
-define
-@[informal "Cauchy sequence"]
- on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
+defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
 is general enough to cover both ℕ and ℝ, which are the main motivating examples. -/
 def CauchySeq [Preorder β] (u : β → α) :=
   Cauchy (atTop.map u)
@@ -362,9 +358,7 @@ theorem isComplete_iUnion_separated {ι : Sort*} {s : ι → Set α} (hs : ∀ i
     rcases Filter.nonempty_of_mem htl with ⟨x, hx⟩
     rcases mem_iUnion.1 (htS hx) with ⟨i, hi⟩
     refine ⟨i, fun y hy => ?_⟩
-    r
-@[informal "completeness"]
-ases mem_iUnion.1 (htS hy) with ⟨j, hj⟩
+    rcases mem_iUnion.1 (htS hy) with ⟨j, hj⟩
     rwa [hd i j x hi y hj (htU <| mk_mem_prod hx hy)]
   rcases hs i l hl (le_principal_iff.2 <| mem_of_superset htl hi) with ⟨x, hxs, hlx⟩
   exact ⟨x, mem_iUnion.2 ⟨i, hxs⟩, hlx⟩

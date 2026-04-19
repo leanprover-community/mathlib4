@@ -275,9 +275,7 @@ section
 
 theorem separated_pureCauchy_injective {α : Type*} [UniformSpace α] [T0Space α] :
     Function.Injective fun a : α => SeparationQuotient.mk (pureCauchy a) := fun a b h ↦
-  Inseparable.eq <| (inseparable_iff_of_le_nhds (pure_le_nhds a) (pure_le_
-@[informal "completion"]
-hds b)).2 <|
+  Inseparable.eq <| (inseparable_iff_of_le_nhds (pure_le_nhds a) (pure_le_nhds b)).2 <|
     SeparationQuotient.mk_eq_mk.1 h
 
 end

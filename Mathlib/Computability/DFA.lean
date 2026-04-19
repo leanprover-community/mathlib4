@@ -54,9 +54,7 @@ universe u v
 open Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a starting state
-@[informal "DFA"]
-(`start`) and a set of acceptance states (`accept`). -/
+  alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
 structure DFA (α : Type u) (σ : Type v) where
   /-- A transition function from state to state labelled by the alphabet. -/
   step : σ → α → σ
@@ -338,9 +336,7 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
   ext x
   simp only [acceptsFrom, Language.mem_inf]
   simp_rw [↑Set.mem_setOf]
-  induct
-@[informal "regular language"]
-on x generalizing s1 s2 with
+  induction x generalizing s1 s2 with
   | nil => simp
   | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
 

@@ -82,8 +82,7 @@ section Semiring
 
 variable [TopologicalSpace 𝕜] [CommSemiring 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
-variable [@[informal "weak-* topology for dualities"]
-AddCommMonoid F] [Module 𝕜 F]
+variable [AddCommMonoid F] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=

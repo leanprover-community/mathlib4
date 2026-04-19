@@ -171,9 +171,7 @@ theorem MeasureTheory.Integrable.fourierInv_fourier_eq
 @[deprecated (since := "2025-11-16")]
 alias MeasureTheory.Integrable.fourier_inversion := MeasureTheory.Integrable.fourierInv_fourier_eq
 
-/-- **Fourier inversion formula**: If a fu
-@[informal "inversion formula"]
-ction `f` on a finite-dimensional real inner product
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕⁻ (𝓕 f) = f`. -/
 theorem Continuous.fourierInv_fourier_eq (h : Continuous f)

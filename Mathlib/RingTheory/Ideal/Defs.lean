@@ -36,9 +36,7 @@ open Set Function
 open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
-`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring
-@[informal "ideal of a commutative ring"]
- then `s` is an additive subgroup. -/
+`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
 abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 

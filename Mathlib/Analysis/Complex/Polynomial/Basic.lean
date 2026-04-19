@@ -33,9 +33,7 @@ open scoped ComplexConjugate
 
 namespace Complex
 
-/-- **Fundamental theorem of algebra**: every nonconstant 
-@[informal "$\\C$ is algebraically closed"]
-omplex polynomial
+/-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
   has a root. -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
@@ -47,8 +45,7 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
         simpa only [tendsto_norm_atTop_iff_cobounded]
           using f.tendsto_norm_atTop hf tendsto_norm_cobounded_atTop)
   -- Thus `f = 0`, contradicting the fact that `0 < degree f`.
-  obtain rfl : f = C 0 := Polynomial.funext fun z ↦@[informal "fundamental theorem of algebra"]
- inv_injective <| by simp [this]
+  obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
   simp at hf
 
 instance isAlgClosed : IsAlgClosed ℂ :=

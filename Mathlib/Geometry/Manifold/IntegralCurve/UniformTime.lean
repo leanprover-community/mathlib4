@@ -155,9 +155,7 @@ lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     exact Ioo_mem_nhds (ht hmem).1 (ht hmem).2
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
-leas
-@[informal "uniform time existence"]
- on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral curve
+least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral curve
 passing through it.
 
 See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/

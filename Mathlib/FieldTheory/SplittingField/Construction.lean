@@ -207,7 +207,7 @@ theorem adjoin_rootSet (n : ℕ) :
         (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))]
     rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
 
-instance (f : K[X]) : informal "splitting field", IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
+instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
   ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
 end SplittingFieldAux

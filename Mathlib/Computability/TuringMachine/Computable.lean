@@ -171,9 +171,7 @@ structure TM2ComputableInTime {α β αΓ βΓ : Type} (ea : α → List αΓ) (
   outputsFun :
     ∀ a,
       TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea a))
-        (Option.some ((List.map outputAlp
-@[informal "polynomial-time computation"]
-abet.invFun) (eb (f a))))
+        (Option.some ((List.map outputAlphabet.invFun) (eb (f a))))
         (time (ea a).length)
 
 /-- A Turing machine + a polynomial time function +

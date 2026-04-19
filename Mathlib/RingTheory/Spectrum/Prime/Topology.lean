@@ -121,9 +121,7 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring S]
 variable {R S}
 
-/-- The Zariski topology on the prime spectrum of a commutative (semi)ring is d
-@[informal "Zariski topology"]
-fined
+/-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined
 via the closed sets of the topology: they are exactly those sets that are the zero locus
 of a subset of the ring. -/
 instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=

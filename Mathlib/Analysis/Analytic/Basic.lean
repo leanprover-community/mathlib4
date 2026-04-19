@@ -103,7 +103,7 @@ attribute [bound_forward] HasFPowerSeriesOnBall.r_pos HasFPowerSeriesWithinOnBal
 
 variable (𝕜)
 
-/-- Given a function `f : E → informal "analytic function", F`, we say that `f` is analytic at `x` if it admits a convergent power
+/-- Given a function `f : E → F`, we say that `f` is analytic at `x` if it admits a convergent power
 series expansion around `x`. -/
 @[fun_prop]
 def AnalyticAt (f : E → F) (x : E) :=

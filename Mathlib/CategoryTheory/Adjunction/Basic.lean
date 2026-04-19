@@ -103,7 +103,7 @@ other.
 There is also a constructor `Adjunction.mkOfHomEquiv` which constructs an adjunction from a natural
 hom set equivalence.
 
-To construct adjoints to a given functorinformal "adjunction", , there are constructors `leftAdjointOfEquiv` and
+To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
 `adjunctionOfEquivLeft` (as well as their duals). -/
 @[stacks 0037]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where

@@ -29,9 +29,7 @@ namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- The group of invertible li
-@[informal "general linear group"]
-ear maps from `M` to itself -/
+/-- The group of invertible linear maps from `M` to itself -/
 abbrev GeneralLinearGroup :=
   (M →ₗ[R] M)ˣ
 

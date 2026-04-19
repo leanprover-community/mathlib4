@@ -58,9 +58,7 @@ inductive Rel : FreeAlgebra R M → FreeAlgebra R M → Prop
 
 end TensorAlgebra
 
-/-- The tensor alg
-@[informal "tensor algebra of a commutative ring"]
-bra of the module `M` over the commutative semiring `R`.
+/-- The tensor algebra of the module `M` over the commutative semiring `R`.
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)

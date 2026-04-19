@@ -44,9 +44,7 @@ open Nat
 variable (R : Type*)
 
 /-- An arithmetic function is a function from `ℕ` that maps 0 to 0. In the literature, they are
-  often instead defined as functions from `ℕ+`. Multiplication on `Arithmet
-@[informal "arithmetic functions"]
-cFunctions` is by
+  often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
   Dirichlet convolution. -/
 def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R

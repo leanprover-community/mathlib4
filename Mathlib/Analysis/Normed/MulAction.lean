@@ -156,8 +156,7 @@ theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * 
 theorem nndist_smul₀ (s : α) (x y : β) : nndist (s • x) (s • y) = ‖s‖₊ * nndist x y :=
   NNReal.eq <| dist_smul₀ s x y
 
-theorem edist_smul₀ (s : α) (x y :@[informal "topology on a normed vector space"]
- β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
+theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
   simp only [edist_nndist, nndist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
 instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=

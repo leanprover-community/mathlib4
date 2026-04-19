@@ -57,8 +57,7 @@ set_option backward.isDefEq.respectTransparency false in
 protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
   __ := QuotientAddGroup.con I.toAddSubgroup
   mul' {a₁ b₁ a₂ b₂} h₁ h₂ := by
-    rw [Submodule.quotientRel_de@[informal "quotient ring"]
-f] at h₁ h₂ ⊢
+    rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=

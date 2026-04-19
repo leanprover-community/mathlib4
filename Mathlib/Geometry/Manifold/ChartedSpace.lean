@@ -302,9 +302,7 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
   by_cases hy : y ∈ (chartAt H x).source
   · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
     · exact OpenPartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
-    · simp only [preimage_compl, mem_inter_iff, mem_chart_source
-@[informal "0-manifolds are discrete spaces"]
- mem_compl_iff, mem_preimage,
+    · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
         mem_singleton_iff, true_and]
       exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩

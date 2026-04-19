@@ -105,9 +105,7 @@ all kernels and cokernels, and if every monomorphism is the kernel of some morph
 and every epimorphism is the cokernel of some morphism.
 
 (This definition implies the existence of zero objects:
-fini
-@[informal "abelian category"]
-e products give a terminal object, and in a preadditive category
+finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
 class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where

@@ -153,9 +153,7 @@ variable
 
 -- TODO: def or abbrev?
 variable (Ω F n) in
-/-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` i
-@[informal "Distributions"]
- the space of `F`-valued distributions on `Ω` with
+/-- `𝓓'^{n}(Ω, F) = Distribution Ω F n` is the space of `F`-valued distributions on `Ω` with
 order at most `n`.
 
 In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/

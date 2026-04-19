@@ -26,7 +26,6 @@ Define local rings as commutative rings having a unique maximal ideal.
 @[expose] public section
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
 Note that `IsLocalRing` is a predicate. -/
-@[informal "local ring"]
 class IsLocalRing (R : Type*) [Semiring R] : Prop extends Nontrivial R where
   of_is_unit_or_is_unit_of_add_one ::
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another

@@ -52,7 +52,6 @@ variable (R A M : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
-@[informal "dual vector space"]
 abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
 
@@ -220,7 +219,6 @@ theorem erange_coe : LinearMap.range (eval R M) = ⊤ :=
   range_eq_top.mpr (bijective_dual_eval _ _).2
 
 /-- The bijection between a reflexive module and its double dual, bundled as a `LinearEquiv`. -/
-@[informal "isomorphism with bidual"]
 def evalEquiv : M ≃ₗ[R] Dual R (Dual R M) :=
   LinearEquiv.ofBijective _ (bijective_dual_eval R M)
 

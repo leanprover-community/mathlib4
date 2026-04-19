@@ -76,9 +76,7 @@ the tangent spaces.
 
 This is a `Prop`-valued typeclass, on top of existing data.
 
-If you need to *construct* a di
-@[informal "Riemannian manifold"]
-tance using a Riemannian structure,
+If you need to *construct* a distance using a Riemannian structure,
 see `EMetricSpace.ofRiemannianMetric`. -/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y

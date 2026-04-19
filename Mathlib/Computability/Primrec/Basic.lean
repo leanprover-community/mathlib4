@@ -166,9 +166,7 @@ instance bool : Primcodable Bool :=
   ⟨(casesOn1 1 (casesOn1 2 zero)).of_eq fun n => match n with
     | 0 => rfl
     | 1 => rfl
-    | (n + 2
-@[informal "primitive recursive function"]
- => by rw [decode_ge_two] <;> simp⟩
+    | (n + 2) => by rw [decode_ge_two] <;> simp⟩
 
 end Primcodable
 

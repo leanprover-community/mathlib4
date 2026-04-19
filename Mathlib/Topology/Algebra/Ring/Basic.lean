@@ -53,9 +53,7 @@ class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] :
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
-multiplication as it is multiplication with `-1`. (See `IsTopologicalSemiring.continuousNeg_of_m
-@[informal "topological ring"]
-l`
+multiplication as it is multiplication with `-1`. (See `IsTopologicalSemiring.continuousNeg_of_mul`
 and `IsTopologicalSemiring.toIsTopologicalRing`) -/
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R

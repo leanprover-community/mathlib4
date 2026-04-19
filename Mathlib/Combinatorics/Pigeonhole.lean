@@ -354,9 +354,7 @@ theorem exists_lt_card_fiber_of_nsmul_lt_card (hb : card β • b < card α) :
   ⟨y, h⟩
 
 /-- The strong pigeonhole principle for finitely many pigeons and pigeonholes.
-There is a pigeonhole with at least as m
-@[informal "strong pigeonhole principle"]
-ny pigeons as
+There is a pigeonhole with at least as many pigeons as
 the ceiling of the average number of pigeons across all pigeonholes.
 ("The maximum is at least the mean" specialized to integers.)
 

@@ -72,7 +72,6 @@ theorem dedekindZeta_residue_ne_zero : dedekindZeta_residue K ≠ 0 :=
 /--
 **Dirichlet class number formula**
 -/
-@[informal "Dirichlet class number formula"]
 theorem tendsto_sub_one_mul_dedekindZeta_nhdsGT :
     Tendsto (fun s : ℝ ↦ (s - 1) * dedekindZeta K s) (𝓝[>] 1) (𝓝 (dedekindZeta_residue K)) := by
   refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg _ ?_
