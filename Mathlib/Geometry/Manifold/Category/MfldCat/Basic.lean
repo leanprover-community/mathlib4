@@ -28,10 +28,6 @@ set_option autoImplicit false
 open CategoryTheory
 open scoped Manifold
 
-/- Implementation note: `carrier`, `E`, `H`, and `I` all live in the same `Type u`. This assumption
-is essential (?) to differential geometry because we wish to compare the linear model
-(`E`, `H`, `I`) with the manifold itself. E.g. the tangent bundle should also be a manifold.
-The field `𝕜` lives in a seperate `Type v`, according to the convention of `ModuleCat` -/
 universe u₁ u₂ u₃ u₄
 
 /-- The category of `C^n` 𝕜-manifolds. -/
