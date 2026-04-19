@@ -70,8 +70,7 @@ lemma CountableSupClosed.supClosed (hs : CountableSupClosed s) : SupClosed s := 
   simpa using  hs.sSup_mem (A := {a, b}) (by grind)
 
 @[simp] lemma countableSupClosed_singleton_bot : CountableSupClosed ({⊥} : Set α) where
-  iSup_nat_mem A hA := by
-    simp_all
+  iSup_nat_mem A hA := by simpa using hA
 
 @[simp] lemma CountableSupClosed.univ : CountableSupClosed (univ : Set α) where
   iSup_nat_mem A hA := by simp
@@ -80,13 +79,13 @@ lemma CountableSupClosed.inter (hs : CountableSupClosed s) (ht : CountableSupClo
     CountableSupClosed (s ∩ t) where
   iSup_nat_mem _ hA := ⟨hs.iSup_nat_mem (fun n ↦ (hA n).1), ht.iSup_nat_mem (fun n ↦ (hA n).2)⟩
 
-lemma countableSupClosed_sInter (hS : ∀ s ∈ S, CountableSupClosed s) :
+lemma CountableSupClosed.sInter (hS : ∀ s ∈ S, CountableSupClosed s) :
     CountableSupClosed (⋂₀ S) where
   iSup_nat_mem _ hA := fun _s hs ↦ (hS _ hs).iSup_mem fun n ↦ hA n _ hs
 
-lemma countableSupClosed_iInter {f : ι → Set α} (hf : ∀ i, CountableSupClosed (f i)) :
+lemma CountableSupClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableSupClosed (f i)) :
     CountableSupClosed (⋂ i, f i) :=
-  countableSupClosed_sInter <| forall_mem_range.2 hf
+  CountableSupClosed.sInter <| forall_mem_range.2 hf
 
 lemma CountableSupClosed.directedOn (hs : CountableSupClosed s) : DirectedOn (· ≤ ·) s :=
   hs.supClosed.directedOn
@@ -143,24 +142,22 @@ lemma CountableInfClosed.infClosed (hs : CountableInfClosed s) : InfClosed s := 
   exact hs.sInf_mem _ (by grind)
 
 @[simp] lemma countableInfClosed_singleton_top : CountableInfClosed ({⊤} : Set α) where
-  iInf_nat_mem _ hA := by
-    simp only [mem_singleton_iff] at hA
-    simp [hA]
+  iInf_nat_mem _ hA := by simpa using hA
 
-@[simp] lemma countableInfClosed_univ : CountableInfClosed (univ : Set α) where
+@[simp] lemma CountableInfClosed.univ : CountableInfClosed (univ : Set α) where
   iInf_nat_mem _ hA := by simp
 
 lemma CountableInfClosed.inter (hs : CountableInfClosed s) (ht : CountableInfClosed t) :
     CountableInfClosed (s ∩ t) where
   iInf_nat_mem _ hA := ⟨hs.iInf_mem (fun n ↦ (hA n).1), ht.iInf_mem (fun n ↦ (hA n).2)⟩
 
-lemma countableInfClosed_sInter (hS : ∀ s ∈ S, CountableInfClosed s) :
+lemma CountableInfClosed.sInter (hS : ∀ s ∈ S, CountableInfClosed s) :
     CountableInfClosed (⋂₀ S) where
   iInf_nat_mem _ hA := fun _s hs ↦ (hS _ hs).iInf_mem fun n ↦ hA n _ hs
 
-lemma countableInfClosed_iInter {f : ι → Set α} (hf : ∀ i, CountableInfClosed (f i)) :
+lemma CountableInfClosed.iInter {f : ι → Set α} (hf : ∀ i, CountableInfClosed (f i)) :
     CountableInfClosed (⋂ i, f i) :=
-  countableInfClosed_sInter <| forall_mem_range.2 hf
+  CountableInfClosed.sInter <| forall_mem_range.2 hf
 
 lemma CountableInfClosed.prod {t : Set β} (hs : CountableInfClosed s) (ht : CountableInfClosed t) :
     CountableInfClosed (s ×ˢ t) where
