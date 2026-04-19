@@ -75,6 +75,7 @@ The measure of a set `s`, denoted `μ s`, is an extended nonnegative real. The r
 is written `μ.real s`.
 -/
 @[informal "positive measure"]
+@[informal "positive measure"]
 structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α where
   m_iUnion ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     toOuterMeasure (⋃ i, f i) = ∑' i, toOuterMeasure (f i)

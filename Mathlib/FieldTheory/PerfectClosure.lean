@@ -67,6 +67,7 @@ inductive PerfectClosure.R : ℕ × K → ℕ × K → Prop
 
 /-- The perfect closure is the smallest extension that makes frobenius surjective. -/
 @[informal "perfect closure"]
+@[informal "perfect closure"]
 def PerfectClosure : Type u :=
   Quot (PerfectClosure.R K p)
 

@@ -44,6 +44,7 @@ open Filter
 is continuous in both arguments. We use the same class for all kinds of multiplicative actions,
 including (semi)modules and algebras. -/
 @[informal "topological module"]
+@[informal "topological module"]
 class ContinuousSMul (M X : Type*) [SMul M X] [TopologicalSpace M] [TopologicalSpace X] :
     Prop where
   /-- The scalar multiplication `(•)` is continuous. -/

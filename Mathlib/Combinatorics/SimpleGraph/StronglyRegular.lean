@@ -47,6 +47,7 @@ variable (G : SimpleGraph V) [DecidableRel G.Adj]
 * every pair of nonadjacent vertices has `μ` common neighbors
 -/
 @[informal "Strongly regular graphs"]
+@[informal "Strongly regular graphs"]
 structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
   card : Fintype.card V = n
   regular : G.IsRegularOfDegree k

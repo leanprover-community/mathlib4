@@ -87,6 +87,7 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
 
 /-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 @[informal "first isomorphism theorem for commutative rings"]
+@[informal "first isomorphism theorem for commutative rings"]
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
@@ -241,7 +242,9 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
   · intro j hj
     simp [(he j).2 i hj.symm]
 
-/-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
+/-- **Chinese Remainder Theorem**. Eisenb
+@[informal "Chinese remainder theorem"]
+d Ex.2.6.
 Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 @[informal "Chinese remainder theorem"]
 noncomputable def quotientInfRingEquivPiQuotient (f : ι → Ideal R)

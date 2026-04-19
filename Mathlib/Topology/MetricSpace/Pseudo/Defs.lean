@@ -365,6 +365,7 @@ variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
 /-- `ball x ε` is the set of all points `y` with `dist y x < ε` -/
 @[informal "ball"]
+@[informal "ball"]
 def ball (x : α) (ε : ℝ) : Set α :=
   { y | dist y x < ε }
 
@@ -744,7 +745,8 @@ theorem mem_uniformity_dist {s : Set (α × α)} :
 
 /-- A constant size neighborhood of the diagonal is an entourage. -/
 theorem dist_mem_uniformity {ε : ℝ} (ε0 : 0 < ε) : { p : α × α | dist p.1 p.2 < ε } ∈ 𝓤 α :=
-  mem_uniformity_dist.2 ⟨ε, ε0, fun _ _ ↦ id⟩
+  mem_uniformity_dist.2 ⟨ε, ε0, @[informal "uniformly continuous function"]
+fun _ _ ↦ id⟩
 
 @[informal "uniformly continuous function"]
 theorem uniformContinuous_iff [PseudoMetricSpace β] {f : α → β} :

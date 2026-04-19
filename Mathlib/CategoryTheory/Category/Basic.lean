@@ -230,7 +230,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
-@[informal "category", univ_out_params, pp_with_univ, stacks 0014]
+@[informal "category", informal "category", univ_out_params, pp_with_univ, stacks 0014]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
@@ -263,7 +263,9 @@ of groups, etc.
 -/
 abbrev LargeCategory (C : Type (u + 1)) : Type (u + 1) := Category.{u} C
 
-/-- A `SmallCategory` has objects and morphisms in the same universe level.
+/-- A `SmallCategory` has objects and morphisms in the sa
+@[informal "small category"]
+e universe level.
 -/
 @[informal "small category"]
 abbrev SmallCategory (C : Type u) : Type (u + 1) := Category.{u} C

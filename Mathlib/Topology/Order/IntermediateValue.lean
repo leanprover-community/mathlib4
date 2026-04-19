@@ -550,6 +550,7 @@ variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopolog
 /-- **Intermediate Value Theorem** for continuous functions on closed intervals, case
 `f a ≤ t ≤ f b`. -/
 @[informal "intermediate value theorem"]
+@[informal "intermediate value theorem"]
 theorem intermediate_value_Icc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Icc (f a) (f b) ⊆ f '' Icc a b :=
   isPreconnected_Icc.intermediate_value (left_mem_Icc.2 hab) (right_mem_Icc.2 hab) hf

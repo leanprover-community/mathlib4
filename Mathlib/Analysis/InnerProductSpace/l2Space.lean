@@ -562,6 +562,7 @@ variable (𝕜 E)
 
 /-- A Hilbert space admits a Hilbert basis. -/
 @[informal "existence of Hilbert basis"]
+@[informal "existence of Hilbert basis"]
 theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩

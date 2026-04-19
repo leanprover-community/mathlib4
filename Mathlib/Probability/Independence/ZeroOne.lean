@@ -277,6 +277,7 @@ theorem Kernel.measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, 
 sub-σ-algebras has probability 0 or 1.
 The tail σ-algebra `limsup s atTop` is the same as `⋂ n, ⋃ i ≥ n, s i`. -/
 @[informal "Kolmogorov's $0$-$1$ law"]
+@[informal "Kolmogorov's $0$-$1$ law"]
 theorem measure_zero_or_one_of_measurableSet_limsup_atTop
     (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :

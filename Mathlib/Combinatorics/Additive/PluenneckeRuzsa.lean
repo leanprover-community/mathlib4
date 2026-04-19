@@ -50,7 +50,7 @@ variable [Group G] {A B C : Finset G}
 /-! ### Noncommutative Ruzsa triangle inequality -/
 
 /-- **Ruzsa's triangle inequality**. Division version. -/
-@[to_additive (attr := informal "Ruzsa triangle inequality") /-- **Ruzsa's triangle inequality**. Subtraction version. -/]
+@[to_additive (attr := informal "Ruzsa triangle inequality") (attr := informal "Ruzsa triangle inequality") /-- **Ruzsa's triangle inequality**. Subtraction version. -/]
 theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset G) :
     #(A / C) * #B ≤ #(A / B) * #(C / B) := by
   rw [← card_product (A / B), ← mul_one #((A / B) ×ˢ (C / B))]
@@ -116,7 +116,7 @@ theorem ruzsa_triangle_inequality_mul_mul_invMul (A B C : Finset G) :
     #(A * C) * #B ≤ #(A * B) * #(C⁻¹ * B) := by
   simpa using ruzsa_triangle_inequality_mulInv_mul_mul A B C⁻¹
 
-/-! ### Plünnecke-Petridis inequality -/
+/-! ### P (attr := informal "Plünnecke-Petridis inequality")lünnecke-Petridis inequality -/
 
 @[to_additive (attr := informal "Plünnecke-Petridis inequality")]
 theorem pluennecke_petridis_inequality_mul (C : Finset G)

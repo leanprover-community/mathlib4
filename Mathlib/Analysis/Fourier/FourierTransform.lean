@@ -439,6 +439,7 @@ alias fourierIntegral := FourierTransform.fourier
 alias fourierIntegralInv := FourierTransform.fourierInv
 
 @[informal "Fourier transform as an integral"]
+@[informal "Fourier transform as an integral"]
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
 

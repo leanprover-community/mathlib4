@@ -201,6 +201,7 @@ around these points.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
 @[informal "smooth map between manifolds"]
+@[informal "smooth map between manifolds"]
 def ContMDiff (n : ℕ∞ω) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 

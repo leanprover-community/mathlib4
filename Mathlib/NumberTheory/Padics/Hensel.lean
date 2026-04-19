@@ -480,6 +480,7 @@ private theorem a_is_soln (ha : F.aeval a = 0) :
   ⟨ha, by simp [deriv_ne_zero hnorm], rfl, a_soln_is_unique ha⟩
 
 @[informal "Hensel's lemma (for $\\mathbb{Z}_p$)"]
+@[informal "Hensel's lemma (for $\\mathbb{Z}_p$)"]
 theorem hensels_lemma :
     ∃ z : ℤ_[p],
       F.aeval z = 0 ∧

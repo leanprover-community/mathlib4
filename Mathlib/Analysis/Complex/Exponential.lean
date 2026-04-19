@@ -74,7 +74,7 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
-@[informal "exponential", pp_nodot]
+@[informal "exponential", informal "exponential", pp_nodot]
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 

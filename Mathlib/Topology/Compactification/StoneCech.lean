@@ -320,6 +320,7 @@ variable (α : Type u) [TopologicalSpace α]
 
 /-- The Stone-Čech compactification of a topological space. -/
 @[informal "Stone-Cech compactification"]
+@[informal "Stone-Cech compactification"]
 def StoneCech : Type u :=
   T2Quotient (PreStoneCech α)
 

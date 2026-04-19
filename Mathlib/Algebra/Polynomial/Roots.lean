@@ -55,6 +55,7 @@ section Roots
 /-- `roots p` noncomputably gives a multiset containing all the roots of `p`,
 including their multiplicities. -/
 @[informal "roots of a polynomial"]
+@[informal "roots of a polynomial"]
 noncomputable def roots (p : R[X]) : Multiset R :=
   haveI := Classical.decEq R
   haveI := Classical.dec (p = 0)

@@ -36,6 +36,7 @@ variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 /-- Heine-Cantor: a continuous function on a compact uniform space is uniformly
 continuous. -/
 @[informal "Heine-Cantor theorem"]
+@[informal "Heine-Cantor theorem"]
 theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α → β}
     (h : Continuous f) : UniformContinuous f :=
   calc map (Prod.map f f) (𝓤 α)

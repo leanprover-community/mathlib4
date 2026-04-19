@@ -57,11 +57,14 @@ namespace PointedCone
 /-- The minimal tensor product of two cones is given by all conical combinations of elementary
 tensor products `x ⊗ₜ y` with `x ∈ C₁` and `y ∈ C₂`. -/
 @[informal "minimal tensor product"]
+@[informal "minimal tensor product"]
 noncomputable def minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     PointedCone R (G ⊗[R] H) :=
   .hull R (.image2 (· ⊗ₜ[R] ·) C₁ C₂)
 
-/-- The maximal tensor product of two cones is the dual (pointed cone) of the minimal tensor product
+/-- The maximal tensor product of two cones is the dual (pointed cone) of the minimal
+@[informal "maximal tensor product"]
+tensor product
 of the dual cones. -/
 @[informal "maximal tensor product"]
 noncomputable def maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :

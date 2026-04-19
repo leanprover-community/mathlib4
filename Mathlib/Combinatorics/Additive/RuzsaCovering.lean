@@ -59,7 +59,7 @@ namespace Set
 variable {A B : Set G}
 
 /-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_mul`. -/
-@[to_additive (attr := informal "Ruzsa covering lemma") /-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`. -/]
+@[to_additive (attr := informal "Ruzsa covering lemma") (attr := informal "Ruzsa covering lemma") /-- **Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`. -/]
 lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
     (hK : Nat.card (A * B) ≤ K * Nat.card B) :
     ∃ F ⊆ A, Nat.card F ≤ K ∧ A ⊆ F * (B / B) ∧ F.Finite := by

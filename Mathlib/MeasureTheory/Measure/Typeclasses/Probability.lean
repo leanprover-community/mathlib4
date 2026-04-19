@@ -61,6 +61,7 @@ section IsProbabilityMeasure
 
 /-- A measure `μ` is called a probability measure if `μ univ = 1`. -/
 @[informal "probability measure"]
+@[informal "probability measure"]
 class IsProbabilityMeasure (μ : Measure α) : Prop where
   measure_univ : μ univ = 1
 

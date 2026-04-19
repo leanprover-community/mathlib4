@@ -366,6 +366,7 @@ namespace LinearEquiv
 /-- The continuous linear equivalence induced by a linear equivalence on a finite-dimensional
 space. -/
 @[informal "equivalence of norms in finite dimension"]
+@[informal "equivalence of norms in finite dimension"]
 def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
   { e with
     continuous_toFun := e.toLinearMap.continuous_of_finiteDimensional

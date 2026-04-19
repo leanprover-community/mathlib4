@@ -56,6 +56,7 @@ open Computability
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
 @[informal "DFA"]
+@[informal "DFA"]
 structure DFA (α : Type u) (σ : Type v) where
   /-- A transition function from state to state labelled by the alphabet. -/
   step : σ → α → σ
@@ -351,7 +352,9 @@ end DFA
 
 namespace Language
 
-/-- A regular language is a language that is defined by a DFA with finite states. -/
+/-- A regular language is a language that is defined by a DFA with
+@[informal "regular language"]
+finite states. -/
 @[informal "regular language"]
 def IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L

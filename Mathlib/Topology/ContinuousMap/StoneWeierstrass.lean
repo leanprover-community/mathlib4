@@ -263,6 +263,7 @@ that a subalgebra `A` of `C(X, ℝ)`, where `X` is a compact topological space,
 is dense if it separates points.
 -/
 @[informal "Stone-Weierstrass theorem"]
+@[informal "Stone-Weierstrass theorem"]
 theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra ℝ C(X, ℝ))
     (w : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by
   -- The closure of `A` is closed under taking `sup` and `inf`,

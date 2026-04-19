@@ -149,6 +149,7 @@ end HomologicalComplex
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
 @[informal "chain complex"]
+@[informal "chain complex"]
 abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 

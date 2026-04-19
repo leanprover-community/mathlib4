@@ -49,6 +49,7 @@ theorem lintegral_sub_le (f g : α → ℝ≥0∞) (hf : Measurable f) :
 
 /-- **Monotone convergence theorem** for nonincreasing sequences of functions. -/
 @[informal "monotone convergence theorem"]
+@[informal "monotone convergence theorem"]
 theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurable (f n))
     (h_mono : ∀ n : ℕ, f n.succ ≤ᵐ[μ] f n) (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
     ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ :=

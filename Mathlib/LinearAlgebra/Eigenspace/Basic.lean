@@ -411,6 +411,7 @@ theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.8 of [axler2024]) -/
 @[informal "eigenvector"]
+@[informal "eigenvector"]
 abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   HasUnifEigenvector f μ 1 x
 
@@ -418,7 +419,9 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-such that `f x = μ • x`. (Def 5.5 of [axler2024]). -/
+such that `f x = μ • x`. (D
+@[informal "eigenvalue"]
+f 5.5 of [axler2024]). -/
 @[informal "eigenvalue"]
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1

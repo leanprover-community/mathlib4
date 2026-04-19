@@ -109,6 +109,7 @@ finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
 @[informal "abelian category"]
+@[informal "abelian category"]
 class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]

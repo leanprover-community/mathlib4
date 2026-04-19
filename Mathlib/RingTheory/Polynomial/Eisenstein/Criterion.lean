@@ -174,6 +174,7 @@ then if every coefficient in `R` except the leading coefficient is in `P`, and
 the trailing coefficient is not in `P^2` and no nonunits in `R` divide `f`, then `f` is
 irreducible. -/
 @[informal "Eisenstein's criterion"]
+@[informal "Eisenstein's criterion"]
 theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsPrime)
     (hfl : f.leadingCoeff ∉ P)
     (hfP : ∀ n : ℕ, ↑n < degree f → f.coeff n ∈ P) (hfd0 : 0 < degree f)

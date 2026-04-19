@@ -256,6 +256,7 @@ end InfEDist
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
 @[informal "Hausdorff distance"]
+@[informal "Hausdorff distance"]
 irreducible_def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEDist x t) ⊔ ⨆ y ∈ t, infEDist y s
 

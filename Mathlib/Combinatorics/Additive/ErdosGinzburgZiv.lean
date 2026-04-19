@@ -182,6 +182,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
 Any sequence of at least `2 * n - 1` elements of `ZMod n` contains a subsequence of `n` elements
 whose sum is zero. -/
 @[informal "Erdős–Ginzburg–Ziv theorem"]
+@[informal "Erdős–Ginzburg–Ziv theorem"]
 theorem ZMod.erdos_ginzburg_ziv (a : ι → ZMod n) (hs : 2 * n - 1 ≤ #s) :
     ∃ t ⊆ s, #t = n ∧ ∑ i ∈ t, a i = 0 := by
   simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd] using Int.erdos_ginzburg_ziv (ZMod.cast ∘ a) hs

@@ -55,6 +55,7 @@ theorem mul_meas_ge_le_lintegral₀ {f : α → ℝ≥0∞} (hf : AEMeasurable f
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. For a version assuming
 `AEMeasurable`, see `mul_meas_ge_le_lintegral₀`. -/
 @[informal "Markov inequality"]
+@[informal "Markov inequality"]
 theorem mul_meas_ge_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (ε : ℝ≥0∞) :
     ε * μ { x | ε ≤ f x } ≤ ∫⁻ a, f a ∂μ :=
   mul_meas_ge_le_lintegral₀ hf.aemeasurable ε

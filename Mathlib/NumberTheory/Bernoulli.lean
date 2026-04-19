@@ -180,6 +180,7 @@ alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
 @[informal "Bernoulli numbers"]
+@[informal "Bernoulli numbers"]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 

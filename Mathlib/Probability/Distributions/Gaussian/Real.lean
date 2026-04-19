@@ -197,6 +197,7 @@ section GaussianReal
 
 /-- A Gaussian distribution on `ℝ` with mean `μ` and variance `v`. -/
 @[informal "Gaussian law"]
+@[informal "Gaussian law"]
 noncomputable
 def gaussianReal (μ : ℝ) (v : ℝ≥0) : Measure ℝ :=
   if v = 0 then Measure.dirac μ else volume.withDensity (gaussianPDF μ v)

@@ -317,4 +317,5 @@ instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
 @[informal "Lebesgue measure"]
+@[informal "Lebesgue measure"]
 instance Real.measureSpace : MeasureSpace ℝ := by infer_instance

@@ -31,6 +31,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The group of invertible linear maps from `M` to itself -/
 @[informal "general linear group"]
+@[informal "general linear group"]
 abbrev GeneralLinearGroup :=
   (M →ₗ[R] M)ˣ
 

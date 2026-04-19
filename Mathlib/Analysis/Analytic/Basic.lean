@@ -105,7 +105,7 @@ variable (𝕜)
 
 /-- Given a function `f : E → F`, we say that `f` is analytic at `x` if it admits a convergent power
 series expansion around `x`. -/
-@[informal "analytic function", fun_prop]
+@[informal "analytic function", informal "analytic function", fun_prop]
 def AnalyticAt (f : E → F) (x : E) :=
   ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesAt f p x
 

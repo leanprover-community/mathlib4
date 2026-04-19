@@ -263,6 +263,7 @@ theorem fderiv_fun_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt �
   (hc.hasFDerivAt.mul hd.hasFDerivAt).fderiv
 
 @[informal "Leibniz formula"]
+@[informal "Leibniz formula"]
 theorem fderiv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     fderiv 𝕜 (c * d) x = c x • fderiv 𝕜 d x + d x • fderiv 𝕜 c x :=
   (hc.hasFDerivAt.mul hd.hasFDerivAt).fderiv

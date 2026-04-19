@@ -61,6 +61,7 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     exact mul_sub_mul_mem I h₁ h₂
 
 @[informal "quotient ring"]
+@[informal "quotient ring"]
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
   inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 

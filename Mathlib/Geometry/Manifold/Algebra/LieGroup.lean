@@ -69,7 +69,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
 -- See note [Design choices about smooth algebraic structures]
 /-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
 the multiplication and inverse operations are `C^n`. -/
-@[informal "Lie group", to_additive]
+@[informal "Lie group", informal "Lie group", to_additive]
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : ℕ∞ω) (G : Type*)

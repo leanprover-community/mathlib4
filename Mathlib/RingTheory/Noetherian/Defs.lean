@@ -59,7 +59,7 @@ open Set Pointwise
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
 -/
 @[informal "Noetherian module"]
-class IsNoetherian (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+n (R M) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   noetherian : ∀ s : Submodule R M, s.FG
 
 attribute [inherit_doc IsNoetherian] IsNoetherian.noetherian
@@ -192,7 +192,9 @@ end
 
 /-- A (semi)ring is Noetherian if it is Noetherian as a module over itself,
 i.e. all its ideals are finitely generated. -/
+@[informal "Noet
 @[informal "Noetherian ring"]
+erian ring"]
 abbrev IsNoetherianRing (R) [Semiring R] :=
   IsNoetherian R R
 

@@ -197,6 +197,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
 
 /-- **Four squares theorem** -/
 @[informal "sum of four squares"]
+@[informal "sum of four squares"]
 theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n := by
   -- The proof is by induction on prime factorization. The case of prime `n` was proved above,
   -- the inductive step follows from `Nat.euler_four_squares`.

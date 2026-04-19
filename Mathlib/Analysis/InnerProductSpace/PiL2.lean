@@ -385,6 +385,7 @@ variable [Fintype ι]
 /-- An orthonormal basis on E is an identification of `E` with its dimensional-matching
 `EuclideanSpace 𝕜 ι`. -/
 @[informal "existence of orthonormal basis"]
+@[informal "existence of orthonormal basis"]
 structure OrthonormalBasis where ofRepr ::
   /-- Linear isometry between `E` and `EuclideanSpace 𝕜 ι` representing the orthonormal basis. -/
   repr : E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι

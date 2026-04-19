@@ -65,6 +65,7 @@ The subgraph `M` of `G` is a matching if every vertex of `M` is incident to exac
 We say that the vertices in `M.support` are *matched* or *saturated*.
 -/
 @[informal "matching"]
+@[informal "matching"]
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/

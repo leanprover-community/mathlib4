@@ -127,6 +127,7 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff :
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 
 @[informal "(smooth) Hom bundle"]
+@[informal "(smooth) Hom bundle"]
 instance ContMDiffVectorBundle.continuousLinearMap :
     ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) ((fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB

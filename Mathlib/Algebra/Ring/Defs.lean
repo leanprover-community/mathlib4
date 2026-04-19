@@ -144,6 +144,7 @@ class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, 
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 @[informal "ring"]
+@[informal "ring"]
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 /-!

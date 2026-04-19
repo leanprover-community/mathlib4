@@ -227,6 +227,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
 @[informal "Banach open mapping theorem"]
+@[informal "Banach open mapping theorem"]
 protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   intro s hs
   rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩

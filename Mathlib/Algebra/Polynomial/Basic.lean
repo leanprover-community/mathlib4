@@ -69,6 +69,7 @@ denoted as `R[X]` within the `Polynomial` namespace.
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
 The embedding from `R` is called `C`. -/
 @[informal "polynomial in one indeterminate"]
+@[informal "polynomial in one indeterminate"]
 structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
   /-- The coefficients `ℕ →₀ R` of a polynomial in `R[X]`. -/
   toFinsupp : AddMonoidAlgebra R ℕ

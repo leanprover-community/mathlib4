@@ -105,7 +105,7 @@ hom set equivalence.
 
 To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
 `adjunctionOfEquivLeft` (as well as their duals). -/
-@[informal "adjunction", stacks 0037]
+@[informal "adjunction", informal "adjunction", stacks 0037]
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G

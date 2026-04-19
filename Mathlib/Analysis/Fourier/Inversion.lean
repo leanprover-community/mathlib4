@@ -175,6 +175,7 @@ alias MeasureTheory.Integrable.fourier_inversion := MeasureTheory.Integrable.fou
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕⁻ (𝓕 f) = f`. -/
 @[informal "inversion formula"]
+@[informal "inversion formula"]
 theorem Continuous.fourierInv_fourier_eq (h : Continuous f)
     (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
     𝓕⁻ (𝓕 f) = f := by

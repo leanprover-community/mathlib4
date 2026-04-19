@@ -69,6 +69,7 @@ with respect to the measure `ℙ` on `Ω` and `μ` on `E`
 if the push-forward measure of `ℙ` along `X` is absolutely continuous with respect to `μ`
 and they have a Lebesgue decomposition (`HaveLebesgueDecomposition`). -/
 @[informal "probability density function"]
+@[informal "probability density function"]
 class HasPDF {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :
     Prop where
   protected aemeasurable' : AEMeasurable X ℙ

@@ -83,6 +83,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 @[informal "linear map"]
+@[informal "linear map"]
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
     AddHom M M₂, MulActionHom σ M M₂

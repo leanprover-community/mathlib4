@@ -53,6 +53,7 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ
 
 /-- Moment of a real random variable, `μ[X ^ p]`. -/
 @[informal "moment of a random variable"]
+@[informal "moment of a random variable"]
 def moment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ :=
   μ[X ^ p]
 

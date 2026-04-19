@@ -548,6 +548,7 @@ def transnumAuxSeq (n : ℕ) : ℝ :=
 an auxiliary sequence `\frac{f^{2^n}(0)}{2^n}` to define `τ(f)` because some proofs are simpler
 this way. -/
 @[informal "translation number"]
+@[informal "translation number"]
 def translationNumber : ℝ :=
   limUnder atTop f.transnumAuxSeq
 
@@ -829,7 +830,9 @@ orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the 
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
-cohomologie bornée][ghys87:groupes]. -/
+cohomol
+@[informal "translation numbers define a group action up to semiconjugacy"]
+gie bornée][ghys87:groupes]. -/
 @[informal "translation numbers define a group action up to semiconjugacy"]
 theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Group G]
     (f₁ f₂ : G →* CircleDeg1Lift) (h : ∀ g, τ (f₁ g) = τ (f₂ g)) :
@@ -884,7 +887,9 @@ theorem semiconj_of_isUnit_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} 
   exact units_semiconj_of_translationNumber_eq h
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
-semiconjugate by a `CircleDeg1Lift`. This version uses assumptions `bijective f₁` and
+semiconjugate by a `CircleDeg1Lift`. This version u
+@[informal "translation number defines a homeomorphism up to semiconjugacy"]
+es assumptions `bijective f₁` and
 `bijective f₂` to assume that `f₁` and `f₂` are homeomorphisms. -/
 @[informal "translation number defines a homeomorphism up to semiconjugacy"]
 theorem semiconj_of_bijective_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} (h₁ : Bijective f₁)

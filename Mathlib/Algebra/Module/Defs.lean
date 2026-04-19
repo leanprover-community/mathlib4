@@ -50,7 +50,7 @@ variable {R S M M₂ : Type*}
   connected by a "scalar multiplication" operation `r • x : M`
   (where `r : R` and `x : M`) with some natural associativity and
   distributivity axioms similar to those on a ring. -/
-@[informal "vector space", ext]
+@[informal "vector space", informal "vector space", ext]
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   DistribMulAction R M where
   /-- Scalar multiplication distributes over addition from the right. -/

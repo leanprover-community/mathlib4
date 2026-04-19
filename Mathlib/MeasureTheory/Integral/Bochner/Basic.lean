@@ -158,6 +158,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
 open Classical in
 /-- The Bochner integral -/
 @[informal "Bochner integral"]
+@[informal "Bochner integral"]
 irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0

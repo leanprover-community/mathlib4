@@ -603,6 +603,7 @@ Note that our global choice of complement is a bit stronger than asking `f` to b
 each `x ∈ M` w.r.t. potentially varying complements: see `isImmersionAt` for details.
 -/
 @[informal "smooth immersion"]
+@[informal "smooth immersion"]
 def IsImmersion (f : M → N) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
 

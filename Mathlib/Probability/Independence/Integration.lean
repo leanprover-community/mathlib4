@@ -245,6 +245,7 @@ lemma IndepFun.integral_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpa
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
 @[informal "mean of product of independent random variables"]
+@[informal "mean of product of independent random variables"]
 lemma IndepFun.integral_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     μ[X * Y] = μ[X] * μ[Y] :=

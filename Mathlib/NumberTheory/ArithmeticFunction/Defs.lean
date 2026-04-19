@@ -47,6 +47,7 @@ variable (R : Type*)
   often instead defined as functions from `ℕ+`. Multiplication on `ArithmeticFunctions` is by
   Dirichlet convolution. -/
 @[informal "arithmetic functions"]
+@[informal "arithmetic functions"]
 def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 

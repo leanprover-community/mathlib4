@@ -56,6 +56,7 @@ theorem exists_hasDerivAt_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b))
 
 /-- **Rolle's Theorem** `deriv` version -/
 @[informal "Rolle's theorem"]
+@[informal "Rolle's theorem"]
 theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI : f a = f b) :
     ∃ c ∈ Ioo a b, deriv f c = 0 :=
   let ⟨c, cmem, hc⟩ := exists_isLocalExtr_Ioo hab hfc hfI

@@ -193,6 +193,7 @@ section UniformAddCommGroup
 variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
 @[informal "completion of an abelian topological group"]
+@[informal "completion of an abelian topological group"]
 instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm a b :=

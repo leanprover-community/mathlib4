@@ -135,6 +135,7 @@ variable [CompleteSpace E]
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
 @[informal "Fréchet-Riesz representation of the dual of a Hilbert space"]
+@[informal "Fréchet-Riesz representation of the dual of a Hilbert space"]
 def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by

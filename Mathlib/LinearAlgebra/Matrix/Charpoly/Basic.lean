@@ -130,6 +130,7 @@ alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmat
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
 @[informal "characteristic polynomial"]
+@[informal "characteristic polynomial"]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
 
@@ -207,7 +208,9 @@ applied to the matrix itself, is zero.
 
 This holds over any commutative ring.
 
-See `LinearMap.aeval_self_charpoly` for the equivalent statement about endomorphisms.
+See `LinearMap.aeval_self_charpoly` for the equi
+@[informal "Cayley-Hamilton theorem"]
+alent statement about endomorphisms.
 -/
 @[informal "Cayley-Hamilton theorem"]
 theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by

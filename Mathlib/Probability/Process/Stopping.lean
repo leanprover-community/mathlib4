@@ -73,6 +73,7 @@ with respect to `f i`.
 Intuitively, the stopping time `τ` describes some stopping rule such that at time
 `i`, we may determine it with the information we have at time `i`. -/
 @[informal "stopping time"]
+@[informal "stopping time"]
 def IsStoppingTime [Preorder ι] (f : Filtration ι m) (τ : Ω → WithTop ι) :=
   ∀ i : ι, MeasurableSet[f i] <| {ω | τ ω ≤ i}
 

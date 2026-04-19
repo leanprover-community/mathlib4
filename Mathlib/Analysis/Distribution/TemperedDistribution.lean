@@ -50,6 +50,7 @@ variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
 a normed space, equipped with the topology of pointwise convergence. -/
 @[informal "tempered distributions"]
+@[informal "tempered distributions"]
 abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we

@@ -86,6 +86,7 @@ They are internally represented as linear equivs `M ≃ₗ[R] (ι →₀ R)`,
 available as `Basis.repr`.
 -/
 @[informal "basis"]
+@[informal "basis"]
 structure Basis where
   /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
   ofRepr ::
@@ -219,7 +220,9 @@ open Basis
 
 open Fintype
 
-/-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
+/-- A module over `R` with a finite basis is linearly equivalent to functions from 
+@[informal "isomorphism with $K^n$"]
+ts basis to `R`.
 -/
 @[informal "isomorphism with $K^n$"]
 def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=

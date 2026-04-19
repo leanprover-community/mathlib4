@@ -35,6 +35,7 @@ universe u v w
   under most interesting computation patterns on infinite lists,
   but conversely it is difficult to extract elements from it. -/
 @[informal "weak sequence"]
+@[informal "weak sequence"]
 def WSeq (α) :=
   Seq (Option α)
 

@@ -34,6 +34,7 @@ bounded, then the norms of these linear maps are uniformly bounded.
 
 See also `WithSeminorms.banach_steinhaus` for the general statement in barrelled spaces. -/
 @[informal "Banach-Steinhaus theorem"]
+@[informal "Banach-Steinhaus theorem"]
 theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]

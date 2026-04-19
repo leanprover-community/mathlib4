@@ -295,6 +295,7 @@ section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
 @[informal "Bernoulli law"]
+@[informal "Bernoulli law"]
 def bernoulli (p : ℝ≥0) (h : p ≤ 1) : PMF Bool :=
   ofFintype (fun b => cond b p (1 - p)) (by simp [h])
 

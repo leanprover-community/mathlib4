@@ -101,7 +101,7 @@ theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜
   subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/
-@[informal "derivative of a composition of functions", fun_prop]
+@[informal "derivative of a composition of functions", informal "derivative of a composition of functions", fun_prop]
 theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp hg hf <| hf.continuousAt.tendsto.prodMap <| tendsto_pure_pure ..

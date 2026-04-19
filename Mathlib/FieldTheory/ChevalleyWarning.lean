@@ -175,6 +175,7 @@ Assume that the total degree of `f` is less than the cardinality of `σ`.
 Then the number of solutions of `f` is divisible by `p`.
 See `char_dvd_card_solutions_of_sum_lt` for a version that takes a family of polynomials `f i`. -/
 @[informal "Chevalley-Warning theorem"]
+@[informal "Chevalley-Warning theorem"]
 theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f

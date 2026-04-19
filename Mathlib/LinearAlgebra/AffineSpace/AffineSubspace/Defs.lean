@@ -147,6 +147,7 @@ end
 /-- An `AffineSubspace k P` is a subset of an `AffineSpace V P` that, if not empty, has an affine
 space structure induced by a corresponding subspace of the `Module k V`. -/
 @[informal "affine subspace"]
+@[informal "affine subspace"]
 structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V]
   [Module k V] [AffineSpace V P] where
   /-- The affine subspace seen as a subset. -/
@@ -419,7 +420,9 @@ variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
   [AffineSpace V P]
 
 /-- The affine span of a set of points is the smallest affine subspace containing those points.
-(Actually defined here in terms of spans in modules.) -/
+(Actually defined here in 
+@[informal "affine span"]
+erms of spans in modules.) -/
 @[informal "affine span"]
 def affineSpan (s : Set P) : AffineSubspace k P where
   carrier := spanPoints k s

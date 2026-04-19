@@ -114,6 +114,7 @@ This theorem is bootstrapped from `Finset.all_card_le_biUnion_card_iff_exists_in
 which has the additional constraint that `ι` is a `Fintype`.
 -/
 @[informal "Hall's marriage theorem"]
+@[informal "Hall's marriage theorem"]
 theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α : Type v}
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, #s ≤ #(s.biUnion t)) ↔

@@ -41,6 +41,7 @@ such that all the stalks are local rings.
 A morphism of locally ringed spaces is a morphism of ringed spaces
 such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[informal "locally ringed space"]
+@[informal "locally ringed space"]
 structure LocallyRingedSpace extends SheafedSpace CommRingCat.{u} where
   /-- Stalks of a locally ringed space are local rings. -/
   isLocalRing : ∀ x, IsLocalRing (presheaf.stalk x)

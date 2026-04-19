@@ -141,6 +141,7 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
 
 /-- The orthogonal projection onto a complete subspace. -/
 @[informal "orthogonal projection"]
+@[informal "orthogonal projection"]
 def orthogonalProjection : E →L[𝕜] K :=
   LinearMap.mkContinuous
     { toFun := fun v => ⟨K.orthogonalProjectionFn v, orthogonalProjectionFn_mem v⟩

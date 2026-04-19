@@ -50,7 +50,7 @@ variable [CommGroup α] (e : α) (x : Finset α × Finset α)
 
 /-- The **Dyson e-transform**. Turns `(s, t)` into `(s ∪ e • t, t ∩ e⁻¹ • s)`. This reduces the
 product of the two sets. -/
-@[to_additive (attr := informal "Dyson transform", simps) /-- The **Dyson e-transform**.
+@[to_additive (attr := informal "Dyson transform", informal "Dyson transform", simps) /-- The **Dyson e-transform**.
 Turns `(s, t)` into `(s ∪ e +ᵥ t, t ∩ -e +ᵥ s)`. This reduces the sum of the two sets. -/]
 def mulDysonETransform : Finset α × Finset α :=
   (x.1 ∪ e • x.2, x.2 ∩ e⁻¹ • x.1)

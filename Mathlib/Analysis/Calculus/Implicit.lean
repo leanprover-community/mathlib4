@@ -155,6 +155,7 @@ at `a`, their derivatives `f'`, `g'` are surjective, and the kernels of these de
 complementary subspaces of `E`, then `implicitFunction` is the unique (germ of a) map
 `φ : F → G → E` such that `f (φ y z) = y` and `g (φ y z) = z`. -/
 @[informal "implicit function theorem"]
+@[informal "implicit function theorem"]
 def implicitFunction : F → G → E :=
   Function.curry <| φ.toOpenPartialHomeomorph.symm
 

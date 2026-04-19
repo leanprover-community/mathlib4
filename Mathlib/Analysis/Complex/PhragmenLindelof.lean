@@ -111,6 +111,7 @@ Then `‖f z‖` is bounded by the same constant on the closed strip
 only for sufficiently large values of `|re z|`.
 -/
 @[informal "Phragmen-Lindelöf principle"]
+@[informal "Phragmen-Lindelöf principle"]
 theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
       fun z ↦ expR (B * expR (c * |z.re|)))

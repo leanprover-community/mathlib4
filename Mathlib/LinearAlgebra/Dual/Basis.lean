@@ -130,6 +130,7 @@ theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
 
 /-- Maps a basis for `V` to a basis for the dual space. -/
 @[informal "dual basis"]
+@[informal "dual basis"]
 def dualBasis : Basis ι R (Dual R M) :=
   b.map b.toDualEquiv
 

@@ -199,6 +199,7 @@ variable [Fintype α] {𝒜 : Finset (Finset α)}
 If `𝒜` is an antichain, then the sum of the proportion of elements it takes from each layer is less
 than `1`. -/
 @[informal "LYM inequality"]
+@[informal "LYM inequality"]
 theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) ≤ 1 := by
@@ -231,7 +232,9 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
 /-! ### Sperner's theorem -/
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
-maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
+maximal layer in `Finset α`. This precisely means that `Fins
+@[informal "Sperner's theorem"]
+t α` is a Sperner order. -/
 @[informal "Sperner's theorem"]
 theorem _root_.IsAntichain.sperner (h𝒜 : IsAntichain (· ⊆ ·) (SetLike.coe 𝒜)) :
     #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by

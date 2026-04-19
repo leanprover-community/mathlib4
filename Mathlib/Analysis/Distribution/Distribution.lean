@@ -158,6 +158,7 @@ order at most `n`.
 
 In most cases you want to use the space `𝓓'(Ω, F) = Distribution Ω F ⊤`. -/
 @[informal "Distributions"]
+@[informal "Distributions"]
 abbrev Distribution := 𝓓^{n}(Ω, ℝ) →L_c[ℝ] F
 
 /-- We denote `𝓓'^{n}(Ω, F)` the space of `F`-valued distributions on `Ω` with order at most

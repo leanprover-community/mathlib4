@@ -50,6 +50,7 @@ If `R` is a ring of characteristic `p`, then `WittVector p R` is a ring of chara
 The canonical example is `WittVector p (ZMod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
 @[informal "ring of Witt vectors"]
+@[informal "ring of Witt vectors"]
 structure WittVector (p : ℕ) (R : Type*) where mk' ::
   /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
 

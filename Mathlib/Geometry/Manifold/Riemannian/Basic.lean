@@ -79,6 +79,7 @@ This is a `Prop`-valued typeclass, on top of existing data.
 If you need to *construct* a distance using a Riemannian structure,
 see `EMetricSpace.ofRiemannianMetric`. -/
 @[informal "Riemannian manifold"]
+@[informal "Riemannian manifold"]
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 

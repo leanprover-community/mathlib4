@@ -29,7 +29,7 @@ variable {x y : ℝ}
 
 /-- Inverse of the `sin` function, returns values in the range `-π / 2 ≤ arcsin x ≤ π / 2`.
 It defaults to `-π / 2` on `(-∞, -1)` and to `π / 2` to `(1, ∞)`. -/
-@[informal "inverse trigonometric functions", pp_nodot]
+@[informal "inverse trigonometric functions", informal "inverse trigonometric functions", pp_nodot]
 noncomputable def arcsin : ℝ → ℝ :=
   Subtype.val ∘ IccExtend (neg_le_self zero_le_one) sinOrderIso.symm
 

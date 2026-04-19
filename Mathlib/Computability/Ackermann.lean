@@ -63,6 +63,7 @@ open Nat
 This is of interest as both a fast-growing function, and as an example of a recursive function that
 isn't primitive recursive. -/
 @[informal "Ackermann function"]
+@[informal "Ackermann function"]
 def ack : ℕ → ℕ → ℕ
   | 0, n => n + 1
   | m + 1, 0 => ack m 1

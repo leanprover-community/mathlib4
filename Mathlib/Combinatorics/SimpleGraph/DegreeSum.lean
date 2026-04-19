@@ -100,6 +100,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset 
 /-- The degree-sum formula.  This is also known as the handshaking lemma, which might
 more specifically refer to `SimpleGraph.even_card_odd_degree_vertices`. -/
 @[informal "degree-sum formula"]
+@[informal "degree-sum formula"]
 theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * #G.edgeFinset :=
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 

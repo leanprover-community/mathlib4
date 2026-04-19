@@ -35,6 +35,7 @@ universe u v w u'
 definition, although in applications `M` and `M₂` will be topological modules over the topological
 ring `R`. -/
 @[informal "continuous linear map"]
+@[informal "continuous linear map"]
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
@@ -69,7 +70,9 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
 
 /-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
 continuous linear functionals and is equipped with the topology of uniform convergence
-on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
+on bounded subsets. `StrongDual R M` is a
+@[informal "dual of a normed space"]
+ abbreviation for `M →L[R] R`. -/
 @[informal "dual of a normed space"]
 abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R

@@ -89,6 +89,7 @@ theorem differentiableOn_update_limUnder_of_isLittleO {f : ℂ → E} {s : Set �
 `f : ℂ → E` is complex differentiable on `s`, and $f(z) - f(c)=o((z-c)^{-1})$, then `f` redefined to
 be equal to `limUnder (𝓝[≠] c) f` at `c` is complex differentiable on `{c} ∪ s`. -/
 @[informal "removable singularity"]
+@[informal "removable singularity"]
 theorem differentiableOn_update_limUnder_insert_of_isLittleO {f : ℂ → E} {s : Set ℂ} {c : ℂ}
     (hc : s ∈ 𝓝[≠] c) (hd : DifferentiableOn ℂ f s)
     (ho : (fun z => f z - f c) =o[𝓝[≠] c] fun z => (z - c)⁻¹) :
