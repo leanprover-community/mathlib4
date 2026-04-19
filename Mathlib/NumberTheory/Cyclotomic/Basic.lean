@@ -550,10 +550,9 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   let i : L →ₐ[K] M := IsSepClosed.lift
   refine ⟨(show L ≃ₐ[K] i.fieldRange from AlgEquiv.ofInjectiveField i).trans
     (IntermediateField.equivOfEq ?_)⟩
-  rw [AlgHom.fieldRange_eq_map]
   have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ :=
     IntermediateField.adjoin_eq_top_of_algebra K _ ((iff_adjoin_eq_top S K L).1 ‹_›).2
-  rw [← htop, IntermediateField.adjoin_map]
+  rw [AlgHom.fieldRange_eq_map, ← htop, IntermediateField.adjoin_map]
   apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
   · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
     exact IntermediateField.subset_adjoin K _ ⟨n, hn, h1, by simpa using congrArg i h2⟩
