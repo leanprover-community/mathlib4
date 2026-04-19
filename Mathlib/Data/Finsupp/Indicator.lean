@@ -80,12 +80,12 @@ theorem eq_indicator_iff {g : ι → α} :
     g = indicator s f ↔ g.support ⊆ s ∧ ∀ ⦃i⦄ (hi : i ∈ s), f i hi = g i := by
   classical
   suffices g.support ⊆ s ∧ (∀ i (hi : i ∈ s), f i hi = g i) ↔
-      (∀ i , if hi : i ∈ s then f i hi = g i else g i = 0) by
+      (∀ i, if hi : i ∈ s then f i hi = g i else g i = 0) by
     simp only [this, funext_iff, indicator_apply]
     grind
   rw [Set.subset_def, and_comm]
   have : (∀ (i : ι), if hi : i ∈ s then f i hi = g i else g i = 0) ↔
-      ((∀ (i : ι) (hi : i ∈ s),  f i hi = g i) ∧ ∀ i (hi : i ∉ s), g i = 0) := by grind
+      ((∀ (i : ι) (hi : i ∈ s), f i hi = g i) ∧ ∀ i (hi : i ∉ s), g i = 0) := by grind
   simp [this, not_imp_comm]
 
 theorem eq_indicator_self_iff {d : ι →₀ α} : (d = indicator s fun i _ ↦ d i) ↔ d.support ⊆ s := by

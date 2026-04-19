@@ -618,7 +618,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
 variable (P : SubmersivePresentation R S ι σ)
 
 @[simp]
-lemma aevalDifferentialEquiv_apply [Finite σ] (x : σ → S) :
+lemma aevalDifferentialEquiv_apply (x : σ → S) :
     P.aevalDifferentialEquiv x = P.aevalDifferential x :=
   rfl
 

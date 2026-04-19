@@ -181,6 +181,29 @@ lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
   rw [Sieve.overEquiv_iff, Sieve.overEquiv_iff]
   simp [Presieve.functorPullback, heq]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
+    (U : Over X) (S : Sieve ((Over.post F).obj U)) :
+    (Sieve.overEquiv U) (Sieve.functorPullback (Over.post F) S) =
+      Sieve.functorPullback F ((Sieve.overEquiv ((Over.post F).obj U)) S) := by
+  refine le_antisymm ?_ ?_
+  · dsimp [Sieve.overEquiv]
+    rw [Sieve.functorPushforward_le_iff_le_functorPullback, ← Sieve.functorPullback_comp]
+    simp_rw [← CategoryTheory.Over.post_forget_eq_forget_comp, Sieve.functorPullback_comp]
+    exact Sieve.functorPullback_monotone _ _ (Sieve.le_functorPushforward_pullback _ _)
+  · intro Z g hg
+    rw [Sieve.overEquiv_iff]
+    dsimp [Presieve.functorPullback]
+    convert (Sieve.overEquiv_iff _ _).mp hg
+    simp
+
+set_option backward.isDefEq.respectTransparency false in
+lemma overEquiv_functorPushforward_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
+    (U : Over X) (S : Sieve U) :
+    (Sieve.overEquiv _) (Sieve.functorPushforward (Over.post F) S) =
+      Sieve.functorPushforward F ((Sieve.overEquiv _) S) := by
+  simp [Sieve.overEquiv, ← Sieve.functorPushforward_comp, ← Over.post_forget_eq_forget_comp]
+
 end Sieve
 
 variable (J : GrothendieckTopology C)
@@ -255,8 +278,8 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
       dsimp [e, W', g₁', g₂']
-      rw [← FunctorToTypes.map_comp_apply]
-      apply congr_fun
+      rw [← Functor.map_comp_apply]
+      apply ConcreteCategory.congr_hom
       congr 1
       rw [← op_comp]
       congr 1
@@ -272,6 +295,23 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsCocontinuous (J.over _) (J.ove
   cover_lift {U} S hS := by
     rw [J.mem_over_iff] at hS ⊢
     rwa [Sieve.overEquiv_functorPullback_map]
+
+instance {D : Type*} [Category* D] (K : GrothendieckTopology D)
+    (F : C ⥤ D) (X : C) [F.IsCocontinuous J K] :
+    (Over.post (X := X) F).IsCocontinuous (J.over X) (K.over _) where
+  cover_lift {U} S hS := by
+    rw [GrothendieckTopology.mem_over_iff] at hS ⊢
+    rw [Sieve.overEquiv_functorPullback_post]
+    exact F.cover_lift J K hS
+
+variable {J} in
+lemma _root_.CategoryTheory.CoverPreserving.overPost {D : Type*} [Category* D]
+    {K : GrothendieckTopology D} {F : C ⥤ D} (X : C) (h : CoverPreserving J K F) :
+    CoverPreserving (J.over X) (K.over _) (Over.post (X := X) F) where
+  cover_preserve {U} S hS := by
+    rw [GrothendieckTopology.mem_over_iff] at hS ⊢
+    rw [Sieve.overEquiv_functorPushforward_post]
+    exact h.cover_preserve hS
 
 open Limits
 
@@ -409,7 +449,8 @@ lemma over_toGrothendieck_eq_toGrothendieck_comap_forget (X : C) :
   · intro ⟨Y, right, (s : Y ⟶ X)⟩ R hR
     obtain ⟨(R : Sieve Y), rfl⟩ := (Sieve.overEquiv _).symm.surjective R
     simp +instances only [GrothendieckTopology.mem_over_iff, Equiv.apply_symm_apply,
-      ← Precoverage.toGrothendieck_toCoverage] at hR
+      ← Precoverage.toGrothendieck_toCoverage, Coverage.mem_toGrothendieck,
+      Over.left] at hR
     induction hR with
     | of Z S hS =>
       rw [Sieve.overEquiv_symm_generate]
