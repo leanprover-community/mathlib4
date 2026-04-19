@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Topology.Path
 public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Order
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.Connected.LocPathConnected
@@ -403,12 +404,12 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     have hγ_in_inter : γ (t j) ∈ U_inter := by
       simp only [U_inter, Set.mem_iInter]
       intro i hi
-      refine hU_contains i ?_
-      cases hi with
-      | inl h =>
-          constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
-      | inr h =>
-          constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
+      exact hU_contains i (t j) <| by
+        cases hi with
+        | inl h =>
+            constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
+        | inr h =>
+            constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
     -- Take the path component of γ(t_j) in the intersection
     refine ⟨pathComponentIn U_inter (γ (t j)),
       ?_, isPathConnected_pathComponentIn hγ_in_inter,
@@ -721,18 +722,81 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   have h_base : Path.Homotopic (γ_aux 0)
       (((α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
-    apply exact
+    apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    simp
+    rw [Path.Homotopic.Quotient.subpathOn_self]
+    let A :=
+      (Path.Homotopic.Quotient.mk (α 0)).cast
+        (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
+    let B :=
+      ((Path.Homotopic.Quotient.mk
+          (γ'.subpathOn (part.t 0) (part.t (Fin.last n))
+            (part.h_mono.monotone (Fin.zero_le (Fin.last n))))).cast
+        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
+        (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
+    have hproof :
+        part.h_mono.monotone (Fin.zero_le (Fin.last n)) =
+          (by
+            simp [part.h_start, part.h_end]) := by
+      simp
+    have hsub :
+        B = Path.Homotopic.Quotient.mk γ' := by
+      dsimp [B]
+      convert
+        congrArg
+          (fun q => q.cast γ'.source.symm γ'.target.symm)
+          (Path.Homotopic.Quotient.subpathOn_zero_one γ')
+      · simp [part.h_start]
+      · simp
+    calc
+      (((Path.Homotopic.Quotient.refl (γ (part.t 0))).cast
+          (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+          (show x = γ (part.t 0) by rw [part.h_start, γ.source])).trans A).trans B
+          = A.trans B := by simp [A]
+      _ = A.trans (Path.Homotopic.Quotient.mk γ') := by
+        exact congrArg (fun q => A.trans q) hsub
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
   have h_final : Path.Homotopic (γ_aux (Fin.last n))
       (γ.trans ((α (Fin.last n)).cast
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
         (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
-    apply exact
+    apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    simp
+    rw [Path.Homotopic.Quotient.subpathOn_self]
+    let A :=
+      (Path.Homotopic.Quotient.mk (α (Fin.last n))).cast
+        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+        (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+    let B :=
+      ((Path.Homotopic.Quotient.mk
+          (γ.subpathOn (part.t 0) (part.t (Fin.last n))
+            (part.h_mono.monotone (Fin.zero_le (Fin.last n))))).cast
+        (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target]))
+    have hproof :
+        part.h_mono.monotone (Fin.zero_le (Fin.last n)) =
+          (by
+            simp [part.h_start, part.h_end]) := by
+      simp
+    have hsub :
+        B = Path.Homotopic.Quotient.mk γ := by
+      dsimp [B]
+      convert
+        congrArg
+          (fun q => q.cast γ.source.symm γ.target.symm)
+          (Path.Homotopic.Quotient.subpathOn_zero_one γ)
+      · simp [part.h_start]
+      · simp
+    calc
+      (B.trans A).trans
+          ((Path.Homotopic.Quotient.refl (γ' (part.t (Fin.last n)))).cast
+            (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+            (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
+          = B.trans A := by simp [A, B]
+      _ = (Path.Homotopic.Quotient.mk γ).trans A := by
+        exact congrArg (fun q => q.trans A) hsub
   -- Lift h_rectangles to the quotient with an arbitrary suffix
   -- This allows simp to apply the rectangle homotopy in context
   have rectangle_with_suffix : ∀ (i : Fin n) {w : X}
@@ -1016,7 +1080,11 @@ homotopy has discrete topology.
 -/
 theorem Path.Homotopic.Quotient.discreteTopology
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X] (x y : X) :
-    DiscreteTopology (Path.Homotopic.Quotient x y) := by
+    @DiscreteTopology (Path.Homotopic.Quotient x y)
+      (inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))) := by
+  letI : Setoid (Path x y) := Path.Homotopic.setoid x y
+  letI : TopologicalSpace (Path.Homotopic.Quotient x y) :=
+    inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))
   -- By `isOpen_setOf_homotopic`, every homotopy class H(p) = {p' | Homotopic p' p} is
   -- open in Path x y. Under the quotient map π : Path x y → Path.Homotopic.Quotient x y, the
   -- preimage π⁻¹({⟦p⟧}) = H(p) is open. Since preimages of singletons are open, every singleton

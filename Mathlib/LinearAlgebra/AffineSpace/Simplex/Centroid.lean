@@ -41,7 +41,7 @@ of the simplex.
 
 -/
 
-public section
+@[expose] public section
 
 noncomputable section
 
