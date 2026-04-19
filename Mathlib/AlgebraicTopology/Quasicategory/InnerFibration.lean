@@ -5,11 +5,19 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
+
+/-!
+# Inner fibrations
+
+Inner fibrations of simplicial sets are the morphisms in `SSet` which have the right lifting
+property with respect to all inner horn inclusions.
+
+Basic consequences of inner fibrations with respect to the definition of quasi-categories are
+formalized.
+
+-/
+
 
 @[expose] public section
 
@@ -22,15 +30,18 @@ namespace SSet
 /-- The family of morphisms in `SSet` which consists of inner horn inclusions
 `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for `0 < i < n`). -/
 def innerHornInclusions : MorphismProperty SSet.{u} :=
-  .ofHoms (fun p : {p : (n : ℕ) × Fin (n + 3) // 0 < p.2 ∧ p.2 < Fin.last (p.1 + 2)} ↦
-    Λ[p.1.1 + 2, p.1.2].ι)
+  ⨆ n, .ofHoms (fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι)
 
 lemma horn_ι_mem_innerHornInclusions {n : ℕ} {i : Fin (n + 3)}
-    (h0 : 0 < i) (hn : i < Fin.last (n + 2)) : innerHornInclusions (horn.{u} (n + 2) i).ι :=
-  .mk (⟨⟨n, i⟩, ⟨h0, hn⟩⟩ : {p : (n : ℕ) × Fin (n + 3) // 0 < p.2 ∧ p.2 < Fin.last (p.1 + 2)})
+    (h0 : 0 < i) (hn : i < Fin.last (n + 2)) : innerHornInclusions (horn.{u} (n + 2) i).ι := by
+  simp only [innerHornInclusions, iSup_iff, ofHoms_iff]
+  use n
+  use ⟨i, h0, hn⟩
 
 lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J := by
-  rintro _ _ _ ⟨⟩
+  intro _ _ _ h
+  simp only [innerHornInclusions, iSup_iff] at h
+  obtain ⟨n, ⟨i⟩⟩ := h
   apply modelCategoryQuillen.horn_ι_mem_J
 
 lemma innerHornInclusions_le_monomorphisms :
@@ -56,8 +67,11 @@ lemma quasicategory_of_from_innerFibrations (S : SSet) {X : SSet} (t : Limits.Is
   quasicategory_of_hasLiftingProperty S t (fun h0 hn ↦ h _ (horn_ι_mem_innerHornInclusions h0 hn))
 
 lemma Quasicategory.from_innerFibrations (S : SSet) [Quasicategory S]
-    {X : SSet} (t : Limits.IsTerminal X) : innerFibrations (t.from S) :=
-  fun _ _ _ ⟨⟨⟨n, i⟩, ⟨h0, hn⟩⟩⟩ ↦ Quasicategory.hasLiftingProperty S t h0 hn
+    {X : SSet} (t : Limits.IsTerminal X) : innerFibrations (t.from S) := by
+  intro _ _ _ h
+  simp only [innerHornInclusions, iSup_iff] at h
+  obtain ⟨n, ⟨i, h0, hn⟩⟩ := h
+  exact hasLiftingProperty S t h0 hn
 
 @[kerodon 01BB]
 lemma quasicategory_iff_from_innerFibration (S : SSet) {X : SSet} (t : Limits.IsTerminal X) :
