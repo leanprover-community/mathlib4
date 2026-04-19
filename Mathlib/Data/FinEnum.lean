@@ -60,6 +60,9 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=
   ofNodupList xs.dedup (by simp [*]) (List.nodup_dedup _)
 
+lemma card_ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) :
+    (FinEnum.ofList xs h).card = xs.dedup.length := rfl
+
 /-- create an exhaustive list of the values of a given type -/
 def toList (α) [FinEnum α] : List α :=
   (List.finRange (card α)).map equiv.symm
@@ -110,11 +113,17 @@ end ULift
 instance pempty : FinEnum PEmpty :=
   ofList [] fun x => PEmpty.elim x
 
+@[simp] lemma card_pempty : FinEnum.card PEmpty = 0 := rfl
+
 instance empty : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
+@[simp] lemma card_empty : FinEnum.card Empty = 0 := rfl
+
 instance punit : FinEnum PUnit :=
   ofList [PUnit.unit] fun x => by simp
+
+@[simp] lemma card_punit : FinEnum.card PUnit = 1 := rfl
 
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
   ofList (toList α ×ˢ toList β) fun x => by cases x; simp
@@ -286,6 +295,10 @@ instance : FinEnum Int64 where
   card := 2 ^ 64
   equiv := ⟨BitVec.toFin ∘ Int64.toBitVec, Int64.ofBitVec ∘ BitVec.ofFin,
     by intro x; simp, by intro x; simp⟩
+
+instance (n : ℕ) : FinEnum (BitVec n) where
+  card := 2 ^ n
+  equiv := ⟨BitVec.toFin, BitVec.ofFin, by intro x; simp, by intro x; simp⟩
 
 @[simp, grind =] lemma card_UInt8 : card UInt8 = 2 ^ 8 := rfl
 @[simp, grind =] lemma card_UInt16 : card UInt16 = 2 ^ 16 := rfl
