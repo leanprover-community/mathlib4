@@ -222,7 +222,6 @@ instance inhabited : Inhabited (MfldCat 𝕜 n) :=
   ⟨of 𝕜 𝕜 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
 
 /-- Bundle a normed space as a `C^n` manifold without boundary (modeled on itself). -/
-@[simps]
 abbrev ofNormedSpace (n : WithTop ℕ∞) (E : Type u) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
     MfldCat.{u} 𝕜 n :=
   of E E E (modelWithCornersSelf 𝕜 E)
