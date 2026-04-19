@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
-public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Order.Completion
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-! # Formalization of Sion's version of the von Neumann minimax theorem
 
@@ -305,7 +306,7 @@ public theorem exists_lt_iInf_of_lt_iInf_of_sup
     simp only [g, ← SupHomClass.map_sup, ι.lt_iff_lt.mpr (ht x hx)]
   obtain ⟨y0, hy0, h⟩ := Sion.exists_lt_iInf_of_lt_iInf_of_sup'
     ne_X kX hgy hgy' cY hgx hgx' hy1 hy2 ht'
-  refine ⟨y0, hy0, by simpa [g, ι.lt_iff_lt] using h⟩
+  exact ⟨y0, hy0, by simpa [g, ι.lt_iff_lt] using h⟩
 
 variable (cX : Convex ℝ X)
 
