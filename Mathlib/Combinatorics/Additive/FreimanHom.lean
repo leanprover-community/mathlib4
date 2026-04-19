@@ -291,25 +291,13 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
     rw [Pi.mul_def, prod_map_mul, prod_map_mul, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
 
-theorem List.length_eq_succ {α : Type*} {n} {l : List α} :
-    l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by cases l <;> aesop
-
-theorem card_eq_succ {α : Type*} {s : Multiset α} :
-    card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
-  refine ⟨?_, by aesop⟩
-  induction s using Quot.inductionOn with
-  | h s =>
-      simp only [quot_mk_to_coe'', coe_card, List.length_eq_succ, forall_exists_index, and_imp]
-      rintro a s rfl rfl
-      exact ⟨a, s, rfl, rfl⟩
-
 @[to_additive] lemma MulHomClass.isMulFreimanHom [FunLike F α β] [MulHomClass F α β] (f : F)
     (hfAB : MapsTo f A B) : IsMulFreimanHom n A B f :=
   match n with
   | 0 => by simpa
   | n + 1 => IsMulFreimanHom.mk hfAB fun s t hsA htA hs ht h => by
-      rw [← map_multiset_ne_zero_prod _ (by rw [ne_eq, ← Multiset.card_eq_zero]; omega),
-          h, map_multiset_ne_zero_prod _ (by rw [ne_eq, ← Multiset.card_eq_zero]; omega)]
+    rw [← map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero]),
+        h, map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero])]
 
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
@@ -333,10 +321,10 @@ lemma isMulFreimanHom_antitone : Antitone (IsMulFreimanHom · A B f) :=
   { mapsTo := hf.mapsTo,
     map_prod_eq_map_prod := fun s t hsA htA hs _ h => match n with
       | 0 => by aesop
-      | n + 1 =>
-          have ⟨a, ha⟩ : ∃ a, a ∈ s := card_pos_iff_exists_mem.1 (by simp [hs])
-          by simpa [*] using hf.map_prod_eq_map_prod (s := a ::ₘ s) (t := a ::ₘ t)
-              (by simpa [hsA ha]) (by simpa [hsA ha]) }
+      | n + 1 => by
+        have ⟨a, ha⟩ : ∃ a, a ∈ s := card_pos_iff_exists_mem.1 (by simp [hs])
+        simpa [*] using hf.map_prod_eq_map_prod (s := a ::ₘ s) (t := a ::ₘ t)
+            (by simpa [hsA ha]) (by simpa [hsA ha]) }
 
 @[to_additive]
 lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom m A B f :=
@@ -379,12 +367,12 @@ section Prod
 @[to_additive]
 lemma IsMulFreimanHom.fst [CommMonoid α] [CommMonoid β] {A : Set α} {B : Set β} {n : ℕ} :
     IsMulFreimanHom n (A ×ˢ B) A Prod.fst :=
-  MulHomClass.isMulFreimanHom (MonoidHom.fst _ _) mapsTo_fst
+  MulHomClass.isMulFreimanHom (MonoidHom.fst _ _) mapsTo_fst_prod
 
 @[to_additive]
 lemma IsMulFreimanHom.snd [CommMonoid α] [CommMonoid β] {A : Set α} {B : Set β} {n : ℕ} :
     IsMulFreimanHom n (A ×ˢ B) B Prod.snd :=
-  MulHomClass.isMulFreimanHom (MonoidHom.snd _ _) mapsTo_snd
+  MulHomClass.isMulFreimanHom (MonoidHom.snd _ _) mapsTo_snd_prod
 
 section
 

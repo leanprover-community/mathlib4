@@ -1261,8 +1261,7 @@ lemma surjOn_fst_iff : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ ↔ t₁ = ∅ ∨ 
 lemma surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonempty ∨ t₂ = ∅ :=
   ⟨by by_contra!; aesop, Or.rec surjOn_snd (· ▸ surjOn_empty _ _)⟩
 
-lemma mapsTo_fst : MapsTo Prod.fst (t₁ ×ˢ t₂) t₁ := fun _ hx => hx.1
-lemma mapsTo_snd : MapsTo Prod.snd (t₁ ×ˢ t₂) t₂ := fun _ hx => hx.2
+
 
 lemma MapsTo.prodMk (h₁ : MapsTo f₁ s t₁) (h₂ : MapsTo f₂ s t₂) :
     MapsTo (fun x => (f₁ x, f₂ x)) s (t₁ ×ˢ t₂) :=

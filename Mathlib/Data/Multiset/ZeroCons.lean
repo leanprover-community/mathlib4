@@ -466,6 +466,11 @@ theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, 
         Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
     fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
+theorem card_eq_succ {s : Multiset α} {n : ℕ} :
+    card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
+  refine ⟨?_, by aesop⟩
+  induction s using Multiset.induction generalizing n with aesop
+
 /-! ### Map for partial functions -/
 
 @[simp]
