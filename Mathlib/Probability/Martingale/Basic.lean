@@ -511,8 +511,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
 
 section IsStronglyPredictable
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- A predictable submartingale is a.e. greater than or equal to its initial state.
 
@@ -522,7 +521,7 @@ measurable. -/
 theorem Submartingale.zero_le_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
     {f : ℕ → Ω → E} (hfmgle : Submartingale f 𝒢 μ) (hf : IsStronglyPredictable 𝒢 f) (n : ℕ) :
     f 0 ≤ᵐ[μ] f n :=
-  zero_le_of_predictable hfmgle (fun _ ↦ (hf.measurable_add_one _).stronglyMeasurable) n
+  zero_le_of_predictable hfmgle hf.measurable_add_one n
 
 /-- A predictable supermartingale is a.e. less than or equal to its initial state.
 
@@ -531,7 +530,7 @@ is defined using strong measurability while `IsPredictable` only provides measur
 theorem Supermartingale.le_zero_of_predictable' [Preorder E] [SigmaFiniteFiltration μ 𝒢]
     {f : ℕ → Ω → E} (hfmgle : Supermartingale f 𝒢 μ) (hfadp : IsStronglyPredictable 𝒢 f)
     (n : ℕ) : f n ≤ᵐ[μ] f 0 :=
-  le_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+  le_zero_of_predictable hfmgle hfadp.measurable_add_one n
 
 /-- A predictable martingale is a.e. equal to its initial state.
 
@@ -539,7 +538,7 @@ In contrast to the non-primed version, this result requires second countability 
 is defined using strong measurability while `IsPredictable` only provides measurable. -/
 theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
     (hfmgle : Martingale f 𝒢 μ) (hfadp : IsStronglyPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
-  eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
+  eq_zero_of_predictable hfmgle hfadp.measurable_add_one n
 
 end IsStronglyPredictable
 

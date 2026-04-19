@@ -131,7 +131,19 @@ lemma stronglyAdapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : Is
     StronglyAdapted 𝓕 u :=
   h𝓕.progMeasurable.stronglyAdapted
 
-omit [SecondCountableTopology E] in
+end IsStronglyPredictable
+
+section Discrete
+
+lemma measurableSet_predictable_singleton_prod
+    {𝓕 : Filtration ℕ m} {n : ℕ} {s : Set Ω} (hs : MeasurableSet[𝓕 n] s) :
+    MeasurableSet[𝓕.predictable] <| {n + 1} ×ˢ s := by
+  rw [(_ : {n + 1} = Set.Ioc n (n + 1))]
+  · exact measurableSet_predictable_Ioc_prod _ _ hs
+  · ext m
+    simp only [Set.mem_singleton_iff, Set.mem_Ioc]
+    lia
+
 lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s : Set (ℕ × Ω)}
     (hs : MeasurableSet[𝓕.predictable] s) (n : ℕ) :
     MeasurableSet[𝓕 n] {ω | (n + 1, ω) ∈ s} := by
@@ -168,30 +180,27 @@ lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s :
         rw [p.1.2]
         exact ⟨fun _ ↦ by aesop, fun _ ↦ lt_add_one_iff.2 hin⟩
 
-omit [SecondCountableTopology E] in
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
-lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u)
-    (n : ℕ) : Measurable[𝓕 n] (u (n + 1)) := by
-  intro s hs
-  rw [(by aesop : u (n + 1) ⁻¹' s = {ω | (n + 1, ω) ∈ (Function.uncurry u) ⁻¹' s})]
-  exact measurableSet_prodMk_add_one_of_predictable (h𝓕.measurable hs) n
+lemma IsStronglyPredictable.measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
+    (h𝓕 : IsStronglyPredictable 𝓕 u) (n : ℕ) : StronglyMeasurable[𝓕 n] (u (n + 1)) := by
+  -- approximating sequence
+  let Y k := (Function.curry @(h𝓕.approx k).toFun (n + 1))
+  use (fun k ↦ @SimpleFunc.mk _ (𝓕 n) _ (Y k) ?_ ?_)
+  · exact fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩
+  · intro s
+    have : Y k ⁻¹' {s} = {ω | (n + 1, ω) ∈ @(h𝓕.approx k).toFun ⁻¹' {s}} := by
+      aesop
+    rw [this]
+    apply measurableSet_prodMk_add_one_of_predictable
+    apply @(h𝓕.approx k).measurableSet_fiber
+  · have := @(h𝓕.approx k).finite_range
+    apply this.subset
+    rw [Set.range_subset_iff]
+    aesop
 
-end IsStronglyPredictable
+variable [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
-section
-
-variable [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E]
-
-lemma measurableSet_predictable_singleton_prod
-    {𝓕 : Filtration ℕ m} {n : ℕ} {s : Set Ω} (hs : MeasurableSet[𝓕 n] s) :
-    MeasurableSet[𝓕.predictable] <| {n + 1} ×ˢ s := by
-  rw [(_ : {n + 1} = Set.Ioc n (n + 1))]
-  · exact measurableSet_predictable_Ioc_prod _ _ hs
-  · ext m
-    simp only [Set.mem_singleton_iff, Set.mem_Ioc]
-    lia
-
-lemma isStronglyPredictable_of_measurable_add_one [SecondCountableTopology E]
+lemma isStronglyPredictable_of_measurable_add_one
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : Measurable[𝓕 0] (u 0)) (h : ∀ n, Measurable[𝓕 n] (u (n + 1))) :
     IsStronglyPredictable 𝓕 u := by
@@ -206,12 +215,12 @@ lemma isStronglyPredictable_of_measurable_add_one [SecondCountableTopology E]
 
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
-lemma isStronglyPredictable_iff_measurable_add_one [SecondCountableTopology E]
+lemma IsStronglyPredictable.isStronglyPredictable_iff_measurable_add_one
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
     IsStronglyPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
-  ⟨fun h𝓕 ↦ ⟨(h𝓕.stronglyAdapted 0).measurable, fun n ↦ h𝓕.measurable_add_one (n)⟩,
+  ⟨fun h𝓕 ↦ ⟨(h𝓕.stronglyAdapted 0).measurable, fun n ↦ (h𝓕.measurable_add_one n).measurable⟩,
     fun h ↦ isStronglyPredictable_of_measurable_add_one h.1 h.2⟩
 
-end
+end Discrete
 
 end MeasureTheory
