@@ -5,10 +5,8 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Quotient
-public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -301,6 +299,15 @@ def paths (W : MorphismProperty C) : MorphismProperty (Paths C) :=
 @[simp]
 lemma nil_mem_paths {W : MorphismProperty C} {X : C} : W.paths (.nil (a := X)) := trivial
 
+lemma cons_mem_paths {W : MorphismProperty C} {X Y Z : C} {p : Path X Y} {f : Y ⟶ Z}
+    (hp : W.paths p) (hf : W f) : W.paths (p.cons f) :=
+  ⟨hp, hf⟩
+
+@[simp]
+lemma cons_mem_paths_iff {W : MorphismProperty C} {X Y Z : C} {p : Path X Y} {f : Y ⟶ Z} :
+    W.paths (p.cons f) ↔ W.paths p ∧ W f :=
+  Iff.rfl
+
 lemma toPath_mem_paths {W : MorphismProperty C} {X Y : C} {f : X ⟶ Y} (hf : W f) :
     W.paths f.toPath :=
   ⟨trivial, hf⟩
@@ -332,6 +339,7 @@ instance (W : MorphismProperty C) : W.paths.IsMultiplicative where
   id_mem _ := nil_mem_paths
   comp_mem _ _ hf hg := W.comp_mem_paths_iff.2 ⟨hf, hg⟩
 
+@[gcongr]
 lemma monotone_paths : Monotone (paths (C := C)) :=
   fun _ _ h _ _ p ↦ p.rec (fun _ ↦ trivial) (fun _ _ hp' hp ↦ ⟨hp' hp.1, h _ hp.2⟩)
 
@@ -349,6 +357,10 @@ lemma composePath_mem' (W : MorphismProperty C) [W.IsStableUnderComposition] {X 
 lemma composePath_mem (W : MorphismProperty C) [W.IsMultiplicative] {X Y : C}
     {p : Path X Y} (hp : W.paths p) : W (composePath p) :=
   W.composePath_mem' hp <| .inr (W.id_mem X)
+
+lemma paths_le_inverseImage (W : MorphismProperty C) [W.IsMultiplicative] :
+    W.paths ≤ W.inverseImage (pathComposition C) :=
+  fun _ _ _ ↦ W.composePath_mem
 
 end MorphismProperty
 
