@@ -167,34 +167,26 @@ instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α 
 
 @[to_dual]
 instance ordConnected_Ici {a : α} : OrdConnected (Ici a) :=
+<<<<<<< HEAD
   ⟨fun _ hx _ _ _ hz => le_trans (mem_Ici.2 hx) (mem_Icc.2 hz).1⟩
+=======
+  ⟨fun _ hx _ _ _ hz => le_trans hx hz.1⟩
+>>>>>>> orddual
 
-@[instance]
-theorem ordConnected_Iic {a : α} : OrdConnected (Iic a) :=
-  ⟨fun _ _ _ hy _ hz => le_trans hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
+@[to_dual]
+instance ordConnected_Ioi {a : α} : OrdConnected (Ioi a) :=
   ⟨fun _ hx _ _ _ hz => lt_of_lt_of_le hx hz.1⟩
 
-@[instance]
-theorem ordConnected_Iio {a : α} : OrdConnected (Iio a) :=
-  ⟨fun _ _ _ hy _ hz => lt_of_le_of_lt hz.2 hy⟩
-
-@[instance]
-theorem ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
+@[to_dual self]
+instance ordConnected_Icc {a b : α} : OrdConnected (Icc a b) :=
   ordConnected_Ici.inter ordConnected_Iic
 
-@[instance]
-theorem ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
+@[to_dual]
+instance ordConnected_Ico {a b : α} : OrdConnected (Ico a b) :=
   ordConnected_Ici.inter ordConnected_Iio
 
-@[instance]
-theorem ordConnected_Ioc {a b : α} : OrdConnected (Ioc a b) :=
-  ordConnected_Ioi.inter ordConnected_Iic
-
-@[instance]
-theorem ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
+@[to_dual self]
+instance ordConnected_Ioo {a b : α} : OrdConnected (Ioo a b) :=
   ordConnected_Ioi.inter ordConnected_Iio
 
 @[instance]
