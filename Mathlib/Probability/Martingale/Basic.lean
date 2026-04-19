@@ -509,7 +509,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
     exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
       (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
-section IsPredictable
+section IsStronglyPredictable
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
@@ -541,7 +541,7 @@ theorem Martingale.eq_zero_of_predictable' [SigmaFiniteFiltration μ 𝒢] {f : 
     (hfmgle : Martingale f 𝒢 μ) (hfadp : IsStronglyPredictable 𝒢 f) (n : ℕ) : f n =ᵐ[μ] f 0 :=
   eq_zero_of_predictable hfmgle (fun _ ↦ (hfadp.measurable_add_one _).stronglyMeasurable) n
 
-end IsPredictable
+end IsStronglyPredictable
 
 namespace Submartingale
 

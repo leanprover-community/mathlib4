@@ -17,13 +17,13 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Main definitions
 
 * `Filtration.predictable` : The predictable σ-algebra associated to a filtration.
-* `IsPredictable` : A process is predictable if it is measurable with respect to the
+* `IsStronglyPredictable` : A process is predictable if it is measurable with respect to the
   predictable σ-algebra.
 
 ## Main results
 
-* `IsPredictable.progMeasurable` : A predictable process is progressively measurable.
-* `isPredictable_iff_measurable_add_one` : `u` is a discrete predictable process iff
+* `IsStronglyPredictable.progMeasurable` : A predictable process is progressively measurable.
+* `isStronglyPredictable_iff_measurable_add_one` : `u` is a discrete predictable process iff
   `u (n + 1)` is `𝓕 n`-measurable and `u 0` is `𝓕 0`-measurable.
 
 ## Tags
@@ -127,7 +127,7 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsS
     · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
 /-- A predictable process is adapted. -/
-lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
+lemma stronglyAdapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     StronglyAdapted 𝓕 u :=
   h𝓕.progMeasurable.stronglyAdapted
 
@@ -191,7 +191,7 @@ lemma measurableSet_predictable_singleton_prod
     simp only [Set.mem_singleton_iff, Set.mem_Ioc]
     lia
 
-lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
+lemma isStronglyPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : Measurable[𝓕 0] (u 0)) (h : ∀ n, Measurable[𝓕 n] (u (n + 1))) :
     IsStronglyPredictable 𝓕 u := by
@@ -206,11 +206,11 @@ lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
 
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
-lemma isPredictable_iff_measurable_add_one [SecondCountableTopology E]
+lemma isStronglyPredictable_iff_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
     IsStronglyPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
-  ⟨fun h𝓕 ↦ ⟨(h𝓕.adapted 0).measurable, fun n ↦ h𝓕.measurable_add_one (n)⟩,
-    fun h ↦ isPredictable_of_measurable_add_one h.1 h.2⟩
+  ⟨fun h𝓕 ↦ ⟨(h𝓕.stronglyAdapted 0).measurable, fun n ↦ h𝓕.measurable_add_one (n)⟩,
+    fun h ↦ isStronglyPredictable_of_measurable_add_one h.1 h.2⟩
 
 end
 
