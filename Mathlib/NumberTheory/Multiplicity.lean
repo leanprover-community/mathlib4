@@ -137,7 +137,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [mul_assoc, mul_assoc]
       refine mul_eq_zero_of_left ?_ _
       refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
-      simp [s, mem_span_singleton]
+      simp [s]
 
 section IntegralDomain
 
@@ -307,7 +307,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
   norm_cast
-  contrapose! hpn
+  contrapose hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
   exact mul_dvd_mul_left _ hpn

@@ -84,8 +84,6 @@ structure Grp where
   X : C
   [grp : GrpObj X]
 
-@[deprecated (since := "2025-10-13")] alias Grp_ := Grp
-
 attribute [instance] Grp.grp AddGrp.addGrp
 
 namespace Grp
@@ -351,14 +349,15 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
 set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
 @[implicit_reducible]
-def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
-    (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
-  inv := Yoneda.fullyFaithful.preimage ⟨fun X f ↦ (h X.unop f).invOf, fun X Y f ↦ by
-    ext g
-    simp_rw [types_comp_apply, yoneda_obj_map, invOf_eq_iff_left]
-    rw [← comp_mul, invOf_mul_self, comp_one]⟩
-  left_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, invOf_mul_self, Hom.one_def]
-  right_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, mul_invOf_self, Hom.one_def]
+def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
+  inv := Yoneda.fullyFaithful.preimage
+    ⟨fun X ↦ TypeCat.ofHom (fun f ↦ (h X.unop f).invOf), fun X Y f ↦ by
+      ext g
+      simp only [yoneda_obj_obj, yoneda_obj_map, TypeCat.Fun.toFun_apply, comp_apply,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, invOf_eq_iff_left]
+      rw [← comp_mul, invOf_mul_self, comp_one]⟩
+  left_inv := by simp [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, Hom.one_def]
+  right_inv := by simp [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, Hom.one_def]
 
 namespace tensorObj
 variable [BraidedCategory C] {G H : C} [GrpObj G] [GrpObj H]

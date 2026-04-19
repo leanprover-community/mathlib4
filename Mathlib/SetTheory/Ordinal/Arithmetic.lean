@@ -225,6 +225,7 @@ theorem enum_succ_eq_top {o : Ordinal} :
     enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
+@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
 theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
     (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
   use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
@@ -232,6 +233,8 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
   · rw [enum_typein]
   · rw [Subtype.mk_lt_mk, lt_succ_iff]
 
+set_option linter.deprecated false in
+@[deprecated isSuccPrelimit_type_lt_iff (since := "2026-04-12")]
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
@@ -243,19 +246,6 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
   nth_rw 1 [← enum_typein r x]
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
-
-@[simp]
-theorem typein_ordinal (o : Ordinal.{u}) :
-    @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
-  induction o using Quotient.inductionOn with | _ w
-  obtain ⟨α, r, wo⟩ := w
-  apply Quotient.sound
-  constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
-
-theorem mk_Iio_ordinal (o : Ordinal.{u}) :
-    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
-  rw [lift_card, ← typein_ordinal]
-  rfl
 
 /-! ### The predecessor of an ordinal -/
 
@@ -1194,7 +1184,16 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
     · exact hc.trans ha
     · simp
 
-theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType :=
-  toType_noMax_of_succ_lt fun _ ↦ (isSuccLimit_ord h).succ_lt
+-- TODO: deprecate in favor of `isSuccPrelimit_type_lt_iff`
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
+  rw [← isSuccPrelimit_type_lt_iff, type_toType]
+  exact (isSuccLimit_ord h).isSuccPrelimit
+
+instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
+
+/-- This can be made a local instance in order to get `⊥`
+in `Cardinal.aleph0.ord.ToType`. -/
+abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
+  WellFoundedLT.toOrderBot _
 
 end Cardinal
