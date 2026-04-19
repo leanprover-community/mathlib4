@@ -152,6 +152,7 @@ def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
 open Bornology Filter
 open scoped Topology Uniformity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
 (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]

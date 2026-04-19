@@ -92,6 +92,7 @@ identify to the shift functors on `C`. -/
 noncomputable def shiftIso (m : A) : shiftFunctor t.Category m ≅ shiftFunctor C m :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
     (shiftFunctor t.Category m).map f =
       (t.shiftIso m).hom.app X ≫ (shiftFunctor C m).map f ≫ (t.shiftIso m).inv.app Y := by

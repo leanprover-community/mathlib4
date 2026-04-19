@@ -135,6 +135,7 @@ section
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
 out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
 `𝟙_ C`. -/
