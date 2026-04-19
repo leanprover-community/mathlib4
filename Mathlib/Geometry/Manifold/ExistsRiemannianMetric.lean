@@ -236,7 +236,7 @@ variable
   {HB : Type*} [TopologicalSpace HB]
   {F : Type*} [NormedAddCommGroup F] [TopologicalSpace (TotalSpace F E)]
 
-noncomputable section section1
+noncomputable section
 
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -291,9 +291,9 @@ instance {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ) (hpos : ∀ v, 0 ≤ φ 
     FiniteDimensional ℝ (VectorSpaceAux x φ hpos hsymm hdef) := by
   exact LinearEquiv.finiteDimensional (tangentSpaceEquiv φ hpos hsymm hdef)
 
-end section1
+end
 
-section section2
+section
 
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -363,9 +363,9 @@ lemma aux_tvs {x : B} (φ : E x →L[ℝ] E x →L[ℝ] ℝ)
   rw [Real.sqrt_lt' (by norm_num)]
   simp [h]
 
-end section2
+end
 
-noncomputable section section3
+noncomputable section
 
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -465,7 +465,7 @@ lemma riemannian_unit_ball_bounded_aux (f : SmoothPartitionOfUnity B IB B)
       by_contra hv
       exact lt_irrefl 0 (h ▸ riemannian_metric_pos_def_aux f hf b hv))
 
-end section3
+end
 
 section smooth
 
@@ -532,7 +532,7 @@ lemma g_global_bilin_smooth (f : SmoothPartitionOfUnity B IB B)
 
 end smooth
 
-section section6
+section
 
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -636,9 +636,9 @@ lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
   simp_rw [fun v => g_global_bilin_eq f hf b v v]
   exact riemannian_unit_ball_bounded_aux f hf b
 
-end section6
+end
 
-section section9
+section
 
 variable
   {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
@@ -670,4 +670,4 @@ public theorem exists_riemannian_metric
      isVonNBounded := riemannian_unit_ball_bounded f hf
      contMDiff := g_global_bilin_smooth f hf }⟩
 
-end section9
+end
