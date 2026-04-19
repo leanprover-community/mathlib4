@@ -110,10 +110,16 @@ class RootableBy where
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
 
-@[to_additive smul_right_surj_of_divisibleBy]
-theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
+@[to_additive DivisibleBy.surjective_smul]
+theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective (fun a => a ^ n : A → A) := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
+
+@[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
+  RootableBy.surjective_pow
+
+@[deprecated (since := "2026-04-19")] alias smul_right_surj_of_divisibleBy :=
+  DivisibleBy.surjective_smul
 
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
@@ -251,11 +257,6 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     let ⟨y, hy⟩ := hf x
     ⟨f <| RootableBy.root y n,
       (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ n = x)⟩
-
-@[to_additive DivisibleBy.surjective_smul]
-theorem RootableBy.surjective_pow (A α : Type*) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
-    {n : α} (hn : n ≠ 0) : Function.Surjective fun a : A => a ^ n := fun a =>
-  ⟨RootableBy.root a n, RootableBy.root_cancel a hn⟩
 
 end Hom
 
