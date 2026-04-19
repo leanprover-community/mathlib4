@@ -1159,8 +1159,8 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [IsMulCommutative α] 
     (ha : MulLECancellable a) : b * a ≤ a ↔ b ≤ 1 := by
   rw [mul_comm', ha.mul_le_iff_le_one_right]
 
-@[to_additive] lemma mul [Semigroup α] (ha : MulLECancellable a)
-    (hb : MulLECancellable b) : MulLECancellable (a * b) :=
+@[to_additive] lemma mul [Semigroup α] (ha : MulLECancellable a) (hb : MulLECancellable b) :
+    MulLECancellable (a * b) :=
   fun c d hcd ↦ hb <| ha <| by rwa [← mul_assoc, ← mul_assoc]
 
 @[to_additive] lemma of_mul_right [Semigroup α] [MulLeftMono α]
