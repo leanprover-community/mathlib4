@@ -357,7 +357,7 @@ theorem center_toNonUnitalSubsemiring :
 
 /-- The center is commutative and associative. -/
 instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
-  __ :  NonUnitalCommSemiring (center R) :=
+  __ : NonUnitalCommSemiring (center R) :=
     inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)
   __ := (inferInstance : NonUnitalNonAssocRing (center R))
 
