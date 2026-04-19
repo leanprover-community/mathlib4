@@ -429,8 +429,8 @@ lemma riemannian_metric_pos_def_aux (f : SmoothPartitionOfUnity B IB B)
             ((∑ j ∈ h1.toFinset, (f j) b • g_bilin_aux F j b).toFun v).toFun v := by
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ContinuousLinearMap.coe_coe]
     rw [ContinuousLinearMap.sum_apply, ContinuousLinearMap.sum_apply]
-  letI h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
-  letI h' x := f x b * ((g_bilin_aux F x b).toFun v).toFun v
+  let h : (j : B) → (E b →L[ℝ] (E b →L[ℝ] ℝ)) := fun j ↦ (f j) b • g_bilin_aux F j b
+  let h' x := f x b * ((g_bilin_aux F x b).toFun v).toFun v
   have h3 : (Function.support h) ⊆ h1.toFinset := Set.Finite.toFinset_subset.mp fun ⦃a⦄ a ↦ a
   have ⟨i, h5⟩ : ∃ i, 0 < f i b := by
     by_contra! hneg
