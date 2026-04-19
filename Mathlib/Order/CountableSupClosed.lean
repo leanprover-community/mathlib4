@@ -169,67 +169,8 @@ def countableSupClosure : ClosureOperator (Set α) := .ofPred
     rintro s₁ s₂ hs h₂ _ ⟨t, ht, rfl⟩
     exact h₂.iSup_mem fun n ↦ hs (ht n))
 
-lemma mem_countableSupClosure_iff :
-    a ∈ countableSupClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a := Iff.rfl
-
-@[simp] lemma subset_countableSupClosure {s : Set α} : s ⊆ countableSupClosure s :=
-  countableSupClosure.le_closure _
-
-@[simp] lemma countableSupClosed_countableSupClosure : CountableSupClosed (countableSupClosure s) :=
-  countableSupClosure.isClosed_closure _
-
-@[simp] lemma supClosed_countableSupClosure : SupClosed (countableSupClosure s) :=
-  countableSupClosed_countableSupClosure.supClosed
-
-lemma countableSupClosure_mono : Monotone (countableSupClosure : Set α → Set α) :=
-  countableSupClosure.monotone
-
-@[simp] lemma countableSupClosure_eq_self : countableSupClosure s = s ↔ CountableSupClosed s :=
-  countableSupClosure.isClosed_iff.symm
-
-alias ⟨_, CountableSupClosed.countableSupClosure_eq⟩ := countableSupClosure_eq_self
-
-lemma countableSupClosure_idem (s : Set α) : countableSupClosure (countableSupClosure s) =
-    countableSupClosure s :=
-  countableSupClosure.idempotent _
-
-@[simp] lemma countableSupClosure_singleton_bot : countableSupClosure {(⊥ : α)} = {⊥} := by simp
-@[simp] lemma countableSupClosure_univ : countableSupClosure (Set.univ : Set α) = Set.univ := by
-  simp
-
-@[simp] lemma upperBounds_countableSupClosure (s : Set α) :
-    upperBounds (countableSupClosure s) = upperBounds s :=
-  (upperBounds_mono_set subset_countableSupClosure).antisymm <| by
-    rintro a ha _ ⟨t, ht, rfl⟩
-    exact iSup_le fun n ↦ ha (ht n)
-
-@[simp] lemma isLUB_countableSupClosure : IsLUB (countableSupClosure s) a ↔ IsLUB s a := by
-  simp [IsLUB]
-
-lemma sup_mem_countableSupClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ countableSupClosure s :=
-  supClosed_countableSupClosure (subset_countableSupClosure ha) (subset_countableSupClosure hb)
-
-lemma iSup_mem_countableSupClosure [Countable ι] [Nonempty ι] {A : ι → α} (hA : ∀ n, A n ∈ s) :
-    (⨆ n, A n) ∈ countableSupClosure s :=
-  countableSupClosed_countableSupClosure.iSup_mem (fun n ↦ subset_countableSupClosure (hA n))
-
-lemma finsetSup'_mem_countableSupClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
-    (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ countableSupClosure s :=
-  supClosed_countableSupClosure.finsetSup'_mem _ fun _i hi ↦ subset_countableSupClosure <| hf _ hi
-
-lemma countableSupClosure_min : s ⊆ t → CountableSupClosed t → countableSupClosure s ⊆ t :=
-  countableSupClosure.closure_min
-
-@[simp] lemma countableSupClosure_prod (s : Set α) (t : Set β) :
-    countableSupClosure (s ×ˢ t) = countableSupClosure s ×ˢ countableSupClosure t :=
-  le_antisymm (countableSupClosure_min
-    (Set.prod_mono subset_countableSupClosure subset_countableSupClosure) <|
-    countableSupClosed_countableSupClosure.prod countableSupClosed_countableSupClosure) <| by
-      rintro ⟨_, _⟩ ⟨⟨u, hu, rfl⟩, v, hv, rfl⟩
-      exact ⟨fun n ↦ (u n, v n), fun n ↦ ⟨hu n, hv n⟩, by rw [Prod.iSup_mk]⟩
-
 /-- Every set generates a set closed under countable infimum. -/
-@[simps! isClosed]
+@[to_dual existing, simps! isClosed]
 def countableInfClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (fun s ↦ {a | ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨅ n, t n = a})
   CountableInfClosed
@@ -243,64 +184,78 @@ def countableInfClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
     rintro s₁ s₂ hs h₂ _ ⟨t, ht, rfl⟩
     exact h₂.iInf_mem fun n ↦ hs (ht n))
 
-lemma mem_countableInfClosure_iff :
-    a ∈ countableInfClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨅ n, t n = a := Iff.rfl
+attribute [to_dual existing] countableSupClosure
 
-@[simp] lemma subset_countableInfClosure {s : Set α} : s ⊆ countableInfClosure s :=
-  countableInfClosure.le_closure _
+@[to_dual]
+lemma mem_countableSupClosure_iff :
+    a ∈ countableSupClosure s ↔ ∃ (t : ℕ → α), (∀ n, t n ∈ s) ∧ ⨆ n, t n = a := Iff.rfl
 
-@[simp] lemma countableInfClosed_countableInfClosure : CountableInfClosed (countableInfClosure s) :=
-  countableInfClosure.isClosed_closure _
+@[to_dual (attr := simp)] lemma subset_countableSupClosure {s : Set α} :
+    s ⊆ countableSupClosure s := countableSupClosure.le_closure _
 
-@[simp] lemma infClosed_countableInfClosure : InfClosed (countableInfClosure s) :=
-  countableInfClosed_countableInfClosure.infClosed
+@[to_dual (attr := simp)] lemma countableSupClosed_countableSupClosure :
+CountableSupClosed (countableSupClosure s) :=
+  countableSupClosure.isClosed_closure _
 
-lemma countableInfClosure_mono : Monotone (countableInfClosure : Set α → Set α) :=
-  countableInfClosure.monotone
+@[to_dual (attr := simp)] lemma supClosed_countableSupClosure : SupClosed (countableSupClosure s) :=
+  countableSupClosed_countableSupClosure.supClosed
 
-@[simp] lemma countableInfClosure_eq_self : countableInfClosure s = s ↔ CountableInfClosed s :=
-  countableInfClosure.isClosed_iff.symm
+@[to_dual]
+lemma countableSupClosure_mono : Monotone (countableSupClosure : Set α → Set α) :=
+  countableSupClosure.monotone
 
-alias ⟨_, CountableInfClosed.countableInfClosure_eq⟩ := countableInfClosure_eq_self
+@[to_dual (attr := simp)] lemma countableSupClosure_eq_self :
+    countableSupClosure s = s ↔ CountableSupClosed s :=
+  countableSupClosure.isClosed_iff.symm
 
-lemma countableInfClosure_idem (s : Set α) :
-    countableInfClosure (countableInfClosure s) = countableInfClosure s :=
-  countableInfClosure.idempotent _
+@[to_dual]
+alias ⟨_, CountableSupClosed.countableSupClosure_eq⟩ := countableSupClosure_eq_self
 
-@[simp] lemma countableInfClosure_singleton_top : countableInfClosure {(⊤ : α)} = {⊤} := by simp
-@[simp] lemma countableInfClosure_univ : countableInfClosure (Set.univ : Set α) = Set.univ := by
-  simp
+@[to_dual]
+lemma countableSupClosure_idem (s : Set α) : countableSupClosure (countableSupClosure s) =
+    countableSupClosure s :=
+  countableSupClosure.idempotent _
 
-@[simp] lemma lowerBounds_countableInfClosure (s : Set α) :
-    lowerBounds (countableInfClosure s) = lowerBounds s :=
-  (lowerBounds_mono_set subset_countableInfClosure).antisymm <| by
+@[to_dual (attr := simp)] lemma countableSupClosure_singleton_bot :
+    countableSupClosure {(⊥ : α)} = {⊥} := by simp
+
+@[to_dual (attr := simp)] lemma countableSupClosure_univ :
+    countableSupClosure (Set.univ : Set α) = Set.univ := by simp
+
+@[to_dual (attr := simp)] lemma upperBounds_countableSupClosure (s : Set α) :
+    upperBounds (countableSupClosure s) = upperBounds s :=
+  (upperBounds_mono_set subset_countableSupClosure).antisymm <| by
     rintro a ha _ ⟨t, ht, rfl⟩
-    exact le_iInf fun n ↦ ha (ht n)
+    exact iSup_le fun n ↦ ha (ht n)
 
-@[simp] lemma isGLB_countableInfClosure : IsGLB (countableInfClosure s) a ↔ IsGLB s a := by
-  simp [IsGLB]
+@[to_dual (attr := simp)] lemma isLUB_countableSupClosure :
+    IsLUB (countableSupClosure s) a ↔ IsLUB s a := by simp [IsLUB]
 
-lemma inf_mem_countableInfClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ countableInfClosure s :=
-  infClosed_countableInfClosure (subset_countableInfClosure ha) (subset_countableInfClosure hb)
+@[to_dual]
+lemma sup_mem_countableSupClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊔ b ∈ countableSupClosure s :=
+  supClosed_countableSupClosure (subset_countableSupClosure ha) (subset_countableSupClosure hb)
 
-lemma iInf_mem_countableInfClosure [Countable ι] [Nonempty ι] {A : ι → α} (hA : ∀ n, A n ∈ s) :
-    (⨅ n, A n) ∈ countableInfClosure s :=
-  countableInfClosed_countableInfClosure.iInf_mem (fun n ↦ subset_countableInfClosure (hA n))
+@[to_dual]
+lemma iSup_mem_countableSupClosure [Countable ι] [Nonempty ι] {A : ι → α} (hA : ∀ n, A n ∈ s) :
+    (⨆ n, A n) ∈ countableSupClosure s :=
+  countableSupClosed_countableSupClosure.iSup_mem (fun n ↦ subset_countableSupClosure (hA n))
 
-lemma finsetInf'_mem_countableInfClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
-    (hf : ∀ i ∈ t, f i ∈ s) : t.inf' ht f ∈ countableInfClosure s :=
-  infClosed_countableInfClosure.finsetInf'_mem _ fun _i hi ↦ subset_countableInfClosure <| hf _ hi
+@[to_dual]
+lemma finsetSup'_mem_countableSupClosure {ι : Type*} {t : Finset ι} (ht : t.Nonempty) {f : ι → α}
+    (hf : ∀ i ∈ t, f i ∈ s) : t.sup' ht f ∈ countableSupClosure s :=
+  supClosed_countableSupClosure.finsetSup'_mem _ fun _i hi ↦ subset_countableSupClosure <| hf _ hi
 
-lemma countableInfClosure_min : s ⊆ t → CountableInfClosed t → countableInfClosure s ⊆ t :=
-  countableInfClosure.closure_min
+@[to_dual countableInfClosure_min]
+lemma countableSupClosure_min : s ⊆ t → CountableSupClosed t → countableSupClosure s ⊆ t :=
+  countableSupClosure.closure_min
 
-@[simp] lemma countableInfClosure_prod (s : Set α) (t : Set β) :
-    countableInfClosure (s ×ˢ t) = countableInfClosure s ×ˢ countableInfClosure t :=
-  le_antisymm (countableInfClosure_min
-    (Set.prod_mono subset_countableInfClosure subset_countableInfClosure) <|
-    countableInfClosed_countableInfClosure.prod countableInfClosed_countableInfClosure) <| by
+@[to_dual (attr := simp)] lemma countableSupClosure_prod (s : Set α) (t : Set β) :
+    countableSupClosure (s ×ˢ t) = countableSupClosure s ×ˢ countableSupClosure t :=
+  le_antisymm (countableSupClosure_min
+    (Set.prod_mono subset_countableSupClosure subset_countableSupClosure) <|
+    countableSupClosed_countableSupClosure.prod countableSupClosed_countableSupClosure) <| by
       rintro ⟨_, _⟩ ⟨⟨u, hu, rfl⟩, v, hv, rfl⟩
-      exact ⟨fun n ↦ (u n, v n), fun n ↦ ⟨hu n, hv n⟩, by rw [Prod.iInf_mk]⟩
+      exact ⟨fun n ↦ (u n, v n), fun n ↦ ⟨hu n, hv n⟩, by rw [Prod.iSup_mk]⟩
 
 end CompleteLattice
 
@@ -319,6 +274,7 @@ protected lemma SupClosed.countableInfClosure [Order.Coframe α] (hs : SupClosed
 
 /-- If a set is closed under binary infima, then its countable supremum closure is also closed under
 binary infima. -/
+@[to_dual existing]
 protected lemma InfClosed.countableSupClosure [Order.Frame α] (hs : InfClosed s) :
     InfClosed (countableSupClosure s) := by
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
@@ -327,5 +283,7 @@ protected lemma InfClosed.countableSupClosure [Order.Frame α] (hs : InfClosed s
   · simp only
     exact hs (ht (Nat.unpair n).1) (hu (Nat.unpair n).2)
   · rw [iSup_unpair (f := (fun n m ↦ t n ⊓ u m)), iSup_prod']
+
+attribute [to_dual existing] SupClosed.countableInfClosure
 
 end Frame
