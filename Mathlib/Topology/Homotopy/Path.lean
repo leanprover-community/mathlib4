@@ -469,7 +469,7 @@ variable {X : Type*} [TopologicalSpace X] {x y : X}
 
 /-- Extract a subpath from γ on the interval [a, b] ⊆ [0, 1].
 This is γ reparametrized via the affine map t ↦ a + t(b - a). -/
-def subpathOn (γ : Path x y) (a b : unitInterval) (_hab : a ≤ b) : Path (γ a) (γ b) where
+def subpathOn (γ : Path x y) (a b : unitInterval) (_ : a ≤ b) : Path (γ a) (γ b) where
   toFun t := γ (convexCombo a b t)
   source' := by simp
   target' := by simp
