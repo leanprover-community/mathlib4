@@ -53,7 +53,7 @@ structure CountableSupClosed [CompleteLattice α] (s : Set α) : Prop where
 
 lemma CountableSupClosed.iSup_mem [hι : Countable ι] [Nonempty ι]
     (hs : CountableSupClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
-    (⨆ n, A n) ∈ s := by
+    ⨆ n, A n ∈ s := by
   obtain ⟨g, hg⟩ := countable_iff_exists_surjective.mp hι
   have : ⨆ i, A i = ⨆ n, A (g n) := by rw [Function.Surjective.iSup_comp hg]
   rw [this]
@@ -67,16 +67,13 @@ lemma CountableSupClosed.sSup_mem (hs : CountableSupClosed s)
 
 lemma CountableSupClosed.supClosed (hs : CountableSupClosed s) : SupClosed s := by
   intro a ha b hb
-  have : a ⊔ b = sSup {a, b} := by simp
-  rw [this]
-  exact hs.sSup_mem (A := {a, b}) (by grind)
+  simpa using  hs.sSup_mem (A := {a, b}) (by grind)
 
 @[simp] lemma countableSupClosed_singleton_bot : CountableSupClosed ({⊥} : Set α) where
   iSup_nat_mem A hA := by
-    simp only [mem_singleton_iff] at hA
-    simp [hA]
+    simp_all
 
-@[simp] lemma countableSupClosed_univ : CountableSupClosed (univ : Set α) where
+@[simp] lemma CountableSupClosed.univ : CountableSupClosed (univ : Set α) where
   iSup_nat_mem A hA := by simp
 
 lemma CountableSupClosed.inter (hs : CountableSupClosed s) (ht : CountableSupClosed t) :
