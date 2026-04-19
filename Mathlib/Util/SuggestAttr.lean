@@ -9,9 +9,8 @@ public import Lean.Elab.Command
 public import Lean.Syntax
 public import Lean.Data.Lsp.Utf16
 public import Batteries.Lean.Position
-import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
-import Mathlib.Tactic.IrreducibleDef
+-- import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Utilities for suggesting attribute insertions
@@ -43,7 +42,7 @@ def findDeclarationSyntax? {m : Type → Type} [Monad m] [MonadEnv m] [MonadLift
     if kind ∈ [
         ``Parser.Command.declaration,
         `lemma,
-        ``Elab.Command.irreducibleDefStx,
+        `Lean.Elab.Command.irreducibleDefStx,
         `Mathlib.Tactic.ToAdditive.to_additive]
     then
       if stx.getRange? (canonicalOnly := true) |>.isEqSome range then
@@ -187,7 +186,7 @@ declaration syntax. -/
               "Could not find syntax matching declaration range."}"
       if kind ∈ [`lemma,
           ``Parser.Command.declaration,
-          ``Lean.Elab.Command.irreducibleDefStx]
+          `Lean.Elab.Command.irreducibleDefStx]
       then
         let some declStart := stx.raw[1].getPos?
           | throwError "Couldn't find start position of declaration {stx}"

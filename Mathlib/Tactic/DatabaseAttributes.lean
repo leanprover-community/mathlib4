@@ -6,8 +6,8 @@ Authors: Damiano Testa, Michael Rothgang
 module
 
 public meta import Lean.Elab.Command
-public import Mathlib.Init
 public meta import Mathlib.Util.SuggestAttr
+public import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `stacks`, `kerodon` and `informal` attributes
