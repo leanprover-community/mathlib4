@@ -734,8 +734,8 @@ theorem closure_range_of (α) :
 
 @[to_additive]
 theorem lift_surjective_of_surjective (hf : Function.Surjective f) :
-  Function.Surjective (lift f) := by
-    rw [← MonoidHom.range_eq_top, range_lift_eq_closure, hf.range_eq, Subgroup.closure_univ]
+    Function.Surjective (lift f) := by
+  rw [← MonoidHom.range_eq_top, range_lift_eq_closure, hf.range_eq, Subgroup.closure_univ]
 
 end lift
 

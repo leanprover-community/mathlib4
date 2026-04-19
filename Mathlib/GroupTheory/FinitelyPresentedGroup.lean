@@ -74,7 +74,7 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
 theorem mk' (G : Type*) [Group G] (S : Type*) [Finite S] (φ : FreeGroup S →* G)
-  (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
+    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
   let e' := FreeGroup.freeGroupCongr e
   let φ' := φ.comp e'.symm.toMonoidHom
@@ -86,8 +86,5 @@ theorem mk' (G : Type*) [Group G] (S : Type*) [Finite S] (φ : FreeGroup S →* 
 instance (G : Type*) [Group G] [Finite G] : IsFinitelyPresented G := by
   refine mk' G G FreeGroup.prod FreeGroup.prod_surjective (Subgroup.IsNormalClosureFG.of_FG ?_)
   apply Subgroup.fg_of_index_ne_zero
-
-/-- The trivial group is finitely presented. -/
-instance : IsFinitelyPresented PUnit := by infer_instance
 
 end Group.IsFinitelyPresented
