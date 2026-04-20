@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 @[expose] public section
 
-universe u u' v v'
+universe v u u'
 
 variable {R : Type u} [CommRing R] {R' : Type u'} [CommRing R']
 
