@@ -200,6 +200,45 @@ lemma right_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
 
 instance : Ring M where
 
+/-- The antisymmetrization of `≻` and `≺` yield a pre-Lie product. -/
+def prelie_lr := a ≻ b - b ≺ a
+
+/-- The antisymmetrization of `≺` and `≻` yield a pre-Lie product. -/
+def prelie_rl := a ≺ b - b ≻ a
+
+/-- The antisymmetrization `a ≻ b - b ≺ a` yields a `NonAssocNonUnitalRing`.
+See note [reducible non-instances] -/
+abbrev toNonAssocNonUnitalRingLR : NonUnitalNonAssocRing M where
+  mul := prelie_lr
+  left_distrib a b c := by simpa [HMul.hMul, prelie_lr] using by abel_nf
+  right_distrib a b c := by simpa [HMul.hMul, prelie_lr] using by abel_nf
+  zero_mul a := by simp [HMul.hMul, prelie_lr]
+  mul_zero a := by simp [HMul.hMul, prelie_lr]
+
+/-- The antisymmetrization `a ≻ b - b ≺ a` yields a `LeftPreLieRing`.
+See note [reducible non-instances] -/
+abbrev toLeftPreLieRing : LeftPreLieRing M where
+  __ := toNonAssocNonUnitalRingLR
+  assoc_symm' x y z := by simpa [associator, HMul.hMul, Mul.mul, prelie_lr] using by abel_nf
+
+/-- The antisymmetrization `a ≺ b - b ≻ a` yields a `NonAssocNonUnitalRing`.
+See note [reducible non-instances] -/
+abbrev toNonAssocNonUnitalRingRL : NonUnitalNonAssocRing M where
+  mul := prelie_rl
+  left_distrib a b c := by simpa [HMul.hMul, prelie_rl] using by abel_nf
+  right_distrib a b c := by simpa [HMul.hMul, prelie_rl] using by abel_nf
+  zero_mul a := by simp [HMul.hMul, prelie_rl]
+  mul_zero a := by simp [HMul.hMul, prelie_rl]
+
+/-- The antisymmetrization `a ≻ b - b ≺ a` yields a `RightPreLieRing`.
+See note [reducible non-instances] -/
+abbrev toRightPreLieRing : RightPreLieRing M where
+  __ := toNonAssocNonUnitalRingRL
+  assoc_symm' x y z := by simpa [associator_apply, HMul.hMul, Mul.mul, prelie_rl] using by abel_nf
+
+scoped[DendriformLR] attribute [instance] DendriformRing.toLeftPreLieRing
+scoped[DendriformRL] attribute [instance] DendriformRing.toRightPreLieRing
+
 end DendriformRing
 
 namespace DendriformAlgebra
