@@ -698,6 +698,7 @@ public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.Basis
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.CartanExists
 public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Algebra.Lie.CartanSubalgebra
@@ -721,7 +722,6 @@ public import Mathlib.Algebra.Lie.LieTheorem
 public import Mathlib.Algebra.Lie.Loop
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Nilpotent
-public import Mathlib.Algebra.Lie.NilpotentOfTrace
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.Normalizer
 public import Mathlib.Algebra.Lie.OfAssociative
