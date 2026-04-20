@@ -85,7 +85,8 @@ lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
 `essSup ‖f‖ μ` for `p = ∞`. -/
 def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
-  if p = 0 then 0 else if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
+  if p = 0 then μ (Function.support (fun x ↦ ‖f x‖ₑ)) else
+  if p = ∞ then eLpNormEssSup f μ else eLpNorm' f (ENNReal.toReal p) μ
 
 variable {μ ν : Measure α}
 
