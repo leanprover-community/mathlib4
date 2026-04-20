@@ -54,6 +54,7 @@ supremum helps define the meaning of recursive procedures.
 * [Chain-complete posets and directed sets with applications][markowsky1976]
 * [Recursive definitions of partial functions and their computations][cadiou1972]
 * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
+* [Denotational Semantics][pitts2012denotational]
 -/
 
 @[expose] public section
@@ -855,5 +856,46 @@ theorem ωSup_iterate_le_fixedPoint (h : x ≤ f x) {a : α}
   exact ωSup_iterate_le_prefixedPoint f x h h_a h_x_le_a
 
 end fixedPoints
+
+namespace ContinuousHom
+
+open Function fixedPoints
+
+variable [OrderBot α] (f : α →𝒄 α)
+
+/-- The least fixed point of an ω-Scott continuous function on an ω-complete partial order
+with a bottom element, defined as the supremum of the chain `⊥, f ⊥, f (f ⊥), …`. -/
+def lfp : α := ωSup (iterateChain f.toOrderHom ⊥ bot_le)
+
+/-- `lfp f` is a fixed point of `f`. -/
+theorem map_lfp : f (lfp f) = lfp f :=
+  ωSup_iterate_mem_fixedPoint f ⊥ bot_le
+
+theorem isFixedPt_lfp : IsFixedPt f (lfp f) := map_lfp f
+
+/-- `lfp f` is below every fixed point of `f`. -/
+theorem lfp_le_fixed {a : α} (h : f a = a) : lfp f ≤ a :=
+  ωSup_iterate_le_fixedPoint f ⊥ bot_le h bot_le
+
+/-- `lfp f` is the least fixed point of `f`. -/
+theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
+  ⟨isFixedPt_lfp f, fun _ ha => lfp_le_fixed f ha⟩
+
+/-- **Scott induction** for `lfp`: to prove a predicate `p` of `lfp f`, it suffices to show
+`p ⊥`, that `p` is preserved by `f`, and that `p` is closed under ωSup of chains. -/
+theorem lfp_induction {p : α → Prop} (h_bot : p ⊥) (h_step : ∀ a, p a → p (f a))
+    (h_sup : ∀ c : Chain α, (∀ n, p (c n)) → p (ωSup c)) : p (lfp f) := by
+  apply h_sup
+  intro n
+  induction n with
+  | zero => exact h_bot
+  | succ k ih =>
+    have hstep : iterateChain f.toOrderHom ⊥ bot_le (k + 1) =
+        f (iterateChain f.toOrderHom ⊥ bot_le k) :=
+      Function.iterate_succ_apply' ..
+    rw [hstep]
+    exact h_step _ ih
+
+end ContinuousHom
 
 end OmegaCompletePartialOrder
