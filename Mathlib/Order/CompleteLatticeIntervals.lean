@@ -166,6 +166,58 @@ noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhab
 
 end OrdConnected
 
+section Iio
+
+open Classical in
+/-- Complete lattice structure on `Set.Iio` -/
+noncomputable instance Set.Iio.conditionallyCompleteLinearOrderBot
+    [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)] :
+    ConditionallyCompleteLinearOrderBot (Iio a) where
+  __ := (inferInstance : LinearOrder (Iio a))
+  __ := orderBot
+  __ := (inferInstance : Lattice (Iio a))
+  sSup S := if hS : BddAbove S then ⟨sSup ((↑) '' S), by
+    rcases hS with ⟨b, hb⟩
+    rw [mem_Iio]
+    apply b.2.trans_le'
+    apply csSup_le'
+    simpa [mem_upperBounds] using hb⟩ else ⊥
+  isLUB_csSup S hS hS' := by
+    simp only [hS', ↓reduceDIte]
+    refine IsLUB.of_image (f := Subtype.val) (by simp) (isLUB_csSup' ?_)
+    exact (Subtype.mono_coe _).map_bddAbove hS'
+  csSup_of_not_bddAbove S hS := by simp [hS]
+  csSup_empty := by simp
+  sInf S := if hS : S.Nonempty then ⟨sInf ((↑) '' S), by
+    rcases hS with ⟨b, hb⟩
+    rw [mem_Iio]
+    apply b.2.trans_le'
+    apply csInf_le'
+    simpa using ⟨b.2, hb⟩⟩ else ⊥
+  isGLB_csInf S hS hS' := by
+    simp only [hS, ↓reduceDIte]
+    refine IsGLB.of_image (f := Subtype.val) (by simp) (isGLB_csInf ?_)
+    simpa
+  csInf_of_not_bddBelow := by simp
+
+lemma Set.Iio.coe_sSup [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)]
+    {S : Set (Iio a)} (hS : BddAbove S) : ↑(sSup S) = sSup ((↑) '' S : Set α) :=
+  congrArg Subtype.val (dif_pos hS)
+
+lemma Set.Iio.coe_sInf [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)]
+    {S : Set (Iio a)} (hS : S.Nonempty) : ↑(sInf S) = sInf ((↑) '' S : Set α) :=
+  congrArg Subtype.val (dif_pos hS)
+
+lemma Set.Iio.coe_iSup [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)]
+    {f : ι → Iio a} (hf : BddAbove (range f)) : ↑(iSup f) = (⨆ i, f i : α) :=
+  (coe_sSup hf).trans (congrArg sSup (range_comp Subtype.val f).symm)
+
+lemma Set.Iio.coe_iInf [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)]
+    [Nonempty ι] {f : ι → Iio a} : ↑(iInf f) = (⨅ i, f i : α) :=
+  (coe_sInf (range_nonempty f)).trans (congrArg sInf (range_comp Subtype.val f).symm)
+
+end Iio
+
 section Icc
 
 open Classical in
