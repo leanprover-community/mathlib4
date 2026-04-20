@@ -26,19 +26,16 @@ open UniformSpace.Completion InfinitePlace
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] {v : InfinitePlace K} {w : InfinitePlace L}
 variable [w.1.LiesOver v.1]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion :=
   (LiesOver.isometry_algebraMap w v).mapRingHom.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 scoped instance : IsScalarTower K v.Completion w.Completion :=
   .of_algebraMap_eq fun x ↦ by
     simp_rw [RingHom.algebraMap_toAlgebra, UniformSpace.Completion.algebraMap_def,
       Isometry.mapRingHom_coe]
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 scoped instance : ContinuousSMul v.Completion w.Completion where
   continuous_smul := (UniformSpace.Completion.continuous_map.comp continuous_fst).mul
     (Continuous.comp continuous_id continuous_snd)
