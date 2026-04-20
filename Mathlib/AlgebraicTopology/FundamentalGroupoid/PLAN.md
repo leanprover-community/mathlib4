@@ -47,6 +47,10 @@ As of commit `74ec3326354` plus the follow-up proofs completed in this worktree:
   applying groupoid cancellation plus
   `IsCoveringMap.injective_path_homotopic_map` to show every loop in the universal cover is
   nullhomotopic.
+- Step 11 (`UniversalCover.existsUnique_continuousMap_lifts`) is implemented as a thin wrapper
+  over `IsCoveringMap.existsUnique_continuousMap_lifts` applied to `UniversalCover.isCoveringMap`.
+
+All planned steps are now complete.
 
 Step 6 was completed via a direct rectangle-homotopy construction
 (`BasedPath.toPath_homotopic_of_joinedIn_slsc`) rather than the globalization route
