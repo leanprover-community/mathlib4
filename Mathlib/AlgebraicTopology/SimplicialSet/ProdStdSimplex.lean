@@ -34,7 +34,6 @@ namespace prodStdSimplex
 
 variable {p q : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `n`-simplices in `Δ[p] ⊗ Δ[q]` identify to order preserving maps
 `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
 def objEquiv {n : ℕ} :
@@ -75,10 +74,7 @@ variable (p q) in
 /-- The binary product `Δ[p] ⊗ Δ[q]` identifies to the nerve
 of `ULift (Fin (p + 1) × Fin (q + 1))`. -/
 def isoNerve : Δ[p] ⊗ Δ[q] ≅ nerve (ULift.{u} (Fin (p + 1) × Fin (q + 1))) :=
-  NatIso.ofComponents (fun d ↦ Equiv.toIso (by
-    obtain ⟨d⟩ := d
-    induction d using SimplexCategory.rec with | _ d
-    exact objEquiv.trans
+  NatIso.ofComponents (fun ⟨⟨d⟩⟩ ↦ Equiv.toIso (objEquiv.trans
       { toFun f := (ULift.orderIso.symm.monotone.comp f.monotone).functor
         invFun s := ULift.orderIso.toOrderEmbedding.toOrderHom.comp ⟨_, s.monotone⟩ }))
 
@@ -121,6 +117,11 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
   simp only [Fin.strictMono_iff_lt_succ]
   exact forall_congr' (fun i ↦ (this _ _ ((objEquiv x).monotone i.castSucc_le_succ)).symm)
 
+lemma strictMono_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
+    (hm : p + q = m) :
+    StrictMono (orderHomOfSimplex x.1 hm) := by
+  simpa only [strictMono_orderHomOfSimplex_iff, ← nonDegenerate_iff_strictMono_objEquiv] using x.2
+
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
   degenerate_eq_top n hn := by
     ext x
@@ -135,6 +136,43 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
 
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).Finite :=
   finite_of_hasDimensionLT _ (p + q + 1) inferInstance
+
+lemma le_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
+    (hm : p + q = m) (i : Fin (n + 1)) : i.1 ≤ orderHomOfSimplex x.1 hm i := by
+  induction i using Fin.induction with
+  | zero => simp
+  | succ i hi =>
+    simpa using lt_of_le_of_lt hi (strictMono_orderHomOfSimplex x hm Fin.castSucc_lt_succ)
+
+lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌)
+    (hn : p + q = n := by lia) :
+    z ∈ (Δ[p] ⊗ Δ[q]).nonDegenerate n ↔ orderHomOfSimplex z hn = .id := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · exact OrderHom.eq_id_of_injective _ (strictMono_orderHomOfSimplex ⟨z, h⟩ hn).injective
+  · rw [nonDegenerate_iff_injective_objEquiv]
+    intro h a b hab
+    simp only [DFunLike.ext_iff, orderHomOfSimplex_coe, OrderHom.id_coe, id_eq] at h
+    rw [← h a, ← h b, Fin.ext_iff]
+    change ((objEquiv z a).1 : ℕ) + (objEquiv z a).2 = (objEquiv z b).1 + (objEquiv z b).2
+    simp only [hab]
+
+lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
+    (h : z₁.1.1 = z₂.1.1) (hn : p + q = n := by lia) :
+    z₁ = z₂ := by
+  ext
+  apply objEquiv.injective
+  ext i : 3
+  · exact DFunLike.congr_fun h i
+  · have h₁ := z₁.2
+    have h₂ := z₂.2
+    rw [nonDegenerate_max_dim_iff] at h₁ h₂
+    simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
+      using DFunLike.congr_fun (h₁.trans h₂.symm) i
+
+lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
+    (h : z₁.1.2 = z₂.1.2) (hn : p + q = n := by lia) :
+    z₁ = z₂ :=
+  (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ h)
 
 end prodStdSimplex
 

@@ -85,6 +85,18 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
   rfl
 
+variable {M} in
+theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
+    integerNormalization M p = 0 ↔ p = 0 := by
+  obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  letI := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  letI : Function.Injective <| mapRingHom (algebraMap R S) := by
+    rw [coe_mapRingHom, map_injective_iff]
+    exact IsLocalization.injective S hM
+  rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
+
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
@@ -115,11 +127,8 @@ variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFr
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
-    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← _root_.map_eq_zero_iff (mapRingHom _)
-    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
-  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
+    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
+  IsLocalization.integerNormalization_eq_zero_iff le_rfl p
 
 variable (A K C)
 

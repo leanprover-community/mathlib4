@@ -391,7 +391,7 @@ theorem eval_eq (l : Products I) (x : C) :
     rintro _ ⟨i, hi, rfl⟩
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
-    push_neg at h
+    push Not at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]

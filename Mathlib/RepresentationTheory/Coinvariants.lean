@@ -344,7 +344,6 @@ end
 
 variable (k G) [Monoid G] (A B : Rep.{w} k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its coinvariants. -/
 @[simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where

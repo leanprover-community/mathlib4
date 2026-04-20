@@ -589,6 +589,11 @@ theorem subtype_map (p : α → Prop) [DecidablePred p] {s : Finset α} :
 theorem subtype_map_of_mem {p : α → Prop} [DecidablePred p] {s : Finset α} (h : ∀ x ∈ s, p x) :
     (s.subtype p).map (Embedding.subtype _) = s := ext <| by simpa [subtype_map] using h
 
+@[simp]
+theorem subtype_mem_eq_attach (s : Finset α) [DecidablePred (· ∈ s)] :
+    s.subtype (· ∈ s) = s.attach := by
+  ext; simp
+
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, all elements of the result have the property of
 the subtype. -/

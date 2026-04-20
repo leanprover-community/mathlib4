@@ -72,9 +72,6 @@ noncomputable def encard (s : Set α) : ℕ∞ := ENat.card s
 
 @[simp] theorem _root_.ENat.card_coe_set_eq (s : Set α) : ENat.card s = s.encard := rfl
 
-@[deprecated "Use simp" (since := "2025-09-23")]
-theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by simp
-
 theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinset.card := by
   have := h.fintype
   rw [encard, ENat.card_eq_coe_fintype_card, toFinite_toFinset, toFinset_card]
@@ -437,7 +434,6 @@ theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ 
     encard_eq_one] at hst
   obtain ⟨x, hx⟩ := hst; use x; rw [← diff_union_of_subset h, hx, singleton_union]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
   induction k using ENat.nat_induction with
   | zero => exact ⟨∅, empty_subset _, by simp⟩

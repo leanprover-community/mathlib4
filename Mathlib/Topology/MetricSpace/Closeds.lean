@@ -270,41 +270,12 @@ theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) 
   fun _ _ => rfl
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
+@[deprecated
+  "Use `TopologicalSpace.NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range` instead"
+  (since := "2026-01-28")]
 theorem isClosed_in_closeds [CompleteSpace α] :
-    IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
-  have :
-    range NonemptyCompacts.toCloseds =
-      { s : Closeds α | (s : Set α).Nonempty ∧ IsCompact (s : Set α) } := by
-    ext s
-    refine ⟨?_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
-    rintro ⟨s, hs, rfl⟩
-    exact ⟨s.nonempty, s.isCompact⟩
-  rw [this]
-  refine isClosed_of_closure_subset fun s hs => ⟨?_, ?_⟩
-  · -- take a set t which is nonempty and at a finite distance of s
-    rcases EMetric.mem_closure_iff.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
-    rw [edist_comm] at Dst
-    -- since `t` is nonempty, so is `s`
-    exact nonempty_of_hausdorffEDist_ne_top ht.1 (ne_of_lt Dst)
-  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.isClosed.isComplete⟩
-    refine EMetric.totallyBounded_iff.2 fun ε (εpos : 0 < ε) => ?_
-    -- we have to show that s is covered by finitely many eballs of radius ε
-    -- pick a nonempty compact set t at distance at most ε/2 of s
-    rcases EMetric.mem_closure_iff.1 hs (ε / 2) (ENNReal.half_pos εpos.ne') with ⟨t, ht, Dst⟩
-    -- cover this space with finitely many balls of radius ε/2
-    rcases EMetric.totallyBounded_iff.1 (isCompact_iff_totallyBounded_isComplete.1 ht.2).1 (ε / 2)
-        (ENNReal.half_pos εpos.ne') with ⟨u, fu, ut⟩
-    refine ⟨u, ⟨fu, fun x hx => ?_⟩⟩
-    -- u : set α, fu : u.finite, ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
-    -- then s is covered by the union of the balls centered at u of radius ε
-    rcases exists_edist_lt_of_hausdorffEDist_lt hx Dst with ⟨z, hz, Dxz⟩
-    rcases mem_iUnion₂.1 (ut hz) with ⟨y, hy, Dzy⟩
-    have : edist x y < ε :=
-      calc
-        edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
-        _ < ε / 2 + ε / 2 := ENNReal.add_lt_add Dxz Dzy
-        _ = ε := ENNReal.add_halves _
-    exact mem_biUnion hy this
+    IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) :=
+  NonemptyCompacts.isClosedEmbedding_toCloseds.isClosed_range
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
 instance instSecondCountableTopology [SecondCountableTopology α] :
@@ -405,9 +376,6 @@ open Metric
 alias NonemptyCompacts.continuous_toCloseds :=
   TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
-@[deprecated (since := "2025-08-20")]
-alias isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
-
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isClosed_subsets_of_isClosed :=
   TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
@@ -439,10 +407,6 @@ alias Closeds.lipschitz_sup := TopologicalSpace.Closeds.lipschitz_sup
 @[deprecated (since := "2026-01-08")]
 alias NonemptyCompacts.isometry_toCloseds :=
   TopologicalSpace.NonemptyCompacts.isometry_toCloseds
-
-@[deprecated (since := "2025-08-20")]
-alias NonemptyCompacts.ToCloseds.isUniformEmbedding :=
-  TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2025-11-19")]
 alias NonemptyCompacts.isUniformEmbedding_toCloseds :=
