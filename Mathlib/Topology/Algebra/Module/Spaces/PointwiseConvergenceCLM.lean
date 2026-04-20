@@ -156,7 +156,7 @@ def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁
     (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
-/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
+/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-\* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)

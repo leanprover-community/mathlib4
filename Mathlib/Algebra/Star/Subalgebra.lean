@@ -13,16 +13,16 @@ public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 /-!
 # Star subalgebras
 
-A `*`-subalgebra is a subalgebra of a `*`-algebra which is closed under `*`.
+A \*-subalgebra is a subalgebra of a \*-algebra which is closed under `*`.
 
-The centralizer of a `*`-closed set is a `*`-subalgebra.
+The centralizer of a \*-closed set is a \*-subalgebra.
 -/
 
 @[expose] public section
 
 universe u v
 
-/-- A `*`-subalgebra is a subalgebra of a `*`-algebra which is closed under `*`. -/
+/-- A \*-subalgebra is a subalgebra of a \*-algebra which is closed under `*`. -/
 structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R] [Semiring A]
     [StarRing A] [Algebra R A] [StarModule R A] : Type v extends Subalgebra R A where
   /-- The `carrier` is closed under the `star` operation. -/
@@ -30,7 +30,7 @@ structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R]
 
 namespace StarSubalgebra
 
-/-- Forgetting that a *-subalgebra is closed under *.
+/-- Forgetting that a \*-subalgebra is closed under \*.
 -/
 add_decl_doc StarSubalgebra.toSubalgebra
 
