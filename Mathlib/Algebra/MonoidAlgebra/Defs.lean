@@ -274,7 +274,7 @@ example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.to
 
 -- Ensure that smul has good defeq properties
 private local instance {α} [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
-example [Monoid A] [SMulZeroClass A R] (a : Units A) (x : R[M]) :
+example [Monoid A] (a : Units A) (x : R[M]) :
     a • x = (a : A) • x := by
   with_reducible_and_instances rfl
 end

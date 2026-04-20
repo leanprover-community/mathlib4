@@ -357,6 +357,16 @@ A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
   mp hf := inv_inv f ▸ hf.inv
   mpr hf := hf.inv
 
+theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
+    (hg : MeromorphicNFAt g x) (hor : g x ≠ 0 ∨ f x ≠ 0) : MeromorphicNFAt (f / g) x := by
+  rw [div_eq_mul_inv]
+  rcases hor with hgne | hfne
+  · have hf := hf.meromorphicNFAt
+    have hgAnalytic : AnalyticAt 𝕜 g x := by grind [meromorphicNFAt_iff_analyticAt_or]
+    have hgInvAnalytic : AnalyticAt 𝕜 g⁻¹ x := hgAnalytic.inv hgne
+    rwa [← meromorphicNFAt_mul_iff_left hgInvAnalytic (inv_ne_zero hgne)] at hf
+  · grind [meromorphicNFAt_mul_iff_right, hg.inv]
+
 /-!
 ### Continuous extension and conversion to normal form
 -/

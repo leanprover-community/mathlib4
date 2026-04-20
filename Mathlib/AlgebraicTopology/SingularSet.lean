@@ -95,9 +95,7 @@ instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
 lemma sSetTopAdj_unit_app_app_down (S : SSet) (m : SimplexCategoryᵒᵖ) (a : S.obj m) :
     ((sSetTopAdj.unit.app S).app m a).down =
       SSet.toTopSimplex.inv.app _ ≫ SSet.toTop.map (SSet.yonedaEquiv.symm a) := by
-  delta sSetTopAdj
-  rw [Presheaf.uliftYonedaAdjunction_unit_app_app]
-  rfl
+  cat_disch
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/
 noncomputable def TopCat.toSSetIsoConst (X : TopCat.{u}) [TotallyDisconnectedSpace X] :
