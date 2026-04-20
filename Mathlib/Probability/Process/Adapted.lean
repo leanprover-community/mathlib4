@@ -21,15 +21,15 @@ some basic facts about them.
   filtration `f` if at each point in time `i`, `u i` is `f i`-measurable
 * `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be strongly adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-strongly measurable
-* `MeasureTheory.IsStronglyProgressive`: a sequence of functions `u` is said to be progressively
-  measurable with respect to a filtration `f` if at each point in time `i`, `u` restricted to
+* `MeasureTheory.IsStronglyProgressive`: a sequence of functions `u` is said to be strongly
+  progressive with respect to a filtration `f` if at each point in time `i`, `u` restricted to
   `Set.Iic i × Ω` is strongly measurable with respect to the product `MeasurableSpace` structure
   where the σ-algebra used for `Ω` is `f i`.
 
 ## Main results
 
 * `StronglyAdapted.isStronglyProgressive_of_continuous`: a continuous strongly adapted process is
-  progressively measurable.
+  strongly progressive.
 
 ## Tags
 
@@ -180,10 +180,10 @@ end StronglyAdapted
 
 variable {β : Type*} [TopologicalSpace β] {u v : ι → Ω → β}
 
-/-- Progressively measurable process. A sequence of functions `u` is said to be progressively
-measurable with respect to a filtration `f` if at each point in time `i`, `u` restricted to
-`Set.Iic i × Ω` is measurable with respect to the product `MeasurableSpace` structure where the
-σ-algebra used for `Ω` is `f i`.
+/-- Strongly progressive process. A sequence of functions `u` is said to be strongly
+progressive with respect to a filtration `f` if at each point in time `i`, `u` restricted to
+`Set.Iic i × Ω` is strongly measurable with respect to the product `MeasurableSpace` structure
+where the σ-algebra used for `Ω` is `f i`.
 The usual definition uses the interval `[0,i]`, which we replace by `Set.Iic i`. We recover the
 usual definition for index types `ℝ≥0` or `ℕ`. -/
 def IsStronglyProgressive [MeasurableSpace ι] (f : Filtration ι m) (u : ι → Ω → β) : Prop :=
@@ -243,7 +243,7 @@ protected theorem div' [Group β] [ContinuousDiv β] (hu : IsStronglyProgressive
     (hv : IsStronglyProgressive f v) : IsStronglyProgressive f fun i ω => u i ω / v i ω := fun i =>
   (hu i).div' (hv i)
 
-/-- The norm of a progressively measurable process is progressively measurable. -/
+/-- The norm of a strongly progressive process is strongly progressive. -/
 protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup β]
     (hu : IsStronglyProgressive f u) :
     IsStronglyProgressive f fun t ω ↦ ‖u t ω‖ := fun t ↦ (hu t).norm
@@ -267,7 +267,7 @@ theorem isStronglyProgressive_of_tendsto [MeasurableSpace ι] [PseudoMetrizableS
     (h_tendsto : Tendsto U atTop (𝓝 u)) : IsStronglyProgressive f u :=
   isStronglyProgressive_of_tendsto' atTop h h_tendsto
 
-/-- A continuous and strongly adapted process is progressively measurable. -/
+/-- A continuous and strongly adapted process is strongly progressive. -/
 theorem StronglyAdapted.isStronglyProgressive_of_continuous [TopologicalSpace ι] [MetrizableSpace ι]
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
     [PseudoMetrizableSpace β] (h : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) :
