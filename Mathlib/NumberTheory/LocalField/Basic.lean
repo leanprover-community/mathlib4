@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 
@@ -156,8 +155,6 @@ section UniformSpace
 
 variable (K : Type*) [Field K] [ValuativeRel K]
   [UniformSpace K] [IsUniformAddGroup K] [IsNonarchimedeanLocalField K]
-
-instance : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).IsRankOneDiscrete := inferInstance
 
 instance : CompleteSpace K :=
   letI : (Valued.v (R := K)).RankOne :=
