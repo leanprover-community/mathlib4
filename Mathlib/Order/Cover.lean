@@ -239,6 +239,10 @@ section Preorder
 variable [Preorder α] [Preorder β] {a b c : α}
 
 @[to_dual self]
+theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
+  not_covBy_iff h
+
+@[to_dual self]
 theorem CovBy.le (h : a ⋖ b) : a ≤ b :=
   h.1.le
 

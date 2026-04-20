@@ -174,6 +174,14 @@ theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
   obtain ⟨b, hb⟩ := this
   exact ⟨b, hb⟩
 
+/-- Given `j < i` with `i` a successor pre-limit, `IsSuccPrelimit.mid` picks an arbitrary element
+strictly between `j` and `i`. -/
+@[to_dual
+/-- Given `i < j` with `i` a predecessor pre-limit, `IsSuccPrelimit.mid` picks an arbitrary element
+strictly between `i` and `j`. -/]
+noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) : Ioo j i :=
+  Classical.indefiniteDescription _ ((not_covBy_iff_nonempty_Ioo hj).mp <| hi j)
+
 @[to_dual]
 theorem _root_.WithTop.isSuccPrelimit_iff [NoMaxOrder α] {x : WithTop α} :
     IsSuccPrelimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccPrelimit y := by
@@ -244,12 +252,6 @@ theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (su
 
 attribute [deprecated IsPredLimit.isMin (since := "2026-03-31")]
 not_isPredLimit_pred_of_not_isMin
-
-/-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
-between `j` and `i`. -/
-noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) :
-    Ioo j i :=
-  Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
 
 section NoMaxOrder
 
@@ -405,15 +407,30 @@ protected theorem IsSuccPrelimit.isMin (h : IsSuccPrelimit a) : IsMin a := fun b
   exact H hc
 
 @[to_dual (attr := simp)]
-theorem isSuccPrelimit_iff : IsSuccPrelimit a ↔ IsMin a :=
+theorem isSuccPrelimit_iff_isMin : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin, IsMin.isSuccPrelimit⟩
 
+@[deprecated (since := "2026-04-19")]
+alias isSuccPrelimit_iff := isSuccPrelimit_iff_isMin
+@[deprecated (since := "2026-04-19")]
+alias isPredPrelimit_iff := isPredPrelimit_iff_isMax
+
 @[to_dual (attr := simp)]
-theorem not_isSuccLimit : ¬ IsSuccLimit a :=
+theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
   fun h ↦ h.not_isMin <| h.isSuccPrelimit.isMin
 
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccLimit := not_isSuccLimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredLimit := not_isPredLimit_of_isPredArchimedean
+
 @[to_dual]
-theorem not_isSuccPrelimit [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+theorem not_isSuccPrelimit_of_isSuccArchimedean [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
+
+@[deprecated (since := "2026-04-19")]
+alias not_isSuccPrelimit := not_isSuccPrelimit_of_isSuccArchimedean
+@[deprecated (since := "2026-04-19")]
+alias not_isPredPrelimit := not_isPredPrelimit_of_isPredArchimedean
 
 end IsSuccArchimedean
 
