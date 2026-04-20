@@ -451,7 +451,7 @@ noncomputable def associatorComponents (X : C) (Y : Fᵒᵖ) :
 noncomputable def associatorComponents' (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y where
   hom := ↾fun x ↦ Quot.mk _ ⟨x.out.2.1.out.1, x.out.2.1.out.2.1,
-      Quot.mk _ ⟨x.out.1, x.out.2.1.out.2.2, x.out.2.2⟩⟩
+    Quot.mk _ ⟨x.out.1, x.out.2.1.out.2.2, x.out.2.2⟩⟩
   inv := ↾fun x ↦ Quot.mk _ ⟨x.out.2.2.out.1,
     Quot.mk _ ⟨x.out.1, x.out.2.1, x.out.2.2.out.2.1⟩, x.out.2.2.out.2.2⟩
   hom_inv_id :=
