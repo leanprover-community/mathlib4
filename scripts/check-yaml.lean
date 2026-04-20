@@ -53,5 +53,5 @@ public unsafe def main : IO Unit := do
   initSearchPath (← findSysroot)
   withImportModules #[`Mathlib, `Archive] ∅ (trustLevel := 1024) fun env => do
     let results ← databases.mapM (fun p ↦ processDb env p)
-    if results.any id then
+    unless results.all id do
       IO.Process.exit 1
