@@ -13,9 +13,10 @@ import Mathlib.Tactic.Order
 /-!
 # The Dedekind completion of the rationals
 
-In Mathlib, the real numbers are defined via equivalence classes of Cauchy sequences. A popular alternative is to instead define them in terms of Dedekind cuts. This file indirectly formalizes that construction, by proving that
-the Dedekind completion of the rationals
-is order isomorphic to the extended reals.
+In Mathlib, the real numbers are defined via equivalence classes of Cauchy sequences.
+A popular alternative is to instead define them in terms of Dedekind cuts.
+This file indirectly formalizes that construction, by proving that the Dedekind completion
+of the rationals is order isomorphic to the extended reals.
 -/
 
 namespace EReal
