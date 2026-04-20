@@ -252,8 +252,7 @@ lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
 
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
-lemma iff_measurable_add_one
-    {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
+lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
     IsStronglyPredictable 𝓕 u ↔
     StronglyMeasurable[𝓕 0] (u 0) ∧ ∀ n, StronglyMeasurable[𝓕 n] (u (n + 1)) :=
   ⟨fun h𝓕 ↦ ⟨h𝓕.progMeasurable.stronglyAdapted 0, h𝓕.measurable_add_one⟩,
