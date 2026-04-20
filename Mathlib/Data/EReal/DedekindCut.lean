@@ -71,7 +71,7 @@ public noncomputable def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
     intro x
     simp only [factorEmbedding_apply, ratEmbedEReal_apply]
     apply sSup_eq_of_forall_le_of_forall_lt_exists_gt
-    · simp
+    · simp [extent_mk]
     · simp only [Set.mem_image, exists_exists_and_eq_and]
       intro w w_lt_x
       obtain ⟨r, w_lt_r, r_lt_x⟩ := exists_rat_btwn_of_lt w_lt_x
