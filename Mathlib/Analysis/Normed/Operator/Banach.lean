@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
@@ -139,7 +140,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
+        _ = 1 / 2 * ‖y‖ := by simp [δ, field]; norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
@@ -187,7 +188,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
     apply le_trans (hg _).2
     calc
-      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := by gcongr; exact hnle n
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
@@ -477,6 +478,16 @@ the space is complete.
 theorem isUnit_iff_isUnit_toLinearMap {f : E →L[𝕜] E} :
     IsUnit f ↔ IsUnit (f : E →ₗ[𝕜] E) :=
   f.isUnit_iff_bijective.trans (Module.End.isUnit_iff _).symm
+
+/--
+The spectrum of a continuous linear map `f` over a Banach space is exactly the spectrum of `f`
+viewed as a mere linear map.
+-/
+theorem spectrum_eq {f : E →L[𝕜] E} :
+    spectrum 𝕜 f = spectrum 𝕜 (f : Module.End 𝕜 E) := by
+  ext μ
+  rw [spectrum.mem_iff, spectrum.mem_iff, ContinuousLinearMap.isUnit_iff_isUnit_toLinearMap]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Intermediate definition used to show

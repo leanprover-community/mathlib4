@@ -26,6 +26,8 @@ noncomputable section
 
 open Complex Filter Function Set TopologicalSpace Topology
 
+open scoped ComplexConjugate
+
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
@@ -123,8 +125,7 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
   let n := Int.floor (z.re / N)
   use -n
   rw [modular_T_zpow_smul z (N * -n)]
-  refine ⟨?_, (by simp only [mul_neg, Int.cast_neg, Int.cast_mul, Int.cast_natCast, vadd_im,
-    le_refl])⟩
+  refine ⟨?_, by simp⟩
   have h : (N * (-n : ℝ) +ᵥ z).re = -N * Int.floor (z.re / N) + z.re := by
     simp only [n, mul_neg, vadd_re, neg_mul]
   norm_cast at *
@@ -185,6 +186,42 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
 
+lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
+  ext
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
+
 end ofComplex
+
+section IsOpenMap
+
+lemma isOpenMap_re : IsOpenMap re :=
+  Complex.isOpenMap_re.comp isOpenEmbedding_coe.isOpenMap
+
+lemma isOpenMap_im : IsOpenMap im :=
+  Complex.isOpenMap_im.comp isOpenEmbedding_coe.isOpenMap
+
+lemma isOpenMap_norm : IsOpenMap (fun τ : ℍ ↦ ‖(τ : ℂ)‖) := by
+  refine .of_nhds_le fun τ U hU ↦ ?_
+  obtain ⟨s, hs, hs'⟩ := Filter.mem_map_iff_exists_image.mp hU
+  simp_rw [← isOpenEmbedding_coe.image_mem_nhds, Metric.mem_nhds_iff] at hs ⊢
+  obtain ⟨ε, hεpos, hεs⟩ := hs
+  refine ⟨ε, hεpos, subset_trans (fun r hr ↦ ?_) hs'⟩
+  have hr' : 0 ≤ r := by
+    by_contra! hr'
+    rw [mem_ball_iff_norm, Real.norm_eq_abs, abs_lt] at hr
+    have : ‖(τ : ℂ)‖ < ε := by linarith
+    have : 0 ∈ Metric.ball (τ : ℂ) ε := by rwa [mem_ball_iff_norm', sub_zero]
+    simpa [UpperHalfPlane.ne_zero] using hεs this
+  have : r / ‖(τ : ℂ)‖ * (τ : ℂ) ∈ Metric.ball (τ : ℂ) ε := by
+    rwa [mem_ball_iff_norm,
+      show r / ‖(τ : ℂ)‖ * (τ : ℂ) - τ = ↑(r / ‖(τ : ℂ)‖ - 1) * (τ : ℂ) by simp; ring,
+      norm_mul, norm_real, ← norm_norm (τ : ℂ), ← norm_mul, sub_mul, norm_norm, one_mul,
+      div_mul_cancel₀ _ (by simpa using τ.ne_zero), ← mem_ball_iff_norm]
+  obtain ⟨ξ, hξs, hξτ⟩ := Set.mem_of_mem_of_subset this hεs
+  use ξ, hξs
+  simp_rw [hξτ, norm_mul, norm_div, norm_real, norm_norm]
+  rw [div_mul_cancel₀ _ (by simpa using τ.ne_zero), Real.norm_of_nonneg hr']
+
+end IsOpenMap
 
 end UpperHalfPlane

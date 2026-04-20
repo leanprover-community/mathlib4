@@ -72,9 +72,6 @@ noncomputable def encard (s : Set α) : ℕ∞ := ENat.card s
 
 @[simp] theorem _root_.ENat.card_coe_set_eq (s : Set α) : ENat.card s = s.encard := rfl
 
-@[deprecated "Use simp" (since := "2025-09-23")]
-theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by simp
-
 theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinset.card := by
   have := h.fintype
   rw [encard, ENat.card_eq_coe_fintype_card, toFinite_toFinset, toFinset_card]
@@ -136,7 +133,6 @@ theorem encard_ne_add_one (a : α) :
   have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
   rwa [encard_singleton, aux, encard_univ] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -331,6 +327,7 @@ theorem encard_eq_add_one_iff {k : ℕ∞} :
   rintro ⟨a, t, h, rfl, rfl⟩
   rw [encard_insert_of_notMem h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every set is either empty, infinite, or can have its `encard` reduced by a removal. Intended
   for well-founded induction on the value of `encard`. -/
 theorem eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt (s : Set α) :
@@ -877,6 +874,8 @@ theorem ncard_range_of_injective (hf : Function.Injective f) :
     (range f).ncard = Nat.card α := by
   rw [← image_univ, ncard_image_of_injective univ hf, ncard_univ]
 
+theorem BijOn.ncard_eq {t : Set β} (h : Set.BijOn f s t) : s.ncard = t.ncard := ncard_congr' h.equiv
+
 /-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
@@ -966,7 +965,6 @@ theorem ncard_union_eq (h : Disjoint s t) (hs : s.Finite := by toFinite_tac)
   to_encard_tac
   rw [hs.cast_ncard_eq, ht.cast_ncard_eq, (hs.union ht).cast_ncard_eq, encard_union_eq h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ncard_union_eq_iff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard ↔ Disjoint s t := by
   rw [← ncard_union_add_ncard_inter s t hs ht, left_eq_add,
@@ -1270,6 +1268,13 @@ theorem ncard_eq_four : s.ncard = 4 ↔
     ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   rw [← encard_eq_four, ncard_def]
   simp
+
+theorem ncard_sumEquiv_symm_apply {α : Type*} (s : Set α) :
+    (Set.sumEquiv.symm (s, s)).ncard = s.ncard + s.ncard := by
+  by_cases hs : s.Finite
+  · simp [(ncard_union_eq_iff (.image _ hs) (.image _ hs)).2 disjoint_image_inl_image_inr,
+      ncard_image_of_injective _ Sum.inl_injective, ncard_image_of_injective _ Sum.inr_injective]
+  · simp [(infinite_union.2 <| .inl <| .image Sum.inl_injective.injOn hs).ncard, Infinite.ncard hs]
 
 end ncard
 end Set

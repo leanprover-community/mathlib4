@@ -122,7 +122,6 @@ its maximal ideal. -/
 abbrev IsWeierstrassDivision [IsLocalRing A] : Prop :=
   f.IsWeierstrassDivisionAt g q r (IsLocalRing.maximalIdeal A)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isWeierstrassDivisionAt_zero : IsWeierstrassDivisionAt 0 g 0 0 I := by
   constructor
   · rw [Polynomial.degree_zero]
@@ -133,7 +132,6 @@ variable {f g q r I}
 
 namespace IsWeierstrassDivisionAt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
     {i : ℕ} (hi : i < (g.map (Ideal.Quotient.mk I)).order.toNat) :
     coeff i (f - r : A⟦X⟧) ∈ I := by
@@ -144,14 +142,12 @@ theorem coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
   have := coeff_of_lt_order_toNat _ (lt_of_le_of_lt hj hi)
   rwa [coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem add {f' q' r'} (H : f.IsWeierstrassDivisionAt g q r I)
     (H' : f'.IsWeierstrassDivisionAt g q' r' I) :
     (f + f').IsWeierstrassDivisionAt g (q + q') (r + r') I :=
   ⟨(Polynomial.degree_add_le _ _).trans_lt (sup_lt_iff.2 ⟨H.degree_lt, H'.degree_lt⟩), by
     rw [H.eq_mul_add, H'.eq_mul_add, Polynomial.coe_add]; ring⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul (H : f.IsWeierstrassDivisionAt g q r I) (a : A) :
     (a • f).IsWeierstrassDivisionAt g (a • q) (a • r) I :=
   ⟨(Polynomial.degree_smul_le a _).trans_lt H.degree_lt, by
@@ -187,10 +183,9 @@ theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
     (hg : g.map (IsLocalRing.residue A) ≠ 0) : g.IsWeierstrassDivisor := by
   rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.notMem_maximalIdeal]
   have h := coeff_order hg
-  contrapose! h
+  contrapose h
   rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Polynomial.IsDistinguishedAt.isWeierstrassDivisorAt {g : A[X]} {I : Ideal A}
     (H : g.IsDistinguishedAt I) (hI : I ≠ ⊤) : IsWeierstrassDivisorAt g I := by
   have : g.natDegree = _ := congr(ENat.toNat $(H.coe_natDegree_eq_order_map g 1
@@ -229,7 +224,6 @@ noncomputable def seq (H : g.IsWeierstrassDivisorAt I) (f : A⟦X⟧) : ℕ → 
 
 variable (a : A) (f f' : A⟦X⟧)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk I)).order.toNat) :
     coeff i (f - g * H.seq f k) ∈ I ^ k := by
   induction k generalizing hi i with
@@ -269,7 +263,6 @@ theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
 @[simp]
 theorem seq_zero : H.seq f 0 = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem seq_one : H.seq f 1 = (PowerSeries.mk fun i ↦ coeff
     (i + (g.map (Ideal.Quotient.mk I)).order.toNat) f) * H.isUnit_shift.unit⁻¹ := by
   simp_rw [seq, mul_zero, zero_add, sub_zero]
@@ -301,7 +294,6 @@ theorem coeff_div_sub_seq_mem [IsPrecomplete I A] (k i : ℕ) :
 noncomputable def mod [IsPrecomplete I A] : A[X] :=
   (f - g * H.div f).trunc (g.map (Ideal.Quotient.mk I)).order.toNat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the ring is `I`-adic complete, then `g` can be used as a divisor in Weierstrass division. -/
 theorem isWeierstrassDivisionAt_div_mod [IsAdicComplete I A] :
     f.IsWeierstrassDivisionAt g (H.div f) (H.mod f) I := by
@@ -322,7 +314,6 @@ theorem isWeierstrassDivisionAt_div_mod [IsAdicComplete I A] :
     exact Ideal.sub_mem _ (H.coeff_seq_mem f k (not_lt.1 hi)) <|
       coeff_mul_mem_ideal_of_coeff_right_mem_ideal' (H.coeff_div_sub_seq_mem f k) i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `g * q = r` for some power series `q` and some polynomial `r` whose degree is `< n`,
 then `q` and `r` are all zero. This implies the uniqueness of Weierstrass division. -/
 theorem eq_zero_of_mul_eq [IsHausdorff I A]
@@ -363,7 +354,6 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
     refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal' (fun i ↦ ?_) ih _
     simp_rw [Polynomial.coeff_coe, g.coeff_trunc_order_mem]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `g * q + r = g * q' + r'` for some power series `q`, `q'` and some polynomials `r`, `r'`
 whose degrees are `< n`, then `q = q'` and `r = r'` are all zero.
 This implies the uniqueness of Weierstrass division. -/
@@ -393,7 +383,6 @@ theorem div_smul [IsAdicComplete I A] : H.div (a • f) = a • H.div f := by
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
     (H2.eq_mul_add.symm.trans H1.eq_mul_add)).1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem div_zero [IsAdicComplete I A] : H.div 0 = 0 := by
   simpa using H.div_smul 0 0
@@ -412,12 +401,10 @@ theorem mod_smul [IsAdicComplete I A] : H.mod (a • f) = a • H.mod f := by
   exact (H.eq_of_mul_add_eq_mul_add H2.degree_lt H1.degree_lt
     (H2.eq_mul_add.symm.trans H1.eq_mul_add)).2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
   simpa using H.mod_smul 0 0
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The remainder map `PowerSeries.IsWeierstrassDivisorAt.mod` induces a linear map
 `A⟦X⟧ / (g) →ₗ[A] A[X]`. -/
 noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ[A] A[X] where
@@ -437,24 +424,20 @@ noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ
     obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
     exact H.mod_smul a f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mod'_mk_eq_mod [IsAdicComplete I A] {f : A⟦X⟧} :
     H.mod' (Ideal.Quotient.mk _ f) = H.mod f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_coe_eq_zero [IsAdicComplete I A] {r : A[X]}
     (hr : r.degree < (g.map (Ideal.Quotient.mk I)).order.toNat) : H.div r = 0 := by
   obtain ⟨h1, h2⟩ := H.isWeierstrassDivisionAt_div_mod r
   exact (H.eq_of_mul_add_eq_mul_add (q := H.div r) (q' := 0) h1 hr (by simpa using h2.symm)).1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mod_coe_eq_self [IsAdicComplete I A] {r : A[X]}
     (hr : r.degree < (g.map (Ideal.Quotient.mk I)).order.toNat) : H.mod r = r := by
   obtain ⟨h1, h2⟩ := H.isWeierstrassDivisionAt_div_mod r
   exact (H.eq_of_mul_add_eq_mul_add (q := H.div r) (q' := 0) h1 hr (by simpa using h2.symm)).2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_mod'_eq_self [IsAdicComplete I A] {f : A⟦X⟧ ⧸ Ideal.span {g}} :
     Ideal.Quotient.mk _ (H.mod' f : A⟦X⟧) = f := by
@@ -470,7 +453,6 @@ section Equiv
 variable {g : A[X]} {I : Ideal A} (H : g.IsDistinguishedAt I) [IsAdicComplete I A]
 include H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A distinguished polynomial `g` induces a natural isomorphism `A[X] / (g) ≃ₐ[A] A⟦X⟧ / (g)`. -/
 @[simps! apply symm_apply]
 noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
@@ -494,7 +476,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
-      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div _ H.monic]; ring⟩
+      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
       convert H.degree_eq_coe_lift_order_map g 1
         (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
@@ -615,14 +597,12 @@ theorem IsWeierstrassDivision.unique [IsAdicComplete (IsLocalRing.maximalIdeal A
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem add_weierstrassDiv [IsAdicComplete (IsLocalRing.maximalIdeal A) A] :
     (f + f') /ʷ g = f /ʷ g + f' /ʷ g := by
   simp_rw [weierstrassDiv]
   split_ifs <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smul_weierstrassDiv [IsAdicComplete (IsLocalRing.maximalIdeal A) A] :
     (a • f) /ʷ g = a • (f /ʷ g) := by
@@ -682,7 +662,6 @@ namespace IsWeierstrassFactorizationAt
 variable {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} {I : Ideal A} (H : g.IsWeierstrassFactorizationAt f h I)
 include H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠ 0 := by
   have := Ideal.Quotient.nontrivial_iff.mpr hI
   rw [congr(map (Ideal.Quotient.mk I) $(H.eq_mul)), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
@@ -693,7 +672,7 @@ theorem degree_eq_coe_lift_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.degree = (g.map (Ideal.Quotient.mk I)).order.lift
       (order_finite_iff_ne_zero.2 (H.map_ne_zero_of_ne_top hI)) := by
   refine H.isDistinguishedAt.degree_eq_coe_lift_order_map g h ?_ H.eq_mul
-  contrapose! hI
+  contrapose hI
   exact Ideal.eq_top_of_isUnit_mem _ hI (isUnit_iff_constantCoeff.1 H.isUnit)
 
 theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
@@ -702,7 +681,6 @@ theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
     ENat.lift_eq_toNat_of_lt_top]
   exact WithBot.unbotD_coe _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `g = f * h` is a Weierstrass factorization, then there is a
 natural isomorphism `A[X] / (f) ≃ₐ[A] A⟦X⟧ / (g)`. -/
 @[simps! apply]
@@ -711,7 +689,6 @@ noncomputable def algEquivQuotient [IsAdicComplete I A] :
   H.isDistinguishedAt.algEquivQuotient.trans <| Ideal.quotientEquivAlgOfEq A <|
     by rw [H.eq_mul, Ideal.span_singleton_mul_right_unit H.isUnit]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivQuotient_symm_apply [IsAdicComplete I A] (x : A⟦X⟧ ⧸ Ideal.span {g}) :
     H.algEquivQuotient.symm x = Ideal.Quotient.mk _
@@ -719,13 +696,11 @@ theorem algEquivQuotient_symm_apply [IsAdicComplete I A] (x : A⟦X⟧ ⧸ Ideal
         (by rw [H.eq_mul, Ideal.span_singleton_mul_right_unit H.isUnit]) x) := by
   simp [algEquivQuotient]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul {g' : A⟦X⟧} {f' : A[X]} {h' : A⟦X⟧} (H' : g'.IsWeierstrassFactorizationAt f' h' I) :
     (g * g').IsWeierstrassFactorizationAt (f * f') (h * h') I :=
   ⟨H.isDistinguishedAt.mul H'.isDistinguishedAt, H.isUnit.mul H'.isUnit, by
     rw [H.eq_mul, H'.eq_mul, Polynomial.coe_mul]; ring⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smul {a : A} (ha : IsUnit a) : (a • g).IsWeierstrassFactorizationAt f (a • h) I := by
   refine ⟨H.isDistinguishedAt, ?_, ?_⟩
   · rw [Algebra.smul_def]
@@ -771,10 +746,9 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]
       refine (Finset.antidiagonal.fst_le hp).lt_of_ne ?_
-      contrapose! hnotMem
+      contrapose hnotMem
       rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsWeierstrassDivision.isWeierstrassFactorization
     {g q : A⟦X⟧} {r : A[X]} (hg : g.map (IsLocalRing.residue A) ≠ 0)
     (H : (X ^ (g.map (IsLocalRing.residue A)).order.toNat).IsWeierstrassDivision g q r) :
@@ -797,7 +771,6 @@ theorem IsWeierstrassDivision.isWeierstrassFactorization
     rw [add_mul, mul_assoc, IsUnit.mul_val_inv, mul_one, ← sub_eq_iff_eq_add] at this
     simp_rw [← this, f, Polynomial.coe_sub, Polynomial.coe_pow, Polynomial.coe_X, sub_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsWeierstrassFactorization.isWeierstrassDivision
     {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} (H : g.IsWeierstrassFactorization f h) :
     (X ^ (g.map (IsLocalRing.residue A)).order.toNat).IsWeierstrassDivision g ↑H.isUnit.unit⁻¹
@@ -880,7 +853,6 @@ theorem IsWeierstrassFactorization.unique
     f = g.weierstrassDistinguished hg ∧ h = g.weierstrassUnit hg :=
   H.elim (g.isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem weierstrassDistinguished_mul (hg : (g * g').map (IsLocalRing.residue A) ≠ 0) :
     (g * g').weierstrassDistinguished hg =
@@ -893,7 +865,6 @@ theorem weierstrassDistinguished_mul (hg : (g * g').map (IsLocalRing.residue A) 
   have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
   exact (H''.elim (H.mul H')).1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem weierstrassUnit_mul (hg : (g * g').map (IsLocalRing.residue A) ≠ 0) :
     (g * g').weierstrassUnit hg =
@@ -906,7 +877,6 @@ theorem weierstrassUnit_mul (hg : (g * g').map (IsLocalRing.residue A) ≠ 0) :
   have H'' := (g * g').isWeierstrassFactorization_weierstrassDistinguished_weierstrassUnit hg
   exact (H''.elim (H.mul H')).2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem weierstrassDistinguished_smul (hg : (a • g).map (IsLocalRing.residue A) ≠ 0) :
     (a • g).weierstrassDistinguished hg =
@@ -917,7 +887,6 @@ theorem weierstrassDistinguished_smul (hg : (a • g).map (IsLocalRing.residue A
   have ha : IsLocalRing.residue A a ≠ 0 := fun h ↦ hg (by simp [Algebra.smul_def, h])
   exact (H'.elim (H.smul (by simpa using ha))).1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem weierstrassUnit_smul (hg : (a • g).map (IsLocalRing.residue A) ≠ 0) :
     (a • g).weierstrassUnit hg =

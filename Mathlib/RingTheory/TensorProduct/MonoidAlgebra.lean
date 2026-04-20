@@ -26,7 +26,6 @@ namespace MonoidAlgebra
 variable {R M S A B : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring A] [CommSemiring B]
 variable [Algebra R S] [Algebra R A] [Algebra R B] [CommMonoid M]
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: Cannot be additivised automatically because of the use of `Multiplicative`
 -- in `AddMonoidAlgebra.liftNCAlgHom` and `of`
 /-- Implementation detail. -/
@@ -56,7 +55,6 @@ lemma tensorEquiv.invFun_tmul (a : A) (m : M) (b : B) :
     tensorEquiv.invFun (single m (a ⊗ₜ[R] b)) = a ⊗ₜ single m b := by
   simp [tensorEquiv.invFun]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A B) in
 /-- The base change of `B[M]` to an `R`-algebra `A` is isomorphic to `(A ⊗[R] B)[M]`
 as an `A`-algebra. -/
@@ -67,42 +65,37 @@ noncomputable def tensorEquiv : A ⊗[R] B[M] ≃ₐ[A] (A ⊗[R] B)[M] := by
   refine .ofAlgHom
     (Algebra.TensorProduct.lift
       ((IsScalarTower.toAlgHom A (A ⊗[R] B) _).comp Algebra.TensorProduct.includeLeft)
-      (mapRangeAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
+      (mapAlgHom _ Algebra.TensorProduct.includeRight) fun p n ↦ .all ..)
       tensorEquiv.invFun ?_ ?_
   · apply AlgHom.toLinearMap_injective
     ext
     simp
   · ext : 1
-    · ext
     apply AlgHom.toLinearMap_injective
     ext
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := A B) (attr := simp)]
 lemma tensorEquiv_tmul (a : A) (p : B[M]) :
-    tensorEquiv R A B (a ⊗ₜ p) = a • mapRangeAlgHom M Algebra.TensorProduct.includeRight p := by
+    tensorEquiv R A B (a ⊗ₜ p) = a • mapAlgHom M Algebra.TensorProduct.includeRight p := by
   simp [tensorEquiv, Algebra.smul_def]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R A B) (attr := simp)]
 lemma tensorEquiv_symm_single (m : M) (a : A) (b : B) :
     (tensorEquiv R A B).symm (single m (a ⊗ₜ b)) = a ⊗ₜ single m b := tensorEquiv.invFun_tmul ..
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/
 @[to_additive (dont_translate := R A)
 /-- The base change of `R[M]` to an `R`-algebra `A` is isomorphic to `A[M]` as an `A`-algebra. -/]
 noncomputable def scalarTensorEquiv : A ⊗[R] R[M] ≃ₐ[A] A[M] :=
-  (tensorEquiv ..).trans <| mapRangeAlgEquiv A M <| Algebra.TensorProduct.rid R A A
+  (tensorEquiv ..).trans <| mapAlgEquiv A M <| Algebra.TensorProduct.rid R A A
 
 @[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_tmul (a : A) (p : R[M]) :
-    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapRangeAlgHom M (Algebra.ofId ..) p := by
+    scalarTensorEquiv R A (a ⊗ₜ p) = a • mapAlgHom M (Algebra.ofId ..) p := by
   ext; simp [scalarTensorEquiv]; simp [Algebra.smul_def, Algebra.commutes]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R A) (attr := simp)]
 lemma scalarTensorEquiv_symm_single (m : M) (a : A) :
     (scalarTensorEquiv R A).symm (single m a) = a ⊗ₜ single m 1 := by simp [scalarTensorEquiv]
@@ -111,11 +104,10 @@ open scoped AlgebraMonoidAlgebra
 
 variable [Algebra S B] [Algebra A B] [IsScalarTower R A B] [IsScalarTower R S B]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R S B)]
 instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
   out := .of_equiv ((tensorEquiv (M := M) R S A).trans <|
-      mapRangeAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
+      mapAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
 @[to_additive (dont_translate := R)]

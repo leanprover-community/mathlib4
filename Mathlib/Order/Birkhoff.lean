@@ -29,7 +29,7 @@ If `α` is moreover a distributive lattice:
   elements.
 * `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
   powerset lattice of its irreducible elements.
-* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinet`: Same as the previous two, but bundled as
+* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinset`: Same as the previous two, but bundled as
   an injective lattice homomorphism.
 * `exists_birkhoff_representation`: `α` embeds into some powerset algebra. You should prefer using
   this over the explicit Birkhoff embedding because the Birkhoff embedding is littered with
@@ -227,7 +227,6 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
   simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
@@ -25,7 +26,11 @@ open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C]
+
+section
+
+variable [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
@@ -41,7 +46,6 @@ noncomputable instance : Abelian (HomologicalComplex C c) where
 
 variable (S : ShortComplex (HomologicalComplex C c))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exact_of_degreewise_exact (hS : ∀ (i : ι), (S.map (eval C c i)).Exact) :
     S.Exact := by
   simp only [ShortComplex.exact_iff_isZero_homology] at hS ⊢
@@ -72,4 +76,57 @@ lemma shortExact_iff_degreewise_shortExact :
     exact hS.map (eval C c i)
   · exact shortExact_of_degreewise_shortExact S
 
+end
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroObject C] [DecidableEq ι]
+
+instance (i j : ι) (I : C) [Injective I] :
+    Injective (((single C c i).obj I).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).injective
+
+instance (i j : ι) (P : C) [Projective P] :
+    Projective (((single C c i).obj P).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).projective
+
+end
+
 end HomologicalComplex
+
+namespace CategoryTheory
+
+open Limits
+
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
+
+variable (F : C ⥤ D) {ι : Type*} (c : ComplexShape ι)
+
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasLimitsOfShape J C]
+    [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesLimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesLimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
+
+instance [F.PreservesZeroMorphisms] {J : Type*} [Category* J] [HasColimitsOfShape J C]
+    [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J (F.mapHomologicalComplex c) :=
+  HomologicalComplex.preservesColimitsOfShape_of_eval _ (fun i ↦
+    inferInstanceAs <| PreservesColimitsOfShape J <| HomologicalComplex.eval C c i ⋙ F)
+
+instance [HasFiniteLimits C] [F.PreservesZeroMorphisms] [PreservesFiniteLimits F] :
+    PreservesFiniteLimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
+
+instance [HasFiniteColimits C] [F.PreservesZeroMorphisms] [PreservesFiniteColimits F] :
+    PreservesFiniteColimits (F.mapHomologicalComplex c) :=
+  ⟨by intros; infer_instance⟩
+
+end CategoryTheory

@@ -120,7 +120,7 @@ The following is the second equivalent characterization of linear disjointness:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
-The results with name containing "of_commute" also have corresponding specialized versions
+The results with name containing "`of_commute`" also have corresponding specialized versions
 assuming `S` is commutative.
 
 ## Tags
@@ -338,7 +338,6 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
   rw [LinearIndependent] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (m : Basis ι R M)
@@ -358,7 +357,6 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
   rw [LinearIndependent] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (n : Basis ι R N)

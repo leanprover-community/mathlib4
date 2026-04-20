@@ -106,7 +106,6 @@ theorem archimedeanClassMk_of_mem_stratum {a : M}
     rw [← u.ball_sup_stratum_eq c]
     exact Submodule.mem_sup_right ha
 
-set_option backward.isDefEq.respectTransparency false in
 instance archimedean_stratum : Archimedean (u.stratum c) := by
   apply ArchimedeanClass.archimedean_of_mk_eq_mk
   intro a ha b hb
@@ -163,7 +162,6 @@ theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   ext1 c
   simpa using le_iSup _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInternal_stratum' : DirectSum.IsInternal u.stratum' := by
   apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top u.iSupIndep_stratum'
   apply Submodule.map_injective_of_injective u.baseDomain.subtype_injective
@@ -204,7 +202,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
     seed.hahnCoeff x c = seed.coeff c (f c) := by
   suffices seed.baseDomain.subtype.submoduleComap
       (seed.stratum c) (DirectSum.decompose seed.stratum' x c) = f c by
-    simp [Seed.hahnCoeff, coeff', this]
+    simp [Seed.hahnCoeff, coeff', decomposeLinearEquiv_apply, this]
   have hxm {c : FiniteArchimedeanClass M} (x : seed.stratum c) : x.val ∈ seed.baseDomain := by
     apply Set.mem_of_mem_of_subset x.prop
     simpa using le_iSup _ _
@@ -611,7 +609,7 @@ theorem eval_smul [IsOrderedAddMonoid R] [Archimedean R] (k : K) (x : M) :
       exact Submodule.smul_mem _ _ hy
     simp [f.evalCoeff_eq hy, f.evalCoeff_eq hy', LinearPMap.map_smul]
   have h' : ¬∃ y : f.val.domain, y.val - k • x ∈ ball K c := by
-    contrapose! h
+    contrapose h
     obtain ⟨y, hy⟩ := h
     use k⁻¹ • y
     have heq : (k⁻¹ • y).val - x = k⁻¹ • (y.val - k • x) := by
@@ -646,7 +644,7 @@ theorem archimedeanClassMk_le_of_eval_eq [IsOrderedAddMonoid R] [Archimedean R] 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem val_sub_ne_zero {x : M} (hx : x ∉ f.val.domain) (y : f.val.domain) : y.val - x ≠ 0 := by
-  contrapose! hx
+  contrapose hx
   obtain rfl : x = y.val := (sub_eq_zero.mp hx).symm
   simp
 
@@ -772,6 +770,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
       exact (f.coeff_eq_of_mem y.val (by simp) hzy (by simp)).le
   exact hieq ▸ hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extend `f` to a larger partial linear map by adding a new `x`. -/
 noncomputable
 def extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :
@@ -782,7 +781,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem extendFun_strictMono [IsOrderedAddMonoid R] [Archimedean R] {x : M}
     (hx : x ∉ f.val.domain) : StrictMono (f.extendFun hx) := by
   have hx' {c : K} (hc : c ≠ 0) : -c • x ∉ f.val.domain := by
-    contrapose! hx
+    contrapose hx
     rwa [neg_smul, neg_mem_iff, Submodule.smul_mem_iff _ hc] at hx
   -- only need to prove `0 < f v` for `0 < v = z - y`
   intro y z hyz
@@ -849,7 +848,7 @@ theorem truncLT_eval_mem_range_extendFun [IsOrderedAddMonoid R] [Archimedean R] 
     · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_lt hdc]
     rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc, eval, ofLex_toLex]
     apply f.evalCoeff_eq_zero
-    contrapose! h
+    contrapose h
     obtain ⟨y, hy⟩ := h
     exact ⟨y, Set.mem_of_mem_of_subset hy (by simpa using (ball_strictAnti K).antitone hdc)⟩
 

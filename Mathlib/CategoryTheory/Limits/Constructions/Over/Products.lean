@@ -44,7 +44,7 @@ explicitly as the pullbacks and pushouts of binary (co)fans in the base category
 For `Over X`, one could construct these binary products from the general theory of arbitrary
 products from the next section, i.e.
 ```
-(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
+(Cone.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
 ```
 but this gives worse defeqs.
@@ -106,11 +106,7 @@ def IsLimit.pullbackConeEquivBinaryFanInverse {c : BinaryFan (Over.mk f) (.mk g)
     <| fun s m hm₁ hm₂ ↦ by
       change PullbackCone f g at s
       have := hc.uniq (pullbackConeEquivBinaryFan.functor.obj s) (Over.homMk m <| by
-        have := c.fst.w
-        simp only [pair_obj_left, Over.mk_left, Functor.id_obj, pair_obj_right,
-          Functor.const_obj_obj, Over.mk_hom, Functor.id_map, CostructuredArrow.right_eq_id]
-          at hm₁ this
-        simp [← hm₁, this])
+        simp [← hm₁, dsimp% c.fst.w])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).left)
 
@@ -126,14 +122,14 @@ def pushoutCoconeEquivBinaryCofan : PushoutCocone f g ≌ BinaryCofan (Under.mk 
   functor.obj c := .mk (Under.homMk (U := .mk f) (V := .mk (f ≫ c.inl)) c.inl rfl)
       (Under.homMk (U := .mk g) (V := .mk (f ≫ c.inl)) c.inr c.condition.symm)
   functor.map {c₁ c₂} a := { hom := Under.homMk a.hom, w := by rintro (_ | _) <;> cat_disch }
-  inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.symm.trans c.inr.w)
+  inverse.obj c := .mk c.inl.right c.inr.right (c.inl.w.trans c.inr.w.symm)
   inverse.map {c₁ c₂} a := {
     hom := a.hom.right
     w := by rintro (_ | _ | _) <;> simp [← Under.comp_right]
   }
   unitIso := NatIso.ofComponents (fun c ↦ c.eta) (fun f ↦ by ext; simp)
   counitIso := NatIso.ofComponents (fun X ↦ BinaryCofan.ext (Under.isoMk (.refl _)
-    (by dsimp; simpa using X.inl.w.symm)) (by ext; simp) (by ext; simp))
+    (by dsimp; simpa using X.inl.w)) (by ext; simp) (by ext; simp))
     (by intros; ext; simp)
   functor_unitIso_comp c := by ext; simp
 
@@ -147,8 +143,8 @@ def IsColimit.pushoutCoconeEquivBinaryCofanFunctor {c : PushoutCocone f g} (hc :
     IsColimit <| pushoutCoconeEquivBinaryCofan.functor.obj c :=
   BinaryCofan.isColimitMk
     (fun s ↦ Under.homMk
-      (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.symm.trans s.inr.w))) <| by
-        simpa using s.inl.w.symm)
+      (hc.desc (PushoutCocone.mk s.inl.right s.inr.right (s.inl.w.trans s.inr.w.symm))) <| by
+        simpa using s.inl.w)
     (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _)) (fun s ↦ Under.UnderMorphism.ext (hc.fac _ _))
       fun s m e₁ e₂ ↦ by
     ext1
@@ -163,17 +159,14 @@ colimit. -/
 def IsColimit.pushoutCoconeEquivBinaryCofanInverse {c : BinaryCofan (Under.mk f) (.mk g)}
     (hc : IsColimit c) : IsColimit <| pushoutCoconeEquivBinaryCofan.inverse.obj c :=
   PushoutCocone.IsColimit.mk
-    (c.inl.w.symm.trans c.inr.w)
+    (c.inl.w.trans c.inr.w.symm)
     (fun s ↦ (hc.desc <| pushoutCoconeEquivBinaryCofan.functor.obj s).right)
     (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
     (fun s ↦ by simpa only using congr($(hc.fac _ _).right))
     <| fun s m hm₁ hm₂ ↦ by
       change PushoutCocone f g at s
       have := hc.uniq (pushoutCoconeEquivBinaryCofan.functor.obj s) (Under.homMk m <| by
-        have := c.inl.w
-        simp only [pair_obj_left, Functor.const_obj_obj, Functor.id_obj, StructuredArrow.left_eq_id,
-          Under.mk_right, Under.mk_hom, Functor.id_map, pair_obj_right] at this hm₁
-        simp [← hm₁, ← Category.assoc, ← this])
+        simp [← hm₁, dsimp% c.inl.w_assoc])
         (by rintro (_ | _) <;> ext <;> simpa)
       exact congr(($this).right)
 
@@ -300,18 +293,18 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := 𝟙 _
       inv := 𝟙 _ }
     (by rintro (j | j) <;> cat_disch)
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
---       `Cones.ext`?
+--       `Cone.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps!]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents fun _ => Cones.ext
+  NatIso.ofComponents fun _ => Cone.ext
     { hom := Over.homMk (𝟙 _)
       inv := Over.homMk (𝟙 _) }
 
@@ -366,14 +359,8 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
           π :=
             { app := fun p => p.as.elim } }
       isLimit :=
-        { lift := fun s => Over.homMk s.pt.hom
-          fac := fun _ j => j.as.elim
-          uniq := fun s m _ => by
-            simp only
-            ext
-            rw [Over.homMk_left _]
-            have := m.w
-            dsimp at this
-            rwa [Category.comp_id, Category.comp_id] at this } }
+        { lift s := Over.homMk s.pt.hom
+          fac _ j := j.as.elim
+          uniq s m _ := by ext; simpa using m.w } }
 
 end CategoryTheory.Over

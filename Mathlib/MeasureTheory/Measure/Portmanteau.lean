@@ -395,7 +395,6 @@ section PseudoMetricSpace
 
 variable {Ω : Type*} [PseudoMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) {a b : ℝ}
     (hab : a < b) : ∃ r ∈ Ioo a b, μ (frontier (Metric.thickening r s)) = 0 := by
   have mbles : ∀ r : ℝ, MeasurableSet (frontier (Metric.thickening r s)) :=
@@ -550,7 +549,6 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
   refine tendsto_integral_of_forall_integral_le_liminf_integral fun f f_nn ↦ ?_
   exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
 condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Superseded by `tendsto_of_forall_isOpen_le_liminf` which works for all countably
@@ -619,7 +617,6 @@ lemma tendsto_of_forall_isClosed_limsup_le'
   refine tendsto_of_forall_isOpen_le_liminf' ?_
   rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure Ω}
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
     Tendsto μs atTop (𝓝 μ) := by
@@ -634,7 +631,6 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
   convert obs
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
 condition `limsup μsₙ(F) ≤ μ(F)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Formulated here for countably generated filters. -/
@@ -798,7 +794,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     simp [accumulate_def]
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the

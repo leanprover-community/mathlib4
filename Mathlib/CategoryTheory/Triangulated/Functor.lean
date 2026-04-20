@@ -78,6 +78,7 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
@@ -128,7 +129,7 @@ def mapTriangleRotateIso :
 set_option backward.isDefEq.respectTransparency false in
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
-noncomputable def mapTriangleInvRotateIso [F.Additive] :
+noncomputable def mapTriangleInvRotateIso :
     F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents

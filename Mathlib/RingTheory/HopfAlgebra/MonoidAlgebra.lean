@@ -46,7 +46,6 @@ lemma antipode_single (g : G) (a : A) :
     antipode R (single g a) = single g⁻¹ (antipode R a) := by
   simp [MonoidAlgebra, antipode]
 
-set_option backward.isDefEq.respectTransparency false in
 open Coalgebra in
 @[to_additive (dont_translate := R A)]
 instance instHopfAlgebra : HopfAlgebra R A[G] where
