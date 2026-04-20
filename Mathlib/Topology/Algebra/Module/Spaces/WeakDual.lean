@@ -61,8 +61,48 @@ functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
-deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
+deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
   FunLike, ContinuousLinearMapClass
+
+namespace WeakDual
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
+instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
+instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
+
+instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
+  ⟨fun m =>
+    continuous_induced_rng.2 <| (WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).const_smul m⟩
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it continuously acts on `WeakDual 𝕜 E`. -/
+instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) :=
+  ⟨continuous_induced_rng.2 <|
+      continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
+
+/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
+multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
+instance (priority := 950) instModule'
+    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
+    Module R (WeakDual 𝕜 E) :=
+  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
+
+instance instModule : Module 𝕜 (WeakDual 𝕜 E) := inferInstance
+
+end WeakDual
 
 namespace StrongDual
 
@@ -105,35 +145,6 @@ theorem coe_toStrongDual (x' : WeakDual 𝕜 E) : (toStrongDual x' : E → 𝕜)
 theorem toStrongDual_inj (x' y' : WeakDual 𝕜 E) : toStrongDual x' = toStrongDual y' ↔ x' = y' :=
   (LinearEquiv.injective toStrongDual).eq_iff
 
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
-instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
-instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
-
-/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
-multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
-instance instModule' (R) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
-    Module R (WeakDual 𝕜 E) :=
-  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
-
-instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
-  ⟨fun m =>
-    continuous_induced_rng.2 <| (WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).const_smul m⟩
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it continuously acts on `WeakDual 𝕜 E`. -/
-instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) :=
-  ⟨continuous_induced_rng.2 <|
-      continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
 
 theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   continuous_induced_dom

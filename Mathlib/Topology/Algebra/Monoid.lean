@@ -157,25 +157,25 @@ theorem Filter.TendstoNhdsWithinIoi.const_mul [PosMulStrictMono 𝕜] (h : Tends
     Tendsto (fun a => b * f a) l (𝓝[>] (b * c)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).const_mul b) <|
-    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Ioi] at *; gcongr; assumption
+    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Ioi] at *; gcongr
 
 theorem Filter.TendstoNhdsWithinIio.const_mul [PosMulStrictMono 𝕜] (h : Tendsto f l (𝓝[<] c)) :
     Tendsto (fun a => b * f a) l (𝓝[<] (b * c)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).const_mul b) <|
-    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Iio] at *; gcongr; assumption
+    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Iio] at *; gcongr
 
 theorem Filter.TendstoNhdsWithinIoi.mul_const [MulPosStrictMono 𝕜] (h : Tendsto f l (𝓝[>] c)) :
     Tendsto (fun a => f a * b) l (𝓝[>] (c * b)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).mul_const b) <|
-    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Ioi] at *; gcongr; assumption
+    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Ioi] at *; gcongr
 
 theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] (h : Tendsto f l (𝓝[<] c)) :
     Tendsto (fun a => f a * b) l (𝓝[<] (c * b)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).mul_const b) <|
-    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Iio] at *; gcongr; assumption
+    (tendsto_nhdsWithin_iff.mp h).2.mono fun _ _ => by rw [Set.mem_Iio] at *; gcongr
 
 end tendsto_nhds
 
