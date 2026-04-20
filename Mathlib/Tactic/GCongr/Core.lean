@@ -517,42 +517,6 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
 
 end Trans
 
-/--
-`Lean.MVarId.applyWithArity` is a copy of `Lean.MVarId.apply`, where the arity of the
-applied function is given explicitly instead of being inferred.
-
-TODO: make `Lean.MVarId.apply` take a configuration argument to do this itself
--/
-def _root_.Lean.MVarId.applyWithArity (mvarId : MVarId) (e : Expr) (arity : Nat)
-    (cfg : ApplyConfig := {}) (term? : Option MessageData := none) : MetaM (List MVarId) :=
-  mvarId.withContext do
-    mvarId.checkNotAssigned `apply
-    let targetType ← mvarId.getType
-    let eType      ← inferType e
-    let (newMVars, binderInfos) ← do
-      -- we use `withDefault` so that we can unfold `Monotone`
-      let (newMVars, binderInfos, eType) ← withDefault <| forallMetaTelescopeReducing eType arity
-      if (← isDefEqApply cfg.approx eType targetType) then
-        pure (newMVars, binderInfos)
-      else
-        let conclusionType? ← if arity = 0 then
-          pure none
-        else
-          let (_, _, r) ← withDefault <| forallMetaTelescopeReducing eType arity
-          pure (some r)
-        throwApplyError mvarId eType conclusionType? targetType term?
-    postprocessAppMVars `apply mvarId newMVars binderInfos
-      cfg.synthAssignedInstances cfg.allowSynthFailures
-    let e ← instantiateMVars e
-    mvarId.assign (mkAppN e newMVars)
-    let newMVars ← newMVars.filterM fun mvar => not <$> mvar.mvarId!.isAssigned
-    let otherMVarIds ← getMVarsNoDelayed e
-    let newMVarIds ← reorderGoals newMVars cfg.newGoals
-    let otherMVarIds := otherMVarIds.filter fun mvarId => !newMVarIds.contains mvarId
-    let result := newMVarIds ++ otherMVarIds.toList
-    result.forM (·.headBetaType)
-    return result
-
 /-- The state used by `GCongrM`. -/
 structure State where
   /-- The new goals produced by `gcongr`. This includes side-goals and main goals.
@@ -582,7 +546,7 @@ def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax ``binderIdent) :
   return (a, s.newGoals)
 
 /-- Add an unsolved goal to the `newGoals` array in the state. -/
-private def pushNewGoal (g : MVarId) : GCongrM Unit :=
+def pushNewGoal (g : MVarId) : GCongrM Unit :=
   modify fun s ↦ { s with newGoals := s.newGoals.push g}
 
 /-- Run the `intro` tactic `n` times on the given goal. -/
@@ -596,10 +560,27 @@ private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
   (← read).mainGoalDischarger mvarId
 
 /-- Run the discharger for side goals. -/
-private def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
+def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
   let mctx ← getMCtx
   try (← read).sideGoalDischarger (← mvarId.intros).2
   catch _ => setMCtx mctx; pushNewGoal mvarId
+
+def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
+    GCongrM (Array (MVarId × Bool) × Array MVarId) := do
+  let const ← mkConstWithFreshMVarLevels lem.declName
+  let type      ← inferType const
+  -- we use `withDefault` so that we can unfold `Monotone`
+  let (mvars, _, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
+  guard <| ← approxDefEq <| isDefEq type (← g.getType)
+  g.assign (mkAppN const mvars)
+  let mut sideGoals := #[]
+  for mvar in mvars, i in 0...* do
+    unless ← mvar.mvarId!.isAssigned do
+      unless lem.mainSubgoals.any (·.1 == i) do
+        sideGoals := sideGoals.push mvar.mvarId!
+  let mainGoals ← lem.mainSubgoals.mapM fun (i, numHyps, isContra) ↦
+    return (← introN (mvars[i]!).mvarId! numHyps, isContra)
+  return (mainGoals, sideGoals)
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
@@ -663,33 +644,25 @@ partial def _root_.Lean.MVarId.gcongr
   if relName == `_Implies then
     lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do
-    let gs ← try
+    try
       -- Try `apply`-ing such a lemma to the goal.
-      let const ← mkConstWithFreshMVarLevels lem.declName
-      withReducible (g.applyWithArity const lem.numHyps { synthAssignedInstances := false })
+      let (mainGoals, sideGoals) ← withReducible (applyGCongrLemma g lem)
+      -- Try the discharger on any side goals which were not resolved by the `apply`.
+      for mvarId in sideGoals do
+        let type ← mvarId.getType
+        if (← isClass? type).isSome then
+          let some inst ← synthInstance? type | failure
+          guard <| ← isDefEq (.mvar mvarId) inst
+        else
+          dischargeSide mvarId
+      for (mvarId, isContra) in mainGoals do
+        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
+        let mdataLhs?' := mdataLhs?.map (· != isContra)
+        discard <| mvarId.gcongr mdataLhs?' depth
+      return true
     catch _ =>
       setMCtx mctx
       continue
-    let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-    let args := e.getAppArgs
-    -- Map over the lemma's `mainSubgoals` list to find the recursive `gcongr` goals.
-    let mainSubgoals := lem.mainSubgoals.map fun (i, numHyps, isContra) ↦
-      -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-      -- unification ...
-      if let some (.mvar mvarId) := args[i]? then
-        (mvarId, numHyps, isContra)
-      else
-        panic! "what kind of lemma is this?"
-    -- Try the discharger on any side goals which were not resolved by the `apply`.
-    for g in gs do
-      if !(← g.isAssigned) && !mainSubgoals.any (·.1 == g) then
-        dischargeSide g
-    for (mvarId, numHyps, isContra) in mainSubgoals do
-      let mvarId ← introN mvarId numHyps
-      -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
-      let mdataLhs?' := mdataLhs?.map (· != isContra)
-      discard <| mvarId.gcongr mdataLhs?' depth
-    return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if mdataLhs?.isNone then
