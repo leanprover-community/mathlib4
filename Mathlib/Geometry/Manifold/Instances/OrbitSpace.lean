@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.OrbitSpace
 /-!
 # Manifold structure on orbit spaces
 
-Let `G` be a group acting properly discontinuously on a `C^k` manifold `M`.
+Let `G` be a group acting freely and properly discontinuously on a `C^k` manifold `M`.
 In this file we will endow the orbit space `orbitRel.Quotient G M`
 with a natural `C^k` manifold structure, on the same model space as `M`.
 
