@@ -786,12 +786,8 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 ≤ a * b) : 2 * r ≤ a + b := by
   apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  calc (2 * r) * (2 * r)
-    _ = 4 * r ^ 2 := by rw [mul_mul_mul_comm, pow_two, two_mul, two_add_two_eq_four]
-    _ ≤ 4 * (a * b) := mul_le_mul_of_nonneg_left ht zero_le_four
-    _ = 4 * a * b := (mul_assoc 4 a b).symm
-    _ ≤ (a + b) ^ 2 := four_mul_le_sq_add a b
-    _ = (a + b) * (a + b) := pow_two (a + b)
+  rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
+  grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
