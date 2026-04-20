@@ -5,18 +5,46 @@ Authors: Justin Lai
 -/
 module
 
-import Mathlib.Tactic
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
-public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Tree Decompositions and Tree Width
 
-This file defines tree decompositions on simple graphs and the tree width.
+This file defines tree decompositions on simple graphs and the treewidth parameter.
+
+## Main definitions
+
+* `SimpleGraph.TreeDecomp` is a tree decomposition of a simple graph.
+* `TreeDecomp.ewidth` is the extended width of the tree decomposition. `SimpleGraph.width` is the
+  ℕ-valued version.
+* `SimpleGraph.hasTreeDecomp n` is a predicate that a simple graph has a tree decomposition of width
+  at most n.
+* `SimpleGraph.etreeWidth` is the extended tree width of a simple graph. `SimpleGraph.treewidth` is
+  the ℕ-valued version.
+
+## Main statements
+
+* `treeWidth_le_card` shows that a finite graph must have finite treewidth.
+* `etreeWidth_ne_zero_iff_ne_bot` shows that a graph has nonzero treewidth iff it is nonempty.
+
+## References
+
+* [R. Diestel **Graph Theory**
+  https://doi.org/10.1007/978-3-662-70107-2][diestel2025]
+
+## TODO
+
+* Prove `G.IsAcyclic ↔ G.treewidth ≤ 1`.
+* Prove that a complete graph with `n` vertices has treewidth `n`.
+
+## Tags
+tree decomposition, treewidth
+
 -/
+
+@[expose] public section
 
 open Finset Fintype
 
@@ -65,7 +93,7 @@ lemma TreeDecomp.ewidth_ge {k : ℕ} (t : TreeDecomp G) :
     (∃ w : t.W, #(t.𝓧 w) - 1 ≥ k) → t.ewidth ≥ k :=
   fun ⟨w, hw⟩ => le_iSup_of_le w (by exact_mod_cast hw)
 
-/-- The proposition that G has a tree decomposition with width at most n. -/
+/-- G has a tree decomposition with width at most n. -/
 def hasTreeDecomp (G : SimpleGraph V) (n : ℕ∞) : Prop := ∃ t : G.TreeDecomp, t.ewidth ≤ n
 
 @[mono]
@@ -136,8 +164,7 @@ lemma ewidth_botTreeDecomp : (botTreeDecomp (V := V)).ewidth = 0 := by
   rintro (_ | w) <;> simp [botTreeDecomp]
 
 
-/-- If G has a tree decomposition of width n,
-  then any subgraph can also use the same decomposition. -/
+/-- If G has a tree decomposition of width n, then the same decomposition on any subgraph. -/
 @[mono]
 lemma TreeDecomp.mono {G' : SimpleGraph V} {n : ℕ∞} (h : G' ≤ G) (hG : G.hasTreeDecomp n) :
     G'.hasTreeDecomp n := by
@@ -182,6 +209,7 @@ lemma treeDecomp_imp_etreeWidth_le (treeDecomp : G.TreeDecomp) :
 @[simp]
 lemma coe_treeWidth (h : G.etreeWidth ≠ ⊤) : G.treeWidth = G.etreeWidth := ENat.coe_toNat h
 
+/-- G has extended treewidth ≤ k iff G has a tree decomposition of width k, where k is finite. -/
 @[simp]
 lemma etreeWidth_le_iff_hasTreeDecomp (k : ℕ) :
     G.etreeWidth ≤ k ↔ G.hasTreeDecomp k := by
@@ -215,14 +243,13 @@ theorem treeWidth_le_card [Fintype V] :
     G.treeWidth ≤ card V - 1 := by
   exact_mod_cast coe_treeWidth_of_finite (V := V) ▸ etreeWidth_le_card (G := G)
 
-/-- Treewidth is monotonic on subgraphs. -/
 @[gcongr]
 lemma treeWidth_mono {G' : SimpleGraph V} [Finite V] (h : G' ≤ G) : G'.treeWidth ≤ G.treeWidth := by
   suffices (G'.treeWidth : ℕ∞) ≤ G.treeWidth by exact_mod_cast this
   simpa using etreeWidth_mono h
 
 /-- The treewidth of a graph is nonzero iff it has an edge. -/
-theorem etreeWidth_nonzero_iff_ne_bot : 0 < G.etreeWidth ↔ G ≠ ⊥ := by
+theorem etreeWidth_ne_zero_iff_ne_bot : 0 < G.etreeWidth ↔ G ≠ ⊥ := by
   classical
   constructor
   · contrapose!
@@ -251,9 +278,14 @@ end TreeWidth
 
 section Adhesion
 
+/-- Given a tree decomposition (𝓧, T), the adhesion set is the intersection of bags along some edge
+  in T. -/
 def TreeDecomp.adhesion [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (_h : t.T.Adj x y)
     : Finset V := (t.𝓧 x) ∩ (t.𝓧 y)
 
+-- TODO: Restate using subtree notation.
+/-- If v is not in an adhesion set, all bags containing v must reside in some subtree cut by the
+    adhesion set's edge. -/
 theorem adhesion_imp_separator [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (h : t.T.Adj x y) :
     ∀ v ∉ t.adhesion h, ∀ a b : t.W, v ∈ t.𝓧 a → v ∈ t.𝓧 b →
     ∀ p : t.T.Path a b, s(x, y) ∉ p.val.edges := by
