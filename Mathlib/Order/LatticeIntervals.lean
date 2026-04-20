@@ -67,6 +67,26 @@ protected lemma coe_inf [SemilatticeInf α] {a : α} {x y : Iio a} :
     ↑(x ⊓ y) = (↑x ⊓ ↑y : α) :=
   rfl
 
+instance semilatticeSup [SemilatticeSup α] [IsLinearOrder α (· ≤ ·)] {a : α} :
+    SemilatticeSup (Iio a) :=
+  Subtype.semilatticeSup fun x y hx hy =>
+    (Std.Total.total x y).elim (fun h : x ≤ y => by rwa [sup_eq_right.2 h]) fun h => by
+      rwa [sup_eq_left.2 h]
+
+@[simp, norm_cast]
+protected lemma coe_sup [SemilatticeSup α] [IsLinearOrder α (· ≤ ·)] {a : α} {x y : Iio a} :
+    ↑(x ⊔ y) = (↑x ⊔ ↑y : α) :=
+  rfl
+
+instance [Lattice α] [IsLinearOrder α (· ≤ ·)] {a : α} : Lattice (Iio a) where
+
+instance orderBot [Preorder α] [OrderBot α] {a : α} [Fact (¬ IsMin a)] : OrderBot (Iio a) :=
+  (isLeast_Iio_bot Fact.out).orderBot
+
+@[simp, norm_cast]
+protected lemma coe_bot [Preorder α] [OrderBot α] (a : α) [Fact (¬ IsMin a)] :
+    (⊥ : Iio a) = (⊥ : α) := rfl
+
 end Iio
 
 namespace Ioc

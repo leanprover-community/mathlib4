@@ -325,6 +325,10 @@ theorem isLeast_Ici : IsLeast (Ici a) a :=
   ⟨self_mem_Ici, fun _ => id⟩
 
 @[to_dual]
+theorem isGreatest_Ioi_top [OrderTop α] (ha : ¬ IsMax a) : IsGreatest (Ioi a) ⊤ :=
+  ⟨(not_isMax_iff.1 ha).elim fun _ => lt_top_of_lt, fun _ _ => le_top⟩
+
+@[to_dual]
 theorem isLUB_Iic : IsLUB (Iic a) a :=
   isGreatest_Iic.isLUB
 
