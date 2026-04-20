@@ -25,7 +25,9 @@ namespace CategoryTheory
 variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
-  homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
+  homGroup X Y :=
+    { toZero := inferInstance
+      __ := Equiv.addCommGroup (opEquiv X Y) }
   add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
   comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
 

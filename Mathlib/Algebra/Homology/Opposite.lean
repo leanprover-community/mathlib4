@@ -374,7 +374,6 @@ lemma opcyclesOpIso_hom_naturality :
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
@@ -426,10 +425,10 @@ section
 
 variable [Preadditive V]
 
-set_option backward.isDefEq.respectTransparency false in
+example : Preadditive (HomologicalComplex Vᵒᵖ c) := inferInstance
+
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 
 end
