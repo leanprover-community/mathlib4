@@ -1189,6 +1189,9 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
   rw [← isSuccPrelimit_type_lt_iff, type_toType]
   exact (isSuccLimit_ord h).isSuccPrelimit
 
+theorem noMaxOrder_Iio_ord {c} (h : ℵ₀ ≤ c) : NoMaxOrder (Iio c.ord) :=
+  (isSuccLimit_ord h).isSuccPrelimit.noMaxOrder_Iio
+
 instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
 
 /-- This can be made a local instance in order to get `⊥`

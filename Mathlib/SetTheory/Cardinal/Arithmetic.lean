@@ -803,12 +803,12 @@ theorem mk_bounded_set_le_powerlt (α : Type u) (c : Cardinal) :
   apply mk_iUnion_le_sum_mk_lift.trans
   apply (sum_le_lift_mk_mul_iSup_lift _).trans
   simp only [mk_Iio_ordinal, card_ord, lift_lift, coe_setOf]
-  rw [← lift_iSup (bddAbove_of_small _), ← lift_mul, lift_le]
+  rw [← lift_iSup bddAbove_of_small, ← lift_mul, lift_le]
   apply mul_le_mul_right
   rw [powerlt]
   refine ciSup_le' fun ⟨i, hi⟩ => ?_
   simp only [mem_Iio, lt_ord] at hi
-  refine le_ciSup_of_le (bddAbove_of_small _) ⟨i.card, hi⟩ ?_
+  refine le_ciSup_of_le bddAbove_of_small ⟨i.card, hi⟩ ?_
   apply mk_bounded_set_le
 
 theorem mk_bounded_subset_le_powerlt {α : Type u} (s : Set α) (c : Cardinal.{u}) :

@@ -1042,6 +1042,10 @@ theorem powerlt_le_powerlt_right {a b c : Cardinal} (h : a ≤ b) : a ^< c ≤ b
 
 theorem powerlt_mono_right (a) : Monotone fun c => c ^< a := fun _ _ => powerlt_le_powerlt_right
 
+@[gcongr]
+theorem powerlt_le_powerlt {a b c d : Cardinal} (h₁ : a ≤ b) (h₂ : c ≤ d) : a ^< c ≤ b ^< d :=
+  (powerlt_le_powerlt_right h₁).trans (powerlt_le_powerlt_left h₂)
+
 theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = a ^ b :=
   (powerlt_le.2 fun _ h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|
     le_powerlt a (lt_succ b)
@@ -1074,6 +1078,19 @@ theorem powerlt_eq_zero_iff {a b : Cardinal} : a ^< b = 0 ↔ b = 0 := by
     rw [← Cardinal.one_le_iff_pos] at hb ⊢
     rw [← powerlt_one ha.ne']
     exact powerlt_le_powerlt_left hb
+
+@[simp]
+theorem lift_powerlt (a b : Cardinal.{u}) : lift.{v} (a ^< b) = lift.{v} a ^< lift.{v} b := by
+  conv_lhs => simp only [powerlt, lift_iSup, bddAbove_of_small]
+  apply le_antisymm
+  · refine ciSup_le' fun c => ?_
+    rw [lift_power]
+    exact le_powerlt _ (lift_lt.2 c.2)
+  · simp_rw [powerlt_le, lt_lift_iff]
+    rintro _ ⟨c, hc, rfl⟩
+    haveI := Small.trans_univLE.{u, max u v} (Iio b)
+    refine le_ciSup_of_le bddAbove_of_small ⟨c, hc⟩ ?_
+    simp
 
 /-- The cardinality of a set is an upper-bound for the amount of elements before the set's mex
 (minimum excluded value) -/

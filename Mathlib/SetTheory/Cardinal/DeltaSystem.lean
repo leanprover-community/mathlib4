@@ -5,7 +5,10 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Pigeonhole
+public import Mathlib.SetTheory.Cardinal.Regular
+
+import Mathlib.Order.Club
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Δ-systems
@@ -27,13 +30,14 @@ contain an uncountable Δ-system.
 
 ## TODO
 
-* Prove that `Δ(θ, κ)` is equivalent to `∀ c < θ, c ^< κ < θ` for any regular cardinal `θ` and
-  infinite cardinal `κ < θ`. (See <https://mathoverflow.net/questions/130879>.)
+* Prove that `Δ(θ, κ)` is equivalent to `∀ c < θ, c ^< κ < θ` for any regular `θ` and infinite
+  `κ < θ`. (See <https://mathoverflow.net/questions/130879>.)
 * Prove that `Δ(θ, κ)` does not hold for singluar `θ`.
 
 ## References
 
 * [Kenneth Kunen, *Set Theory: An Introduction to Independence Proofs.*][kunen1980set]
+* [Kenneth Kunen, *Set Theory.*][kunen2011set]
 -/
 
 @[expose] public section
@@ -48,9 +52,14 @@ def DeltaSystemProperty (θ κ : Cardinal.{u}) :=
   ∀ ι α (f : ι → Set α), #ι = θ → (∀ i, #(f i) < κ) →
     ∃ (s : Set ι) (t : Set α), #s = θ ∧ s.Pairwise (f · ∩ f · = t)
 
-variable {θ κ : Cardinal.{u}}
+variable {θ κ μ : Cardinal.{u}}
 
 open Order Ordinal Set
+
+@[gcongr]
+theorem DeltaSystemProperty.mono (h : κ ≤ μ) (hμ : DeltaSystemProperty θ μ) :
+    DeltaSystemProperty θ κ :=
+  fun ι α f hι hf => hμ ι α f hι fun i => (hf i).trans_le h
 
 /-- An alternative formalization of Δ-system property, with weaker assumption and stronger
 conclusion. -/
@@ -68,224 +77,128 @@ theorem DeltaSystemProperty.exists_pairwise_eq (h : DeltaSystemProperty θ κ) (
 
 namespace IsRegular
 
-variable (h : κ < θ) (hκ : ℵ₀ ≤ κ) (hθ : θ.IsRegular) (hθ' : ∀ c < θ, c ^< κ < θ)
+private lemma deltaSystemProperty_aux (hκμ : κ ≤ μ) (hμθ : μ < θ) (hκ : ℵ₀ ≤ κ) (hμ : μ.IsRegular)
+    (hθ : θ.IsRegular) (hθ' : ∀ c < θ, c ^< κ < θ) {f : Iio θ.ord → Set (Iio θ.ord)}
+    (hf : ∀ i, #(f i) < Cardinal.lift.{u + 1} κ) :
+    ∃ (s : Set (Iio θ.ord)) (t : Set (Iio θ.ord)),
+      #s = Cardinal.lift.{u + 1} θ ∧ s.Pairwise (f · ∩ f · = t) := by
+  haveI : Nonempty (Iio θ.ord) := ⟨0, by simp [hθ.pos]⟩
+  haveI : NoMaxOrder (Iio θ.ord) := noMaxOrder_Iio_ord hθ.aleph0_le
+  haveI : Fact (¬ IsMin θ.ord) := ⟨by simp [← pos_iff_ne_zero, hθ.pos]⟩
+  have : ℵ₀ < Order.cof (Iio θ.ord) := by
+    simpa [← lift_ord, ← lift_cof, hθ.cof_ord] using hμ.aleph0_le.trans_lt hμθ
+  have : typeLT (Iio θ.ord) ≤ (Order.cof (Iio θ.ord)).ord := by
+    simp [← lift_ord, ← lift_cof, hθ.cof_ord]
+  rcases exists_isStationary_preimage_singleton (f := fun i => sSup (Set.Iio i ∩ f i))
+    (by assumption) (by assumption) (hθ.isStationary_setOf_cof_eq hμ hμθ)
+    (by
+      intro ⟨i, hi⟩
+      simp only [mem_setOf_eq, gt_iff_lt] at hi ⊢
+      rw [← Subtype.coe_lt_coe, Iio.coe_sSup (bddAbove_Iio.mono inter_subset_left)]
+      apply Ordinal.sSup_lt_of_lt_cof
+      · grw [mk_image_eq Subtype.val_injective, mk_le_mk_of_subset inter_subset_right]
+        apply (hf i).trans_le
+        simpa [← lift_cof, hi]
+      · simp +contextual [← Subtype.coe_lt_coe]) with ⟨ξ, hξ⟩
+  have : ∃ ν : Iio θ.ord, ξ < ν := by
+    rcases (isSuccLimit_ord hθ.aleph0_le).lt_iff_exists_lt.1 ξ.2 with ⟨ν, hν, hν'⟩
+    exact ⟨⟨ν, hν⟩, hν'⟩
+  rcases this with ⟨ν, hν⟩
+  rcases exists_isStationary_preimage_singleton_of_cardinalMk_range_lt_cof
+    (f := fun i => f i ∩ Iio ν) (by assumption)
+    (hξ.inter_isClub (by assumption)
+      (isClub_almost_fixed_points (f := sSup ∘ f) (by assumption) (by assumption)))
+    (by
+      grw [mk_range_le_powerlt (Cardinal.lift.{u + 1} κ) (Iio ν)]
+      · rw [mk_Iio_Iio_ord_eq, ← lift_aleph0.{u + 1, u}]
+        simp only [← lift_max, ← lift_powerlt, ← lift_mul, Ordinal.cof_Iio, ← lift_cof, lift_lt]
+        rw [hθ.cof_ord, mul_eq_max_of_aleph0_le_left hκ]
+        · refine max_lt (hκμ.trans_lt hμθ) (hθ' _ (max_lt ?_ (hμ.aleph0_le.trans_lt hμθ)))
+          rw [← lt_ord]
+          exact ν.2
+        · simpa [powerlt_eq_zero_iff] using pos_iff_ne_zero.1 (aleph0_pos.trans_le hκ)
+      · grind
+      · exact fun i => (mk_le_mk_of_subset inter_subset_left).trans_lt (hf _)) with ⟨w, hw⟩
+  refine ⟨_, w, hθ.card_eq_of_isStationary hw, ?_⟩
+  intro i hi j hj hij
+  wlog hij' : i < j generalizing i j
+  · rw [inter_comm]
+    exact this hj hi hij.symm (lt_of_le_of_ne (le_of_not_gt hij') hij.symm)
+  simp only [mem_setOf_eq, coe_setOf, Function.comp_apply, mem_image, mem_preimage,
+    mem_singleton_iff, Subtype.exists, mem_inter_iff, exists_and_left, exists_prop,
+    exists_eq_right_right] at hi hj
+  rcases hi with ⟨hi₁, ⟨-, hi₃⟩, hi₄⟩
+  rcases hj with ⟨hj₁, ⟨hj₂, hj₃⟩, hj₄⟩
+  nth_rw 1 [← inter_self w, ← hi₁, ← hj₁, ← inter_inter_distrib_right,
+    inter_eq_self_of_subset_left (t := Iio ν)]
+  intro x hx
+  simp only [mem_inter_iff, mem_Iio] at hx ⊢
+  apply hν.trans_le'
+  rw [← hj₂]
+  apply le_csSup (bddAbove_Iio.mono inter_subset_left)
+  simp only [mem_inter_iff, mem_Iio, hx.2, and_true]
+  apply (hj₄ _ hij').trans_le'
+  refine le_csSup (bddAbove_Iio_of_lt_cof ?_) hx.1
+  grw [hf]
+  simpa [hθ.cof_ord] using hκμ.trans_lt hμθ
 
-include h hκ hθ hθ' in
-private lemma delta_system_property_aux {ι : Type u} {ρ : Ordinal.{u}} {f : ι → Set θ.ord.ToType}
-    (hι : θ ≤ #ι) (hf : ∀ i, #(f i) < κ) (hρ : ρ < κ.ord) (hρ' : ∀ i, typeLT (f i) = ρ) :
-    ∃ (s : Set ι) (t : Set θ.ord.ToType), θ ≤ #s ∧ s.Pairwise (f · ∩ f · = t) := by
-  classical
-  rcases (zero_le ρ).eq_or_lt with rfl | hρ''
-  · simp only [type_eq_zero_iff_isEmpty, isEmpty_coe_sort] at hρ'
-    exact ⟨Set.univ, ∅, by simpa, by simp [hρ', Set.Pairwise]⟩
-  simp_rw [← type_toType ρ, type_eq] at hρ'
-  have g₁ : ∀ i, ρ.ToType ≃o f i := fun i => OrderIso.ofRelIsoLT (Classical.choice (hρ' i)).symm
-  haveI : Nonempty θ.ord.ToType := by simpa using ((zero_le κ).trans_lt h).ne'
-  letI := WellFoundedLT.toOrderBot (α := θ.ord.ToType)
-  letI := WellFoundedLT.conditionallyCompleteLinearOrderBot θ.ord.ToType
-  by_cases hξ₀ : ∀ ξ : ρ.ToType, Bounded (· < ·) {(g₁ i ξ).1 | i}
-  · simp only [Bounded, mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hξ₀
-    choose b hb using hξ₀
-    have : BddAbove (range b) := by
-      rw [bddAbove_def]
-      refine ⟨Ordinal.ToType.mk ⟨⨆ x, (b x).toOrd.1, ?_⟩, ?_⟩
-      · rw [mem_Iio]
-        apply iSup_lt_ord_of_isRegular hθ
-        · simpa [← lt_ord] using hρ.trans (ord_lt_ord.2 h)
-        · exact fun i => (b i).toOrd.2
-      · simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-          ← ToType.mk.symm_apply_le, ← Subtype.coe_le_coe]
-        exact le_ciSup (Ordinal.bddAbove_of_small _)
-    let b₀ := iSup b
-    have : ∀ i, Subtype.val '' range (g₁ i) ⊆ Iio b₀ := by
-      intro i x hx
-      simp only [mem_image, mem_range, ↓existsAndEq, true_and] at hx
-      rcases hx with ⟨x, rfl⟩
-      exact (hb _ _).trans_le <| le_ciSup this x
-    simp_rw [← OrderIso.coe_toEquiv, Equiv.range_eq_univ, image_univ, Subtype.range_val] at this
-    have : #(range f) < θ := by
-      apply (mk_range_le_powerlt κ (Iio b₀) this hf).trans_lt
-      rw [mul_eq_max_of_aleph0_le_left hκ]
-      · simp only [sup_lt_iff, h, true_and]
-        apply hθ'
-        simp only [sup_lt_iff, hκ.trans_lt h, and_true]
-        exact mk_Iio_ord_toType _
-      · simpa [powerlt_eq_zero_iff] using (aleph0_pos.trans_le hκ).ne'
-    rcases infinite_pigeonhole_card_range f θ hι hθ.aleph0_le (by rwa [hθ.cof_eq]) with ⟨t, ht⟩
-    refine ⟨_, t, ht, ?_⟩
-    grind [Set.Pairwise]
-  haveI : Nonempty ρ.ToType := by simpa using hρ''.ne'
-  letI := Classical.inhabited_of_nonempty (α := ρ.ToType) inferInstance
-  letI := WellFoundedLT.toOrderBot (α := ρ.ToType)
-  letI := WellFoundedLT.conditionallyCompleteLinearOrderBot ρ.ToType
-  let ξ₀ : ρ.ToType := sInf {ξ : ρ.ToType | Unbounded (· < ·) {(g₁ i ξ).1 | (i : ι)}}
-  replace hξ₀ : Unbounded (· < ·) {(g₁ i ξ₀).1 | i} := by
-    simp_rw [not_forall, not_bounded_iff] at hξ₀
-    apply csInf_mem (s := {ξ | Unbounded (· < ·) {(g₁ i ξ).1 | i}})
-    simpa [nonempty_def]
-  have hξ₀' : ∀ ξ < ξ₀, Bounded (· < ·) {(g₁ i ξ).1 | (i : ι)} := by
-    intro ξ hξ
-    apply notMem_of_lt_csInf' at hξ
-    simpa using hξ
-  choose! α hα using hξ₀'
-  simp only [mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hα
-  let α₀ := ⨆ ξ : Iio ξ₀, α ξ
-  haveI : NoMaxOrder (θ.ord.ToType) := noMaxOrder hθ.aleph0_le
-  have hα₀ : ∀ i, ∀ ξ < ξ₀, g₁ i ξ < α₀ := by
-    intro i ξ hξ
-    rw [← succ_le_iff]
-    refine le_ciSup_of_le ?_ ⟨ξ, hξ⟩ ?_
-    · refine ⟨Ordinal.ToType.mk ⟨⨆ ξ : Iio ξ₀, α ξ, ?_⟩, ?_⟩
-      · rw [mem_Iio]
-        apply iSup_lt_ord_of_isRegular hθ
-        · apply (mk_set_le _).trans_lt
-          apply h.trans'
-          simpa [← lt_ord]
-        · exact fun i => (α i).toOrd.2
-      · simp only [mem_upperBounds, mem_range, Subtype.exists, mem_Iio, exists_prop,
-          ← ToType.mk.symm_apply_le, ← Subtype.coe_le_coe, forall_exists_index, and_imp,
-          forall_apply_eq_imp_iff₂]
-        intro ξ hξ
-        exact le_ciSup (Ordinal.bddAbove_range _) (⟨ξ, hξ⟩ : Iio ξ₀)
-    · rw [succ_le_iff]
-      exact hα ξ hξ i
-  haveI : Nonempty ι := by simpa [← mk_ne_zero_iff] using hθ.pos.trans_le hι |>.ne'
-  let g₂ : θ.ord.ToType → ι := WellFoundedLT.fix fun x ih =>
-    Classical.epsilon fun i => α₀ < g₁ i ξ₀ ∧ ∀ y hy ξ, (g₁ (ih y hy) ξ).1 < g₁ i ξ₀
-  have hg₂ : ∀ μ, α₀ < g₁ (g₂ μ) ξ₀ ∧ ∀ ν < μ, ∀ ξ, (g₁ (g₂ ν) ξ).1 < g₁ (g₂ μ) ξ₀ := by
-    intro μ
-    suffices ∃ i, α₀ < g₁ i ξ₀ ∧ ∀ ν < μ, ∀ ξ, (g₁ (g₂ ν) ξ).1 < g₁ i ξ₀ by
-      apply Classical.epsilon_spec at this
-      unfold g₂
-      rwa [WellFoundedLT.fix_eq]
-    let o : Ordinal := succ (max α₀ (⨆ ν : Iio μ, ⨆ ξ, g₁ (g₂ ν) ξ))
-    have ho : o < θ.ord := by
-      apply (Cardinal.isSuccLimit_ord hθ.aleph0_le).succ_lt
-      refine max_lt α₀.toOrd.2 ?_
-      apply iSup_lt_ord_of_isRegular hθ
-      · apply mk_Iio_ord_toType
-      · intro
-        apply iSup_lt_ord_of_isRegular hθ
-        · apply h.trans'
-          simpa [← lt_ord]
-        · exact fun _ => (Ordinal.ToType.toOrd _).2
-    rcases hξ₀ (Ordinal.ToType.mk ⟨o, ho⟩) with ⟨_, ⟨i, rfl⟩, hi⟩
-    simp only [not_lt, ← ToType.mk.le_symm_apply, ← Subtype.coe_le_coe, succ_le_iff, sup_lt_iff,
-      Subtype.coe_lt_coe, OrderIso.lt_iff_lt, o] at hi
-    rcases hi with ⟨hi₁, hi₂⟩
-    refine ⟨i, hi₁, fun ν hν ξ => ?_⟩
-    rw [← ToType.mk.symm.lt_iff_lt]
-    apply hi₂.trans_le'
-    exact le_ciSup_of_le (Ordinal.bddAbove_range _) ⟨ν, hν⟩ <|
-      le_ciSup_of_le (Ordinal.bddAbove_range _) ξ le_rfl
-  have hg₂' : Function.Injective g₂ := by
-    intro x y h
-    by_contra! h'
-    rcases lt_or_gt_of_ne h' with h' | h'
-    · have := (hg₂ _).2 _ h' ξ₀
-      rw [h] at this
-      simp at this
-    · have := (hg₂ _).2 _ h' ξ₀
-      rw [h] at this
-      simp at this
-  have hg₂'' : ∀ x y, x ≠ y → f (g₂ x) ∩ f (g₂ y) ⊆ Iio α₀ := by
-    intro x y h
-    wlog h' : x < y generalizing x y
-    · rw [inter_comm]
-      exact this _ _ h.symm (lt_of_le_of_ne (le_of_not_gt h') h.symm)
-    intro z
-    simp only [mem_inter_iff, mem_Iio, and_imp]
-    intro hzx hzy
-    by_contra hz
-    let ξx := (g₁ (g₂ x)).symm ⟨z, hzx⟩
-    let ξy := (g₁ (g₂ y)).symm ⟨z, hzy⟩
-    have hξy : ξ₀ ≤ ξy := by
-      by_contra!
-      apply hα₀ (g₂ y) at this
-      simp only [OrderIso.apply_symm_apply, ξy] at this
-      contradiction
-    simp only [(g₁ (g₂ y)).le_symm_apply, ← Subtype.coe_le_coe, ξy] at hξy
-    apply ((hg₂ _).2 _ h' ξx).trans_le at hξy
-    simp [ξx] at hξy
-  let g₃ : θ.ord.ToType → Set θ.ord.ToType := fun x => f (g₂ x) ∩ Set.Iio α₀
-  have hg₃ : ∀ x, g₃ x ⊆ Set.Iio α₀ := by simp [g₃]
-  have hg₃' : #(Set.range g₃) < θ := by
-    refine (mk_range_le_powerlt κ (Iio α₀) hg₃ ?_).trans_lt ?_
-    · intro i
-      refine (mk_le_mk_of_subset ?_).trans_lt (hf (g₂ i))
-      grind
-    · rw [mul_eq_max_of_aleph0_le_left hκ]
-      · apply max_lt h
-        apply hθ'
-        apply max_lt
-        · exact mk_Iio_ord_toType _
-        · exact hκ.trans_lt h
-      · simp [powerlt_eq_zero_iff, (aleph0_pos.trans_le hκ).ne']
-  rcases infinite_pigeonhole_card_range g₃ θ (by rw [mk_ord_toType]) hθ.aleph0_le
-    (by rwa [hθ.cof_eq]) with ⟨r, hr⟩
-  refine ⟨g₂ '' (g₃ ⁻¹' {r}), r, ?_, ?_⟩
-  · rwa [mk_image_eq hg₂']
-  · apply Pairwise.image
-    intro x hx y hy hxy
-    simp only [mem_preimage, mem_singleton_iff, g₃] at hx hy
-    simpa [← inter_inter_distrib_right, inter_self, inter_eq_left.2 (hg₂'' x y hxy)]
-      using congr_arg₂ (· ∩ ·) hx hy
-
-include h hκ hθ hθ' in
 /-- **Δ-system lemma**: `Δ(θ, κ)` holds for any regular cardinal `θ` and infinite cardinal `κ < θ`
 such that `∀ c < θ, c ^< κ < θ`. -/
-theorem delta_system_property_of_powerlt_lt : DeltaSystemProperty θ κ := by
+theorem deltaSystemProperty_of_powerlt_lt (h : κ < θ) (hκ : ℵ₀ ≤ κ) (hθ : θ.IsRegular)
+    (hθ' : ∀ c < θ, c ^< κ < θ) : DeltaSystemProperty θ κ := by
   intro ι α f hι hf
-  haveI : Nonempty ι := by
-    simpa [mk_ne_zero_iff] using (aleph0_pos.trans_le hκ |>.trans h |>.trans_le hι.ge).ne'
+  have : ∃ μ ≥ κ, μ < θ ∧ μ.IsRegular := by
+    rcases lt_or_eq_of_le (cof_ord_le κ) with hκ' | hκ'
+    · refine ⟨Order.succ κ, Order.le_succ _, ?_, isRegular_succ hκ⟩
+      apply (hθ' _ h).trans_le'
+      rw [Order.succ_le_iff]
+      apply (lt_power_cof_ord hκ).trans_le
+      exact le_powerlt _ hκ'
+    · exact ⟨κ, le_rfl, h, hκ, hκ'.ge⟩
+  rcases this with ⟨μ, hμ, hμ', hμ''⟩
+  haveI : Nonempty ι := by simp [← mk_ne_zero_iff, hι, ← pos_iff_ne_zero, hθ.pos]
   have : #(⋃ i, f i) ≤ θ := by
     refine mk_iUnion_le_sum_mk.trans <| (sum_le_mk_mul_iSup _).trans <|
-      (mul_le_mul_right (ciSup_mono (bddAbove_of_small _) fun i => (hf i).le) _).trans ?_
+      (mul_le_mul_right (ciSup_mono bddAbove_of_small fun i => (hf i).le) _).trans ?_
     rw [ciSup_const,
       mul_eq_left (hκ.trans h.le |>.trans hι.ge) (h.le.trans hι.ge) (aleph0_pos.trans_le hκ).ne',
       hι]
-  rw [← card_ord θ, ← mk_toType, le_def] at this
+  rw [← card_ord θ, ← Cardinal.lift_le, ← mk_Iio_ordinal, ← Cardinal.lift_id #(Iio θ.ord),
+    Cardinal.lift_mk_le.{u + 1}] at this
   rcases this with ⟨g⟩
-  let g' : ι → Set θ.ord.ToType := fun i =>
-    Set.range ((Set.embeddingOfSubset _ _ (Set.subset_iUnion f i)).trans g)
-  have hg : ∀ i, #(g' i) < κ := fun i => mk_range_le.trans_lt (hf i)
-  have hg' : ∀ i, typeLT (g' i) < κ.ord := by simpa [lt_ord, card_type]
-  rcases infinite_pigeonhole_card (fun i => Ordinal.ToType.mk ⟨typeLT (g' i), hg' i⟩) _ hι.ge
-    (hκ.trans h.le) (by rwa [mk_ord_toType, hθ.cof_eq]) with ⟨ρ, hs⟩
-  generalize hρ : (_ ⁻¹' {ρ}) = s at hs
-  have : ∃ ρ', ρ = Ordinal.ToType.mk ρ' := ⟨ρ.toOrd, by simp⟩
-  rcases this with ⟨⟨ρ, hρ'⟩, rfl⟩
-  simp only [mem_Iio] at hρ'
-  apply (subset_of_eq ∘ Eq.symm) at hρ
-  simp_rw [subset_def, mem_preimage, mem_singleton_iff, ToType.mk.eq_iff_eq, Subtype.mk_eq_mk]
-    at hρ
-  rcases delta_system_property_aux (ι := s) (f := g' ∘ Subtype.val) h hκ hθ hθ' hs (by grind) hρ'
-    (by grind) with ⟨s', t, hs', ht⟩
-  refine ⟨Subtype.val '' s', Subtype.val '' (g ⁻¹' t), ?_, ?_⟩
-  · rw [mk_image_eq Subtype.val_injective]
-    refine hs'.antisymm' <| (mk_set_le _).trans <| (mk_set_le _).trans ?_
-    rw [hι]
-  · refine .image (ht.imp fun x y h => ?_)
-    simp only [Function.comp_apply] at h
-    rw [Function.onFun_apply, ← h, preimage_inter, image_inter Subtype.val_injective]
+  rw [← Cardinal.lift_inj.{u, u + 1}, ← card_ord θ, ← mk_Iio_ordinal,
+    ← Cardinal.lift_id #(Iio θ.ord), Cardinal.lift_mk_eq.{u, u + 1, u + 1}] at hι
+  rcases hι with ⟨e⟩
+  rcases deltaSystemProperty_aux
+    (f := fun i => Set.range ((Set.embeddingOfSubset _ _ (Set.subset_iUnion f (e.symm i))).trans g))
+    hμ hμ' hκ hμ'' hθ hθ' (fun _ => by
+      rw [← Cardinal.lift_id'.{u, u + 1} #_,
+        mk_range_eq_of_injective (Function.Embedding.injective _), Cardinal.lift_lt]
+      apply hf) with ⟨s, t, hs, ht⟩
+  refine ⟨e.symm '' s, Subtype.val '' (g ⁻¹' t), ?_, ?_⟩
+  · rw [← Cardinal.lift_inj, mk_image_eq_of_injOn_lift _ _ e.symm.injective.injOn]
+    simp [hs]
+  · refine .image (ht.imp fun i j h => ?_)
+    simp only [← h, preimage_inter, image_inter Subtype.val_injective, Function.onFun_apply]
     congr <;> ext i <;> simp only [embeddingOfSubset, mem_image, mem_preimage, mem_range,
-      Function.Embedding.trans_apply, Function.Embedding.coeFn_mk, Subtype.exists, g'] <;> grind
+      Function.Embedding.trans_apply, Function.Embedding.coeFn_mk, EmbeddingLike.apply_eq_iff_eq,
+      Subtype.exists] <;> grind
 
-include hθ in
 /-- `Δ(θ, ℵ₀)` holds for any uncountable regular cardinal `θ`. -/
-theorem delta_system_property_aleph0 (hθ' : ℵ₀ < θ) : DeltaSystemProperty θ ℵ₀ := by
-  apply delta_system_property_of_powerlt_lt hθ' le_rfl hθ
+theorem deltaSystemProperty_aleph0 (hθ : θ.IsRegular) (hθ' : θ ≠ ℵ₀) :
+    DeltaSystemProperty θ ℵ₀ := by
+  replace hθ' := hθ.aleph0_le.lt_of_ne' hθ'
+  apply deltaSystemProperty_of_powerlt_lt hθ' le_rfl hθ
   intro c hc
   apply (powerlt_aleph0_le _).trans_lt
   simp [hc, hθ']
 
-include hθ in
 /-- **Δ-system lemma** for `Δ(θ, ℵ₀)`: for any uncountable regular cardinal `θ`, any `θ`-sized
 family of finite sets must contain a `θ`-sized Δ-system. -/
-theorem exists_pairwise_inter_eq_finset (hθ' : ℵ₀ < θ) {ι : Type u} {α : Type v} [DecidableEq α]
-    (f : ι → Finset α) (hι : θ ≤ #ι) :
+theorem exists_pairwise_inter_eq_finset (hθ : θ.IsRegular) (hθ' : θ ≠ ℵ₀) {ι : Type u} {α : Type v}
+    [DecidableEq α] (f : ι → Finset α) (hι : θ ≤ #ι) :
     ∃ (s : Set ι) (t : Finset α), #s = θ ∧ s.Pairwise (f · ∩ f · = t) := by
-  rcases (delta_system_property_aleph0 hθ.lift (aleph0_lt_lift.{u, v}.2 hθ')).exists_pairwise_eq
+  rcases (deltaSystemProperty_aleph0 hθ.lift (by simpa)).exists_pairwise_eq
     aleph0_pos (f := fun i : ULift.{v} ι => Equiv.ulift.symm '' (f i.down : Set α)) (by simpa)
     (by simp) with ⟨s, t, hs, ht, ht'⟩
   rw [lt_aleph0_iff_subtype_finite, setOf_mem_eq] at ht
@@ -307,7 +220,7 @@ uncountable Δ-system. -/
 theorem Uncountable.exists_pairwise_inter_eq_finset {ι : Type u} {α : Type v}
     [Uncountable ι] [DecidableEq α] (f : ι → Finset α) :
     ∃ (s : Set ι) (t : Finset α), Uncountable s ∧ s.Pairwise (f · ∩ f · = t) := by
-  rcases isRegular_aleph_one.exists_pairwise_inter_eq_finset aleph0_lt_aleph_one f
-    (by simp [← succ_aleph0]) with ⟨s, t, hs, ht⟩
+  rcases isRegular_aleph_one.exists_pairwise_inter_eq_finset aleph0_lt_aleph_one.ne' f (by simp)
+    with ⟨s, t, hs, ht⟩
   refine ⟨s, t, ?_, ht⟩
-  simpa [← aleph0_lt_mk_iff, hs] using aleph0_lt_aleph_one
+  simp [← aleph0_lt_mk_iff, hs]

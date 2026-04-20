@@ -5,8 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.Order.DirSupClosed
+
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Club sets and stationary sets
@@ -54,6 +57,10 @@ theorem IsClub.univ : IsClub (.univ (α := α)) :=
 theorem isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
   ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ IsClub.of_isEmpty _⟩
 
+theorem IsClub.nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty := by
+  by_contra!
+  simp [isClub_empty_iff, this] at hs
+
 -- Depends on #37304.
 proof_wanted IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t)
 
@@ -67,6 +74,10 @@ theorem IsClub.csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set �
 theorem IsClub.ciSup_mem {α} [ConditionallyCompleteLinearOrder α] {ι} {f : ι → α} [Nonempty ι]
     {s : Set α} (hs : IsClub s) (ht : .range f ⊆ s) (ht' : BddAbove (.range f)) : ⨆ i, f i ∈ s :=
   hs.csSup_mem ht (Set.range_nonempty _) ht'
+
+theorem isClub_Ioi [NoMaxOrder α] (x : α) : IsClub (Set.Ioi x) where
+  dirSupClosed := dirSupClosed_Ioi x
+  isCofinal := .of_not_bddAbove (not_bddAbove_Ioi x)
 
 section WellFoundedLT
 
@@ -100,6 +111,12 @@ theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : ℵ₀ < Order.co
   refine IsClub.sInter hα ?_ (by simpa)
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
+
+theorem IsClub.biInter {ι : Type u} {s : Set ι} {f : ι → Set α} (hα : ℵ₀ < Order.cof α)
+    (hs : Cardinal.lift.{v} #s < Cardinal.lift.{u} (Order.cof α)) (hf : ∀ i ∈ s, IsClub (f i)) :
+    IsClub (⋂ i ∈ s, f i) := by
+  rw [Set.biInter_eq_iInter]
+  exact iInter hα hs (by simpa)
 
 theorem IsClub.inter {s t : Set α} (hα : ℵ₀ < Order.cof α) (hs : IsClub s) (ht : IsClub t) :
     IsClub (s ∩ t) := by
@@ -164,6 +181,10 @@ theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : ℵ₀ < cof α
     refine .of_not_isCofinal fun h ↦ (Order.cof_le h).not_gt (hα.trans_le' ?_)
     simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
+lemma isClub_almost_fixed_points [NoMaxOrder α] {f : α → α} (hα' : ℵ₀ < Order.cof α)
+    (hα : typeLT α ≤ (Order.cof α).ord) : IsClub {x : α | ∀ y < x, f y < x} :=
+  IsClub.diag hα' hα fun x => isClub_Ioi (f x)
+
 end WellFoundedLT
 
 /-! ### Stationary sets -/
@@ -187,6 +208,11 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
 theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
 
+theorem IsStationary.not_bddAbove [NoMaxOrder α] (hs : IsStationary s) : ¬ BddAbove s := by
+  by_contra ⟨a, ha⟩
+  apply (hs (isClub_Ioi a)).ne_empty
+  simpa [Set.eq_empty_iff_forall_notMem, mem_upperBounds] using ha
+
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
   rw [not_isCofinal_iff] at hs
   intro t ht
@@ -198,6 +224,12 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
 
 proof_wanted isStationary_iff_not_isCofinal_compl (hα : Order.cof α ≤ ℵ₀) :
     IsStationary s ↔ ¬ IsCofinal (sᶜ)
+
+theorem IsStationary.inter_isClub [WellFoundedLT α] (hα : ℵ₀ < Order.cof α) (hs : IsStationary s)
+    (ht : IsClub t) : IsStationary (s ∩ t) := by
+  intro t' ht'
+  rw [Set.inter_assoc]
+  exact hs (ht.inter hα ht')
 
 /-- **Fodor's lemma,** or the **pressing down lemma:** if `α` has the order type of a regular
 cardinal, `s` is a stationary set, and `f : s → α` is a regressive function, there exists some
@@ -213,3 +245,86 @@ theorem exists_isStationary_preimage_singleton [WellFoundedLT α] {f : s → α}
   obtain ⟨a, hs, ha⟩ := hs <| .diag hα' hα fun a ↦ (hg a).1
   apply (hg (f ⟨a, hs⟩)).2 a
   simpa using ⟨hs, ha _ (hf ⟨a, hs⟩)⟩
+
+lemma exists_isStationary_preimage_singleton_of_cardinalMk_range_lt_cof [WellFoundedLT α]
+    {f : s → Set α} (hα : ℵ₀ < Order.cof α) (hs : IsStationary s)
+    (hf : #(Set.range f) < Order.cof α) : ∃ a, IsStationary (Subtype.val '' (f ⁻¹' {a})) := by
+  unfold IsStationary
+  by_contra!
+  choose g hg using this
+  apply (hs (.biInter hα (by simpa) fun i _ => (hg i).1)).ne_empty
+  rw [Set.eq_empty_iff_forall_notMem]
+  intro x hx
+  rw [Set.mem_inter_iff, Set.mem_iInter₂] at hx
+  apply Set.not_nonempty_iff_eq_empty.2 (hg (f ⟨x, hx.1⟩)).2
+  exists x
+  grind [Subtype.exists]
+
+/-- For regular cardinals `α < κ`, the set `{o < κ | cof o = α}` is stationary in `κ`. -/
+lemma Cardinal.IsRegular.isStationary_setOf_cof_eq {α κ : Cardinal.{u}} (hκ : κ.IsRegular)
+    (hα : α.IsRegular) (h : α < κ) : IsStationary {o : Set.Iio κ.ord | cof o = α} := by
+  intro C hC
+  haveI : NoMaxOrder (Set.Iio κ.ord) := noMaxOrder_Iio_ord hκ.aleph0_le
+  haveI : Fact (¬ IsMin κ.ord) := ⟨by simp [pos_iff_ne_zero.1 hκ.pos]⟩
+  rcases hC.nonempty with ⟨a, ha⟩
+  have := not_bddAbove_iff_isCofinal.2 hC.isCofinal
+  simp only [bddAbove_def, not_exists, not_forall, exists_prop, not_le] at this
+  choose! f hf₁ hf₂ using this
+  let g : Ordinal.{u} → Set.Iio κ.ord := fun x =>
+    Ordinal.limitRecOn x a (fun _ => f) fun x _ ih => ⨆ y : Set.Iio x, ih y.1 y.2
+  have hg0 : g 0 = a := by simp [g]
+  have hg_succ : ∀ x, g (Order.succ x) = f (g x) := by simp [g, -Order.succ_eq_add_one]
+  have hg_limit : ∀ x, Order.IsSuccLimit x → g x = ⨆ y : Set.Iio x, g y := by
+    simp +contextual [g, Ordinal.limitRecOn_limit]
+  have hg₁ : ∀ x < κ.ord, g x ∈ C := by
+    intro x hx
+    induction x using Ordinal.limitRecOn with
+    | zero => simpa [hg0]
+    | succ x ih =>
+      grind [Order.lt_succ]
+    | limit x hx' ih =>
+      simp only [hx', hg_limit]
+      haveI : Nonempty (Set.Iio x) := ⟨0, by simpa using hx'.bot_lt⟩
+      apply hC.ciSup_mem
+      · grind
+      · apply bddAbove_range_Iio_of_lt_cof
+        rwa [hκ.cof_ord, mk_Iio_ordinal, lift_lift, lift_lt, ← lt_ord]
+  have hg₂ : StrictMonoOn g (Set.Iio κ.ord) := by
+    intro x hx y hy h
+    simp only [Set.mem_Iio] at hx hy
+    induction y using Ordinal.limitRecOn generalizing x with
+    | zero => simp at h
+    | succ y ih =>
+      simp only [hg_succ]
+      apply (hf₂ _).trans_le'
+      rw [Order.lt_succ_iff, le_iff_lt_or_eq] at h
+      grind [Order.lt_succ]
+    | limit y hy' ih =>
+      simp only [hy', hg_limit]
+      apply (hf₂ _).trans_le
+      rw [← hg_succ]
+      refine le_ciSup_of_le ?_ (⟨Order.succ x, ?_⟩ : Set.Iio y) le_rfl
+      · apply bddAbove_range_Iio_of_lt_cof
+        rwa [hκ.cof_ord, mk_Iio_ordinal, lift_lift, lift_lt, ← lt_ord]
+      · simpa [-Order.succ_eq_add_one] using hy'.succ_lt h
+  simp only [Set.nonempty_def, Set.mem_inter_iff, Set.mem_setOf_eq]
+  refine ⟨g α.ord, ?_, ?_⟩
+  · rw [hg_limit _ (Cardinal.isSuccLimit_ord hα.aleph0_le),
+      Set.Iio.coe_iSup (bddAbove_range_Iio_of_lt_cof (by simpa [hκ.cof_ord])),
+      Ordinal.cof_iSup_Iio, hα.cof_ord]
+    · exact (hg₂.mono (Set.Iio_subset_Iio (Cardinal.ord_le_ord.2 h.le))).strictMono
+    · exact (Cardinal.isSuccLimit_ord hα.aleph0_le).isSuccPrelimit
+  · grind [Cardinal.ord_lt_ord]
+
+lemma Cardinal.IsRegular.card_eq_of_isStationary {c : Cardinal.{u}} (hc : c.IsRegular)
+    {s : Set (Set.Iio c.ord)} (hs : IsStationary s) : #s = Cardinal.lift.{u + 1} c := by
+  apply le_antisymm
+  · grw [mk_set_le]
+    simp
+  conv_lhs => rw [← hc.cof_ord, lift_cof, ← cof_Iio]
+  by_contra! h
+  haveI : NoMaxOrder (Set.Iio c.ord) := noMaxOrder_Iio_ord hc.aleph0_le
+  apply hs.not_bddAbove
+  contrapose! h
+  rw [not_bddAbove_iff_isCofinal] at h
+  exact Order.cof_le h

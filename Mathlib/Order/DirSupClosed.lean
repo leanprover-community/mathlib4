@@ -210,6 +210,14 @@ lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := by
   simpa using dirSupClosedOn_Iic a (D := .univ)
 
+lemma dirSupClosedOn_Ioi (a : α) : DirSupClosedOn D (Ioi a) := by
+  intro s _ hs hs' _ b hb
+  rcases hs' with ⟨c, hc⟩
+  exact (hs hc).trans_le (hb.1 hc)
+
+lemma dirSupClosed_Ioi (a : α) : DirSupClosed (Ioi a) := by
+  simpa using dirSupClosedOn_Ioi a (D := .univ)
+
 lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
   (isLowerSet_Iic a).dirSupInaccOn
 
