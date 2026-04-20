@@ -77,6 +77,14 @@ class DendriformRing (M) extends DendriformSemiring M, AddCommGroup M where
   right_id_neg a b : right a (- b) = - right a b
   right_neg_id a b : right (- a) b = - right a b
 
+/-- A dendriform algebra is a `DendriformSemiring` with a `Module` structure compatible with `≺` and
+`≻`. -/
+class DendriformAlgebra (R M) [CommSemiring R] extends DendriformSemiring M, Module R M where
+  smul_left' (r : R) (a b : M) : (r • a) ≺ b = r • (a ≺ b)
+  left_smul' (r : R) (a b : M) : a ≺ (r • b) = r • (a ≺ b)
+  smul_right' (r : R) (a b : M) : (r • a) ≻ b = r • (a ≻ b)
+  right_smul' (r : R) (a b : M) : a ≻ (r • b) = r • (a ≻ b)
+
 namespace NonUnitalDendriformSemiring
 
 variable {M} [NonUnitalDendriformSemiring M]
@@ -194,3 +202,23 @@ instance : Ring M where
 
 end DendriformRing
 
+namespace DendriformAlgebra
+
+variable {R M} [CommSemiring R] [DendriformAlgebra R M]
+variable (r : R) (a b : M)
+
+@[simp]
+lemma smul_left : (r • a) ≺ b = r • (a ≺ b) := smul_left' r a b
+
+@[simp]
+lemma left_smul : a ≺ (r • b) = r • (a ≺ b) := left_smul' r a b
+
+@[simp]
+lemma smul_right : (r • a) ≻ b = r • (a ≻ b) := smul_right' r a b
+
+@[simp]
+lemma right_smul : a ≻ (r • b) = r • (a ≻ b) := right_smul' r a b
+
+instance : Algebra R M := Algebra.ofModule (by simp) (by simp)
+
+end DendriformAlgebra
