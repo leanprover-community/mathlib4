@@ -520,7 +520,7 @@ theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
   simp_rw [map_eq_image]
   exact s.image_erase f.2 a
 
-theorem iterate_image [DecidableEq α] {f : α → α} {n : ℕ} :
+theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
     (Finset.image f)^[n] s = s.image f^[n] := by
   induction n with
   | zero => simp
