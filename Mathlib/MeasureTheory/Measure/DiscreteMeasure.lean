@@ -191,3 +191,4 @@ theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClas
 end DiscreteMeasure
 
 end MeasureTheory
+#lint
