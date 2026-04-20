@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
+public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 
@@ -689,11 +690,36 @@ class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B
 attribute [grind =>] Valuation.IsTrivialOn.eq_one
 
 variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
-  [v.IsTrivialOn A]
+  [hv : v.IsTrivialOn A]
 
 @[simp]
 theorem IsTrivialOn.valuation_algebraMap_le_one (a : A) : v (algebraMap A B a) ≤ 1 := by
   by_cases a = 0 <;> grind [zero_le']
+
+section Polynomial
+
+open Polynomial
+
+lemma valuation_aeval_monomial_eq_valuation_pow (w : B) (n : ℕ) {a : A} (ha : a ≠ 0) :
+    v ((monomial n a).aeval w) = (v w) ^ n := by
+  simp [← C_mul_X_pow_eq_monomial, map_mul, map_pow, one_mul, hv.eq_one a ha]
+
+theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : B) (hpos : 1 < v w)
+    {p : Polynomial A} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
+  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ _ ((leadingCoeff_ne_zero).mpr hp)]
+  nth_rw 1 [as_sum_range p, map_sum]
+  apply Valuation.map_sum_eq_of_lt _ (by simp)
+  intro i hi
+  simp only [Finset.mem_sdiff, Finset.mem_range, Nat.lt_add_one_iff, Finset.mem_singleton,
+    ← lt_iff_le_and_ne] at hi
+  simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
+  by_cases h0 : (p.coeff i) = 0
+  · simp [h0, map_zero, zero_mul, one_mul, hv.eq_one p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
+      pow_pos (lt_of_le_of_lt zero_le_one hpos) p.natDegree]
+  · simp [one_mul, hv.eq_one p.leadingCoeff (leadingCoeff_ne_zero.mpr hp),
+      hv.eq_one _ h0, one_mul, pow_lt_pow_right₀ hpos hi]
+
+end Polynomial
 
 end IsTrivialOn
 

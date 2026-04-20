@@ -327,8 +327,7 @@ lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X
      (hlt : 1 < v RatFunc.X) {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
-  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K K⟮X⟯
-    RatFunc.X hlt hp
+  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ .X hlt hp
   ext p
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
   exact (aeval_algebraMap_apply K⟮X⟯ X p).symm
