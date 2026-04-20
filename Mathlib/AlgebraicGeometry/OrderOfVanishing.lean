@@ -68,7 +68,6 @@ def ord (Z : X) (hZ : coheight Z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
 The order of vanishing of a non-zero element of the function field at any point is not zero. Since
 `Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element.
 -/
-@[simp]
 lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
     Scheme.ord Z hZ f ≠ 0 := (map_ne_zero (Scheme.ord Z hZ)).mpr hf
 
