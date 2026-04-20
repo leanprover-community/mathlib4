@@ -789,9 +789,9 @@ lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMul
   rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
   grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
 
-@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
+@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
     (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=
