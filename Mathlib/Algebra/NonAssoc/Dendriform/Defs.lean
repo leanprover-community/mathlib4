@@ -70,6 +70,13 @@ class DendriformSemiring (M) extends NonUnitalDendriformSemiring M, One M where
   right_id_one a : a ≠ 1 → right a 1 = 0
   one_mul_one_eq_one' : right 1 1 + left 1 1 = 1
 
+/-- A dendriform ring has a `Neg` instance compatible with both `≺` and `≻`. -/
+class DendriformRing (M) extends DendriformSemiring M, AddCommGroup M where
+  left_id_neg a b : left a (- b) = - left a b
+  left_neg_id a b : left (- a) b = - left a b
+  right_id_neg a b : right a (- b) = - right a b
+  right_neg_id a b : right (- a) b = - right a b
+
 namespace NonUnitalDendriformSemiring
 
 variable {M} [NonUnitalDendriformSemiring M]
@@ -153,4 +160,37 @@ instance : Semiring M where
     · simp [right_one ha, left_one ha]
 
 end DendriformSemiring
+
+namespace DendriformRing
+
+variable {M} [DendriformRing M]
+variable (a b c : M)
+
+@[simp]
+lemma neg_left : (- a) ≺ b = -(a ≺ b) := left_neg_id a b
+
+@[simp]
+lemma left_neg : a ≺ (- b) = -(a ≺ b) := left_id_neg a b
+
+@[simp]
+lemma neg_right : (- a) ≻ b = -(a ≻ b) := right_neg_id a b
+
+@[simp]
+lemma right_neg : a ≻ (- b) = -(a ≻ b) := right_id_neg a b
+
+@[simp]
+lemma sub_left : (a - b) ≺ c = a ≺ c - b ≺ c := by simp [sub_eq_add_neg]
+
+@[simp]
+lemma left_sub : a ≺ (b - c) = a ≺ b - a ≺ c := by simp [sub_eq_add_neg]
+
+@[simp]
+lemma sub_right : (a - b) ≻ c = a ≻ c - b ≻ c := by simp [sub_eq_add_neg]
+
+@[simp]
+lemma right_sub : a ≻ (b - c) = a ≻ b - a ≻ c := by simp [sub_eq_add_neg]
+
+instance : Ring M where
+
+end DendriformRing
 
