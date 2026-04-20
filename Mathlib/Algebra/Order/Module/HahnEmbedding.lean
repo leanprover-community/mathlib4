@@ -609,7 +609,7 @@ theorem eval_smul [IsOrderedAddMonoid R] [Archimedean R] (k : K) (x : M) :
       exact Submodule.smul_mem _ _ hy
     simp [f.evalCoeff_eq hy, f.evalCoeff_eq hy', LinearPMap.map_smul]
   have h' : ¬∃ y : f.val.domain, y.val - k • x ∈ ball K c := by
-    contrapose! h
+    contrapose h
     obtain ⟨y, hy⟩ := h
     use k⁻¹ • y
     have heq : (k⁻¹ • y).val - x = k⁻¹ • (y.val - k • x) := by
@@ -644,7 +644,7 @@ theorem archimedeanClassMk_le_of_eval_eq [IsOrderedAddMonoid R] [Archimedean R] 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem val_sub_ne_zero {x : M} (hx : x ∉ f.val.domain) (y : f.val.domain) : y.val - x ≠ 0 := by
-  contrapose! hx
+  contrapose hx
   obtain rfl : x = y.val := (sub_eq_zero.mp hx).symm
   simp
 
@@ -781,7 +781,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem extendFun_strictMono [IsOrderedAddMonoid R] [Archimedean R] {x : M}
     (hx : x ∉ f.val.domain) : StrictMono (f.extendFun hx) := by
   have hx' {c : K} (hc : c ≠ 0) : -c • x ∉ f.val.domain := by
-    contrapose! hx
+    contrapose hx
     rwa [neg_smul, neg_mem_iff, Submodule.smul_mem_iff _ hc] at hx
   -- only need to prove `0 < f v` for `0 < v = z - y`
   intro y z hyz
@@ -848,7 +848,7 @@ theorem truncLT_eval_mem_range_extendFun [IsOrderedAddMonoid R] [Archimedean R] 
     · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_lt hdc]
     rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc, eval, ofLex_toLex]
     apply f.evalCoeff_eq_zero
-    contrapose! h
+    contrapose h
     obtain ⟨y, hy⟩ := h
     exact ⟨y, Set.mem_of_mem_of_subset hy (by simpa using (ball_strictAnti K).antitone hdc)⟩
 

@@ -327,7 +327,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg (le_of_lt hx) _
+      positivity
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
           norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
@@ -434,7 +434,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine Real.Gamma_ne_zero fun n => ?_
     specialize hs n
-    contrapose! hs
+    contrapose hs
     rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
   · have : sin (↑π * s) ≠ 0 := by
       rw [Complex.sin_ne_zero_iff]

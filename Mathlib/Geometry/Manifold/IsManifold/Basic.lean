@@ -19,7 +19,7 @@ half-space (to get manifolds with boundaries) for which the changes of coordinat
 We define a model with corners as a map `I : H → E` embedding nicely the topological space `H` in
 the vector space `E` (or more precisely as a structure containing all the relevant properties).
 Given such a model with corners `I` on `(E, H)`, we define the groupoid of local
-homeomorphisms of `H` which are `C^n` when read in `E` (for any regularity `n : WithTop ℕ∞`).
+homeomorphisms of `H` which are `C^n` when read in `E` (for any regularity `n : ℕ∞ω`).
 With this groupoid at hand and the general machinery of charted spaces, we thus get the notion
 of `C^n` manifold with respect to any model with corners `I` on `(E, H)`.
 
@@ -90,7 +90,7 @@ So, it is important to use the above incantation to maximize the applicability o
 
 Even better, if the result should apply in a parallel way to smooth manifolds and to analytic
 manifolds, the last typeclass should be replaced with `[IsManifold I n M]`
-for `n : WithTop ℕ∞`.
+for `n : ℕ∞ω`.
 
 We also define `TangentSpace I (x : M)` as a type synonym of `E`, and `TangentBundle I M` as a
 type synonym for `Π (x : M), TangentSpace I x` (in the form of an
@@ -152,7 +152,6 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all that is needed to
@@ -185,7 +184,6 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
 def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -304,7 +302,6 @@ theorem range_eq_univ_of_not_isRCLikeNormedField (h : ¬ IsRCLikeNormedField �
     range I = univ := by
   simpa [h] using I.convex_range'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a set is `ℝ`-convex for some normed space structure, then it is `ℝ`-convex for the
 normed space structure coming from an `IsRCLikeNormedField 𝕜`. Useful when constructing model
 spaces to avoid diamond issues when populating the field `convex_range'`. -/
@@ -340,7 +337,6 @@ def ofConvexRange
 @[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
   ModelWithCorners.ofConvexRange
 
-set_option backward.isDefEq.respectTransparency false in
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI : RCLike 𝕜 := h.rclike
@@ -355,7 +351,6 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
       rfl
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, convex_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -364,7 +359,6 @@ protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
     simpa [h] using I.convex_range
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, uniqueDiffOn_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -498,7 +492,6 @@ end
 
 section ModelWithCornersProd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
@@ -639,7 +632,7 @@ section contDiffGroupoid
 /-! ### `C^n` functions on models with corners -/
 
 
-variable {m n : WithTop ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+variable {m n : ℕ∞ω} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
@@ -787,25 +780,25 @@ section IsManifold
 /-- Typeclass defining manifolds with respect to a model with corners, over a
 field `𝕜`. This definition includes the model with corners `I` (which might allow boundary, corners,
 or not, so this class covers both manifolds with boundary and manifolds without boundary), and
-a smoothness parameter `n : WithTop ℕ∞` (where `n = 0` means topological manifold, `n = ∞` means
+a smoothness parameter `n : ℕ∞ω` (where `n = 0` means topological manifold, `n = ∞` means
 smooth manifold and `n = ω` means analytic manifold). -/
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
+    (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M] : Prop
     extends HasGroupoid M (contDiffGroupoid n I)
 
 /-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
 theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
 
 theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
+    (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M]
     (h : ∀ e e' : OpenPartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 n (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
@@ -817,7 +810,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-- For any model with corners, the model space is a `C^n` manifold -/
 instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
+    {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
 
 end IsManifold
@@ -829,9 +822,9 @@ charted space with a structure groupoid, avoiding the need to specify the groupo
 `contDiffGroupoid n I` explicitly. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {n : WithTop ℕ∞} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {n : ℕ∞ω} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-protected theorem of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+protected theorem of_le {m n : ℕ∞ω} (hmn : m ≤ n)
     [IsManifold I n M] : IsManifold I m M := by
   have : HasGroupoid M (contDiffGroupoid m I) :=
     hasGroupoid_of_le (G₁ := contDiffGroupoid n I) (by infer_instance)
@@ -840,27 +833,27 @@ protected theorem of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 
 /-- A typeclass registering that a smoothness exponent is smaller than `∞`. Used to deduce that
 some manifolds are `C^n` when they are `C^∞`. -/
-class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
+class _root_.ENat.LEInfty (m : ℕ∞ω) where
   out : m ≤ ∞
 
 open ENat
 
-instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+instance (n : ℕ∞) : LEInfty (n : ℕ∞ω) := ⟨mod_cast le_top⟩
 
-instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+instance (n : ℕ) : LEInfty (n : ℕ∞ω) := ⟨mod_cast le_top⟩
 
-instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
-  inferInstanceAs (LEInfty (n : WithTop ℕ∞))
+instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : ℕ∞ω) :=
+  inferInstanceAs (LEInfty (n : ℕ∞ω))
 
-instance : LEInfty (1 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((1 : ℕ) : WithTop ℕ∞))
+instance : LEInfty (1 : ℕ∞ω) := inferInstanceAs (LEInfty ((1 : ℕ) : ℕ∞ω))
 
-instance : LEInfty (0 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((0 : ℕ) : WithTop ℕ∞))
+instance : LEInfty (0 : ℕ∞ω) := inferInstanceAs (LEInfty ((0 : ℕ) : ℕ∞ω))
 
-instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
+instance {a : ℕ∞ω} [IsManifold I ∞ M] [h : LEInfty a] :
     IsManifold I a M :=
   IsManifold.of_le h.out
 
-instance {a : WithTop ℕ∞} [IsManifold I ω M] :
+instance {a : ℕ∞ω} [IsManifold I ω M] :
     IsManifold I a M :=
   IsManifold.of_le le_top
 
@@ -899,7 +892,7 @@ theorem compatible_of_mem_maximalAtlas {e e' : OpenPartialHomeomorph M H}
     e.symm.trans e' ∈ contDiffGroupoid n I :=
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 
-lemma maximalAtlas_subset_of_le {m n : WithTop ℕ∞} (h : m ≤ n) :
+lemma maximalAtlas_subset_of_le {m n : ℕ∞ω} (h : m ≤ n) :
     maximalAtlas I n M ⊆ maximalAtlas I m M :=
   StructureGroupoid.maximalAtlas_mono (contDiffGroupoid_le h)
 
@@ -951,7 +944,7 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
 section
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
-  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : ℕ∞ω}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1002,7 +995,7 @@ end IsManifold
 
 theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ (e.singletonChartedSpace h) :=
   @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
@@ -1010,7 +1003,7 @@ theorem OpenPartialHomeomorph.isManifold_singleton
 
 theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+    {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
   (h.toOpenPartialHomeomorph f).isManifold_singleton (by simp)
@@ -1020,7 +1013,7 @@ namespace TopologicalSpace.Opens
 open TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I n M]
   (s : Opens M)
 
@@ -1060,6 +1053,16 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Identifying the tangent space at a normed space with the normed space itself.
+This canonical identification (which, in mathlib, is implemented using an abuse of definitional
+equality) is very prevalent in a number of places: this device allows making it explicit. -/
+def NormedSpace.fromTangentSpace (v : E) : TangentSpace 𝓘(𝕜, E) v ≃L[𝕜] E where
+  toFun v := v
+  invFun v := v
+  map_add' := by simp
+  map_smul' := by simp
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 

@@ -80,8 +80,9 @@ def limitπAlgHom (j) :
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
     commutes' := fun x => by
-      simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply R,
-        Types.Small.limitCone_pt, AlgEquiv.commutes]
+      simp only [Functor.comp_obj, Types.Small.limitCone_pt, Functor.const_obj_obj,
+        Types.Small.limitCone_π_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+        ← Shrink.algEquiv_apply R, AlgEquiv.commutes]
       rfl
     }
 
@@ -98,8 +99,8 @@ def limitCone : Cone F where
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
       naturality := fun _ _ f => by
-        ext : 1
-        exact AlgHom.coe_fn_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+        ext
+        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `AlgCat R` is a limit cone.
@@ -114,24 +115,18 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
       (fun s => rfl)
   · congr
     ext j
-    simp only [Functor.mapCone_π_app, forget_map, map_one, Pi.one_apply]
+    simp
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_mul, EquivLike.coe_apply]
-    apply map_mul
+    simp
+    rfl
   · ext j
-    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      equivShrink_symm_zero, EquivLike.coe_apply]
-    apply map_zero
+    simp
+    rfl
   · intro x y
     ext j
-    simp only [Functor.comp_obj, forget_obj, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
-      Types.Small.limitCone_pt, equivShrink_symm_add, EquivLike.coe_apply]
-    apply map_add
+    simp
+    rfl
   · intro r
     simp only [Equiv.algebraMap_def, Equiv.symm_symm]
     apply congrArg
@@ -153,7 +148,6 @@ lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgCat.{w} R) :=
 instance hasLimits : HasLimits (AlgCat.{w} R) :=
   AlgCat.hasLimitsOfSize.{w, w, u}
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
 instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :

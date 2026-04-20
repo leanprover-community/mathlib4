@@ -15,7 +15,7 @@ This file defines `foldImportedDecls`, a function for efficiently folding throug
 It splits the environment into parts, each of which is folded over in a separate thread.
 
 We also provide `foldCurrFileDecls` which loops through the declarations of the current module,
-without any parallellism.
+without any parallelism.
 -/
 
 variable {α : Type}
@@ -45,7 +45,8 @@ def visitConst (modName : Name) (errorRef : FoldDeclErrorRef)
 def foldModules (ngen : NameGenerator) (errorRef : FoldDeclErrorRef)
     (env : Environment) (init : α) (act : α → Name → ConstantInfo → MetaM α)
     (mctx : Meta.Context) (cctx : Core.Context)
-    (start stop : Nat) : EIO Exception α :=
+    (start stop : Nat) : EIO Exception α := do
+  let cctx := { cctx with initHeartbeats := ← IO.getNumHeartbeats }
   let go : MetaM α := do
     let mut a := init
     for i in start...stop do
@@ -60,7 +61,7 @@ def foldModules (ngen : NameGenerator) (errorRef : FoldDeclErrorRef)
   go.run' mctx {} |>.run' cctx { env, ngen }
 
 /-- Fold through all imported constants using `act`.
-This uses paralellism, with each thread independently folding over a subset of modules.
+This uses parallelism, with each thread independently folding over a subset of modules.
 The array of tasks is returned, so this function typically returns before all tasks have finished.
 The results can then be combined using `Array.foldl`. -/
 @[specialize]
@@ -70,7 +71,7 @@ public def foldImportedDecls (init : α) (cfg : Config)
   let env ← getEnv
   let numModules := env.header.moduleData.size
   let mctx := { keyedConfig := cfg.toConfigWithKey }
-  let cctx := { (← read) with maxHeartbeats := 0 }
+  let cctx ← read
   let errorRef ← IO.mkRef {}
   let mut tasks := #[]
   let mut start := 0
@@ -102,7 +103,7 @@ public def foldCurrFileDecls (init : α) (cfg : Config)
   setNGen parentNGen
   let go : MetaM α := env.constants.map₂.foldlM (visitConst modName errorRef act) init
   let result ← go.run' { keyedConfig := cfg.toConfigWithKey } {}
-    |>.run' { (← read) with maxHeartbeats := 0 } { env, ngen := childNGen }
+    |>.run' (← read) { env, ngen := childNGen }
   return (result, errorRef)
 
 end Lean.Meta

@@ -61,11 +61,11 @@ topology, continuous.
 Note: this definition should be used with an explicit universe parameter `u` for the size of the
 compact Hausdorff spaces mapping to `X`.
 -/
+@[implicit_reducible]
 def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : TopologicalSpace X :=
   let f : (Σ (i : (S : CompHaus.{u}) × C(S, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
   coinduced f inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma continuous_from_compactlyGenerated [TopologicalSpace X] [t : TopologicalSpace Y] (f : X → Y)
     (h : ∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) :
         Continuous[compactlyGenerated.{u} X, t] f := by
@@ -97,7 +97,6 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
       Sigma.forall]
     exact fun S f ↦ f.2
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by
@@ -365,7 +364,7 @@ instance to_compactlyCoherentSpace [CompactlyGeneratedSpace X] : CompactlyCohere
     fun K _ _ _ f hf ↦ h K f hf
 
 /-- A compactly coherent space that is Hausdorff is compactly generated. -/
-instance of_compactlyCoherentSpace_of_t2 [T2Space X] [CompactlyCoherentSpace X] :
+instance of_compactlyCoherentSpace_of_t2 [CompactlyCoherentSpace X] :
     CompactlyGeneratedSpace X := by
   apply compactlyGeneratedSpace_of_isClosed_of_t2
   intro s hs

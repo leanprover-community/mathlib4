@@ -41,9 +41,11 @@ variable [MonoidalCategory V]
 
 @[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
   associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
-  rightUnitor_hom_hom rightUnitor_inv_hom]
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
-  Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+  rightUnitor_hom_hom rightUnitor_inv_hom, reducible]
+instance instMonoidalCategory : MonoidalCategory (Action V G) where
+  tensorObj X Y := Action.mk (X.V ⊗ Y.V) _
+  tensorUnit := Action.mk (𝟙_ _) _
+  __ := Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
 theorem tensorUnit_ρ {g : G} :
@@ -55,7 +57,6 @@ theorem tensor_ρ {X Y : Action V G} {g : G} :
     @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ₘ Y.ρ g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
@@ -84,7 +85,6 @@ section
 
 variable [BraidedCategory V]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BraidedCategory (Action V G) :=
   .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
@@ -125,8 +125,8 @@ instance FunctorCategoryEquivalence.functorMonoidal :
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
 instance functorCategoryEquivalenceFunctorMonoidal :
-    (functorCategoryEquivalence V G).functor.Monoidal := by
-  dsimp only [functorCategoryEquivalence_functor]; infer_instance
+    (functorCategoryEquivalence V G).functor.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.functor.Monoidal
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
@@ -135,8 +135,8 @@ instance FunctorCategoryEquivalence.inverseMonoidal :
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :
-    (functorCategoryEquivalence V G).inverse.Monoidal := by
-  dsimp only [functorCategoryEquivalence_inverse]; infer_instance
+    (functorCategoryEquivalence V G).inverse.Monoidal :=
+  inferInstanceAs FunctorCategoryEquivalence.inverse.Monoidal
 
 @[simp]
 lemma FunctorCategoryEquivalence.functor_ε :
@@ -208,19 +208,18 @@ variable (G : Type u)
 
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/
-@[simps!]
+@[simps! hom_hom inv_hom]
 noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
 variable [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
-@[simps!]
+@[simps! hom_hom inv_hom]
 noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ trivial G X.V :=
   mkIso (Equiv.toIso {
@@ -229,8 +228,10 @@ noncomputable def leftRegularTensorIso (X : Action (Type u) G) :
     left_inv _ := Prod.ext rfl <| by simp
     right_inv _ := Prod.ext rfl <| by simp }) <| fun _ => by
       ext _
-      simp only [tensorObj_V, tensor_ρ, types_comp_apply, tensor_apply, ofMulAction_apply]
-      simp
+      simp only [tensorObj_V, tensor_ρ]
+      simp [types_tensorObj_def]
+      rfl
+
 
 /-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
 `G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
@@ -252,35 +253,33 @@ variable {G}
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) → G) :
-    (diagonalSuccIsoTensorTrivial G n).hom.hom f =
+    dsimp% (diagonalSuccIsoTensorTrivial G n).hom.hom f =
       (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction n with
   | zero => exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   | succ n hn =>
     refine Prod.ext rfl (funext fun x => ?_)
     induction x using Fin.cases
-    <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
-      Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
-      leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
-    <;> simp [ofMulAction_V, types_tensorObj_def, Fin.tail]
+    <;> simp_all [diagonalSuccIsoTensorTrivial, types_tensorObj_def]
+    <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
-    (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
+    dsimp% (diagonalSuccIsoTensorTrivial G n).inv.hom (g, f) =
       (g • Fin.partialProd f : Fin (n + 1) → G) := by
   induction n generalizing g with
   | zero =>
     funext (x : Fin 1)
     simp [diagonalSuccIsoTensorTrivial, diagonalOneIsoLeftRegular, Subsingleton.elim x 0,
-      ofMulAction_V]
+      ofMulAction_V, types_tensorObj_def, types_tensorUnit_def]
   | succ n hn =>
     funext x
-    induction x using Fin.cases
-    <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom,
-        tensorObj_V, types_comp_apply, leftRegularTensorIso_inv_hom, tensor_ρ, tensor_apply,
-        ofMulAction_apply]
-    <;> simp_all [types_tensorObj_def, mul_assoc, Fin.partialProd_succ', ofMulAction_V]
+    induction x using Fin.cases with
+    | zero => simp; rfl
+    | succ i =>
+      simpa [diagonalSuccIsoTensorTrivial, types_tensorObj_def, mul_assoc, Fin.partialProd_succ',
+        ofMulAction_V] using congrFun (hn (g * f 0) (Fin.tail f)) i
 
 end
 

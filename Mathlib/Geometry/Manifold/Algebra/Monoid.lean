@@ -25,21 +25,22 @@ open scoped Manifold ContDiff
 
 library_note «Design choices about smooth algebraic structures» /--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
-`IsManifold I n G`. This way we save users from adding both
-`[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
-lemmas hold true without the `IsManifold I n G` assumption, we're not aware of a
-mathematically interesting monoid on a topological manifold such that (a) the space is not a
-`IsManifold`; (b) the multiplication is `C^n` at `(a, b)` in the charts
-`extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
+   `IsManifold I n G`. This way we save users from adding both
+   `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
+   lemmas hold true without the `IsManifold I n G` assumption, we're not aware of a
+   mathematically interesting monoid on a topological manifold such that (a) the space is not a
+   `IsManifold`; (b) the multiplication is `C^n` at `(a, b)` in the charts
+   `extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
 
 2. Because of `ModelProd` we can't assume, e.g., that a `LieGroup` is modelled on `𝓘(𝕜, E)`. So,
-we formulate the definitions and lemmas for any model.
+   we formulate the definitions and lemmas for any model.
 
 3. While smoothness of an operation implies its continuity, lemmas like
-`continuousMul_of_contMDiffMul` can't be instances because otherwise Lean would have to search for
-`ContMDiffMul I n G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users needs
-`[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
-`[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
+   `continuousMul_of_contMDiffMul` can't be instances because otherwise Lean would have to search
+   for `ContMDiffMul I n G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users
+   need `[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
+   `[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better).
+-/
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
@@ -47,7 +48,7 @@ semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiri
 instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
   contMDiff_add : CMDiff n fun p : G × G ↦ p.1 + p.2
@@ -59,7 +60,7 @@ and `ContMDiffMul I n G`. -/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
   contMDiff_mul : CMDiff n fun p : G × G ↦ p.1 * p.2
@@ -67,23 +68,23 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 section ContMDiffMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : ℕ∞ω}
   {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H G] {E' : Type*} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
 @[to_additive]
-protected theorem ContMDiffMul.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+protected theorem ContMDiffMul.of_le {m n : ℕ∞ω} (hmn : m ≤ n)
     [h : ContMDiffMul I n G] : ContMDiffMul I m G := by
   have : IsManifold I m G := IsManifold.of_le hmn
   exact ⟨h.contMDiff_mul.of_le hmn⟩
 
 @[to_additive]
-instance {a : WithTop ℕ∞} [ContMDiffMul I ∞ G] [h : ENat.LEInfty a] : ContMDiffMul I a G :=
+instance {a : ℕ∞ω} [ContMDiffMul I ∞ G] [h : ENat.LEInfty a] : ContMDiffMul I a G :=
   ContMDiffMul.of_le h.out
 
 @[to_additive]
-instance {a : WithTop ℕ∞} [ContMDiffMul I ω G] : ContMDiffMul I a G :=
+instance {a : ℕ∞ω} [ContMDiffMul I ω G] : ContMDiffMul I a G :=
   ContMDiffMul.of_le le_top
 
 @[to_additive]
@@ -250,7 +251,7 @@ end ContMDiffMul
 
 section Monoid
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [Monoid G]
   [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G] {H' : Type*} [TopologicalSpace H']
@@ -264,7 +265,7 @@ theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G ↦ a ^ i
 
 /-- Morphism of additive `C^n` monoids. -/
 structure ContMDiffAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
-    (n : WithTop ℕ∞) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [AddMonoid G]
+    (n : ℕ∞ω) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [AddMonoid G]
     (G' : Type*) [TopologicalSpace G'] [ChartedSpace H' G'] [AddMonoid G']
     extends G →+ G' where
   contMDiff_toFun : CMDiff n toFun
@@ -272,7 +273,7 @@ structure ContMDiffAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : Model
 /-- Morphism of `C^n` monoids. -/
 @[to_additive]
 structure ContMDiffMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
-    (n : WithTop ℕ∞) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Monoid G] (G' : Type*)
+    (n : ℕ∞ω) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Monoid G] (G' : Type*)
     [TopologicalSpace G'] [ChartedSpace H' G'] [Monoid G'] extends
     G →* G' where
   contMDiff_toFun : CMDiff n toFun
@@ -310,7 +311,7 @@ section CommMonoid
 
 open Function
 
-variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {H : Type*} [TopologicalSpace H]
+variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {H : Type*} [TopologicalSpace H]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -439,7 +440,7 @@ end CommMonoid
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
+  [NormedSpace 𝕜 E] {n : ℕ∞ω}
 
 instance instContMDiffAddSelf : ContMDiffAdd 𝓘(𝕜, E) n E := by
   constructor
@@ -450,7 +451,7 @@ end
 
 section DivConst
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
   {G : Type*} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffMul I n G]

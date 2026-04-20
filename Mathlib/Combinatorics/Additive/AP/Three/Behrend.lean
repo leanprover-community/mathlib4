@@ -53,7 +53,6 @@ open Nat hiding log
 open Finset Metric Real WithLp
 open scoped Pointwise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
 The idea is that an arithmetic progression is contained on a line and the frontier of a strictly
 convex set does not contain lines. -/
@@ -389,7 +388,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     rw [cast_ne_zero]
     apply (nValue_pos hN).ne'
   rw [← le_div_iff₀']
-  · exact floor_le (div_nonneg (rpow_nonneg (cast_nonneg _) _) zero_le_two)
+  · exact floor_le (by positivity)
   apply zero_lt_two
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by

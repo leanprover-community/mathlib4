@@ -72,9 +72,7 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
     refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
     exact intervalIntegrable_rpow' (by linarith)
   · refine integrable_of_isBigO_exp_neg one_half_pos ?_ (Gamma_integrand_isLittleO _).isBigO
-    refine continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const ?_)
-    intro x hx
-    exact Or.inl ((zero_lt_one : (0 : ℝ) < 1).trans_le hx).ne'
+    exact continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind))
 
 end Real
 
@@ -523,7 +521,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       apply n_ih
       · intro m
         specialize hs (1 + m)
-        contrapose! hs
+        contrapose hs
         rw [← eq_sub_iff_add_eq] at hs
         rw [hs]
         push_cast
