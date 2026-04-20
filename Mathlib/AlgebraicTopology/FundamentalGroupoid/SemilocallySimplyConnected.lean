@@ -856,10 +856,8 @@ theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
     (h_rectangles : ∀ (i : Fin n),
         Path.Homotopic
-          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le)).trans (α i.succ))
-          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ)
-            (part.h_mono.monotone i.castSucc_lt_succ.le))))
+          ((γ.subpathOn (part.t i.castSucc) (part.t i.succ)).trans (α i.succ))
+          ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))))
     (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
       Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
     (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀) :
