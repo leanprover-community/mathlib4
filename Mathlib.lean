@@ -1453,6 +1453,7 @@ public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
 public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.BasedPath
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
@@ -1460,7 +1461,8 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SemilocallySimplyConnected
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover.Basic
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.UniversalCover.Covering
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BifibrantObjectHomotopy

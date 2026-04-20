@@ -6,23 +6,39 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SemilocallySimplyConnected
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.CompactOpen
-public import Mathlib.Topology.Covering.Basic
-public import Mathlib.Topology.Homotopy.Lifting
+public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.Order.Basic
 
 /-!
-# Universal cover
+# Based paths
 
-This file introduces the based-path quotient model for the universal cover based at a point `x₀`.
+For a topological space `X` and basepoint `x₀ : X`, this file introduces the space
+`BasedPath x₀` of continuous maps `γ : C(I, X)` with `γ 0 = x₀`, topologised as a subspace
+of the compact-open topology on `C(I, X)`. It then develops the path-component machinery of
+`endpoint ⁻¹' U` that feeds the universal-cover construction.
 
-The underlying point of the universal cover is still represented by an endpoint together with a
-homotopy class of paths from `x₀`, but the topology is not the naive sigma topology. Instead it is
-the quotient topology coming from the compact-open based-path space.
+## Main definitions
+
+* `BasedPath x₀`: the compact-open space of based paths out of `x₀`.
+* `BasedPath.endpoint`, `BasedPath.toPath`, `BasedPath.ofPath`, `BasedPath.append`:
+  basic API for operating on based paths.
+* `BasedPath.deformTerminal`: a reparameterisation that traverses a compressed tail of the
+  original path and then a new path from its endpoint.
+* `Path.initialSegmentFamily`: the family `t ↦ γ|_[0, t]` of initial segments of a path.
+
+## Main results
+
+* `BasedPath.isOpenMap_endpoint`: the endpoint map `BasedPath x₀ → X` is open when `X` is
+  locally path-connected.
+* `BasedPath.joinedIn_preimage_of_append`: appending a path inside `U` moves a based path
+  within the same path component of `endpoint ⁻¹' U`.
+* `BasedPath.exists_open_nhd_pathComponent_preimage`: variable-endpoint tube/component theorem.
+* `BasedPath.isOpen_pathComponent_preimage`: in a semilocally simply connected, locally
+  path-connected space, path components of `endpoint ⁻¹' U` (for good `U`) are open.
+* `BasedPath.pathComponent_preimage_saturated`: path components of `endpoint ⁻¹' U` are
+  invariant under endpoint-preserving homotopy.
 -/
-
-set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -86,14 +102,15 @@ def ofPath {y : X} (γ : Path x₀ y) : BasedPath x₀ :=
   ext t
   rfl
 
-@[simp] theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y := by
+theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y := by
   simp [endpoint, ofPath, γ.target]
 
 /-- Append a path at the endpoint of a based path. -/
-noncomputable def append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) : BasedPath x₀ :=
+noncomputable def append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
+    BasedPath x₀ :=
   ofPath (γ.toPath.trans δ)
 
-@[simp] theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
+theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
     endpoint (append γ δ) = y := endpoint_ofPath _
 
 /-- The tail of a based path from time `a` to the endpoint. -/
@@ -164,8 +181,8 @@ end BasedPath
 
 namespace Path
 
-theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} (h : t₀ ≤ t₁)
-    {U : Set X} (hU : Set.Icc t₀ t₁ ⊆ γ.extend ⁻¹' U) :
+theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
+    (h : t₀ ≤ t₁) {U : Set X} (hU : Set.Icc t₀ t₁ ⊆ γ.extend ⁻¹' U) :
     Set.range (γ.truncateOfLE h) ⊆ U := by
   rintro _ ⟨s, rfl⟩
   dsimp [truncateOfLE, truncate]
@@ -200,6 +217,7 @@ end Path
 
 namespace BasedPath
 
+/-- The endpoint map `BasedPath x₀ → X` is an open map when `X` is locally path-connected. -/
 theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
     IsOpenMap (endpoint (x₀ := x₀)) := by
   classical
@@ -247,7 +265,8 @@ theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
       have h1bad : (1 : I) ∈ ⋂ KU ∈ Tbad, KU.1ᶜ := by
         simp [Tbad]
       exact (isOpen_biInter_finset hbadOpen).mem_nhds h1bad
-  rcases exists_Ioc_subset_of_mem_nhds' hNnhds (show (0 : I) < 1 by simp) with ⟨a₀, ha₀, hIoc⟩
+  rcases exists_Ioc_subset_of_mem_nhds' hNnhds (show (0 : I) < 1 by simp)
+    with ⟨a₀, ha₀, hIoc⟩
   let a : ℝ := (((a₀ : I) : ℝ) + 1) / 2
   let b : ℝ := (a + 1) / 2
   have ha₀_nonneg : 0 ≤ ((a₀ : I) : ℝ) := a₀.2.1
@@ -456,7 +475,8 @@ theorem exists_open_nhd_pathComponent_preimage
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U) :
-    ∃ N : Set (BasedPath x₀), IsOpen N ∧ α ∈ N ∧ N ⊆ endpoint (x₀ := x₀) ⁻¹' U ∧
+    ∃ N : Set (BasedPath x₀), IsOpen N ∧ α ∈ N ∧
+      N ⊆ endpoint (x₀ := x₀) ⁻¹' U ∧
       ∀ β ∈ N, JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) α β := by
   classical
   obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_partition_in_slsc_neighborhoods hX
@@ -514,21 +534,25 @@ theorem exists_open_nhd_pathComponent_preimage
   · -- `N` is open.
     have hN_split : N =
         {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} ∩
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
+              β.1 s ∈ T.U i} ∩
         {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} := rfl
     rw [hN_split]
     refine IsOpen.inter ?_ ?_
     · -- Segment conditions: pulled back from `C(I, X)` tubes.
       have hrewrite : {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
+              β.1 s ∈ T.U i} =
           ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
-              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} := by
+              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
+                β.1 s ∈ T.U i} := by
         ext β; simp
       rw [hrewrite]
       apply isOpen_iInter_of_finite
       intro i
       have heq : {β : BasedPath x₀ | ∀ s : I,
-              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
+              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
+                β.1 s ∈ T.U i} =
           (fun β : BasedPath x₀ => (β.1 : C(I, X))) ⁻¹'
             {f : C(I, X) | Set.MapsTo f
               (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (T.U i)} := by
@@ -578,7 +602,8 @@ theorem exists_open_nhd_pathComponent_preimage
       intro i
       have hab : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
         part.h_mono.monotone i.castSucc_lt_succ.le
-      have hα_sub : Set.range (α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
+      have hα_sub :
+          Set.range (α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
         hα_tube.subpathOn_range_subset i
       have hβ_sub :
           Set.range (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
@@ -849,688 +874,3 @@ theorem pathComponent_preimage_saturated
   pathComponentIn_congr (joinedIn_preimage_singleton_of_homotopic x₀ hy h).symm
 
 end BasedPath
-
-/-- The endpoint-plus-homotopy-class model for the universal cover. The topology is supplied below
-as the quotient topology from `BasedPath x₀`. -/
-abbrev UniversalCover (x₀ : X) :=
-  Σ x : X, Path.Homotopic.Quotient x₀ x
-
-namespace UniversalCover
-
-variable {x₀ x : X}
-
-/-- The quotient map from based paths to endpoint/path-homotopy classes. -/
-def ofBasedPath (x₀ : X) : BasedPath x₀ → UniversalCover x₀
-  | ⟨γ, hγ⟩ =>
-      ⟨γ 1, Path.Homotopic.Quotient.mk
-        ({ toContinuousMap := γ, source' := hγ, target' := rfl } : Path x₀ (γ 1))⟩
-
-instance instTopologicalSpaceUniversalCover (x₀ : X) : TopologicalSpace (UniversalCover x₀) :=
-  TopologicalSpace.coinduced (ofBasedPath x₀) inferInstance
-
-@[continuity] theorem continuous_ofBasedPath (x₀ : X) : Continuous (ofBasedPath x₀) :=
-  continuous_coinduced_rng
-
-theorem surjective_ofBasedPath (x₀ : X) : Function.Surjective (ofBasedPath x₀) := by
-  intro z
-  rcases z with ⟨x, q⟩
-  induction q using Quotient.inductionOn with
-  | h γ =>
-      refine ⟨⟨γ.toContinuousMap, γ.source⟩, ?_⟩
-      cases γ with
-      | mk f hs ht =>
-          subst x
-          rfl
-
-theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) := by
-  refine ⟨?_, surjective_ofBasedPath x₀⟩
-  exact ⟨rfl⟩
-
-/-- The raw quotient relation on based paths induced by endpoint-preserving homotopy. -/
-abbrev BasedPathSetoid (x₀ : X) : Setoid (BasedPath x₀) :=
-  Setoid.ker (ofBasedPath x₀)
-
-instance instSetoidBasedPath (x₀ : X) : Setoid (BasedPath x₀) :=
-  BasedPathSetoid x₀
-
-/-- The raw quotient of based paths by endpoint-preserving homotopy. -/
-abbrev RawUniversalCover (x₀ : X) :=
-  Quotient (BasedPathSetoid x₀)
-
-instance instTopologicalSpaceRawUniversalCover (x₀ : X) :
-    TopologicalSpace (RawUniversalCover x₀) := by
-  delta RawUniversalCover BasedPathSetoid
-  infer_instance
-
-/-- The canonical quotient map from based paths to the raw universal-cover quotient. -/
-def quotientMk (x₀ : X) : BasedPath x₀ → RawUniversalCover x₀ :=
-  @Quotient.mk' _ (BasedPathSetoid x₀)
-
-@[continuity] theorem continuous_quotientMk (x₀ : X) :
-    Continuous (quotientMk (x₀ := x₀)) :=
-  continuous_quotient_mk'
-
-/-- The raw quotient maps continuously to `UniversalCover`. -/
-noncomputable def quotientToUniversalCover (x₀ : X) :
-    RawUniversalCover x₀ → UniversalCover x₀ :=
-  Quotient.lift (ofBasedPath x₀) fun _ _ h => h
-
-@[simp] theorem quotientToUniversalCover_mk (x₀ : X) (p : BasedPath x₀) :
-    quotientToUniversalCover x₀ (quotientMk x₀ p) = ofBasedPath x₀ p :=
-  rfl
-
-@[continuity] theorem continuous_quotientToUniversalCover (x₀ : X) :
-    Continuous (quotientToUniversalCover x₀) :=
-  (continuous_ofBasedPath x₀).quotient_lift fun _ _ h => h
-
-/-- `UniversalCover x₀` really is the quotient of based paths by endpoint-preserving homotopy. -/
-noncomputable def quotientHomeomorph (x₀ : X) :
-    RawUniversalCover x₀ ≃ₜ UniversalCover x₀ :=
-  by
-    let f : C(BasedPath x₀, UniversalCover x₀) := ⟨ofBasedPath x₀, continuous_ofBasedPath x₀⟩
-    let hq : IsQuotientMap f := isQuotientMap_ofBasedPath x₀
-    simpa [RawUniversalCover, BasedPathSetoid] using
-      (Topology.IsQuotientMap.homeomorph hq)
-
-@[simp] theorem quotientHomeomorph_mk (x₀ : X) (p : BasedPath x₀) :
-    quotientHomeomorph x₀ (quotientMk x₀ p) = ofBasedPath x₀ p := by
-  rfl
-
-/-- The endpoint projection. -/
-def proj : UniversalCover x₀ → X :=
-  Sigma.fst
-
-@[simp] theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
-    proj ⟨x, q⟩ = x := rfl
-
-@[simp] theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
-    proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
-  rfl
-
-@[simp] theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
-    ofBasedPath x₀ (BasedPath.ofPath p) = ⟨y, Path.Homotopic.Quotient.mk p⟩ := by
-  refine Sigma.ext p.target ?_
-  apply Path.Homotopic.hpath_hext
-  intro t
-  rfl
-
-/-- Equality in the universal cover induces an endpoint-preserving homotopy of representative
-based paths. -/
-theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
-    (h : ofBasedPath x₀ α = ofBasedPath x₀ β) :
-    Path.Homotopic
-      (α.toPath.cast rfl (by
-        have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-          simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) h
-        exact heq.symm))
-      β.toPath := by
-  cases α with
-  | mk αf hα0 =>
-    cases β with
-    | mk βf hβ0 =>
-      simp only [ofBasedPath, Sigma.mk.injEq] at h
-      obtain ⟨hend, hq⟩ := h
-      let p : Path x₀ (βf 1) :=
-        ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)).cast
-          rfl hend.symm
-      have hp_heq : HEq
-          (Path.Homotopic.Quotient.mk
-            ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)))
-          (Path.Homotopic.Quotient.mk p) := by
-        apply Path.Homotopic.hpath_hext
-        intro t
-        rfl
-      have hq' : Path.Homotopic.Quotient.mk p =
-          Path.Homotopic.Quotient.mk
-            ({ toContinuousMap := βf, source' := hβ0, target' := rfl } : Path x₀ (βf 1)) := by
-        exact eq_of_heq (HEq.trans hp_heq.symm hq)
-      exact Path.Homotopic.Quotient.exact hq'
-
-/-- If two based paths have the same endpoint and homotopic `toPath`s (after casting to a
-common target), then they represent the same element of the `UniversalCover`. -/
-theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
-    (heq : BasedPath.endpoint α = BasedPath.endpoint β)
-    (h : Path.Homotopic (α.toPath.cast rfl heq.symm) β.toPath) :
-    ofBasedPath x₀ α = ofBasedPath x₀ β := by
-  obtain ⟨αf, hα0⟩ := α
-  obtain ⟨βf, hβ0⟩ := β
-  change αf 1 = βf 1 at heq
-  change (⟨αf 1, Path.Homotopic.Quotient.mk
-      (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1))⟩ : Σ _ : X, _) =
-    ⟨βf 1, Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1))⟩
-  refine Sigma.ext heq ?_
-  have h1 :
-      HEq (Path.Homotopic.Quotient.mk (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)))
-        (Path.Homotopic.Quotient.mk
-          ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm)) :=
-    Path.Homotopic.hpath_hext (fun _ => rfl)
-  have h2 :
-      Path.Homotopic.Quotient.mk ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm) =
-        Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1)) :=
-    Quotient.sound h
-  exact h1.trans (heq_of_eq h2)
-
-@[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
-  rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
-  change Continuous fun γ : BasedPath x₀ => γ.1 1
-  exact (continuous_eval_const (1 : I)).comp continuous_subtype_val
-
-theorem isOpenMap_proj [LocPathConnectedSpace X] (x₀ : X) :
-    IsOpenMap (proj (x₀ := x₀)) := by
-  intro s hs
-  have hs_pre : IsOpen (ofBasedPath x₀ ⁻¹' s) :=
-    (isQuotientMap_ofBasedPath x₀).isOpen_preimage.2 hs
-  have himage :
-      proj (x₀ := x₀) '' s = BasedPath.endpoint '' (ofBasedPath x₀ ⁻¹' s) := by
-    ext x
-    constructor
-    · rintro ⟨z, hz, rfl⟩
-      rcases surjective_ofBasedPath x₀ z with ⟨γ, rfl⟩
-      exact ⟨γ, hz, by simp [proj_ofBasedPath]⟩
-    · rintro ⟨γ, hsγ, hγ⟩
-      exact ⟨ofBasedPath x₀ γ, hsγ, by simpa [proj_ofBasedPath] using hγ⟩
-  rw [himage]
-  exact BasedPath.isOpenMap_endpoint x₀ _ hs_pre
-
-/-- A point in the universal cover determines a point of the fiber over its endpoint. -/
-abbrev Fiber (x₀ x : X) :=
-  {p : UniversalCover x₀ // proj p = x}
-
-/-- The fiber over `x` is equivalent to the quotient of paths from `x₀` to `x`. -/
-noncomputable def fiberEquiv (x₀ x : X) :
-    Fiber x₀ x ≃ Path.Homotopic.Quotient x₀ x where
-  toFun p := p.1.2.cast rfl p.2.symm
-  invFun q := ⟨⟨x, q⟩, by simp [proj]⟩
-  left_inv p := by
-    rcases p with ⟨⟨y, q⟩, hp⟩
-    dsimp [proj] at hp ⊢
-    subst hp
-    simp
-  right_inv q := by
-    change q.cast rfl rfl = q
-    simp
-
-/-! ### Sheet construction over a good neighborhood
-
-Below we construct, for each point `x` and a good neighborhood `U` of `x`, the sheets indexed by
-the homotopy classes `q : Path.Homotopic.Quotient x₀ x`. -/
-
-/-- The path component (in `endpoint ⁻¹' U`) of the based path `ofPath p`. -/
-def basedPathComponent (U : Set X) {y : X} (p : Path x₀ y) : Set (BasedPath x₀) :=
-  pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
-
-/-- The sheet over `U` (with `x ∈ U`) corresponding to a homotopy class
-`q : Path.Homotopic.Quotient x₀ x`, expressed as a set of based paths. -/
-noncomputable def basedPathSheet (U : Set X) (hxU : x ∈ U)
-    (q : Path.Homotopic.Quotient x₀ x) : Set (BasedPath x₀) :=
-  Quotient.liftOn q (fun p : Path x₀ x => basedPathComponent U p)
-    fun _ _ h => BasedPath.pathComponent_preimage_saturated hxU h
-
-@[simp] theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
-    basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p := rfl
-
-theorem basedPathSheet_subset_endpoint_preimage (U : Set X) (hxU : x ∈ U)
-    (q : Path.Homotopic.Quotient x₀ x) :
-    basedPathSheet U hxU q ⊆ BasedPath.endpoint (x₀ := x₀) ⁻¹' U := by
-  induction q using Quotient.inductionOn with
-  | h p =>
-    intro β hβ
-    exact hβ.target_mem
-
-/-- The sheet over `U` corresponding to `q`, viewed as a subset of `UniversalCover x₀`. -/
-noncomputable def sheet (U : Set X) (hxU : x ∈ U)
-    (q : Path.Homotopic.Quotient x₀ x) : Set (UniversalCover x₀) :=
-  ofBasedPath x₀ '' basedPathSheet U hxU q
-
-theorem sheet_subset_proj_preimage (U : Set X) (hxU : x ∈ U)
-    (q : Path.Homotopic.Quotient x₀ x) :
-    sheet U hxU q ⊆ proj (x₀ := x₀) ⁻¹' U := by
-  rintro _ ⟨α, hα, rfl⟩
-  change BasedPath.endpoint α ∈ U
-  exact basedPathSheet_subset_endpoint_preimage U hxU q hα
-
-/-- Two based paths with equal `ofBasedPath` images lie in the same path component of any
-endpoint preimage of a set containing their common endpoint.
-
-This is the saturation property of sheets under the quotient map `ofBasedPath`. -/
-theorem pathComponent_preimage_eq_of_ofBasedPath_eq
-    {U : Set X} {α β : BasedPath x₀}
-    (hα_end : BasedPath.endpoint α ∈ U)
-    (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
-    pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α =
-      pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) β := by
-  have hβ_end : BasedPath.endpoint β ∈ U := by
-    have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-      simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
-    exact heq ▸ hα_end
-  exact BasedPath.pathComponent_preimage_saturated (x₀ := x₀) hβ_end
-    (toPath_homotopic_of_ofBasedPath_eq hαβ)
-
-/-- Membership in a based-path component is preserved under equality in the universal cover. -/
-theorem mem_basedPathComponent_of_ofBasedPath_eq {U : Set X} {y : X} {p : Path x₀ y}
-    {α β : BasedPath x₀} (hβ : β ∈ basedPathComponent U p)
-    (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
-    α ∈ basedPathComponent U p := by
-  have hα_end : BasedPath.endpoint α ∈ U := by
-    have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
-      simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
-    exact heq ▸ hβ.target_mem
-  change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
-  have hself : α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α :=
-    mem_pathComponentIn_self hα_end
-  rw [pathComponent_preimage_eq_of_ofBasedPath_eq hα_end hαβ,
-    pathComponentIn_congr hβ] at hself
-  exact hself
-
-/-- The preimage of a sheet under `ofBasedPath` is the corresponding `basedPathSheet`.
-This expresses that the sheet is saturated under the `ofBasedPath` quotient. -/
-theorem preimage_sheet (U : Set X) (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
-    ofBasedPath x₀ ⁻¹' sheet U hxU q = basedPathSheet U hxU q := by
-  apply Set.Subset.antisymm
-  · intro α hα
-    obtain ⟨β, hβ, hαβ⟩ := hα
-    induction q using Quotient.inductionOn with
-    | h p =>
-      change β ∈ basedPathComponent U p at hβ
-      change α ∈ basedPathComponent U p
-      exact mem_basedPathComponent_of_ofBasedPath_eq hβ hαβ.symm
-  · intro α hα
-    exact ⟨α, hα, rfl⟩
-
-theorem isOpen_sheet [LocPathConnectedSpace X] (hX : SemilocallySimplyConnected X)
-    (U : Set X) (hU_open : IsOpen U) (hxU : x ∈ U)
-    (q : Path.Homotopic.Quotient x₀ x) :
-    IsOpen (sheet U hxU q) := by
-  rw [(isQuotientMap_ofBasedPath x₀).isOpen_preimage.symm]
-  rw [preimage_sheet]
-  induction q using Quotient.inductionOn with
-  | h p => exact BasedPath.isOpen_pathComponent_preimage hX hU_open _
-
-theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
-    ofBasedPath x₀ (BasedPath.ofPath p) ∈ sheet U hxU (Path.Homotopic.Quotient.mk p) :=
-  ⟨BasedPath.ofPath p, mem_pathComponentIn_self
-    (by simpa [BasedPath.endpoint, BasedPath.ofPath, p.target] using hxU), rfl⟩
-
-/-- Sheet surjection onto `U`: every point of `U` is the projection of a point of the sheet. -/
-theorem sheet_surjOn [LocPathConnectedSpace X]
-    {U : Set X} (hU_pathConn : IsPathConnected U)
-    (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
-    (sheet U hxU q).SurjOn (proj (x₀ := x₀)) U := by
-  intro v hvU
-  induction q using Quotient.inductionOn with
-  | h p =>
-    have hp_end : BasedPath.endpoint (BasedPath.ofPath p) ∈ U :=
-      (BasedPath.endpoint_ofPath p).symm ▸ hxU
-    obtain ⟨δ, hδU⟩ := hU_pathConn.exists_path hxU hvU
-    let δ' : Path (BasedPath.endpoint (BasedPath.ofPath p)) v :=
-      δ.cast (BasedPath.endpoint_ofPath p) rfl
-    have hδ'_range : Set.range δ' ⊆ U := by
-      rintro _ ⟨t, rfl⟩
-      exact hδU ⟨t, rfl⟩
-    let γ := BasedPath.append (BasedPath.ofPath p) δ'
-    have h_joined : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
-        (BasedPath.ofPath p) γ :=
-      BasedPath.joinedIn_preimage_of_append (BasedPath.ofPath p) hp_end δ' hδ'_range
-    have hγ_in : γ ∈ basedPathComponent U p := h_joined
-    refine ⟨ofBasedPath x₀ γ, ⟨γ, hγ_in, rfl⟩, ?_⟩
-    change BasedPath.endpoint γ = v
-    exact BasedPath.endpoint_append _ _
-
-/-- Sheets over the same good neighborhood, indexed by `Path.Homotopic.Quotient`, are pairwise
-disjoint. -/
-theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
-    {U : Set X}
-    (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (hxU : x ∈ U) :
-    Pairwise fun (q₁ q₂ : Path.Homotopic.Quotient x₀ x) =>
-      Disjoint (sheet U hxU q₁) (sheet U hxU q₂) := by
-  intro q₁ q₂ hne
-  refine Set.disjoint_iff.mpr ?_
-  rintro e ⟨he₁, he₂⟩
-  apply hne
-  induction q₁ using Quotient.inductionOn with
-  | h p₁ =>
-    induction q₂ using Quotient.inductionOn with
-    | h p₂ =>
-      obtain ⟨α₁, hα₁, rfl⟩ := he₁
-      obtain ⟨α₂, hα₂, hαeq⟩ := he₂
-      change α₁ ∈ basedPathComponent U p₁ at hα₁
-      change α₂ ∈ basedPathComponent U p₂ at hα₂
-      have hα₁_end : BasedPath.endpoint α₁ ∈ U := hα₁.target_mem
-      have h_same : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
-          pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ :=
-        pathComponent_preimage_eq_of_ofBasedPath_eq hα₁_end hαeq.symm
-      have hp₁_end : BasedPath.endpoint (BasedPath.ofPath p₁) ∈ U :=
-        (BasedPath.endpoint_ofPath p₁).symm ▸ hxU
-      have h_joined_p : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
-          (BasedPath.ofPath p₁) (BasedPath.ofPath p₂) := by
-        have h_α₁_eq_p₁ : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p₁) :=
-          pathComponentIn_congr hα₁
-        have h_α₂_eq_p₂ : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ =
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p₂) :=
-          pathComponentIn_congr hα₂
-        have hp₁_mem : BasedPath.ofPath p₁ ∈
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p₂) := by
-          rw [← h_α₂_eq_p₂, ← h_same, h_α₁_eq_p₁]
-          exact mem_pathComponentIn_self hp₁_end
-        exact hp₁_mem.symm
-      have h_end_eq : BasedPath.endpoint (BasedPath.ofPath p₁) =
-          BasedPath.endpoint (BasedPath.ofPath p₂) := by
-        rw [BasedPath.endpoint_ofPath, BasedPath.endpoint_ofPath]
-      have h_hom := BasedPath.toPath_homotopic_of_joinedIn_slsc
-        hU_slsc hp₁_end h_end_eq h_joined_p
-      have h_uc_eq : ofBasedPath x₀ (BasedPath.ofPath p₁) =
-          ofBasedPath x₀ (BasedPath.ofPath p₂) :=
-        ofBasedPath_eq_of_homotopic_toPath h_end_eq h_hom
-      -- Extract `⟦p₁⟧ = ⟦p₂⟧` from the `ofBasedPath` equality.
-      change (Path.Homotopic.Quotient.mk p₁ : Path.Homotopic.Quotient x₀ x) =
-        Path.Homotopic.Quotient.mk p₂
-      rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_uc_eq
-      exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_uc_eq).2
-
-/-- Sheets exhaust `proj ⁻¹' U`: every element of the preimage lies in some sheet. -/
-theorem sheet_exhaustive [LocPathConnectedSpace X]
-    {U : Set X} (hU_pathConn : IsPathConnected U)
-    (hxU : x ∈ U) :
-    (proj (x₀ := x₀) ⁻¹' U) ⊆ ⋃ q : Path.Homotopic.Quotient x₀ x, sheet U hxU q := by
-  intro e he
-  obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ e
-  change BasedPath.endpoint α ∈ U at he
-  -- Get a path from `endpoint α` to `x` inside `U`.
-  obtain ⟨η, hη_range⟩ := hU_pathConn.exists_path he hxU
-  -- Use `p := α.toPath.trans η : Path x₀ x` as the sheet index.
-  let p : Path x₀ x := α.toPath.trans η
-  refine Set.mem_iUnion.mpr ⟨Path.Homotopic.Quotient.mk p, α, ?_, rfl⟩
-  -- Show α ∈ basedPathComponent U p.
-  change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
-  -- `BasedPath.ofPath p = append α η`, so α is joined to it by `joinedIn_preimage_of_append`.
-  have h_join : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α
-      (BasedPath.append α η) :=
-    BasedPath.joinedIn_preimage_of_append α he η hη_range
-  -- `BasedPath.append α η = BasedPath.ofPath p` by definition.
-  change JoinedIn _ α (BasedPath.ofPath (α.toPath.trans η)) at h_join
-  exact h_join.symm
-
-/-- **Step 6 (sheet injectivity).** In a good neighborhood `U`, the projection `proj` is
-injective on each sheet. -/
-theorem sheet_proj_injOn [LocPathConnectedSpace X]
-    {U : Set X}
-    (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
-    (sheet U hxU q).InjOn (proj (x₀ := x₀)) := by
-  rintro _ ⟨α₁, hα₁, rfl⟩ _ ⟨α₂, hα₂, rfl⟩ h_proj
-  rw [proj_ofBasedPath, proj_ofBasedPath] at h_proj
-  have hα₁_end : BasedPath.endpoint α₁ ∈ U :=
-    basedPathSheet_subset_endpoint_preimage U hxU q hα₁
-  induction q using Quotient.inductionOn with
-  | h p =>
-    change α₁ ∈ basedPathComponent U p at hα₁
-    change α₂ ∈ basedPathComponent U p at hα₂
-    have h_joined : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ α₂ :=
-      hα₁.symm.trans hα₂
-    have h_homotopic : Path.Homotopic (α₁.toPath.cast rfl h_proj.symm) α₂.toPath :=
-      BasedPath.toPath_homotopic_of_joinedIn_slsc hU_slsc hα₁_end h_proj h_joined
-    exact ofBasedPath_eq_of_homotopic_toPath h_proj h_homotopic
-
-/-- **Step 7.** The endpoint projection `proj` is a covering map under
-`SemilocallySimplyConnected X`, `LocPathConnectedSpace X`, and `PathConnectedSpace X`. -/
-theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X) :
-    IsCoveringMap (proj (x₀ := x₀)) := by
-  intro x
-  -- Get a good neighborhood of `x`.
-  obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood hX x
-  -- Shorthand.
-  let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q => sheet U hxU q
-  -- Nonempty instances needed by `trivializationDiscrete`.
-  have _ne_ι : Nonempty (Path.Homotopic.Quotient x₀ x) :=
-    ⟨Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)⟩
-  have _ne_fun : Nonempty (X → UniversalCover x₀) :=
-    ⟨fun _ => ofBasedPath x₀ (BasedPath.ofPath (PathConnectedSpace.somePath x₀ x₀))⟩
-  -- Build the trivialization.
-  have h_open_iff : ∀ q : Path.Homotopic.Quotient x₀ x, ∀ {W : Set X}, W ⊆ U →
-      (IsOpen W ↔ IsOpen (proj (x₀ := x₀) ⁻¹' W ∩ S q)) := by
-    intro q W hWU
-    constructor
-    · intro hW_open
-      exact (hW_open.preimage (continuous_proj x₀)).inter (isOpen_sheet hX U hU_open hxU q)
-    · intro h_open_inter
-      -- Use surjectivity of sheet → U and `isOpenMap_proj`.
-      have h_image_eq : proj (x₀ := x₀) '' (proj (x₀ := x₀) ⁻¹' W ∩ S q) = W := by
-        ext v
-        constructor
-        · rintro ⟨e, ⟨hv1, _⟩, rfl⟩
-          exact hv1
-        · intro hvW
-          have hvU : v ∈ U := hWU hvW
-          obtain ⟨e, he_sheet, he_proj⟩ := sheet_surjOn hU_pathConn hxU q hvU
-          refine ⟨e, ⟨?_, he_sheet⟩, he_proj⟩
-          change proj (x₀ := x₀) e ∈ W
-          rw [he_proj]; exact hvW
-      rw [← h_image_eq]
-      exact isOpenMap_proj x₀ _ h_open_inter
-  have h_inj : ∀ q, (S q).InjOn (proj (x₀ := x₀)) :=
-    fun q => sheet_proj_injOn hU_slsc hxU q
-  have h_surj : ∀ q, (S q).SurjOn (proj (x₀ := x₀)) U :=
-    fun q => sheet_surjOn hU_pathConn hxU q
-  have h_disjoint : Pairwise (Function.onFun Disjoint S) := by
-    unfold Function.onFun
-    exact sheet_pairwise_disjoint hU_slsc hxU
-  have h_exhaustive : proj (x₀ := x₀) ⁻¹' U ⊆ ⋃ q, S q :=
-    sheet_exhaustive hU_pathConn hxU
-  haveI _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
-    Path.Homotopic.Quotient.discreteTopology hX x₀ x
-  refine (IsEvenlyCovered.of_trivialization (t :=
-    IsOpen.trivializationDiscrete (f := proj (x₀ := x₀))
-      S U hU_open h_open_iff h_inj h_surj h_disjoint h_exhaustive) ?_).to_isEvenlyCovered_preimage
-  rw [IsOpen.trivializationDiscrete_baseSet]
-  exact hxU
-
-/-- **Step 8.** Fibers of the universal cover are discrete; immediate from the covering-map
-property via `IsEvenlyCovered.discreteTopology_fiber`. -/
-theorem discreteTopology_fiber [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ x : X) :
-    DiscreteTopology (proj (x₀ := x₀) ⁻¹' {x}) :=
-  ((isCoveringMap hX x₀) x).discreteTopology_fiber
-
-/-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
-private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
-    Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) := by
-  -- Family of based paths: `F_fn t s = α(s * t)` — at `t = 0` constant at x₀, at `t = 1` α.
-  have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := by
-    intro s t
-    refine ⟨mul_nonneg s.2.1 t.2.1, ?_⟩
-    exact mul_le_one₀ s.2.2 t.2.1 t.2.2
-  let F_cm : I → C(I, X) := fun t =>
-    ⟨fun s => α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩, by
-      refine α.1.continuous.comp ?_
-      exact Continuous.subtype_mk (by fun_prop) _⟩
-  have hF_cont : Continuous F_cm := by
-    refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    have hst_cont : Continuous (fun ts : I × I =>
-        (⟨((ts.2 : ℝ) * (ts.1 : ℝ)), hst_mem ts.2 ts.1⟩ : I)) := by
-      refine Continuous.subtype_mk ?_ _
-      exact ((continuous_induced_dom.comp continuous_snd).mul
-        (continuous_induced_dom.comp continuous_fst))
-    exact α.1.continuous.comp hst_cont
-  let F : I → BasedPath x₀ := fun t =>
-    ⟨F_cm t, by
-      change α.1 ⟨(0 : ℝ) * (t : ℝ), _⟩ = x₀
-      have h0 : ((0 : I) : ℝ) * (t : ℝ) = 0 := by simp
-      rw [show (⟨(0 : ℝ) * (t : ℝ), hst_mem 0 t⟩ : I) = (0 : I) from Subtype.ext (by simp)]
-      exact α.2⟩
-  have hF_bp_cont : Continuous F := by
-    exact Continuous.subtype_mk hF_cont _
-  -- Both boundary endpoints are `x₀`.
-  have h_F0_end :
-      BasedPath.endpoint (F 0) = BasedPath.endpoint (BasedPath.ofPath (Path.refl x₀)) := by
-    change α.1 ⟨(1 : ℝ) * (0 : ℝ), _⟩ = (BasedPath.ofPath (Path.refl x₀)).1 1
-    rw [show (⟨(1 : ℝ) * (0 : ℝ), hst_mem 1 0⟩ : I) = (0 : I) from Subtype.ext (by simp)]
-    simpa [BasedPath.ofPath] using α.2
-  have h_start :
-      ofBasedPath x₀ (F 0) = ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀)) := by
-    refine ofBasedPath_eq_of_homotopic_toPath h_F0_end ?_
-    have h_paths_eq : (F 0).toPath.cast rfl h_F0_end.symm =
-        (BasedPath.ofPath (Path.refl x₀)).toPath := by
-      ext s
-      change α.1 ⟨(s : ℝ) * (0 : ℝ), _⟩ = x₀
-      rw [show (⟨(s : ℝ) * (0 : ℝ), hst_mem s 0⟩ : I) = (0 : I) from Subtype.ext (by simp)]
-      exact α.2
-    rw [h_paths_eq]
-  have h_end : ofBasedPath x₀ (F 1) = ofBasedPath x₀ α := by
-    congr 1
-    ext s
-    change α.1 ⟨(s : ℝ) * (1 : ℝ), _⟩ = α.1 s
-    rw [show (⟨(s : ℝ) * (1 : ℝ), hst_mem s 1⟩ : I) = s from Subtype.ext (by simp)]
-  refine ⟨⟨⟨fun t => ofBasedPath x₀ (F t), ?_⟩, ?_, ?_⟩⟩
-  · exact (continuous_ofBasedPath x₀).comp hF_bp_cont
-  · exact h_start
-  · exact h_end
-
-/-- **Step 9.** The universal cover is path-connected. -/
-theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
-    PathConnectedSpace (UniversalCover x₀) := by
-  refine ⟨⟨ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))⟩, fun z₁ z₂ => ?_⟩
-  obtain ⟨α₁, rfl⟩ := surjective_ofBasedPath x₀ z₁
-  obtain ⟨α₂, rfl⟩ := surjective_ofBasedPath x₀ z₂
-  exact (joined_basepoint_of_ofBasedPath α₁).symm.trans (joined_basepoint_of_ofBasedPath α₂)
-
-/-- The lift through the covering map `proj` of a path `γ : Path (endpoint α) y` starting at
-`ofBasedPath α` ends at `ofBasedPath (append α γ)`. This is the key ingredient for the
-simply-connectedness proof. -/
-private theorem liftPath_apply_one_eq_ofBasedPath_append
-    [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) {α : BasedPath x₀} {y : X}
-    (γ : Path (BasedPath.endpoint α) y) :
-    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
-      (by simpa [BasedPath.endpoint] using γ.source) 1 =
-      ofBasedPath x₀ (BasedPath.append α γ) := by
-  let Γ : C(I, UniversalCover x₀) := by
-    refine ⟨fun t => ofBasedPath x₀ (BasedPath.append α (Path.initialSegmentFamily γ t)), ?_⟩
-    exact (continuous_ofBasedPath x₀).comp <| Continuous.subtype_mk (by
-      refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-      simpa [BasedPath.append, BasedPath.ofPath] using
-        Path.trans_continuous_family (fun _ : I => α.toPath)
-          (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily γ)
-          (Path.continuous_initialSegmentFamily_uncurry γ)) _
-  have hΓ_lifts : proj (x₀ := x₀) ∘ Γ = γ := by
-    ext t
-    simpa [Γ, BasedPath.endpoint] using
-      (BasedPath.endpoint_append α (Path.initialSegmentFamily γ t))
-  have hΓ_zero : Γ 0 = ofBasedPath x₀ α := by
-    have h0_hom :
-        Path.Homotopic
-          ((α.toPath.trans (Path.initialSegmentFamily γ 0)).cast rfl
-            (by simpa [BasedPath.endpoint] using γ.source.symm))
-          α.toPath := by
-      rw [Path.initialSegmentFamily_zero]
-      simpa using Path.Homotopic.trans_refl_cast α.toPath rfl
-        (by simp)
-    have h0_end : BasedPath.endpoint (BasedPath.append α (Path.initialSegmentFamily γ 0)) =
-        BasedPath.endpoint α := by
-      trans γ 0
-      · exact BasedPath.endpoint_append α (Path.initialSegmentFamily γ 0)
-      · simpa [BasedPath.endpoint] using γ.source
-    exact ofBasedPath_eq_of_homotopic_toPath (x₀ := x₀) h0_end h0_hom
-  have hΓ_eq_lift :
-      Γ = (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
-        (by simpa [BasedPath.endpoint] using γ.source) := by
-    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
-      (e := ofBasedPath x₀ α)
-      (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2 ?_
-    exact ⟨hΓ_lifts, hΓ_zero⟩
-  calc
-    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
-        (by simpa [BasedPath.endpoint] using γ.source) 1 = Γ 1 := by
-      simp [hΓ_eq_lift]
-    _ = ofBasedPath x₀ (BasedPath.append α γ) := by
-      simpa [Γ] using
-        congrArg (fun δ => ofBasedPath x₀ (BasedPath.append α δ)) (Path.initialSegmentFamily_one γ)
-
-theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X) :
-    SimplyConnectedSpace (UniversalCover x₀) := by
-  rw [simply_connected_iff_loops_nullhomotopic]
-  refine ⟨pathConnectedSpace x₀, ?_⟩
-  intro z p
-  obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ z
-  let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) := p.map (continuous_proj x₀)
-  have hγ0 : γ 0 = BasedPath.endpoint α := by
-    change proj (p 0) = BasedPath.endpoint α
-    rw [p.source]
-    rfl
-  have hp_eq_lift :
-      (p : C(I, UniversalCover x₀)) =
-        (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
-    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
-      (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2 ?_
-    exact ⟨by ext t; rfl, p.source⟩
-  have h_end : ofBasedPath x₀ (BasedPath.append α γ) = ofBasedPath x₀ α := by
-    calc
-      ofBasedPath x₀ (BasedPath.append α γ) =
-          (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 1 := by
-        symm
-        exact liftPath_apply_one_eq_ofBasedPath_append hX γ
-      _ = p 1 := by
-        rw [← hp_eq_lift]
-        rfl
-      _ = ofBasedPath x₀ α := p.target
-  have h_append_eq :
-      Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
-    have h_end' :
-        ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
-          ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
-      simpa [BasedPath.append, BasedPath.ofPath] using h_end
-    have h_end'' :
-        (⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk (α.toPath.trans γ)⟩ :
-          UniversalCover x₀) =
-        ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩ := by
-      simpa [ofBasedPath_ofPath] using h_end'
-    exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_end'').2
-  have hγ_null :
-      (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
-          (BasedPath.endpoint α) (BasedPath.endpoint α)) =
-        Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by
-    let qα : Path.Homotopic.Quotient x₀ (BasedPath.endpoint α) :=
-      Path.Homotopic.Quotient.mk α.toPath
-    calc
-      Path.Homotopic.Quotient.mk γ =
-          Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.refl (BasedPath.endpoint α))
-            (Path.Homotopic.Quotient.mk γ) := by simp
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα)
-            (Path.Homotopic.Quotient.mk γ) := by simp
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.symm qα)
-            (Path.Homotopic.Quotient.trans qα (Path.Homotopic.Quotient.mk γ)) := by
-          exact Path.Homotopic.Quotient.trans_assoc _ _ _
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.symm qα)
-            (Path.Homotopic.Quotient.mk (α.toPath.trans γ)) := by
-          rw [Path.Homotopic.Quotient.mk_trans]
-      _ = Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα := by
-          rw [h_append_eq]
-      _ = Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by simp
-  rw [← Path.Homotopic.Quotient.eq]
-  apply (isCoveringMap hX x₀).injective_path_homotopic_map (ofBasedPath x₀ α) (ofBasedPath x₀ α)
-  simpa [γ, Path.Homotopic.Quotient.mk_map] using hγ_null
-
-/-- **Step 11.** Universal property of the universal cover: any continuous map `f : A → X` from a
-simply connected, locally path-connected space `A` lifts uniquely to the universal cover, after
-specifying a lift `e₀ : UniversalCover x₀` of any point `a₀ : A`.
-
-This is a thin wrapper over `IsCoveringMap.existsUnique_continuousMap_lifts` applied to
-`UniversalCover.isCoveringMap`. -/
-theorem existsUnique_continuousMap_lifts {A : Type*} [TopologicalSpace A]
-    [SimplyConnectedSpace A] [LocPathConnectedSpace A]
-    [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X)
-    (f : C(A, X)) (a₀ : A) (e₀ : UniversalCover x₀) (he : proj e₀ = f a₀) :
-    ∃! F : C(A, UniversalCover x₀), F a₀ = e₀ ∧ proj ∘ F = f :=
-  (isCoveringMap hX x₀).existsUnique_continuousMap_lifts f a₀ e₀ he
-
-end UniversalCover
