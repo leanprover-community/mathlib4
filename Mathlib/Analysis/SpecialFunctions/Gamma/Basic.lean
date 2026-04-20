@@ -408,18 +408,8 @@ def Gamma (s : ℝ) : ℝ :=
 set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
     Gamma s = ∫ x in Ioi 0, exp (-x) * x ^ (s - 1) := by
-  rw [Gamma, Complex.Gamma_eq_integral (by rwa [Complex.ofReal_re] : 0 < Complex.re s)]
-  dsimp only [Complex.GammaIntegral]
-  simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
-  suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
-      ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
-    conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
-    rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
-  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-  push_cast
-  rw [Complex.ofReal_cpow (le_of_lt hx)]
-  push_cast; rfl
+  rw [Gamma, Complex.Gamma_eq_integral (RCLike.ofReal_pos.mp hs), Complex.GammaIntegral_ofReal,
+    Complex.ofReal_re]
 
 theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   simp_rw [Gamma]
@@ -521,7 +511,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       apply n_ih
       · intro m
         specialize hs (1 + m)
-        contrapose hs
+        contrapose! hs
         rw [← eq_sub_iff_add_eq] at hs
         rw [hs]
         push_cast
