@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Data.ZMod.QuotientRing
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.IntegralDomain
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -123,6 +124,13 @@ theorem finite_cardQuot_heightOneSpectrum_le (B : ℕ) :
 theorem finite_absNorm_heightOneSpectrum_le [IsDedekindDomain R] [Module.Free ℤ R] (B : ℕ) :
     {p : IsDedekindDomain.HeightOneSpectrum R | p.asIdeal.absNorm ≤ B}.Finite :=
   finite_cardQuot_heightOneSpectrum_le B
+
+instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
+  ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
+
+instance [IsDedekindDomain R] [Module.Free ℤ R] :
+    Northcott fun p : IsDedekindDomain.HeightOneSpectrum R ↦ p.asIdeal.absNorm :=
+  ⟨Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le⟩
 
 variable (R) in
 /--

@@ -175,8 +175,7 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
 
 variable (X Y f) in
 /-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
-def setOf_sublevelLeft_subset [AddCommGroup F] [Module ℝ F]
-    (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
+def setOf_sublevelLeft_subset (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
 
 include ne_X kX hfx hfx' cY hfy hfy' in

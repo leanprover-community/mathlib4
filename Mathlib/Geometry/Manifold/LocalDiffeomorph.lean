@@ -57,7 +57,7 @@ local diffeomorphism, manifold
 
 -/
 
-@[expose] public section
+public noncomputable section
 
 open Manifold Set TopologicalSpace
 
@@ -152,7 +152,7 @@ variable {f : M → N} {x : M}
 variable {I I' J n}
 
 /-- An arbitrary choice of local inverse of `f` near `x`. -/
-noncomputable def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
     PartialDiffeomorph J I N M n := (Classical.choose hf).symm
 
 lemma localInverse_open_source (hf : IsLocalDiffeomorphAt I J n f x) :
@@ -225,12 +225,12 @@ end IsLocalDiffeomorphAt
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on `s`** iff it is a local diffeomorphism
 at each `x : s`. -/
-def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
+@[expose] def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=
   ∀ x : s, IsLocalDiffeomorphAt I J n f x
 
 /-- `f : M → N` is a **`C^n` local diffeomorphism** iff it is a local diffeomorphism
 at each `x ∈ M`. -/
-def IsLocalDiffeomorph (f : M → N) : Prop :=
+@[expose] def IsLocalDiffeomorph (f : M → N) : Prop :=
   ∀ x : M, IsLocalDiffeomorphAt I J n f x
 
 variable {I J n} in
@@ -317,7 +317,7 @@ lemma IsLocalDiffeomorph.isOpen_range (hf : IsLocalDiffeomorph I J n f) : IsOpen
   (hf.isOpenMap).isOpen_range
 
 /-- The image of a local diffeomorphism is open. -/
-def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
+@[expose] def IsLocalDiffeomorph.image (hf : IsLocalDiffeomorph I J n f) : Opens N :=
   ⟨range f, hf.isOpen_range⟩
 
 lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.1 = range f :=
@@ -327,7 +327,7 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 -- This argument implies a `LocalDiffeomorphOn f s` for `s` open is a `PartialDiffeomorph`
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def IsLocalDiffeomorph.diffeomorphOfBijective
+def IsLocalDiffeomorph.diffeomorphOfBijective
     (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
@@ -369,7 +369,7 @@ variable {I I' J n}
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≠ 0`, the differential `df_x`
 is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
+@[expose] def IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : n ≠ 0) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (f x) where
   toFun := mfderiv% f x
@@ -400,7 +400,7 @@ lemma IsLocalDiffeomorphAt.mfderivToContinuousLinearEquiv_coe
 
 /-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≠ 0`)
 is a linear equivalence. -/
-noncomputable def Diffeomorph.mfderivToContinuousLinearEquiv
+def Diffeomorph.mfderivToContinuousLinearEquiv
     (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) (x : M) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (Φ x) :=
   (Φ.isLocalDiffeomorph x).mfderivToContinuousLinearEquiv hn
@@ -410,7 +410,7 @@ lemma Diffeomorph.mfderivToContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ 
 
 /-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≠ 0`),
 each differential is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
+def IsLocalDiffeomorph.mfderivToContinuousLinearEquiv
     (hf : IsLocalDiffeomorph I J n f) (hn : n ≠ 0) (x : M) :
     TangentSpace I x ≃L[𝕜] TangentSpace J (f x) :=
   (hf x).mfderivToContinuousLinearEquiv hn
