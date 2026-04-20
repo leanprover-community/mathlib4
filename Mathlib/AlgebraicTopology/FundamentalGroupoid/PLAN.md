@@ -13,7 +13,7 @@ The implementation should reuse the `#31576` machinery rather than duplicate any
 
 ## Status on This Branch
 
-As of commit `74ec3326354` plus the follow-up proof completed in this worktree:
+As of commit `74ec3326354` plus the follow-up proofs completed in this worktree:
 
 - Step 1 is implemented as `BasedPath.joinedIn_preimage_of_append`.
 - Step 2 is implemented as `BasedPath.exists_open_nhd_pathComponent_preimage`.
@@ -28,21 +28,40 @@ As of commit `74ec3326354` plus the follow-up proof completed in this worktree:
   `UniversalCover.preimage_sheet`,
   `UniversalCover.isOpen_sheet`,
   `UniversalCover.mem_sheet_self`.
+- Step 6 is implemented via:
+  `BasedPath.toPath_homotopic_of_joinedIn_slsc` (the rectangle homotopy lemma) and
+  `UniversalCover.sheet_proj_injOn`. Supporting lemma
+  `UniversalCover.ofBasedPath_eq_of_homotopic_toPath` bridges homotopy to `UniversalCover` equality.
+- Step 7 helpers:
+  `UniversalCover.sheet_surjOn`, `UniversalCover.sheet_pairwise_disjoint`,
+  `UniversalCover.sheet_exhaustive`.
+- Step 7 (`UniversalCover.isCoveringMap`) is implemented using
+  `IsOpen.trivializationDiscrete` with the sheet family.
+- Step 8 (`UniversalCover.discreteTopology_fiber`) derives from the covering-map result.
+- Step 9 (`UniversalCover.pathConnectedSpace`) is implemented via the direct
+  quotient-model construction `joined_basepoint_of_ofBasedPath` using the
+  reparameterization `(s, t) ↦ α.1 (s * t)`.
 
-The remaining `sorry`s are now concentrated in steps 6, 7, 9, and 10.
+The remaining `sorry` is in step 10.
 
-The next missing ingredient is more specific than the original plan stated:
+Step 6 was completed via a direct rectangle-homotopy construction
+(`BasedPath.toPath_homotopic_of_joinedIn_slsc`) rather than the globalization route
+originally proposed: given `α, β` joined inside `endpoint ⁻¹' U` with the same endpoint
+`v ∈ U`, we build an explicit `Path.Homotopy (α'.trans L) (β.trans (refl v))` using the
+endpoint trace `L(t) = endpoint (F t)` of the joining path `F`, combine it with `L ≃ refl v`
+(from `hU_slsc`), and conclude `α.toPath ≃ β.toPath` via three `trans_refl`-style steps.
 
-- Step 6 needs a globalization lemma of the form:
-  if `α` and `β` are joined inside `BasedPath.endpoint ⁻¹' U`, then there exists a path
-  `δ : Path (endpoint α) (endpoint β)` with `Set.range δ ⊆ U` such that
-  `Path.Homotopic (α.toPath.trans δ) β.toPath`.
-
-This is the global version of the local “final rung” statement already proved in step 2.
-Once this lemma exists, sheet injectivity follows by applying it to two points over the same
-endpoint and then killing the resulting loop in `U` with the SLSC uniqueness hypothesis.
-The current plan should therefore be read as requiring this intermediate theorem before the
-existing step-6 statement can be completed cleanly.
+Step 10 remains as `sorry` and requires identifying the covering-map lift of a path
+`γ : Path (endpoint α) y` at `ofBasedPath α` with `ofBasedPath (append α γ)`. This is a
+canonical-lift computation that requires either (a) an explicit construction via `Path.truncate`
+plus continuity, or (b) a proof that under `fiberEquiv` the monodromy action on fibers is
+right-multiplication in `Path.Homotopic.Quotient`. Both routes involve substantial casting
+between the propositional equality `γ.extend 0 = endpoint α` and the definitional path source.
+Once this lemma exists, the structure of the proof is:
+- both `p₁, p₂ : Path z₁ z₂` lift their projections `γ_i = proj ∘ p_i` to the same endpoint;
+- by the canonical-lift lemma, `⟦α.toPath.trans γ_i⟧` is determined by `z_1, z_2`;
+- left-cancellation in the groupoid gives `⟦γ_1⟧ = ⟦γ_2⟧`;
+- `IsCoveringMap.injective_path_homotopic_map` then yields `⟦p_1⟧ = ⟦p_2⟧`.
 
 ## Current Foundation
 
