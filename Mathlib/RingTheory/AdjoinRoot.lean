@@ -462,9 +462,9 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
   .ofAlgHom
     (mapAlgHom f p q h.symm.dvd)
     (mapAlgHom f.symm q p <| by
-      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
+      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+        .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
@@ -473,9 +473,9 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
 
 @[simp] lemma symm_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
     (mapAlgEquiv f p q h).symm = mapAlgEquiv f.symm q p (by
-      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
+      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+        .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
@@ -1032,12 +1032,12 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
-                  (by rw [Ideal.map_map, AlgEquiv.toRingEquiv_eq_coe,
+                  (by rw [Ideal.map_map,
                       ← AlgEquiv.coe_ringHom_commutes, ← AdjoinRoot.algebraMap_eq,
                       AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
-                    RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
+                    RingHom.toFun_eq_coe, Ideal.quotientMap_mk,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
                     Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 

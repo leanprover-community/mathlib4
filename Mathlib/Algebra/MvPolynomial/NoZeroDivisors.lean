@@ -77,12 +77,11 @@ lemma degrees_mul_eq (hp : p ≠ 0) (hq : q ≠ 0) :
 
 end Degrees
 
-set_option backward.isDefEq.respectTransparency false in
 theorem totalDegree_mul_of_isDomain {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     totalDegree (f * g) = totalDegree f + totalDegree g := by
-  cases exists_wellOrder σ
-  simp [← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
+  cases exists_wellFoundedGT σ
+  simp [← degree_degLexDegree, MonomialOrder.degree_mul hf hg]
 
 theorem totalDegree_le_of_dvd_of_isDomain {f g : MvPolynomial σ R}
     (h : f ∣ g) (hg : g ≠ 0) :

@@ -69,7 +69,7 @@ lemma cons_zero_eq_single_zero : cons y (0 : Fin n →₀ M) = single 0 y := by
   ext j
   cases j using Fin.cases <;> simp
 
-lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y :=  by
+lemma cons_zero_single_eq_single_succ : cons 0 (single i y) = single i.succ y := by
   ext j
   cases j using Fin.cases <;> simp [single_apply]
 

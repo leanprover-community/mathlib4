@@ -524,7 +524,6 @@ The intersection `V` in the glue data associated to a locally directed diagram. 
 noncomputable
 def V (i j : J) : (F.obj i).Opens := ⨆ (k : Σ k, (k ⟶ i) × (k ⟶ j)), (F.map k.2.1).opensRange
 
-set_option backward.isDefEq.respectTransparency false in
 lemma V_self (i) : V F i i = ⊤ :=
   top_le_iff.mp (le_iSup_of_le ⟨i, 𝟙 _, 𝟙 _⟩ (by simp [Scheme.Hom.opensRange_of_isIso]))
 
@@ -695,7 +694,6 @@ def glueData : Scheme.GlueData where
       ← Iso.inv_comp_eq, Scheme.Hom.isoOpensRange_inv_comp]
     exact (Scheme.homOfLE_ι _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
     F.map f ≫ (glueData F).ι j = (glueData F).ι i := by
   have : IsIso (V F ↓i ↓j).ι := by

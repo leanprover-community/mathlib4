@@ -9,6 +9,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sober
 
 /-!
 # The Krull dimension of a topological space
@@ -60,116 +61,6 @@ theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     IsInducing.topologicalKrullDim_le (h.homeomorph f).symm.isClosedEmbedding.toIsInducing
   le_antisymm fwd bwd
 
-
-namespace IrreducibleCloseds
-
-variable {U X : Type*} [TopologicalSpace X] [TopologicalSpace U] (f : U → X) (h : Continuous f)
-
-/--
-Alternate definition of `map` not requiring the map to be closed, instead taking the closure of the
-image.
--/
-def map' (T : IrreducibleCloseds U) : {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} where
-  val := {
-    carrier := closure (f '' T.1)
-    is_irreducible' := IsIrreducible.closure <|
-      IsIrreducible.image T.is_irreducible' f (Continuous.continuousOn h)
-    is_closed' := isClosed_closure
-  }
-  property := nonempty_iff_ne_empty.mp
-    (Nonempty.mono (closure_subset_preimage_closure_image h (s := T))
-    (closure_nonempty_iff.mpr T.2.nonempty))
-
-/--
-Map induced by the preimage under a continuous closed embedding on irreducible closed subsets.
--/
-def comap (h2 : IsOpenEmbedding f) (V : {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅}) :
-    IrreducibleCloseds U where
-  carrier := f ⁻¹' V
-  is_irreducible' := ⟨nonempty_iff_ne_empty.mpr V.2,
-    IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.1.2) h2⟩
-  is_closed' := V.1.3.preimage h
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is monotone.
--/
-lemma map'_mono {U X : Type*} [TopologicalSpace X] [TopologicalSpace U]
-  (f : U → X) (h2 : Continuous f) :
-  Monotone <| map' f h2 := fun _ _ s ↦ closure_mono (image_mono s)
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is injective when `f` is an
-open embedding
--/
-lemma map'_injective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-    Function.Injective <| map' f h := by
-  intro V W hVW
-  simp only [ne_eq, coe_setOf, map', mem_setOf_eq, Subtype.mk.injEq,
-    IrreducibleCloseds.mk.injEq] at hVW
-  have : f ⁻¹' closure (f '' V) = f ⁻¹' closure (f '' W) := congrArg (preimage f) hVW
-  simp only [h2.isOpenMap.preimage_closure_eq_closure_preimage h,
-        Function.Injective.preimage_image h2.1.injective _,
-        V.isClosed.closure_eq, W.isClosed.closure_eq] at this
-  exact IrreducibleCloseds.ext_iff.mpr this
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is surjective onto irreducible
-closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
--/
-lemma map'_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-    Function.Surjective <| map' f h := by
-  intro V
-  use comap f h h2 V
-  simp only [ne_eq, coe_setOf, map', mem_setOf_eq]
-  have : (V.1.1 ∩ range f).Nonempty := by
-    have := V.2
-    dsimp at this
-    rw[← Set.preimage_inter_range] at this
-    have : (f ⁻¹' (↑↑V ∩ range f)).Nonempty := nonempty_iff_ne_empty.mpr this
-    exact Set.nonempty_of_nonempty_preimage this
-  have lem := subset_closure_inter_of_isPreirreducible_of_isOpen (S := V.1.1) (U := range f)
-    (IsIrreducible.isPreirreducible V.1.2) (h2.isOpen_range) this
-  refine le_antisymm (((IsClosed.closure_subset_iff (IrreducibleCloseds.isClosed V.1)).mpr
-    (image_preimage_subset f ↑↑V))) ?_
-  suffices V.1.1 ⊆ closure (f '' (f ⁻¹' V.1.1)) from this
-  convert lem
-  exact image_preimage_eq_inter_range
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is bijective onto irreducible
-closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
--/
-lemma map'_bijective_of_openEmbedding (h2 : IsOpenEmbedding f) :
-  Function.Bijective <| map' f h :=
-  ⟨map'_injective_of_openEmbedding f h h2, map'_surjective_of_openEmbedding f h h2⟩
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is strictly monotone when
-`f` is an open embedding.
--/
-lemma map'_strictMono_of_openEmbedding (h2 : IsOpenEmbedding f) :
-  StrictMono <| map' f h := Monotone.strictMono_of_injective
-   (map'_mono f h) (map'_injective_of_openEmbedding f h h2)
-
-/--
-Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` are order isomorphic
-to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
--/
-noncomputable
-def map'OrderIso (h2 : IsOpenEmbedding f) :
-  IrreducibleCloseds U ≃o {V : IrreducibleCloseds X | f ⁻¹' V ≠ ∅} := by
-  refine ⟨Equiv.ofBijective (map' f h) (map'_bijective_of_openEmbedding f h h2), ?_⟩
-  have := map'_mono f h
-  refine fun a b ↦ ⟨fun h ↦ ?_, fun a_1 ↦ (map'_mono f h) a_1⟩
-  · have eq : f ⁻¹' closure (f '' a.carrier) ≤ f ⁻¹' closure (f '' b.carrier) := fun _ b ↦ h b
-    have (c : IrreducibleCloseds U) : c.carrier = f ⁻¹' (closure (f '' c.carrier)) := by
-      suffices closure c.carrier = f ⁻¹' (closure (f '' c.carrier)) by
-        nth_rewrite 1 [← IsClosed.closure_eq c.3]
-        exact this
-      exact Topology.IsEmbedding.closure_eq_preimage_closure_image h2.isEmbedding c
-    rwa [← this a, ← this b] at eq
-
-end IrreducibleCloseds
 /-- The topological Krull dimension of any subspace is at most the dimension of the
 ambient space. -/
 theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Set X) :
@@ -182,3 +73,21 @@ theorem topologicalKrullDim_zero_of_discreteTopology
   refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
   obtain ⟨z, hz⟩ := Z.2.nonempty
   rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
+
+lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
+    (Z : TopologicalSpace.IrreducibleCloseds X) :
+    Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
+  rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
+  refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
+  intro a b hlt
+  exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
+
+attribute [local instance] specializationOrder in
+lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSober X] [T0Space X]
+    {x : X} (f : X → Y) (hf : IsOpenEmbedding f) : coheight (f x) = coheight x := by
+  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := Y)).symm (f x),
+    ← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm x,
+    ← Topology.IsOpenEmbedding.coheight_map hf]
+  congr
+  ext : 1
+  simp [closure_image_closure hf.continuous]

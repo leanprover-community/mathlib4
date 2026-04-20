@@ -558,6 +558,16 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
+lemma specializes_primeSpectrum_iff_specializes_spec (R : CommRingCat) (a b : PrimeSpectrum R) :
+    a ⤳ b ↔ @Specializes (Spec R) _ a b := by rfl
+
+lemma le_primeSpectrum_iff_le_spec (R : CommRingCat) (a b : PrimeSpectrum R) :
+    @LE.le _ PrimeSpectrum.instPartialOrder.toLE a b ↔
+    @LE.le (Spec R) _ b a := by
+  simp [PrimeSpectrum.le_iff_specializes,
+    Scheme.le_iff_specializes (X := Spec R) (a := (b : Spec R)) (b := (a : Spec R)),
+    specializes_primeSpectrum_iff_specializes_spec]
+
 section
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
@@ -653,7 +663,6 @@ lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = CommRingCat.ofHom (algebraMap _ _) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toOpen_eq (U) :
     CommRingCat.ofHom (algebraMap R <| (Spec.structureSheaf R).presheaf.obj (.op U)) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl

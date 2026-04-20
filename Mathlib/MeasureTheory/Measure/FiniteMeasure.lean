@@ -259,7 +259,6 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 

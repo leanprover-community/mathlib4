@@ -28,6 +28,26 @@ of `Q`.
   collection of nontrivial elements whose supremum is `s`.
 * `Partition.removeBot`: A constructor for `Partition s` that removes `⊥` from a set of parts.
 * `Partition.Rel`: The partial equivalence relation induced by a partition of a set.
+* `Partition.IsRepFun`: A predicate characterizing a representative function for a partition.
+
+## Representative functions (`IsRepFun`)
+
+`IsRepFun P f` means that `f` sends each element of the support to a representative in its
+`Partition.Rel`-class, agrees on related elements, and is the identity outside the support.
+
+This is useful whenever a construction must pick one distinguished element per part of a partition.
+For example, in graph theory one may partition edges into parallel classes or vertices into
+connected components; a representative function can specify which edge remains when simplifying
+parallel edges, or how supervertices are labeled after contraction. Similar uses arise in matroid
+theory and in the definition of minors.
+
+Tempting alternatives are to use `Classical.choice` or fix a global well-order and take minimal
+representatives. However, these lead to issues with inconsistencies: independent choices need not
+respect relations between different instances (e.g. monotonicity of simplifications with respect
+to subgraph order), a global order can clash with structure already carried by the type, and maps
+between different types need not intertwine two separate canonical choices. Stating hypotheses with
+`IsRepFun` keeps the chosen representatives explicit; existence under suitable conditions can be
+proved separately.
 
 ## TODO
 
@@ -286,9 +306,7 @@ lemma Rel.forall (h : P.Rel x y) (ht : t ∈ P) : x ∈ t ↔ y ∈ t := by
 
 @[simp]
 lemma rel_rfl_iff : P.Rel x x ↔ x ∈ u := by
-  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-  · obtain ⟨t, ht, hxP, -⟩ := hx
-    exact subset_of_mem ht hxP
+  refine ⟨fun ⟨t, ht, hxP, _⟩ ↦ subset_of_mem ht hxP, fun hx ↦ ?_⟩
   obtain ⟨t, ⟨ht, hxt⟩, -⟩ := P.mem_iff_unique.mp hx
   exact ⟨t, ht, hxt, hxt⟩
 
@@ -313,4 +331,92 @@ lemma Rel.right_mem (h : P.Rel x y) : y ∈ u := h.symm.left_mem
 
 end Rel
 
+/-! ### Representative functions
+
+See the module docstring for motivation (graph simplification, minors, and why we use an explicit
+`IsRepFun` hypothesis rather than a global choice of representatives).
+-/
+
+section IsRepFun
+
+/-- A predicate characterizing when a function `f : α → α` is a representative function for a
+partition `P`. A representative function maps each element to a canonical representative in its
+equivalence class, is the identity outside the support, and maps related elements to the same
+representative. -/
+structure IsRepFun {u : Set α} (P : Partition u) (f : α → α) : Prop where
+  apply_of_notMem : ∀ ⦃a⦄, a ∉ u → f a = a
+  rel_apply : ∀ ⦃a⦄, a ∈ u → P.Rel a (f a)
+  apply_eq_apply : ∀ ⦃a b⦄, P.Rel a b → f a = f b
+
+namespace IsRepFun
+
+variable {u : Set α} {P : Partition u} {f g : α → α} {a b c : α}
+
+lemma apply_mem (hf : IsRepFun P f) (ha : a ∈ u) : f a ∈ u := (hf.rel_apply ha).right_mem
+
+lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
+  rintro _ ⟨a, haS, rfl⟩
+  by_cases ha : a ∈ u
+  · exact hs <| hf.apply_mem ha
+  exact (hf.apply_of_notMem ha).symm ▸ haS
+
+lemma mapsTo (hf : IsRepFun P f) (hs : u ⊆ s) : Set.MapsTo f s s :=
+  fun x h ↦ hf.image_subset hs ⟨x, h, rfl⟩
+
+lemma mapsTo_of_disjoint (hf : IsRepFun P f) (hs : Disjoint u s) : Set.MapsTo f s s :=
+  fun _ h ↦ (hf.apply_of_notMem <| hs.notMem_of_mem_right h).symm ▸ h
+
+lemma apply_mem_iff (hf : IsRepFun P f) (hs : u ⊆ s) : f a ∈ s ↔ a ∈ s :=
+  hf.mapsTo hs |>.mem_iff <| mapsTo_of_disjoint hf hs.disjoint_compl_right
+
+lemma apply_eq_apply_iff_rel (hf : IsRepFun P f) (ha : a ∈ u) : f a = f b ↔ P.Rel a b := by
+  refine ⟨fun hab ↦ (hf.rel_apply ha).trans ?_, (hf.apply_eq_apply ·)⟩
+  rw [hab, P.rel_comm]
+  refine hf.rel_apply <| by_contra fun hb ↦ ?_
+  rw [hf.apply_of_notMem hb] at hab
+  exact hab ▸ hb <| hf.apply_mem ha
+
+lemma apply_eq_apply_iff (hf : IsRepFun P f) : f a = f b ↔ a = b ∨ P.Rel a b := by
+  simp only [or_iff_not_imp_left, ← ne_eq]
+  refine ⟨fun hab hne ↦ ?_, fun h ↦ ?_⟩
+  · obtain (ha | ha) := em (a ∈ u)
+    · exact hf.apply_eq_apply_iff_rel ha |>.mp hab
+    obtain (hb | hb) := em (b ∈ u)
+    · exact (hf.apply_eq_apply_iff_rel hb |>.mp hab.symm).symm
+    rw [hf.apply_of_notMem ha, hf.apply_of_notMem hb] at hab
+    contradiction
+  obtain rfl | hne := eq_or_ne a b
+  · rfl
+  exact hf.apply_eq_apply (h hne)
+
+lemma forall_apply_eq_apply_iff (hf : IsRepFun P f) (a) :
+    (∀ (x : α), f a = f x ↔ a = x) ∨ (∀ (x : α), f a = f x ↔ P.Rel a x) := by
+  refine (em (a ∈ u)).elim (fun ha ↦ Or.inr fun b ↦ ?_) (fun ha ↦ Or.inl fun b ↦ ?_)
+  · rw [hf.apply_eq_apply_iff_rel ha]
+  rw [hf.apply_of_notMem ha]
+  constructor <;> rintro rfl
+  · exact hf.apply_of_notMem <| hf.apply_mem_iff le_rfl |>.not.mp ha
+  exact hf.apply_of_notMem ha |>.symm
+
+lemma apply_eq_apply_iff' (hf : IsRepFun P f) :
+    f a = f b ↔ (a = b ∧ ∀ c, f a = f c ↔ a = c) ∨ P.Rel a b := by
+  obtain h1 | h2 := hf.forall_apply_eq_apply_iff a
+  · refine ⟨by grind, ?_⟩
+    rintro (h | h)
+    · exact congrArg _ h.1
+    exact hf.apply_eq_apply h
+  grind
+
+lemma idem (hf : IsRepFun P f) : f (f a) = f a := by
+  obtain (ha | ha) := em (a ∈ u)
+  · rw [eq_comm, hf.apply_eq_apply_iff_rel ha]
+    exact hf.rel_apply ha
+  simp_rw [hf.apply_of_notMem ha]
+
+theorem apply_apply (hf : IsRepFun P f) (hg : IsRepFun P g) (x : α) : f (g x) = f x := by
+  obtain (hx | hx) := em (x ∈ u)
+  · exact hf.apply_eq_apply (hg.rel_apply hx).symm
+  rw [hg.apply_of_notMem hx, hf.apply_of_notMem hx]
+
+end IsRepFun.IsRepFun
 end Partition

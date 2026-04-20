@@ -682,7 +682,7 @@ lemma mpullbackWithin_mlieBracketWithin_of_isSymmSndFDerivWithinAt
   obtain ⟨u, u_open, x₀u, ut, maps_u, u_smooth⟩ :
       ∃ u, IsOpen u ∧ x₀ ∈ u ∧ s ∩ u ⊆ f ⁻¹' t ∧
         s ∩ u ⊆ f ⁻¹' (extChartAt I' (f x₀)).source ∧ CMDiff[s ∩ u] 2 f := by
-    obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ CMDiff[insert x₀ s ∩ u] 2 f  :=
+    obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ CMDiff[insert x₀ s ∩ u] 2 f :=
       hf.contMDiffOn' le_rfl (by simp)
     have : f ⁻¹' (extChartAt I' (f x₀)).source ∈ 𝓝[s] x₀ :=
       hf.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (f x₀))

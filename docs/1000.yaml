@@ -1675,7 +1675,7 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
+  decl: exists_wellFoundedLT
   authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 

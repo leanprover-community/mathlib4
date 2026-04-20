@@ -95,9 +95,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     Claim that the sum equals `1` -/
     refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
-    · rw [Nat.cast_one, Finset.sum_range_one]
-      norm_num
-      rw [div_self]
+    · rw [Nat.cast_one, Finset.sum_range_one, zero_add, div_self]
       exact (mul_pos (a_pos 0 (Nat.zero_le _)) (a_pos 1 (Nat.zero_lt_succ _))).ne'
     -- Check the divisibility condition
     · rw [mul_one, tsub_self]

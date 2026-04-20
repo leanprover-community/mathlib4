@@ -252,7 +252,7 @@ noncomputable def homEquiv {N : ModuleCat.{w} cR.pt} :
         rw [hφ]
         erw [toPresheaf_map_app_apply]
         rw [map_smul]
-        rfl}
+        rfl }
   left_inv φ := (forget₂ _ AddCommGrpCat).map_injective (by
     ext : 1
     exact (homEquiv' hcR hcM).left_inv ((forget₂ _ AddCommGrpCat).map φ).hom)

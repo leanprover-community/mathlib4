@@ -97,7 +97,6 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
       Sigma.forall]
     exact fun S f ↦ f.2
 
-set_option backward.isDefEq.respectTransparency false in
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where
   le_compactlyGenerated := by

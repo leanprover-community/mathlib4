@@ -70,7 +70,7 @@ noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop
 
 /-- The geometric realization of a simplicial set. -/
-scoped [Simplicial] notation "|" X "|" => SSet.toTop.obj X
+scoped[Simplicial] notation "|" X "|" => SSet.toTop.obj X
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/

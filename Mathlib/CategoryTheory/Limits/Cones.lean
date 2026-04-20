@@ -244,7 +244,7 @@ structure CoconeMorphism (A B : Cocone F) where
   w (j : J) : dsimp% A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w CoconeMorphism.w
-attribute [to_dual existing] ConeMorphism.mk.congr_simp ConeMorphism.casesOn
+attribute [to_dual existing] ConeMorphism.casesOn
 
 @[to_dual]
 instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=

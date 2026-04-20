@@ -117,12 +117,6 @@ def toRingEquiv [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEqu
 
 end RingEquivClass
 
-/-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
-`RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
-    CoeTC F (α ≃+* β) :=
-  ⟨RingEquivClass.toRingEquiv⟩
-
 namespace RingEquiv
 
 section Basic

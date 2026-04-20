@@ -56,7 +56,6 @@ attribute [instance] QuasiSeparated.quasiCompact_diagonal
 @[deprecated (since := "2025-10-15")]
 alias QuasiSeparated.diagonalQuasiCompact := QuasiSeparated.quasiCompact_diagonal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]

@@ -123,7 +123,6 @@ lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
   rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_le_opensRange (U : X.Opens) : f ''ᵁ U ≤ f.opensRange := by
   simpa using f.image_mono le_top
 

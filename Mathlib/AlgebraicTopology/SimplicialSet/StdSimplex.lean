@@ -89,6 +89,12 @@ lemma objEquiv_symm_comp {n n' : SimplexCategory} {m : SimplexCategoryᵒᵖ}
     objEquiv.{u}.symm (f ≫ g) =
       (stdSimplex.map g).app _ (objEquiv.{u}.symm f) := rfl
 
+lemma map_objEquiv_symm {n : SimplexCategory} {m m' : SimplexCategoryᵒᵖ}
+    (f : m.unop ⟶ n) (g : m ⟶ m') :
+    (stdSimplex.{u}.obj n).map g (objEquiv.symm f) =
+      objEquiv.symm (g.unop ≫ f) :=
+  rfl
+
 @[simp]
 lemma objEquiv_symm_apply {n m : ℕ} (f : ⦋m⦌ ⟶ ⦋n⦌) (i : Fin (m + 1)) :
     (objEquiv.{u}.symm f : Δ[n] _⦋m⦌) i = f.toOrderHom i := rfl
@@ -229,7 +235,6 @@ lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) :
     ↑(edge n a b hab).down.toOrderHom = ![a, b] :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
 def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _⦋2⦌ := by
   refine objMk ⟨![a, b, c], ?_⟩
@@ -244,7 +249,6 @@ lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ 
 
 attribute [local simp] image_subset_iff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `S : Finset (Fin (n + 1))`, this is the corresponding face of `Δ[n]`,
 as a subcomplex. -/
 @[simps -isSimp obj]
@@ -254,18 +258,15 @@ def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex wh
 
 attribute [local simp] face_obj
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_face_iff {n : ℕ} (S : Finset (Fin (n + 1))) {d : ℕ} (x : (Δ[n] : SSet.{u}) _⦋d⦌) :
     x ∈ (face S).obj _ ↔ ∀ (i : Fin (d + 1)), x i ∈ S := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
     face S₁ ⊓ face S₂ = face (S₁ ⊓ S₂) := by
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma face_empty (n : ℕ) :
     face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
@@ -320,7 +321,6 @@ lemma face_le_face_iff {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
   simp only [← obj₀Equiv_symm_mem_face_iff.{u}] at hi ⊢
   exact h _ hi
 
-set_option backward.isDefEq.respectTransparency false in
 lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin (m + 1) ≃o S) :
     face.{u} S =
       Subcomplex.ofSimplex (X := Δ[n])
@@ -339,7 +339,6 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
     simpa only [Subtype.ext_iff] using e.apply_symm_apply ⟨_, hx j⟩
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S : Finset (Fin (n + 1))` is order isomorphic to `Fin (m + 1)`,
 then the face `face S` of `Δ[n]` is representable by `m`,
 i.e. `face S` is isomorphic to `Δ[m]`, see `stdSimplex.isoOfRepresentableBy`. -/
@@ -495,7 +494,6 @@ noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
   stdSimplex.isoOfRepresentableBy
     (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 private lemma bijective_image_objEquiv_toOrderHom_univ (m : ℕ) :
     Function.Bijective (fun (⟨x, hx⟩ : (Δ[n] : SSet.{u}).nonDegenerate m) ↦
@@ -538,7 +536,6 @@ lemma nonDegenerateEquiv'_iff {n d : ℕ} (x : (Δ[n] : SSet.{u}).nonDegenerate 
   dsimp [nonDegenerateEquiv']
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `x` is a nondegenerate `d`-simplex of `Δ[n]`, this is the order isomorphism
 between `Fin (d + 1)` and the corresponding subset of `Fin (n + 1)` of cardinality `d + 1`. -/
 @[no_expose] noncomputable def orderIsoOfNonDegenerate
@@ -614,6 +611,34 @@ lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
   · rw [← hasDimensionLT_iff_of_iso
       (isoOfRepresentableBy (faceRepresentableBy S m (monoEquivOfFin S (by simpa))))]
     exact hasDimensionLT_of_le _ (m + 1) _
+
+lemma ofSimplex_objEquiv_symm_id (n : ℕ) :
+    Subcomplex.ofSimplex (objEquiv.{u}.symm (𝟙 ⦋n⦌)) = ⊤ :=
+  le_antisymm (by simp) (fun _ x _ ↦ by
+    obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
+    simp only [Subcomplex.mem_ofSimplex_obj_iff, op_unop]
+    exact ⟨f, by simp [map_objEquiv_symm.{u}]⟩)
+
+lemma objEquiv_symm_id_mem_nonDegenerate (n : ℕ) :
+    (objEquiv (m := (op ⦋n⦌))).symm (𝟙 _) ∈ (Δ[n] : SSet.{u}).nonDegenerate n := by
+  rw [mem_nonDegenerate_iff_strictMono]
+  exact fun _ _ h ↦ h
+
+lemma nonDegenerate_top_dim (n : ℕ) :
+    (Δ[n] : SSet.{u}).nonDegenerate n = {(objEquiv (m := (op ⦋n⦌))).symm (𝟙 _)} := by
+  ext x
+  simp only [Set.mem_singleton_iff]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨f, rfl⟩ := objEquiv.symm.surjective x
+    have : Mono f := by simpa using (mem_nonDegenerate_iff_mono _).mp h
+    simpa only [EmbeddingLike.apply_eq_iff_eq] using SimplexCategory.eq_id_of_mono f
+  · rintro rfl
+    apply objEquiv_symm_id_mem_nonDegenerate
+
+lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_instance) :
+    False :=
+  (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
+    (nonDegenerateEquiv.2 (.refl _)) n)
 
 end stdSimplex
 

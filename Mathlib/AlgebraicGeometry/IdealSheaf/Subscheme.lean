@@ -219,7 +219,6 @@ def glueDataT (U V : X.affineOpens) :
     rw [Scheme.Hom.liftQuotient_comp_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id,
       Category.comp_id, Category.assoc, X.homOfLE_homOfLE]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 private lemma glueDataT_snd (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.snd _ _ = pullback.snd _ _ ≫ X.homOfLE (by simp) :=
@@ -333,7 +332,6 @@ private lemma ι_gluedTo (U : X.affineOpens) :
     I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
   Multicoequalizer.π_desc _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
     I.glueDataObjMap h ≫ I.glueData.ι V = I.glueData.ι U := by

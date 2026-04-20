@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes
@@ -246,7 +247,6 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible .univ := fun h =>
@@ -345,69 +345,36 @@ instance [IsIntegral X] : OrderTop X where
 
 open IrreducibleCloseds Set in
 @[stacks 02I4]
-lemma coheight_eq_of_openImmersion {U X : Scheme} {Z : U} (f : U ⟶ X)
-  [k : IsOpenImmersion f] : Order.coheight (f.base Z) = Order.coheight Z := by
-  rw [← Order.coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm (f.base Z),
-      ← Order.coheight_orderIso (irreducibleSetEquivPoints (α := U)).symm Z,
-      ← Order.coheight_orderIso
-      (map'OrderIso f.base (Scheme.Hom.continuous f) k.base_open)
-      ((irreducibleSetEquivPoints (α := U)).symm Z)]
-  let g : {V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' ↑V ≠ ∅} ↪o
-      IrreducibleCloseds X :=
-    OrderEmbedding.subtype {V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' V ≠ ∅}
-  let a := (map'OrderIso f.base (Scheme.Hom.continuous f) k.base_open)
-      (irreducibleSetEquivPoints.symm Z)
-  have : ∀ p : LTSeries (IrreducibleCloseds X), p.head = g a →
-         ∃ p' : LTSeries ({V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' ↑V ≠ ∅}),
-           p'.head = a ∧ p = p'.map g (OrderEmbedding.strictMono g) := fun p hp ↦ by
-    let p' : LTSeries {V : IrreducibleCloseds X | ⇑(ConcreteCategory.hom f.base) ⁻¹' ↑V ≠ ∅} := {
-      length := p.length
-      toFun i := {
-        val := p i
-        property := by
-          suffices  ¬⇑(ConcreteCategory.hom f.base) ⁻¹' a = ∅ by
-            rw[← Ne, ← nonempty_iff_ne_empty] at this
-            exact nonempty_iff_ne_empty.mp <|
-              Nonempty.mono (fun _ b ↦ (hp ▸ LTSeries.head_le p i) b) this
-          exact a.2
-      }
-      step := p.step
-    }
-    exact ⟨p', SetCoe.ext hp, rfl⟩
-  have := Order.coheight_eq_of_strictMono g (fun _ _ a ↦ a)
-     ((map'OrderIso f.base (Scheme.Hom.continuous f) k.base_open)
-     (irreducibleSetEquivPoints.symm Z)) this
-  convert this.symm
-  simp only [irreducibleSetEquivPoints, ne_eq, coe_setOf, mem_setOf_eq, map'OrderIso,
-    RelIso.coe_fn_mk, Equiv.ofBijective_apply, map']
-  suffices closure {f.base Z} = closure ((f.base) '' (closure {Z})) from
-    IrreducibleCloseds.ext_iff.mpr this
-  simp [closure_image_closure (Scheme.Hom.continuous f)]
+lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpenImmersion f] :
+    Order.coheight (f.base x) = Order.coheight x := f.isOpenEmbedding.coheight_eq
+
+open Order in
+lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
+    x.asIdeal.height = coheight x := by
+  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
+  congr
+  ext a b
+  exact le_primeSpectrum_iff_le_spec R a b
 
 open Order in
 @[stacks 02IZ]
-lemma stalk_dim_eq_coheight {X : Scheme} (Z : X) :
-  ringKrullDim (X.presheaf.stalk Z) = Order.coheight Z := by
-  obtain ⟨R, f, hf⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
-    (U := ⊤) (x := Z) (by aesop)
-  obtain ⟨y, hy⟩ := Set.mem_range.mp hf.2.1
-  have := hf.1
-  have := hy ▸ AlgebraicGeometry.coheight_eq_of_openImmersion f (Z := y)
-  rw [this]
-  suffices ringKrullDim ((Spec R).presheaf.stalk y) = coheight y from
-    this ▸ Order.krullDim_eq_of_orderIso
-    (hy ▸ PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
-  let k : Algebra ↑R ↑((Spec R).presheaf.stalk y) := StructureSheaf.stalkAlgebra (↑R) y
-  have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk y)) y.asIdeal :=
-    StructureSheaf.IsLocalization.to_stalk R y
-  rw [IsLocalization.AtPrime.ringKrullDim_eq_height y.asIdeal ((Spec R).presheaf.stalk y),
-     Ideal.height_eq_primeHeight y.asIdeal, Ideal.primeHeight]
+lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
+    ringKrullDim (X.presheaf.stalk x) = Order.coheight x := by
+  wlog h : ∃ R, X = Spec R
+  · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
+      (show x ∈ ⊤ from trivial)
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
+    rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]
+    exact Order.krullDim_eq_of_orderIso
+      (PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  obtain ⟨R, rfl⟩ := h
+  let k : Algebra ↑R ↑((Spec R).presheaf.stalk x) := StructureSheaf.stalkAlgebra (↑R) x
+  have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk x)) x.asIdeal :=
+    StructureSheaf.IsLocalization.to_stalk R x
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
   apply WithBot.coe_eq_coe.mpr
-  congr
-  ext
-  simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes,
-    OrderDual.instPreorder, OrderDual.instLE]
-  exact Eq.to_iff rfl
+  exact idealHeight_eq_coheight R x
+
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by
   rw [← PrimeSpectrum.t1Space_iff_isField]

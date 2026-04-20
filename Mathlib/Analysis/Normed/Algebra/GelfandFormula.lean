@@ -58,7 +58,7 @@ theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolvent
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 
-@[deprecated  (since := "2026-03-26")]
+@[deprecated (since := "2026-03-26")]
 alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
 
 theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :

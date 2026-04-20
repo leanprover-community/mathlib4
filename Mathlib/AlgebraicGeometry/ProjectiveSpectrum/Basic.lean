@@ -82,7 +82,6 @@ theorem isBasis_basicOpen :
   convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
@@ -206,7 +205,6 @@ lemma isAffineOpen_basicOpen : IsAffineOpen (basicOpen 𝒜 f) := by
   rw [← opensRange_awayι 𝒜 f f_deg hm]
   exact isAffineOpen_opensRange (awayι _ _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
     Spec.map (CommRingCat.ofHom (fromZeroRingHom 𝒜 _)) := by
@@ -383,7 +381,6 @@ def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) 
   · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
     simp [H]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homOfLE_toBasicOpenOfGlobalSections_ι
     {H : f t = x} {h0d : 0 < d} {hd : t ∈ 𝒜 d} {H' : f t' = x'} {h0d' : 0 < d'} {hd' : t' ∈ 𝒜 d'}

@@ -326,29 +326,24 @@ lemma coheight_le_coheight_apply_of_strictMono (f : α → β) (hf : StrictMono 
   apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
 
-lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
-    (h : ∀ p : LTSeries β, p.last = f a → ∃ p' :
-    LTSeries α, p'.last = a ∧ p = p'.map f hf) : height a = height (f a) := by
-  apply le_antisymm <|
-    Order.height_le_height_apply_of_strictMono _ hf _
-  refine height_le_iff'.mpr (fun p hp ↦ ?_)
-  choose p' hp' using (h p hp)
-  exact hp'.2 ▸ LTSeries.map_length p' f hf ▸
-        (Order.height_eq_iSup_last_eq a) ▸
-        (ciSup_pos hp'.1 : (⨆ (_ : RelSeries.last p' = a), p'.length : ℕ∞) = p'.length) ▸
-        le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.last p = a), p.length) p'
+lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, f a < b → ∃ (a' : α), a < a' ∧ f a' = b) (a : α) :
+    coheight a = coheight (f a) := by
+  refine le_antisymm (Order.coheight_le_coheight_apply_of_strictMono _ hf _) ?_
+  refine coheight_le_iff'.mpr fun p hp ↦ ?_
+  induction p using RelSeries.inductionOn generalizing a with
+  | singleton x => simp
+  | cons p x hx ih =>
+    simp only [RelSeries.head_cons] at hp
+    obtain ⟨a', haa', ha'⟩ := h a p.head (by grind)
+    grw [RelSeries.cons_length, Nat.cast_add, Nat.cast_one, ih a' ha'.symm]
+    exact coheight_add_one_le haa'
 
-lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
-    (h : ∀ p : LTSeries β, p.head = f a → ∃ p' :
-    LTSeries α, p'.head = a ∧ p = p'.map f hf) : coheight a = coheight (f a) := by
-  apply le_antisymm <|
-    Order.coheight_le_coheight_apply_of_strictMono _ hf _
-  refine coheight_le_iff'.mpr (fun p hp ↦ ?_)
-  choose p' hp' using (h p hp)
-  exact hp'.2 ▸ LTSeries.map_length p' f hf ▸
-        (Order.coheight_eq_iSup_head_eq a) ▸
-        (ciSup_pos hp'.1 : (⨆ (_ : RelSeries.head p' = a), p'.length : ℕ∞) = p'.length) ▸
-        le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.head p = a), p.length) p'
+lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f)
+    (h : ∀ a : α, ∀ b : β, b < f a → ∃ (a' : α), a' < a ∧ f a' = b) (a : α) :
+    height a = height (f a) := coheight_eq_of_strictMono (α := αᵒᵈ) (β := βᵒᵈ)
+  (f := OrderDual.toDual ∘ f ∘ OrderDual.toDual)
+  (strictMono_dual_iff.mp hf) (fun a b hab ↦ h a b hab) _
 
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by

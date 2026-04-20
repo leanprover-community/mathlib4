@@ -69,7 +69,7 @@ variable {p} in
 lemma exists_of_fiberMk_eq_fiberMk [IsCofiltered N]
     {U : N} {X : C} {f₁ f₂ : p.obj U ⟶ X} (hf : fiberMk f₁ = fiberMk f₂) :
     ∃ (V : N) (g : V ⟶ U), p.map g ≫ f₁ = p.map g ≫ f₂ := by
-  obtain ⟨V, g, hg⟩  :=
+  obtain ⟨V, g, hg⟩ :=
     (Types.FilteredColimit.isColimit_eq_iff'
       (colimit.isColimit (p.op ⋙ shrinkYoneda.{w}.obj X)) _ _).1 hf
   refine ⟨V.unop, g.unop, ?_⟩

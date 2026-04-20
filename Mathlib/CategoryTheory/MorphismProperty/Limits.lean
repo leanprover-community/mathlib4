@@ -82,14 +82,12 @@ lemma pushouts_monotone : Monotone (pushouts (C := C)) := by
   rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
   exact ⟨_, _, _, _, _, h _ hp, sq⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.pushouts.RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro q q' e ⟨A, B, p, f, g, hp, h⟩
     exact ⟨A, B, p, f ≫ e.hom.left, g ≫ e.hom.right, hp,
       IsPushout.paste_horiz h (IsPushout.of_horiz_isIso ⟨e.hom.w⟩)⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.pullbacks.RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro q q' e ⟨X, Y, p, f, g, hp, h⟩

@@ -47,7 +47,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, edist (f i) (f (i + 1)) :=
-  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
 
 /-- A version of `edist_le_Ico_sum_edist` with each intermediate distance replaced
 with an upper estimate. -/
@@ -62,7 +62,7 @@ with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
 
 namespace EMetric
 

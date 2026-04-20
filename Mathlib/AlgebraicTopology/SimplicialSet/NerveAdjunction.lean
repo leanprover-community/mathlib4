@@ -64,7 +64,6 @@ variable {n : ℕ} {X Y : Truncated.{u} 2} (f₀ : X _⦋0⦌₂ → Y _⦋0⦌�
 
 namespace liftOfStrictSegal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def f₂ (x : X _⦋2⦌₂) : Y _⦋2⦌₂ :=
   (hY.spineEquiv 2).symm

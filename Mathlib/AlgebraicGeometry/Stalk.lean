@@ -119,7 +119,6 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fromSpecStalk_appTop {x : X} :
     (X.fromSpecStalk x).appTop =
       X.presheaf.germ ⊤ x trivial ≫

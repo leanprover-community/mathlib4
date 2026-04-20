@@ -71,7 +71,6 @@ instance : HasImage f :=
 instance : HasImages (Type u) where
   has_image := by infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)

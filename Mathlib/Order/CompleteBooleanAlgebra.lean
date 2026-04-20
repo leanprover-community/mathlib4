@@ -529,6 +529,7 @@ theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : S
 theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
   @sSup_inf_sSup αᵒᵈ _ _ _
 
+@[to_dual existing]
 theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right

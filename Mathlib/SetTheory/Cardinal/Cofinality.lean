@@ -383,7 +383,7 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
       obtain ⟨i, hi⟩ := hb
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
-    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+    exact (lt_add_one _).trans_le <| le_ciSup (bddAbove_of_small _) _
 
 theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i + 1) = Order.cof γ := by

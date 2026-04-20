@@ -344,7 +344,6 @@ theorem map_id : ∀ p : MvPolynomial σ R, map (RingHom.id R) p = p := AddMonoi
 theorem map_map [CommSemiring S₂] (g : S₁ →+* S₂) (p : MvPolynomial σ R) :
     map g (map f p) = map (g.comp f) p := AddMonoidAlgebra.map_map ..
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval₂ f g = eval g (map f p) := by
   simp [eval₂, eval]; simp [map, MvPolynomial, Finsupp.sum_mapRange_index, mapRingHom]
 
