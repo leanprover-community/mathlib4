@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
 ## Main definitions
@@ -183,13 +184,35 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     G.Reachable u v := by
   rw [Subsingleton.allEq u v]
 
-lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
-    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
-  rintro ⟨_ | @⟨u, x, v, hadj, w'⟩⟩
+lemma Reachable.nonempty_neighborSet_left {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hreach : G.Reachable u v) : (G.neighborSet u).Nonempty := by
+  obtain ⟨_ | @⟨u, x, v, hadj, w'⟩⟩ := hreach
   · contradiction
-  · have : 0 < G.degree u := (G.degree_pos_iff_exists_adj u).mpr ⟨x, hadj⟩
-    rw [hu] at this
-    contradiction
+  · exact ⟨x, hadj⟩
+
+lemma Reachable.nonempty_neighborSet_right {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hreach : G.Reachable u v) : (G.neighborSet v).Nonempty :=
+  hreach.symm.nonempty_neighborSet_left huv.symm
+
+lemma Reachable.degree_pos_left {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree u :=
+  degree_pos_iff_nonempty.mpr (hreach.nonempty_neighborSet_left huv)
+
+lemma Reachable.degree_pos_right {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
+    (huv : u ≠ v) (hreach : G.Reachable u v) : 0 < G.degree v :=
+  hreach.symm.degree_pos_left huv.symm
+
+lemma not_reachable_of_neighborSet_left_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hu : G.neighborSet u = ∅) : ¬G.Reachable u v :=
+  (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
+
+lemma not_reachable_of_neighborSet_right_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
+    (hv : G.neighborSet v = ∅) : ¬G.Reachable u v :=
+  fun r ↦ not_reachable_of_neighborSet_left_eq_empty huv.symm hv r.symm
+
+lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v :=
+  (Reachable.degree_pos_left huv).mt (by simp [hu])
 
 lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
     (huv : u ≠ v) (hu : G.degree v = 0) : ¬G.Reachable u v := by
@@ -228,12 +251,6 @@ lemma not_preconnected_bot [Nontrivial V] : ¬(⊥ : SimpleGraph V).Preconnected
 @[simp] lemma preconnected_top : (⊤ : SimpleGraph V).Preconnected := fun x y => by
   if h : x = y then rw [h] else exact Adj.reachable h
 
-@[deprecated (since := "2025-09-23")] alias bot_preconnected := preconnected_bot
-@[deprecated (since := "2025-09-23")]
-alias bot_preconnected_iff_subsingleton := preconnected_bot_iff_subsingleton
-@[deprecated (since := "2025-09-23")] alias bot_not_preconnected := not_preconnected_bot
-@[deprecated (since := "2025-09-23")] alias top_preconnected := preconnected_top
-
 @[nontriviality]
 lemma Preconnected.of_subsingleton {G : SimpleGraph V} [Subsingleton V] : G.Preconnected :=
   fun _ _ ↦ .of_subsingleton
@@ -243,6 +260,7 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
+@[simp]
 lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
     (h : G.Preconnected) : G.support = Set.univ := by
   simp only [Set.eq_univ_iff_forall]
@@ -252,6 +270,10 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   cases p with
   | nil => contradiction
   | @cons _ w => exact ⟨w, ‹_›⟩
+
+@[simp]
+lemma Preconnected.not_isIsolated [Nontrivial V] {G : SimpleGraph V} (hG : G.Preconnected) (v : V) :
+    ¬ G.IsIsolated v := by simp [← mem_support_iff_not_isIsolated, hG]
 
 lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
     (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
@@ -265,7 +287,7 @@ lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : S
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
-  induction p with grind [Walk.nil_iff_support_eq, Walk.support_eq_cons, adj_comm]
+  induction p with grind [Walk.nil_iff_support_eq, Walk.cons_tail_support, adj_comm]
 
 lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
     {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
@@ -327,9 +349,6 @@ lemma connected_top_iff : (completeGraph V).Connected ↔ Nonempty V := by simp 
 
 @[simp] lemma connected_top [Nonempty V] : (completeGraph V).Connected := by rwa [connected_top_iff]
 
-@[deprecated (since := "2025-09-23")] alias bot_not_connected := not_connected_bot
-@[deprecated (since := "2025-09-23")] alias top_connected := connected_top
-
 @[nontriviality]
 lemma Connected.of_subsingleton {G : SimpleGraph V} [Nonempty V] [Subsingleton V] :
     G.Connected :=
@@ -353,7 +372,7 @@ theorem reachable_or_reachable_compl (u v w : V) : G.Reachable u v ∨ Gᶜ.Reac
 theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := by
   rw [or_iff_not_imp_left, G.connected_iff_exists_forall_reachable]
   intro h u v
-  push_neg at h
+  push Not at h
   have ⟨w, huw⟩ := h u
   exact reachable_or_reachable_compl .. |>.resolve_left huw
 
@@ -634,8 +653,7 @@ lemma adj_spanningCoe_toSimpleGraph {v w : V} (C : G.ConnectedComponent) :
   apply Iff.intro
   · intro h
     simp_all only [map_adj, SetLike.coe_sort_coe, Subtype.exists, mem_supp_iff]
-    obtain ⟨_, a, _, _, h₁, h₂, h₃⟩ := h
-    subst h₂ h₃
+    obtain ⟨_, a, _, _, h₁, rfl, rfl⟩ := h
     exact ⟨a, h₁⟩
   · simp only [toSimpleGraph, map_adj, comap_adj, Embedding.subtype_apply, Subtype.exists,
       exists_and_left, and_imp]
@@ -728,19 +746,26 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 /-! ### Bridge edges -/
 
 section BridgeEdges
+variable {u v : V}
 
 /-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
 are no longer reachable from one another. -/
 def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
   e ∈ G.edgeSet ∧
-    Sym2.lift ⟨fun v w => ¬(G \ fromEdgeSet {e}).Reachable v w, by simp [reachable_comm]⟩ e
+    Sym2.lift ⟨fun v w => ¬(G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
 
 theorem isBridge_iff {u v : V} :
-    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
+    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G.deleteEdges {s(u, v)}).Reachable u v := Iff.rfl
+
+@[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) (h : G.Adj u v) :
+    G.IsBridge s(u, v) := ⟨h, fun h ↦ huv <| h.mono <| deleteEdges_le _⟩
+
+lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
+  cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
-    (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
+theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
+    (G.deleteEdges {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', s(v, w) ∉ p.edges := by
   constructor
   · rintro ⟨p⟩
     use p.map (.ofLE (by simp))
@@ -749,13 +774,16 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
     refine ⟨p.transfer _ fun e ep => ?_⟩
-    simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag]
+    rw [edgeSet_deleteEdges]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
+
+@[deprecated (since := "2026-03-18")]
+alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists_walk
 
 theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
     G.IsBridge s(v, w) ↔ G.Adj v w ∧ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
   rw [isBridge_iff, and_congr_right']
-  rw [reachable_delete_edges_iff_exists_walk, not_exists_not]
+  rw [reachable_deleteEdges_iff_exists_walk, not_exists_not]
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     (hb : ∀ p : G.Walk v w, s(v, w) ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
@@ -784,10 +812,10 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   exact List.disjoint_of_nodup_append hc hbq hpq'
 
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
-    G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
+    G.Adj v w ∧ (G.deleteEdges {s(v, w)}).Reachable v w ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by
   classical
-  rw [reachable_delete_edges_iff_exists_walk]
+  rw [reachable_deleteEdges_iff_exists_walk]
   constructor
   · rintro ⟨h, p, hp⟩
     refine ⟨w, Walk.cons h.symm p.toPath, ?_, ?_⟩
@@ -819,7 +847,6 @@ theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
@@ -844,23 +871,28 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
     isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Connecting two unreachable vertices by an edge creates a bridge. -/
-theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
-    (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
+theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
+    (G ⊔ edge u v).IsBridge s(u, v) := by
   refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
   exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
 
-set_option backward.isDefEq.respectTransparency false in
+@[deprecated (since := "2026-03-18")]
+alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
+
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
-theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
-    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by
+theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
+    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ edge u v).IsBridge e := by
   refine isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨edgeSet_mono le_sup_left h'.left, ?_⟩
   refine fun _ p hp hpe ↦ isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
     (p.transfer G fun e' he' ↦ ?_) (hp.transfer _) (Walk.edges_transfer p _ ▸ hpe)
   refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
-  exact .mono (sdiff_le_iff'.mpr <| refl _) <|
-    adj_and_reachable_delete_edges_iff_exists_cycle.mpr (by grind [edgeSet_fromEdgeSet]) |>.right
+  exact .mono (sdiff_le_iff'.mpr le_rfl) <|
+    adj_and_reachable_delete_edges_iff_exists_cycle.mpr ⟨_, p, by simp_all⟩ |>.right
+
+@[deprecated (since := "2026-03-18")]
+alias IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge :=
+  IsBridge.sup_edge_of_not_reachable_of_isBridge
 
 end BridgeEdges
 

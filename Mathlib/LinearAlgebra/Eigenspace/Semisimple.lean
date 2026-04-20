@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 public import Mathlib.LinearAlgebra.Semisimple
 
 /-!
@@ -16,8 +17,12 @@ endomorphisms.
 
 ## Main definitions / results
 
-* `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
+* `Module.End.IsFinitelySemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
   a generalized eigenspace is an eigenspace.
+* `Module.End.IsSemisimple.iSup_eigenspace_eq_top`: over an algebraically closed field,
+  the eigenspaces of a semisimple endomorphism span the whole space.
+* `Module.End.IsSemisimple.eq_zero_iff_forall_eigenvalue`: a semisimple endomorphism over
+  an algebraically closed field is zero iff all eigenvalues are zero.
 
 -/
 
@@ -65,5 +70,34 @@ lemma IsFinitelySemisimple.maxGenEigenspace_eq_eigenspace
     (hf : f.IsFinitelySemisimple) (μ : R) :
     f.maxGenEigenspace μ = f.eigenspace μ :=
   hf.genEigenspace_eq_eigenspace μ ENat.top_pos
+
+section AlgClosed
+
+variable {K V : Type*} [Field K] [IsAlgClosed K] [AddCommGroup V] [Module K V]
+  [FiniteDimensional K V] {f : End K V}
+
+lemma IsSemisimple.iSup_eigenspace_eq_top (hf : f.IsSemisimple) :
+    ⨆ μ : K, f.eigenspace μ = ⊤ := by
+  simpa only [(isFinitelySemisimple_iff_isSemisimple.mpr hf).maxGenEigenspace_eq_eigenspace] using
+    iSup_maxGenEigenspace_eq_top f
+
+lemma IsSemisimple.eq_zero_iff_forall_eigenvalue (hf : f.IsSemisimple) :
+    f = 0 ↔ ∀ μ : K, f.HasEigenvalue μ → μ = 0 := by
+  constructor
+  · rintro rfl μ hμ
+    by_contra hμ0
+    obtain ⟨x, hx, hx_ne⟩ := (Submodule.ne_bot_iff _).mp hμ
+    rw [mem_eigenspace_iff] at hx
+    exact hx_ne ((smul_eq_zero.mp hx.symm).resolve_left hμ0)
+  · intro h
+    suffices f.eigenspace 0 = ⊤ by rwa [eigenspace_zero, LinearMap.ker_eq_top] at this
+    rw [← hf.iSup_eigenspace_eq_top]
+    refine le_antisymm (le_iSup _ 0) (iSup_le fun μ ↦ ?_)
+    rcases eq_or_ne μ 0 with rfl | hμ
+    · exact le_refl _
+    · have : f.eigenspace μ = ⊥ := not_not.mp (hasEigenvalue_iff.not.mp fun he ↦ hμ (h μ he))
+      simp [this]
+
+end AlgClosed
 
 end Module.End

@@ -237,12 +237,8 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  rcases eq_zero_or_neZero p with hp | hp
-  · subst hp
-    simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
-    -- the subst created a non-defeq but subsingleton instance diamond; resolve it
-    suffices Fintype.card ℤˣ ≠ 0 by convert this
-    simp
+  rcases eq_zero_or_neZero p with rfl | hp
+  · simp [ZMod, not_prime_zero, zero_tsub]
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]
 
 @[simp]

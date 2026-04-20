@@ -322,7 +322,6 @@ end NonAssocRing
 section Ring
 variable [Ring R] [Fintype n]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem asIdeal_matrix [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matrix n) = (asIdeal I).matrix n := by
   ext; simp
@@ -338,7 +337,6 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in

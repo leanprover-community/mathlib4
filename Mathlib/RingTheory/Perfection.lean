@@ -56,7 +56,7 @@ def submonoid (M : Type*) [CommMonoid M] (p : ℕ) : Submonoid (ℕ → M) where
 alias _root_.Monoid.perfection := submonoid
 
 instance (M : Type*) [CommMonoid M] (p : ℕ) : CommMonoid (Perfection M p) :=
-  (submonoid M p).toCommMonoid
+  inferInstanceAs <| CommMonoid (submonoid M p)
 
 variable (M : Type*) [CommMonoid M] (p : ℕ)
 
@@ -202,7 +202,7 @@ alias _root_.Ring.perfectionSubsemiring := subsemiring
 variable (R : Type*) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : CommSemiring (Perfection R p) :=
-  (subsemiring R p).toCommSemiring
+  inferInstanceAs <| CommSemiring (subsemiring R p)
 
 instance : CharP (Perfection R p) p :=
   CharP.subsemiring _ _ (subsemiring R p)
@@ -244,7 +244,7 @@ lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := r
 set_option backward.isDefEq.respectTransparency false in
 lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
     ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
-  simp; rfl
+  simp
 
 lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R p n := rfl
 
@@ -376,10 +376,10 @@ alias _root_.Ring.perfectionSubring := subring
 variable (R : Type*) [CommRing R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
 instance : Ring (Perfection R p) :=
-  (subring R p).toRing
+  inferInstanceAs <| Ring (subring R p)
 
 instance : CommRing (Perfection R p) :=
-  (subring R p).toCommRing
+  inferInstanceAs <| CommRing (subring R p)
 
 end CommRing
 
@@ -567,7 +567,6 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
     preVal K v O p (x * y) = preVal K v O p x * preVal K v O p y := by
   have hx0 : x ≠ 0 := mt (by rintro rfl; rw [zero_mul]) hxy0
@@ -577,7 +576,6 @@ theorem preVal_mul {x y : ModP O p} (hxy0 : x * y ≠ 0) :
   rw [← map_mul (Ideal.Quotient.mk (Ideal.span {↑p})) r s] at hxy0 ⊢
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_mul, v.map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preVal_add (x y : ModP O p) :
     preVal K v O p (x + y) ≤ max (preVal K v O p x) (preVal K v O p y) := by
   by_cases hx0 : x = 0
@@ -648,7 +646,6 @@ variable [Fact p.Prime] [Fact (¬ IsUnit (p : O))]
 instance : CommRing (PreTilt O p) :=
   inferInstanceAs <| CommRing <| Perfection _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 
@@ -743,7 +740,6 @@ theorem valAux_eq {f : PreTilt O p} {n : ℕ} (hfn : coeff n f ≠ 0) :
   rw [ih (coeff_nat_find_add_ne_zero k), ← add_assoc, ← hx, ← coeff_pow_p, ← hx, ← map_pow,
     ModP.preVal_mk hv h1, ModP.preVal_mk hv h2, map_pow, v.map_pow, ← pow_mul, pow_succ']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_one : valAux K v O p 1 = 1 :=
   (valAux_eq (hv := hv) <| show coeff 0 1 ≠ 0 from one_ne_zero).trans <| by
     rw [pow_zero, pow_one, map_one, ← (Ideal.Quotient.mk _).map_one, ModP.preVal_mk hv,
@@ -770,7 +766,6 @@ theorem valAux_mul (f g : PreTilt O p) :
       valAux_eq hv (coeff_add_ne_zero hn 1), valAux_eq hv hfg]
   rw [map_mul] at hfg ⊢; rw [ModP.preVal_mul hv hfg, mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem valAux_add (f g : PreTilt O p) :
     valAux K v O p (f + g) ≤ max (valAux K v O p f) (valAux K v O p g) := by
   by_cases hf : f = 0
@@ -843,7 +838,7 @@ namespace Tilt
 noncomputable instance [Fact p.Prime] [hvp : Fact (v p ≠ 1)] : Field (Tilt K v O hv p) :=
   haveI := Fact.mk <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
   haveI := PreTilt.isDomain K v O hv p
-  FractionRing.field _
+  inferInstanceAs <| Field (FractionRing _)
 
 end Tilt
 

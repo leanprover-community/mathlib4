@@ -123,7 +123,6 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
   map_injective {X Y f g} hfg := by
