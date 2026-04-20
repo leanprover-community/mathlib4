@@ -73,7 +73,7 @@ lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
 open Polynomial
 
 lemma Polynomial.monimial_mem_reesAlgebra (i : ℕ) {r : R} (mem : r ∈ I ^ i) :
-    (monomial i) r ∈ reesAlgebra I := by
+    monomial i r ∈ reesAlgebra I := by
   refine (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
   by_cases eqi : n = i
   · simpa [eqi]
@@ -105,6 +105,29 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
       | add s1 hs1 s2 hs2 mem1 mem2 => simpa using add_mem mem1 mem2
     apply this
     simpa [pow_succ'] using h i
+
+noncomputable abbrev reesAlgebraToAssociatedGraded :=
+  Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I)))
+
+noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
+    Ideal ((reesAlgebra I) ⧸ (I.map (algebraMap R (reesAlgebra I)))) :=
+  ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
+
+lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
+    ∃ (s : Finset (reesAlgebra I)) (deg : s → ℕ) (coeff : s → R),
+      (∀ x : s, x.1 = monomial (deg x) (coeff x)) ∧ (∀ x : s, coeff x ∈ J) ∧
+        (Ideal.span (s : Set (reesAlgebra I))).map (reesAlgebraToAssociatedGraded I) =
+          J.toAssociatedGraded I := by
+  sorry
+
+lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (s : Finset (reesAlgebra I)) (deg : s → ℕ)
+    (coeff : s → R) (eq : ∀ x : s, x.1 = monomial (deg x) (coeff x)) (memJ : ∀ x : s, coeff x ∈ J)
+    (span_eq : (Ideal.span (s : Set (reesAlgebra I))).map (reesAlgebraToAssociatedGraded I) =
+      J.toAssociatedGraded I)
+    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : s → R),
+    (∀ x : s, coeff' x ∈ I ^ (n - deg x)) ∧ (∀ x : s, deg x > n → coeff' x = 0) ∧
+      r - ∑ x : s, coeff' x * coeff x ∈ I ^ (n + 1) := by
+  sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
