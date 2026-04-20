@@ -594,15 +594,10 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩
-    simp only [pow_zero]
-    ext <;> simp only [x_one, y_one]
-    · have prop := a.prop
-      rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
-        sq_eq_one_iff] at prop
-      refine prop.resolve_right fun hf => ?_
-      have := (hax.trans_eq hax').le.trans_eq hf
-      norm_num at this
-    · exact hy.symm
+    rcases eq_one_or_neg_one_iff_y_eq_zero.2 hy.symm with rfl | rfl
+    · simp
+    · exfalso
+      simp at hax'
   · -- case 2: `a ≥ a₁`
     have hx₁ : 1 < a.x := by nlinarith [a.prop, h.d_pos]
     have hxx₁ := h.mul_inv_x_pos hx₁ hy

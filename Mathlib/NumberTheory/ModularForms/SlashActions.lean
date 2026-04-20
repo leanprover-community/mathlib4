@@ -222,15 +222,11 @@ lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} 
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
-      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
     ext _
     simp [slash_apply]
   | insert i t hi IH =>
-    rcases t.eq_empty_or_nonempty with rfl | ht
-    · simp
     simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ, add_sub_cancel_right,
-    show ∑ i ∈ insert i t, k i = (k i) + ∑ i ∈ t, k i by grind, mul_slash, IH, mul_smul_comm,
+      show ∑ i ∈ insert i t, k i = (k i) + ∑ i ∈ t, k i by grind, mul_slash, IH, mul_smul_comm,
       ← mul_smul]
     congr 1
     nth_rw 2 [show (#t : ℤ) = 1 + (#t - 1) by grind]

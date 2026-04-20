@@ -82,11 +82,7 @@ theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
 theorem surjective_primeCounting' : Function.Surjective π' :=
   Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
 
-theorem surjective_primeCounting : Function.Surjective π := by
-  suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
-  convert surjective_primeCounting'
-  ext
-  exact primeCounting_sub_one _
+theorem surjective_primeCounting : Function.Surjective π := fun n => ⟨nth Prime n - 1, by simp⟩
 
 open Filter
 
