@@ -534,8 +534,10 @@ theorem coe_monoidHom_id : (id α : α →* α) = MonoidHom.id α :=
 variable {_ : NonAssocSemiring γ}
 
 /-- Composition of ring homomorphisms is a ring homomorphism. -/
+@[implicit_reducible]
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
-  { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with toFun := g ∘ f, map_one' := by simp }
+  { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with
+    toFun := fun x ↦ g (f x), map_one' := by simp }
 
 /-- Composition of semiring homomorphisms is associative. -/
 theorem comp_assoc {δ} {_ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* γ) (h : γ →+* δ) :
