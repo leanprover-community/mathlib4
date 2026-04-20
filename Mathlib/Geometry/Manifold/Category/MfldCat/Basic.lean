@@ -32,6 +32,7 @@ open scoped Manifold
 universe u₁ u₂ u₃ u₄
 
 /-- The category of `C^n` 𝕜-manifolds. -/
+@[pp_with_univ, nolint checkUnivs]
 structure MfldCat (𝕜 : Type u₁) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
   of ::
