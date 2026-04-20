@@ -35,6 +35,7 @@ def delabCheckingCanonical : DelabM (Bool × Term) := do
     return (true, ← withAnnotateTermInfo `(_))
   else
     return (false, ← delab)
+
 namespace Delab.Noncanonical
 
 /-- Delaborate an expression with arity `arity` into a unary notation `mkStx` iff the argument
