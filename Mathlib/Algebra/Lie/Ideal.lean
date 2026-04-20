@@ -72,18 +72,19 @@ theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
+instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) [Bracket L M] : Bracket I M where
+  bracket x m := ⁅(x : L), m⁆
+
+instance (priority := 2000) (I : LieIdeal R L) : Bracket I I := inferInstance
+
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
-instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I where
-  bracket x y := ⟨⁅(x : L), y⁆, lie_mem_right R L I x y y.2⟩
-  __ : LieRing I := inferInstanceAs <| LieRing I.toLieSubalgebra
+instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
+  inferInstanceAs <| LieRing I.toLieSubalgebra
 
 /-- Transfer the `LieAlgebra` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
   inferInstanceAs <| LieAlgebra R I.toLieSubalgebra
-
-instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    (I : LieIdeal R L) [Bracket L M] : Bracket I M where
-  bracket x m := ⁅(x : L), m⁆
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
