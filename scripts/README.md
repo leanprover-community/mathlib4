@@ -151,6 +151,14 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
 - `lake-build-wrapper.py`
   A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
+- `public_olean_diff.sh`
+  Compares the public `.olean` files of two Mathlib builds (e.g. master vs a PR branch).
+  In the module system each module produces public, server, and private olean files; theorems are
+  exported as axioms in the public `.olean`, so proof-only changes leave it byte-identical.
+  This script compares public oleans only (skipping `.olean.private`, `.olean.server`, and
+  `.ir.olean`), writing one line per differing module to an output file. Used in CI to
+  automatically add or remove the `no-public-api-changes` label on PRs.
+  Usage: `scripts/public_olean_diff.sh <base_lib_dir> <head_lib_dir> <output_file>`
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
