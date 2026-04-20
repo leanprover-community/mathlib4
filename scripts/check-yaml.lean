@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Lean.CoreM
-import Mathlib.Tactic.ToExpr
+module
+
+import Lean.Data.Json
+import Lean.Linter.Deprecated
 
 /-! # Script to check `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`
 
@@ -13,8 +15,7 @@ This assumes `yaml_check.py` has first translated these to `json` files.
 It verifies that the referenced declarations exist, and prints an error otherwise.
 -/
 
-open IO.FS Lean Lean.Elab
-open Lean Core Elab Command
+open Lean
 
 abbrev DBFile := Array (String × Name)
 
@@ -48,7 +49,7 @@ def processDb (env : Environment) (file : String) : IO Bool := do
     success := false
   return success
 
-unsafe def main : IO Unit := do
+public unsafe def main : IO Unit := do
   initSearchPath (← findSysroot)
   withImportModules #[`Mathlib, `Archive] ∅ (trustLevel := 1024) fun env => do
     let results ← databases.mapM (fun p ↦ processDb env p)
