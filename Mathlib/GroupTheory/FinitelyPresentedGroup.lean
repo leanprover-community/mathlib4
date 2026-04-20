@@ -52,7 +52,7 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
-theorem of_FG {N : Subgroup G} [N.Normal] (h : Group.FG N) : N.IsNormalClosureFG := by
+theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG := by
   obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
   exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
 
@@ -84,7 +84,7 @@ theorem mk' (G : Type*) [Group G] (S : Type*) [Finite S] (φ : FreeGroup S →* 
 
 /-- Any finite group is finitely presented. -/
 instance (G : Type*) [Group G] [Finite G] : IsFinitelyPresented G := by
-  refine mk' G G FreeGroup.prod FreeGroup.prod_surjective (Subgroup.IsNormalClosureFG.of_FG ?_)
-  apply Subgroup.fg_of_index_ne_zero
+  refine mk' G G FreeGroup.prod FreeGroup.prod_surjective
+    (Subgroup.IsNormalClosureFG.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
