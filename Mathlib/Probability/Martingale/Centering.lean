@@ -41,7 +41,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 namespace MeasureTheory
 
 variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [CompleteSpace E] {f : ℕ → Ω → E} {ℱ : Filtration ℕ m0}
+  [NormedSpace ℝ E] [CompleteSpace E] {f g : ℕ → Ω → E} {ℱ : Filtration ℕ m0}
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the predictable process. See `martingalePart` for the martingale. -/
@@ -52,10 +52,54 @@ noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → 
 theorem predictablePart_zero : predictablePart f ℱ μ 0 = 0 := by
   simp_rw [predictablePart, Finset.range_zero, Finset.sum_empty]
 
+lemma predictablePart_add_one (n : ℕ) :
+    predictablePart f ℱ μ (n + 1) =
+      predictablePart f ℱ μ n + μ[f (n + 1) - f n | ℱ n] := by
+  simp [predictablePart, Finset.sum_range_add]
+
+lemma predictablePart_smul (c : ℝ) (n : ℕ) :
+    predictablePart (c • f) ℱ μ n =ᵐ[μ] c • predictablePart f ℱ μ n := by
+  simp only [predictablePart, Finset.smul_sum]
+  refine eventuallyEq_sum fun i hi => ?_
+  simp [← smul_sub, condExp_smul]
+
+lemma predictablePart_add (hfint : ∀ n, Integrable (f n) μ)
+    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) :
+    predictablePart (f + g) ℱ μ n =ᵐ[μ] predictablePart f ℱ μ n + predictablePart g ℱ μ n := by
+  simp only [predictablePart, ← Finset.sum_add_distrib]
+  refine eventuallyEq_sum fun i hi => ?_
+  calc
+  _ =ᵐ[μ] μ[(f (i + 1) - f i) + (g (i + 1) - g i) | ℱ i] := by simp; abel_nf; rfl
+  _ =ᵐ[μ] _ := by apply condExp_add ((hfint (i + 1)).sub (hfint i)) ((hgint (i + 1)).sub (hgint i))
+
+lemma Martingale.predictablePart_eq_zero (hf : Martingale f ℱ μ) (n : ℕ) :
+    predictablePart f ℱ μ n =ᵐ[μ] 0 := by
+  rw [predictablePart, ← Finset.sum_const_zero (s := Finset.range n)]
+  refine eventuallyEq_sum fun i hi => ?_
+  calc
+  _ =ᵐ[μ] μ[f (i + 1) | ℱ i] - μ[f i | ℱ i] := by
+    simp [condExp_sub (hf.integrable (i + 1)) (hf.integrable i) (ℱ i)]
+  _ =ᵐ[μ] f i - f i := (hf.condExp_ae_eq (Nat.le_succ i)).sub (hf.condExp_ae_eq le_rfl)
+  _ =ᵐ[μ] 0 := by simp
+
+lemma IsPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
+    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
+    (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
+    predictablePart f ℱ μ n =ᵐ[μ] f n - f 0 := by
+  simp only [predictablePart, ← Finset.sum_range_sub]
+  exact eventuallyEq_sum fun i hi => (condExp_of_stronglyMeasurable (ℱ.le i)
+    ((hf.measurable_add_one i).stronglyMeasurable.sub (hf.adapted i))
+    ((hfint (i + 1)).sub (hfint i))).eventuallyEq
+
 theorem stronglyAdapted_predictablePart :
     StronglyAdapted ℱ fun n => predictablePart f ℱ μ (n + 1) :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
+
+lemma isPredictable_predictablePart [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] :
+    IsPredictable ℱ (predictablePart f ℱ μ) :=
+  isPredictable_of_measurable_add_one (by simp [measurable_const'])
+    fun n ↦ (stronglyAdapted_predictablePart n).measurable
 
 theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
@@ -65,6 +109,49 @@ theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predicta
 process. This is the martingale. See `predictablePart` for the predictable process. -/
 noncomputable def martingalePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → E) (ℱ : Filtration ℕ m0)
     (μ : Measure Ω) : ℕ → Ω → E := fun n => f n - predictablePart f ℱ μ n
+
+@[simp]
+lemma martingalePart_zero : martingalePart f ℱ μ 0 = f 0 := by
+  simp [martingalePart]
+
+lemma martingalePart_smul (c : ℝ) (n : ℕ) :
+    martingalePart (c • f) ℱ μ n =ᵐ[μ] c • martingalePart f ℱ μ n := by
+  filter_upwards [predictablePart_smul (f := f) c n] with ω hω
+  simpa [martingalePart, smul_sub]
+
+lemma martingalePart_add (hfint : ∀ n, Integrable (f n) μ)
+    (hgint : ∀ n, Integrable (g n) μ) (n : ℕ) :
+    martingalePart (f + g) ℱ μ n =ᵐ[μ] martingalePart f ℱ μ n + martingalePart g ℱ μ n := by
+  filter_upwards [predictablePart_add (ℱ := ℱ) hfint hgint n] with ω hω
+  simp_all [martingalePart]
+  abel
+
+lemma Martingale.martingalePart_eq (hf : Martingale f ℱ μ) (n : ℕ) :
+    martingalePart f ℱ μ n =ᵐ[μ] f n := by
+  filter_upwards [hf.predictablePart_eq_zero n] with ω hω
+  simp [martingalePart, hω]
+
+lemma Submartingale.monotone_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
+    (hf : Submartingale f ℱ μ) :
+    ∀ᵐ ω ∂μ, Monotone (predictablePart f ℱ μ · ω) := by
+  have := ae_all_iff.2 <| fun n : ℕ ↦ hf.condExp_sub_nonneg n.le_succ
+  filter_upwards [this] with ω h
+  simp only [Pi.zero_apply, Nat.succ_eq_add_one, ← ge_iff_le] at h
+  refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)
+  grw [predictablePart_add_one, Pi.add_apply, h n, add_zero]
+
+lemma Submartingale.nonneg_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
+    (hf : Submartingale f ℱ μ) :
+    ∀ᵐ ω ∂μ, ∀ n, 0 ≤ predictablePart f ℱ μ n ω := by
+  filter_upwards [hf.monotone_predictablePart] with ω hω n
+  simpa [predictablePart_zero] using hω (Nat.zero_le n)
+
+lemma IsPredictable.martingalePart_eq [SecondCountableTopology E] [MeasurableSpace E]
+    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
+    (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
+    martingalePart f ℱ μ n =ᵐ[μ] f 0 := by
+  filter_upwards [hf.predictablePart_eq (μ := μ) hfint n] with ω hω
+  simp [martingalePart, hω, sub_eq_add_neg]
 
 theorem martingalePart_add_predictablePart (ℱ : Filtration ℕ m0) (μ : Measure Ω) (f : ℕ → Ω → E) :
     martingalePart f ℱ μ + predictablePart f ℱ μ = f :=
