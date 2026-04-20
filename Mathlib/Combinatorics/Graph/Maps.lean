@@ -10,11 +10,16 @@ public import Mathlib.Combinatorics.Graph.Subgraph
 /-!
 # Maps between graphs
 
-This file develops the basic theory of vertex maps on graphs `Graph α β`.
+This file defines vertex map between graphs `Graph α β`. Morphisms between graphs will also be
+defined in this file in the future.
 
 ## Main definitions
 
 * `map`: the map on graphs induced by a function on vertices `f : α → α'`
+
+## TODO
+
+* Morphisms between graphs
 
 -/
 
