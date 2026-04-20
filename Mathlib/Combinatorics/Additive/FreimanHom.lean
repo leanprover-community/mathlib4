@@ -428,22 +428,18 @@ lemma isAddFreimanIso_image_val (hm : m ≠ 0) (hkmn : m * k ≤ n) (S : Set (Fi
       exact Equiv.bijOn_image _
     all_goals simp; grind
 
-@[simp, grind →]
-private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
-  Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
-
 /-- **No wrap-around principle**.
 
 The first `k + 1` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k + 1` elements
 of `ℕ` assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iic (Fin.ofNat (n + 1) k)) (Iic k) val := by
-  have h := isAddFreimanIso_image_val hm hkmn (Iic (Fin.ofNat (n + 1) k)) (by
-    simp [le_iff_val_le_val, Nat.mod_eq_of_lt (aux hm hkmn)])
+  have aux : k < n + 1 := Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
+  have h := isAddFreimanIso_image_val hm hkmn (Iic (Fin.ofNat (n + 1) k)) <| by
+    simp [le_def, Nat.mod_eq_of_lt aux]
   suffices (val '' Iic (Fin.ofNat (n + 1) k)) = Set.Iic k by rwa [this] at h
   ext i
-  simp only [ofNat_eq_cast, mem_image, Set.mem_Iic, le_iff_val_le_val, val_natCast,
-    Nat.mod_eq_of_lt (aux hm hkmn)]
+  simp only [ofNat_eq_cast, mem_image, Set.mem_Iic, le_def, val_natCast, Nat.mod_eq_of_lt aux]
   constructor
   · grind
   · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
@@ -454,13 +450,13 @@ The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first 
 assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (Fin.ofNat (n + 1) k)) (Iio k) val := by
+  have aux : k < n + 1 := Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
   have h := isAddFreimanIso_image_val hm hkmn (Iio (Fin.ofNat (n + 1) k)) <| by
-    simp only [ofNat_eq_cast, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt (aux hm hkmn)]
+    simp only [ofNat_eq_cast, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt aux]
     grind
   suffices (val '' Iio (Fin.ofNat (n + 1) k)) = Set.Iio k by rwa [this] at h
   ext i
-  simp only [ofNat_eq_cast, mem_image, Set.mem_Iio, lt_def, val_natCast,
-    Nat.mod_eq_of_lt (aux hm hkmn)]
+  simp only [ofNat_eq_cast, mem_image, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt aux]
   constructor
   · grind
   · exact (⟨⟨i, by grind⟩, ·, rfl⟩)
