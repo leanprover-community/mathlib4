@@ -956,7 +956,7 @@ def proj : UniversalCover x₀ → X :=
 
 /-- Equality in the universal cover induces an endpoint-preserving homotopy of representative
 based paths. -/
-theorem homotopic_toPath_of_ofBasedPath_eq {α β : BasedPath x₀}
+theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
     (h : ofBasedPath x₀ α = ofBasedPath x₀ β) :
     Path.Homotopic
       (α.toPath.cast rfl (by
@@ -985,6 +985,30 @@ theorem homotopic_toPath_of_ofBasedPath_eq {α β : BasedPath x₀}
             ({ toContinuousMap := βf, source' := hβ0, target' := rfl } : Path x₀ (βf 1)) := by
         exact eq_of_heq (HEq.trans hp_heq.symm hq)
       exact Path.Homotopic.Quotient.exact hq'
+
+/-- If two based paths have the same endpoint and homotopic `toPath`s (after casting to a
+common target), then they represent the same element of the `UniversalCover`. -/
+theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
+    (heq : BasedPath.endpoint α = BasedPath.endpoint β)
+    (h : Path.Homotopic (α.toPath.cast rfl heq.symm) β.toPath) :
+    ofBasedPath x₀ α = ofBasedPath x₀ β := by
+  obtain ⟨αf, hα0⟩ := α
+  obtain ⟨βf, hβ0⟩ := β
+  change αf 1 = βf 1 at heq
+  change (⟨αf 1, Path.Homotopic.Quotient.mk
+      (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1))⟩ : Σ _ : X, _) =
+    ⟨βf 1, Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1))⟩
+  refine Sigma.ext heq ?_
+  have h1 :
+      HEq (Path.Homotopic.Quotient.mk (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)))
+        (Path.Homotopic.Quotient.mk
+          ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm)) :=
+    Path.Homotopic.hpath_hext (fun _ => rfl)
+  have h2 :
+      Path.Homotopic.Quotient.mk ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm) =
+        Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1)) :=
+    Quotient.sound h
+  exact h1.trans (heq_of_eq h2)
 
 @[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
@@ -1069,7 +1093,7 @@ theorem sheet_subset_proj_preimage (U : Set X) (hxU : x ∈ U)
 endpoint preimage of a set containing their common endpoint.
 
 This is the saturation property of sheets under the quotient map `ofBasedPath`. -/
-theorem pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq
+theorem pathComponent_preimage_eq_of_ofBasedPath_eq
     {U : Set X} {α β : BasedPath x₀}
     (hα_end : BasedPath.endpoint α ∈ U)
     (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
@@ -1080,7 +1104,7 @@ theorem pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq
       simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
     exact heq ▸ hα_end
   exact BasedPath.pathComponent_preimage_saturated (x₀ := x₀) hβ_end
-    (homotopic_toPath_of_ofBasedPath_eq hαβ)
+    (toPath_homotopic_of_ofBasedPath_eq hαβ)
 
 /-- Membership in a based-path component is preserved under equality in the universal cover. -/
 theorem mem_basedPathComponent_of_ofBasedPath_eq {U : Set X} {y : X} {p : Path x₀ y}
@@ -1094,7 +1118,7 @@ theorem mem_basedPathComponent_of_ofBasedPath_eq {U : Set X} {y : X} {p : Path x
   change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
   have hself : α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α :=
     mem_pathComponentIn_self hα_end
-  rw [pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq hα_end hαβ,
+  rw [pathComponent_preimage_eq_of_ofBasedPath_eq hα_end hαβ,
     pathComponentIn_congr hβ] at hself
   exact hself
 
@@ -1126,32 +1150,6 @@ theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
     ofBasedPath x₀ (BasedPath.ofPath p) ∈ sheet U hxU (Path.Homotopic.Quotient.mk p) :=
   ⟨BasedPath.ofPath p, mem_pathComponentIn_self
     (by simpa [BasedPath.endpoint, BasedPath.ofPath, p.target] using hxU), rfl⟩
-
-/-- If two based paths have the same endpoint and homotopic `toPath`s (after casting to a
-common target), then they represent the same element of the `UniversalCover`. -/
-theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
-    (heq : BasedPath.endpoint α = BasedPath.endpoint β)
-    (h : Path.Homotopic (α.toPath.cast rfl heq.symm) β.toPath) :
-    ofBasedPath x₀ α = ofBasedPath x₀ β := by
-  obtain ⟨αf, hα0⟩ := α
-  obtain ⟨βf, hβ0⟩ := β
-  change αf 1 = βf 1 at heq
-  change (⟨αf 1, Path.Homotopic.Quotient.mk
-      (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1))⟩ : Σ _ : X, _) =
-    ⟨βf 1, Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1))⟩
-  refine Sigma.ext heq ?_
-  -- `α.toPath` and `α.toPath.cast _ _` are pointwise equal, hence have equal quotient classes.
-  have h1 :
-      HEq (Path.Homotopic.Quotient.mk (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)))
-        (Path.Homotopic.Quotient.mk
-          ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm)) :=
-    Path.Homotopic.hpath_hext (fun _ => rfl)
-  -- The cast quotient class equals `β.toPath`'s quotient class by the homotopy `h`.
-  have h2 :
-      Path.Homotopic.Quotient.mk ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm) =
-        Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1)) :=
-    Quotient.sound h
-  exact h1.trans (heq_of_eq h2)
 
 /-- Sheet surjection onto `U`: every point of `U` is the projection of a point of the sheet. -/
 theorem sheet_surjOn [LocPathConnectedSpace X]
@@ -1202,7 +1200,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
       have hα₁_end : BasedPath.endpoint α₁ ∈ U := hα₁.target_mem
       have h_same : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
           pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ :=
-        pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq hα₁_end hαeq.symm
+        pathComponent_preimage_eq_of_ofBasedPath_eq hα₁_end hαeq.symm
       have hp₁_end : BasedPath.endpoint (BasedPath.ofPath p₁) ∈ U :=
         (BasedPath.endpoint_ofPath p₁).symm ▸ hxU
       have h_joined_p : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
