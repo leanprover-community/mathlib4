@@ -168,7 +168,7 @@ theorem fst_prod_snd (G : Face (C₁.prod C₂)) : G.fst.prod G.snd = G := by
     have := add_mem zm yn
     simp only [Prod.mk_add_mk, add_comm] at this
     rw [← Prod.mk_add_mk, add_comm] at this
-    refine G.isFaceOf.mem_of_add_mem ?_ ?_ this
+    refine G.isFaceOf.mem_of_add_mem_left ?_ ?_ this
     · exact ⟨(mem_prod.mp (G.isFaceOf.le yn)).1, (mem_prod.mp (G.isFaceOf.le zm)).2⟩
     · exact ⟨(mem_prod.mp (G.isFaceOf.le zm)).1, (mem_prod.mp (G.isFaceOf.le yn)).2⟩
   · intro h; exact ⟨⟨x.2, h⟩, ⟨x.1, h⟩⟩
