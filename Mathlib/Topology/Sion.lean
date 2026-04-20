@@ -19,6 +19,7 @@ Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
 and let `f : X × Y → β` be a function such that
 - for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
 - for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
+Then:
 
 * `Sion.minimax' : If `β` is complete, then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
@@ -35,7 +36,7 @@ As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
 * `Sion.minimax` is a variant of that result that
-avoids complete linear orders using `IsLUB` and `IsGLB`.
+  avoids complete linear orders using `IsLUB` and `IsGLB`.
 
 We follow the proof of [Komiya-1988][Komiya (1988)].
 
