@@ -549,42 +549,24 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   have := isSeparable S K L
   let i : L →ₐ[K] M := IsSepClosed.lift
   refine ⟨(show L ≃ₐ[K] i.fieldRange from AlgEquiv.ofInjectiveField i).trans
-    (IntermediateField.equivOfEq (le_antisymm ?_ ?_))⟩
-  · rintro x (hx : x ∈ i.range)
-    let e := Subalgebra.equivOfEq _ _ ((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2
-      |>.trans Subalgebra.topEquiv
-    have hrange : i.range = (i.comp (AlgHomClass.toAlgHom e)).range := by
-      ext x
-      simp only [AlgHom.mem_range, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply]
-      constructor
-      · rintro ⟨y, rfl⟩; exact ⟨e.symm y, by simp⟩
-      · rintro ⟨y, rfl⟩; exact ⟨e y, rfl⟩
-    rw [hrange, AlgHom.mem_range] at hx
-    obtain ⟨⟨y, hy⟩, rfl⟩ := hx
-    induction hy using Algebra.adjoin_induction with
-    | mem x hx =>
-      obtain ⟨n, hn, h1, h2⟩ := hx
-      apply IntermediateField.subset_adjoin
-      use n, hn, h1
-      rw [← map_pow, ← map_one (i.comp (AlgHomClass.toAlgHom e))]
-      congr 1
-      apply_fun _ using Subtype.val_injective
-      simpa
-    | algebraMap x =>
-      convert IntermediateField.algebraMap_mem _ x
-      exact AlgHom.commutes _ x
-    | add x y hx hy ihx ihy =>
-      convert add_mem ihx ihy
-      exact map_add (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-    | mul x y hx hy ihx ihy =>
-      convert mul_mem ihx ihy
-      exact map_mul (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-  · rw [IntermediateField.adjoin_le_iff]
-    rintro x ⟨n, hn, h1, h2⟩
-    have := NeZero.mk h1
+    (IntermediateField.equivOfEq ?_)⟩
+  rw [AlgHom.fieldRange_eq_map]
+  have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ := by
+    exact IntermediateField.adjoin_eq_top_of_algebra (F := K)
+      (S := {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1})
+      (((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2)
+  rw [← htop, IntermediateField.adjoin_map]
+  apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
+  · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
+    exact IntermediateField.subset_adjoin (F := K)
+      (S := {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) ⟨n, hn, h1, by
+        simpa using congrArg i h2⟩
+  · rintro x ⟨n, hn, h1, h2⟩
+    have : NeZero n := ⟨h1⟩
     obtain ⟨y, hy⟩ := exists_isPrimitiveRoot K L hn h1
     obtain ⟨m, -, rfl⟩ := (hy.map_of_injective (f := i) i.injective).eq_pow_of_pow_eq_one h2
-    exact ⟨y ^ m, by simp⟩
+    exact pow_mem (IntermediateField.subset_adjoin (F := K)
+      (S := i '' {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) ⟨y, ⟨n, hn, h1, hy.pow_eq_one⟩, rfl⟩) m
 
 theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   rw [isGalois_iff]
