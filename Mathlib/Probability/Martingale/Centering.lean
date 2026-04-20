@@ -135,9 +135,9 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
   have hhpred : StronglyAdapted ℱ fun n => h (n + 1) := by
     rw [hh]
     exact stronglyAdapted_predictablePart.sub hg
+  have := (IsStronglyPredictable.of_measurable_add_one (hg0.symm ▸ stronglyMeasurable_zero) hg)
   have hhmgle : Martingale h ℱ μ := hf.sub (martingale_martingalePart
-    (hf.stronglyAdapted.add <| Predictable.stronglyAdapted hg <| hg0.symm ▸ stronglyMeasurable_zero)
-    fun n => (hf.integrable n).add <| hgint n)
+    (hf.stronglyAdapted.add this.stronglyAdapted) fun n => (hf.integrable n).add <| hgint n)
   refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
   unfold h at hω
