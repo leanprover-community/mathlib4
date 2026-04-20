@@ -395,9 +395,7 @@ theorem Splits.roots_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
 alias Splits.map_roots := Splits.roots_map
 
 omit [IsDomain R] in
-theorem Splits.map_aroots_algebraMap {A B : Type*}
-    [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
-    [IsSimpleRing A] [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B] {f : R[X]}
+theorem Splits.map_aroots_algebraMap [IsSimpleRing A] [Algebra A B] [IsScalarTower R A B]
     (hf : (f.map (algebraMap R A)).Splits) :
     (f.aroots A).map (algebraMap A B) = f.aroots B := by
   rw [← aroots_map B A, aroots, aroots, hf.roots_map]
