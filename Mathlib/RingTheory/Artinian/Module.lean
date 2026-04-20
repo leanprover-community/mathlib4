@@ -628,7 +628,6 @@ noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R,
 lemma equivPi_apply [IsReduced R] (x : R) (m : MaximalSpectrum R) : equivPi R x m = x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 
