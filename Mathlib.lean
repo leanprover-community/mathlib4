@@ -876,6 +876,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Algebra.NoZeroSMulDivisors.Prod
+public import Mathlib.Algebra.NonAssoc.Dendriform.Defs
 public import Mathlib.Algebra.NonAssoc.LieAdmissible.Defs
 public import Mathlib.Algebra.NonAssoc.PreLie.Basic
 public import Mathlib.Algebra.Notation
