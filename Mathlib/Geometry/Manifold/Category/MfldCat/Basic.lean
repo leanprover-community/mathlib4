@@ -10,16 +10,22 @@ public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
-# Category instance for smooth manifolds
+# The category of $C^n$ manifolds
 
 We introduce the category `MfldCat 𝕜 n` of `C^n` manifolds over a field `𝕜`. Each object bundles the
-underlying manifold together with its model space `E`, chart space `H`, and
+underlying manifold together with its model vector space `E`, model space `H`, and
 `I : ModelWithCorners 𝕜 E H`. Thus, `MfldCat 𝕜 n` also includes manifolds with boundary and corners.
 
 We define a forgetful functor `forget₂ (MfldCat 𝕜 n) TopCat` taking smooth manifolds to topological
 spaces. We also define `MfldCat.ofNormedSpace` turning any `NormedSpace 𝕜 E` into a manifold. In the
 future, we plan to define a functor `FGModuleCat 𝕜 ⥤ MfldCat 𝕜 n` from the category of
 finite-dimensional vector spaces over `𝕜`.
+
+# Implementation Notes
+* We do not assume `[FiniteDimensional 𝕜 E] [T2Space M] [SigmaCompactSpace M]`, so this category
+  includes non-Hausdorff, non-paracompact, and infite-dimensional manifolds.
+* We keep `E`, `H` and `carrier` all in the same `Type u` since we do not care about large manifolds
+  modelled on small spaces. `𝕜` is given a seperate `Type v`.
 -/
 
 @[expose] public section
@@ -27,30 +33,30 @@ finite-dimensional vector spaces over `𝕜`.
 set_option autoImplicit false
 
 open CategoryTheory
-open scoped Manifold
+open scoped Manifold ContDiff
 
-universe u₁ u₂ u₃ u₄
+universe u v
 
 /-- The category of `C^n` 𝕜-manifolds. -/
 -- Note: Copied from `PFunctor`, but do we need seperate universe levels here? Seems perverse.
 @[pp_with_univ, nolint checkUnivs]
-structure MfldCat (𝕜 : Type u₁) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
+structure MfldCat (𝕜 : Type v) [NontriviallyNormedField 𝕜] (n : ℕ∞ω) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
   of ::
   /-- The underlying type. -/
-  carrier : Type u₂
+  carrier : Type u
   /-- The model normed space. -/
-  E : Type u₃
+  E : Type u
   /-- The chart space. -/
-  H : Type u₄
-  [instNAG : NormedAddCommGroup E]
-  [instNS : NormedSpace 𝕜 E]
-  [instTopH : TopologicalSpace H]
+  H : Type u
+  [instNormedAddCommGroup : NormedAddCommGroup E]
+  [instNormedSpace : NormedSpace 𝕜 E]
+  [instTopologicalSpaceH : TopologicalSpace H]
   /-- The model with corners. -/
   I : ModelWithCorners 𝕜 E H
-  [instTop : TopologicalSpace carrier]
-  [instCharted : ChartedSpace H carrier]
-  [instManifold : IsManifold I n carrier]
+  [instTopologicalSpace : TopologicalSpace carrier]
+  [instChartedSpace : ChartedSpace H carrier]
+  [instIsManifold : IsManifold I n carrier]
 
 section Notation
 
@@ -63,16 +69,18 @@ meta def MfldCat.delabOf : Delab := delabApp
 
 end Notation
 
-attribute [instance] MfldCat.instNAG MfldCat.instNS MfldCat.instTopH MfldCat.instTop
-  MfldCat.instCharted MfldCat.instManifold
+attribute [instance] MfldCat.instNormedAddCommGroup MfldCat.instNormedSpace
+  MfldCat.instTopologicalSpaceH MfldCat.instTopologicalSpace
+  MfldCat.instChartedSpace MfldCat.instIsManifold
 
 initialize_simps_projections MfldCat
-  (-instNAG, -instNS, -instTopH, -instTop, -instCharted, -instManifold)
+  (-instNormedAddCommGroup, -instNormedSpace, -instTopologicalSpaceH, -instTopologicalSpace,
+    -instChartedSpace, -instIsManifold)
 
 namespace MfldCat
 
-variable {𝕜 : Type u₁} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
-  {X Y Z : Type u₂} {E E' E'' : Type u₃} {H H' H'' : Type u₄}
+variable {𝕜 : Type v} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
+  {X Y Z : Type u} {E E' E'' : Type u} {H H' H'' : Type u}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [TopologicalSpace H'']
@@ -82,18 +90,18 @@ variable {𝕜 : Type u₁} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   [TopologicalSpace Y] [ChartedSpace H' Y] [IsManifold I' n Y]
   [TopologicalSpace Z] [ChartedSpace H'' Z] [IsManifold I'' n Z]
 
-instance : CoeSort (MfldCat 𝕜 n) (Type u₂) := ⟨MfldCat.carrier⟩
+instance : CoeSort (MfldCat 𝕜 n) (Type u) := ⟨MfldCat.carrier⟩
 
 attribute [coe] MfldCat.carrier
 
 variable (X E H I) in
-lemma coe_of : (of (n := n) X E H I : Type u₂) = X := rfl
+lemma coe_of : (of (n := n) X E H I : Type u) = X := rfl
 
 lemma of_carrier (M : MfldCat 𝕜 n) : of (n := n) M.carrier M.E M.H M.I = M := rfl
 
 /-- The type of morphisms in `MfldCat`. -/
 @[ext]
-structure Hom (M N : MfldCat.{u₁, u₂, u₃, u₄} 𝕜 n) where
+structure Hom (M N : MfldCat.{u, v} 𝕜 n) where
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap M.I N.I M N n
 
@@ -116,7 +124,7 @@ abbrev ofHom (f : ContMDiffMap I I' X Y n) : of (n := n) X E H I ⟶ of (n := n)
   ConcreteCategory.ofHom (C := MfldCat 𝕜 n) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (M N : MfldCat 𝕜 n) (f : Hom M N) :=
+def Hom.Simps.hom (M N : MfldCat.{u, v} 𝕜 n) (f : Hom M N) :=
   f.hom
 
 initialize_simps_projections Hom (hom' → hom)
@@ -206,12 +214,12 @@ instance inhabited : Inhabited (MfldCat 𝕜 n) :=
   ⟨of 𝕜 𝕜 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
 
 /-- A normed space is a `C^n` manifold (modeled on itself). -/
-abbrev ofNormedSpace (n : WithTop ℕ∞) (E : Type u₃) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
+abbrev ofNormedSpace (n : ℕ∞ω) (E : Type u) [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
     MfldCat 𝕜 n :=
   of E E E (modelWithCornersSelf 𝕜 E)
 
 /-- `MfldCat 𝕜 n` has a forgetful functor to `TopCat`. -/
-instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u₂} where
+instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
   forget₂.obj M := TopCat.of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
 
@@ -249,7 +257,7 @@ theorem of_diffeomorphOfIso {M N : MfldCat 𝕜 n} (f : M ≅ N) :
 
 /-- The constant morphism `M ⟶ N` in `MfldCat` given by `y : N`. -/
 def const {M N : MfldCat 𝕜 n} (y : N) : M ⟶ N :=
-  ofHom ⟨fun _ ↦ y, contMDiff_const⟩
+  ofHom <| ContMDiffMap.const y
 
 @[simp]
 lemma const_apply {M N : MfldCat 𝕜 n} (y : N) (x : M) :
