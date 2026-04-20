@@ -21,8 +21,6 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
   minimal degree version of the **Erdős-Stone theorem** for simple graphs.
 -/
 
-@[expose] public section
-
 
 open Filter Finset Fintype Real Topology
 
@@ -160,7 +158,7 @@ theorem filter.pi.mem_val {p} (hp : p ∈ K.parts) (w : filter K t) :
   let s := Multiset.of_mem_filter w.prop p hp
   s.choose_spec.right
 
-/-- If `#ErdosStone.filter` is sufficently large, then there exist a `y` such that there
+/-- If `#ErdosStone.filter` is sufficiently large, then there exist a `y` such that there
 are least `t` vertices in the fiber `ErdosStone.filter.pi A · = y`.
 
 This is an auxiliary definition for the **Erdős-Stone theorem**. -/
@@ -174,11 +172,20 @@ theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
     rw [K.card_mem_parts hp]
     exact ht_lt_t'.le
   apply exists_le_card_fiber_of_mul_le_card
-  simp_rw [card_coe, Finset.card_pi, card_powersetCard,
-    Finset.prod_congr rfl fun p hp ↦ show (#p).choose t = t'.choose t by rw [K.card_mem_parts hp],
-    prod_const, K.card_parts.resolve_right ht'_pos.ne']
-  exact_mod_cast le_of_mul_le_mul_right (mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN))
-    (sub_pos_of_lt <| mod_cast ht_lt_t' : 0 < (t' - t : ℝ))
+  simp_rw [card_coe]
+  calc #(K.parts.pi (·.powersetCard t)) * t
+    _ = (∏ x ∈ K.parts, (#x).choose t) * t := by
+        simp_rw [Finset.card_pi, card_powersetCard]
+    _ = (∏ p ∈ K.parts, t'.choose t) * t :=
+        congrArg (· * t) <| prod_congr rfl
+          fun p hp ↦ congrArg (Nat.choose · t) <| K.card_mem_parts hp
+    _ ≤ t'.choose t ^ r * t := by
+        rw [prod_const, K.card_parts.resolve_right ht'_pos.ne']
+    _ ≤ #(filter K t) := by
+        refine Nat.le_of_mul_le_mul_right ?_ (Nat.sub_pos_of_lt ht_lt_t')
+        rw [← @Nat.cast_le ℝ, Nat.cast_mul _ (t' - t), Nat.cast_mul _ (t' - t),
+          Nat.cast_sub ht_lt_t'.le]
+        exact mul_le_card_filter_mul K hr_pos ht'_pos hδ (mod_cast hN)
 
 end ErdosStone
 
@@ -186,7 +193,7 @@ end ErdosStone
 copy of a `completeEquipartiteGraph` in `r + 1` parts each of size `t`.
 
 This is the minimal-degree version of the **Erdős-Stone theorem**. -/
-theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
+public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
     {ε : ℝ} (hε : 0 < ε) (r t : ℕ) :
     ∀ᶠ n in atTop, ∀ {G : SimpleGraph (Fin n)} [DecidableRel G.Adj],
       G.minDegree ≥ (1 - 1 / r + ε) * n
