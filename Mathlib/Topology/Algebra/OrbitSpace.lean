@@ -65,20 +65,32 @@ lemma localHomeomorphAt_eq_quotientMk :
     localHomeomorphAt G p = (Quotient.mk _ : M → orbitRel.Quotient G M) :=
   (Classical.choose_spec (isLocalHomeomorph_of_properlyDiscontinuousSMul p)).2.symm
 
-/-- The equivalence class `⟦p⟧` lies in the target of `localHomeomorphAt p`. -/
-lemma mem_localHomeomorphAt_target : ⟦p⟧ ∈ (localHomeomorphAt G p).target := by
+/-- If `k` lies in the source of `localHomeomorphAt p`, its equivalence class `⟦k⟧` lies in the
+target of `localHomeomorphAt p`. -/
+lemma mem_localHomeomorphAt_target' {k : M} (h : k ∈ (localHomeomorphAt G p).source) :
+    ⟦k⟧ ∈ (localHomeomorphAt G p).target := by
   rw [← OpenPartialHomeomorph.image_source_eq_target, Set.mem_image]
-  refine ⟨p, mem_localHomeomorphAt_source, ?_⟩
+  refine ⟨k, h, ?_⟩
   rw [localHomeomorphAt_eq_quotientMk]
+
+/-- The equivalence class `⟦p⟧` lies in the target of `localHomeomorphAt p`. -/
+lemma mem_localHomeomorphAt_target : ⟦p⟧ ∈ (localHomeomorphAt G p).target :=
+  mem_localHomeomorphAt_target' mem_localHomeomorphAt_source
 
 variable (G p) in
 /-- A chosen local inverse for the quotient map `Quotient.mk : M → M⧸G` at a point `p : M`. -/
 def localInverseAt : OpenPartialHomeomorph (orbitRel.Quotient G M) M :=
   (localHomeomorphAt G p).symm
 
+/-- If `k` lies in the source of `localHomeomorphAt p`, its equivalence class `⟦k⟧` lies in the
+source of `localInverseAt p`. -/
+lemma mem_localInverseAt_source' {k : M} (h : k ∈ (localHomeomorphAt G p).source) :
+    ⟦k⟧ ∈ (localInverseAt G p).source := by
+  simp [localInverseAt, mem_localHomeomorphAt_target' h]
+
 /-- The equivalence class `⟦p⟧` lies in the source of `localInverseAt p`. -/
-lemma mem_localInverseAt_source : ⟦p⟧ ∈ (localInverseAt G p).source := by
-  simp [localInverseAt, mem_localHomeomorphAt_target]
+lemma mem_localInverseAt_source : ⟦p⟧ ∈ (localInverseAt G p).source :=
+  mem_localInverseAt_source' mem_localHomeomorphAt_source
 
 /-- If a point `k` lies on the source of `localHomeomorphAt p` and its class `⟦k⟧` lies on the
 source of `localInverseAt p`, then `localInverseAt p` sends `⟦k⟧` back to its representative `k`. -/
