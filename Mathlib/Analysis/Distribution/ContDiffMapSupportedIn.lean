@@ -82,14 +82,14 @@ distributions
 
 @[expose] public section
 
-open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
+open TopologicalSpace Set Function UniformSpace WithSeminorms
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
-  {n k : ℕ∞} {K : Compacts E}
+  {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -321,12 +321,95 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
     postcompLM T f = T ∘ f :=
   rfl
 
+open scoped Classical in
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoLM 𝕜` is the `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
+
+This is in fact continuous (see `monoCLM`). Furthermore:
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
+specified by a type ascription.
+-/
+noncomputable def monoLM :
+    𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toFun f :=
+    if h : n₂ ≤ n₁ ∧ K₁ ≤ K₂ then
+      .of_support_subset (f.contDiff.of_le (mod_cast h.1)) (f.support_subset.trans h.2)
+    else 0
+  map_add' f g := by split_ifs <;> ext <;> simp
+  map_smul' c f := by split_ifs <;> ext <;> simp
+
+open scoped Classical in
+@[simp]
+lemma monoLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    ((monoLM 𝕜 f : 𝓓^{n₂}_{K₂}(E, F)) : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 := by
+  rw [monoLM]
+  split_ifs <;> rfl
+
+lemma monoLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) →ₗ[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoLM 𝕜' :=
+  rfl
+
+variable (n k) in
+/-- `fderivLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+This is subsumed by `fderivCLM`, which also bundles the continuity. -/
+noncomputable def fderivLM :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
+  toFun f :=
+    if hk : k + 1 ≤ n then
+      .of_support_subset
+        (f.contDiff.fderiv_right <| mod_cast hk)
+        ((support_fderiv_subset ℝ).trans f.tsupport_subset)
+    else 0
+  map_add' f g := by
+    split_ifs with hk
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+      ext
+      simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
+                       (g.contDiff.differentiable hk'.ne').differentiableAt]
+    · simp
+  map_smul' c f := by
+    split_ifs with hk
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+      ext
+      simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
+    · simp
+
+@[simp]
+lemma fderivLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    fderivLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+  rw [fderivLM]
+  split_ifs <;> rfl
+
+lemma fderivLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
+    fderivLM 𝕜 n k f = fderiv ℝ f := by
+  simp [hk]
+
+lemma fderivLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
+    fderivLM 𝕜 n k f = 0 := by
+  ext : 1
+  simp [not_le_of_gt hk]
+
+lemma fderivLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (fderivLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivLM 𝕜' n k :=
+  rfl
+
 variable (n k) in
 /-- `iteratedFDerivLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
 This only makes mathematical sense if `k + i ≤ n`, otherwise we define it as the zero map.
-
-See `iteratedFDerivLM` for the very common case where everything is infinitely differentiable.
 
 This is subsumed by `iteratedFDerivCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
@@ -348,13 +431,13 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
     · simp
@@ -369,10 +452,10 @@ lemma iteratedFDerivLM_apply_of_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : k +
     iteratedFDerivLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : ¬ (k + i ≤ n)) :
+lemma iteratedFDerivLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : n < k + i) :
     iteratedFDerivLM 𝕜 n k i f = 0 := by
   ext : 1
-  simp [hin]
+  simp [not_le_of_gt hin]
 
 lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
@@ -586,7 +669,7 @@ protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{
   by_cases hi : i ≤ n
   · simp [hi, forall_const, ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply,
       BoundedContinuousFunction.norm_le hC, this]
-  · push_neg at hi
+  · push Not at hi
     simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
 
 protected theorem seminorm_top_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
@@ -622,7 +705,7 @@ functions as a continuous `𝕜`-linear map. -/
 noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
   toLinearMap := toBoundedContinuousFunctionLM 𝕜
   cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
     simp [norm_toBoundedContinuousFunction 𝕜 f]
 
@@ -635,6 +718,10 @@ lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [Nontrivially
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
   rfl
+
+instance : ContinuousEval 𝓓^{n}_{K}(E, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}_{K}(E, F) :=
   have : Injective (toBoundedContinuousFunctionCLM ℝ : 𝓓^{n}_{K}(E, F) →L[ℝ] E →ᵇ F) :=
@@ -667,14 +754,107 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
     𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
   toLinearMap := postcompLM T
   cont := show Continuous (postcompLM T) by
-    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
-    simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (.of_real fun i ↦ ⟨{i}, ‖T‖, fun f ↦ ?_⟩)
+    simpa using seminorm_postcompLM_le 𝕜 T f
 
 @[simp]
 lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
     (f : 𝓓^{n}_{K}(E, F)) :
     postcompCLM T f = T ∘ f :=
+  rfl
+
+theorem seminorm_monoLM_le {i : ℕ} (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 f) ≤ N[𝕜]_{K₁, n₁, i} f := by
+  by_cases H : n₂ ≤ n₁ ∧ K₁ ≤ K₂
+  · simp (discharger := positivity) only [ContDiffMapSupportedIn.seminorm_le_iff, monoLM_apply, H,
+      and_self, ↓reduceIte]
+    intro hik _ _
+    exact norm_iteratedFDeriv_apply_le_seminorm _ (hik.trans (mod_cast H.1))
+  · simp [monoLM_eq_zero, H]
+
+theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂) (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    N[𝕜]_{K₂, n₂, i} (monoLM 𝕜 f) = N[𝕜]_{K₁, n₁, i} f := by
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm, ContDiffMapSupportedIn.seminorm_apply,
+    structureMapCLM_apply, h₁, h₂]
+
+/-- If `n₁ ≥ n₂` and `K₁ ⊆ K₂`, `monoCLM 𝕜` is the continuous `𝕜`-linear inclusion of
+`𝓓^{n₁}_{K₁}(E, F)` inside `𝓓^{n₂}_{K₂}(E, F)`. Otherwise, this is the zero map.
+
+Furthermore:
+* it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
+* it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
+March 2026).
+
+The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
+specified by a type ascription.
+-/
+noncomputable def monoCLM :
+    𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F) where
+  toLinearMap := monoLM 𝕜
+  cont := show Continuous (monoLM 𝕜) by
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, 1, fun f ↦ ?_⟩)
+    simpa using seminorm_monoLM_le 𝕜 f
+
+open scoped Classical in
+@[simp]
+lemma monoCLM_apply (f : 𝓓^{n₁}_{K₁}(E, F)) :
+    ((monoCLM 𝕜 f : 𝓓^{n₂}_{K₂}(E, F)) : E → F) = if n₂ ≤ n₁ ∧ K₁ ≤ K₂ then f else 0 :=
+  monoLM_apply 𝕜 f
+
+lemma monoCLM_eq_zero (H : ¬ (n₂ ≤ n₁ ∧ K₁ ≤ K₂)) :
+    (monoCLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) →L[𝕜] 𝓓^{n₂}_{K₂}(E, F)) = 0 := by
+  ext; simp [H]
+
+lemma monoCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (monoCLM 𝕜 : 𝓓^{n₁}_{K₁}(E, F) → 𝓓^{n₂}_{K₂}(E, F)) = monoCLM 𝕜' :=
+  rfl
+
+theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i + 1} f := by
+  by_cases! hk : k + 1 ≤ n
+  · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
+    intro hi x hx
+    have hi' : i + 1 ≤ n := (add_le_add_left hi 1).trans hk
+    simpa [hk, norm_iteratedFDeriv_fderiv] using
+      norm_iteratedFDeriv_apply_le_seminorm 𝕜 hi'
+  · simp [fderivLM_apply_of_gt 𝕜 f hk]
+
+theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
+    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i + 1} f := by
+  simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
+    norm_iteratedFDeriv_fderiv]
+
+variable (n k) in
+/-- `fderivCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map. -/
+noncomputable def fderivCLM :
+    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{k}_{K}(E, E →L[ℝ] F) where
+  toLinearMap := fderivLM 𝕜 n k
+  cont := show Continuous (fderivLM 𝕜 n k) by
+    refine continuous_of_isBounded (ContDiffMapSupportedIn.withSeminorms ..)
+      (ContDiffMapSupportedIn.withSeminorms ..) _ (fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩)
+    simpa using seminorm_fderivLM_le 𝕜 f
+
+@[simp]
+lemma fderivCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    fderivCLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 :=
+  fderivLM_apply 𝕜 f
+
+lemma fderivCLM_apply_of_le (f : 𝓓^{n}_{K}(E, F)) (hk : k + 1 ≤ n) :
+    fderivCLM 𝕜 n k f = fderiv ℝ f :=
+  fderivLM_apply_of_le 𝕜 f hk
+
+lemma fderivCLM_apply_of_gt (f : 𝓓^{n}_{K}(E, F)) (hk : n < k + 1) :
+    fderivCLM 𝕜 n k f = 0 :=
+  fderivLM_apply_of_gt 𝕜 f hk
+
+lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (fderivCLM 𝕜 n k : 𝓓^{n}_{K}(E, F) → _) = fderivCLM 𝕜' n k :=
   rfl
 
 end Topology

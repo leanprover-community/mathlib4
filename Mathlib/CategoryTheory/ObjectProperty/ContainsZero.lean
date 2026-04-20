@@ -44,6 +44,10 @@ lemma exists_prop_of_containsZero [P.ContainsZero] :
     ∃ (Z : C), IsZero Z ∧ P Z :=
   ContainsZero.exists_zero
 
+-- see Note [lower instance priority]
+instance (priority := 100) [P.ContainsZero] : P.Nonempty :=
+  nonempty_of_prop P.exists_prop_of_containsZero.choose_spec.2
+
 lemma prop_of_isZero [P.ContainsZero] [P.IsClosedUnderIsomorphisms]
     {Z : C} (hZ : IsZero Z) :
     P Z := by

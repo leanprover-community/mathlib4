@@ -115,6 +115,14 @@ theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Idea
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
 
+@[simp]
+theorem isCoprime_two_left {m : ℤ} : IsCoprime 2 m ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
+
+@[simp]
+theorem isCoprime_two_right {m : ℤ} : IsCoprime m 2 ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
+
 theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, a = d ^ k := by
   obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow' hab h

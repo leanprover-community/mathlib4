@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
@@ -49,10 +50,7 @@ lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b]
         _ = 0 := zero_comp
   HasLimit.mk
     { cone :=
-        PullbackCone.mk a' b' <| by
-          simp? at ha' hb' says
-            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
-          rw [ha', hb']
+        PullbackCone.mk a' b' <| by rw [dsimp% ha', dsimp% hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
           (fun s =>
@@ -164,6 +162,15 @@ open ZeroObject
 theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) : Epi f :=
   epi_of_zero_cokernel f 0 <| zeroCokernelOfZeroCancel f hf
+
+variable {D : Type*} [Category* D] [HasZeroMorphisms D] [HasZeroObject D]
+
+lemma preservesEpimorphisms_of_preservesCokernels (F : D ⥤ C) [F.PreservesZeroMorphisms]
+    [∀ {X Y : D} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F] :
+    F.PreservesEpimorphisms where
+  preserves f :=
+    epi_of_zero_cokernel _ _ <| IsColimit.equivIsoColimit (mapZeroCokernelCofork F f) <|
+    (cokernel.zeroCokernelCofork f).mapIsColimit (cokernel.isColimitCoconeZeroCocone f) F
 
 end
 
@@ -320,6 +327,15 @@ open ZeroObject
 theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) : Mono f :=
   mono_of_zero_kernel f 0 <| zeroKernelOfCancelZero f hf
+
+variable {D : Type*} [Category* D] [HasZeroMorphisms D] [HasZeroObject D]
+
+lemma preservesMonomorphisms_of_preservesKernels (F : D ⥤ C) [F.PreservesZeroMorphisms]
+    [∀ {X Y : D} (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F] :
+    F.PreservesMonomorphisms where
+  preserves f :=
+    mono_of_zero_kernel _ _ <| IsLimit.equivIsoLimit (mapZeroKernelFork F f) <|
+    (kernel.zeroKernelFork f).mapIsLimit (kernel.isLimitConeZeroCone f) F
 
 end
 

@@ -39,14 +39,14 @@ namespace Submonoid
 
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
-  { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
+  { (inferInstance : Monoid (IsUnit.submonoid M)) with
     inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
     inv_mul_cancel := fun x ↦
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
-  { inferInstanceAs (Group (IsUnit.submonoid M)) with
+  { (inferInstance : Group (IsUnit.submonoid M)) with
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]

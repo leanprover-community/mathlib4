@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -20,7 +20,7 @@ This file proves results about bipartite simple graphs, including several double
 
 * `SimpleGraph.IsBipartiteWith G s t` is the condition that a simple graph `G` is bipartite in sets
   `s`, `t`, that is, `s` and `t` are disjoint and vertices `v`, `w` being adjacent in `G` implies
-  that `v ∈ s` and `w ∈ t`, or `v ∈ s` and `w ∈ t`.
+  that `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`.
 
   Note that in this implementation, if `G.IsBipartiteWith s t`, `s ∪ t` need not cover the vertices
   of `G`, instead `s ∪ t` is only required to cover the *support* of `G`, that is, the vertices
@@ -52,6 +52,10 @@ This file proves results about bipartite simple graphs, including several double
 
 * `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
   that connect a vertex in the set `s` to a vertex in the set `t`.
+
+* `SimpleGraph.bipartiteDoubleCover`; the simple graph `G.bipartiteDoubleCover` has two vertices
+  `inl v` and `inr v` for each vertex `v` in `G` such that `inl v` (`inr v`) is adjacent to `inr w`
+  (`inl w`) iff `v` is adjacent to `w` in `G`.
 
 ## Implementation notes
 
@@ -362,6 +366,14 @@ theorem completeBipartiteGraph_isContained_iff :
 
 end Copy
 
+lemma IsBipartiteWith.subgraph (h : G.IsBipartiteWith s t) (H : Subgraph G) :
+    H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
+  ⟨by grind [h.disjoint], fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
+
+lemma IsBipartite.subgraph (h : G.IsBipartite) (H : Subgraph G) : H.coe.IsBipartite :=
+  let ⟨_, _, hst⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
+  isBipartite_iff_exists_isBipartiteWith.mpr ⟨_, _, IsBipartiteWith.subgraph hst H⟩
+
 section Between
 
 /-- The subgraph of `G` containing edges that connect a vertex in the set `s` to a vertex in the
@@ -444,5 +456,150 @@ theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
   exact card_le_card (neighborFinset_subset_between_union_compl hw)
 
 end Between
+
+section completeBipartiteGraph
+
+variable {W₁ W₂ : Type*}
+
+theorem edgeSet_completeBipartiteGraph :
+    (completeBipartiteGraph W₁ W₂).edgeSet =
+    .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
+  refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
+  · cases u <;> cases v <;> simp_all
+  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+
+theorem encard_edgeSet_completeBipartiteGraph :
+    (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
+  rw [edgeSet_completeBipartiteGraph, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
+  exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
+
+/-- An embedding of the edges of a bipartite graph into the edges of the complete bipartite graph -/
+def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
+    (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
+  toFun := fun ⟨e, he⟩ ↦
+    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+      (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
+      (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
+    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+  inj' := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    grind
+
+end completeBipartiteGraph
+
+section
+
+/-- The cardinality of the edge set of a bipartite graph is upper bounded by the product
+of the cardinality of the two partitions. -/
+theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
+    G.edgeSet.encard ≤ s.encard * t.encard := by
+  classical
+  grw [hG.edgeSetEmbeddingCompleteBipartiteGraph.encard_le]
+  simp [encard_edgeSet_completeBipartiteGraph]
+
+theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
+    4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
+  refine finite_or_infinite V |>.elim (fun hv ↦ ?_) (fun _ ↦ by simp)
+  have ⟨s, t, h⟩ := h.exists_isBipartiteWith
+  grw [h.encard_edgeSet_le]
+  have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
+  rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
+  norm_cast at this ⊢
+  grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
+
+end
+
+section BipartiteDoubleCover
+
+/-- `bipartiteDoubleCover G` has two vertices `inl v` and `inr v` for each vertex `v` in `G`
+such that `inl v` (`inr v`) is adjacent to `inr w` (`inl w`) iff `v` is adjacent to `w` in `G`. -/
+@[simp] def bipartiteDoubleCover (G : SimpleGraph V) : SimpleGraph (V ⊕ V) where
+  Adj
+  | .inl v', .inr w' | .inr v', .inl w' => G.Adj v' w'
+  | _, _ => False
+  symm _ _ := by grind [adj_symm]
+
+instance [h : DecidableRel G.Adj] : DecidableRel G.bipartiteDoubleCover.Adj
+  | .inl _, .inr _ | .inr _, .inl _ => h _ _
+  | .inl _, .inl _ | .inr _, .inr _ => inferInstanceAs (Decidable False)
+
+/-- The bipartite double cover of `G` is contained in the corresponding complete bipartite graph,
+that is, the bipartite double cover of `G` is bipartite. -/
+theorem bipartiteDoubleCover_le : G.bipartiteDoubleCover ≤ completeBipartiteGraph V V :=
+  fun v w hadj ↦ match v, w with
+  | .inl _, .inr _ | .inr _, .inl _ => by simp
+  | .inl _, .inl _ | .inr _, .inr _ => by simp at hadj
+
+/-- The bipartite double cover of `G` has twice the number of edges as `G`. -/
+theorem card_edgeFinset_bipartiteDoubleCover [Fintype V] [DecidableRel G.Adj] :
+    #G.bipartiteDoubleCover.edgeFinset = 2 * #G.edgeFinset := by
+  rw [two_mul_card_edgeFinset, eq_comm]
+  apply card_bij (fun (v, w) _ ↦ s(.inl v, .inr w))
+    (fun _ h ↦ by simpa using h) (by grind) (fun e he ↦ ?_)
+  induction e with | _ v w
+  rw [mem_edgeFinset, mem_edgeSet] at he
+  match v, w with
+  | .inl _, .inr _ => simpa using he
+  | .inr _, .inl _ => simpa using he.symm
+  | .inl _, .inl _ | .inr _, .inr _ => simp at he
+
+/-- If the double cover of `G` contains `completeBipartiteGraph α β`, then `G` also
+contains `completeBipartiteGraph α β`. -/
+theorem completeBipartiteGraph_isContained_bipartiteDoubleCover
+    {α β : Type*} [Finite α] [Finite β] [Nonempty α] [Nonempty β] :
+    completeBipartiteGraph α β ⊑ G.bipartiteDoubleCover ↔ completeBipartiteGraph α β ⊑ G := by
+  have : Fintype α := .ofFinite α
+  have : Fintype β := .ofFinite β
+  simp_rw [completeBipartiteGraph_isContained_iff]
+  refine ⟨fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_,
+    fun ⟨left, right, card_left, card_right, h⟩ ↦ ?_⟩
+  · simp_rw [← card_left, ← card_right]
+    obtain ⟨l, hl⟩ : left.Nonempty := card_pos.mp <| card_pos.trans_le card_left.ge
+    obtain ⟨r, hr⟩ : right.Nonempty := card_pos.mp <| card_pos.trans_le card_right.ge
+    have hmem_left {l'} (hl' : l' ∈ left) :
+        (l.isLeft → l'.isLeft) ∧ (l.isRight → l'.isRight) := by
+      rcases l with l | l <;> rcases r with r | r <;> rcases l' with l' | l'
+      all_goals solve | simp | simpa using h hl hr | simpa using h hl' hr
+    have hmem_right {r'} (hr' : r' ∈ right) :
+        (r.isLeft → r'.isLeft) ∧ (r.isRight → r'.isRight) := by
+      rcases l with l | l <;> rcases r with r | r <;> rcases r' with r' | r'
+      all_goals solve | simp | simpa using h hl hr | simpa using h hl hr'
+    rcases l with l | l <;> rcases r with r | r
+    · simpa using h hl hr
+    · refine ⟨left.toLeft, right.toRight, ?_, ?_, fun i hi j hj ↦ ?_⟩
+      · exact card_bij (fun i _ ↦ .inl i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
+          (fun i hi ↦ ⟨i.getLeft <| (hmem_left hi).left Sum.isLeft_inl, by simp [hi]⟩)
+      · exact card_bij (fun j hj ↦ .inr j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
+          (fun j hj ↦ ⟨j.getRight <| (hmem_right hj).right Sum.isRight_inr, by simp [hj]⟩)
+      · rw [mem_coe, mem_toLeft] at hi
+        rw [mem_coe, mem_toRight] at hj
+        simpa using h hi hj
+    · refine ⟨left.toRight, right.toLeft, ?_, ?_, fun i hi j hj ↦ ?_⟩
+      · exact card_bij (fun i _ ↦ .inr i) (fun i hi ↦ by simpa using hi) (fun i hi j hj ↦ by simp)
+          (fun i hi ↦ ⟨i.getRight <| (hmem_left hi).right Sum.isRight_inr, by simp [hi]⟩)
+      · exact card_bij (fun j hj ↦ .inl j) (fun j hj ↦ by simpa using hj) (fun i hi j hj ↦ by simp)
+          (fun j hj ↦ ⟨j.getLeft <| (hmem_right hj).left Sum.isLeft_inl, by simp [hj]⟩)
+      · rw [mem_coe, mem_toRight] at hi
+        rw [mem_coe, mem_toLeft] at hj
+        simpa using h hi hj
+    · simpa using h hl hr
+  · simp_rw [← card_left, ← card_right]
+    refine ⟨left.map .inl, right.map .inr, card_map _, card_map _, fun i hi j hj ↦ ?_⟩
+    simp_rw [mem_coe, mem_map, Function.Embedding.inl_apply,
+      Function.Embedding.inr_apply] at hi hj
+    obtain ⟨i', hi', hi⟩ := hi
+    obtain ⟨j', hj', hj⟩ := hj
+    simpa [← hi, ← hj] using h hi' hj'
+
+theorem isBipartiteWith_bipartiteDoubleCover :
+    G.bipartiteDoubleCover.IsBipartiteWith {v | v.isLeft} {w | w.isRight} where
+  disjoint := by simp [Set.disjoint_iff_forall_ne]
+  mem_of_adj := by simp
+
+theorem isBipartite_bipartiteDoubleCover : G.bipartiteDoubleCover.IsBipartite :=
+  isBipartiteWith_bipartiteDoubleCover.isBipartite
+
+end BipartiteDoubleCover
 
 end SimpleGraph

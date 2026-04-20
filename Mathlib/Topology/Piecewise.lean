@@ -91,15 +91,13 @@ theorem ContinuousOn.piecewise [∀ a, Decidable (a ∈ t)]
     (hg : ContinuousOn g <| s ∩ closure tᶜ) : ContinuousOn (piecewise t f g) s :=
   hf.if ht hg
 
--- `simp` runs on two goals, but only uses `assumption` on one of them
-set_option linter.flexible false in
 theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
     Continuous fun a => ite (p a) (f a) (g a) := by
   rw [← continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
+  apply ContinuousOn.if' <;> simpa
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))

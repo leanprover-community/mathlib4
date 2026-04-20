@@ -154,15 +154,22 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check (T% (T% X)) x
 
+section
+-- Check minimal assumptions to find a model fiber.
+
+variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
+/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+#guard_msgs in
+#check T% σ
+
+end
 -- Error message when missing typeclass assumptions for sections of a fiber bundle.
 -- This used to silently do nothing; now there is a helpful error.
 section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  (e : Trivialization F (π F E)) [(x : B) → Zero (E x)]
-
-variable (σ : (b : B) → E b) in
+  {E : B → Type*} (σ : (b : B) → E b)
 /--
 error: could not find a `FiberBundle` instance on `E`:
 `σ` is a function into `E`
@@ -174,7 +181,7 @@ hint: you may be missing suitable typeclass assumptions
 
 /-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
 #guard_msgs in
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] (σ : (b : B) → E b) in
+variable [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 #check T% σ
 
 end
@@ -1298,47 +1305,47 @@ variable {f : Unit → Unit}
 error: Could not find a model with corners for `Unit`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
-[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+[Elab.DiffGeo.MDiff] 💥️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
-[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+[Elab.DiffGeo.MDiff] 💥️ TangentBundle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `TangentBundle`
-[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+[Elab.DiffGeo.MDiff] 💥️ NormedSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `NormedSpace` structure on `Unit` among local instances.
-[Elab.DiffGeo.MDiff] ❌️ Manifold
+[Elab.DiffGeo.MDiff] 💥️ Manifold
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find a `ChartedSpace` structure on `Unit` among local instances, and `Unit` is not the charted space of some type in the local context either.
-[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+[Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a space of continuous linear maps
-[Elab.DiffGeo.MDiff] ❌️ RealInterval
+[Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+[Elab.DiffGeo.MDiff] 💥️ EuclideanSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a Euclidean space, half-space or quadrant
-[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+[Elab.DiffGeo.MDiff] 💥️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex upper half plane
-[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+[Elab.DiffGeo.MDiff] 💥️ Units of algebra
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a set of units, in particular not of a complete normed algebra
-[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+[Elab.DiffGeo.MDiff] 💥️ Complex unit circle
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not the complex unit circle
-[Elab.DiffGeo.MDiff] ❌️ Sphere
+[Elab.DiffGeo.MDiff] 💥️ Sphere
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type
-[Elab.DiffGeo.MDiff] ❌️ NormedField
+[Elab.DiffGeo.MDiff] 💥️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize instance of type class
         NontriviallyNormedField Unit
       ⏎
       Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
-[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+[Elab.DiffGeo.MDiff] 💥️ InnerProductSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       Couldn't find an `InnerProductSpace` structure on `Unit` among local instances.
 -/

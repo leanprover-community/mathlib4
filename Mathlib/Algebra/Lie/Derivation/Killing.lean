@@ -5,7 +5,7 @@ Authors: Frédéric Marbach
 -/
 module
 
-public import Mathlib.Algebra.Lie.Derivation.AdjointAction
+public import Mathlib.Algebra.Lie.AdjointAction.Derivation
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 

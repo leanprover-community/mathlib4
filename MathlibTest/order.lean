@@ -1,3 +1,4 @@
+module
 import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Tactic.Order
 

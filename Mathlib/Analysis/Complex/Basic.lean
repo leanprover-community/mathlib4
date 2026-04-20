@@ -406,7 +406,7 @@ theorem _root_.RCLike.map_nonneg_iff {𝕜 𝕜' : Type*} [RCLike 𝕜] [RCLike 
 
 open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
-    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff rfl
+    0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff I_im
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
@@ -436,11 +436,13 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
   Isometry.of_dist_eq <| by simp_rw [← Complex.ofReal_intCast,
     Complex.isometry_ofReal.dist_eq, Int.dist_cast_real, implies_true]
 
-theorem closedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
+theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
 
+@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
+
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
-  Complex.closedEmbedding_intCast.isClosed_range
+  Complex.isClosedEmbedding_intCast.isClosed_range
 
 lemma isOpen_compl_range_intCast : IsOpen (Set.range ((↑) : ℤ → ℂ))ᶜ :=
   Complex.isClosed_range_intCast.isOpen_compl
@@ -455,8 +457,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
-lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := OrderClosedTopology.isClosed_le'
+lemma orderClosedTopology : OrderClosedTopology ℂ := RCLike.instOrderClosedTopology
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
@@ -637,7 +638,7 @@ lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]
   rw [ne_eq, Complex.ext_iff] at hz
-  push_neg at hz
+  push Not at hz
   simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
   by_contra! contra
   exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
@@ -680,8 +681,7 @@ lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
 lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := by
   intro z hz
   apply Or.inl
-  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt (mem_ball_iff_norm.1 hz)
-  linarith
+  simpa using (re_le_norm _).trans_lt (mem_ball_iff_norm'.1 hz)
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slitPlane :=

@@ -53,19 +53,16 @@ alias Functor.exists_map_eq_of_isLocallyDirected := Functor.IsLocallyDirected.co
 instance (F : Discrete J ⥤ Type*) : F.IsLocallyDirected := by
   constructor
   rintro ⟨i⟩ ⟨j⟩ ⟨k⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩
-  simp only [Discrete.functor_map_id, types_id_apply, forall_eq']
-  exact fun x ↦ ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
+  simpa using fun x ↦ ⟨i, 𝟙 _, 𝟙 _, x, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : WidePushoutShape J ⥤ Type*) [∀ i, Mono (F.map (.init i))] :
     F.IsLocallyDirected := by
   constructor
   rintro i j k (_ | i) (_ | j)
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_eq']
-    exact fun x ↦ ⟨_, 𝟙 _, 𝟙 _, x, by simp⟩
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_comm, forall_eq]
+  · simpa using fun x ↦ ⟨_, 𝟙 _, 𝟙 _, x, by simp⟩
+  · simp only [WidePushoutShape.hom_id, Functor.map_id, id_apply, forall_comm, forall_eq]
     exact fun x ↦ ⟨_, .init _, 𝟙 _, x, by simp⟩
-  · simp only [WidePushoutShape.hom_id, FunctorToTypes.map_id_apply, forall_eq']
+  · simp only [WidePushoutShape.hom_id, Functor.map_id, id_apply, forall_eq']
     exact fun x ↦ ⟨_, 𝟙 _, .init _, x, by simp⟩
   · simp only [((CategoryTheory.mono_iff_injective (F.map (.init i))).mp inferInstance).eq_iff,
       forall_eq']

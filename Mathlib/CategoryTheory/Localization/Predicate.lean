@@ -268,6 +268,14 @@ lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*)
     ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
+/-- The precomposition with a localization functor gives fully faithful functors
+between functor categories. -/
+def fullyFaithfulWhiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
+    ((whiskeringLeft C D E).obj L).FullyFaithful := by
+  have := full_whiskeringLeft L W E
+  have := faithful_whiskeringLeft L W E
+  exact FullyFaithful.ofFullyFaithful _
+
 variable {E}
 
 theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
@@ -282,8 +290,6 @@ is commutative up to an isomorphism. -/
 class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso (L W F F') : L ⋙ F' ≅ F
-
-@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
 
 variable {W}
 
