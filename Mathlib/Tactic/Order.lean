@@ -292,7 +292,7 @@ syntax orderArgs := (&" only")? (" [" term,* "]")?
 /-- `order_core` is an implementation detail of the `order` tactic. It proves the main goal,
 which must be `⊢ False`, by deriving a contradiction from hypotheses which are formulas in the
 language of orders. -/
-syntax (name := order_core) "order_core" orderArgs ident : tactic
+local syntax (name := order_core) "order_core" orderArgs ident : tactic
 
 open Syntax in
 elab_rules : tactic
