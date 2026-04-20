@@ -32,8 +32,9 @@ coaxing.
 -/
 lemma krullDimLE_of_coheight
     {Z : X} {n : ℕ} (hZ : Order.coheight Z = n) : Ring.KrullDimLE n (X.presheaf.stalk Z) := by
-  rw [Ring.krullDimLE_iff, AlgebraicGeometry.stalk_dim_eq_coheight Z, hZ]
-  rfl
+  rw [Ring.krullDimLE_iff, ringKrullDim_stalk_eq_coheight Z]
+  exact_mod_cast hZ.le
+
 
 variable [IsIntegral X]
 
@@ -41,10 +42,9 @@ variable [IsIntegral X]
 For `f` an element of the function field of `X`, there exists some open set `U ⊆ X` such that
 `f` is a unit in `Γ(X, U)`.
 -/
-lemma functionField_exists_unit_nhd
-    (f : X.functionField) (hf : f ≠ 0) :
-    ∃ U : X.Opens, ∃ f' : Γ(X, U), ∃ _ :
-    Nonempty U, X.germToFunctionField U f' = f ∧ IsUnit f' := by
+lemma functionField_exists_unit_nhd (f : X.functionField) (hf : f ≠ 0) :
+    ∃ U : X.Opens, ∃ f' : Γ(X, U),∃ _ : Nonempty U,
+    X.germToFunctionField U f' = f ∧ IsUnit f' := by
   obtain ⟨U, hU, g, hg⟩ := TopCat.Presheaf.germ_exist _ _ f
   refine ⟨AlgebraicGeometry.Scheme.basicOpen X g,
     TopCat.Presheaf.restrict g (AlgebraicGeometry.Scheme.basicOpen_le X g).hom, ?_⟩
@@ -56,8 +56,13 @@ lemma functionField_exists_unit_nhd
     aesop
   use this
   have := TopCat.Presheaf.germ_res X.presheaf (Scheme.basicOpen_le X g).hom
-    (genericPoint X) (Scheme.germToFunctionField._proof_1 X (X.basicOpen g))
-  exact ⟨hg ▸ this ▸ rfl, AlgebraicGeometry.RingedSpace.isUnit_res_basicOpen X.toRingedSpace g⟩
+    (genericPoint X) (((genericPoint_spec X).mem_open_set_iff (X.basicOpen g).isOpen).mpr
+    (by simpa using (IsIntegral.nonempty : Nonempty (X.basicOpen g))))
+  refine ⟨?_, AlgebraicGeometry.RingedSpace.isUnit_res_basicOpen X.toRingedSpace g⟩
+  rw [← hg, ← this]
+
+  rfl
+  --hg ▸ this ▸ rfl
 
 variable [IsLocallyNoetherian X]
 
@@ -90,11 +95,10 @@ lemma ord_of_isUnit (U : X.Opens)
   have : IsUnit <| X.presheaf.germ U x hx' f :=
     RingHom.isUnit_map (ConcreteCategory.hom (X.presheaf.germ U x hx')
       : ↑(X.presheaf.obj (Opposite.op U)) →+* ↑(X.presheaf.stalk x)) hf
-  have := ordFrac_of_isUnit (K := X.functionField) (X.presheaf.germ U x hx' f) this
+  have := Ring.ordFrac_of_isUnit (K := X.functionField) this
   rw[← this]
-  simp[Scheme.ord]
   congr 1
-  simp [Scheme.germToFunctionField]
+  simp only [Scheme.germToFunctionField]
   have : genericPoint X ⤳ x := genericPoint_specializes x
   rw [← TopCat.Presheaf.germ_stalkSpecializes X.presheaf hx' this]
   rfl
