@@ -86,8 +86,8 @@ assumption later, for the lemmas where it is relevant.
 These are defined in an identical way to infinite sums (`HasSum`). For example, we say that
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
 not converge as some authors would. -/
-@[to_additive (attr := informal "infinite sum") /-- `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β`
-converges to `a` along the SummationFilter `L`.
+@[to_additive (attr := informal "infinite sum") /-- `HasSum f a L` means that the (potentially
+infinite) sum of the `f b` for `b : β` converges to `a` along the SummationFilter `L`.
 
 By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards
 the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is
