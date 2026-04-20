@@ -659,12 +659,12 @@ def mkOfAdjoinEqTop' [Module.Finite R S] [Module.Free R S] {α : S} (hα : Algeb
     haveI := monic.finite_adjoinRoot
     let φ := AdjoinRoot.liftAlgHom _ (Algebra.ofId R S) _ (minpoly.aeval R α)
     IsAdjoinRoot.ofAdjoinRootEquiv <| AlgEquiv.ofBijective φ <| by
-    refine OrzechProperty.bijective_of_surjective_of_finrank_le φ.toLinearMap (fun s ↦ ?_) ?_
-    · rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
-      rcases hα s with ⟨p, hp⟩
-      exact ⟨AdjoinRoot.mk (minpoly R α) p, by simp [φ, ← aeval_def, hp]⟩
-    · nontriviality R
-      exact finrank_quotient_span_eq_natDegree' monic ▸ minpoly.natDegree_le α
+      refine OrzechProperty.bijective_of_surjective_of_finrank_le φ.toLinearMap (fun s ↦ ?_) ?_
+      · rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+        rcases hα s with ⟨p, hp⟩
+        exact ⟨AdjoinRoot.mk (minpoly R α) p, by simp [φ, ← aeval_def, hp]⟩
+      · nontriviality R
+        exact finrank_quotient_span_eq_natDegree' monic ▸ minpoly.natDegree_le α
   map := aeval α
   monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
 
