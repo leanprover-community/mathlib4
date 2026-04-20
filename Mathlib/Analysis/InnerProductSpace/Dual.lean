@@ -134,7 +134,6 @@ variable [CompleteSpace E]
 /-- **Fréchet-Riesz representation**: any `ℓ` in the dual of a Hilbert space `E` is of the form
 `fun u => ⟪y, u⟫` for some `y : E`, i.e. `toDualMap` is surjective.
 -/
-@[informal "Fréchet-Riesz representation of the dual of a Hilbert space"]
 def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by

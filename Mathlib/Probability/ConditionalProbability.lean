@@ -71,7 +71,6 @@ variable (μ) in
 /-- The conditional probability measure of measure `μ` on set `s` is `μ` restricted to `s`
 and scaled by the inverse of `μ s` (to make it a probability measure):
 `(μ s)⁻¹ • μ.restrict s`. -/
-@[informal "conditional probability"]
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 

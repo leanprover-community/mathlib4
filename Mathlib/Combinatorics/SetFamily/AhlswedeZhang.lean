@@ -429,7 +429,6 @@ lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜
   · exact fun h ↦ h𝒜₂ (mem_insert_of_mem h)
 
 /-- The **Ahlswede-Zhang Identity**. -/
-@[informal "Ahlswede-Zhang identity"]
 lemma infSum_eq_one (h𝒜₁ : 𝒜.Nonempty) (h𝒜₀ : ∅ ∉ 𝒜) : infSum 𝒜 = 1 := by
   rw [← compls_compls 𝒜, eq_sub_of_add_eq (infSum_compls_add_supSum _),
     supSum_of_univ_notMem h𝒜₁.compls, add_sub_cancel_left]

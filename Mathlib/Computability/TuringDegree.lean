@@ -101,7 +101,6 @@ theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h₁ : f ≡ᵀ g) (h₂ 
 /--
 Turing degrees are the equivalence classes of partial functions under Turing equivalence.
 -/
-@[informal "Turing degrees"]
 abbrev TuringDegree :=
   Antisymmetrization _ TuringReducible
 

@@ -228,7 +228,6 @@ theorem lintegral_liminf_le' {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Fi
     _ = _ := hg.1.liminf_eq
 
 /-- **Fatou's lemma**, version with `Measurable` functions. -/
-@[informal "Fatou's lemma"]
 theorem lintegral_liminf_le {ι : Type*} {f : ι → α → ℝ≥0∞} {u : Filter ι}
     [IsCountablyGenerated u] (h_meas : ∀ i, Measurable (f i)) :
     ∫⁻ a, liminf (fun i => f i a) u ∂μ ≤ liminf (fun i => ∫⁻ a, f i a ∂μ) u :=

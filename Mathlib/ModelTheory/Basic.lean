@@ -155,7 +155,7 @@ variable (L) (M : Type w)
   language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
   (modeled as `(Fin n → M)`) to `M`, and a relation of arity `n` is a function from tuples of length
   `n` to `Prop`. -/
-@[informal "first-order structure", ext]
+@[ext]
 class Structure where
   /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M := by

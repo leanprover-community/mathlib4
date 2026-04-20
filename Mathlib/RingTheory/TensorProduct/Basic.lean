@@ -296,7 +296,6 @@ example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra :
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-@[informal "tensor product of algebras"]
 instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 

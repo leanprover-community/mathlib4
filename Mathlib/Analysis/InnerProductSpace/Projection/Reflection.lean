@@ -44,7 +44,6 @@ sometimes understood to mean specifically reflection in a codimension-one subspa
 more generally to cover operations such as reflection in a point.  The definition here, of
 reflection in a subspace, is a more general sense of the word that includes both those common
 cases. -/
-@[informal "reflection"]
 def reflection : E ≃ₗᵢ[𝕜] E :=
   { K.reflectionLinearEquiv with
     norm_map' := by

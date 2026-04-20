@@ -318,7 +318,6 @@ then there exists a continuous function `f : X → ℝ` such that
 * `f` equals one on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
 -/
-@[informal "Urysohn's lemma"]
 theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t)
     (hd : Disjoint s t) : ∃ f : C(X, ℝ), EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by

@@ -52,7 +52,6 @@ variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 /-- Construct a continuous linear map from a linear map and a bound on this linear map.
 The fact that the norm of the continuous linear map is then controlled is given in
 `LinearMap.mkContinuous_norm_le`. -/
-@[informal "norm of a continuous linear map"]
 def LinearMap.mkContinuous (C : ℝ) (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : E →SL[σ] F :=
   ⟨f, AddMonoidHomClass.continuous_of_bound f C h⟩
 

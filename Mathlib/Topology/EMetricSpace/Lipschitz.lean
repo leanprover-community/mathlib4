@@ -55,7 +55,6 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Se
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
-@[informal "Lipschitz continuity"]
 def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, edist (f x) (f y) ≤ K * edist x y
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if

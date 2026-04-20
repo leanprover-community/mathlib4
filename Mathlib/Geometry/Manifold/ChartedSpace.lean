@@ -308,7 +308,6 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
   · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
 /-- A charted space over a discrete space is discrete. -/
-@[informal "0-manifolds are discrete spaces"]
 theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
   apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=

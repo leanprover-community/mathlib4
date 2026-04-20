@@ -783,7 +783,7 @@ field `𝕜`. This definition includes the model with corners `I` (which might a
 or not, so this class covers both manifolds with boundary and manifolds without boundary), and
 a smoothness parameter `n : ℕ∞ω` (where `n = 0` means topological manifold, `n = ∞` means
 smooth manifold and `n = ω` means analytic manifold). -/
-@[informal "smooth or analytic manifold (with boundary and corners)", informal "smooth manifold"]
+@[informal "smooth manifold"]
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
@@ -920,7 +920,6 @@ instance empty [IsEmpty M] : IsManifold I n M := by
 attribute [local instance] ChartedSpace.of_discreteTopology in
 variable (n) in
 /-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
-@[informal "discrete spaces are 0-manifolds"]
 theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
     IsManifold (modelWithCornersSelf 𝕜 E) n M := by
   apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
@@ -972,7 +971,6 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modelled on `(E, H)`. -/
-@[informal "disjoint union of manifolds"]
 instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
     obtain (h | h) := isEmpty_or_nonempty H
@@ -1075,7 +1073,6 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[informal "tangent bundle"]
 abbrev TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace

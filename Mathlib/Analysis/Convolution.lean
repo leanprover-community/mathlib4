@@ -398,7 +398,6 @@ variable [NormedSpace ℝ F]
 
 /-- The convolution of two functions `f` and `g` with respect to a continuous bilinear map `L` and
 measure `μ`. It is defined to be `(f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`. -/
-@[informal "convolution"]
 noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[𝕜] E' →L[𝕜] F)
     (μ : Measure G := by volume_tac) : G → F := fun x =>
   ∫ t, L (f t) (g (x - t)) ∂μ

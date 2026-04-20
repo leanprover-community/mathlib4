@@ -37,7 +37,6 @@ variable (C : Type u) [Category.{v} C]
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
-@[informal "sheafed space"]
 structure SheafedSpace extends PresheafedSpace C where
   /-- A sheafed space is a presheafed space which happens to be a sheaf. -/
   IsSheaf : presheaf.IsSheaf

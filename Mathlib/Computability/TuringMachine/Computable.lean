@@ -153,7 +153,6 @@ structure TM2ComputableAux (Γ₀ Γ₁ : Type) where
   outputAlphabet : tm.Γ tm.k₁ ≃ Γ₁
 
 /-- A Turing machine + a proof it outputs `f`. -/
-@[informal "in terms of Turing machines"]
 structure TM2Computable {α β αΓ βΓ : Type} (ea : α → List αΓ) (eb : β → List βΓ) (f : α → β) extends
   TM2ComputableAux αΓ βΓ where
   /-- a proof this machine outputs `f` -/
@@ -177,7 +176,6 @@ structure TM2ComputableInTime {α β αΓ βΓ : Type} (ea : α → List αΓ) (
 
 /-- A Turing machine + a polynomial time function +
 a proof it outputs `f` in at most `time(input.length)` steps. -/
-@[informal "polynomial-time computation"]
 structure TM2ComputableInPolyTime {α β αΓ βΓ : Type} (ea : α → List αΓ) (eb : β → List βΓ)
   (f : α → β) extends TM2ComputableAux αΓ βΓ where
   /-- a polynomial time function -/

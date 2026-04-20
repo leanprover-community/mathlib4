@@ -61,7 +61,7 @@ open DyckStep
 
 /-- A Dyck word is a list of `DyckStep`s with as many `U`s as `D`s and with every prefix having
 at least as many `U`s as `D`s. -/
-@[informal "Dyck words", ext]
+@[ext]
 structure DyckWord where
   /-- The underlying list -/
   toList : List DyckStep

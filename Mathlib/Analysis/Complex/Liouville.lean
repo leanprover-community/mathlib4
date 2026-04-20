@@ -111,7 +111,6 @@ namespace Differentiable
 open Complex
 
 /-- **Liouville's theorem**: a complex differentiable bounded function `f : E → F` is a constant. -/
-@[informal "Liouville theorem"]
 theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
     (z w : E) : f z = f w := by
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z

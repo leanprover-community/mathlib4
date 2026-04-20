@@ -183,7 +183,6 @@ theorem Summable.of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Sum
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (NNReal.summable_coe.2 hg) h
 
-@[informal "absolutely convergent series in Banach spaces"]
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded hf fun _i => le_rfl
 

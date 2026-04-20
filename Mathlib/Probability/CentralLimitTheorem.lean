@@ -120,7 +120,6 @@ private theorem tendstoInDistribution_inv_sqrt_mul_var_mul_sum_sub
 independent, identically distributed with mean `μ` and variance `v`, and a random variable
 `Y : Ω' → ℝ` following `gaussianReal 0 v`, the sequence
 `n ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution. -/
-@[informal "central limit theorem"]
 theorem tendstoInDistribution_inv_sqrt_mul_sum_sub
     (hY : HasLaw Y (gaussianReal 0 Var[X 0; P].toNNReal) P')
     (hX : MemLp (X 0) 2 P) (hindep : iIndepFun X P)

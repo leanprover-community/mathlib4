@@ -85,7 +85,6 @@ section
 variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
-@[informal "functorial homology"]
 noncomputable def homology := (K.sc i).homology
 
 /-- The cycles in degree `i` of a homological complex. -/

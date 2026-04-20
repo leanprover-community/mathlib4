@@ -81,7 +81,6 @@ instance : ContinuousMul (Completion α) where
     have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
-@[informal "completion of a topological ring"]
 instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
       ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with

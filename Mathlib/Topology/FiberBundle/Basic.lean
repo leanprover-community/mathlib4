@@ -183,7 +183,6 @@ variable [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
 for which the fibers are all homeomorphic to `F`, such that the local situation around each point
 is a direct product. -/
-@[informal "topological fiber bundle"]
 class FiberBundle where
   totalSpaceMk_isInducing' : ∀ b : B, IsInducing (@TotalSpace.mk B F E b)
   trivializationAtlas' : Set (Trivialization F (π F E))

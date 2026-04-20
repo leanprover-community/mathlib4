@@ -52,7 +52,6 @@ universe u v
   alphabet (`step`), a set of starting states (`start`) and a set of acceptance states (`accept`).
   Note the transition function sends a state to a `Set` of states. These are the states that it
   may be sent to. -/
-@[informal "NFA"]
 structure NFA (α : Type u) (σ : Type v) where
   /-- The NFA's transition function -/
   step : σ → α → Set σ

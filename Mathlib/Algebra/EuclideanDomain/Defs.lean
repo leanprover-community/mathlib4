@@ -70,7 +70,6 @@ universe u
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well-founded relation
   `r` with the property that `r (a % b) b`, instead of a valuation. -/
-@[informal "Euclidean domain"]
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
     This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/

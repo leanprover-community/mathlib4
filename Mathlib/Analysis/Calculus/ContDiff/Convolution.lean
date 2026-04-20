@@ -427,7 +427,6 @@ theorem _root_.HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : 
   exact contDiffOn_convolution_right_with_param_comp L contDiffOn_id isOpen_univ hk
     (fun p x _ hx => h'k x hx) hf (hg.comp contDiff_snd).contDiffOn
 
-@[informal "regularization by convolution"]
 theorem _root_.HasCompactSupport.contDiff_convolution_left [μ.IsAddLeftInvariant] [μ.IsNegInvariant]
     {n : ℕ∞} (hcf : HasCompactSupport f) (hf : ContDiff 𝕜 n f) (hg : LocallyIntegrable g μ) :
     ContDiff 𝕜 n (f ⋆[L, μ] g) := by

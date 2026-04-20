@@ -785,7 +785,6 @@ omit [IsProbabilityMeasure μ] in
 identically distributed integrable random variables taking values in a Banach space,
 then `n⁻¹ • ∑ i ∈ range n, X i` converges almost surely to `𝔼[X 0]`. We give here the strong
 version, due to Etemadi, that only requires pairwise independence. -/
-@[informal "strong law of large numbers"]
 theorem strong_law_ae (X : ℕ → Ω → E) (hint : Integrable (X 0) μ)
     (hindep : Pairwise ((· ⟂ᵢ[μ] ·) on X))
     (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :

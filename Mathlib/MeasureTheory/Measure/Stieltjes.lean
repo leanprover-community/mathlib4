@@ -525,7 +525,6 @@ variable [MeasurableSpace R] [BorelSpace R] [SecondCountableTopology R] [Densely
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. If there is a bot element, it gives zero mass to it. -/
-@[informal "Stieltjes measure"]
 protected irreducible_def measure : Measure R where
   toOuterMeasure := f.outer
   m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ <| by

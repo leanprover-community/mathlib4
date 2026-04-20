@@ -348,7 +348,7 @@ theorem card_fixingSubgroup_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   conv_rhs => rw [← fixedField_fixingSubgroup K, IntermediateField.finrank_fixedField_eq_card]
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/
-@[informal "Galois correspondence", simps! apply, stacks 09DW]
+@[simps! apply, stacks 09DW]
 def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     IntermediateField F E ≃o (Subgroup Gal(E/F))ᵒᵈ where
   toFun := OrderDual.toDual ∘ IntermediateField.fixingSubgroup

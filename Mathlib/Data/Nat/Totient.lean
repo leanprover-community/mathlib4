@@ -35,7 +35,6 @@ namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
 coprime with `n`. -/
-@[informal "Euler's totient function ($\\varphi$)"]
 def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 
 @[inherit_doc]

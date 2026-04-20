@@ -66,7 +66,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I J n) in
 /-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
 and a `C^k` immersion. -/
-@[informal "smooth embedding", mk_iff]
+@[mk_iff]
 structure IsSmoothEmbedding (f : M → N) where
   isImmersion : IsImmersion I J n f
   isEmbedding : IsEmbedding f

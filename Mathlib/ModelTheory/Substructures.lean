@@ -93,7 +93,6 @@ end ClosedUnder
 variable (L) (M)
 
 /-- A substructure of a structure `M` is a set closed under application of function symbols. -/
-@[informal "substructure"]
 structure Substructure where
   /-- The underlying set of this substructure -/
   carrier : Set M

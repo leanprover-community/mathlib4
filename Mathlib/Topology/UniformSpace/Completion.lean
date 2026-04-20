@@ -291,7 +291,6 @@ variable {β : Type*} [UniformSpace β]
 variable {γ : Type*} [UniformSpace γ]
 
 /-- Hausdorff completion of `α` -/
-@[informal "completion"]
 def Completion := SeparationQuotient (CauchyFilter α)
 
 namespace Completion

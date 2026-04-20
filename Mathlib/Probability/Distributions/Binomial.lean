@@ -42,7 +42,7 @@ variable {R Ω : Type*} [MeasurableSpace R] [AddMonoidWithOne R] {m : Measurable
   {P : Measure Ω} {X : Ω → R} {n : ℕ} {p : I}
 
 /-- The binomial probability distribution with parameter `p`. -/
-@[informal "binomial law", expose]
+@[expose]
 noncomputable def binomial (n : ℕ) (p : I) : Measure ℕ := setBer(Set.Iio n, p).map Set.ncard
 
 /-- The binomial probability distribution with parameter `p`. -/

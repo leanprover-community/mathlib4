@@ -161,7 +161,6 @@ end SubringClass
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
-@[informal "subring"]
 structure Subring (R : Type u) [NonAssocRing R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/

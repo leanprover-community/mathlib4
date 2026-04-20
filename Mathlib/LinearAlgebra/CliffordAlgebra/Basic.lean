@@ -66,7 +66,6 @@ end CliffordAlgebra
 
 /-- The Clifford algebra of an `R`-module `M` equipped with a `QuadraticForm` `Q`.
 -/
-@[informal "Clifford algebra"]
 def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)
 deriving Inhabited, Ring, Algebra R

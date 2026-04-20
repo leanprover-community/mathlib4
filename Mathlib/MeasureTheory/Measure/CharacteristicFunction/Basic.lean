@@ -126,7 +126,6 @@ section InnerProductSpace
 variable {E : Type*} {mE : MeasurableSpace E} {μ : Measure E} {t : E}
 
 /-- The characteristic function of a measure in an inner product space. -/
-@[informal "characteristic function"]
 noncomputable def charFun [Inner ℝ E] (μ : Measure E) (t : E) : ℂ := ∫ x, exp (⟪x, t⟫ * I) ∂μ
 
 lemma charFun_apply [Inner ℝ E] (t : E) : charFun μ t = ∫ x, exp (⟪x, t⟫ * I) ∂μ := rfl

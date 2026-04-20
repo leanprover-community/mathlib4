@@ -26,7 +26,7 @@ open MeasureTheory
 
 /-- A stochastic process is a Gaussian process if all its finite dimensional distributions are
 Gaussian. -/
-@[informal "Gaussian processes", fun_prop]
+@[fun_prop]
 public structure ProbabilityTheory.IsGaussianProcess {Ω E T : Type*} {mΩ : MeasurableSpace Ω}
     [MeasurableSpace E] [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E]
     (X : T → Ω → E) (P : Measure Ω := by volume_tac) : Prop where

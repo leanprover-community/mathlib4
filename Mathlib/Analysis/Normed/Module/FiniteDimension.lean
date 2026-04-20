@@ -576,7 +576,6 @@ variable (𝕜 : Type u) [NontriviallyNormedField 𝕜] (E : Type v) [NormedAddC
 We do not register this as an instance to avoid an instance loop when trying to prove the
 properness of `𝕜`, and the search for `𝕜` as an unknown metavariable. Declare the instance
 explicitly when needed. -/
-@[informal "Heine-Borel theorem (finite-dimensional normed spaces are proper)"]
 theorem FiniteDimensional.proper [FiniteDimensional 𝕜 E] : ProperSpace E := by
   have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm

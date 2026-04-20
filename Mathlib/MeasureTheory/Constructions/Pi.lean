@@ -210,7 +210,6 @@ theorem pi_caratheodory :
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
   It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
-@[informal "product of finitely many measures"]
 protected irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 

@@ -168,7 +168,7 @@ in the sense that `|A ^ m|` is at most `|A|` times a constant exponential in `m`
 
 See also `Finset.small_alternating_pow_of_small_tripling` for a version with a weaker constant but
 which encompasses non-symmetric sets. -/
-@[informal "Small tripling implies small powers", to_additive
+@[to_additive
 /-- If `A` is symmetric (`-A = A`) and has small tripling, then `A` has small powers,
 in the sense that `|m • A|` is at most `|A|` times a constant exponential in `m`.
 

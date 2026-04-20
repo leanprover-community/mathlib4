@@ -376,7 +376,6 @@ invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-@[informal "derivative of the inverse of a function"]
 theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g : F → E} {a : F}
     (hg : ContinuousAt g a) (hf : HasFDerivAt f (f' : E →L[𝕜] F) (g a))
     (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasFDerivAt g (f'.symm : F →L[𝕜] E) a := by

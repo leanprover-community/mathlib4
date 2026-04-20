@@ -194,7 +194,6 @@ instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
 end SemiRingCat
 
 /-- The category of rings. -/
-@[informal "the category of rings"]
 structure RingCat where
   /-- The object in the category of rings associated to a type equipped with the appropriate
   typeclasses. -/

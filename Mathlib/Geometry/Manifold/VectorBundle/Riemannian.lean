@@ -241,7 +241,6 @@ topology as the already existing one, and varying continuously with the base poi
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
 product space structure on the fibers without creating diamonds. -/
-@[informal "Smooth bundle metric"]
 structure ContMDiffRiemannianMetric where
   /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ

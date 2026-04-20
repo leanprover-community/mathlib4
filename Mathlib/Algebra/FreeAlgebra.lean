@@ -165,7 +165,6 @@ If `α` has two or more terms then `FreeAlgebra R α` is not commutative.
 One can think of `FreeAlgebra R α` as the free non-commutative polynomial ring
 with coefficients in `R` and variables indexed by `α`.
 -/
-@[informal "free algebra of a commutative ring"]
 def FreeAlgebra :=
   Quot (FreeAlgebra.Rel R X)
 

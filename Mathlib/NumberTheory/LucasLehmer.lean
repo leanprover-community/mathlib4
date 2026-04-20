@@ -577,7 +577,6 @@ export LucasLehmer (LucasLehmerTest lucasLehmerResidue)
 
 open LucasLehmer
 
-@[informal "Lucas-Lehmer primality test"]
 theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (mersenne p).Prime := by
   set p' := p - 2 with hp'
   clear_value p'

@@ -57,7 +57,6 @@ variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-@[informal "exterior algebra"]
 abbrev ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 

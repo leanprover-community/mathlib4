@@ -227,7 +227,6 @@ variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
 -/
-@[informal "continued fraction"]
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
 

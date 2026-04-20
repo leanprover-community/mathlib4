@@ -42,7 +42,6 @@ deriving DecidableEq, Repr
 attribute [nolint unusedArguments] instReprContextFreeRule.repr
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
-@[informal "context-free grammar"]
 structure ContextFreeGrammar (T : Type*) where
   /-- Type of nonterminals. -/
   NT : Type
@@ -237,7 +236,6 @@ lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.inp
 end ContextFreeGrammar
 
 /-- Context-free languages are defined by context-free grammars. -/
-@[informal "context-free language"]
 def Language.IsContextFree (L : Language T) : Prop :=
   ∃ g : ContextFreeGrammar T, g.language = L
 

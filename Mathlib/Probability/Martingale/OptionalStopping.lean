@@ -91,7 +91,6 @@ theorem submartingale_of_expected_stoppedValue_mono [SigmaFiniteFiltration μ �
 /-- **The optional stopping theorem** (fair game theorem): a strongly adapted integrable process `f`
 is a submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 stopped value of `f` at `τ` has expectation smaller than its stopped value at `π`. -/
-@[informal "optional stopping theorem"]
 theorem submartingale_iff_expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
     (hadp : StronglyAdapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ) :
     Submartingale f 𝒢 μ ↔ ∀ τ π : Ω → ℕ∞, IsStoppingTime 𝒢 τ → IsStoppingTime 𝒢 π →

@@ -73,7 +73,6 @@ variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [Decida
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
-@[informal "Regularity lemma"]
 theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     ∃ P : Finpartition univ,
       P.IsEquipartition ∧ l ≤ #P.parts ∧ #P.parts ≤ bound ε l ∧ P.IsUniform G ε := by

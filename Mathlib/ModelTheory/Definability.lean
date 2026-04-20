@@ -53,7 +53,6 @@ variable {α : Type u₁} {β : Type*}
 
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
   membership in the set is given by a first-order formula with parameters from `A`. -/
-@[informal "definable set"]
 def Definable (s : Set (α → M)) : Prop :=
   ∃ φ : L[[A]].Formula α, s = setOf φ.Realize
 

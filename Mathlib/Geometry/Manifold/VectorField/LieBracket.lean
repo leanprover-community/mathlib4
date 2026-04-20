@@ -74,7 +74,6 @@ def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M
 
 variable (I I') in
 /-- The Lie bracket of two vector fields in a manifold. -/
-@[informal "Lie bracket of vector field"]
 def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
   mlieBracketWithin I V W univ x₀
 
@@ -1065,7 +1064,6 @@ lemma leibniz_identity_mlieBracket_apply
 
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
-@[informal "Jacobi/Leibniz identity"]
 lemma leibniz_identity_mlieBracket
     {U V W : Π (x : M), TangentSpace I x}
     (hU : CMDiff (minSmoothness 𝕜 2) (T% U))

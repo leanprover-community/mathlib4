@@ -70,7 +70,7 @@ open Complex
 noncomputable section
 
 /-- The real sine function, defined as the real part of the complex sine -/
-@[informal "trigonometric functions", pp_nodot]
+@[pp_nodot]
 nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 
@@ -89,7 +89,7 @@ nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
 /-- The real hyperbolic sine function, defined as the real part of the complex hyperbolic sine -/
-@[informal "hyperbolic trigonometric functions", pp_nodot]
+@[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 
