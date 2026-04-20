@@ -172,7 +172,7 @@ initialize Lean.registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
     addTagEntry decl .informal tag.getString ((comment.map (·.getString)).getD "")
   -- docstrings are immutable once an asynchronous elaboration task has been started
-  applicationTime := .afterTypeChecking -- should be .beforeElaboration; lean4#13433
+  applicationTime := .beforeElaboration
 }
 
 @[specialize f]
