@@ -269,7 +269,7 @@ variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [MetricSpace Q] [NormedAddTorsor W Q]
 
 @[simp]
-theorem image_intrinsicInterior (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
+theorem intrinsicInterior_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
     intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
