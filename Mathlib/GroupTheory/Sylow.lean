@@ -77,6 +77,10 @@ instance : SubgroupClass (Sylow p G) G where
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _
 
+@[simp]
+protected theorem coe_coe (P : Sylow p G) : (P : Subgroup G) = (P : Set G) :=
+  rfl
+
 /-- A `p`-subgroup with index indivisible by `p` is a Sylow subgroup. -/
 def _root_.IsPGroup.toSylow [Fact p.Prime] {P : Subgroup G}
     (hP1 : IsPGroup p P) (hP2 : ¬ p ∣ P.index) : Sylow p G :=
@@ -256,26 +260,26 @@ theorem smul_subtype {P : Sylow p G} {H : Subgroup G} (hP : P ≤ H) (h : H) :
   ext (Subgroup.conj_smul_subgroupOf hP h)
 
 theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
-    g • P = P ↔ g ∈ normalizer (P : Subgroup G) := by
-  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P.toSubgroup),
-      mem_normalizer_iff, inv_inv]
+    g • P = P ↔ g ∈ normalizer P := by
+  rw [eq_comm, SetLike.ext_iff, ← inv_mem_iff (G := G) (H := normalizer P),
+      mem_set_normalizer_iff, inv_inv]
   exact
     forall_congr' fun h =>
       iff_congr Iff.rfl
         ⟨fun ⟨a, b, c⟩ => c ▸ by simpa [mul_assoc] using b,
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 
-theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] :
-    g • P = P := by simp only [smul_eq_iff_mem_normalizer, P.normalizer_eq_top, mem_top]
+theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] : g • P = P := by
+  simp only [smul_eq_iff_mem_normalizer, ← P.coe_coe, P.normalizer_eq_top, mem_top]
 
 end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
-    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ normalizer (P : Subgroup G) := by
+    P ∈ fixedPoints H (Sylow p G) ↔ H ≤ normalizer P := by
   simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
-    P ⊓ normalizer (Q : Subgroup G) = P ⊓ Q :=
+    P ⊓ normalizer Q = P ⊓ Q :=
   le_antisymm
     (le_inf inf_le_left
       (sup_eq_right.mp
@@ -354,13 +358,13 @@ theorem orbit_eq_top [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) : orbit
   top_le_iff.mp fun Q _ => exists_smul_eq G P Q
 
 theorem stabilizer_eq_normalizer (P : Sylow p G) :
-    stabilizer G P = normalizer (P : Subgroup G) := by
+    stabilizer G P = normalizer P := by
   ext; simp [smul_eq_iff_mem_normalizer]
 
 theorem conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) (x g : G) (hx : x ∈ centralizer P)
     (hy : g⁻¹ * x * g ∈ centralizer P) :
-    ∃ n ∈ normalizer (P : Subgroup G), g⁻¹ * x * g = n⁻¹ * x * n := by
+    ∃ n ∈ normalizer P, g⁻¹ * x * g = n⁻¹ * x * n := by
   have h1 : P ≤ centralizer (zpowers x : Set G) := by rwa [le_centralizer_iff, zpowers_le]
   have h2 : ↑(g • P) ≤ centralizer (zpowers x : Set G) := by
     rw [le_centralizer_iff, zpowers_le]
@@ -376,29 +380,29 @@ theorem conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite (Sylow
 
 theorem conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     [_hP : IsMulCommutative P] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
-    ∃ n ∈ normalizer (P : Subgroup G), g⁻¹ * x * g = n⁻¹ * x * n :=
+    ∃ n ∈ normalizer P, g⁻¹ * x * g = n⁻¹ * x * n :=
   P.conj_eq_normalizer_conj_of_mem_centralizer x g
     (P.le_centralizer hx) (P.le_centralizer hy)
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
 noncomputable def equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
-    (P : Sylow p G) : Sylow p G ≃ G ⧸ normalizer (P : Subgroup G) :=
+    (P : Sylow p G) : Sylow p G ≃ G ⧸ normalizer P :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
     _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := orbitEquivQuotientStabilizer G P
-    _ ≃ G ⧸ normalizer (P : Subgroup G) := by rw [P.stabilizer_eq_normalizer]
+    _ ≃ G ⧸ normalizer P := by rw [P.stabilizer_eq_normalizer]
 
 instance [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
-    Finite (G ⧸ normalizer (P : Subgroup G)) :=
+    Finite (G ⧸ normalizer P) :=
   Finite.of_equiv (Sylow p G) P.equivQuotientNormalizer
 
 theorem card_eq_card_quotient_normalizer [Fact p.Prime] [Finite (Sylow p G)]
-    (P : Sylow p G) : Nat.card (Sylow p G) = Nat.card (G ⧸ normalizer (P : Subgroup G)) :=
+    (P : Sylow p G) : Nat.card (Sylow p G) = Nat.card (G ⧸ normalizer P) :=
   Nat.card_congr P.equivQuotientNormalizer
 
 theorem card_eq_index_normalizer [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
-    Nat.card (Sylow p G) = (normalizer ((P : Subgroup G) : Set G)).index :=
+    Nat.card (Sylow p G) = (normalizer (P : Set G)).index :=
   P.card_eq_card_quotient_normalizer
 
 theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
@@ -426,8 +430,8 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
 
 /-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hP : P.relIndex (normalizer (P : Subgroup G)) ≠ 0) : ¬ p ∣ P.index := by
-  rw [← relIndex_mul_index le_normalizer, ← card_eq_index_normalizer]
+    (hP : P.relIndex (normalizer P) ≠ 0) : ¬ p ∣ P.index := by
+  rw [← relIndex_mul_index le_normalizer, P.coe_coe, ← card_eq_index_normalizer]
   haveI : (P.subtype le_normalizer).Normal :=
     Subgroup.normal_in_normalizer
   haveI : (P.subtype le_normalizer).FiniteIndex := ⟨hP⟩
@@ -490,9 +494,9 @@ theorem normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Norma
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
 theorem normalizer_sup_eq_top' {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N.Normal]
-    [Finite (Sylow p N)] (P : Sylow p G) (hP : P ≤ N) : normalizer (P : Subgroup G) ⊔ N = ⊤ := by
+    [Finite (Sylow p N)] (P : Sylow p G) (hP : P ≤ N) : normalizer P ⊔ N = ⊤ := by
   rw [← normalizer_sup_eq_top (P.subtype hP), P.coe_subtype, subgroupOf_map_subtype,
-    inf_of_le_left hP]
+    inf_of_le_left hP, P.coe_coe]
 
 end Sylow
 
@@ -739,14 +743,15 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   exact characteristic_of_subsingleton _
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (hn : (normalizer ((P : Subgroup G) : Set G)).Normal) : P.Normal := by
-  rw [← normalizer_eq_top_iff, ← normalizer_sup_eq_top' P le_normalizer, sup_idem]
+    (hn : (normalizer (P : Set G)).Normal) : P.Normal := by
+  rw [← normalizer_eq_top_iff, ← normalizer_sup_eq_top' P le_normalizer, P.coe_coe, sup_idem]
 
 @[simp]
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
-    normalizer (normalizer ((P : Subgroup G) : Set G)) = normalizer ((P : Subgroup G) : Set G) := by
+    normalizer (normalizer (P : Set G)) = normalizer (P : Set G) := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  rw [coe_subtype, normal_subgroupOf_iff_le_normalizer (le_normalizer.trans le_normalizer),
+  rw [← (P.subtype _).coe_coe, coe_subtype,
+    normal_subgroupOf_iff_le_normalizer (le_normalizer.trans le_normalizer),
     ← subgroupOf_normalizer_eq (le_normalizer.trans le_normalizer)] at this
   exact le_antisymm (this normal_in_normalizer) le_normalizer
 
@@ -755,7 +760,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
     (P : Sylow p G) : P.Normal :=
   normalizer_eq_top_iff.mp
     (by
-      rcases eq_top_or_exists_le_coatom (normalizer ((P : Subgroup G) : Set G))
+      rcases eq_top_or_exists_le_coatom (normalizer (P : Set G))
         with (heq | ⟨K, hK, hNK⟩)
       · exact heq
       · haveI := hnc _ hK
