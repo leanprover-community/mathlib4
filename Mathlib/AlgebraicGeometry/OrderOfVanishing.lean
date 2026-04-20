@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 
 /-!
-# Order of vansihing in a scheme
+# Order of vanishing in a scheme
 
 In this file we define the order of vanishing of an element of the function field of a locally
 Noetherian integral scheme at a point of codimension `1`.
