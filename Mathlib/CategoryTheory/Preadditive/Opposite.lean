@@ -25,11 +25,15 @@ namespace CategoryTheory
 variable (C : Type*) [Category* C] [Preadditive C]
 
 instance : Preadditive Cᵒᵖ where
-  homGroup X Y :=
-    { toZero := inferInstance
-      __ := Equiv.addCommGroup (opEquiv X Y) }
+  homGroup X Y := fast_instance% Equiv.addCommGroup (opEquiv X Y)
   add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
   comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
+
+/-- Test that the two ways to obtain the `HasZeroMorphisms Cᵒᵖ` instance
+from `Preadditive C` are the same. -/
+example : (instPreadditiveOpposite C).preadditiveHasZeroMorphisms =
+    @Limits.hasZeroMorphismsOpposite  C _ Preadditive.preadditiveHasZeroMorphisms := by
+  with_reducible_and_instances rfl
 
 instance moduleEndLeft {X Y : C} : Module (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul_add _ _ _ := Preadditive.comp_add _ _ _ _ _ _
