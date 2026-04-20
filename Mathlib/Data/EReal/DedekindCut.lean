@@ -100,14 +100,14 @@ theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     simp only [iSup_lt_iff, iSup_le_iff] at sup_lt_b
     obtain ⟨c, c_lt_b, left_lt_c⟩ := sup_lt_b
     obtain ⟨q, sup_lt_q, q_lt_b⟩ := exists_rat_btwn_of_lt c_lt_b
-    have : ∀ t ∈ A.left, t < q := by
+    have left_lt_q : ∀ t ∈ A.left, t < q := by
       intro t t_mem_left
       have : ((t : ℝ) : EReal) < (q : ℝ) := by order [left_lt_c t t_mem_left]
       simpa
     have q_mem_right : q ∈ A.right := by
       simp only [← upperBounds_left]
       intro t t_mem_left
-      order [this t t_mem_left]
+      order [left_lt_q t t_mem_left]
     order [b_le_right q q_mem_right]
 
 end EReal
