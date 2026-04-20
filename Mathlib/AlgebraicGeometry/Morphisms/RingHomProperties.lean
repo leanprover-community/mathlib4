@@ -449,9 +449,6 @@ lemma of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget [IsZariskiLocalAtTarge
     rw [HasRingHomProperty.Spec_iff (P := Q)]
     rfl
 
-@[deprecated (since := "2025-10-07")]
-alias of_isLocalAtSource_of_isLocalAtTarget := of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
-
 lemma inf {P P' : MorphismProperty Scheme.{u}}
     {Q Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
     [HasRingHomProperty P Q] [HasRingHomProperty P' Q'] :

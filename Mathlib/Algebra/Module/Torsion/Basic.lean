@@ -542,7 +542,9 @@ def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
 
 /-- can't be an instance because `hM` can't be inferred -/
 abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
-  ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
+  Module.IsTorsionBySet.hasSMul ?_
+where finally
+  rwa [← isTorsionBySet_span_singleton_iff r] at hM
 
 @[simp]
 theorem IsTorsionBySet.mk_smul [I.IsTwoSided] (hM : IsTorsionBySet R M I) (b : R) (x : M) :
@@ -585,8 +587,10 @@ theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module [h : (Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) :
-    Module (R ⧸ Ideal.span {r}) M := by
-  rw [Ideal.span] at h; exact ((isTorsionBySet_span_singleton_iff r).mpr hM).module
+    Module (R ⧸ Ideal.span {r}) M :=
+  IsTorsionBySet.module ?_
+where finally
+  rwa [← isTorsionBySet_span_singleton_iff] at hM
 
 /-- Any module is also a module over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
@@ -694,7 +698,6 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an `R`-module `M` and an element `a` in `R`, submodules of the `a`-torsion submodule of
 `M` do not depend on whether we take scalars to be `R` or `R ⧸ R ∙ a`. -/
 def submodule_torsionBy_orderIso (a : R) :
