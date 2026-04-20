@@ -233,6 +233,7 @@ theorem norm_fderiv_le_one_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
 Let `f : E → F` be a complex analytic on an open ball with center at the origin.
 If `f` sends this ball to the closed ball with center `0` of the same radius and `f 0 = 0`,
 then for any point `z` of this disk we have `‖f z‖ ≤ ‖z‖`. -/
+@[informal "Schwarz lemma"]
 theorem norm_le_norm_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (closedBall 0 R)) (h₀ : f 0 = 0) (hz : ‖z‖ < R) :
     ‖f z‖ ≤ ‖z‖ := by
