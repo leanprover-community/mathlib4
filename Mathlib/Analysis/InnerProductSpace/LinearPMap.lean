@@ -277,12 +277,8 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     LinearEquiv.trans_apply, LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists,
     prod_inner_apply, ofLp_fst, ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
-  · rintro ⟨y, h1, h2⟩ a b hab
-    rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
-    specialize h1 (toLp 2 (b, -a)) a b hab rfl
-    dsimp at h1
-    simp only [inner_neg_left, ← sub_eq_add_neg] at h1
-    exact h1
+  · rintro ⟨_, h, rfl⟩ a b hab
+    simpa [sub_eq_add_neg] using h (toLp 2 (b, -a)) a b hab rfl
   · intro h
     refine ⟨toLp 2 x, ?_, rfl⟩
     intro u a b hab hu
@@ -296,19 +292,14 @@ theorem _root_.LinearPMap.adjoint_graph_eq_graph_adjoint (hT : Dense (T.domain :
   simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left, mem_adjoint_iff,
     forall_exists_index, forall_apply_eq_imp_iff]
   constructor
-  · rintro ⟨hx, h⟩ a ha
-    rw [← h, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩, sub_self]
+  · rintro ⟨hx, hTx⟩ a ha
+    rw [← hTx, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩, sub_self]
   · intro h
-    simp_rw [sub_eq_zero] at h
-    have hx : x.fst ∈ T†.domain := by
-      apply mem_adjoint_domain_of_exists
-      use x.snd
-      rintro ⟨a, ha⟩
-      rw [← inner_conj_symm, ← h a ha, inner_conj_symm]
-    use hx
-    apply hT.eq_of_inner_right 𝕜
-    rintro a ha
-    rw [← h a ha, (adjoint_isFormalAdjoint hT).symm ⟨a, ha⟩ ⟨x.fst, hx⟩]
+    simp only [sub_eq_zero] at h
+    refine ⟨?_, adjoint_apply_eq hT _ fun a ↦ by
+      rw [← inner_conj_symm, ← h a.1 a.2, inner_conj_symm]⟩
+    exact mem_adjoint_domain_of_exists _ ⟨x.2, fun a ↦ by
+      rw [← inner_conj_symm, ← h a.1 a.2, inner_conj_symm]⟩
 
 @[simp]
 theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.domain : Set E)) :
