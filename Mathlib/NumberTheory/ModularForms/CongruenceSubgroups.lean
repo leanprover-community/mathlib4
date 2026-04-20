@@ -71,7 +71,7 @@ lemma mem_Gamma_one (γ : SL(2, ℤ)) : γ ∈ Γ(1) := by
 
 /-- The GL-image of `Γ(1)` equals `𝒮ℒ` (the image of `SL(2, ℤ)` in `GL(2, ℝ)`). -/
 theorem Gamma_one_coe_eq_SL : (↑(Gamma 1) : Subgroup (GL (Fin 2) ℝ)) = 𝒮ℒ := by
-  change (Gamma 1).map (mapGL ℝ) = (mapGL ℝ).range; rw [Gamma_one_top, MonoidHom.range_eq_map]
+  simp [Gamma_one_top, MonoidHom.range_eq_map]
 
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := rfl
 
