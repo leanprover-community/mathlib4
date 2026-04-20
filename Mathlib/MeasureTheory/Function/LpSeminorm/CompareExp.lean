@@ -150,7 +150,7 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
   have : (toMeasurable μ s).indicator f = f := by
     apply Set.indicator_eq_self.2
     apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
-    contrapose! hx
+    contrapose hx
     exact subset_toMeasurable μ s hx
   rw [← this, memLp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
   have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
