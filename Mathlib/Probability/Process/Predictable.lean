@@ -22,7 +22,7 @@ and adapted. We also give an equivalent characterization of predictability for d
 
 ## Main results
 
-* `IsStronglyPredictable.progMeasurable` : A predictable process is progressively measurable.
+* `IsStronglyPredictable.isStronglyProgressive` : A predictable process is progressively measurable.
 * `IsStronglyPredictable.iff_measurable_add_one` : `u` is a discrete predictable process iff
   `u (n + 1)` is `𝓕 n`-measurable and `u 0` is `𝓕 0`-measurable.
 
@@ -171,8 +171,8 @@ variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace �
     [OpensMeasurableSpace ι] [OrderClosedTopology ι]
 
 /-- A predictable process is progressively measurable. -/
-lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
-    ProgMeasurable 𝓕 u := by
+lemma isStronglyProgressive {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
+    IsStronglyProgressive 𝓕 u := by
   intro i
   letI : MeasurableSpace (ι × Ω) := 𝓕.predictable
   letI : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (𝓕 i)
@@ -185,7 +185,7 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsS
 /-- A predictable process is adapted. -/
 lemma stronglyAdapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     StronglyAdapted 𝓕 u :=
-  h𝓕.progMeasurable.stronglyAdapted
+  h𝓕.isStronglyProgressive.stronglyAdapted
 
 section Discrete
 
@@ -255,7 +255,7 @@ lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
 lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
     IsStronglyPredictable 𝓕 u ↔
     StronglyMeasurable[𝓕 0] (u 0) ∧ ∀ n, StronglyMeasurable[𝓕 n] (u (n + 1)) :=
-  ⟨fun h𝓕 ↦ ⟨h𝓕.progMeasurable.stronglyAdapted 0, h𝓕.measurable_add_one⟩,
+  ⟨fun h𝓕 ↦ ⟨h𝓕.isStronglyProgressive.stronglyAdapted 0, h𝓕.measurable_add_one⟩,
     fun h ↦ .of_measurable_add_one h.1 h.2⟩
 
 end Discrete
