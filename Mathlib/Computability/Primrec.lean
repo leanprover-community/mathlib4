@@ -5,6 +5,6 @@ Authors: Mario Carneiro
 -/
 module -- shake: keep-all
 
-public import Mathlib.Computability.Primrec.List
+public import Mathlib.Computability.Primrec.Nat
 
 deprecated_module (since := "2026-01-10")
