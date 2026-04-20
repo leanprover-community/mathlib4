@@ -262,6 +262,8 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
   lcm_zero_right : ∀ a, lcm a 0 = 0
 
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
+attribute [informal "greatest common divisor"] GCDMonoid.gcd
+attribute [informal "least common multiple"] GCDMonoid.lcm
 
 /-- Normalized GCD monoid: a cancellative `CommMonoidWithZero` with normalization and `gcd`
 (greatest common divisor) and `lcm` (least common multiple) operations. In this setting `gcd` and
