@@ -489,6 +489,20 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
 
 end
 
+section truncTotal
+
+open Finset
+
+variable {f : MvPowerSeries σ R} [Finite τ] [Finite σ]
+
+theorem truncTotal_subst {n : ℕ} (ha : HasSubst a) :
+    truncTotal n (f.subst a) = ∑ i ∈ range (n + 1), (f.homogeneousComponent i).subst
+      (fun x ↦ ((a x).truncTotal (n + 1)).toMvPowerSeries) := by
+
+  sorry
+
+end truncTotal
+
 section rescale
 
 section CommSemiring
