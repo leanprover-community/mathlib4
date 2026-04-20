@@ -902,12 +902,6 @@ alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
 @[deprecated (since := "2025-12-12")]
 alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
 
-@[deprecated (since := "2025-10-08")]
-alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
-
-@[deprecated (since := "2025-10-08")]
-alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
-
 end Splits
 
 end
