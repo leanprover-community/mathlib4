@@ -131,6 +131,10 @@ lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
   contrapose! ha
   apply not_isOfFinOrder_of_isMulTorsionFree ha
 
+@[to_additive]
+lemma isOfFinOrder_iff_eq_one [IsMulTorsionFree G] (a : G) : IsOfFinOrder a ↔ a = 1 :=
+  ⟨IsOfFinOrder.eq_one', fun h => h.symm ▸ IsOfFinOrder.one⟩
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive /-- Elements of finite order are of finite order in submonoids. -/]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
@@ -906,6 +910,14 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
 @[to_additive (attr := simp)]
 lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
   rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
+
+@[to_additive]
+lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
+    orderOf g ≤ 1 := by
+  obtain rfl | ha := eq_or_ne g 1
+  · simp
+  · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
+    simp [ha]
 
 end CommGroup
 
