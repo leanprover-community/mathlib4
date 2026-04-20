@@ -188,17 +188,8 @@ private partial def foldKeysAsNamesAux {α} (acc : α) (pfx : Name) (f : α → 
 def _root_.Lean.Json.foldKeysAsNames {α} (json : Json) (f : α → Name → String → α) (init : α) : α :=
   foldKeysAsNamesAux init .anonymous f json
 
-private def mathOverviewPath : IO System.FilePath := do
-  initSearchPath (← findSysroot)
-  let some oleanSearchPath := (← IO.getEnv "LEAN_PATH").map System.SearchPath.parse
-    | throw (.userError "`LEAN_PATH` is not set.")
-  -- `*/mathlib4/.lake/build/lib/lean`. Fragile.
-  let some mathlibRoot := oleanSearchPath.findSome? fun p => do
-      let root ← (p.parent.bind (·.parent.bind (·.parent.bind (·.parent))))
-      guard <| root.fileName.isEqSome "mathlib4"
-      return root
-    | throw (.userError "Could not find `*/mathlib4` in `LEAN_PATH`.")
-  return mathlibRoot / "docs" / "overview.json"
+@[inline] private def mathOverviewPath : IO System.FilePath :=
+  return (← IO.currentDir) / "docs" / "overview.json"
 
 @[inline] private def readMathOverviewJson : IO Json := do
   let file ← IO.FS.readFile <|← mathOverviewPath
