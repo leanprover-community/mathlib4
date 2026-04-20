@@ -464,12 +464,6 @@ lemma associatorComponents_apply (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
     (associatorComponents P Q R X Y).hom (Quot.mk _ ⟨e, Quot.mk _ ⟨d, (p, q)⟩, r⟩) =
       Quot.mk _ ⟨d, (p, Quot.mk _ ⟨e, (q, r)⟩)⟩ := by
   sorry
-  -- obtain ⟨⟨d', x⟩, h⟩ := Quot.mk_surjective ((associatorComponents P Q R X Y).hom (Quot.mk _ ⟨e, Quot.mk _ ⟨d, (p, q)⟩, r⟩))
-  -- rw [← h]
-  -- apply Quot.sound
-  -- have := coendRel.mk (𝟙 d') x
-
-
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) := by
