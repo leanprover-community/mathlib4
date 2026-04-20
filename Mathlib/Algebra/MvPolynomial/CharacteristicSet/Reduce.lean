@@ -69,7 +69,7 @@ theorem reducedTo_of_max_vars_lt (h : q.vars.max < p.vars.max) : q.reducedTo p :
   else
     rcases WithBot.ne_bot_iff_exists.mp <| LT.lt.ne_bot h with ⟨c, hc⟩
     apply (reducedTo_iff hc.symm hq).mpr
-    rewrite [(iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr <|
+    rw [(iff_not_comm.mpr mem_vars_iff_degreeOf_ne_zero).mpr <|
       Finset.notMem_of_max_lt_coe (hc ▸ h)]
     exact Nat.pos_of_ne_zero <| degreeOf_max_vars_ne_zero hc.symm
 
@@ -99,7 +99,7 @@ theorem reducedTo_iff_gt_of_max_vars_eq (hq : q ≠ 0) (h : q.vars.max = p.vars.
     have : q.mainDegree < p.mainDegree := (lt_iff_not_imp.mp hr <| Eq.not_lt h).2
     match hp : p.vars.max with
     | ⊥ => by
-      rewrite [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
+      rw [mainDegree_eq_zero_iff.mpr hp, mainDegree_eq_zero_iff.mpr (h ▸ hp)] at this
       exact absurd this <| Nat.not_lt_zero 0
     | some c => by
       rw [mainDegree_of_max_vars_isSome hp, mainDegree_of_max_vars_isSome (h ▸ hp)] at this
@@ -136,7 +136,7 @@ section Initial
 
 theorem initial_reducedTo : q.reducedTo p → q.initial.reducedTo p := fun h ↦ by
   by_cases hq : q = 0
-  · rewrite [hq, initial_zero]
+  · rw [hq, initial_zero]
     exact zero_reducedTo p
   by_cases hp : p.vars.max = ⊥
   · exact absurd h <| not_reducedTo_of_bot_max_vars hq hp
@@ -186,7 +186,7 @@ This order decrease is what guarantees the termination of the characteristic set
 theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
     (p_ne_zero : p ≠ 0) (hp : p.reducedToSet S) : S.takeConcat p < S := by
   unfold takeConcat
-  rewrite [reducedToSet_iff] at hp
+  rw [reducedToSet_iff] at hp
   split_ifs with hS hc
   · exact hS ▸ single_lt_empty p_ne_zero
   · refine gt_single_of_first_gt p_ne_zero ?_
@@ -194,21 +194,21 @@ theorem _root_.TriangularSet.takeConcat_lt_of_reducedToSet
     · exact MvPolynomial.lt_of_max_vars_lt h
     apply (MvPolynomial.reducedTo_iff_gt_of_max_vars_eq p_ne_zero h).mp
     exact hp 0 <| length_ge_one_iff.mpr hS
-  let k := Nat.find <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
+  let k := Nat.find <| exists_index_max_vars_between_of_max_vars_first_lt <| lt_of_not_ge hc
   have hk : k ≤ S.length ∧ (S (k - 1)).vars.max < p.vars.max ∧
       (p.vars.max ≤ (S k).vars.max ∨ k = S.length) :=
-    Nat.find_spec <| exists_index_mainVar_between_of_mainVar_first_lt <| lt_of_not_ge hc
-  have length_tk : (S.take k).length = k := min_eq_left hk.1
+    Nat.find_spec <| exists_index_max_vars_between_of_max_vars_first_lt <| lt_of_not_ge hc
+  have length_tk : (S.take k).length = k := S.length_take k ▸ (min_eq_left hk.1)
   change (S.take k).concat p _ < S
   by_cases keq : k = S.length
   · refine TriangularSet.lt_def.mpr <| Or.inr ?_
-    rewrite [length_concat, length_tk]
+    rw [length_concat, length_tk]
     refine ⟨keq ▸ lt_add_one S.length, fun i hi ↦ ?_⟩
     rw [concat_apply, length_tk, keq, take_length, if_pos hi]
   refine TriangularSet.lt_def.mpr <| Or.inl ?_
   simp only [length_concat, concat_apply, length_tk]
   refine ⟨k, lt_add_one k, ?_, fun i hi ↦ by rw [take_apply, if_pos hi, if_pos hi]⟩
-  rewrite [if_neg <| Nat.lt_irrefl k, if_pos rfl]
+  rw [if_neg <| Nat.lt_irrefl k, if_pos rfl]
   by_cases max_vars_lt' : p.vars.max < (S k).vars.max
   · exact MvPolynomial.lt_of_max_vars_lt max_vars_lt'
   have : p.vars.max ≤ (S k).vars.max := (or_iff_left keq).mp hk.2.2

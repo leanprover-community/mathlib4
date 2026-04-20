@@ -96,22 +96,22 @@ noncomputable def pseudoOf.go [NoZeroDivisors R] (i : σ) (f : MvPolynomial σ R
     have Id : I.degreeOf i = 0 := by rw [degreeOf_initialOf_self]
     have : (I * r).degreeOf i - 1 ≤ r.degreeOf i - 1 := by
       apply Nat.sub_le_sub_right
-      rewrite [← zero_add (r.degreeOf i), ← Id]
+      rw [← zero_add (r.degreeOf i), ← Id]
       exact degreeOf_mul_le ..
     refine le_trans ?_ this
     apply degreeOf_sub_lt_of_initialOf_eq
-    repeat1' rewrite [mul_assoc, mul_comm _ f, ← mul_assoc]
-    · rewrite [initialOf_mul_X_self_pow, initialOf_mul_eq, initialOf_mul_eq]
+    repeat1' rw [mul_assoc, mul_comm _ f, ← mul_assoc]
+    · rw [initialOf_mul_X_self_pow, initialOf_mul_eq, initialOf_mul_eq]
       rw [initialOf_initialOf_self, initialOf_initialOf_self, mul_comm]
     have f_ne : f ≠ 0 := ne_zero_of_degreeOf_ne_zero h
     have I_ne : I ≠ 0 := initialOf_ne_zero i f_ne
     have r_ne : r ≠ 0 := by
       contrapose! h_1
-      rewrite [h_1, degreeOf_zero]
+      rw [h_1, degreeOf_zero]
       exact Nat.zero_lt_of_ne_zero h
     have Ir_ne : r.initialOf i ≠ 0 := initialOf_ne_zero i r_ne
-    rewrite [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ (mul_ne_zero_iff.mpr ⟨Ir_ne ,f_ne⟩)]
-    rewrite [degreeOf_mul_eq I_ne r_ne, degreeOf_mul_eq Ir_ne f_ne]
+    rw [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ (mul_ne_zero_iff.mpr ⟨Ir_ne ,f_ne⟩)]
+    rw [degreeOf_mul_eq I_ne r_ne, degreeOf_mul_eq Ir_ne f_ne]
     simpa [I] using (Nat.add_sub_of_le <| Nat.le_of_not_lt h_1).symm
 
 /-- Pseudo-division of `g` by `f` regarding the variable `i`.
@@ -124,15 +124,15 @@ noncomputable def pseudoOf [NoZeroDivisors R] (i : σ) (f : MvPolynomial σ R)
   else pseudoOf.go i f 0 0 g h
 
 theorem zero_pseudoOf : (0 : MvPolynomial σ R).pseudoOf i f = ⟨1 - f.degreeOf i, 0, 0⟩ := by
-  rewrite [pseudoOf]
+  rw [pseudoOf]
   split_ifs with h
   · rw [h]
-  rewrite [pseudoOf.go, degreeOf_zero, zero_add]
+  rw [pseudoOf.go, degreeOf_zero, zero_add]
   have : 1 - f.degreeOf i = 0 := Nat.sub_eq_zero_of_le (Nat.pos_of_ne_zero h)
   simp only [Nat.pos_of_ne_zero h, this, ↓reduceIte]
 
 theorem pseudoOf_self : f.pseudoOf i f = ⟨1, f.initialOf i, 0⟩ := by
-  rewrite [pseudoOf]
+  rw [pseudoOf]
   split_ifs with h
   · rw [initialOf_eq_of_degreeOf_eq_zero h]
   simp [pseudoOf.go, Nat.pos_of_ne_zero h]
@@ -142,13 +142,13 @@ lemma pseudoOfGo_next (h : f.degreeOf i ≠ 0) (s : ℕ) (q : MvPolynomial σ R)
     let term := r.initialOf i * X i ^ (r.degreeOf i - f.degreeOf i);
     pseudoOf.go i f s q r h =
       pseudoOf.go i f  (s + 1) (f.initialOf i * q + term) (f.initialOf i * r - term * f) h := by
-  rewrite [pseudoOf.go]; simp [hn]
+  rw [pseudoOf.go]; simp [hn]
 
 lemma pseudoOfGo_equation (h : f.degreeOf i ≠ 0) (s : ℕ) (q r : MvPolynomial σ R) :
     f.initialOf i ^ s * g = q * f + r → letI result := pseudoOf.go i f s q r h;
     f.initialOf i ^ result.exponent * g = result.quotient * f + result.remainder := by
   induction s, q, r using pseudoOf.go.induct i f h with
-  | case1 s q r dlt => rewrite [pseudoOf.go]; simp only [dlt, ↓reduceIte, imp_self]
+  | case1 s q r dlt => rw [pseudoOf.go]; simp only [dlt, ↓reduceIte, imp_self]
   | case2 s q r dlt term I q' r' ih =>
     intro heq
     suffices I ^ (s + 1) * g = q' * f + r' by
@@ -156,13 +156,13 @@ lemma pseudoOfGo_equation (h : f.degreeOf i ≠ 0) (s : ℕ) (q r : MvPolynomial
     unfold q' r'
     have : (I * q + term) * f + (I * r - term * f) = I * (q * f + r) + (term - term) * f :=
       by ring
-    nth_rewrite 1 [this, ← heq]
+    nth_rw 1 [this, ← heq]
     ring
 
 /-- The fundamental equation of pseudo-division: `initᵢ(f) ^ s * g = q * f + r` -/
 theorem pseudoOf_equation : f.initialOf i ^ (g.pseudoOf i f).exponent * g
     = (g.pseudoOf i f).quotient * f + (g.pseudoOf i f).remainder := by
-  rewrite [pseudoOf]
+  rw [pseudoOf]
   split_ifs with h
   · rw [pow_one, add_zero, initialOf_eq_of_degreeOf_eq_zero h, mul_comm]
   exact g.pseudoOfGo_equation _ _ _ _ _ _ (by ring)
@@ -171,7 +171,7 @@ lemma degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero {i j : σ} {f : MvPol
     (h : f.degreeOf i ≠ 0) (hi : i ≠ j) (hj : f.degreeOf j = 0) (s : ℕ) (q r : MvPolynomial σ R) :
     (pseudoOf.go i f s q r h).remainder.degreeOf j ≤ r.degreeOf j := by
   induction s, q, r using pseudoOf.go.induct i f h with
-  | case1 s q r h => rewrite [pseudoOf.go]; simp only [h, ↓reduceIte, Std.le_refl]
+  | case1 s q r h => rw [pseudoOf.go]; simp only [h, ↓reduceIte, Std.le_refl]
   | case2 s q r dlt term I q' r' ih =>
     apply le_trans (pseudoOfGo_next i f h s q (le_of_not_gt dlt) ▸ ih)
     apply le_trans (degreeOf_sub_le ..)
@@ -180,13 +180,13 @@ lemma degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero {i j : σ} {f : MvPol
       simp only [Id, zero_add, le_refl]
     simp only [hj, add_zero, term]
     apply le_trans (degreeOf_mul_le ..)
-    rewrite [degreeOf_X_pow_of_ne _ hi.symm, add_zero]
+    rw [degreeOf_X_pow_of_ne _ hi.symm, add_zero]
     exact degreeOf_initialOf_le i j r
 
 theorem degreeOf_pseudoOf_remainder_le_of_degreeOf_eq_zero {i j : σ} (g : MvPolynomial σ R)
     {f : MvPolynomial σ R} (hi : i ≠ j) (hj : f.degreeOf j = 0) :
     (g.pseudoOf i f).remainder.degreeOf j ≤ g.degreeOf j := by
-  rewrite [pseudoOf]
+  rw [pseudoOf]
   split_ifs with h
   · exact (@degreeOf_zero R _ _ _) ▸ Nat.zero_le _
   exact degreeOf_pseudoOfGo_remainder_le_of_degreeOf_eq_zero h hi hj ..
@@ -208,7 +208,7 @@ theorem degreeOf_pseudoOfGo_remainder_lt_of_degreeOf_ne_zero {i : σ} {f : MvPol
     (h : f.degreeOf i ≠ 0) (s : ℕ) (q r : MvPolynomial σ R) :
     (pseudoOf.go i f s q r h).remainder.degreeOf i < f.degreeOf i := by
   induction s, q, r using pseudoOf.go.induct i f h with
-  | case1 s q r h => rewrite [pseudoOf.go]; simp only [h, ↓reduceIte]
+  | case1 s q r h => rw [pseudoOf.go]; simp only [h, ↓reduceIte]
   | case2 s q r dlt term I q' r' ih =>
     refine lt_of_eq_of_lt ?_ ih
     rw [pseudoOfGo_next _ _ h _ _ (Nat.not_lt.mp dlt)]
@@ -227,7 +227,7 @@ theorem pseudoOf_remainder_eq_zero_of_dvd {i : σ} {g f : MvPolynomial σ R} (h1
   absurd degreeOf_pseudoOf_remainder_lt_of_degreeOf_ne_zero g h2
   have : r.degreeOf i = f.degreeOf i + c.degreeOf i :=
     hc ▸ degreeOf_mul_eq (left_ne_zero_of_mul (hc ▸ con)) (right_ne_zero_of_mul (hc ▸ con))
-  rewrite [not_lt, this]
+  rw [not_lt, this]
   exact Nat.le_add_right _ _
 
 variable [DecidableEq R] [LinearOrder σ]
@@ -242,23 +242,23 @@ theorem pseudoOf_remainder_reducedTo {c : σ} (g : MvPolynomial σ R) {f : MvPol
 
 /-- A remainder `r` of `g` by `f` is a polynomial which is reduced with respect to `f` and
 suffices `f.initial ^ s * g = q * f + r` for some `s : ℕ` and `q : MvPolynomial σ R`. -/
-def isRemainder (r g f : MvPolynomial σ R) : Prop :=
+def IsRemainder (r g f : MvPolynomial σ R) : Prop :=
   r.reducedTo f ∧ ∃ (s : ℕ) (q : MvPolynomial σ R), f.initial ^ s * g = q * f + r
 
 omit [NoZeroDivisors R] in
-theorem isRemainder_def (r g f : MvPolynomial σ R) : r.isRemainder g f ↔
+theorem isRemainder_def (r g f : MvPolynomial σ R) : r.IsRemainder g f ↔
     r.reducedTo f ∧ ∃ (s : ℕ) (q : MvPolynomial σ R), f.initial ^ s * g = q * f + r := Iff.rfl
 
 /-- A remainder `r` of `g` by `S` is a polynomial which is reduced with respect to `S` and
 suffices `(∏ i, (S i).initial ^ es[i]) * g = (∑ i, qs[i] * S i) + r`
 for some `es : List ℕ` and `qs : List (MvPolynomial σ R)`. -/
-def isSetRemainder (r g : MvPolynomial σ R) (S : TriangularSet σ R) : Prop := r.reducedToSet S ∧
+def IsSetRemainder (r g : MvPolynomial σ R) (S : TriangularSet σ R) : Prop := r.reducedToSet S ∧
   ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)), (es.length = S.length ∧ qs.length = S.length) ∧
     (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
 
 omit [NoZeroDivisors R] in
 theorem isSetRemainder_def (r g : MvPolynomial σ R) (S : TriangularSet σ R) :
-    r.isSetRemainder g S ↔ r.reducedToSet S ∧ ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)),
+    r.IsSetRemainder g S ↔ r.reducedToSet S ∧ ∃ (es : List ℕ) (qs : List (MvPolynomial σ R)),
       (es.length = S.length ∧ qs.length = S.length) ∧
       (∏ i : Fin es.length, (S i).initial ^ es[i]) * g = (∑ i : Fin qs.length, qs[i] * S i) + r
   := Iff.rfl
@@ -333,16 +333,16 @@ theorem degreeOf_pseudo_remainder_le_of_degreeOf_eq_zero {i : σ} {f : MvPolynom
     exact degreeOf_pseudoOf_remainder_le_of_degreeOf_eq_zero g this h
 
 theorem pseudo_remainder_reducedTo (h : f ≠ 0) : (g.pseudo f).remainder.reducedTo f := by
-  rewrite [pseudo, if_neg h]
+  rw [pseudo, if_neg h]
   match h : f.vars.max with
   | ⊥ => simp only; trivial
   | some c => exact g.pseudoOf_remainder_reducedTo h
 
-theorem pseudo_remainder_isRemainder (h : f ≠ 0) : (g.pseudo f).remainder.isRemainder g f :=
+theorem pseudo_remainder_isRemainder (h : f ≠ 0) : (g.pseudo f).remainder.IsRemainder g f :=
   ⟨g.pseudo_remainder_reducedTo f h, _, _, g.pseudo_equation f⟩
 
 theorem isRemainder_of_eq_pseudo_remainder {r g f : MvPolynomial σ R} (h : f ≠ 0) :
-    (g.pseudo f).remainder = r → r.isRemainder g f := fun hr ↦
+    (g.pseudo f).remainder = r → r.IsRemainder g f := fun hr ↦
   hr ▸ g.pseudo_remainder_isRemainder f h
 
 theorem pseudo_remainder_eq_zero_of_dvd {g f : MvPolynomial σ R} (h : f ∣ g) :
@@ -417,7 +417,7 @@ lemma setPseudoGo_equation (f : ℕ → MvPolynomial σ R) (fuel : ℕ) : ∀ (e
     have hp : (f fuel).initial ^ p.exponent * r = p.quotient * f fuel + p.remainder :=
       r.pseudo_equation (f fuel)
     have : setPseudo.go f (fuel + 1) es qs r = setPseudo.go f fuel es' qs' r' := by
-      rewrite [setPseudo.go]; simp; rfl
+      rw [setPseudo.go]; simp; rfl
     have heq' : es'.foldrIdx (fun i e I ↦ (f i).initial ^ e * I) 1 fuel * g =
         qs'.foldrIdx (fun i q Q ↦ q * f i + Q) 0 fuel + r' := by
       unfold es' qs' r'
@@ -430,7 +430,7 @@ lemma setPseudoGo_equation (f : ℕ → MvPolynomial σ R) (fuel : ℕ) : ∀ (e
         | cons q qs hq =>
           simp only [foldrIdx, map_cons, foldrIdx_cons]
           rw [mul_add, hq (n + 1), mul_comm q r, mul_assoc]
-      rewrite [mul_assoc, heq, mul_add, hp, ← this]
+      rw [mul_assoc, heq, mul_add, hp, ← this]
       ring
     rw [this, ih es' qs' r' heq']
 
@@ -448,7 +448,7 @@ theorem setPseudo_equation : letI result := g.setPseudo S
     | nil => simp
     | cons e es ih =>
       simp only [foldrIdx, zero_add, length_cons]
-      rewrite [foldrIdx_start, ih, add_comm _ 1, Finset.prod_range_add, Finset.prod_range_one]
+      rw [foldrIdx_start, ih, add_comm _ 1, Finset.prod_range_add, Finset.prod_range_one]
       simp [add_comm]
   have hqs (qs : List (MvPolynomial σ R)) (S : ℕ → MvPolynomial σ R) :
       qs.foldrIdx (fun i q Q ↦ q * S i + Q) 0
@@ -457,7 +457,7 @@ theorem setPseudo_equation : letI result := g.setPseudo S
     | nil => simp
     | cons q qs ih =>
       simp only [foldrIdx, zero_add, length_cons]
-      rewrite [foldrIdx_start, ih, add_comm _ 1, Finset.sum_range_add, Finset.sum_range_one]
+      rw [foldrIdx_start, ih, add_comm _ 1, Finset.sum_range_add, Finset.sum_range_one]
       simp [add_comm]
   simpa [hes, hqs, Finset.prod_range, Finset.sum_range] using g.setPseudo_equation' S
 
@@ -480,14 +480,11 @@ lemma setPseudoGo_drop_succ_remainder_eq {k n : ℕ} (hn : n < k) (hk : k ≤ S.
   | succ n ih =>
     intro es qs r
     have ih := ih (Nat.lt_sub_of_add_lt hn) (le_trans (Nat.sub_le k 1) hk)
-    rewrite [Nat.Simproc.sub_add_eq_comm k (n + 1) 1, setPseudo.go]
-    nth_rewrite 2 [setPseudo.go]
+    rw [Nat.Simproc.sub_add_eq_comm k (n + 1) 1, setPseudo.go]
+    nth_rw 2 [setPseudo.go]
     simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, and_self, ↓reduceIte,
       add_tsub_cancel_right, drop_apply, ih]
-    have : n + 1 + (k - 1 - (n + 1)) = n + (k - (n + 1)) := by
-      have : n + 1 ≤ k - 1 := Nat.le_sub_one_of_lt hn
-      rw [← Nat.add_sub_assoc this, Nat.succ_add_eq_add_succ, Nat.succ_eq_add_one,
-        Nat.sub_add_cancel <| Nat.one_le_of_lt hn, Nat.add_sub_assoc <| Nat.le_of_succ_le hn]
+    have : k - 1 - (n + 1) + (n + 1) = (k - (n + 1)) + n := by grind
     rw [this, Nat.Simproc.sub_add_eq_comm]
 
 theorem setPseudo_remainder_eq_setPseudoRem : (g.setPseudo S).remainder = g.setPseudoRem S := by
@@ -497,7 +494,7 @@ theorem setPseudo_remainder_eq_setPseudoRem : (g.setPseudo S).remainder = g.setP
   | succ n ih =>
     have := setPseudoGo_drop_succ_remainder_eq S (lt_add_one n) (h ▸ le_refl _) ([]) ([]) g
     simp only [tsub_self, TriangularSet.drop_zero, add_tsub_cancel_left] at this
-    rewrite [this, ih _ (by simp [h, add_tsub_cancel_right]), toList_drop_comm, drop_one]
+    rw [this, ih _ (by simp [h, add_tsub_cancel_right]), toList_drop, drop_one]
     have h : S.toList ≠ [] := length_pos_iff.mp (length_toList S ▸ h ▸ Nat.zero_lt_succ n)
     rw [← cons_head_tail h, foldr_cons, cons_head_tail, head_eq_getElem_zero, toList_getElem]
 
@@ -516,7 +513,7 @@ lemma setPseudoRem_reducedTo (l : List (MvPolynomial σ R)) (hl1 : ∀ ⦃p⦄, 
     rw [reducedTo] at ih ⊢
     split_ifs with hr'
     have r'_ne_zero : r' ≠ 0 := fun h ↦ by absurd hr'; simp only [h, zero_pseudo]
-    rewrite [if_neg r'_ne_zero] at ih
+    rw [if_neg r'_ne_zero] at ih
     split at ih <;> expose_names
     · exact ih
     suffices (r'.pseudo a).remainder.degreeOf c ≤ r'.degreeOf c by exact lt_of_le_of_lt this ih
@@ -526,17 +523,17 @@ lemma setPseudoRem_reducedTo (l : List (MvPolynomial σ R)) (hl1 : ∀ ⦃p⦄, 
     apply heq ▸ (pairwise_cons.mp hl2).1 p hp
 
 theorem setPseudo_remainder_reducedToSet : (g.setPseudo S).remainder.reducedToSet S := by
-  rewrite [reducedToSet_iff, setPseudo_remainder_eq_setPseudoRem, setPseudoRem]
+  rw [reducedToSet_iff, setPseudo_remainder_eq_setPseudoRem, setPseudoRem]
   intro i hi
-  apply setPseudoRem_reducedTo _ toList_non_zero toList_pairwise
+  apply setPseudoRem_reducedTo _ S.toList_non_zero S.toList_pairwise
   exact mem_toList_iff.mpr <| apply_mem hi
 
-theorem setPseudo_remainder_isSetRemainder : (g.setPseudo S).remainder.isSetRemainder g S :=
+theorem setPseudo_remainder_isSetRemainder : (g.setPseudo S).remainder.IsSetRemainder g S :=
   ⟨g.setPseudo_remainder_reducedToSet S, _, _,
     ⟨g.length_setPseudo_exponents S, g.length_setPseudo_quotients S⟩, g.setPseudo_equation S⟩
 
 theorem isSetRemainder_of_eq_setPseudo_remainder {r g : MvPolynomial σ R}
-    {S : TriangularSet σ R} : (g.setPseudo S).remainder = r → r.isSetRemainder g S := fun h ↦
+    {S : TriangularSet σ R} : (g.setPseudo S).remainder = r → r.IsSetRemainder g S := fun h ↦
   h ▸ g.setPseudo_remainder_isSetRemainder S
 
 lemma setPseudoRem_eq_self_of_max_vars_lt (l : List (MvPolynomial σ R))
@@ -570,13 +567,14 @@ theorem setPseudo_remainder_eq_zero_of_mem {p : MvPolynomial σ R} (hp : p ∈ S
   simp only [this, append_assoc, cons_append, nil_append, foldr_append, foldr_cons]
   suffices ((l1.foldr (fun p r ↦ (r.pseudo p).remainder) p).pseudo p).remainder = 0 by
     rw [this, zero_setPseudoRem]
-  simp only [← toList_drop_comm, l1]
+  simp only [← toList_drop, l1]
   refine pseudo_remainder_eq_zero_of_dvd (dvd_of_eq <| Eq.symm ?_)
-  refine setPseudoRem_eq_self_of_max_vars_lt _ toList_non_zero toList_pairwise (fun q hq ↦ ?_)
+  refine setPseudoRem_eq_self_of_max_vars_lt _ (toList_non_zero _) (toList_pairwise _) ?_
+  intro q hq
   rcases mem_toList_iff.mp hq with ⟨i, hi1, hi2⟩
-  rewrite [← hn2, ← hi2, drop_apply]
-  refine max_vars_lt_of_index_lt ?_ (Nat.lt_add_left i (lt_add_one n))
-  exact Nat.add_lt_of_lt_sub hi1
+  rw [← hn2, ← hi2, drop_apply]
+  refine max_vars_lt_of_index_lt ?_ (Nat.lt_add_right i (lt_add_one n))
+  exact Nat.add_lt_of_lt_sub' (S.length_drop _ ▸ hi1)
 
 end Field
 end MvPolynomial

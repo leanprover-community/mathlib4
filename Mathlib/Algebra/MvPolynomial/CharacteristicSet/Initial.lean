@@ -62,8 +62,8 @@ theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
     (monomial s r).initialOf i = monomial (s.erase i) r := by
   by_cases r_zero : r = 0
   · simp only [r_zero, monomial_zero, initialOf_zero]
-  rewrite [initialOf_def, Finset.sum_filter, ← single_eq_monomial, degreeOf_eq_sup, support]
-  rewrite [Finsupp.support_single_ne_zero s r_zero, Finset.sum_singleton, Finset.sup_singleton]
+  rw [initialOf_def, Finset.sum_filter, ← single_eq_monomial, degreeOf_eq_sup, support]
+  rw [Finsupp.support_single_ne_zero s r_zero, Finset.sum_singleton, Finset.sup_singleton]
   rw [if_pos rfl, coeff, Finsupp.single_eq_same]
 
 @[simp] theorem initialOf_C (r : R) : (C r : MvPolynomial σ R).initialOf i = C r := by
@@ -74,12 +74,12 @@ theorem initialOf_def {p : MvPolynomial σ R} {i : σ} :
 @[simp] theorem initialOf_mul_X_self : (p * X i).initialOf i = p.initialOf i := by
   by_cases p_zero : p = 0
   · rw [p_zero, zero_mul, initialOf_zero]
-  rewrite [initialOf_def, (degreeOf_mul_X_eq_degreeOf_add_one_iff i p).mpr p_zero]
+  rw [initialOf_def, (degreeOf_mul_X_eq_degreeOf_add_one_iff i p).mpr p_zero]
   simp [Finset.sum_filter, initialOf_def]
 
 theorem initialOf_mul_X_of_ne {i j : σ} (h : i ≠ j) :
     (p * X j).initialOf i = p.initialOf i * X j := by
-  rewrite [initialOf_def, degreeOf_mul_X_of_ne _ h]
+  rw [initialOf_def, degreeOf_mul_X_of_ne _ h]
   simp [h, monomial_add_single, initialOf_def, Finset.sum_filter, Finset.sum_mul]
 
 @[simp] theorem initialOf_mul_X_self_pow (k : ℕ) : (p * X i ^ k).initialOf i = p.initialOf i := by
@@ -109,20 +109,20 @@ theorem initialOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
 theorem coeff_initialOf_eq_of_apply_ne_zero {s : σ →₀ ℕ} (h : s i ≠ 0) :
     (p.initialOf i).coeff s = 0 := by
   classical
-  rewrite [initialOf, coeff_sum, Finset.sum_congr rfl fun _ _ ↦ coeff_monomial s _ _]
+  rw [initialOf, coeff_sum, Finset.sum_congr rfl fun _ _ ↦ coeff_monomial s _ _]
   have (x : σ →₀ ℕ) : x.erase i = s ↔ False := by
     refine iff_false_intro <| Finsupp.ne_iff.mpr ⟨i, ?_⟩
-    rewrite [Finsupp.erase_apply, if_pos rfl]
+    rw [Finsupp.erase_apply, if_pos rfl]
     exact h.symm
   simp only [this, ↓reduceIte, Finset.sum_const_zero]
 
 theorem coeff_initialOf_eq_of_apply_eq_zero {s : σ →₀ ℕ} (h : s i = 0) :
     (p.initialOf i).coeff s = p.coeff (s.update i (p.degreeOf i)) := by
   classical
-  rewrite [initialOf, coeff_sum, Finset.sum_congr rfl fun _ _ ↦ coeff_monomial s _ _]
+  rw [initialOf, coeff_sum, Finset.sum_congr rfl fun _ _ ↦ coeff_monomial s _ _]
   have (x : σ →₀ ℕ) : x i = p.degreeOf i ∧ x.erase i = s ↔ x = s.update i (p.degreeOf i) := by
     refine ⟨fun hx ↦ Finsupp.ext fun j ↦ ?_, fun hx ↦ ?_⟩
-    · rewrite [Finsupp.update_apply]
+    · rw [Finsupp.update_apply]
       split_ifs with hj
       · rw [hj, hx.1]
       rw [← hx.2, Finsupp.erase_apply, if_neg hj]
@@ -165,16 +165,16 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
         apply notMem_support_iff.mp
         apply p.degreeOf_initialOf_self i ▸ notMem_support_of_degreeOf_lt i
         exact Nat.zero_lt_of_ne_zero hs
-      rewrite [hsc]
+      rw [hsc]
       apply Eq.symm <| notMem_support_iff.mp ?_
       apply this ▸ notMem_support_of_degreeOf_lt i
       exact Nat.zero_lt_of_ne_zero hs
     simp [degreeOf, degrees_rename_of_injective Subtype.val_injective]
-  rewrite [not_ne_iff] at hs
-  rewrite [Polynomial.leadingCoeff, ← degreeOf_eq_natDegree]
+  rw [not_ne_iff] at hs
+  rw [Polynomial.leadingCoeff, ← degreeOf_eq_natDegree]
   set s' : { b // b ≠ i } →₀ ℕ := (s.mapDomain f).some with hs'
   have : s'.mapDomain Subtype.val = s := by
-    rewrite [hs', Finsupp.some, hsv, Finsupp.mapDomain_comp,
+    rw [hs', Finsupp.some, hsv, Finsupp.mapDomain_comp,
       Finsupp.mapDomain_comapDomain _ (Option.some_injective _)]
     · ext j
       simp [Finsupp.mapDomain_equiv_apply]
@@ -185,7 +185,7 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
     refine ⟨f.symm j, by contrapose! hj; rw [hj, hs], ?_⟩
     have : f ∘ Subtype.val = @some { b // b ≠ i } := (Equiv.symm_comp_eq _ _ _).mpr hsv
     simp only [ne_eq, ← this, Function.comp_apply, Equiv.apply_symm_apply]
-  rewrite [← this, coeff_rename_mapDomain _ Subtype.val_injective, this,
+  rw [← this, coeff_rename_mapDomain _ Subtype.val_injective, this,
     optionEquivLeft_coeff_coeff, ← coeff_rename_mapDomain _ f.symm.injective]
   simp only [rename_rename, ne_eq, Equiv.symm_comp_self, rename_id, AlgHom.coe_id, id_eq]
   have (n : ℕ) : (s'.optionElim n).mapDomain f.symm = s.update i n := by
@@ -194,7 +194,7 @@ theorem initialOf_eq_leadingCoeff [DecidableEq σ] {p : MvPolynomial σ R} {i : 
       Finsupp.optionElim_apply_eq_elim, Finsupp.update_apply, s', Option.elim]
     have : f i = none := Equiv.optionSubtypeNe_symm_self i
     split <;> expose_names
-    · have : j ≠ i := fun hj ↦ by absurd heq; rewrite [hj, this]; exact not_eq_of_beq_eq_false rfl
+    · have : j ≠ i := fun hj ↦ by absurd heq; rw [hj, this]; exact not_eq_of_beq_eq_false rfl
       rw [if_neg this, Finsupp.comapDomain_apply, ← heq, Finsupp.mapDomain_apply f.injective]
     have : j = i := by apply f.injective; rw [this, heq]
     rw [if_pos this]
@@ -211,7 +211,7 @@ theorem vars_initialOf_subset : (p.initialOf i).vars ⊆ p.vars := by
 
 theorem initialOf_eq_of_degreeOf_eq_zero {p : MvPolynomial σ R} {i : σ} :
     p.degreeOf i = 0 → p.initialOf i = p := fun h ↦ Eq.symm (by
-  nth_rewrite 1 [p.as_sum, initialOf_def, Finset.sum_filter]
+  nth_rw 1 [p.as_sum, initialOf_def, Finset.sum_filter]
   refine Finset.sum_congr rfl (fun s hs ↦ ?_)
   simp [h, Nat.eq_zero_of_le_zero <| degreeOf_le_iff.mp (le_of_eq h) s hs])
 
@@ -219,17 +219,17 @@ theorem degreeOf_initialOf_le : (p.initialOf i).degreeOf j ≤ p.degreeOf j := b
   refine le_trans (degreeOf_sum_le ..) <| Finset.sup_le ?_
   intro s hs
   simp only [Finset.mem_filter, mem_support_iff, ne_eq] at hs
-  rewrite [degreeOf_monomial_eq _ _ hs.1, degreeOf_eq_sup]
+  rw [degreeOf_monomial_eq _ _ hs.1, degreeOf_eq_sup]
   by_cases hi : i = j
-  · rewrite [hi, Finsupp.erase_same]
+  · rw [hi, Finsupp.erase_same]
     exact Nat.zero_le _
-  rewrite [Finsupp.erase_ne (Ne.symm hi)]
+  rw [Finsupp.erase_ne (Ne.symm hi)]
   apply Finset.le_sup <| mem_support_iff.mpr hs.1
 
 theorem initialOf_add_eq_of_degreeOf_lt {i : σ} {p q : MvPolynomial σ R}
     (h : q.degreeOf i < p.degreeOf i) : (p + q).initialOf i = p.initialOf i := by
   ext s
-  rewrite [coeff_initialOf_eq, coeff_initialOf_eq, degreeOf_add_eq_of_degreeOf_lt h, coeff_add]
+  rw [coeff_initialOf_eq, coeff_initialOf_eq, degreeOf_add_eq_of_degreeOf_lt h, coeff_add]
   split_ifs with hs
   · suffices q.coeff (s.update i (degreeOf i p)) = 0 by rw [this, add_zero]
     refine notMem_support_iff.mp <| notMem_support_of_degreeOf_lt i ?_
@@ -241,14 +241,14 @@ theorem degreeOf_eq_of_initialOf_decomposition {i : σ} {p q r : MvPolynomial σ
     (decomp : p = q * X i ^ d + r) : p.degreeOf i = d := by
   haveI : Nontrivial R := have ⟨s, hs⟩ := ne_zero_iff.mp q_ne; ⟨q.coeff s, 0, hs⟩
   have := degreeOf_mul_le i q (X i ^ d)
-  rewrite [hq, zero_add] at this
+  rw [hq, zero_add] at this
   have := le_trans (degreeOf_add_le i (q * X i ^ d) r) (sup_le_sup_right this (r.degreeOf i))
-  rewrite [← decomp, degreeOf_X_self_pow, max_eq_left_of_lt hr] at this
+  rw [← decomp, degreeOf_X_self_pow, max_eq_left_of_lt hr] at this
   apply le_antisymm this
   have d_eq := degreeOf_mul_X_self_pow_eq_add_of_ne_zero i d q_ne
   have : r.degreeOf i < (q * X i ^ d).degreeOf i :=
     d_eq ▸ (lt_of_lt_of_le hr <| Nat.le_add_left d _)
-  rewrite [decomp, degreeOf_add_eq_of_degreeOf_lt this, d_eq]
+  rw [decomp, degreeOf_add_eq_of_degreeOf_lt this, d_eq]
   exact Nat.le_add_left d _
 
 @[simp] theorem initialOf_initialOf_self : (p.initialOf i).initialOf i = p.initialOf i :=
@@ -266,22 +266,22 @@ protected lemma _initialOf_decomposition :
   set q := ∑ s ∈ p.support with s i ≠ p.degreeOf i, (monomial s) (p.coeff s) with hq
   simp only
   constructor
-  · rewrite [degreeOf_eq_sup, Finset.sup_le_iff]
+  · rw [degreeOf_eq_sup, Finset.sup_le_iff]
     intro s hs
-    rewrite [hq,  mem_support_iff, coeff_sum, Finset.sum_filter] at hs
+    rw [hq,  mem_support_iff, coeff_sum, Finset.sum_filter] at hs
     set f := fun t ↦ if t i ≠ p.degreeOf i then (monomial t (p.coeff t)).coeff s else 0 with hf
     have hf : f = fun t ↦ if t = s then (if t i ≠ p.degreeOf i then (p.coeff t) else 0) else 0 :=
-      by ext t; simp only [hf, coeff_monomial]; rewrite [← ite_and]; simp only [and_comm, ite_and]
+      by ext t; simp only [hf, coeff_monomial]; rw [← ite_and]; simp only [and_comm, ite_and]
     simp only [hf, ne_eq, Finset.sum_ite_eq', mem_support_iff, ite_eq_right_iff,
       Classical.not_imp] at hs
     have : s i ≤ p.degreeOf i := le_degreeOf_of_mem_support i <| mem_support_iff.mpr hs.1
     by_cases d_zero : p.degreeOf i = 0
-    · rewrite [d_zero] at this ⊢
+    · rw [d_zero] at this ⊢
       exact this
     exact Nat.le_sub_one_of_lt <| lt_of_le_of_ne this hs.2.1
   rw [initialOf_def, Finset.sum_mul, hq, Finset.sum_filter, Finset.sum_filter, X_pow_eq_monomial]
   simp only [monomial_mul, mul_one, ne_eq, ite_not, ← Finset.sum_add_distrib]
-  nth_rewrite 1 [as_sum p]
+  nth_rw 1 [as_sum p]
   refine Finset.sum_congr rfl (fun s _ ↦ ?_)
   split_ifs with hs
   · rw [← hs, Finsupp.erase_add_single, add_zero]
@@ -294,8 +294,8 @@ theorem initialOf_decomposition : ∃ q, q.degreeOf i ≤ p.degreeOf i - 1 ∧
 
 theorem initialOf_ne_zero {p : MvPolynomial σ R} : p ≠ 0 → p.initialOf i ≠ 0 := mt fun h ↦ by
   obtain ⟨q, hq1, hq2⟩ := p.initialOf_decomposition i
-  rewrite [h, zero_mul, zero_add] at hq2
-  rewrite [← hq2] at hq1
+  rw [h, zero_mul, zero_add] at hq2
+  rw [← hq2] at hq1
   have : p.degreeOf i = 0 := by contrapose! hq1; exact Nat.sub_one_lt hq1
   exact initialOf_eq_of_degreeOf_eq_zero this ▸ h
 
@@ -312,7 +312,7 @@ theorem degreeOf_add_lt_of_initialOf_cancel {i : σ} {p q : MvPolynomial σ R}
     calc p' + q' = (p.initialOf i + q.initialOf i) * X i ^ d + p' + q' := by simp [hi]
       _ = p.initialOf i * X i ^ d + p' + (q.initialOf i * X i ^ d + q') := by ring
       _ = p + q := by rw [← hp2, hd, ← hq2]
-  rewrite [← this]
+  rw [← this]
   exact le_trans (degreeOf_add_le i p' q') <| max_le hp1 (hd ▸ hq1)
 
 theorem initialOf_cancel_of_degreeOf_add_lt {i : σ} {p q : MvPolynomial σ R}
@@ -323,11 +323,10 @@ theorem initialOf_cancel_of_degreeOf_add_lt {i : σ} {p q : MvPolynomial σ R}
   · have : p.degreeOf i = q.degreeOf i := by
       contrapose! h
       rcases lt_or_gt_of_ne h with h | h
-      · rewrite [add_comm, degreeOf_add_eq_of_degreeOf_lt h]
+      · rw [add_comm, degreeOf_add_eq_of_degreeOf_lt h]
         exact Nat.le_of_succ_le h
-      rewrite [degreeOf_add_eq_of_degreeOf_lt h]
-      rfl
-    rewrite [← this, ← coeff_add]
+      rw [degreeOf_add_eq_of_degreeOf_lt h]
+    rw [← this, ← coeff_add]
     refine notMem_support_iff.mp <| notMem_support_of_degreeOf_lt i ?_
     classical simpa only [Finsupp.update_apply]
   rw [add_zero]
@@ -362,7 +361,7 @@ theorem initialOf_add_of_degreeOf_eq_of_ne {p q : MvPolynomial σ R}
   have hp1 : degreeOf i p' < degreeOf i p := Nat.lt_of_le_pred pd_zero hp1
   have hq1 : degreeOf i q' < degreeOf i p := Nat.lt_of_le_pred pd_zero (h ▸ hq1)
   have decomp : p + q = (p.initialOf i + q.initialOf i) * X i ^ p.degreeOf i + (p' + q') :=
-    by nth_rewrite 1 [hp2, hq2, h]; ring
+    by nth_rw 1 [hp2, hq2, h]; ring
   have d_zero : (p.initialOf i + q.initialOf i).degreeOf i = 0 := by
     refine Nat.eq_zero_of_le_zero <| le_trans (degreeOf_add_le ..) ?_
     simp only [degreeOf_initialOf_self, max_self, le_refl]
@@ -379,17 +378,17 @@ theorem initialOf_mul_decomposition : ∃ r, r.degreeOf i ≤ p.degreeOf i + q.d
         ∃ r, r.degreeOf i ≤ p.degreeOf i + q.degreeOf i - 1
           ∧ p * q = p.initialOf i * q.initialOf i * X i ^ (p.degreeOf i + q.degreeOf i) + r := by
       obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
-      rewrite [initialOf_eq_of_degreeOf_eq_zero h]
-      refine ⟨q * p', ?_, by nth_rewrite 1 [h, add_zero, hp2]; ring⟩
+      rw [initialOf_eq_of_degreeOf_eq_zero h]
+      refine ⟨q * p', ?_, by nth_rw 1 [h, add_zero, hp2]; ring⟩
       refine le_trans (degreeOf_mul_le ..) ?_
       simpa [initialOf_eq_of_degreeOf_eq_zero, h] using hp1
-    · rewrite [add_comm, mul_comm, mul_comm (p.initialOf i)]
+    · rw [add_comm, mul_comm, mul_comm (p.initialOf i)]
       exact this h
     exact this h
   obtain ⟨p', hp1, hp2⟩ := p.initialOf_decomposition i
   obtain ⟨q', hq1, hq2⟩ := q.initialOf_decomposition i
   use q.initialOf i * X i ^ q.degreeOf i * p' + p.initialOf i * X i ^ p.degreeOf i * q' + p' * q'
-  refine ⟨?_, by nth_rewrite 1 [hp2, hq2]; ring⟩
+  refine ⟨?_, by nth_rw 1 [hp2, hq2]; ring⟩
   have hp := Nat.zero_lt_of_ne_zero (not_or.mp this).1
   have hq := Nat.zero_lt_of_ne_zero (not_or.mp this).2
   have : (p' * q').degreeOf i ≤ p.degreeOf i + q.degreeOf i - 1 := by
@@ -398,11 +397,11 @@ theorem initialOf_mul_decomposition : ∃ r, r.degreeOf i ≤ p.degreeOf i + q.d
   refine le_trans (degreeOf_add_le ..) (max_le ?_ this)
   refine le_trans (degreeOf_add_le ..) (max_le ?_ ?_)
   <;> refine le_trans (degreeOf_mul_le i ..) ?_
-  · rewrite [add_comm (p.degreeOf i), Nat.add_sub_assoc hp _, Nat.succ_eq_add_one, zero_add]
+  · rw [add_comm (p.degreeOf i), Nat.add_sub_assoc hp _, Nat.succ_eq_add_one, zero_add]
     apply add_le_add ?_ hp1
     have : q.initialOf i ≠ 0 := initialOf_ne_zero_of_degreeOf_ne_zero <| Nat.ne_zero_of_lt hq
     rw [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ this, degreeOf_initialOf_self, zero_add]
-  rewrite [Nat.add_sub_assoc hq _, Nat.succ_eq_add_one, zero_add]
+  rw [Nat.add_sub_assoc hq _, Nat.succ_eq_add_one, zero_add]
   apply add_le_add ?_ hq1
   have : p.initialOf i ≠ 0 := initialOf_ne_zero_of_degreeOf_ne_zero <| Nat.ne_zero_of_lt hp
   rw [degreeOf_mul_X_self_pow_eq_add_of_ne_zero _ _ this, degreeOf_initialOf_self, zero_add]
@@ -456,7 +455,7 @@ theorem initial_monomial {s : σ →₀ ℕ} (r : R) {c : σ} :
 @[simp] theorem initial_X_pow (i : σ) {k : ℕ} (hk : k ≠ 0) :
     (X i ^ k).initial = (1 : MvPolynomial σ R) := by
   have : (Finsupp.single i k).support.max = i := by
-    rewrite [Finsupp.support_single_ne_zero _ hk]; exact rfl
+    rw [Finsupp.support_single_ne_zero _ hk]; exact rfl
   rw [X_pow_eq_monomial, initial_monomial 1 this, Finsupp.erase_single, monomial_zero', C_1]
 
 @[simp] theorem initial_X (i : σ) : (X i : MvPolynomial σ R).initial = 1 :=
@@ -467,7 +466,7 @@ theorem max_vars_initial_lt (hp : p.vars.max ≠ ⊥) :
   by_contra con
   have ⟨c, hc⟩ := WithBot.ne_bot_iff_exists.mp hp
   absurd p.degreeOf_initialOf_self c
-  rewrite [initial_of_max_vars_isSome' hc.symm] at con
+  rw [initial_of_max_vars_isSome' hc.symm] at con
   have con : (p.initialOf c).vars.max = p.vars.max :=
     eq_of_le_of_not_lt (Finset.max_mono <| vars_initialOf_subset c p) con
   have con := Finset.mem_of_max (hc ▸ con)
