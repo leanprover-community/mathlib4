@@ -18,8 +18,8 @@ which defines the weak topology given two vector spaces `E` and `F` over a commu
 such that for all `y : F` every map `fun x => B x y` is continuous.
 
 In this file, we consider two special cases.
-In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-\* topology,
-`WeakDual 𝕜 E := (E →L[𝕜] 𝕜)`. Interchanging the arguments in the bilinear form yields the
+In the case that `F = E →L[𝕜] 𝕜` and `B` being the canonical pairing, we obtain the weak-\*
+topology, `WeakDual 𝕜 E := (E →L[𝕜] 𝕜)`. Interchanging the arguments in the bilinear form yields the
 weak topology `WeakSpace 𝕜 E := E`.
 
 ## Main definitions
