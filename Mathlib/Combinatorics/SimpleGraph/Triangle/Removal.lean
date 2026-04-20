@@ -158,6 +158,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
 
 /-- **Triangle Removal Lemma**. If there are not too many triangles (on the order of `(card α)^3`)
 then they can all be removed by removing a few edges (on the order of `(card α)^2`). -/
+@[informal "Triangle removal lemma"]
 lemma triangle_removal (hG : #(G.cliqueFinset 3) < triangleRemovalBound ε * card α ^ 3) :
     ∃ G' ≤ G, ∃ _ : DecidableRel G'.Adj,
       (#G.edgeFinset - #G'.edgeFinset : ℝ) < ε * (card α ^ 2 : ℕ) ∧ G'.CliqueFree 3 := by

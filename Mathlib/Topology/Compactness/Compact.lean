@@ -365,6 +365,7 @@ theorem isCompact_of_finite_subfamily_closed
 
 /-- A set `s` is compact if and only if
 for every open cover of `s`, there exists a finite subcover. -/
+@[informal "compactness in terms of open covers (Borel-Lebesgue)"]
 theorem isCompact_iff_finite_subcover :
     IsCompact s ↔ ∀ {ι : Type u} (U : ι → Set X),
       (∀ i, IsOpen (U i)) → (s ⊆ ⋃ i, U i) → ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=

@@ -297,6 +297,7 @@ variable [DistribLattice α] [CommSemiring β] [LinearOrder β] [IsStrictOrdered
   [ExistsAddOfLE β] (f f₁ f₂ f₃ f₄ g μ : α → β)
 
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
+@[informal "Four functions theorem"]
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
     (∑ a ∈ s, f₁ a) * ∑ a ∈ t, f₂ a ≤ (∑ a ∈ s ⊼ t, f₃ a) * ∑ a ∈ s ⊻ t, f₄ a := by

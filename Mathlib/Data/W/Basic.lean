@@ -36,6 +36,7 @@ identifier `W` in the root namespace.
 Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
 elements of `α` and the children of a node labeled `a` are indexed by elements of `β a`.
 -/
+@[informal "W type"]
 inductive WType {α : Type*} (β : α → Type*)
   | mk (a : α) (f : β a → WType β) : WType β
 

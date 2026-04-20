@@ -196,6 +196,7 @@ set `s`, `μ` is a probability measure on `α`, and `f : α → E` is a function
 to `s`, then the value of `g` at the expected value of `f` is less than or equal to the expected
 value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
 `ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
+@[informal "Jensen's inequality (integral version)"]
 theorem ConvexOn.map_integral_le [IsProbabilityMeasure μ] (hg : ConvexOn ℝ s g)
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ)
     (hgi : Integrable (g ∘ f) μ) : g (∫ x, f x ∂μ) ≤ ∫ x, g (f x) ∂μ := by

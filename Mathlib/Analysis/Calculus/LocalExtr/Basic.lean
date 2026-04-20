@@ -178,6 +178,7 @@ theorem IsLocalMin.hasFDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasFDerivAt f 
     apply mem_univ
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
+@[informal "local extrema"]
 theorem IsLocalMin.fderiv_eq_zero (h : IsLocalMin f a) : fderiv ℝ f a = 0 := by
   classical
   exact if hf : DifferentiableAt ℝ f a then h.hasFDerivAt_eq_zero hf.hasFDerivAt

@@ -183,6 +183,7 @@ lemma shatterer_compress_subset_shatterer (a : α) (𝒜 : Finset (Finset α)) :
 /-! ### Vapnik-Chervonenkis dimension -/
 
 /-- The Vapnik-Chervonenkis dimension of a set family is the maximal size of a set it shatters. -/
+@[informal "VC dimension"]
 def vcDim (𝒜 : Finset (Finset α)) : ℕ := 𝒜.shatterer.sup card
 
 @[gcongr] lemma vcDim_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : 𝒜.vcDim ≤ ℬ.vcDim := by unfold vcDim; gcongr
@@ -194,6 +195,7 @@ lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcD
   sup_mono <| shatterer_compress_subset_shatterer _ _
 
 /-- The **Sauer-Shelah lemma**. -/
+@[informal "Sauer-Shelah lemma"]
 lemma card_shatterer_le_sum_vcDim [Fintype α] :
     #𝒜.shatterer ≤ ∑ k ∈ Iic 𝒜.vcDim, (Fintype.card α).choose k := by
   simp_rw [← card_univ, ← card_powersetCard]

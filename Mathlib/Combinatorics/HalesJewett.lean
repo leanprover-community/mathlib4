@@ -445,6 +445,7 @@ private theorem exists_mono_in_high_dimension' :
 /-- The **Hales-Jewett theorem**: For any finite types `α` and `κ`, there exists a finite type `ι`
 such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial
 line. -/
+@[informal "Hales-Jewett theorem"]
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
   let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u, v} α (ULift.{u, v} κ)
@@ -456,6 +457,7 @@ end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
+@[informal "van der Waerden theorem"]
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   classical

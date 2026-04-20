@@ -114,6 +114,7 @@ theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
 
 /-- Existence of local integral curves for a $C^1$ vector field on a `C^1` manifold without
 boundary. -/
+@[informal "local existence of integral curves"]
 lemma exists_isMIntegralCurveAt_of_contMDiffAt_boundaryless
     [CompleteSpace E] [BoundarylessManifold I M]
     (hv : CMDiffAt 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀) :
@@ -221,6 +222,7 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     apply (heq.and hmem).mono
     exact fun _ ht ↦ ht
 
+@[informal "uniqueness of integral curves"]
 theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless [BoundarylessManifold I M]
     (ht₀ : t₀ ∈ Ioo a b)
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))

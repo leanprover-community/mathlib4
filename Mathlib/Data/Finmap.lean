@@ -66,6 +66,7 @@ end Multiset
 
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
   a quotient of `AList β` by permutation of the underlying list. -/
+@[informal "finite map"]
 structure Finmap (β : α → Type v) : Type max u v where
   /-- The underlying `Multiset` of a `Finmap` -/
   entries : Multiset (Sigma β)

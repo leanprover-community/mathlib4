@@ -35,6 +35,7 @@ namespace Complex
 
 /-- **Fundamental theorem of algebra**: every nonconstant complex polynomial
   has a root. -/
+@[informal "$\\C$ is algebraically closed"]
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
   by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
@@ -48,6 +49,7 @@ theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z :
   obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
   simp at hf
 
+@[informal "fundamental theorem of algebra"]
 instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 

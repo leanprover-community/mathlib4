@@ -62,6 +62,7 @@ universe v
 variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
+@[informal "language"]
 def Language (α) :=
   Set (List α)
 deriving CompleteAtomicBooleanAlgebra
@@ -307,6 +308,7 @@ theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l�
   add_le_add
 
 /-- **Arden's lemma** -/
+@[informal "Arden's lemma"]
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
   mp h := by
     apply le_antisymm

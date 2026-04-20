@@ -61,6 +61,7 @@ def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
 /-- `Seq α` is the type of possibly infinite lists (referred here as sequences).
   It is encoded as an infinite stream of options such that if `f n = none`, then
   `f m = none` for all `m ≥ n`. -/
+@[informal "sequence"]
 def Seq (α : Type u) : Type u :=
   { f : Stream' (Option α) // f.IsSeq }
 

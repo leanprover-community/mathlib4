@@ -95,6 +95,7 @@ It is defined as 0 if any one of the following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
+@[informal "conditional expectation"]
 noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then

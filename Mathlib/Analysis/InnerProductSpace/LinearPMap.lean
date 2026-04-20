@@ -151,6 +151,7 @@ variable (T)
 
 open scoped Classical in
 /-- The adjoint operator as a partially defined linear operator, denoted as `T†`. -/
+@[informal "adjoint operator"]
 def adjoint : F →ₗ.[𝕜] E where
   domain := T.adjointDomain
   toFun := if hT : Dense (T.domain : Set E) then adjointAux hT else 0

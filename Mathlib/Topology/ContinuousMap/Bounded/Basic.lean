@@ -300,6 +300,7 @@ instance : ContinuousEvalConst (α →ᵇ β) α β := inferInstance
   ContinuousEval.continuous_eval
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
+@[informal "completeness of spaces of bounded continuous functions"]
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
   complete_of_cauchySeq_tendsto fun (f : ℕ → α →ᵇ β) (hf : CauchySeq f) => by
     /- We have to show that `f n` converges to a bounded continuous function.

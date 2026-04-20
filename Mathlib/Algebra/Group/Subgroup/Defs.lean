@@ -292,6 +292,7 @@ end SubgroupClass
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
 and closed under multiplicative inverse. -/
+@[informal "subgroup"]
 structure Subgroup (G : Type*) [Group G] extends Submonoid G where
   /-- `G` is closed under inverses -/
   inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
@@ -601,6 +602,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 open Set
 
 /-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
+@[informal "normal subgroup"]
 structure Normal : Prop where
   /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H

@@ -365,6 +365,7 @@ namespace LinearEquiv
 
 /-- The continuous linear equivalence induced by a linear equivalence on a finite-dimensional
 space. -/
+@[informal "equivalence of norms in finite dimension"]
 def toContinuousLinearEquiv (e : E ≃ₗ[𝕜] F) : E ≃L[𝕜] F :=
   { e with
     continuous_toFun := e.toLinearMap.continuous_of_finiteDimensional
@@ -515,6 +516,7 @@ theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E 
 variable {𝕜 E}
 
 /-- A finite-dimensional subspace is complete. -/
+@[informal "finite-dimensional normed spaces over complete normed fields are complete"]
 theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
   haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup

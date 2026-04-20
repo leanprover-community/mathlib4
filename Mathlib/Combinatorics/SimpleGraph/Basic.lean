@@ -88,7 +88,7 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
+@[informal "simple graph", ext, aesop safe constructors (rule_sets := [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop

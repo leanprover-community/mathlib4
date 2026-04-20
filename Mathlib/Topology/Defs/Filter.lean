@@ -258,6 +258,7 @@ end Lim
 Also known as an accumulation point or a limit point, but beware that terminology varies.
 This is *not* the same as asking `𝓝[≠] x ⊓ F ≠ ⊥`, which is called `AccPt` in Mathlib.
 See `mem_closure_iff_clusterPt` in particular. -/
+@[informal "cluster point"]
 def ClusterPt (x : X) (F : Filter X) : Prop :=
   NeBot (𝓝 x ⊓ F)
 
@@ -273,6 +274,7 @@ def AccPt (x : X) (F : Filter X) : Prop :=
 
 /-- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
 there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
+@[informal "compactness in terms of filters"]
 def IsCompact (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 

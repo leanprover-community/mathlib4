@@ -102,6 +102,7 @@ for all `v : V`, `continuousLinearEquivOfBilin B v` is the unique element `V`
 such that `continuousLinearEquivOfBilin B v, w⟫ = B v w`.
 The Lax-Milgram theorem states that this is a continuous equivalence.
 -/
+@[informal "Lax-Milgram theorem"]
 def continuousLinearEquivOfBilin (coercive : IsCoercive B) : V ≃L[ℝ] V :=
   ContinuousLinearEquiv.ofBijective B♯ coercive.ker_eq_bot coercive.range_eq_top
 

@@ -69,6 +69,7 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
   any power of `‖x‖`. -/
+@[informal "Schwartz space"]
 structure SchwartzMap where
   /-- The underlying function.
 

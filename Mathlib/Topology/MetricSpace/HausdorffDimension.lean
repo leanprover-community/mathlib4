@@ -94,7 +94,7 @@ open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
 variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
 /-- Hausdorff dimension of a set in an (e)metric space. -/
-@[irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by
+@[informal "Hausdorff dimension", irreducible] noncomputable def dimH (s : Set X) : ℝ≥0∞ := by
   borelize X; exact ⨆ (d : ℝ≥0) (_ : @hausdorffMeasure X _ _ ⟨rfl⟩ d s = ∞), d
 
 /-!

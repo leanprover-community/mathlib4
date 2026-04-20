@@ -46,6 +46,7 @@ Although `Set` is defined as `α → Prop`, this is an implementation detail whi
 relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
 and predicates.
 -/
+@[informal "set"]
 def Set (α : Type u) := α → Prop
 
 /-

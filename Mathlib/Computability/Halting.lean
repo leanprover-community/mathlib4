@@ -221,6 +221,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   cases a; cases f n <;> simp
 
 /-- **Rice's Theorem** -/
+@[informal "Rice theorem"]
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   obtain ⟨_, h⟩ := h
@@ -253,6 +254,7 @@ theorem halting_problem_re (n) : REPred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 
 /-- The **Halting problem** is not computable -/
+@[informal "halting problem"]
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 

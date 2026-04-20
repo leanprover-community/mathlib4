@@ -67,6 +67,7 @@ variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
   is a type of finite sets with duplicates allowed. -/
+@[informal "multiset"]
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 

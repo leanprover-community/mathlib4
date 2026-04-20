@@ -84,6 +84,7 @@ variable {α β ι M N O G H : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
+@[informal "finitely supported function"]
 structure Finsupp (α : Type*) (M : Type*) [Zero M] where
   /-- The support of a finitely supported function (aka `Finsupp`). -/
   support : Finset α

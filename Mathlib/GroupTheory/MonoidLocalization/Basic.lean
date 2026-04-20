@@ -204,7 +204,7 @@ theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M)
 end Localization
 
 /-- The localization of a `CommMonoid` at one of its submonoids (as a quotient type). -/
-@[to_additive AddLocalization
+@[informal "localization", to_additive AddLocalization
 /-- The localization of an `AddCommMonoid` at one of its submonoids (as a quotient type). -/]
 abbrev Localization := OreLocalization S M
 

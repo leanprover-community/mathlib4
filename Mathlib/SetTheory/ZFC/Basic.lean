@@ -44,7 +44,7 @@ universe u
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
-@[pp_with_univ]
+@[informal "model of ZFC", pp_with_univ]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 

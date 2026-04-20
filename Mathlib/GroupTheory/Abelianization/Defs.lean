@@ -35,6 +35,7 @@ variable (G : Type u) [Group G]
 open Subgroup (centralizer)
 
 /-- The abelianization of G is the quotient of G by its commutator subgroup. -/
+@[informal "abelianization"]
 def Abelianization : Type u :=
   G ⧸ commutator G
 

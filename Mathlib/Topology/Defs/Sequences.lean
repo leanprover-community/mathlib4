@@ -89,6 +89,7 @@ class FrechetUrysohnSpace : Prop where
 
 /-- A topological space is said to be a *sequential space* if any sequentially closed set in this
 space is closed. This condition is weaker than being a Fréchet-Urysohn space. -/
+@[informal "sequential space"]
 class SequentialSpace : Prop where
   isClosed_of_seq : ∀ s : Set X, IsSeqClosed s → IsClosed s
 

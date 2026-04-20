@@ -99,6 +99,7 @@ open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 
 The maximum density of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
 infinity. -/
+@[informal "Corners theorem"]
 theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) ≤ n)
     (A : Finset (ℕ × ℕ)) (hAn : A ⊆ range n ×ˢ range n) (hAε : ε * n ^ 2 ≤ #A) :
     ¬ IsCornerFree (A : Set (ℕ × ℕ)) := by
@@ -161,6 +162,7 @@ open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- **Roth's theorem** for `ℕ`.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
+@[informal "Roth's theorem"]
 theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound (ε / 3) ≤ n)
     (A : Finset ℕ) (hAn : A ⊆ range n) (hAε : ε * n ≤ #A) : ¬ ThreeAPFree (A : Set ℕ) := by
   rintro hA

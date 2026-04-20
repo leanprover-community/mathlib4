@@ -179,6 +179,7 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
 alias bernoulli'_odd_eq_zero := bernoulli'_eq_zero_of_odd
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
+@[informal "Bernoulli numbers"]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 

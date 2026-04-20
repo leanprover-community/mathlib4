@@ -127,6 +127,7 @@ namespace AnalyticAt
 /-- The *principle of isolated zeros* for an analytic function, local version: if a function is
 analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
 vanish in a punctured neighborhood of `z₀`. -/
+@[informal "principle of isolated zeros"]
 theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rcases hf with ⟨p, hp⟩
@@ -240,6 +241,7 @@ analytic on a connected set `U` and coincide at points which accumulate to a poi
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
 see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`. -/
+@[informal "principle of analytic continuation"]
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=

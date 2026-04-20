@@ -346,6 +346,7 @@ lemma eq_const_of_exists_le [ProperSpace E] {f : E → F} {r b : ℝ}
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `f` is locally constant in a neighborhood
 of `c`. -/
+@[informal "maximum modulus principle"]
 theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
     (hd : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMax (norm ∘ f) c) :
     ∀ᶠ y in 𝓝 c, f y = f c := by

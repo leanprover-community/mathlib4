@@ -127,6 +127,7 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
+@[informal "unique factorisation domain"]
 class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
     extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a

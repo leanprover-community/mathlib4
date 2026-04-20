@@ -60,7 +60,7 @@ variable {X Y : Type*}
   the induced topology on `X` is the collection of sets
   that are preimages of some open set in `Y`.
   This is the coarsest topology that makes `f` continuous. -/
-@[implicit_reducible]
+@[informal "induced topology", implicit_reducible]
 def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
   IsOpen s := ∃ t, IsOpen t ∧ f ⁻¹' t = s
   isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩

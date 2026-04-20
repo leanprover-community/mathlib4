@@ -28,6 +28,7 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 
 
 /-- A binary tree with values stored in non-leaf nodes. -/
+@[informal "tree"]
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
   | node : α → Tree α → Tree α → Tree α

@@ -35,6 +35,7 @@ variable {α : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
+@[informal "presented group"]
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
 deriving Group

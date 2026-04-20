@@ -66,6 +66,7 @@ universe u v
 open Set
 
 /-- A topology on `X`. -/
+@[informal "topological space"]
 class TopologicalSpace (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
@@ -117,6 +118,7 @@ def interior (s : Set X) : Set X :=
   ⋃₀ { t | IsOpen t ∧ t ⊆ s }
 
 /-- The closure of `s` is the smallest closed set containing `s`. -/
+@[informal "closure"]
 def closure (s : Set X) : Set X :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 
@@ -145,7 +147,7 @@ def DenseRange {α : Type*} (f : α → X) := Dense (range f)
 
 /-- A function between topological spaces is continuous if the preimage
   of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. -/
-@[fun_prop]
+@[informal "continuous function", fun_prop]
 structure Continuous (f : X → Y) : Prop where
   /-- The preimage of an open set under a continuous function is an open set. Use `IsOpen.preimage`
   instead. -/
@@ -153,10 +155,12 @@ structure Continuous (f : X → Y) : Prop where
 
 /-- A map `f : X → Y` is said to be an *open map*,
 if the image of any open `U : Set X` is open in `Y`. -/
+@[informal "open map"]
 def IsOpenMap (f : X → Y) : Prop := ∀ U : Set X, IsOpen U → IsOpen (f '' U)
 
 /-- A map `f : X → Y` is said to be a *closed map*,
 if the image of any closed `U : Set X` is closed in `Y`. -/
+@[informal "closed map"]
 def IsClosedMap (f : X → Y) : Prop := ∀ U : Set X, IsClosed U → IsClosed (f '' U)
 
 /-- An open quotient map is an open map `f : X → Y` which is both an open map and a quotient map.
