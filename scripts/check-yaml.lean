@@ -12,7 +12,8 @@ import Lean.Linter.Deprecated
 
 This assumes `yaml_check.py` has first translated these to `json` files.
 
-It verifies that the referenced declarations exist, and prints an error otherwise.
+It verifies that the referenced declarations exist and are not deprecated, and prints an error
+otherwise.
 -/
 
 open Lean
