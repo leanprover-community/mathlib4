@@ -24,7 +24,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 @[expose] public section
 
-open CategoryTheory.Category Simplicial Opposite
+open CategoryTheory Category Simplicial Opposite
 
 universe v u
 
@@ -253,3 +253,9 @@ end
 end nerve
 
 end CategoryTheory
+
+/-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
+@[simps]
+def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
+  obj X := nerve X
+  map f := nerveMap f.hom.monotone.functor
