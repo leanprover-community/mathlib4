@@ -182,9 +182,9 @@ theorem _root_.WithTop.isSuccPrelimit_iff [NoMaxOrder α] {x : WithTop α} :
   | top => simp [IsSuccPrelimit]
 
 @[to_dual]
-theorem IsSuccPrelimit.withTopCoe [NoMaxOrder α] {x : α} (h : IsSuccPrelimit x) :
+theorem IsSuccPrelimit.withTopCoe {x : α} (h : IsSuccPrelimit x) :
     IsSuccPrelimit (x : WithTop α) := by
-  simpa [WithTop.isSuccPrelimit_iff]
+  simpa [IsSuccPrelimit, WithTop.forall]
 
 @[to_dual (attr := simp)]
 theorem _root_.WithTop.isSuccPrelimit_top [NoMaxOrder α] : IsSuccPrelimit (⊤ : WithTop α) := by
@@ -198,10 +198,9 @@ theorem _root_.WithTop.isSuccLimit_iff [Nonempty α] [NoMaxOrder α] {x : WithTo
   | top => simp [IsSuccLimit, WithTop.exists]
 
 @[to_dual]
-theorem IsSuccLimit.withTopCoe [NoMaxOrder α] {x : α} (h : IsSuccLimit x) :
+theorem IsSuccLimit.withTopCoe {x : α} (h : IsSuccLimit x) :
     IsSuccLimit (x : WithTop α) := by
-  have : Nonempty α := ⟨x⟩
-  simpa [WithTop.isSuccLimit_iff]
+  simpa [IsSuccLimit, WithTop.exists, h.isSuccPrelimit.withTopCoe] using h.not_isMin
 
 @[to_dual]
 theorem _root_.WithTop.isSuccLimit_top [Nonempty α] [NoMaxOrder α] :
