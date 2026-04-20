@@ -477,7 +477,7 @@ theorem SurjOn.comap_nonempty (h : SurjOn f s t) (ht : t.Nonempty) : s.Nonempty 
 lemma SurjOn.nonempty_or_eq_empty (h : SurjOn f s t) :
     s.Nonempty ∨ t = ∅ := by
   by_contra!
-  grind [surjOn_empty_iff, Set.not_nonempty_iff_eq_empty]
+  exact (h.comap_nonempty this.2).ne_empty this.1
 
 theorem SurjOn.congr (h : SurjOn f₁ s t) (H : EqOn f₁ f₂ s) : SurjOn f₂ s t := by
   rwa [SurjOn, ← H.image_eq]
