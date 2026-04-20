@@ -112,7 +112,7 @@ class RootableBy where
 
 @[to_additive DivisibleBy.surjective_smul]
 theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
-    Function.Surjective (fun a => a ^ n : A → A) := fun x =>
+    Function.Surjective fun a : A => a ^ n := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 
 @[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
