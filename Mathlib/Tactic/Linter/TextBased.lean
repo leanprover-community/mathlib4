@@ -32,8 +32,8 @@ Currently, this file contains linters checking
 - for module names to be in upper camel case,
 - for module names to be valid Windows filenames, and containing no forbidden characters such as
   `!`, `.` or spaces.
-- for any code containing blocklisted unicode characters
-- bad unicode characters
+- for any code containing unicode characters not on the allowlist
+- for incorrect usage of unicode variant selectors
 
 For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -394,7 +394,10 @@ def findBadUnicode (s : String) : Array StyleError :=
 
 end UnicodeLinter
 
-/-- Lint a collection of input strings for disallowed unicode characters. -/
+/-- Lint a collection of input strings for disallowed unicode characters.
+
+This is implemented using an allowlist, see
+`Mathlib.Linter.TextBased.UnicodeLinter.isAllowedCharacter`. -/
 public register_option linter.unicodeLinter : Bool := { defValue := true }
 
 @[inherit_doc linter.unicodeLinter]
