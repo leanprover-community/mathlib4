@@ -194,13 +194,13 @@ lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h𝓕 : IsStronglyPredictable 𝓕 u) (n : ℕ) : StronglyMeasurable[𝓕 n] (u (n + 1)) := by
   letI : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
   letI : MeasurableSpace Ω := 𝓕 n
-  let X k := (Function.curry (h𝓕.approx k) (n + 1))
-  refine ⟨(fun k ↦ SimpleFunc.mk (X k) ?_ ?_), (fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩)⟩
+  let X m := (Function.curry (h𝓕.approx m) (n + 1))
+  refine ⟨(fun m ↦ SimpleFunc.mk (X m) ?_ ?_), (fun ω ↦ h𝓕.tendsto_approx ⟨(n + 1), ω⟩)⟩
   · intro s
-    rw [(by aesop : X k ⁻¹' {s} = {ω | (n + 1, ω) ∈ h𝓕.approx k ⁻¹' {s}})]
+    rw [(by aesop : X m ⁻¹' {s} = {ω | (n + 1, ω) ∈ h𝓕.approx m ⁻¹' {s}})]
     apply measurableSet_prodMk_add_one_of_predictable
-    apply (h𝓕.approx k).measurableSet_fiber
-  · apply (h𝓕.approx k).finite_range.subset
+    apply (h𝓕.approx m).measurableSet_fiber
+  · apply (h𝓕.approx m).finite_range.subset
     rw [Set.range_subset_iff]
     aesop
 
@@ -214,41 +214,38 @@ lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     | n + 1 => (h n).approx m x.2
   -- second layer of approximation (to ensure the whole process has finite range)
   let Y m (x : ℕ × Ω) := if x.1 ≤ m then X m x else X m ⟨0, x.2⟩
-  use fun m ↦ SimpleFunc.mk (Y m) ?_ ?_
-  · intro ⟨n, ω⟩
-    rw [tendsto_congr' (f₂ := fun m ↦ X m ⟨n, ω⟩)]
-    · rcases n with rfl | k
-      · exact h₀.tendsto_approx ω
-      · exact (h k).tendsto_approx ω
-    · filter_upwards [eventually_ge_atTop n] with m hm using by simp; grind
+  refine ⟨fun m ↦ SimpleFunc.mk (Y m) ?_ ?_, ?_⟩
   · intro s
     rw [(by aesop : Y m ⁻¹' {s} = ⋃ n : ℕ, {n} ×ˢ ((Function.curry (Y m) n) ⁻¹' {s}))]
     refine MeasurableSet.iUnion <| fun n ↦ ?_
-    rcases n with rfl | k
+    rcases n with rfl | n
     · apply measurableSet_predictable_singleton_bot_prod
       letI : MeasurableSpace Ω := 𝓕 0
       exact (h₀.approx m).measurableSet_fiber s
     · apply measurableSet_predictable_singleton_prod
-      by_cases! hmk : k + 1 ≤ m
-      · rw [(by aesop : Function.curry (Y m) (k + 1) = Function.curry (X m) (k + 1))]
-        letI : MeasurableSpace Ω := 𝓕 k
-        exact ((h k).approx m).measurableSet_fiber s
-      · rw [(by aesop : Function.curry (Y m) (k + 1) = Function.curry (X m) 0)]
+      by_cases! hmk : n + 1 ≤ m
+      · rw [(by aesop : Function.curry (Y m) (n + 1) = Function.curry (X m) (n + 1))]
+        letI : MeasurableSpace Ω := 𝓕 n
+        exact ((h n).approx m).measurableSet_fiber s
+      · rw [(by aesop : Function.curry (Y m) (n + 1) = Function.curry (X m) 0)]
         apply 𝓕.mono (i := 0) (by simp)
         letI : MeasurableSpace Ω := 𝓕 0
         exact (h₀.approx m).measurableSet_fiber s
-  · apply Set.Finite.subset (s := ⋃ n ∈ Finset.range (m + 1), Set.range (Function.curry (X m) n))
-    · refine Set.Finite.biUnion' (by aesop) ?_
-      intro k hk
-      rcases k with rfl | k
+  · apply Set.Finite.subset (s := ⋃ k ∈ Finset.range (m + 1), Set.range (Function.curry (X m) k))
+    · refine Set.Finite.biUnion' (by aesop) (fun n hn ↦ ?_)
+      rcases n with rfl | n
       · exact @(h₀.approx m).finite_range
-      · exact @((h k).approx m).finite_range
+      · exact @((h n).approx m).finite_range
     · intro e he
-      obtain ⟨⟨k, ω⟩, he'⟩ := Set.mem_range.mp he
+      obtain ⟨⟨n, ω⟩, hnω⟩ := Set.mem_range.mp he
       simp_rw [Set.mem_iUnion, Set.mem_range]
-      by_cases! h' : k ≤ m
-      · exact ⟨k, by aesop⟩
-      · exact ⟨0, by aesop, ω, by aesop⟩
+      exact ⟨if n ≤ m then n else 0, by aesop, ω, by aesop⟩
+  · intro ⟨n, ω⟩
+    rw [tendsto_congr' (f₂ := fun m ↦ X m ⟨n, ω⟩)]
+    · rcases n with rfl | n
+      · exact h₀.tendsto_approx ω
+      · exact (h n).tendsto_approx ω
+    · filter_upwards [eventually_ge_atTop n] with m hm using by simp; grind
 
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
