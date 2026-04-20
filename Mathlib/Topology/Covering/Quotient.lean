@@ -43,29 +43,66 @@ attribute [to_additive] isQuotientCoveringMap_iff
 
 namespace IsQuotientCoveringMap
 
+variable {f G} (hf : IsQuotientCoveringMap f G)
+include hf
+
 @[to_additive] theorem subgroup_congr (S S' : Subgroup G) (eq : S = S') :
     IsQuotientCoveringMap f S ↔ IsQuotientCoveringMap f S' := by rw [eq]
 
+@[to_additive] protected theorem map_smul (g : G) {e : E} : f (g • e) = f e :=
+  hf.apply_eq_iff_mem_orbit.mpr ⟨g, rfl⟩
+
 /-- The group action on the domain of a quotient covering map is free. -/
-@[to_additive] theorem isCancelSMul (h : IsQuotientCoveringMap f G) : IsCancelSMul G E where
+@[to_additive] theorem isCancelSMul : IsCancelSMul G E where
   right_cancel' g g' e eq := by
-    have ⟨U, heU, hU⟩ := h.disjoint e
+    have ⟨U, heU, hU⟩ := hf.disjoint e
     simpa [inv_mul_eq_one, eq_comm] using hU (g'⁻¹ * g)
       ⟨e, ⟨e, mem_of_mem_nhds heU, by simpa [mul_smul, inv_smul_eq_iff]⟩, mem_of_mem_nhds heU⟩
 
-variable {f G}
-
-@[to_additive] theorem homeomorph_comp (h : IsQuotientCoveringMap f G) {Y} [TopologicalSpace Y]
+@[to_additive] theorem homeomorph_comp {Y} [TopologicalSpace Y]
     (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G where
-  __ := φ.isQuotientMap.comp h.toIsQuotientMap
-  continuous_const_smul := h.continuous_const_smul
-  apply_eq_iff_mem_orbit := by simpa using @h.apply_eq_iff_mem_orbit
-  disjoint := h.disjoint
+  __ := φ.isQuotientMap.comp hf.toIsQuotientMap
+  continuous_const_smul := hf.continuous_const_smul
+  apply_eq_iff_mem_orbit := by simpa using @hf.apply_eq_iff_mem_orbit
+  disjoint := hf.disjoint
 
+omit hf in
 @[to_additive (attr := simp)] theorem homeomorph_comp_iff {Y} [TopologicalSpace Y]
     (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G ↔ IsQuotientCoveringMap f G where
   mp h := by convert h.homeomorph_comp φ.symm; ext; simp
   mpr h := h.homeomorph_comp φ
+
+/-- Fibers of a quotient covering map by a group G is a G-torsor. -/
+@[to_additive /-- Fibers of a quotient covering map by an additive group G is a G-torsor. -/]
+noncomputable def fiberEquivGroup {x : X} (e : f ⁻¹' {x}) : f ⁻¹' {x} ≃ G :=
+  have := hf.isCancelSMul
+  .symm <| .ofBijective (fun g ↦ ⟨g • e, (hf.map_smul g).trans e.2⟩)
+    ⟨fun _ _ eq ↦ IsCancelSMul.right_cancel _ _ e.1 congr($eq), fun e' ↦
+      have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm); ⟨g, Subtype.ext eq⟩⟩
+
+@[simp] theorem fiberEquivGroup_self {x : X} (e : f ⁻¹' {x}) : hf.fiberEquivGroup e e = 1 :=
+  (Equiv.apply_eq_iff_eq_symm_apply _).mpr <| Subtype.ext (one_smul ..).symm
+
+theorem fiberEquivGroup_smul_self {x : X} (e : f ⁻¹' {x}) {e' : f ⁻¹' {x}} :
+    hf.fiberEquivGroup e e' • e = e'.1 :=
+  congr($((hf.fiberEquivGroup e).symm_apply_apply e'))
+
+/-- A quotient covering map `f` induces a permutation action on each fiber. -/
+@[simps!] def toPermFiber (x : X) : G →* Equiv.Perm (f ⁻¹' {x}) :=
+  SubMulAction.mulAction ⟨f ⁻¹' {x}, fun g _ h ↦ (hf.map_smul g).trans h⟩ |>.toPermHom
+
+theorem toPermFiber_ext (x : X) (e : f ⁻¹' {x}) {g g' : G}
+    (eq : hf.toPermFiber x g e = hf.toPermFiber x g' e) : g = g' :=
+  have := hf.isCancelSMul
+  IsCancelSMul.right_cancel _ _ e.1 congr($eq)
+
+theorem toPermFiber_injective (x : X) : Function.Injective (hf.toPermFiber x) :=
+  have ⟨e, he⟩ := hf.surjective x
+  fun _ _ eq ↦ hf.toPermFiber_ext x ⟨e, he⟩ congr($eq _)
+
+theorem toPermFiber_transitive {x : X} (e e' : f ⁻¹' {x}) : ∃ g : G, hf.toPermFiber x g e = e' :=
+  have ⟨g, eq⟩ := hf.apply_eq_iff_mem_orbit.mp (e'.2.trans e.2.symm)
+  ⟨g, Subtype.ext eq⟩
 
 end IsQuotientCoveringMap
 

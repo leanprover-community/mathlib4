@@ -32,16 +32,18 @@ variable (X)
 
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
-def FundamentalGroup (x : X) :=
+abbrev FundamentalGroup (x : X) :=
   End (FundamentalGroupoid.mk x)
-
-instance (x : X) : Group (FundamentalGroup X x) := inferInstanceAs (Group (End _))
-
-instance (x : X) : Inhabited (FundamentalGroup X x) := inferInstanceAs (Inhabited (End _))
 
 variable {X}
 
 namespace FundamentalGroup
+
+variable {x : X} {p q : FundamentalGroup X x}
+
+theorem one_def : (1 : FundamentalGroup X x) = .refl x := rfl
+theorem mul_def : p * q = q.trans p := rfl
+theorem inv_def : p⁻¹ = p.symm := rfl
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
@@ -84,8 +86,8 @@ variable (f : C(X, Y)) {x : X} {y : Y} (h : f x = y)
 def mapOfEq : FundamentalGroup X x →* FundamentalGroup Y y :=
   (eqToIso <| congr_arg FundamentalGroupoid.mk h).conj.toMonoidHom.comp (map f x)
 
-theorem mapOfEq_apply (p : Path x x) :
-    mapOfEq f h (fromPath <| .mk p) = fromPath (.mk <| (p.map f.continuous).cast h.symm h.symm) :=
+theorem mapOfEq_apply (p : FundamentalGroup X x) :
+    mapOfEq f h p = (Path.Homotopic.Quotient.map p f).cast h.symm h.symm :=
   FundamentalGroupoid.conj_eqToHom ..
 
 end FundamentalGroup
