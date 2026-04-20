@@ -26,8 +26,6 @@ This file proves the **Kővári-Sós-Turán theorem** for the Zarankiewicz funct
   **Kővári-Sós-Turán theorem** upper bounding the extremal numbers of `completeBipartiteGraph α β`.
 -/
 
-@[expose] public section
-
 
 open Finset Fintype
 
@@ -203,7 +201,7 @@ end KovariSosTuran
 /-- An upper bound on the Zarankiewicz function.
 
 This is the **Kővári-Sós-Turán theorem**. -/
-theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
+public theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
     zarankiewicz m n s t
       ≤ ((t - 1) ^ (s⁻¹ : ℝ) * m * n ^ (1 - (s⁻¹ : ℝ)) + (s - 1) * n : ℝ) := by
   have hs' : 1 ≤ card (Fin s) := by rwa [← Fintype.card_fin s] at hs
@@ -220,7 +218,7 @@ theorem zarankiewicz_le (m n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
 /-- An upper bound on the symmetric Zarankiewicz function.
 
 This is a corollary of the **Kővári-Sós-Turán theorem**. -/
-theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
+public theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t) :
     zarankiewicz n n s t
       ≤ ((t - 1) ^ (s : ℝ)⁻¹ * n ^ (2 - (s : ℝ)⁻¹) + (s - 1) * n : ℝ) := by
   have hone_add_one_sub_inv_card_ne_zero : 1 + (1 - (s : ℝ)⁻¹) ≠ 0 := by
@@ -233,7 +231,7 @@ theorem symm_zarankiewicz_le (n : ℕ) {s t : ℕ} (hs : 1 ≤ s) (ht : s ≤ t)
 /-- An upper bound on the extremal numbers of `completeBipartiteGraph α β`.
 
 This is a corollary of the **Kővári-Sós-Turán theorem**. -/
-theorem extremalNumber_completeBipartiteGraph_le
+public theorem extremalNumber_completeBipartiteGraph_le
     (n : ℕ) [Nonempty α] (hcard_le : card α ≤ card β) :
     (extremalNumber n (completeBipartiteGraph α β) : ℝ)
       ≤ (card β - 1) ^ (card α : ℝ)⁻¹ * n ^ (2 - (card α : ℝ)⁻¹) / 2 + (card α - 1) * n / 2 := by
