@@ -60,6 +60,16 @@ infixr:75 " ≻ " => NonUnitalDendriformSemiring.right
 /-- Notation for the left operation. The symbol point left. -/
 infixr:75 " ≺ " => NonUnitalDendriformSemiring.left
 
+/-- A dendriform semiring is a `NonUnitalDendriformSemiring` where the unit satisfies certain axioms
+ensuring that `1 * a = a * 1` for all `a : M`.
+-/
+class DendriformSemiring (M) extends NonUnitalDendriformSemiring M, One M where
+  left_id_one a : a ≠ 1 → left a 1 = a
+  left_one_id a : a ≠ 1 →  left 1 a = 0
+  right_one_id a : a ≠ 1 → right 1 a = a
+  right_id_one a : a ≠ 1 → right a 1 = 0
+  one_mul_one_eq_one' : right 1 1 + left 1 1 = 1
+
 namespace NonUnitalDendriformSemiring
 
 variable {M} [NonUnitalDendriformSemiring M]
@@ -111,4 +121,36 @@ instance : NonUnitalSemiring M where
   mul_assoc a b c := by simpa using by abel_nf
 
 end NonUnitalDendriformSemiring
+
+namespace DendriformSemiring
+
+variable {M} [DendriformSemiring M]
+
+@[simp]
+lemma left_one {a : M} (ha : a ≠ 1) : a ≺ 1 = a := left_id_one a ha
+
+@[simp]
+lemma one_left {a : M} (ha : a ≠ 1) : 1 ≺ a = 0 := left_one_id a ha
+
+@[simp]
+lemma one_right {a : M} (ha : a ≠ 1) : 1 ≻ a = a := right_one_id a ha
+
+@[simp]
+lemma right_one {a : M} (ha : a ≠ 1) : a ≻ 1 = 0 := right_id_one a ha
+
+@[simp]
+lemma one_mul_one_eq_one : (1 : M) ≻ 1 + 1 ≺ 1 = 1 := one_mul_one_eq_one'
+
+
+instance : Semiring M where
+  one_mul a := by
+    rcases eq_or_ne a 1 with (rfl | ha)
+    · exact one_mul_one_eq_one
+    · simp [one_right ha, one_left ha]
+  mul_one a := by 
+    rcases eq_or_ne a 1 with (rfl | ha)
+    · exact one_mul_one_eq_one
+    · simp [right_one ha, left_one ha]
+
+end DendriformSemiring
 
