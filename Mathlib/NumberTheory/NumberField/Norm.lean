@@ -84,7 +84,7 @@ theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :
 
 theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞 L} :
     IsUnit (norm K x) ↔ IsUnit x := by
-  refine ⟨fun hx => ?_, IsUnit.map _⟩
+  refine ⟨fun hx ↦ ?_, IsUnit.map _⟩
   exact isUnit_of_dvd_unit (dvd_norm K x) (hx.map (algebraMap (𝓞 K) (𝓞 L)))
 
 variable (F : Type*) [Field F] [Algebra K F] [FiniteDimensional K F]
