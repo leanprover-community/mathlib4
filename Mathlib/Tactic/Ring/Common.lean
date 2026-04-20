@@ -1268,6 +1268,11 @@ This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 * `rc` tells us how to normalize constants in `α`.
 * `rcℕ` tells us how to normalize constants in exponents.
 -/
+/- Note: Some other functions include similar `match` statement on all valid head symbols. Any
+changes to `eval` should be kept in sync:
+* `Common.isAtomOrDerivable`
+* `Algebra.collectScalarRings`
+-/
 partial def eval  {u : Lean.Level}
     {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do

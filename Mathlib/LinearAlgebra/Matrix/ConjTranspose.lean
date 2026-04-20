@@ -5,15 +5,10 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Star.BigOperators
 public import Mathlib.Algebra.Star.Module
-public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Data.Matrix.Basis
-public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over star rings.
@@ -403,27 +398,6 @@ theorem conjTransposeLinearEquiv_symm [CommSemiring R] [StarRing R] [AddCommMono
     (conjTransposeLinearEquiv m n R α).symm = conjTransposeLinearEquiv n m R α :=
   rfl
 
-variable {m n R α}
-variable (m α)
-
-/-- `Matrix.conjTranspose` as a `RingEquiv` to the opposite ring -/
-@[simps!]
-def conjTransposeRingEquiv [NonUnitalNonAssocSemiring α] [StarRing α] [Fintype m] :
-    Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
-  __ := (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv
-  map_mul' M N := (congrArg MulOpposite.op <| conjTranspose_mul M N).trans <| MulOpposite.op_mul ..
-
-variable {m α}
-
-@[simp]
-theorem conjTranspose_pow [Semiring α] [StarRing α] [Fintype m] [DecidableEq m] (M : Matrix m m α)
-    (k : ℕ) : (M ^ k)ᴴ = Mᴴ ^ k :=
-  MulOpposite.op_injective <| map_pow (conjTransposeRingEquiv m α) M k
-
-theorem conjTranspose_list_prod [Semiring α] [StarRing α] [Fintype m] [DecidableEq m]
-    (l : List (Matrix m m α)) : l.prodᴴ = (l.map conjTranspose).reverse.prod :=
-  (conjTransposeRingEquiv m α).unop_map_list_prod l
-
 end ConjTranspose
 
 section Star
@@ -469,5 +443,33 @@ theorem conjTranspose_submatrix [Star α] (A : Matrix m n α) (r : l → m)
 theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᴴ = reindex eₙ eₘ Mᴴ :=
   rfl
+
+variable (m α) in
+/-- `Matrix.conjTranspose` as a `StarRingEquiv` to the opposite ring -/
+@[simps!]
+def conjTransposeRingEquiv [NonUnitalNonAssocSemiring α] [StarRing α] [Fintype m] :
+    Matrix m m α ≃⋆+* (Matrix m m α)ᵐᵒᵖ where
+  __ := (conjTransposeAddEquiv m m α).trans MulOpposite.opAddEquiv
+  map_mul' M N := (congrArg MulOpposite.op <| conjTranspose_mul M N).trans <| MulOpposite.op_mul ..
+  map_star' _ := rfl
+
+@[simp]
+theorem conjTranspose_pow [Semiring α] [StarRing α] [Fintype m] [DecidableEq m] (M : Matrix m m α)
+    (k : ℕ) : (M ^ k)ᴴ = Mᴴ ^ k :=
+  MulOpposite.op_injective <| map_pow (conjTransposeRingEquiv m α) M k
+
+theorem conjTranspose_list_prod [Semiring α] [StarRing α] [Fintype m] [DecidableEq m]
+    (l : List (Matrix m m α)) : l.prodᴴ = (l.map conjTranspose).reverse.prod :=
+  (conjTransposeRingEquiv m α).unop_map_list_prod l
+
+variable (n α) in
+/-- `Matrix.conjTranspose` as a `StarAlgEquiv` to the opposite ring -/
+@[simps!]
+def conjTransposeAlgEquiv [Fintype n] [CommSemiring R] [StarRing R] [TrivialStar R] [Semiring α]
+    [StarRing α] [Algebra R α] [StarModule R α] : Matrix n n α ≃⋆ₐ[R] (Matrix n n α)ᵐᵒᵖ where
+  __ := conjTransposeRingEquiv n α
+  map_smul' r M := by
+    change conjTransposeRingEquiv n α (r • M) = r • conjTransposeRingEquiv n α M
+    simp
 
 end Matrix
