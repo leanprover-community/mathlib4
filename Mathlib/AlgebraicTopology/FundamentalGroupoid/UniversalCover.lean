@@ -1388,9 +1388,142 @@ explicit based-path description of fiber elements forces the projected loop to b
 The key missing ingredient is the identification of `IsCoveringMap.liftPath` for our specific
 covering, showing that the lift of a path `γ : Path (endpoint α) y` starting at `ofBasedPath α`
 ends at `ofBasedPath (append α γ)`. -/
+
+private theorem liftPath_apply_one_eq_ofBasedPath_append
+    [LocPathConnectedSpace X] [PathConnectedSpace X]
+    (hX : SemilocallySimplyConnected X) {α : BasedPath x₀} {y : X}
+    (γ : Path (BasedPath.endpoint α) y) :
+    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+      (by simpa [BasedPath.endpoint] using γ.source) 1 =
+      ofBasedPath x₀ (BasedPath.append α γ) := by
+  let ε : (t : I) → Path (BasedPath.endpoint α) (γ t) := fun t =>
+    (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
+  have hε_uncurry : Continuous ↿ε := by
+    have htrunc : Continuous (fun ts : I × I => γ.truncate 0 ts.1 ts.2 : I × I → X) := by
+      let key : I × I → ℝ × ℝ × I := fun ts => (0, ts.1, ts.2)
+      have hkey : Continuous key := by fun_prop
+      simpa [key] using γ.truncate_continuous_family.comp hkey
+    simpa [ε] using htrunc
+  let Γ : C(I, UniversalCover x₀) := by
+    refine ⟨fun t => ofBasedPath x₀ (BasedPath.append α (ε t)), ?_⟩
+    exact (continuous_ofBasedPath x₀).comp <| Continuous.subtype_mk (by
+      refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
+      simpa [BasedPath.append, BasedPath.ofPath] using
+        Path.trans_continuous_family (fun _ : I => α.toPath)
+          (Path.continuous_uncurry_iff.mpr continuous_const) ε hε_uncurry) _
+  have hΓ_lifts : proj (x₀ := x₀) ∘ Γ = γ := by
+    ext t
+    simpa [Γ, BasedPath.endpoint] using (BasedPath.endpoint_append α (ε t))
+  have hΓ_zero : Γ 0 = ofBasedPath x₀ α := by
+    have hε0 : ε 0 = (Path.refl (BasedPath.endpoint α)).cast rfl
+        (by simpa [BasedPath.endpoint] using γ.source) := by
+      ext s
+      dsimp [ε]
+      simpa [Path.truncate_zero_zero, Path.refl] using γ.extend_zero
+    have h0_hom :
+        Path.Homotopic
+          ((α.toPath.trans (ε 0)).cast rfl (by simpa [BasedPath.endpoint] using γ.source.symm))
+          α.toPath := by
+      rw [hε0]
+      simpa using Path.Homotopic.trans_refl_cast α.toPath rfl
+        (by simpa [BasedPath.endpoint] using γ.source)
+    have h0_end : BasedPath.endpoint (BasedPath.append α (ε 0)) = BasedPath.endpoint α := by
+      trans γ 0
+      · exact BasedPath.endpoint_append α (ε 0)
+      · simpa [BasedPath.endpoint] using γ.source
+    exact ofBasedPath_eq_of_homotopic_toPath (x₀ := x₀) h0_end h0_hom
+  have hΓ_eq_lift :
+      Γ = (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+        (by simpa [BasedPath.endpoint] using γ.source) := by
+    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
+      (e := ofBasedPath x₀ α)
+      (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2 ?_
+    exact ⟨hΓ_lifts, hΓ_zero⟩
+  have hε1 : ε 1 = γ.cast rfl (by simpa using γ.target) := by
+    ext s
+    simp [ε, Path.truncate_zero_one]
+  calc
+    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+        (by simpa [BasedPath.endpoint] using γ.source) 1 = Γ 1 := by
+      simpa [hΓ_eq_lift] using congrArg (fun η : C(I, UniversalCover x₀) => η 1) hΓ_eq_lift.symm
+    _ = ofBasedPath x₀ (BasedPath.append α γ) := by
+      simpa [Γ] using congrArg (fun δ => ofBasedPath x₀ (BasedPath.append α δ)) hε1
+
 theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
     (hX : SemilocallySimplyConnected X) (x₀ : X) :
     SimplyConnectedSpace (UniversalCover x₀) := by
-  sorry
+  rw [simply_connected_iff_loops_nullhomotopic]
+  refine ⟨pathConnectedSpace hX x₀, ?_⟩
+  intro z p
+  obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ z
+  let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) := p.map (continuous_proj x₀)
+  have hγ0 : γ 0 = BasedPath.endpoint α := by
+    change proj (p 0) = BasedPath.endpoint α
+    rw [p.source]
+    rfl
+  have hp_eq_lift :
+      (p : C(I, UniversalCover x₀)) =
+        (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
+    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
+      (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2 ?_
+    exact ⟨by ext t <;> rfl, p.source⟩
+  have h_end : ofBasedPath x₀ (BasedPath.append α γ) = ofBasedPath x₀ α := by
+    calc
+      ofBasedPath x₀ (BasedPath.append α γ) =
+          (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 1 := by
+        symm
+        exact liftPath_apply_one_eq_ofBasedPath_append hX γ
+      _ = p 1 := by
+        rw [← hp_eq_lift]
+        rfl
+      _ = ofBasedPath x₀ α := p.target
+  have h_append_eq :
+      Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
+    let lhs : UniversalCover x₀ :=
+      ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk (α.toPath.trans γ)⟩
+    let rhs : UniversalCover x₀ :=
+      ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩
+    have hlhs : ofBasedPath x₀ (BasedPath.append α γ) = lhs := by
+      refine Sigma.ext ?_ ?_
+      · simp [lhs, BasedPath.append, BasedPath.ofPath, ofBasedPath, BasedPath.endpoint]
+      · apply Path.Homotopic.hpath_hext
+        intro t
+        rfl
+    have hrhs : ofBasedPath x₀ α = rhs := by
+      refine Sigma.ext ?_ ?_
+      · rfl
+      · apply Path.Homotopic.hpath_hext
+        intro t
+        rfl
+    have h_end' : lhs = rhs := hlhs.symm.trans (h_end.trans hrhs)
+    simpa [lhs, rhs, Path.Homotopic.Quotient.mk_trans] using h_end'
+  have hγ_null :
+      (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
+          (BasedPath.endpoint α) (BasedPath.endpoint α)) =
+        Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by
+    let qα : Path.Homotopic.Quotient x₀ (BasedPath.endpoint α) :=
+      Path.Homotopic.Quotient.mk α.toPath
+    calc
+      Path.Homotopic.Quotient.mk γ =
+          Path.Homotopic.Quotient.trans
+            (Path.Homotopic.Quotient.refl (BasedPath.endpoint α))
+            (Path.Homotopic.Quotient.mk γ) := by simp
+      _ = Path.Homotopic.Quotient.trans
+            (Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα)
+            (Path.Homotopic.Quotient.mk γ) := by simp
+      _ = Path.Homotopic.Quotient.trans
+            (Path.Homotopic.Quotient.symm qα)
+            (Path.Homotopic.Quotient.trans qα (Path.Homotopic.Quotient.mk γ)) := by
+          exact Path.Homotopic.Quotient.trans_assoc _ _ _
+      _ = Path.Homotopic.Quotient.trans
+            (Path.Homotopic.Quotient.symm qα)
+            (Path.Homotopic.Quotient.mk (α.toPath.trans γ)) := by
+          rw [Path.Homotopic.Quotient.mk_trans]
+      _ = Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα := by
+          rw [h_append_eq]
+      _ = Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by simp
+  rw [← Path.Homotopic.Quotient.eq]
+  apply (isCoveringMap hX x₀).injective_path_homotopic_map (ofBasedPath x₀ α) (ofBasedPath x₀ α)
+  simpa [γ, Path.Homotopic.Quotient.mk_map] using hγ_null
 
 end UniversalCover

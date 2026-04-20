@@ -41,8 +41,12 @@ As of commit `74ec3326354` plus the follow-up proofs completed in this worktree:
 - Step 9 (`UniversalCover.pathConnectedSpace`) is implemented via the direct
   quotient-model construction `joined_basepoint_of_ofBasedPath` using the
   reparameterization `(s, t) ↦ α.1 (s * t)`.
-
-The remaining `sorry` is in step 10.
+- Step 10 (`UniversalCover.simplyConnectedSpace`) is implemented by:
+  a canonical-lift computation for `IsCoveringMap.liftPath`, identifying the lift of
+  `γ : Path (endpoint α) y` from `ofBasedPath α` with `ofBasedPath (append α γ)`, and then
+  applying groupoid cancellation plus
+  `IsCoveringMap.injective_path_homotopic_map` to show every loop in the universal cover is
+  nullhomotopic.
 
 Step 6 was completed via a direct rectangle-homotopy construction
 (`BasedPath.toPath_homotopic_of_joinedIn_slsc`) rather than the globalization route
@@ -51,17 +55,7 @@ originally proposed: given `α, β` joined inside `endpoint ⁻¹' U` with the s
 endpoint trace `L(t) = endpoint (F t)` of the joining path `F`, combine it with `L ≃ refl v`
 (from `hU_slsc`), and conclude `α.toPath ≃ β.toPath` via three `trans_refl`-style steps.
 
-Step 10 remains as `sorry` and requires identifying the covering-map lift of a path
-`γ : Path (endpoint α) y` at `ofBasedPath α` with `ofBasedPath (append α γ)`. This is a
-canonical-lift computation that requires either (a) an explicit construction via `Path.truncate`
-plus continuity, or (b) a proof that under `fiberEquiv` the monodromy action on fibers is
-right-multiplication in `Path.Homotopic.Quotient`. Both routes involve substantial casting
-between the propositional equality `γ.extend 0 = endpoint α` and the definitional path source.
-Once this lemma exists, the structure of the proof is:
-- both `p₁, p₂ : Path z₁ z₂` lift their projections `γ_i = proj ∘ p_i` to the same endpoint;
-- by the canonical-lift lemma, `⟦α.toPath.trans γ_i⟧` is determined by `z_1, z_2`;
-- left-cancellation in the groupoid gives `⟦γ_1⟧ = ⟦γ_2⟧`;
-- `IsCoveringMap.injective_path_homotopic_map` then yields `⟦p_1⟧ = ⟦p_2⟧`.
+The original step-10 blocker is now resolved in the explicit-lift style sketched above.
 
 ## Current Foundation
 
