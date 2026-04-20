@@ -50,7 +50,7 @@ theorem ncard_mk_fiber_eq_card_toFinset [DecidableEq α] {z : Sym2 α} :
     (Sym2.mk.uncurry ⁻¹' {z}).ncard = z.toFinset.card := by
   rw [Sym2.ncard_mk_fiber, Sym2.card_toFinset]
 
-theorem ncard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard ≤ 2 := by
+theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard ≤ 2 := by
   classical
   rw [← z.finite_mk_fiber.cast_ncard_eq, z.ncard_mk_fiber]
   split_ifs <;> norm_cast
