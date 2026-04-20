@@ -307,22 +307,18 @@ instance pi {ι : Type*} (M : ι → Type*)
 variable (R M)
 theorem exists_exact_and_surjective [Module.FinitePresentation R M] :
     ∃ (n m : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
-    Function.Exact f g ∧ Function.Surjective g := by
-  obtain ⟨n, K, iso, S, hS⟩ := Module.FinitePresentation.exists_fin R M
+      Function.Exact f g ∧ Function.Surjective g := by
+  obtain ⟨n, K, iso, S, hS⟩ := exists_fin R M
   let m := S.card
   let gens : Fin m → (Fin n → R) := Subtype.val ∘ (Finset.equivFin S).symm
   let f : (Fin m → R) →ₗ[R] (Fin n → R) := Fintype.linearCombination R gens
   let g : (Fin n → R) →ₗ[R] M := iso.symm.toLinearMap.comp (Submodule.mkQ K)
-  have h₁ : LinearMap.range f = K := by
-    simp only [← hS, f, Fintype.range_linearCombination, gens, (Function.Surjective.range_comp
-    (Finset.equivFin S).symm.surjective Subtype.val), Subtype.range_val_subtype, Finset.setOf_mem]
-  have h₂ : LinearMap.ker g = K := by
-    simp only [g, LinearEquiv.ker_comp, Submodule.ker_mkQ]
-  have exact_fg : Function.Exact f g := LinearMap.exact_iff.mpr (h₂.trans h₁.symm)
+  have h : g.ker = f.range := Eq.trans (b := K) (by simp [g]) <| by
+    simp [← hS, f, gens, (Finset.equivFin S).symm.surjective.range_comp Subtype.val]
   have : Function.Surjective g := by
     simp only [g, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
       Submodule.mkQ_surjective]
-  exact ⟨n, m, f, g, exact_fg, this⟩
+  exact ⟨n, m, f, g, LinearMap.exact_iff.mpr h, this⟩
 
 end Module.FinitePresentation
 
