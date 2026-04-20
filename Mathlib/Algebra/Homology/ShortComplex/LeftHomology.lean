@@ -666,7 +666,7 @@ def leftHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
 instance isIso_leftHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (leftHomologyMap' φ h₁ h₂) :=
-  (inferInstance : IsIso (leftHomologyMapIso' (asIso φ) h₁ h₂).hom)
+  inferInstanceAs <| IsIso (leftHomologyMapIso' (asIso φ) h₁ h₂).hom
 
 /-- An isomorphism of short complexes `S₁ ≅ S₂` induces an isomorphism on the `K` fields
 of left homology data of `S₁` and `S₂`. -/
@@ -681,7 +681,7 @@ def cyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
 instance isIso_cyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (cyclesMap' φ h₁ h₂) :=
-  (inferInstance : IsIso (cyclesMapIso' (asIso φ) h₁ h₂).hom)
+  inferInstanceAs <| IsIso (cyclesMapIso' (asIso φ) h₁ h₂).hom
 
 /-- The isomorphism `S₁.leftHomology ≅ S₂.leftHomology` induced by an isomorphism of
 short complexes `S₁ ≅ S₂`. -/
@@ -696,7 +696,7 @@ noncomputable def leftHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
 instance isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂)
     [IsIso φ] [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     IsIso (leftHomologyMap φ) :=
-  (inferInstance : IsIso (leftHomologyMapIso (asIso φ)).hom)
+  inferInstanceAs <| IsIso (leftHomologyMapIso (asIso φ)).hom
 
 /-- The isomorphism `S₁.cycles ≅ S₂.cycles` induced by an isomorphism
 of short complexes `S₁ ≅ S₂`. -/
@@ -710,7 +710,7 @@ noncomputable def cyclesMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
 
 instance isIso_cyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
     [S₂.HasLeftHomology] : IsIso (cyclesMap φ) :=
-  (inferInstance : IsIso (cyclesMapIso (asIso φ)).hom)
+  inferInstanceAs <| IsIso (cyclesMapIso (asIso φ)).hom
 
 variable {S}
 

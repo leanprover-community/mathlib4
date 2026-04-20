@@ -22,10 +22,10 @@ We define rank one valuations.
 
 ## Main Definitions
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
-`MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
-of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
+  `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
+  of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.
 * `RankOne.restrict_RankOne` is the `RankOne` instance for the restriction of a valuation to its
-image, as defined in
+  image, as defined in
 
 ## Tags
 
@@ -73,8 +73,9 @@ lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivia
       -- toAdd_strictMono is already in an applied form, do defeq abuse instead
       exact StrictMono.comp strictMono_id (f.monotone'.strictMono_of_injective hf)
     let rf : Multiplicative ℝ →* ℝ≥0ˣ := {
-      toFun x := Units.mk0 ⟨(2 : ℝ) ^ (log (M := ℝ) x), by positivity⟩ <| by
+      toFun x := Units.mk0 (.mk ((2 : ℝ) ^ (log (M := ℝ) x)) (by positivity)) <| by
         rw [ne_eq, Subtype.ext_iff]
+        simp only [NNReal.val_eq_coe, NNReal.coe_mk, NNReal.coe_zero]
         positivity
       map_one' := by simp
       map_mul' _ _ := by
@@ -130,11 +131,10 @@ instance : IsNontrivial v where
 
 section Restrict
 
-set_option backward.isDefEq.respectTransparency false in
 instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    exact ⟨x, by simp [hx0], by grind [restrict_def, restrict₀_eq_one_iff]⟩
+    exact ⟨x, by simp [hx0], by grind [restrict_eq_one_iff]⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
@@ -173,19 +173,19 @@ variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     obtain ⟨x, hx, hx'⟩ := H
     exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
+@[implicit_reducible]
 def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
   exists_val_nontrivial := by
-    by_contra H'
-    push_neg at H'
+    by_contra! H'
     rw [nontrivial_iff_exists_ne 1] at H
     obtain ⟨x, hx⟩ := H
     obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
@@ -215,6 +215,7 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 /-- A valuative relation has a rank one valuation when it is both nontrivial
 and the rank is at most one. -/
+@[implicit_reducible]
 def Valuation.RankOne.ofRankLeOneStruct [ValuativeRel.IsNontrivial R] (e : RankLeOneStruct R) :
     Valuation.RankOne (valuation R) where
   hom' := e.emb.comp embedding

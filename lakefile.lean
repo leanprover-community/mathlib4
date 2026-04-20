@@ -6,14 +6,13 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.91" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "batteries" @ git "v4.30.0-rc1"
+require "leanprover-community" / "Qq" @ git "v4.30.0-rc1"
+require "leanprover-community" / "aesop" @ git "v4.30.0-rc1"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets not up-to-date. \
-    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
-    If this does not work, report your issue on the Lean Zulip."
+    "ProofWidgets failed to reuse pre-built JS code. \
+    Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
@@ -44,9 +43,6 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
-    -- This feature is broken, see
-    -- https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/574421640.
-    -- We disable it here to avoid tripping over new contributors.
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
@@ -69,10 +65,11 @@ lean_lib Mathlib where
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
-lean_lib Cache
+lean_lib Cache where
+  globs := #[`Cache.+]
 
 lean_lib MathlibTest where
-  globs := #[.submodules `MathlibTest]
+  globs := #[`MathlibTest.+]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -124,6 +121,10 @@ lean_exe «lint-style» where
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
 lean_exe «check_title_labels» where
+  srcDir := "scripts"
+
+/-- `lake exe nightly-testing-checklist` reports nightly-testing branch status. -/
+lean_exe «nightly-testing-checklist» where
   srcDir := "scripts"
 
 lean_exe mathlib_test_executable where

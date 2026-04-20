@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Batteries.Data.List
+public import Batteries.Data.List.Pairwise
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 public meta import Mathlib.Util.AtomM

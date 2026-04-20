@@ -35,7 +35,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {D' : Type u₃} [Category.{v₃} D'] {D'' : Type u₄} [Category.{v₄} D'']
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The pushforward of sheaves of modules that is induced by a continuous functor `F`
@@ -86,8 +86,7 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous.{u} G K K'] [Functor.IsContinuous.{v} G K K']
-  [Functor.IsContinuous.{u} (F ⋙ G) J K'] [Functor.IsContinuous.{v} (F ⋙ G) J K']
+  [Functor.IsContinuous G K K'] [Functor.IsContinuous (F ⋙ G) J K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
@@ -107,13 +106,10 @@ lemma pushforwardComp_inv_app_val_app (M U x) :
   ((pushforwardComp φ ψ).inv.app M).val.app U x = x := rfl
 
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
-  [Functor.IsContinuous.{u} G' K' K''] [Functor.IsContinuous.{v} G' K' K'']
-  [Functor.IsContinuous.{u} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{v} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{u} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{v} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{u} (F ⋙ G ⋙ G') J K'']
-  [Functor.IsContinuous.{v} (F ⋙ G ⋙ G') J K'']
+  [Functor.IsContinuous G' K' K'']
+  [Functor.IsContinuous (G ⋙ G') K K'']
+  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
+  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 lemma pushforward_assoc :
@@ -142,9 +138,9 @@ section NatTrans
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   {F G H : C ⥤ D} {T : Sheaf J RingCat.{u}} {S : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
-  [Functor.IsContinuous.{u} G J K] [Functor.IsContinuous.{v} G J K]
-  [Functor.IsContinuous.{u} H J K] [Functor.IsContinuous.{v} H J K]
+  [Functor.IsContinuous F J K]
+  [Functor.IsContinuous G J K]
+  [Functor.IsContinuous H J K]
   (φ : T ⟶ (G.sheafPushforwardContinuous RingCat.{u} J K).obj S)
 
 /-- A natural transformation gives a natural transformation between the pushforward functors. -/
@@ -209,8 +205,8 @@ section Adjunction
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D} {G : D ⥤ C}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
-  [Functor.IsContinuous.{u} G K J] [Functor.IsContinuous.{v} G K J]
+  [Functor.IsContinuous F J K]
+  [Functor.IsContinuous G K J]
   (adj : F ⊣ G)
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K J).obj S)
@@ -223,19 +219,18 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
   unit :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} G F K J K
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} G F K J K
+    letI := CategoryTheory.Functor.isContinuous_comp G F K J K
     (pushforwardId _).inv ≫ pushforwardNatTrans (𝟙 _) adj.counit ≫
       (pushforwardCongr (by ext1; simpa)).hom ≫ (pushforwardComp _ _).inv
   counit :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} F G J K J
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} F G J K J
+    letI := CategoryTheory.Functor.isContinuous_comp F G J K J
     (pushforwardComp _ _).hom ≫ pushforwardNatTrans _ adj.unit ≫
       (pushforwardCongr (by ext1; simpa)).hom ≫ (pushforwardId _).hom
   left_triangle_components X := by
     ext U x
     change (X.val.presheaf.map (adj.counit.app (F.obj U.unop)).op ≫
       X.val.presheaf.map (F.map (adj.unit.app U.unop)).op) _ = _
+    dsimp only [id_obj]
     rw [← Functor.map_comp, ← op_comp, adj.left_triangle_components]
     simp
   right_triangle_components X := by
@@ -290,8 +285,8 @@ section Equivalence
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} (eqv : C ≌ D)
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} eqv.functor J K] [Functor.IsContinuous.{v} eqv.functor J K]
-  [Functor.IsContinuous.{u} eqv.inverse K J] [Functor.IsContinuous.{v} eqv.inverse K J]
+  [Functor.IsContinuous eqv.functor J K]
+  [Functor.IsContinuous eqv.inverse K J]
   (φ : S ⟶ (eqv.functor.sheafPushforwardContinuous RingCat.{u} J K).obj R)
   (ψ : R ⟶ (eqv.inverse.sheafPushforwardContinuous RingCat.{u} K J).obj S)
   (H₁ : Functor.whiskerRight (NatTrans.op eqv.counit) R.obj =
@@ -305,13 +300,11 @@ def pushforwardPushforwardEquivalence : SheafOfModules R ≌ SheafOfModules S wh
   functor := pushforward.{v} φ
   inverse := pushforward.{v} ψ
   unitIso :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} eqv.inverse eqv.functor K J K
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} eqv.inverse eqv.functor K J K
+    letI := CategoryTheory.Functor.isContinuous_comp eqv.inverse eqv.functor K J K
     (pushforwardId _).symm ≪≫ pushforwardNatIso _ eqv.counitIso ≪≫
       pushforwardCongr (by ext1; simpa) ≪≫ (pushforwardComp _ _).symm
   counitIso :=
-    letI := CategoryTheory.Functor.isContinuous_comp.{v} eqv.functor eqv.inverse J K J
-    letI := CategoryTheory.Functor.isContinuous_comp.{u} eqv.functor eqv.inverse J K J
+    letI := CategoryTheory.Functor.isContinuous_comp eqv.functor eqv.inverse J K J
     pushforwardComp _ _ ≪≫ pushforwardNatIso _ eqv.unitIso ≪≫
       pushforwardCongr (by ext1; simpa) ≪≫ pushforwardId _
   functor_unitIso_comp :=

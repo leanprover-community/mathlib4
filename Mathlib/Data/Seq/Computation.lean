@@ -892,19 +892,19 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
     let ⟨b, b2, ab⟩ := l a1
     ⟨b, b2, H ab⟩⟩
 
-theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
-  ⟨fun {_} a1 =>
-    let ⟨_, b2, ab⟩ := l1 a1
+theorem LiftRel.trans (R : α → α → Prop) (H : IsTrans α R) : IsTrans _ (LiftRel R) :=
+  ⟨fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
+  ⟨fun {a} a1 =>
+    let ⟨b, b2, ab⟩ := l1 a1
     let ⟨c, c3, bc⟩ := l2 b2
-    ⟨c, c3, H ab bc⟩,
-    fun {_} c3 =>
-    let ⟨_, b2, bc⟩ := r2 c3
+    ⟨c, c3, H.trans a b c ab bc⟩,
+    fun {c} c3 =>
+    let ⟨b, b2, bc⟩ := r2 c3
     let ⟨a, a1, ab⟩ := r1 b2
-    ⟨a, a1, H ab bc⟩⟩
+    ⟨a, a1, H.trans a b c ab bc⟩⟩⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @LiftRel.symm _ R @symm, @LiftRel.trans _ R @trans⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) :=
+  ⟨LiftRel.refl R H.refl, @LiftRel.symm _ R @H.symm, LiftRel.trans R H.isTrans |>.trans _ _ _⟩
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
     LiftRel R s t → LiftRel S s t

@@ -38,6 +38,11 @@ theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
     ext; simp [← fderivWithin_derivWithin]
   simp [contDiffOn_succ_iff_fderivWithin hs, this, ContinuousLinearEquiv.comp_contDiffOn_iff]
 
+theorem contDiffOn_one_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 1 f s ↔ DifferentiableOn 𝕜 f s ∧ ContinuousOn (derivWithin f s) s := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiffOn_succ_iff_derivWithin hs]
+  simp
+
 theorem contDiffOn_infty_iff_derivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (derivWithin f s) s := by
   rw [show ∞ = ∞ + 1 by rfl, contDiffOn_succ_iff_derivWithin hs]

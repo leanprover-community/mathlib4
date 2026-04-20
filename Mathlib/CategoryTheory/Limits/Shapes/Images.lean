@@ -679,14 +679,12 @@ variable {C : Type u} [Category.{v} C]
 section
 
 instance {X Y : C} (f : X ⟶ Y) [HasImage f] : HasImage (Arrow.mk f).hom :=
-  show HasImage f by infer_instance
+  inferInstanceAs <| HasImage f
 
 end
 
 section HasImageMap
 
--- Don't generate unnecessary injectivity lemmas which the `simpNF` linter will complain about.
-set_option genInjectivity false in
 /-- An image map is a morphism `image f → image g` fitting into a commutative square and satisfying
 the obvious commutativity conditions. -/
 structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) where
@@ -753,7 +751,7 @@ instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [H
   HasImageMap.mk
     { map := (HasImageMap.imageMap sq1).map ≫ (HasImageMap.imageMap sq2).map
       map_ι := by
-        rw [Category.assoc, ImageMap.map_ι, ImageMap.map_ι_assoc, Comma.comp_right] }
+        rw [Category.assoc, ImageMap.map_ι, ImageMap.map_ι_assoc, Arrow.comp_right] }
 
 variable {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
 
@@ -773,15 +771,8 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
-/-- `@[simp]`-normal form of `ImageMap.mk.injEq`. -/
-@[simp]
-theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
-    (map : image f.hom ⟶ image g.hom)
-    (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
-    (map' : image f.hom ⟶ image g.hom)
-    (map_ι' : map' ≫ image.ι g.hom = image.ι f.hom ≫ sq.right) : (map = map') = True := by
-  simp only [Functor.id_obj, eq_iff_iff, iff_true]
-  apply ImageMap.map_uniq_aux _ map_ι _ map_ι'
+@[deprecated (since := "2026-04-08")]
+alias ImageMap.mk.injEq' :=  ImageMap.mk.injEq
 
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>

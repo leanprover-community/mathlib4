@@ -39,6 +39,8 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
 
+theorem Finset.univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
+
 theorem Finset.val_univ_fin (n : ℕ) : (Finset.univ : Finset (Fin n)).val = List.finRange n := rfl
 
 /-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
@@ -107,6 +109,9 @@ theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
   simp
 
+lemma Fin.eq_iff_eq_zero_iff (a b : Fin 2) : a = b ↔ (a = 0 ↔ b = 0) :=
+  ⟨by rintro rfl; rfl, fin_two_eq_of_eq_zero_iff⟩
+
 instance Unique.fintype {α : Type*} [Unique α] : Fintype α :=
   Fintype.ofSubsingleton default
 
@@ -143,10 +148,12 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
   ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
+@[implicit_reducible]
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 
@@ -287,9 +294,4 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
-  rcases lt_trichotomy m n with (h | rfl | h)
-  · exact hf' m n h
-  · exact (hmn rfl).elim
-  · unfold Function.onFun
-    apply symm
-    exact hf' n m h
+  grind +splitIndPred

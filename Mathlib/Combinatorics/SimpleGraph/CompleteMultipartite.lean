@@ -5,7 +5,7 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
@@ -61,23 +61,25 @@ open Finset Fintype Function
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
-def IsCompleteMultipartite (G : SimpleGraph α) : Prop := Transitive (¬ G.Adj · ·)
+def IsCompleteMultipartite (G : SimpleGraph α) : Prop := IsTrans α (¬ G.Adj · ·)
 
-theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite := by
-  simp [IsCompleteMultipartite, Transitive]
+theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite :=
+  ⟨by simp⟩
 
-variable {G : SimpleGraph α}
+protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
+    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+
 /-- The setoid given by non-adjacency -/
+@[implicit_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
-    ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
+    ⟨(¬ G.Adj · ·), ⟨G.loopless.irrefl, fun h' ↦ by rwa [adj_comm] at h', h.trans _ _ _⟩⟩
 
 lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
-    (completeMultipartiteGraph V).IsCompleteMultipartite := by
-  intro
-  simp_all
+    (completeMultipartiteGraph V).IsCompleteMultipartite :=
+  ⟨by simp_all⟩
 
 /-- The graph isomorphism from a graph `G` that `IsCompleteMultipartite` to the corresponding
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
@@ -97,14 +99,14 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
   constructor <;> intro h
   · exact ⟨_, _, fun _ ↦ ⟨_, h.setoid.refl _⟩, ⟨h.iso⟩⟩
   · obtain ⟨_, _, _, ⟨e⟩⟩ := h
-    intro _ _ _ h1 h2
+    refine ⟨fun _ _ _ h1 h2 ↦ ?_⟩
     rw [← e.map_rel_iff] at *
-    exact completeMultipartiteGraph.isCompleteMultipartite _ h1 h2
+    exact completeMultipartiteGraph.isCompleteMultipartite _ |>.trans _ _ _ h1 h2
 
 lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsCompleteMultipartite)
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
-    hc.comap h.iso.symm.toEmbedding).of_hom h.iso
+    hc.comap h.iso.symm.isContained).of_hom h.iso
 
 variable (G) in
 /--
@@ -141,8 +143,8 @@ end IsPathGraph3Compl
 
 lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteMultipartite G) :
     ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ := by
-  rw [IsCompleteMultipartite, Transitive] at h
-  push_neg at h
+  apply mt IsTrans.mk at h
+  push Not at h
   obtain ⟨_, _, _, h1, h2, h3⟩ := h
   rw [adj_comm] at h1
   exact ⟨_, _, _, h3, h1, h2⟩
@@ -150,7 +152,7 @@ lemma exists_isPathGraph3Compl_of_not_isCompleteMultipartite (h : ¬ IsCompleteM
 lemma not_isCompleteMultipartite_iff_exists_isPathGraph3Compl :
     ¬ IsCompleteMultipartite G ↔ ∃ v w₁ w₂, G.IsPathGraph3Compl v w₁ w₂ :=
   ⟨fun h ↦ G.exists_isPathGraph3Compl_of_not_isCompleteMultipartite h,
-   fun ⟨_, _, _, h1, h2, h3⟩ ↦ fun h ↦ h (by rwa [adj_comm] at h2) h3 h1⟩
+   fun ⟨_, _, _, h1, h2, h3⟩ ↦ fun h ↦ h.trans _ _ _ (by rwa [adj_comm] at h2) h3 h1⟩
 
 /--
 Any `IsPathGraph3Compl` in `G` gives rise to a graph embedding of the complement of the path graph
@@ -190,7 +192,7 @@ lemma not_isCompleteMultipartite_of_pathGraph3ComplEmbedding (e : (pathGraph 3)�
   have h0 : ¬ G.Adj (e 0) (e 1) := by simp [pathGraph_adj]
   have h1 : ¬ G.Adj (e 1) (e 2) := by simp [pathGraph_adj]
   have h2 : G.Adj (e 0) (e 2) := by simp [pathGraph_adj]
-  exact h h0 h1 h2
+  exact h.trans _ _ _ h0 h1 h2
 
 theorem IsCompleteMultipartite.comap {β : Type*} {H : SimpleGraph β} (f : H ↪g G) :
     G.IsCompleteMultipartite → H.IsCompleteMultipartite := by

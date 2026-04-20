@@ -17,6 +17,7 @@ the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
   - An `α : S` that is integral over `R` with minimal polynomial `f`
+
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
@@ -70,7 +71,6 @@ variable [Module.IsTorsionFree R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The isomorphism of rings between `S / I` and `(R / I)[X] / minpoly x` when `I`
 and `(conductor R x) ∩ R` are coprime.
@@ -83,7 +83,6 @@ noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMa
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by

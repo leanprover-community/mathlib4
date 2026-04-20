@@ -42,9 +42,11 @@ Linearity:
 - `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
+
 If `f` and `g` are integrable:
 - `setToFun_add : setToFun μ T hT (f + g) = setToFun μ T hT f + setToFun μ T hT g`
 - `setToFun_sub : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g`
+
 If `T` satisfies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
 - `setToFun_smul : setToFun μ T hT (c • f) = c • setToFun μ T hT f`
 
@@ -819,13 +821,7 @@ theorem setToFun_nonneg [ClosedIciTopology G''] {T : Set α → G' →L[ℝ] G''
     (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f := by
   by_cases hfi : Integrable f μ
   · simp_rw [setToFun_eq _ hfi]
-    refine L1.setToL1_nonneg hT hT_nonneg ?_
-    rw [← Lp.coeFn_le]
-    have h0 := Lp.coeFn_zero G' 1 μ
-    have h := Integrable.coeFn_toL1 hfi
-    filter_upwards [h0, h, hf] with _ h0a ha hfa
-    rw [h0a, ha]
-    exact hfa
+    exact L1.setToL1_nonneg hT hT_nonneg hf
   · simp_rw [setToFun_undef _ hfi, le_rfl]
 
 theorem setToFun_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']

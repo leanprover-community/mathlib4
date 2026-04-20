@@ -132,7 +132,6 @@ can be expressed in matrix form.
 noncomputable def jacobiMatrix : Matrix σ σ P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
   simp [jacobiMatrix, jacobian]
 

@@ -895,6 +895,12 @@ lemma uliftYonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ T
   rw [uliftYonedaEquiv_naturality]
   simp
 
+@[reassoc]
+lemma uliftYonedaEquiv_symm_comp
+    {F G : Cᵒᵖ ⥤ Type max w v₁} {X : Cᵒᵖ} (x : F.obj X) (f : F ⟶ G) :
+    uliftYonedaEquiv.symm x ≫ f = uliftYonedaEquiv.symm (f.app _ x) :=
+  uliftYonedaEquiv.injective (by rw [uliftYonedaEquiv_comp]; simp)
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :

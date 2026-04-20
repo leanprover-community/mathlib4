@@ -137,8 +137,7 @@ lemma hσ'₁ (x : X _⦋1⦌₂) :
 
 /-- Auxiliary definition for `SSet.Truncated.liftOfStrictSegal`. -/
 def app (n : (SimplexCategory.Truncated 2)ᵒᵖ) : X.obj n ⟶ Y.obj n := by
-  obtain ⟨n, hn⟩ := n
-  induction n using SimplexCategory.rec with | _ n
+  obtain ⟨⟨n⟩, hn⟩ := n
   match n with
   | 0 => exact f₀
   | 1 => exact f₁
@@ -435,10 +434,9 @@ instance (C D : Type u) [Category.{u} C] [Category.{u} D] :
 
 instance isIso_prodComparison_stdSimplex.{w} (n m : ℕ) :
     IsIso (prodComparison hoFunctor (Δ[n] : SSet.{w}) Δ[m]) :=
-  IsIso.of_isIso_fac_right (prodComparison_natural
+  IsIso.of_isIso_fac_right (prodComparison_natural.{w}
     hoFunctor (stdSimplex.isoNerve n).hom (stdSimplex.isoNerve m).hom).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
     IsIso (prodComparison hoFunctor D X) := by
@@ -451,7 +449,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
 
 set_option backward.isDefEq.respectTransparency false in
 instance isIso_prodComparison (X Y : SSet) :
-    IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
+    IsIso (prodComparison hoFunctor.{u} X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by
   convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
     prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
   · ext <;> simp [← Functor.map_comp]

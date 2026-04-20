@@ -35,9 +35,9 @@ namespace Matrix
 variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
 
 local notation "M" => Matrix n' n' R
-
-noncomputable instance : DivInvMonoid M :=
-  { show Monoid M by infer_instance, show Inv M by infer_instance with }
+noncomputable instance : DivInvMonoid (Matrix n' n' R) where
+  __ : Monoid M := inferInstance
+  __ : Inv M := inferInstance
 
 section NatPow
 

@@ -107,7 +107,6 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trace_gen_eq_sum_roots (x : L) (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
       ((minpoly K x).aroots F).sum := by
@@ -125,7 +124,6 @@ open IntermediateField
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
   rw [← trace_trace (S := K⟮x⟯)]
@@ -251,7 +249,6 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
   have hx := Algebra.IsSeparable.isIntegral K x
@@ -278,7 +275,6 @@ end EqSumEmbeddings
 
 section NotIsSeparable
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) :
     trace K L = 0 := by
   obtain ⟨p, hp⟩ := ExpChar.exists K

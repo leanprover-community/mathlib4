@@ -113,10 +113,10 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   counit : G.comp F ⟶ 𝟭 D
   /-- Equality of the composition of the unit and counit with the identity `F ⟶ FGF ⟶ F = 𝟙` -/
   left_triangle_components (X : C) :
-      F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
+    dsimp% F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by cat_disch
   /-- Equality of the composition of the unit and counit with the identity `G ⟶ GFG ⟶ G = 𝟙` -/
   right_triangle_components (Y : D) :
-      unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
+    dsimp% unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by cat_disch
 
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
@@ -215,6 +215,11 @@ theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by s
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma homEquiv_symm_unit (X : C) : dsimp% (adj.homEquiv _ _).symm (adj.unit.app X) = 𝟙 _ := by
+  simp
+
 theorem homEquiv_naturality_left_symm (f : X' ⟶ X) (g : X ⟶ G.obj Y) :
     (adj.homEquiv X' Y).symm (f ≫ g) = F.map f ≫ (adj.homEquiv X Y).symm g := by
   simp
@@ -261,12 +266,10 @@ theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
       using homEquiv_naturality_left_square adj _ _ _ _ w,
     homEquiv_naturality_right_square adj f g h k⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
   ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 𝟙 _ := by
   ext; simp
@@ -493,15 +496,50 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
+@[simps]
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
+  unit := adj.unit ≫ Functor.whiskerRight iso.hom _
+  counit := Functor.whiskerLeft _ iso.inv ≫ adj.counit
+  left_triangle_components X := by
+    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, Functor.whiskerRight_app,
+      Functor.map_comp, Functor.whiskerLeft_app, Category.assoc, NatTrans.naturality_assoc]
+    simp [← Functor.comp_map]
+  right_triangle_components := by simp [← Functor.map_comp]
+
+lemma homEquiv_ofNatIsoLeft_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
+    {X : C} {Y : D} (f : G.obj X ⟶ Y) :
+    (ofNatIsoLeft adj iso).homEquiv X Y f = adj.homEquiv _ _ (iso.hom.app _ ≫ f) := by
+  simp
+
+lemma homEquiv_ofNatIsoLeft_symm_apply {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G)
+    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
+    ((ofNatIsoLeft adj iso).homEquiv X Y).symm f = iso.inv.app _ ≫ (adj.homEquiv _ _).symm f := by
+  simp
 
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+@[simps]
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
+  unit := adj.unit ≫ Functor.whiskerLeft _ iso.hom
+  counit := Functor.whiskerRight iso.inv _ ≫ adj.counit
+  left_triangle_components X := by simp [← Functor.map_comp_assoc]
+  right_triangle_components Y := by
+    simp only [id_obj, comp_obj, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app, map_comp,
+      assoc, ← iso.hom.naturality_assoc, ← iso.hom.naturality, unit_naturality_assoc,
+      adj.right_triangle_components_assoc]
+    simp
+
+lemma homEquiv_ofNatIsoRight_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
+    {X : C} {Y : D} (f : F.obj X ⟶ Y) :
+    (ofNatIsoRight adj iso).homEquiv X Y f = adj.homEquiv _ _ f ≫ iso.hom.app _ := by
+  simp
+
+lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H)
+    {X : C} {Y : D} (f : X ⟶ H.obj Y) :
+    ((ofNatIsoRight adj iso).homEquiv X Y).symm f =
+      (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
@@ -658,6 +696,23 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 
+lemma map_comp_bijective_iff (adj : F ⊣ G) {X Y : C} (f : X ⟶ Y) (Z : D) :
+    Function.Bijective (fun (g : F.obj Y ⟶ Z) ↦ F.map f ≫ g) ↔
+      Function.Bijective (fun (g : Y ⟶ G.obj Z) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  ext g
+  simp
+
+lemma comp_map_bijective_iff (adj : F ⊣ G) {X Y : D} (g : X ⟶ Y) (Z : C) :
+    Function.Bijective (fun (f : Z ⟶ G.obj X) ↦ f ≫ G.map g) ↔
+      Function.Bijective (fun (f : F.obj Z ⟶ X) ↦ f ≫ g) := by
+  rw [← Function.Bijective.of_comp_iff' (adj.homEquiv _ _).bijective,
+    ← Function.Bijective.of_comp_iff _ (adj.homEquiv _ _).symm.bijective]
+  congr!
+  simp
+
 end Adjunction
 
 open Adjunction
@@ -675,7 +730,6 @@ namespace Equivalence
 
 variable (e : C ≌ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`.) -/
 @[simps]

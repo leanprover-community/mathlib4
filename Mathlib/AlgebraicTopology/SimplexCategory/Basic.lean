@@ -303,7 +303,6 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     δ (Fin.castSucc i) ≫ σ i = 𝟙 ⦋n⦌ := by
   rcases i with ⟨i, hi⟩
   ext ⟨j, hj⟩
-  simp? at hj says simp only [len_mk] at hj
   dsimp [σ, δ, Fin.predAbove, Fin.succAbove]
   simp only [Fin.lt_def, Fin.dite_val, Fin.ite_val, Fin.val_pred]
   split_ifs
@@ -728,10 +727,8 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  ext : 2
-  convert congr_arg (fun φ => (OrderEmbedding.toOrderHom φ)) (eq₁.trans eq₂.symm)
-  ext i : 2
-  rfl
+  ext : 4
+  exact DFunLike.congr_fun (eq₁.trans eq₂.symm) _
 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
@@ -806,22 +803,13 @@ theorem eq_comp_δ_of_not_surjective {n : ℕ} {Δ : SimplexCategory} (θ : Δ �
   use i
   exact eq_comp_δ_of_not_surjective' θ i (not_exists.mp hi)
 
-theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ := by
-  suffices IsIso i by
-    apply eq_id_of_isIso
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true]
-  infer_instance
+theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ :=
+  have := (isIso_iff_of_mono i).mpr rfl
+  eq_id_of_isIso _
 
-theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
-  suffices IsIso i from eq_id_of_isIso _
-  apply isIso_of_bijective
-  dsimp
-  rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true]
-  infer_instance
+theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
+  have := (isIso_iff_of_epi i).mpr rfl
+  eq_id_of_isIso _
 
 theorem eq_σ_of_epi {n : ℕ} (θ : ⦋n + 1⦌ ⟶ ⦋n⦌) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by
   obtain ⟨i, θ', h⟩ := eq_σ_comp_of_not_injective θ (by

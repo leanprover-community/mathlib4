@@ -59,7 +59,7 @@ set_option backward.isDefEq.respectTransparency false in
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
-  regular := bot_degree
+  regular := .bot
   of_adj _ _ h := h.elim
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
@@ -188,7 +188,6 @@ theorem IsSRGWith.param_eq
       ← Set.toFinset_card]
     congr!
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` and `C` be the adjacency matrices of a strongly regular graph with parameters `n k ℓ μ`
 and its complement respectively and `I` be the identity matrix,
 then `A ^ 2 = k • I + ℓ • A + μ • C`. `C` is equivalent to the expression `J - I - A`

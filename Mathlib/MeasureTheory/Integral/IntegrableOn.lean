@@ -262,6 +262,29 @@ theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
     IntegrableOn f s (μ + ν) := by
   delta IntegrableOn; rw [Measure.restrict_add]; exact hμ.integrable.add_measure hν
 
+@[to_fun]
+theorem IntegrableOn.add [ContinuousAdd ε'] {f g : α → ε'}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f + g) s μ :=
+  Integrable.add hf hg
+
+@[to_fun]
+theorem IntegrableOn.sub {f g : α → E}
+    (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ) : IntegrableOn (f - g) s μ :=
+  Integrable.sub hf hg
+
+@[to_fun]
+theorem IntegrableOn.neg {f : α → E} (hf : IntegrableOn f s μ) : IntegrableOn (-f) s μ :=
+  Integrable.neg hf
+
+@[simp]
+theorem integrableOn_neg_iff {f : α → E} : IntegrableOn (-f) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
+@[simp]
+theorem integrableOn_fun_neg_iff {f : α → E} :
+    IntegrableOn (fun x ↦ -f x) s μ ↔ IntegrableOn f s μ :=
+  integrable_neg_iff
+
 @[simp]
 theorem integrableOn_add_measure [PseudoMetrizableSpace ε] :
     IntegrableOn f s (μ + ν) ↔ IntegrableOn f s μ ∧ IntegrableOn f s ν :=
@@ -344,6 +367,10 @@ theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} 
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
+
+theorem integrableOn_indicator_iff (hs : MeasurableSet s) :
+    IntegrableOn (indicator s f) t μ ↔ IntegrableOn f (s ∩ t) μ := by
+  simp_rw [IntegrableOn, integrable_indicator_iff hs, IntegrableOn, Measure.restrict_restrict hs]
 
 end indicator
 

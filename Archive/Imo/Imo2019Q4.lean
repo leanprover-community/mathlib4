@@ -26,15 +26,10 @@ individually.
 -/
 
 
-open scoped Nat
-
-open Nat hiding zero_le Prime
-
-open Finset
+open Nat Finset
 
 namespace Imo2019Q4
 
-set_option backward.isDefEq.respectTransparency false in
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by
@@ -48,17 +43,17 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       emultiplicity_pow_self_of_prime Int.prime_two, Nat.cast_lt, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ≤ ∏ __ ∈ range n, (2 : ℤ) ^ n := ?_
+  calc ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ≤ ∏ _ ∈ range n, (2 : ℤ) ^ n := ?_
     _ < k ! := ?_
   · gcongr
     · intro i hi
-      simp only [mem_range] at hi
+      rw [mem_range] at hi
       have : (2 : ℤ) ^ i ≤ (2 : ℤ) ^ n := by gcongr; norm_num
       linarith
     · apply sub_le_self
       positivity
   norm_cast
-  calc ∏ __ ∈ range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
+  calc ∏ _ ∈ range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2
@@ -80,13 +75,12 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 
 end Imo2019Q4
 
-set_option linter.flexible false in
 theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;> decide
+  · rintro (h | h) <;> rcases Prod.ext_iff.mp h with ⟨rfl, rfl⟩ <;> decide
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h

@@ -46,7 +46,7 @@ def comap : Point.{w} J where
     simp
 
 variable (A : Type*) [Category.{v} A] [HasProducts.{w} A]
-  [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
 
 /-- Given a continuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 and a point `Φ` of `(D, K)`, this is the isomorphism between

@@ -109,10 +109,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
 
-instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
-  inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Finite X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Finite (LightProfinite.of X) :=
+  inferInstanceAs (Finite X)
 
 end DiscreteTopology
 
@@ -254,10 +255,10 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
 instance : Category LightDiagram :=
-  inferInstanceAs (Category (InducedCategory _ toProfinite))
+  inferInstanceAs <| Category (InducedCategory _ toProfinite)
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
-  InducedCategory.concreteCategory toProfinite
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toProfinite) _
 
 end LightDiagram
 

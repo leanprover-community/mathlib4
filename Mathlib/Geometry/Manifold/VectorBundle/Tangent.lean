@@ -180,13 +180,13 @@ local notation "TM" => TangentBundle I M
 section TangentBundleInstances
 
 instance : TopologicalSpace TM :=
-  (tangentBundleCore I M).toTopologicalSpace
+  inferInstanceAs <| TopologicalSpace (tangentBundleCore I M).TotalSpace
 
 instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).fiberBundle
+  inferInstanceAs <| FiberBundle E (tangentBundleCore I M).Fiber
 
 instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).vectorBundle
+  inferInstanceAs <| VectorBundle 𝕜 E (tangentBundleCore I M).Fiber
 
 namespace TangentBundle
 

@@ -554,7 +554,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
       (by simp)
   have : IsOpenImmersion α := by
     apply +allowSynthFailures IsOpenImmersion.of_comp
-    · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
+    · exact (inferInstance : IsOpenImmersion (pullback.fst (V F i j).ι (V F i k).ι))
     · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
       infer_instance
   have : α z = x := by

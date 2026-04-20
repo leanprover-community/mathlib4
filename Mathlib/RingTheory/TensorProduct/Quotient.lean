@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -46,10 +47,9 @@ private lemma quotIdealMapEquivTensorQuotAux_mk (b : B) :
     (quotIdealMapEquivTensorQuotAux B I) b = b ⊗ₜ[A] 1 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- `B ⊗[A] (A ⧸ I)` is isomorphic as an `A`-algebra to `B ⧸ I B`. -/
+/-- `B ⊗[A] (A ⧸ I)` is isomorphic as a `B`-algebra to `B ⧸ I B`. -/
 noncomputable def quotIdealMapEquivTensorQuot :
     (B ⧸ (I.map <| algebraMap A B)) ≃ₐ[B] B ⊗[A] (A ⧸ I) :=
   AlgEquiv.ofLinearEquiv (quotIdealMapEquivTensorQuotAux B I) rfl
@@ -67,6 +67,24 @@ lemma quotIdealMapEquivTensorQuot_mk (b : B) :
 @[simp]
 lemma quotIdealMapEquivTensorQuot_symm_tmul (b : B) (a : A) :
     (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.Quotient.mk (a • b) :=
+  rfl
+
+/-- `(A ⧸ I) ⊗[A] B` is isomorphic as an `A ⧸ I`-algebra to `B ⧸ I B`. -/
+noncomputable def quotIdealMapEquivQuotTensor :
+    (B ⧸ (I.map (algebraMap A B))) ≃ₐ[A ⧸ I] (A ⧸ I) ⊗[A] B :=
+  AlgEquiv.extendScalarsOfSurjective Ideal.Quotient.mk_surjective
+  { __ := (quotIdealMapEquivTensorQuot B I).toRingEquiv.trans
+      (Algebra.TensorProduct.comm A B (A ⧸ I)).toRingEquiv
+    commutes' x := by
+      suffices Algebra.TensorProduct.comm A B (A ⧸ I) (quotIdealMapEquivTensorQuot B I
+        (Ideal.Quotient.mk (I.map (algebraMap A B)) (algebraMap A B x))) =
+          (algebraMap A (TensorProduct A (A ⧸ I) B)) x by simpa
+      rw [quotIdealMapEquivTensorQuot_mk, tmul_one_eq_one_tmul]
+      simp }
+
+@[simp]
+lemma quotIdealMapEquivQuotTensor_mk (b : B) :
+    quotIdealMapEquivQuotTensor B I b = 1 ⊗ₜ[A] b :=
   rfl
 
 end
@@ -107,3 +125,11 @@ lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
 end
 
 end Algebra.TensorProduct
+
+lemma Ideal.subtype_rTensor_range {R : Type*} [CommRing R] (M : Type*) [AddCommGroup M] [Module R M]
+    (I : Ideal R) :
+    ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range = I • (⊤ : Submodule R M) := by
+  rw [← Submodule.ker_mkQ (I • (⊤ : Submodule R M)), LinearMap.range_comp,
+    ← Submodule.map_symm_eq_iff, ← Submodule.comap_equiv_eq_map_symm, ← LinearMap.ker_comp,
+    ← TensorProduct.quotTensorEquivQuotSMul_comp_mkQ_rTensor, LinearEquiv.ker_comp]
+  exact LinearMap.exact_iff.mp (rTensor_exact M (LinearMap.exact_subtype_mkQ I) I.mkQ_surjective)

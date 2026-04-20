@@ -40,7 +40,10 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
-deriving Inhabited, FunLike, CoeFun
+deriving Inhabited, FunLike
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for PolynomialModule
 
 noncomputable section
 deriving instance AddCommGroup for PolynomialModule
@@ -178,8 +181,8 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
       | add _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
       | single n a =>
         ext i
-        simp only [coeff_ofFinsupp, smul_single_apply, toFinsuppIso_symm_apply, coeff_ofFinsupp,
-        single_apply, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
+        simp_rw [toFinsuppIso_symm_apply, coeff_ofFinsupp, coeff_mul, smul_single_apply,
+          smul_eq_mul, coeff_ofFinsupp, single_apply, mul_ite, mul_zero]
         split_ifs with hn
         · rw [Finset.sum_eq_single (i - n, n)]
           · simp only [ite_true]

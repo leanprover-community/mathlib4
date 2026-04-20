@@ -30,13 +30,14 @@ universe u
 
 variable {L : Language} {T : L.Theory} {α : Type*}
 
-public instance : TopologicalSpace (CompleteType T α) := generateFrom (range typesWith)
+public instance : TopologicalSpace (CompleteType T α) :=
+  generateFrom (range (T.typesWith))
 
 public lemma isTopologicalBasis_range_typesWith :
-    IsTopologicalBasis (range (typesWith (α := α) (T := T))) where
+    IsTopologicalBasis (range (T.typesWith (α := α))) where
   exists_subset_inter := by
     intro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
-    refine ⟨typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
+    refine ⟨T.typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
     rw [typesWith_inf, ht₁, ht₂]
     exact ⟨hx, fun _ ↦ id⟩
   sUnion_eq := by
@@ -44,13 +45,13 @@ public lemma isTopologicalBasis_range_typesWith :
     exact Set.subset_sUnion_of_mem ⟨_, typesWith_top⟩
   eq_generateFrom := rfl
 
-public lemma isOpen_typesWith (φ : L[[α]].Sentence) : IsOpen (typesWith (T := T) φ) :=
+public lemma isOpen_typesWith (φ : L[[α]].Sentence) : IsOpen (T.typesWith φ) :=
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
-public lemma isClosed_typesWith (φ : L[[α]].Sentence) : IsClosed (typesWith (T := T) φ) where
+public lemma isClosed_typesWith (φ : L[[α]].Sentence) : IsClosed (T.typesWith φ) where
   isOpen_compl := by rw [← typesWith_not]; exact isOpen_typesWith _
 
-public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (typesWith (T := T) φ) where
+public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (T.typesWith φ) where
   left := isClosed_typesWith _
   right := isOpen_typesWith _
 
@@ -61,10 +62,10 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
   obtain ⟨φ, hφ⟩ := hpq
   cases mem_or_not_mem p φ with
   | inl h =>
-    refine ⟨typesWith φ, isClopen_typesWith _, h, ?_⟩
+    refine ⟨T.typesWith φ, isClopen_typesWith _, h, ?_⟩
     rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]
   | inr h =>
-    refine ⟨typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
+    refine ⟨T.typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
     rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ←not_mem_iff]
 
 

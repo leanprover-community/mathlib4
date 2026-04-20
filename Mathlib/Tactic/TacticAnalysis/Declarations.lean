@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
@@ -272,7 +273,13 @@ def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
           catch _e =>
             pure [goal]
           if goals.isEmpty then
-            logWarningAt preI.tacI.stx m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+            let msg ← addMessageContext m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+            let header := (← msg.toString) ++ "\n\nTry this:"
+            if let some start := preI.tacI.stx.getPos? then
+            if let some stop := postI.tacI.stx.getTailPos? then
+            let synth := Lean.Syntax.setInfo (Lean.SourceInfo.synthetic start stop) preI.tacI.stx
+            Elab.Command.liftCoreM <|
+              Tactic.TryThis.addSuggestion (header := header) synth (← `(tactic | grind))
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {

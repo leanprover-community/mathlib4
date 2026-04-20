@@ -273,7 +273,6 @@ private lemma RingEquiv.height_comap_of_isPrime {S : Type*} [CommRing S] (e : R 
   have := p.map_comap_of_equiv e.symm
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal S) :
     (I.comap e).height = I.height := by
@@ -360,7 +359,6 @@ lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e 
   rw [← J.height_eq_primeHeight] at e'
   exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
   induction r with
@@ -378,7 +376,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       · rintro K hK - -
         rw [Set.Finite.mem_toFinset] at hK
         exact hK.1.1.1
-      · push_neg
+      · push Not
         intro K hK e
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK

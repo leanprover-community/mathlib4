@@ -362,7 +362,7 @@ theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _
 
 theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
-  ((isNormal_deriv _).ext .id).2 (by simp [h])
+  ((isNormal_deriv _).ext_iff .id).2 (by simp [h])
 
 @[deprecated (since := "2025-10-25")]
 alias deriv_id_of_nfp_id := deriv_eq_id_of_nfp_eq_id
@@ -423,11 +423,7 @@ end
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
-  simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_natCast]
-  congr; funext n
-  induction n with
-  | zero => rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  | succ n hn => rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, hn]
+  simp [← iSup_iterate_eq_nfp]
 
 theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * ω := by
   apply le_antisymm (nfp_le_fp (isNormal_add_right a).monotone hba _)
@@ -451,11 +447,11 @@ theorem add_le_right_iff_mul_omega0_le {a b : Ordinal} : a + b ≤ b ↔ a * ω 
 
 theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * ω + b := by
   revert b
-  rw [← funext_iff, IsNormal.ext (isNormal_deriv _) (isNormal_add_right _)]
+  rw [← funext_iff, IsNormal.ext_iff (isNormal_deriv _) (isNormal_add_right _)]
   refine ⟨?_, fun a h => ?_⟩
   · rw [bot_eq_zero, deriv_zero_right, add_zero]
     exact nfp_add_zero a
-  · rw [deriv_succ, h, add_succ]
+  · rw [succ_eq_add_one, deriv_add_one, h, ← add_assoc]
     exact nfp_eq_self (add_eq_right_iff_mul_omega0_le.2 (le_self_add.trans (le_succ _)))
 
 /-! ### Fixed points of multiplication -/
@@ -534,7 +530,7 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
     deriv (a * ·) b = a ^ ω * b := by
   revert b
   rw [← funext_iff,
-    IsNormal.ext (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
+    IsNormal.ext_iff (isNormal_deriv _) (isNormal_mul_right (opow_pos ω ha))]
   refine ⟨?_, fun c h => ?_⟩
   · rw [bot_eq_zero, deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]

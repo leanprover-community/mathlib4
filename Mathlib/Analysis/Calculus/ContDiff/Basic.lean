@@ -46,15 +46,54 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
-theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
-    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s = 0 := by
+theorem iteratedFDerivWithin_zero {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (0 : E → F) s = 0 := by
   cases i with
   | zero => ext; simp
   | succ i => apply iteratedFDerivWithin_succ_const
 
 @[simp]
-theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
-  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
+theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
+  apply iteratedFDerivWithin_zero
+
+@[deprecated (since := "2026-03-18")]
+alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
+
+@[simp]
+theorem ftaylorSeriesWithin_zero :
+    ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeriesWithin]
+
+@[simp]
+theorem ftaylorSeriesWithin_fun_zero :
+    ftaylorSeriesWithin 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
+  apply ftaylorSeriesWithin_zero
+
+@[simp]
+theorem iteratedFDeriv_zero {n : ℕ} :
+    iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
+  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
+
+@[simp]
+theorem iteratedFDeriv_fun_zero {n : ℕ} :
+    iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
+  apply iteratedFDeriv_zero
+
+@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
+
+@[simp]
+theorem ftaylorSeries_zero :
+    ftaylorSeries 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeries]
+
+@[simp]
+theorem ftaylorSeries_fun_zero :
+    ftaylorSeries 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
+  ext
+  simp [ftaylorSeries]
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff

@@ -26,9 +26,12 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 -- TODO: generalize some of these to `WithTop α`
 section Actions
 
+noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : SMul ℝ≥0 M :=
+  ⟨fun c m ↦ (c : ℝ≥0∞) • m⟩
+
 /-- A `MulAction` over `ℝ≥0∞` restricts to a `MulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M ofNNRealHom.toMonoidHom
+  fast_instance% MulAction.compHom M ofNNRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
@@ -45,11 +48,11 @@ instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
     DistribMulAction ℝ≥0 M :=
-  DistribMulAction.compHom M ofNNRealHom.toMonoidHom
+  fast_instance% DistribMulAction.compHom M ofNNRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ≥0∞` restricts to a `Module` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddCommMonoid M] [Module ℝ≥0∞ M] : Module ℝ≥0 M :=
-  Module.compHom M ofNNRealHom
+  fast_instance% Module.compHom M ofNNRealHom
 
 /-- An `Algebra` over `ℝ≥0∞` restricts to an `Algebra` over `ℝ≥0`. -/
 noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra ℝ≥0 A where

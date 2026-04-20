@@ -86,7 +86,7 @@ lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 
 instance : DivInvOneMonoid ℝ≥0∞ :=
-  { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
+  { (inferInstance : DivInvMonoid ℝ≥0∞) with
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
 protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻¹ ^ n
@@ -939,6 +939,17 @@ lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
+
+theorem ofReal_inv_le {x : ℝ} : ENNReal.ofReal x⁻¹ ≤ (ENNReal.ofReal x)⁻¹ := by
+  obtain hx | hx := lt_or_ge 0 x
+  · simp [ofReal_inv_of_pos hx]
+  · simp [ofReal_of_nonpos hx]
+
+theorem ofReal_div_le {x y : ℝ} (hy : 0 ≤ y) :
+    ENNReal.ofReal (x / y) ≤ ENNReal.ofReal x / ENNReal.ofReal y := by
+  simp_rw [div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy)]
+  gcongr
+  exact ofReal_inv_le
 
 theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
     ENNReal.ofReal (x / y) = ENNReal.ofReal x / ENNReal.ofReal y := by

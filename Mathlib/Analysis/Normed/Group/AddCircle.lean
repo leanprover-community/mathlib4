@@ -82,7 +82,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     · simpa [abs_of_nonneg] using hr (fract x)
     · simpa [abs_sub_comm (fract x)] using hr (fract x - 1) (by simp)
   · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
-      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
+      forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_comm (α := ℕ)]
       using round_le _
 
 theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ * x - round (p⁻¹ * x)| := by
@@ -151,7 +151,6 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     inv_mul_cancel_left₀ hp] at hn ⊢
   exact (round_le (p⁻¹ * (y - x)) n).trans hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     (hs : s ⊆ closedBall x (|p| / 2)) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε ∩ s = if ε < |p| / 2 then closedBall x ε ∩ s else s := by

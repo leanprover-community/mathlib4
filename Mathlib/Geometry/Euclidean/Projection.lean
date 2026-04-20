@@ -244,7 +244,6 @@ lemma orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem {s : AffineSubsp
     (vsub_orthogonalProjection_mem_direction_orthogonal s q)]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the orthogonal projections of a point onto two subspaces are equal, so is the projection
 onto their supremum. -/
 lemma orthogonalProjection_sup_of_orthogonalProjection_eq {s₁ s₂ : AffineSubspace 𝕜 P} [Nonempty s₁]
@@ -265,12 +264,8 @@ in the orthogonal direction. -/
 theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace 𝕜 P} [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p : P} (hp : p ∈ s) {v : V} (hv : v ∈ s.directionᗮ) :
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
-  have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
-  rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
-  refine (eq_of_vsub_eq_zero ?_).symm
   ext
-  refine Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ ?_ h
-  exact (_ : s.direction).2
+  exact coe_orthogonalProjection_eq_iff_mem.mpr (by simp [*])
 
 /-- Adding a vector to a point in the given subspace, then taking the
 orthogonal projection, produces the original point if the vector is a

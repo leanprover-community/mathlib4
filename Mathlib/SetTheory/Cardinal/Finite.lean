@@ -153,7 +153,6 @@ lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) =
   classical
   obtain hs | hs := s.finite_or_infinite
   · have := hs.fintype
-    have := fintypeImage s f
     simp_rw [Nat.card_eq_fintype_card, Set.card_image_of_inj_on hf]
   · have := hs.to_subtype
     have := (hs.image hf).to_subtype

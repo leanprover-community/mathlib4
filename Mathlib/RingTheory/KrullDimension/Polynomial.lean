@@ -20,6 +20,7 @@ This file proves properties of the Krull dimension of the polynomial ring over a
 
 * `Polynomial.ringKrullDim_le`: the Krull dimension of the polynomial ring over a commutative ring
   `R` is less than `2 * (ringKrullDim R) + 1`.
+
 For noetherian rings:
 * `Polynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X]` is `dim R + 1`.
 * `MvPolynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X₁, ..., Xₙ]` is
@@ -28,7 +29,6 @@ For noetherian rings:
 
 public section
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by
   rw [ringKrullDim, ringKrullDim]
@@ -46,7 +46,6 @@ namespace Polynomial
 
 open Ideal IsLocalization
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `p` be a maximal ideal of `A`. If `P` is a maximal ideal of `A[X]` lying above `p`,
 then `ht(P) = ht(p) + 1`.
@@ -116,7 +115,6 @@ lemma ringKrullDim_of_isNoetherianRing : ringKrullDim R[X] = ringKrullDim R + 1 
 
 end Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is Noetherian, `dim R[X₁, ..., Xₙ] = dim R + n`. -/
 @[simp]
 lemma MvPolynomial.ringKrullDim_of_isNoetherianRing {ι : Type*} [Finite ι] :

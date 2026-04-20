@@ -37,7 +37,6 @@ section IsPrincipal
 
 variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`. To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.powQuotPowSuccLinearEquivMapMkPowSuccPow`. -/

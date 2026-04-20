@@ -6,7 +6,9 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-public import Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.RepresentationTheory.Rep.Res
 
 /-!
 # Coinduced representations
@@ -43,12 +45,13 @@ coinduction functor and hence that the coinduction functor preserves limits.
 
 @[expose] public section
 
-universe u
+universe t u' u v' v w' w
 
 namespace Representation
 
-variable {k G H : Type*} [CommSemiring k] [Monoid G] [Monoid H] (φ : G →* H) {A : Type*}
-  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
+variable {k G H : Type*} [Semiring k] [Monoid G] [Monoid H] (φ : G →* H) {A B : Type*}
+  [AddCommMonoid A] [Module k A] [AddCommMonoid B] [Module k B] (σ : Representation k G A)
+  (ρ : Representation k G B)
 
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coindV φ ρ` is the sub-`k`-module of
@@ -57,10 +60,14 @@ such that `f (φ g * h) = (ρ g) (f h)` for all `g : G` and `h : H`.
 -/
 @[simps]
 def coindV : Submodule k (H → A) where
-  carrier := {f : H → A | ∀ (g : G) (h : H), f (φ g * h) = ρ g (f h) }
+  carrier := {f : H → A | ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) }
   add_mem' _ _ _ _ := by simp_all
   zero_mem' := by simp
   smul_mem' _ _ _ := by simp_all
+
+@[simp]
+lemma mem_coindV (f : H → A) : f ∈ coindV φ σ ↔ ∀ (g : G) (h : H), f (φ g * h) = σ g (f h) :=
+  Iff.rfl
 
 /--
 If `ρ : Representation k G A` and `φ : G →* H` then `coind φ ρ` is the representation
@@ -77,13 +84,32 @@ def coind : Representation k H (coindV φ ρ) where
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
+variable {σ ρ} in
+/-- Given a monoid homomorphism `φ : G →* H` and an intertwining map `f : σ ⟶ ρ`, there is a
+  natural intertwining map `coind φ σ ⟶ coind φ ρ` given by postcomposition by `f`. -/
+def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind φ ρ) where
+  __ : _ →ₗ[k] _ := (f.toLinearMap.compLeft H).restrict fun x h ↦ by
+    simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
+      IntertwiningMap.toLinearMap_apply] at h ⊢
+    intro g h0
+    simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
+  isIntertwining' h := by ext; simp
+
+lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :
+    (coindMap φ f) x = (f.toLinearMap.compLeft H) x := rfl
+
+@[simp]
+lemma coindMap_coe_apply_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) (h : H) :
+    ((coindMap φ f) x).1 h = f (x.1 h) := rfl
+
 end Representation
 
 namespace Rep
 
 open CategoryTheory Finsupp
 
-variable {k G H : Type u} [CommRing k] [Monoid G] [Monoid H] (φ : G →* H) (A : Rep k G)
+variable {k : Type u} {G : Type v} {H : Type w} [CommRing k] [Monoid G] [Monoid H]
+  (φ : G →* H) (A : Rep k G)
 
 section Coind
 
@@ -93,28 +119,24 @@ defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h •
 -/
 noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
-@[simps]
-noncomputable def coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B where
-  hom := ModuleCat.ofHom <| (f.hom.hom.compLeft H).restrict
-    fun x h y z => by simp [h y z, hom_comm_apply]
-  comm _ := by ext; simp [ModuleCat.endRingEquiv]
+noncomputable abbrev coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B :=
+  ofHom <| Representation.coindMap φ f.hom
 
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
 to the coinduced `H`-representation `coind φ A`, with action on maps given by postcomposition. -/
 @[simps obj map]
-noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
+noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
 set_option backward.isDefEq.respectTransparency false in
-instance {G : Type u} [Group G] (S : Subgroup G) :
+instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
-  preserves {X Y} f := (Rep.epi_iff_surjective _).2 fun y => by
+  preserves {X Y} f := (epi_iff_surjective _).2 fun y => by
     letI := QuotientGroup.rightRel S
     choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
     choose! i hi using Quotient.mk'_surjective (α := G)
@@ -126,12 +148,13 @@ instance {G : Type u} [Group G] (S : Subgroup G) :
     let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
     · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
-    · simp_all [x, hom_comm_apply, ← y.2 (γ g), γ]
+    · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
+        Representation.coindMap_coe_apply_apply, hom_comm_apply, x]
+      simp_all [← y.2 (γ g), γ]
 
 end Coind
 section Coind'
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant
@@ -139,19 +162,18 @@ then `(h • f) (r • h₁) := r • f (h₁ * h)`, where `r : k`.
 -/
 @[simps]
 noncomputable def _root_.Representation.coind' :
-    Representation k H ((Action.res _ φ).obj (leftRegular k H) ⟶ A) where
-  toFun h := {
-    toFun f := (Action.res _ φ).map ((leftRegularHomEquiv (leftRegular k H)).symm (single h 1)) ≫ f
-    map_add' _ _ := by rfl
-    map_smul' _ _ := by rfl }
+    Representation k H (res φ (leftRegular k H) ⟶ A) where
+  toFun h :=
+  { toFun f := (resFunctor φ).map ((leftRegularHomEquiv (leftRegular k H)).symm.toLinearMap
+      (Finsupp.single h 1)) ≫ f
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
   map_one' := by
-    ext x : 3
-    refine lhom_ext' fun _ => LinearMap.ext_ring ?_
-    simp [leftRegularHomEquiv_symm_apply (leftRegular k H)]
+    ext
+    simp [homEquiv]
   map_mul' _ _ := by
-    ext x : 3
-    refine lhom_ext' fun _ => LinearMap.ext_ring ?_
-    simp [leftRegularHomEquiv_symm_apply (leftRegular k H), mul_assoc]
+    ext
+    simp [homEquiv, mul_assoc]
 
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
@@ -162,17 +184,16 @@ noncomputable abbrev coind' : Rep k H := Rep.of (Representation.coind' φ A)
 
 variable {A} in
 @[ext]
-lemma coind'_ext {f g : coind' φ A}
-    (hfg : ∀ h, f.hom (single h 1) = g.hom (single h 1)) : f = g :=
-  Action.Hom.ext <| ModuleCat.hom_ext <| lhom_ext' fun h => LinearMap.ext_ring <| hfg h
+lemma coind'_ext {f g : coind' φ A} (hfg : ∀ h, f.hom.toLinearMap (.single h 1) =
+    g.hom.toLinearMap (.single h 1)) : f = g :=
+  Rep.hom_ext <| by ext1; dsimp; ext h; simpa using hfg h
 
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind' φ A ⟶ coind' φ B`, given by postcomposition
 by `f`. -/
-@[simps]
-noncomputable def coindMap' {A B : Rep k G} (f : A ⟶ B) : coind' φ A ⟶ coind' φ B where
-  hom := ModuleCat.ofHom <| Linear.rightComp k _ f
-  comm h := by ext; simp [ModuleCat.endRingEquiv]
+noncomputable def coindMap' {A B : Rep k G} (f : A ⟶ B) : coind' φ A ⟶ coind' φ B := Rep.ofHom
+  { __ := Linear.rightComp k _ f
+    isIntertwining' h := by ext; simp }
 
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
@@ -183,37 +204,28 @@ noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
   map f := coindMap' φ f
 
 end Coind'
-section CoindIso
+noncomputable section CoindIso
 
-set_option backward.isDefEq.respectTransparency false in
-/--
-If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
+/-- If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent
-to the `G`-representation morphisms `k[H] ⟶ A`.
--/
+to the `G`-representation morphisms `k[H] ⟶ A`. -/
 @[simps]
 noncomputable def coindVEquiv :
-    A.ρ.coindV φ ≃ₗ[k] ((Action.res _ φ).obj (leftRegular k H) ⟶ A) where
-  toFun f := {
-    hom := ModuleCat.ofHom <| linearCombination _ f.1
-    comm g := ModuleCat.hom_ext <| lhom_ext' fun _ => LinearMap.ext_ring <| by
-      simp [ModuleCat.endRingEquiv, f.2 g] }
-  map_add' _ _ := coind'_ext φ fun _ => by simp
-  map_smul' _ _ := coind'_ext φ fun _ => by simp
-  invFun f := {
-    val h := f.hom (single h 1)
-    property g h := by have := (hom_comm_apply f g (single h 1)).symm; simp_all [Rep.res_obj_ρ φ] }
+    A.ρ.coindV φ ≃ₗ[k] (res φ (leftRegular k H) ⟶ A) where
+  toFun f := Rep.ofHom ⟨linearCombination _ f.1, fun g ↦ by dsimp; ext; simp [f.2 g]⟩
+  map_add' _ _ := coind'_ext φ <| by simp [Rep.add_hom]
+  map_smul' _ _ := coind'_ext φ <| by simp [smul_hom]
+  invFun f := ⟨fun h ↦ f.hom.toLinearMap (.single h 1), fun g h ↦ by
+    simp only [res_obj_V, res_obj_ρ, Representation.IntertwiningMap.toLinearMap_apply]
+    have := by simpa using (hom_comm_apply f g (.single h 1)).symm
+    rw [← this]⟩
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
-@[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
-  Action.mkIso (coindVEquiv φ A).toModuleIso fun h => by
-    ext
-    simp [ModuleCat.endRingEquiv, leftRegularHomEquiv_symm_apply (leftRegular k H)]
+  Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
@@ -222,35 +234,60 @@ given by `coindIso φ`. -/
 @[simps!]
 noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
   NatIso.ofComponents (coindIso φ) fun _ => by
-    simp only [coindFunctor_obj, coindFunctor'_obj]
     ext
-    simp
+    exact coind'_ext _ fun _ ↦ by simp [coindIso, coindMap']
 
 end CoindIso
-section Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
+noncomputable section Adjunction
+
+/-- The morphism induced by the adjunction between `res φ` and `coind φ` sending a morphism
+  `f : res φ B ⟶ A` to the morphism `B ⟶ coind φ A` given by the underlying linear map sending
+  `b : B.V` to the function sending `h : H` to `f ((B.ρ h) b)`. -/
+def resCoindToHom (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) : B ⟶ (coind φ A) :=
+  Rep.ofHom ⟨(LinearMap.pi fun h => f.hom.toLinearMap ∘ₗ
+    Rep.ρ B h).codRestrict _ fun _ _ _ => by simpa using hom_comm_apply f _ _, fun g ↦ by
+    dsimp; ext; simp⟩
+
+@[simp]
+lemma resCoindToHom_hom_apply_coe (B : Rep k H) (A : Rep k G) (f : res φ B ⟶ A) (c : ↑B.V)
+    (i : H) : (DFunLike.coe (F := no_index(_)) (resCoindToHom φ B A f).hom c).1 i =
+    (Hom.hom f) ((B.ρ i) c) := rfl
+
+-- this `no_index` is to prevent simp discrimination tree from acting weird, i.e before
+-- adding it the discrimination tree looks like: _.1 (@DFunLike.coe
+-- (@Representation.IntertwiningMap _ _ _.1 (@Rep.mk✝ ..).1 ..)) which is bad because `Rep.mk` is
+-- private and should never be used.
+
+/--
+info: _.1 (@DFunLike.coe _ _.1 _ _ (@ConcreteCategory.hom (Rep _ _ _ _) _ _ _ _ _ _ _ (@resCoindToHom _ _ _ _ _ _ _ _ _ _)) _)
+-/
+#guard_msgs in
+#discr_tree_simp_key resCoindToHom_hom_apply_coe
+
+attribute [pp_with_univ] Rep coind
+
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
-`A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
-`H`-representation morphisms `B ⟶ coind φ A`. -/
-@[simps]
-noncomputable def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
-    ((Action.res _ φ).obj B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
-  toFun f := {
-    hom := ModuleCat.ofHom <| (LinearMap.pi fun h => f.hom.hom ∘ₗ Rep.ρ B h).codRestrict _
-      fun _ _ _ => by simpa using hom_comm_apply f _ _
-    comm _ := by ext; simp [ModuleCat.endRingEquiv] }
+`A`, there is a `k`-linear equivalence between the `G`-representation morphisms `res φ B ⟶ A` and
+the `H`-representation morphisms `B ⟶ coind φ A`.
+
+Note `Rep.resCoindHomEquiv.{t, u, v, w}` has the property that
+even with all inputs explicitly given, the first universe cannot be synthesized.
+-/
+@[simps, pp_with_univ]
+def resCoindHomEquiv (B : Rep.{max w t} k H) (A : Rep.{max w t} k G) :
+    (res φ B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
+  toFun f := resCoindToHom φ B A f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := {
-    hom := ModuleCat.ofHom (LinearMap.proj 1 ∘ₗ ((Rep.ρ A).coindV φ).subtype ∘ₗ f.hom.hom)
-    comm g := by
+  invFun f := Rep.ofHom ⟨LinearMap.proj 1 ∘ₗ (A.ρ.coindV φ).subtype ∘ₗ f.hom.toLinearMap,
+    fun g => by
       ext x
       have := ((f.hom x).2 g 1).symm
       have := hom_comm_apply f (φ g) x
-      simp_all }
-  left_inv := by intro; ext; simp
-  right_inv z := by ext; have := hom_comm_apply z; simp_all
+      simp_all⟩
+  left_inv x := by ext; simp
+  right_inv z := by ext; simp [resCoindToHom, hom_comm_apply z]
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about `@[simps! counit_app_hom_hom unit_app_hom_hom]`,
@@ -258,21 +295,21 @@ but removing it seems to be harmless. -/
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functor `Rep k G ⥤ Rep k H` is right
 adjoint to the restriction functor along `φ`. -/
-noncomputable abbrev resCoindAdjunction : Action.res _ φ ⊣ coindFunctor k φ :=
+noncomputable abbrev resCoindAdjunction : resFunctor.{max w t} φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
 
-noncomputable instance : (coindFunctor k φ).IsRightAdjoint :=
+noncomputable instance : (coindFunctor.{max w t} k φ).IsRightAdjoint :=
   (resCoindAdjunction k φ).isRightAdjoint
 
-noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsLeftAdjoint :=
+noncomputable instance : (resFunctor.{max w t} (k := k) φ).IsLeftAdjoint :=
   (resCoindAdjunction k φ).isLeftAdjoint
 
-instance {G : Type u} [Group G] (S : Subgroup G) :
-    (Action.res (ModuleCat.{u} k) S.subtype).PreservesProjectiveObjects :=
-  (Action.res _ S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
+instance {G : Type w} [Group G] (S : Subgroup G) :
+    (resFunctor.{max w t} (k := k) S.subtype).PreservesProjectiveObjects  :=
+  (resFunctor S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
     (resCoindAdjunction k S.subtype)
 
 end Adjunction

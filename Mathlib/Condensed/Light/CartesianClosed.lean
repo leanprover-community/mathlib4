@@ -28,5 +28,4 @@ variable {C : Type u} [SmallCategory C]
 instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalClosed (LightCondSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))

@@ -197,8 +197,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
   · intro gl' gl'_spec
     convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
       rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
-    · rw [eqToHom_op, eqToHom_op, eqToHom_trans, eqToHom_refl, F.1.map_id,
-        ConcreteCategory.id_apply]
+    · simp
     · exact gl'_spec i
 
 @[ext]
@@ -250,6 +249,16 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     · rintro ⟨_ | _⟩
       any_goals exact h₁
       any_goals exact h₂
+
+variable {F} {U} in
+theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}
+    {s : ToType (F.1.obj (op (iSup U)))} {t : ToType (G.1.obj (op V))}
+    {sf : ∀ i : ι, ToType (F.1.obj (op (U i)))} (h : IsGluing F.1 U sf s) (hV : ∀ i : ι, U i ≤ V)
+    (ht : ∀ i : ι, f.1.app (op (U i)) (sf i) = G.1.map (homOfLE (hV i)).op t) :
+    f.hom.app (op (iSup U)) s = G.obj.map (homOfLE (by aesop_cat)).op t := by
+  refine eq_of_locally_eq G U _ _ (fun _ ↦ ?_)
+  rw [← NatTrans.naturality_apply, h, ht, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
+  rfl
 
 end
 

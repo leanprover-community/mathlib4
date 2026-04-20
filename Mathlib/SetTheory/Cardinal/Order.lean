@@ -426,7 +426,7 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  isSuccLimit_iff
+  isSuccLimit_iff_of_orderBot
 
 @[simp]
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=

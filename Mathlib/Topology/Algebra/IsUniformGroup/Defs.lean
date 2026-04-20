@@ -575,6 +575,13 @@ theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β
   comap_uniformity := by
     simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
 
+@[to_additive]
+theorem MonoidHom.isUniformEmbedding_of_isEmbedding {Hom : Type*} [UniformSpace β] [Group β]
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsEmbedding f) :
+    IsUniformEmbedding f where
+  toIsUniformInducing := MonoidHom.isUniformInducing_of_isInducing h.isInducing
+  injective := h.injective
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -589,7 +596,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
 /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
@@ -637,7 +644,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive (attr := instance_reducible)
+@[to_additive (attr := implicit_reducible)
 /-- The left uniformity on a topological additive group (as opposed to the right
 uniformity).
 

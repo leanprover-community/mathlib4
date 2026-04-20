@@ -51,7 +51,7 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ SemiRingCat.{max v u})
 -- semiring axioms.
 instance semiringObj (j : J) :
     Semiring (((F ⋙ forget₂ SemiRingCat.{max v u} MonCat) ⋙ forget MonCat).obj j) :=
-  show Semiring (F.obj j) by infer_instance
+  inferInstanceAs <| Semiring (F.obj j)
 
 variable [IsFiltered J]
 

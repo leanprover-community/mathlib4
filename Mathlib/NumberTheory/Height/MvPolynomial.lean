@@ -36,7 +36,7 @@ variable {R α : Type*} [CommRing R]
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero
---       for emtpy iSups), which are not known there.
+--       for empty iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
 lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
     [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
@@ -234,15 +234,20 @@ lemma mulHeightBound_eq (p : ι' → MvPolynomial ι K) :
         ∏ᶠ v : nonarchAbsVal, ⨆ j, max (⨆ s : (p j).support, v.val (coeff s (p j))) 1 :=
   rfl
 
-lemma mulHeightBound_zero_one : mulHeightBound ![(0 : MvPolynomial (Fin 2) K), 1] = 1 := by
-  simp only [mulHeightBound, Nat.succ_eq_add_one, Nat.reduceAdd, iSup_fun_eq_max]
-  conv_rhs => rw [← one_mul 1]
-  congr
-  · convert Multiset.prod_map_one with v
-    simp [MvPolynomial.sum_def, support_one]
-  · refine finprod_eq_one_of_forall_eq_one fun v ↦ ?_
-    rw [show ![(0 : MvPolynomial (Fin 2) K), 1] 1 = 1 from rfl, support_one]
-    simp
+variable (K ι ι') in
+lemma max_mulHeightBound_zero_one_eq_one :
+    max (mulHeightBound (0 : ι' → MvPolynomial ι K)) 1 = 1 := by
+  simp only [mulHeightBound_eq, Pi.zero_apply, support_zero, coeff_zero, AbsoluteValue.map_zero,
+    Real.iSup_of_isEmpty, zero_le_one, sup_of_le_right]
+  set_option backward.isDefEq.respectTransparency false in -- temporary measure
+  simp only [Finsupp.sum_zero_index] -- singling this out for needing the above
+  simp only [Real.iSup_const_zero, Multiset.map_const', Multiset.prod_replicate, zero_pow_eq]
+  rcases isEmpty_or_nonempty ι'
+  · split_ifs
+    · simpa using finprod_zero_le_one
+    · simp
+  · simp
+    grind
 
 variable [Finite ι']
 
@@ -377,5 +382,243 @@ theorem logHeight_eval_le' {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i
   ⟨_, logHeight_eval_le hp⟩
 
 end Height
+
+/-!
+### Lower bound for the height of the image under a polynomial map
+
+If
+* `p : ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `N`,
+* `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
+* `x : ι → K` is such that for all `k : ι`,
+  `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
+then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
+A similar statement holds for the logarithmic height.
+
+Note that we only require the polynomial relations `∑ j, q (k, j) * p j = X k ^ (M + N)`
+to hold after evaluating at `x`. In this way, we can apply the result to points on some
+subvariety of projective space when the map given by `p` is a morphism on that subvariety,
+but not necessarily on all of the ambient space. In fact, the proof does not even need that
+`p j` is homogeneous (of fixed degree). In applications, this will be the case, however,
+and if the third condition above holds on the level of polynomials, then it follows.
+
+The main idea is to reduce this to a combination of `mulHeight_linearMap_apply_le`
+and `mulHeight_eval_le`.
+-/
+
+namespace Height
+
+variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι']
+
+private lemma mulHeight_eval_ge_aux {M N : ℕ} {q : ι × ι' → MvPolynomial ι K} [IsEmpty ι']
+    (p : ι' → MvPolynomial ι K) {x : ι → K}
+    (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
+    x = 0 := by
+  ext i
+  simp only [Finset.univ_eq_empty, Finset.sum_empty] at h
+  exact eq_zero_of_pow_eq_zero <| (h i).symm
+
+variable [AdmissibleAbsValues K] [Finite ι]
+
+open AdmissibleAbsValues
+
+/-- If
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
+* `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
+* `x : ι → K` is such that for all `k : ι`,
+  `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
+then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`. -/
+theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
+    (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
+    (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
+    (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1)⁻¹ * mulHeight x ^ N ≤
+      mulHeight (fun j ↦ (p j).eval x) := by
+  rcases isEmpty_or_nonempty ι'
+  · simp [show q = 0 from Subsingleton.elim .., max_mulHeightBound_zero_one_eq_one K ι (ι × ι'),
+      mulHeight_eval_ge_aux p h]
+    grind [zero_pow_eq]
+  -- case `ι'` nonempty
+  let q' : ι × ι' → K := fun a ↦ (q a).eval x
+  have H : mulHeight x ^ (M + N) ≤
+      Nat.card ι' ^ totalWeight K * mulHeight q' * mulHeight fun j ↦ (p j).eval x := by
+    rw [← mulHeight_pow x (M + N)]
+    have : x ^ (M + N) = fun k ↦ ∑ j, (q (k, j)).eval x * (p j).eval x := funext fun k ↦ (h k).symm
+    simpa [this] using mulHeight_linearMap_apply_le q' _
+  rw [inv_mul_le_iff₀ ?hC, ← mul_le_mul_iff_left₀ (by positivity : 0 < mulHeight x ^ M)]
+  case hC => exact mul_pos (mod_cast Nat.one_le_pow _ _ Nat.card_pos) <| by positivity
+  rw [← pow_add, add_comm]
+  grw [H, mulHeight_eval_le hq x]
+  exact Eq.le (by ring)
+
+/-- If
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
+* `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
+* `x : ι → K` is such that for all `k : ι`,
+  `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
+then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by a positive
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
+
+The difference to `mulHeight_eval_ge` is that the constant is not made explicit. -/
+theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
+    (hq : ∀ a, (q a).IsHomogeneous M) :
+    ∃ C > 0, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
+      (_h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)),
+      C * mulHeight x ^ N ≤ mulHeight (fun j ↦ (p j).eval x) := by
+  rcases isEmpty_or_nonempty ι'
+  · exact ⟨1, zero_lt_one, fun p _ h ↦ by simp [mulHeight_eval_ge_aux p h]⟩
+  have : 0 < Nat.card ι' := Nat.card_pos
+  exact ⟨_, by positivity, mulHeight_eval_ge hq⟩
+
+open Real in
+/-- If
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
+* `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
+* `x : ι → K` is such that for all `k : ι`,
+  `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
+then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by an (explicit)
+constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
+theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
+    (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
+    (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
+    -log (Nat.card ι' ^ totalWeight K * max (mulHeightBound q) 1) + N * logHeight x ≤
+      logHeight (fun j ↦ (p j).eval x) := by
+  simp only [logHeight_eq_log_mulHeight]
+  rcases isEmpty_or_nonempty ι'
+  · simp [show q = 0 from Subsingleton.elim .., mulHeight_eval_ge_aux p h,
+      max_mulHeightBound_zero_one_eq_one K ι (ι × ι')]
+  have : (Nat.card ι' : ℝ) ^ totalWeight K ≠ 0 := by simp
+  pull (disch := first | assumption | positivity) log
+  exact (log_le_log <| by positivity) <| mulHeight_eval_ge hq p h
+
+/-- If
+* `p : ι' → MvPolynomial ι K` is a family of polynomials (which in practice will be homogeneous
+  of the same degree `N`),
+* `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
+* `x : ι → K` is such that for all `k : ι`,
+  `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
+then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by a
+constant plus `N` times the logarithmic height of `x`.
+
+The difference to `logHeight_eval_ge` is that the constant is not made explicit. -/
+theorem logHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
+    (hq : ∀ a, (q a).IsHomogeneous M) :
+    ∃ C, ∀ (p : ι' → MvPolynomial ι K) {x : ι → K}
+      (_h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)),
+      C + N * logHeight x ≤ logHeight (fun j ↦ (p j).eval x) :=
+  ⟨_, logHeight_eval_ge hq⟩
+
+end Height
+
+/-!
+### Bounds for the height of ![x*y, x+y, 1]
+
+We show that the multiplicative height of `![a*c, a*d + b*c, b*d]` is bounded from above and from
+below by a positive constant times the product of the multiplicative heights of `![a, b]` and
+`![c, d]` (and the analogous statements for the logarithmic heights).
+
+The constants are unspecified here; with (likely considerably, but trivial) more work,
+we could make them explicit.
+-/
+
+section sym2
+
+namespace Height
+
+variable [AdmissibleAbsValues K]
+
+lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
+    mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
+  simp only [← mulHeight_fun_mul_eq hab hcd]
+  convert mulHeight_comp_equiv finProdFinEquiv _ with i
+  fin_cases i <;> simp [finProdFinEquiv]
+
+open MvPolynomial
+
+variable (K)
+
+lemma mulHeight_sym2_le :
+    ∃ C > 0, ∀ (a b c d : K),
+      mulHeight ![a * c, a * d + b * c, b * d] ≤ C * mulHeight ![a, b] * mulHeight ![c, d] := by
+  let p : Fin 3 → MvPolynomial (Fin 4) K := ![X 0, X 1 + X 2, X 3]
+  have hom i : (p i).IsHomogeneous 1 := by
+    fin_cases i <;> simp [p, isHomogeneous_X, IsHomogeneous.add]
+  obtain ⟨C, hC₀, hC⟩ := mulHeight_eval_le' hom
+  simp only [pow_one] at hC
+  refine ⟨max C 1, by grind, fun a b c d ↦ ?_⟩
+  by_cases hab : ![a, b] = 0
+  · rw [hab, mulHeight_zero, mul_one, show a = 0 from congrFun hab 0,
+      show b = 0 from congrFun hab 1,
+      show ![0 * c, 0 * d + 0 * c, 0 * d] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
+    grw [← one_le_mulHeight]
+    grind
+  by_cases hcd : ![c, d] = 0
+  · rw [hcd, mulHeight_zero, mul_one, show c = 0 from congrFun hcd 0,
+      show d = 0 from congrFun hcd 1,
+      show ![a * 0, a * 0 + b * 0, b * 0] = 0 by ext i; fin_cases i <;> simp, mulHeight_zero]
+    grw [← one_le_mulHeight]
+    grind
+  rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
+  grw [← le_max_left C 1]
+  convert hC _ with i
+  fin_cases i <;> simp [p]
+
+lemma mulHeight_sym2_ge :
+    ∃ C > 0, ∀ {a b c d : K}, ![a, b] ≠ 0 → ![c, d] ≠ 0 →
+      C * mulHeight ![a, b] * mulHeight ![c, d] ≤ mulHeight ![a * c, a * d + b * c, b * d] := by
+  let p : Fin 3 → MvPolynomial (Fin 4) K := ![X 0, X 1 + X 2, X 3]
+  let q : Fin 4 × Fin 3 → MvPolynomial (Fin 4) K :=
+    ![![X 0, 0, 0], ![0, X 1, -X 0], ![0, X 2, -X 0], ![0, 0, X 3]].uncurry
+  have hom a : (q a).IsHomogeneous 1 := by
+    fin_cases a <;> simp [q] <;> grind [!isHomogeneous_X, isHomogeneous_zero, IsHomogeneous.neg]
+  obtain ⟨C, hC₀, hC⟩ := mulHeight_eval_ge' (M := 1) (N := 1) hom
+  simp only [pow_one] at hC
+  refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
+  rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
+  convert hC p fun j ↦ ?H  with i
+  case H => fin_cases j <;> simp [p, q, Fin.sum_univ_three] <;> ring
+  fin_cases i <;> simp [p]
+
+open Real in
+lemma logHeight_sym2_le :
+    ∃ C, ∀ (a b c d : K), logHeight ![a * c, a * d + b * c, b * d] ≤
+      C + logHeight ![a, b] + logHeight ![c, d] := by
+  obtain ⟨C', hC₀, hC⟩ := mulHeight_sym2_le K
+  refine ⟨log C', fun a b c d ↦ ?_⟩
+  simp only [logHeight_eq_log_mulHeight]
+  pull (disch := positivity) log
+  exact log_le_log (by positivity) (hC ..)
+
+open Real in
+lemma logHeight_sym2_ge :
+    ∃ C, ∀ {a b c d : K}, ![a, b] ≠ 0 → ![c, d] ≠ 0 →
+      C + logHeight ![a, b] + logHeight ![c, d] ≤ logHeight ![a * c, a * d + b * c, b * d] := by
+  obtain ⟨C', hC₀, hC⟩ := mulHeight_sym2_ge K
+  refine ⟨log C', fun hab hcd ↦ ?_⟩
+  simp only [logHeight_eq_log_mulHeight]
+  pull (disch := positivity) log
+  exact log_le_log (by positivity) (hC hab hcd)
+
+-- see below comment regarding performance
+set_option linter.tacticAnalysis.mergeWithGrind false in
+lemma abs_logHeight_sym2_sub_le :
+    ∃ C, ∀ {a b c d : K}, ![a, b] ≠ 0 → ![c, d] ≠ 0 →
+      |logHeight ![a * c, a * d + b * c, b * d] - (logHeight ![a, b] + logHeight ![c, d])| ≤ C := by
+  obtain ⟨C₁, hC₁⟩ := logHeight_sym2_le K
+  obtain ⟨C₂, hC₂⟩ := logHeight_sym2_ge K
+  -- `grind` does it without the `specialize`, but is slow
+  exact ⟨max C₁ (-C₂), fun hab hcd ↦ by specialize hC₂ hab hcd; grind⟩
+
+end Height
+
+end sym2
 
 end

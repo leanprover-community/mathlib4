@@ -497,9 +497,8 @@ theorem dvd_eq_le : ((· ∣ ·) : Associates M → Associates M → Prop) = (·
 instance uniqueUnits : Unique (Associates M)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
-    revert hab hba
-    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
-      associated_one_of_associated_mul_one <| Quotient.exact hab
+    induction a, b using Quotient.inductionOn₂ with | _ a b
+    exact Units.ext <| Quotient.sound <| associated_one_of_associated_mul_one <| Quotient.exact hab
 
 @[simp]
 theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by

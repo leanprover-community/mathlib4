@@ -447,7 +447,7 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
           HomogeneousLocalization.val_mk]
         dsimp
         simp_rw [decompose_of_mem_same _ f_deg]
-        simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
+        simp)
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
   fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
