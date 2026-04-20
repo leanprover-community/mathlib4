@@ -79,11 +79,11 @@ end IsRegularLocalRing
 
 /-!
 
-# Definition of Regular Ring
+# Definition of regular rings
 
 In this section, we define regular rings as noetherian rings whose localization at every prime are
 regular local rings.
-(Note that regular local ring is not natrually regular ring in this definition).
+(Note that a regular local ring is a regular ring, but this is not immediate under this definition).
 
 ## TODO
 Show that regular local rings are regular under this definition.
