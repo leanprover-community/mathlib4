@@ -37,8 +37,6 @@ open scoped Manifold ContDiff
 universe u v
 
 /-- The category of `C^n` 𝕜-manifolds. -/
--- Note: Copied from `PFunctor`, but do we need seperate universe levels here? Seems perverse.
-@[pp_with_univ, nolint checkUnivs]
 structure MfldCat (𝕜 : Type v) [NontriviallyNormedField 𝕜] (n : ℕ∞ω) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
   of ::
