@@ -32,7 +32,7 @@ The proof used can be found in [serge_lang_algebra]
 
 @[expose] public section
 
-variable {α β : Type*}
+variable {α β : Type*} {ι : Sort*}
 
 /-- The type of nonempty chains of an order -/
 @[ext]
@@ -229,6 +229,8 @@ theorem nonempty_fixedPoints_of_inflationary [Nonempty α] (le_map : ∀ x, x �
 
 end ChainCompletePartialOrder
 
+open OmegaCompletePartialOrder
+
 namespace CompleteLattice
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
@@ -241,7 +243,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
-  rw [sSup_eq_iSup]; exact ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
+  rw [sSup_eq_iSup]; apply ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
 
 lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous (f ⊔ g) := by
