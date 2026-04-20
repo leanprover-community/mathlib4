@@ -80,7 +80,7 @@ abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ
 abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
   (snd R A B).comp (pullback f g).val
 
-theorem comp_pullbackFst_eq_comp_pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) :
+theorem pullback_comm_sq (f : A →ₐ[R] C) (g : B →ₐ[R] C) :
     f.comp (pullbackFst f g) = g.comp (pullbackSnd f g) :=
   AlgHom.ext fun x ↦ x.prop
 

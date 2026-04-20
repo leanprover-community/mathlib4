@@ -79,7 +79,7 @@ variable {I : Ideal A}
 
 /-- The residue algebra structure on `ofQuot`. -/
 instance ofQuotResidueAlgebra [Nontrivial (A ⧸ I)] : Algebra (A ⧸ I) k :=
-  (Ideal.Quotient.lift I (algebraMap A k) fun a a_in ↦ by
+  fast_instance% (Ideal.Quotient.lift I (algebraMap A k) fun a a_in ↦ by
     rw [← residue_apply, residue_eq_zero_iff]
     exact le_maximalIdeal (by rwa [← Ideal.Quotient.nontrivial_iff]) a_in).toAlgebra
 
@@ -104,7 +104,7 @@ lemma residue_ofQuot_mk_apply [Nontrivial (A ⧸ I)] (a : A) :
     (A.ofQuot I).residue (Ideal.Quotient.mk I a) = A.residue a := rfl
 
 instance algebraOfQuot (A : LocAlgCat.{w} Λ k) {I : Ideal A} [Nontrivial (A ⧸ I)] :
-    Algebra A (A.ofQuot I) := Ideal.Quotient.algebra _
+    Algebra A (A.ofQuot I) := fast_instance% Ideal.Quotient.algebra _
 
 instance isScalarTower_algebraOfQuot (A : LocAlgCat.{w} Λ k) {I : Ideal A} [Nontrivial (A ⧸ I)] :
     IsScalarTower Λ A (A.ofQuot I) := .of_algebraMap_eq fun _ ↦ rfl
@@ -204,16 +204,16 @@ lemma toInfinitesimalNeighborhood_comp_map (m n : ℕ) [NeZero m] [NeZero n] (hm
 
 /-- The special fiber of `A` over `Λ` when `Λ` is a local ring, defined as the quotient by
 the extended maximal ideal of `Λ`, viewed as an object in `LocAlgCat`. -/
-abbrev specialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
-    (A : LocAlgCat.{w} Λ k) : LocAlgCat.{w} Λ k := A.ofQuot ((maximalIdeal Λ).map (algebraMap Λ A))
+abbrev specialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : LocAlgCat.{w} Λ k) :
+    LocAlgCat.{w} Λ k := A.ofQuot ((maximalIdeal Λ).map (algebraMap Λ A))
 
 /-- The canonical morphism from `A` to its special fiber. -/
-abbrev toSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
-    (A : LocAlgCat.{w} Λ k) : A ⟶ A.specialFiber := toOfQuot ..
+abbrev toSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (A : LocAlgCat.{w} Λ k) :
+    A ⟶ A.specialFiber := toOfQuot ..
 
 /-- The morphism between special fibers induced by a morphism between two objects. -/
-abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
-    (f : A ⟶ B) : A.specialFiber ⟶ B.specialFiber :=
+abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (f : A ⟶ B) :
+    A.specialFiber ⟶ B.specialFiber :=
   mapOfQuot f (by rw [Ideal.map_le_iff_le_comap, ← Ideal.comap_coe f.toAlgHom,
     Ideal.comap_comap, AlgHom.comp_algebraMap, ← Ideal.map_le_iff_le_comap])
 
@@ -236,7 +236,7 @@ section ofPullback
 variable {f : A ⟶ C} {g : B ⟶ C}
 
 instance ofPullbackResidueAlgebra : Algebra (f.toAlgHom.pullback g.toAlgHom) k :=
-  (A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)).toAlgebra
+  fast_instance% (A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)).toAlgebra
 
 instance isScalarTower_ofPullbackResidueAlgebra :
     IsScalarTower Λ (f.toAlgHom.pullback g.toAlgHom) k := .of_algebraMap_eq (by
@@ -280,9 +280,9 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
   ⟨f.toAlgHom.pullbackSnd g.toAlgHom, IsLocalRing.maximalIdeal_comap
     (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom, (residue_comp_pullbackFst f g).symm⟩
 
-lemma pullbackFst_comp_eq_pullbackSnd_comp (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g :=
-  Hom.ext <| AlgHom.comp_pullbackFst_eq_comp_pullbackSnd f.toAlgHom g.toAlgHom
+  Hom.ext <| AlgHom.pullback_comm_sq f.toAlgHom g.toAlgHom
 
 open Polynomial in
 private lemma not_isUnit_aeval_of_aeval_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (x : k)

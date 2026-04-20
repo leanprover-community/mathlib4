@@ -1185,7 +1185,7 @@ abbrev pullbackFst (f : A →+* C) (g : B →+* C) : f.pullback g →+* A :=
 abbrev pullbackSnd (f : A →+* C) (g : B →+* C) : f.pullback g →+* B :=
   (RingHom.snd A B).comp (f.pullback g).subtype
 
-theorem comp_pullbackFst_eq_comp_pullbackSnd (f : A →+* C) (g : B →+* C) :
+theorem pullback_comm_sq (f : A →+* C) (g : B →+* C) :
     f.comp (f.pullbackFst g) = g.comp (f.pullbackSnd g) :=
   RingHom.ext fun x ↦ x.prop
 

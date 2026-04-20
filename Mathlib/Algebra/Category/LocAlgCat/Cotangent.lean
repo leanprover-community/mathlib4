@@ -46,7 +46,8 @@ namespace LocAlgCat
 
 variable {Λ : Type u} [CommRing Λ] {k : Type v} [Field k] [Algebra Λ k] {A B C : LocAlgCat.{w} Λ k}
 
-instance : Module k (CotangentSpace A) := .compHom _ (A.residueEquiv.symm : k →+* ResidueField A)
+instance module_cotangentSpace : Module k (CotangentSpace A) :=
+  fast_instance% .compHom _ (A.residueEquiv.symm : k →+* ResidueField A)
 
 lemma smul_cotangent_def (r : k) (x : CotangentSpace A) : r • x = (A.residueEquiv.symm r) • x :=
   rfl
@@ -127,7 +128,7 @@ theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
   rw [sup_eq_right.mpr this]
   exact (A.toOfQuot I).comap_maximalIdeal_eq
 
-theorem bijective_mapCotangent_toOfQuot_iff {I : Ideal A} [Nontrivial (A ⧸ I)] :
+theorem bijective_mapCotangent_toOfQuot_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
   simp only [Bijective, surjective_mapCotangent_toOfQuot I, and_true]
   simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker]
@@ -215,7 +216,7 @@ section IsLocalRing
 variable [IsLocalRing Λ]
 
 instance [Algebra.IsIntegral Λ k] : Module (ResidueField Λ) (CotangentSpace A) :=
-  .restrictScalars (ResidueField Λ) k (CotangentSpace A)
+  fast_instance% .restrictScalars (ResidueField Λ) k (CotangentSpace A)
 
 lemma residueField_smul_cotangent [Algebra.IsIntegral Λ k] (r : ResidueField Λ)
     (x : CotangentSpace A) : r • x = (algebraMap (ResidueField Λ) k r) • x := rfl
