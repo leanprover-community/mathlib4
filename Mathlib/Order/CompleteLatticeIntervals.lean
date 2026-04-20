@@ -169,7 +169,7 @@ end OrdConnected
 section Iio
 
 open Classical in
-/-- Complete lattice structure on `Set.Iio` -/
+/-- Complete linear order structure on `Set.Iio` -/
 noncomputable instance Set.Iio.conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrderBot α] {a : α} [Fact (¬ IsMin a)] :
     ConditionallyCompleteLinearOrderBot (Iio a) where
