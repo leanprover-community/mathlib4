@@ -308,6 +308,7 @@ instance (n : ℕ) : FinEnum (BitVec n) where
 @[simp, grind =] lemma card_Int16 : card Int16 = 2 ^ 16 := rfl
 @[simp, grind =] lemma card_Int32 : card Int32 = 2 ^ 32 := rfl
 @[simp, grind =] lemma card_Int64 : card Int64 = 2 ^ 64 := rfl
+@[simp, grind =] lemma card_bitVec (n : ℕ) : card (BitVec n) = 2 ^ n := rfl
 
 end FinEnum
 
