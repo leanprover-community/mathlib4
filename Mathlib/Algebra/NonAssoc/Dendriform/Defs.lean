@@ -162,7 +162,7 @@ instance : Semiring M where
     rcases eq_or_ne a 1 with (rfl | ha)
     · exact one_mul_one_eq_one
     · simp [one_right ha, one_left ha]
-  mul_one a := by 
+  mul_one a := by
     rcases eq_or_ne a 1 with (rfl | ha)
     · exact one_mul_one_eq_one
     · simp [right_one ha, left_one ha]
