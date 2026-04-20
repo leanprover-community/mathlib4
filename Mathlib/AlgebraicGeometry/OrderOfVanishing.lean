@@ -60,9 +60,7 @@ lemma functionField_exists_unit_nhd (f : X.functionField) (hf : f ≠ 0) :
     (by simpa using (IsIntegral.nonempty : Nonempty (X.basicOpen g))))
   refine ⟨?_, AlgebraicGeometry.RingedSpace.isUnit_res_basicOpen X.toRingedSpace g⟩
   rw [← hg, ← this]
-
   rfl
-  --hg ▸ this ▸ rfl
 
 variable [IsLocallyNoetherian X]
 
