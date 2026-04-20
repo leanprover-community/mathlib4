@@ -146,8 +146,6 @@ instance SpecMap_residue {X : Scheme.{u}} (x) : IsClosedImmersion (Spec.map (X.r
   IsClosedImmersion.spec_of_surjective (X.residue x)
     Ideal.Quotient.mk_surjective
 
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue := SpecMap_residue
-
 instance (priority := low) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsAffineHom f :=
   isAffineHom_of_isInducing _ f.isClosedEmbedding.isInducing f.isClosedEmbedding.isClosed_range
 
@@ -393,7 +391,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsClosedImmersion f] :
 instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersion f] :
     LocallyOfFiniteType f := by
   rw [HasRingHomProperty.eq_affineLocally @LocallyOfFiniteType,
-    ← and_iff_right (inferInstanceAs (IsAffineHom f)) (b := affineLocally _ _),
+    ← and_iff_right (inferInstance : IsAffineHom f) (b := affineLocally _ _),
     ← targetAffineLocally_affineAnd_iff_affineLocally RingHom.finiteType_isLocal]
   rw [HasAffineProperty.eq_targetAffineLocally @IsClosedImmersion] at h
   exact targetAffineLocally_affineAnd_le (RingHom.FiniteType.of_surjective _) _ h

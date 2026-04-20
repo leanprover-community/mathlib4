@@ -127,31 +127,37 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     _ ≤ _ := (nthRoots n (f g₀)).toFinset_card_le
 
 /-- A finite subgroup of the unit group of an integral domain is cyclic. -/
-theorem isCyclic_of_subgroup_isDomain [Finite G] (f : G →* R) (hf : Injective f) : IsCyclic G := by
+theorem isCyclic_of_injective_ringHom [Finite G] (f : G →* R) (hf : Injective f) : IsCyclic G := by
   classical
     cases nonempty_fintype G
     apply isCyclic_of_card_pow_eq_one_le
     intro n hn
     exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
 
+@[deprecated (since := "2026-03-04")]
+alias isCyclic_of_subgroup_isDomain := isCyclic_of_injective_ringHom
+
 /-- The unit group of a finite integral domain is cyclic.
 
 To support `ℤˣ` and other infinite monoids with finite groups of units, this requires only
 `Finite Rˣ` rather than deducing it from `Finite R`. -/
 instance [Finite Rˣ] : IsCyclic Rˣ :=
-  isCyclic_of_subgroup_isDomain (Units.coeHom R) Units.val_injective
+  isCyclic_of_injective_ringHom (Units.coeHom R) Units.val_injective
 
 section
 
 variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
-instance subgroup_units_cyclic : IsCyclic S :=
-  isCyclic_of_subgroup_isDomain { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
+instance isCyclic_subgroup_units : IsCyclic S :=
+  isCyclic_of_injective_ringHom { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
     (Units.val_injective.comp Subtype.val_injective)
+
+@[deprecated (since := "2026-03-03")] alias subgroup_units_cyclic := isCyclic_subgroup_units
 
 end
 
+-- TODO: find a better home (Mathlib.Algebra.Polynomial.PartialFractions)?
 section EuclideanDivision
 
 namespace Polynomial
@@ -179,53 +185,40 @@ variable [Fintype G]
 -/
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
-    obtain ⟨x, hx⟩ : ∃ x : MonoidHom.range f.toHomUnits,
-        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x :=
-      IsCyclic.exists_monoid_generator
-    have hx1 : x ≠ 1 := by
-      rintro rfl
-      apply hf
+    obtain ⟨x, hx⟩ := IsCyclic.exists_monoid_generator (α := MonoidHom.range f.toHomUnits)
+    have hx1 : (x.1 : R) - 1 ≠ 0 := by
+      rw [sub_ne_zero]
+      contrapose hf
       ext g
-      rw [MonoidHom.one_apply]
       obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
-      rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
-        eq_comm] at hn
-    replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
-      fun h => hx1 (Subtype.ext (Units.ext (sub_eq_zero.1 h)))
+      simpa [hf, Subtype.ext_iff, Units.ext_iff] using hn.symm
     let c := #{g | f.toHomUnits g = 1}
     calc
-      ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
-      _ = ∑ u ∈ univ.image f.toHomUnits, #{g | f.toHomUnits g = u} • (u : R) :=
+      ∑ g : G, f g = ∑ u ∈ univ.image f.toHomUnits, #{g | f.toHomUnits g = u} • (u : R) :=
         sum_comp ((↑) : Rˣ → R) f.toHomUnits
       _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
-      -- Porting note: have to change `(b : R)` into `((b : Rˣ) : R)`
-      _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
+      _ = ∑ b : MonoidHom.range f.toHomUnits, c • (b.1 : R) :=
         (Finset.sum_subtype _ (by simp) _)
-      _ = c • ∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R) := smul_sum.symm
-      _ = c • (0 : R) := congr_arg₂ _ rfl ?_
+      _ = c • ∑ b : MonoidHom.range f.toHomUnits, (b.1 : R) := smul_sum.symm
+      _ = c • 0 := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
-      _ = (0 : R) := smul_zero _
+      _ = 0 := smul_zero _
     · -- remaining goal 1
-      show #{g : G | f.toHomUnits g = u} = c
       apply MonoidHom.card_fiber_eq_of_mem_range f.toHomUnits
       · simpa only [mem_image, mem_univ, true_and, Set.mem_range] using hu
       · exact ⟨1, f.toHomUnits.map_one⟩
     -- remaining goal 2
-    show (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R)) = 0
     calc
-      (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R))
-        = ∑ n ∈ range (orderOf x), ((x : Rˣ) : R) ^ n :=
+      (∑ b : MonoidHom.range f.toHomUnits, (b.1 : R))
+        = ∑ n ∈ range (orderOf x), (x.1 : R) ^ n :=
         Eq.symm <|
-          sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
+          sum_nbij (x ^ ·) (by simp)
             (by simpa using pow_injOn_Iio_orderOf)
             (fun b _ => let ⟨n, hn⟩ := hx b
-              ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
-               -- Porting note: have to `beta_reduce` to apply the function
-               by beta_reduce at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
-            (by simp only [imp_true_iff, Subgroup.coe_pow,
-                Units.val_pow_eq_pow_val])
+              ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)), by simp [hn]⟩)
+            (by simp)
       _ = 0 := ?_
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
     norm_cast

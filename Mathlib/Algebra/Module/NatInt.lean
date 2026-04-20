@@ -136,7 +136,7 @@ def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := inferInstance
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 
-/-- All `ℕ`-module structures are equal. See also `AddCommMoniod.uniqueNatModule`. -/
+/-- All `ℕ`-module structures are equal. See also `AddCommMonoid.uniqueNatModule`. -/
 instance AddCommMonoid.subsingletonNatModule : Subsingleton (Module ℕ M) :=
   AddCommMonoid.uniqueNatModule.instSubsingleton
 

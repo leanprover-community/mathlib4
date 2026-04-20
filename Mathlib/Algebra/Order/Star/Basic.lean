@@ -180,7 +180,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
-@[aesop 10% apply]
+@[aesop 10% apply, grind ←]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   .mono hx <| .zero R
 
@@ -427,10 +427,6 @@ instance [IsCancelAdd R] : IsStrictOrderedModule R A where
     obtain ⟨ha₀, ha⟩ := ha
     exact ⟨r • a, smul_ne_zero hr₀ ha₀, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-@[deprecated smul_lt_smul_of_pos_left (since := "2025-08-24")]
-lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b)
-    (hc : 0 < c) : c • a < c • b := smul_lt_smul_of_pos_left hab hc
-
 end StarModule
 
 section OrderClass
@@ -450,7 +446,6 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [StarOrderedRing R] [StarOrderedRing S]
     [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
 

@@ -189,7 +189,6 @@ theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : 
 theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
   nhdsLT_neBot_of_exists_lt ⟨0, NeZero.pos x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
 statement works for `x = 0`.
@@ -278,15 +277,14 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
-      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.ofNat_ne_top⟩)⟩)
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
     · refine ⟨n, hn.trans_lt ?_⟩
       by_cases hε_top : ε = ∞
-      · rw [hε_top]
-        exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
+      · simp [hε_top]
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      gcongr <;> simp [*]
+      gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -749,7 +747,6 @@ section truncateToReal
 Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
 noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
 
-set_option backward.isDefEq.respectTransparency false in
 lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
@@ -761,7 +758,7 @@ lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞}
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   gcongr
-  exacts [t_ne_top, min_le_left t x]
+  exact min_le_left t x
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 
@@ -868,7 +865,6 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rw [key]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -876,7 +872,6 @@ lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u)
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -884,7 +879,6 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
     (f : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf f := by
   refine le_antisymm ?_ <| liminf_le_liminf <| .of_forall <| by simp

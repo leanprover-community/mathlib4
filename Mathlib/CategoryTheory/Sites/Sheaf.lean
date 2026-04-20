@@ -349,7 +349,7 @@ abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.obj ⟶ Y.obj) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
 
 /-- `Sheaf.homEquiv` as a natural isomorphism. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
     sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
       yoneda :=
@@ -363,7 +363,7 @@ lemma sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : 
   rfl
 
 /-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
     (sheafToPresheaf J A).op ⋙ coyoneda ⋙
       (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A) ≅
@@ -387,25 +387,31 @@ theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mon
 instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
   · intro hP
-    refine Presieve.isSheaf_iso J ?_ (hP PUnit)
+    refine Presieve.isSheaf_iso J ?_ (hP (PUnit))
     exact Functor.isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
-    refine ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) ?_, ?_, ?_⟩
+    refine ⟨TypeCat.ofHom fun x => (hP S hS).amalgamate (fun Z f hf ↦
+      (ConcreteCategory.hom (z f hf)) x) ?_, ?_, ?_⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
-      exact congr_fun (hz g₁ g₂ hf₁ hf₂ h) x
+      exact (ConcreteCategory.congr_hom (hz g₁ g₂ hf₁ hf₂ h)) x
     · intro Z f hf
-      funext x
+      apply ConcreteCategory.hom_ext
+      intro x
+      simp only [Functor.comp_obj, Functor.flip_obj_obj, yoneda_obj_obj, Functor.comp_map,
+        Functor.flip_obj_map, yoneda_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+        comp_apply]
       apply Presieve.IsSheafFor.valid_glue
     · intro y hy
-      funext x
+      apply ConcreteCategory.hom_ext
+      intro x
       apply (hP S hS).isSeparatedFor.ext
       intro Y' f hf
-      rw [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
-      rfl
+      simp [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
 
 /-- The sheaf of sections guaranteed by the sheaf condition. -/
 @[simps]
@@ -636,7 +642,7 @@ set_option backward.isDefEq.respectTransparency false in
 -- Again I wonder whether `UnivLE` can somehow be used to allow `s` to take
 -- values in a more general universe.
 /-- (Implementation). An auxiliary lemma to convert between sheaf conditions. -/
-def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
+def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type (max v₁ u₁))
     [∀ J, PreservesLimitsOfShape (Discrete.{max v₁ u₁} J) s] (U : C) (R : Presieve U) :
     IsLimit (s.mapCone (Fork.ofι _ (w R P))) ≃
       IsLimit (Fork.ofι _ (Equalizer.Presieve.w (P ⋙ s) R)) := by
@@ -709,7 +715,7 @@ Note this lemma applies for "algebraic" categories, e.g. groups, abelian groups 
 for the category of topological spaces, topological rings, etc. since reflecting isomorphisms does
 not hold.
 -/
-theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
+theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type (max v₁ u₁)) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
   have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSize_shrink.{_, 0, _, u₁} s

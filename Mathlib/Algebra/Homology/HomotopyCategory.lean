@@ -46,16 +46,18 @@ with chain maps identified when they are homotopic. -/
 def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 
-instance : Category (HomotopyCategory V c) := by
-  dsimp only [HomotopyCategory]
-  infer_instance
+instance : Category (HomotopyCategory V c) :=
+  inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
--- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
-instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
-  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
-  exact ⟨Homotopy.add h h'⟩)
+instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
+  Quotient.preadditive _ (by
+    rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+    exact ⟨Homotopy.add h h'⟩)
+
+instance : Preadditive (HomotopyCategory V c) :=
+  inferInstanceAs <| Preadditive (CategoryTheory.Quotient (homotopic V c))
 
 /-- The quotient functor from complexes to the homotopy category. -/
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
@@ -67,16 +69,13 @@ instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 
-instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
-  (inferInstance : Preadditive (HomotopyCategory V c))
-
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
 instance [Linear R V] : Linear R (HomotopyCategory V c) :=
   Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
 
-instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
-  Quotient.linear_functor _ _ _
+instance [Linear R V] : Functor.Linear R (quotient V c) :=
+  Quotient.linear_functor _ (homotopic V c) _
 
 open ZeroObject
 

@@ -206,8 +206,8 @@ noncomputable instance : LinearOrder (DedekindCut α) where
   toDecidableLE := inferInstance
 
 noncomputable instance : CompleteLinearOrder (DedekindCut α) where
-  __ := inferInstanceAs (LinearOrder _)
-  __ := inferInstanceAs (CompleteLattice _)
+  __ := (inferInstance : LinearOrder _)
+  __ := (inferInstance : CompleteLattice _)
   __ := LinearOrder.toBiheytingAlgebra _
 
 end LinearOrder

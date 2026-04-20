@@ -129,7 +129,7 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
   · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-      _ ≤ ‖f‖ * (N * ‖e x‖) := mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _)
+      _ ≤ ‖f‖ * (N * ‖e x‖) := by gcongr; exact h_e x
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 
 
