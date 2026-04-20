@@ -52,13 +52,12 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
-/-- The trivial group is the normal closure of a finite set of relations. -/
-protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) :=
-  ⟨∅, Finite.of_subsingleton, normalClosure_empty⟩
-
 theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG := by
   obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
   exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
+
+/-- The trivial group is the normal closure of a finite set of relations. -/
+protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) := of_FG _
 
 end Subgroup.IsNormalClosureFG
 
@@ -84,7 +83,9 @@ instance [Finite α] : Group.IsFinitelyPresented (FreeGroup α) := by
   · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
     exact Subgroup.IsNormalClosureFG.bot
 
-theorem mk' (G : Type*) [Group G] (S : Type*) [Finite S] (φ : FreeGroup S →* G)
+variable (G)
+
+theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
     (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
   let e' := FreeGroup.freeGroupCongr e
