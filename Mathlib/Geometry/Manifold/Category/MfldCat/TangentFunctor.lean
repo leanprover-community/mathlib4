@@ -13,6 +13,9 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 
 We define the tangent functor `MfldCat.tangentFunctor : MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n`, sending a
 `C^(n+1)` manifold to its tangent bundle and a `C^(n+1)` map to its pushforward `tangentMap`.
+
+## References
+* [J. M. Lee, *Introduction to Smooth Manifolds*][lee2012] (2nd Edition, p. 75)
 -/
 
 @[expose] public section
