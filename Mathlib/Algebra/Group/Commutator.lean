@@ -30,9 +30,15 @@ def commutatorElement {G : Type*} [Group G] : Bracket G G :=
 
 namespace commutatorElement
 
-attribute [scoped instance] commutatorElement addCommutatorElement
+attribute [scoped instance] commutatorElement
 
 end commutatorElement
+
+namespace addCommutatorElement
+
+attribute [scoped instance] addCommutatorElement
+
+end addCommutatorElement
 
 open scoped commutatorElement
 
