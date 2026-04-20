@@ -239,6 +239,7 @@ theorem out_zero : (0 : Associates α).out = 0 := by
 
 end Associates
 
+set_option linter.globalAttributeIn false in
 /-- GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
