@@ -88,13 +88,12 @@ theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
   let e' := FreeGroup.freeGroupCongr e
   let φ' := φ.comp e'.symm.toMonoidHom
-  have h : φ'.ker = φ.ker.map e' := MonoidHom.ker_comp_mulEquiv φ e'.symm
+  have h : φ'.ker = φ.ker.map e' := φ.ker_comp_mulEquiv e'.symm
   refine ⟨n, φ', h1.comp e'.symm.surjective, ?_⟩
   simpa [h] using h2.map e'.surjective
 
 /-- Any finite group is finitely presented. -/
-instance (G : Type*) [Group G] [Finite G] : IsFinitelyPresented G := by
-  refine mk' G G FreeGroup.prod FreeGroup.prod_surjective
-    (Subgroup.IsNormalClosureFG.of_FG FreeGroup.prod.ker)
+instance [Finite G] : IsFinitelyPresented G :=
+  mk' G G FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
