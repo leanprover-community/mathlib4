@@ -285,6 +285,7 @@ theorem StronglyAdapted.isStronglyProgressive_of_discrete [TopologicalSpace ι] 
   h.isStronglyProgressive_of_continuous fun _ => continuous_of_discreteTopology
 
 -- this dot notation will make more sense once we have a more general definition for predictable
+@[deprecated "use `IsStronglyPredictable.stronglyAdapted`" (since := "2026-01-05")]
 theorem Predictable.stronglyAdapted {f : Filtration ℕ m} {u : ℕ → Ω → β}
     (hu : StronglyAdapted f fun n => u (n + 1)) (hu0 : StronglyMeasurable[f 0] (u 0)) :
     StronglyAdapted f u := fun n =>
