@@ -260,6 +260,34 @@ theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
 
 end AffineIsometry
 
+namespace AffineEquiv
+
+variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W]
+  [MetricSpace P] [NormedAddTorsor V P]
+  [MetricSpace Q] [NormedAddTorsor W Q]
+
+@[simp]
+theorem image_intrinsicInterior (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
+    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp
+  haveI : Nonempty s := hs.to_subtype
+  let spanEquiv : affineSpan 𝕜 s ≃ᵃ[𝕜] (affineSpan 𝕜 s).map φ.toAffineMap :=
+    (affineSpan 𝕜 s).equivMapOfInjective φ.toAffineMap φ.injective
+  let spanHomeomorph := spanEquiv.toHomeomorphOfFiniteDimensional
+  have hsubtype : φ.toAffineMap ∘ (↑) ∘ spanHomeomorph.symm = (↑) := by
+    funext x
+    exact congrArg Subtype.val (spanEquiv.apply_symm_apply x)
+  rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s,
+    ← hsubtype, ← Function.comp_assoc, image_comp, image_comp,
+    spanHomeomorph.symm.image_interior, spanHomeomorph.image_symm, ← preimage_comp,
+    Function.comp_assoc, spanHomeomorph.symm_comp_self, Function.comp_id, preimage_comp]
+  simp [φ.injective.preimage_image]
+
+end AffineEquiv
+
 section NormedAddTorsor
 
 variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
