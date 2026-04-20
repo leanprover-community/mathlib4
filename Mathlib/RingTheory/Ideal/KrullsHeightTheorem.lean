@@ -483,15 +483,13 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
 end Algebra
 
 /-- In a Noetherian local ring of positive Krull dimension,
-there exists an element in the maximal ideal not in its square. -/
-lemma IsLocalRing.exists_mem_maximalIdeal_not_mem_sq
-    [IsLocalRing R] (h : 0 < ringKrullDim R) :
-    ∃ x ∈ IsLocalRing.maximalIdeal R, x ∉ (IsLocalRing.maximalIdeal R) ^ 2 := by
-  by_contra! h_contra
+the square of the maximal ideal is strictly contained in the maximal ideal. -/
+lemma IsLocalRing.maximalIdeal_sq_lt [IsLocalRing R] (h : 0 < ringKrullDim R) :
+    (IsLocalRing.maximalIdeal R) ^ 2 < IsLocalRing.maximalIdeal R := by
+  refine lt_of_le_of_ne (Ideal.pow_le_self two_ne_zero) fun h_eq => h.ne' ?_
   have : IsLocalRing.maximalIdeal R = ⊥ :=
     Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
       (IsNoetherian.noetherian _)
-      (by rwa [Ideal.smul_eq_mul, ← sq])
+      (by rw [Ideal.smul_eq_mul, ← sq]; exact h_eq.symm.le)
       (IsLocalRing.maximalIdeal_le_jacobson ⊥)
-  exact h.ne' (by rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this,
-    Ideal.height_bot, WithBot.coe_zero])
+  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this, Ideal.height_bot, WithBot.coe_zero]
