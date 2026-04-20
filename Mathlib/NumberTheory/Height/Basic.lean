@@ -170,7 +170,7 @@ lemma logHeight₁_eq (x : K) :
   rw [mulHeight₁_eq] at H
   have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
     intro a ha
-    contrapose! ha
+    contrapose ha
     rw [ha]
     exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
   rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
