@@ -159,7 +159,6 @@ lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :

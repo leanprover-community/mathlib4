@@ -38,7 +38,6 @@ namespace Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
 that works both for `ℝ` and `ℂ`. -/
@@ -70,7 +69,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
@@ -144,7 +142,6 @@ section Seminormed
 
 variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of Hahn-Banach. Given an element `x` of a normed space with `‖x‖ ≠ 0`, there
 exists an element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by

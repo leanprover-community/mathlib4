@@ -370,7 +370,6 @@ open scoped InnerProductSpace
 theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
     ((stereographic' n v).symm x : E) =
