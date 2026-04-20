@@ -783,7 +783,6 @@ field `𝕜`. This definition includes the model with corners `I` (which might a
 or not, so this class covers both manifolds with boundary and manifolds without boundary), and
 a smoothness parameter `n : ℕ∞ω` (where `n = 0` means topological manifold, `n = ∞` means
 smooth manifold and `n = ω` means analytic manifold). -/
-@[informal "smooth manifold"]
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω) (M : Type*)
@@ -929,7 +928,6 @@ example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
-@[informal "product of manifolds"]
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
