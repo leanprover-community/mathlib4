@@ -37,6 +37,8 @@ as a follow-up.
   w.r.t. `μ` as an `ℝ≥0∞`-valued vector measure.
 * `ContinuousLinearMap.density`: the Radon–Nikodym density of a scalar-valued bounded
   linear functional, obtained by recombining the real and imaginary parts.
+* `ContinuousLinearMap.apply_indicator_one_eq_setIntegral_density`: `φ` applied to the scalar
+  unit indicator equals the set integral of `φ.density hp` (p-general key identity).
 * `MeasureTheory.Lp.lInftyToL1Dualₗᵢ`: the natural pairing `g f ↦ ∫ x, g x * f x ∂μ` packaged
   as an isometric `𝕜`-linear embedding `Lp 𝕜 ∞ μ →ₗᵢ[𝕜] StrongDual 𝕜 (Lp 𝕜 1 μ)`.
 * `MeasureTheory.Lp.lInftyEquivL1Dual`: for a finite measure `μ`, the above embedding is an
@@ -232,13 +234,14 @@ lemma lInftyToL1Dualₗᵢ_apply_apply (g : Lp 𝕜 ∞ μ) (f : Lp 𝕜 1 μ) :
 
 end IsometryLowerBound
 
-/-! ### Surjectivity via Radon–Nikodym
+/-! ### Surjectivity via Radon–Nikodym (at `p = 1`)
 
 For a finite measure `μ`, every bounded linear functional on `L¹(μ; 𝕜)` is given by integration
-against an `L∞(μ; 𝕜)` function. The proof decomposes a complex scalar functional into real and
-imaginary parts (via `ContinuousLinearMap.reFunctional`, `ContinuousLinearMap.imFunctional`,
-precomposed with `Lp.ofReal`), applies the signed-measure Radon–Nikodym to each, and recombines
-into `ContinuousLinearMap.density`. -/
+against an `L∞(μ; 𝕜)` function. The key p-general identity
+`φ (indicatorConstLp p hs _ 1) = ∫_s φ.density hp` is
+`ContinuousLinearMap.apply_indicator_one_eq_setIntegral_density` above; here at `p = 1` we
+additionally establish that `φ.density` lies in `L∞` and extend the identity from indicators
+to all of `L¹` via `Lp.induction`, yielding surjectivity of `lInftyToL1Dualₗᵢ`. -/
 
 section Surjectivity
 
