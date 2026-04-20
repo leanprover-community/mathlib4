@@ -23,7 +23,7 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Main results
 
 * `IsStronglyPredictable.progMeasurable` : A predictable process is progressively measurable.
-* `isStronglyPredictable_iff_measurable_add_one` : `u` is a discrete predictable process iff
+* `IsStronglyPredictable.iff_measurable_add_one` : `u` is a discrete predictable process iff
   `u (n + 1)` is `𝓕 n`-measurable and `u 0` is `𝓕 0`-measurable.
 
 ## Tags
@@ -133,9 +133,28 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   · exact hm'bot A hA
   · exact hm' i A hA
 
-end
+/-- The inclusion map from [0,i] × Ω with the subtype × 𝓕 i σ-algebra) to ι × Ω with the
+predictable σ-algebra is measurable -/
+lemma measurable_inclusion_predictable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι]
+    [TopologicalSpace ι] [OpensMeasurableSpace ι] [OrderClosedTopology ι] {𝓕 : Filtration ι m} {i} :
+    @Measurable (Set.Iic i × Ω) (ι × Ω) (Subtype.instMeasurableSpace.prod (𝓕 i)) 𝓕.predictable
+    fun x ↦ ⟨x.1.val, x.2⟩ := by
+  rw [measurable_iff_comap_le]
+  refine MeasurableSpace.comap_le_iff_le_map.2 <|
+    measurableSpace_le_predictable_of_measurableSet ?_ ?_
+  · intros A hA
+    simp only [MeasurableSpace.map_def,
+      (by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ A) = {⊥} ×ˢ A)]
+    exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hA
+  · intros j A hA
+    simp only [MeasurableSpace.map_def]
+    obtain hji | hij := le_total j i
+    · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
+        = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
+      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
+    · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
 
-section StronglyPredictable
+end
 
 variable [TopologicalSpace E]
 
@@ -150,40 +169,28 @@ open Filtration
 
 variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace ι]
     [OpensMeasurableSpace ι] [OrderClosedTopology ι]
-    [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 /-- A predictable process is progressively measurable. -/
 lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     ProgMeasurable 𝓕 u := by
-  refine fun i ↦ Measurable.stronglyMeasurable ?_
-  rw [IsStronglyPredictable, stronglyMeasurable_iff_measurable, measurable_iff_comap_le] at h𝓕
-  rw [measurable_iff_comap_le, (by aesop : (fun (p : Set.Iic i × Ω) ↦ u (p.1) p.2)
-      = Function.uncurry u ∘ (fun p ↦ (p.1, p.2))), ← MeasurableSpace.comap_comp]
-  refine (MeasurableSpace.comap_mono h𝓕).trans <| MeasurableSpace.comap_le_iff_le_map.2 <|
-    measurableSpace_le_predictable_of_measurableSet ?_ ?_
-  · intros A hA
-    simp only [MeasurableSpace.map_def,
-      (by aesop : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' ({⊥} ×ˢ A) = {⊥} ×ˢ A)]
-    exact (measurableSet_singleton _).prod <| 𝓕.mono bot_le _ hA
-  · intros j A hA
-    simp only [MeasurableSpace.map_def]
-    obtain hji | hij := le_total j i
-    · rw [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A
-        = (Subtype.val ⁻¹' (Set.Ioc j i)) ×ˢ A)]
-      exact (measurable_subtype_coe measurableSet_Ioc).prod (𝓕.mono hji _ hA)
-    · simp [(by grind : (fun (p : Set.Iic i × Ω) ↦ ((p.1 : ι), p.2)) ⁻¹' Set.Ioi j ×ˢ A = ∅)]
+  intro i
+  letI : MeasurableSpace (ι × Ω) := 𝓕.predictable
+  letI : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (𝓕 i)
+  let X m (x : Set.Iic i × Ω) := h𝓕.approx m ⟨x.1, x.2⟩
+  refine ⟨fun m ↦ SimpleFunc.mk (X m) ?_ ?_, ?_⟩
+  · exact fun e ↦ measurable_inclusion_predictable <| (h𝓕.approx m).measurableSet_fiber e
+  · exact Set.Finite.subset (h𝓕.approx m).finite_range (by grind)
+  · exact fun n ↦ by apply h𝓕.tendsto_approx
 
 /-- A predictable process is adapted. -/
 lemma stronglyAdapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsStronglyPredictable 𝓕 u) :
     StronglyAdapted 𝓕 u :=
   h𝓕.progMeasurable.stronglyAdapted
 
-end IsStronglyPredictable
-
 section Discrete
 
 /-- If `u` is a discrete predictable process, then `u (n + 1)` is `𝓕 n`-measurable. -/
-lemma IsStronglyPredictable.measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
+lemma measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h𝓕 : IsStronglyPredictable 𝓕 u) (n : ℕ) : StronglyMeasurable[𝓕 n] (u (n + 1)) := by
   letI : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
   letI : MeasurableSpace Ω := 𝓕 n
@@ -197,8 +204,7 @@ lemma IsStronglyPredictable.measurable_add_one {𝓕 : Filtration ℕ m} {u : �
     rw [Set.range_subset_iff]
     aesop
 
-lemma isStronglyPredictable_of_measurable_add_one'
-    {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
+lemma of_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
     (h₀ : StronglyMeasurable[𝓕 0] (u 0)) (h : ∀ n, StronglyMeasurable[𝓕 n] (u (n + 1))) :
     IsStronglyPredictable 𝓕 u := by
   letI : MeasurableSpace (ℕ × Ω) := 𝓕.predictable
@@ -206,7 +212,7 @@ lemma isStronglyPredictable_of_measurable_add_one'
   let X m (x : ℕ × Ω) := match x.1 with
     | 0 => h₀.approx m x.2
     | n + 1 => (h n).approx m x.2
-  -- second layer of approximation (to ensure Y has finite range as a process)
+  -- second layer of approximation (to ensure the whole process has finite range)
   let Y m (x : ℕ × Ω) := if x.1 ≤ m then X m x else X m ⟨0, x.2⟩
   use fun m ↦ SimpleFunc.mk (Y m) ?_ ?_
   · intro ⟨n, ω⟩
@@ -228,12 +234,9 @@ lemma isStronglyPredictable_of_measurable_add_one'
         letI : MeasurableSpace Ω := 𝓕 k
         exact ((h k).approx m).measurableSet_fiber s
       · rw [(by aesop : Function.curry (Y m) (k + 1) = Function.curry (X m) 0)]
+        apply 𝓕.mono (i := 0) (by simp)
         letI : MeasurableSpace Ω := 𝓕 0
-        have := (h₀.approx m).measurableSet_fiber s
-        -- first shrink sigma field to 𝓕 0
-        -- then apply this (h₀.approx m).measurableSet_fiber s
-        sorry -- split into cases and use that filtration is increasing
-      --exact ((h k).approx m).measurableSet_fiber s
+        exact (h₀.approx m).measurableSet_fiber s
   · apply Set.Finite.subset (s := ⋃ n ∈ Finset.range (m + 1), Set.range (Function.curry (X m) n))
     · refine Set.Finite.biUnion' (by aesop) ?_
       intro k hk
@@ -247,31 +250,17 @@ lemma isStronglyPredictable_of_measurable_add_one'
       · exact ⟨k, by aesop⟩
       · exact ⟨0, by aesop, ω, by aesop⟩
 
-variable [MetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
-
-lemma isStronglyPredictable_of_measurable_add_one
-    {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}
-    (h₀ : Measurable[𝓕 0] (u 0)) (h : ∀ n, Measurable[𝓕 n] (u (n + 1))) :
-    IsStronglyPredictable 𝓕 u := by
-  refine Measurable.stronglyMeasurable ?_
-  intro s hs
-  rw [(by aesop : Function.uncurry u ⁻¹' s = ⋃ n : ℕ, {n} ×ˢ (u n ⁻¹' s))]
-  refine MeasurableSet.iUnion <| fun n ↦ ?_
-  obtain (rfl | hn) := n.eq_zero_or_eq_succ_pred
-  · exact MeasurableSpace.measurableSet_generateFrom <| Or.inl ⟨u 0 ⁻¹' s, h₀ hs, rfl⟩
-  · rw [hn]
-    exact measurableSet_predictable_singleton_prod (h (n - 1) hs)
-
 /-- A discrete process `u` is predictable iff `u (n + 1)` is `𝓕 n`-measurable for all `n` and
 `u 0` is `𝓕 0`-measurable. -/
-lemma IsStronglyPredictable.isStronglyPredictable_iff_measurable_add_one
+lemma iff_measurable_add_one
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
-    IsStronglyPredictable 𝓕 u ↔ Measurable[𝓕 0] (u 0) ∧ ∀ n, Measurable[𝓕 n] (u (n + 1)) :=
-  ⟨fun h𝓕 ↦ ⟨(h𝓕.stronglyAdapted 0).measurable, fun n ↦ (h𝓕.measurable_add_one n).measurable⟩,
-    fun h ↦ isStronglyPredictable_of_measurable_add_one h.1 h.2⟩
+    IsStronglyPredictable 𝓕 u ↔
+    StronglyMeasurable[𝓕 0] (u 0) ∧ ∀ n, StronglyMeasurable[𝓕 n] (u (n + 1)) :=
+  ⟨fun h𝓕 ↦ ⟨h𝓕.progMeasurable.stronglyAdapted 0, h𝓕.measurable_add_one⟩,
+    fun h ↦ .of_measurable_add_one h.1 h.2⟩
 
 end Discrete
 
-end StronglyPredictable
+end IsStronglyPredictable
 
 end MeasureTheory
