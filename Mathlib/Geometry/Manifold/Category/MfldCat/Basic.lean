@@ -5,7 +5,6 @@ Authors: Jack McCarthy
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
 
