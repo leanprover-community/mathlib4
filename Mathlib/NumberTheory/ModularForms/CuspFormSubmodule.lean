@@ -57,7 +57,7 @@ lemma toModularFormₗ_eq_coe [Γ.HasDetOne] (f : CuspForm Γ k) :
 
 lemma toModularFormₗ_injective [Γ.HasDetOne] :
     Function.Injective (toModularFormₗ : CuspForm Γ k → ModularForm Γ k) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ congr_fun (congr_arg DFunLike.coe h) z
+  fun _ _ h ↦ DFunLike.ext _ _ fun z ↦ DFunLike.congr_fun h z
 
 end CuspForm
 
@@ -86,7 +86,7 @@ lemma isCuspForm_iff [Γ.HasDetOne] (f : ModularForm Γ k) :
 
 instance [Γ.HasDetOne] : FunLike (cuspFormSubmodule Γ k) ℍ ℂ where
   coe f := (f : ModularForm Γ k)
-  coe_injective' _ _ h := Subtype.ext (DFunLike.ext _ _ (congr_fun h))
+  coe_injective' _ _ h := Subtype.ext (DFunLike.ext' h)
 
 instance [Γ.HasDetOne] : CuspFormClass (cuspFormSubmodule Γ k) Γ k where
   slash_action_eq f := (f : ModularForm Γ k).slash_action_eq'
@@ -103,8 +103,7 @@ variable {k : ℤ}
 lemma isZeroAtImInfty_of_valueAtInfty_eq_zero
     (f : ModularForm 𝒮ℒ k) (h : valueAtInfty f = 0) : IsZeroAtImInfty f := by
   change Filter.Tendsto f atImInfty (𝓝 0)
-  rw [show (0 : ℂ) = cuspFunction 1 f 0 by
-    rw [cuspFunction_apply_zero f one_pos one_mem_strictPeriods_SL]; exact h.symm]
+  rw [← h, ← cuspFunction_apply_zero f one_pos one_mem_strictPeriods_SL]
   exact ((analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL).continuousAt.tendsto.comp
     (qParam_tendsto_atImInfty one_pos)).congr
     (fun τ ↦ eq_cuspFunction f τ one_mem_strictPeriods_SL one_ne_zero)
@@ -136,9 +135,8 @@ constant term. -/
 lemma isCuspForm_iff_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k) :
     IsCuspForm f ↔ (qExpansion 1 f).coeff 0 = 0 := by
   refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun h ↦ (isCuspForm_iff f).mpr (isZeroAt_of_coeffZero_eq_zero f h)⟩
-  rw [qExpansion_coeff_zero f one_pos one_mem_strictPeriods_SL]
-  exact congr_arg valueAtInfty (congr_arg DFunLike.coe hg.symm) ▸
-    (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
+  rw [← hg, qExpansion_coeff_zero _ one_pos one_mem_strictPeriods_SL]
+  exact (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
 
 end SL2Z
 
