@@ -550,23 +550,18 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   let i : L →ₐ[K] M := IsSepClosed.lift
   refine ⟨(show L ≃ₐ[K] i.fieldRange from AlgEquiv.ofInjectiveField i).trans
     (IntermediateField.equivOfEq ?_)⟩
-  rw [AlgHom.fieldRange_eq_map]
-  have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ := by
-    exact IntermediateField.adjoin_eq_top_of_algebra (F := K)
-      (S := {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1})
-      (((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2)
-  rw [← htop, IntermediateField.adjoin_map]
+  have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ :=
+    IntermediateField.adjoin_eq_top_of_algebra K _ ((iff_adjoin_eq_top S K L).1 ‹_›).2
+  rw [AlgHom.fieldRange_eq_map, ← htop, IntermediateField.adjoin_map]
   apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
   · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
-    exact IntermediateField.subset_adjoin (F := K)
-      (S := {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) ⟨n, hn, h1, by
-        simpa using congrArg i h2⟩
+    exact IntermediateField.subset_adjoin K _ ⟨n, hn, h1, by simpa using congrArg i h2⟩
   · rintro x ⟨n, hn, h1, h2⟩
     have : NeZero n := ⟨h1⟩
     obtain ⟨y, hy⟩ := exists_isPrimitiveRoot K L hn h1
-    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective (f := i) i.injective).eq_pow_of_pow_eq_one h2
-    exact pow_mem (IntermediateField.subset_adjoin (F := K)
-      (S := i '' {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) ⟨y, ⟨n, hn, h1, hy.pow_eq_one⟩, rfl⟩) m
+    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective i.injective).eq_pow_of_pow_eq_one h2
+    exact pow_mem (IntermediateField.subset_adjoin K (i '' {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1})
+      ⟨y, ⟨n, hn, h1, hy.pow_eq_one⟩, rfl⟩) m
 
 theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   rw [isGalois_iff]
