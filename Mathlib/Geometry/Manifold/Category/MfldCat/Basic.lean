@@ -5,6 +5,7 @@ Authors: Jack McCarthy
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
 
@@ -31,6 +32,8 @@ open scoped Manifold
 universe u₁ u₂ u₃ u₄
 
 /-- The category of `C^n` 𝕜-manifolds. -/
+-- Note: Copied from `PFunctor`, but do we need seperate universe levels here? Seems perverse.
+@[pp_with_univ, nolint checkUnivs]
 structure MfldCat (𝕜 : Type u₁) [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞) where
   /-- The object in `MfldCat` associated to a type equipped with the appropriate typeclasses. -/
   of ::
