@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.OrderOfVanishing.Basic
-import Mathlib.RingTheory.OrderOfVanishing.Properties
+import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 
 /-!
 # Order of vansihing in a scheme
