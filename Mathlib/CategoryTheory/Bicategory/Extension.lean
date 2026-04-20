@@ -163,11 +163,11 @@ end LeftExtension
 /-- Triangle diagrams for (left) lifts.
 ```
             b
-          ◥ |
-   lift /   |      ▲
+          ◹ |
+   lift /   |      △
       /     | f    | unit
-    /       ▼
-  c - - - ▶ a
+    /       ▽
+  c - - - ▷ a
        g
 ```
 -/
@@ -212,11 +212,11 @@ def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
 /-- Whisker a 1-morphism to a lift.
 ```
                     b
-                  ◥ |
-           lift /   |      ▲
+                  ◹ |
+           lift /   |      △
               /     | f    | unit
-            /       ▼
-x - - - ▶ c - - - ▶ a
+            /       ▽
+x - - - ▷ c - - - ▷ a
      h         g
 ```
 -/
@@ -330,7 +330,7 @@ end RightExtension
 /-- Triangle diagrams for (right) lifts.
 ```
             b
-          ◥ |
+          ◹ |
    lift /   |      | counit
       /     | f    ▽
     /       ▽

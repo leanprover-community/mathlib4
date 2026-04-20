@@ -217,11 +217,11 @@ def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
 /-- `f₊ g` is the left Kan lift of `g` along `f`.
 ```
             b
-          ◥ |
+          ◹ |
    f₊ g /   |
       /     | f
-    /       ▼
-  c - - - ▶ a
+    /       ▽
+  c - - - ▷ a
        g
 ```
 -/
