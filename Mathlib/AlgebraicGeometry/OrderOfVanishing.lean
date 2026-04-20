@@ -3,12 +3,11 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.AlgebraicGeometry.FunctionField
-import Mathlib.AlgebraicGeometry.Noetherian
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.OrderOfVanishing.Basic
-import Mathlib.RingTheory.OrderOfVanishing.Noetherian
+module
+
+public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 
 /-!
 # Order of vansihing in a scheme
@@ -16,6 +15,8 @@ import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 In this file we define the order of vanishing of an element of the function field of a locally
 Noetherian integral scheme at a point of codimension `1`.
 -/
+
+@[expose] public section
 
 open Multiplicative WithZero AlgebraicGeometry Order TopologicalSpace CategoryTheory
 
