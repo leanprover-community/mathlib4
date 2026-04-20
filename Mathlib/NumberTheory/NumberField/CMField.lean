@@ -279,7 +279,7 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
-    AlgEquiv.toRingEquiv_eq_coe, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
+    RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_ringEquiv, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
@@ -439,6 +439,7 @@ theorem regOfFamily_realFunSystem :
     show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
     show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
   simp [f, g]
+  rfl
 
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :
     regulator K / regulator K⁺ = 2 ^ rank K * (indexRealUnits K : ℝ)⁻¹ := by
@@ -468,7 +469,7 @@ theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticEx
     have := ((IntermediateField.isSimpleOrder_of_finrank_prime E K
       (IsQuadraticExtension.finrank_eq_two E K ▸ Nat.prime_two)).eq_bot_or_eq_top L).resolve_left ?_
     · simpa [L] using congr_arg IntermediateField.toSubfield this
-    · contrapose! h
+    · contrapose h
       rw [← SetLike.coe_set_eq, Subfield.coe_toIntermediateField] at h
       rw [← sup_eq_left, ← SetLike.coe_set_eq, h, IntermediateField.coe_bot]
       aesop

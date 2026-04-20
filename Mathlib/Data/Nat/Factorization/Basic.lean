@@ -38,7 +38,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
   contrapose! h
   refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
-  · contrapose! hr0
+  · contrapose hr0
     exact (add_eq_zero.1 hr0).2
 
 /-- The only numbers with empty prime factorization are `0` and `1` -/
