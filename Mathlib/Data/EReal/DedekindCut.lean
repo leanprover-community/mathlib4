@@ -89,6 +89,25 @@ theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
 
 theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sInf ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.right) := by
-  sorry
+  simp only [dedekindCutOrderIso_apply_eq_sSup, sSup_image, sInf_image]
+  apply le_antisymm
+  · simp only [← upperBounds_left, le_iInf_iff, iSup_le_iff, EReal.coe_le_coe_iff, Rat.cast_le]
+    intro _ mem_right _ mem_left
+    exact mem_right mem_left
+  · by_contra
+    simp only [not_le, lt_iInf_iff, le_iInf_iff] at this
+    obtain ⟨b, sup_lt_b, b_le_right⟩ := this
+    simp only [iSup_lt_iff, iSup_le_iff] at sup_lt_b
+    obtain ⟨c, c_lt_b, left_lt_c⟩ := sup_lt_b
+    obtain ⟨q, sup_lt_q, q_lt_b⟩ := exists_rat_btwn_of_lt c_lt_b
+    have : ∀ t ∈ A.left, t < q := by
+      intro t t_mem_left
+      have : ((t : ℝ) : EReal) < (q : ℝ) := by order [left_lt_c t t_mem_left]
+      simpa
+    have q_mem_right : q ∈ A.right := by
+      simp only [← upperBounds_left]
+      intro t t_mem_left
+      order [this t t_mem_left]
+    order [b_le_right q q_mem_right]
 
 end EReal
