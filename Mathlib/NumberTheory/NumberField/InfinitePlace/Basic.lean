@@ -202,7 +202,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
-  contrapose! hφ
+  contrapose hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
   | inl h => rwa [h] at hφ
   | inr h => rwa [← ComplexEmbedding.isReal_conjugate_iff, h] at hφ
@@ -247,7 +247,7 @@ theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
-  contrapose! h
+  contrapose h
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 
@@ -592,7 +592,6 @@ theorem isNontrivial : v.1.IsNontrivial := by
 
 variable {v} (K)
 
-set_option backward.isDefEq.respectTransparency false in
 open Filter in
 /--
 *Weak approximation for infinite places*

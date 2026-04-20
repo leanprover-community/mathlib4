@@ -46,7 +46,7 @@ private lemma Convex.condExp_mem_of_hereditarilyLindelofSpace [IsFiniteMeasure �
   simp_all only [condExp_const, comp_apply]
   exact hb
 
-set_option backward.isDefEq.respectTransparency false
+set_option backward.isDefEq.respectTransparency false in
 private lemma Convex.condExp_mem_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hf_int : Integrable f μ) (hs : IsClosed s) (hc : Convex ℝ s) (hf : ∀ᵐ a ∂μ, f a ∈ s) :
     ∀ᵐ a ∂μ, μ[f | m] a ∈ s := by
@@ -113,7 +113,7 @@ private lemma ConvexOn.map_condExp_le_of_hereditarilyLindelofSpace [IsFiniteMeas
   rw [show φ (μ[f | m] a) = s.restrict φ ⟨μ[f | m] a, hq⟩ by simp, ← hLc2]
   simpa [iSup_congr hp] using ciSup_le hw
 
-set_option backward.isDefEq.respectTransparency false
+set_option backward.isDefEq.respectTransparency false in
 /-- Conditional Jensen's inequality for finite measures. -/
 private theorem ConvexOn.map_condExp_le_of_isFiniteMeasure [IsFiniteMeasure μ] (hm : m ≤ mα)
     (hφ_cvx : ConvexOn ℝ s φ) (hφ_cont : LowerSemicontinuousOn φ s) (hf : ∀ᵐ a ∂μ, f a ∈ s)

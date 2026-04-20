@@ -268,14 +268,14 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W' (W'.addX x₁ x₂ �
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
     ← span_insert, ← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul,
     ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
 lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| -ℓ, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
@@ -296,7 +296,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul]
   C_simp
   ring1
@@ -655,7 +655,7 @@ variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
