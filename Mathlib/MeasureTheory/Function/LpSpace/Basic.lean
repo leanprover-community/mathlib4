@@ -371,6 +371,28 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
+/-- For `f ∈ Lp E ∞ μ`, the pointwise norm `‖f x‖` is bounded by the `Lp` norm `‖f‖` a.e. -/
+theorem ae_norm_le_norm (f : Lp E ∞ μ) : ∀ᵐ x ∂μ, ‖(f : α → E) x‖ ≤ ‖f‖ := by
+  have h : eLpNormEssSup (f : α → E) μ ≠ ∞ := by
+    rw [← eLpNorm_exponent_top]
+    exact (Lp.memLp f).2.ne
+  filter_upwards [ae_le_eLpNormEssSup (f := (f : α → E)) (μ := μ)] with _ hx
+  rw [norm_def, eLpNorm_exponent_top, ← ENNReal.toReal_ofReal (norm_nonneg _)]
+  exact ENNReal.toReal_mono h (by rwa [← ofReal_norm_eq_enorm] at hx)
+
+/-- For `f ∈ Lp E ∞ μ` and `c < ‖f‖`, the set of points where `‖f x‖ > c` has positive measure. -/
+theorem measure_norm_gt_pos_of_lt_norm {f : Lp E ∞ μ} {c : ℝ} (hc : 0 ≤ c) (hcf : c < ‖f‖) :
+    μ {x | c < ‖(f : α → E) x‖} ≠ 0 := by
+  intro h_null
+  have h_ae : ∀ᵐ x ∂μ, ‖(f : α → E) x‖ ≤ c := by
+    rw [ae_iff]
+    convert h_null using 2
+    simp
+  have h_norm_le : ‖f‖ ≤ c := by
+    rw [norm_def, eLpNorm_exponent_top]
+    exact ENNReal.toReal_le_of_le_ofReal hc (eLpNormEssSup_le_of_ae_bound h_ae)
+  exact absurd h_norm_le (not_le.mpr hcf)
+
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
   { AddGroupNorm.toNormedAddCommGroup
       { toFun := (norm : Lp E p μ → ℝ)
@@ -826,6 +848,21 @@ theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ
 end ContinuousLinearMap
 
 namespace MeasureTheory.Lp
+
+section OfReal
+
+variable (𝕜 : Type*) [RCLike 𝕜] (p : ℝ≥0∞) (μ : Measure α) [Fact (1 ≤ p)]
+
+/-- The natural inclusion `Lp ℝ p μ →L[ℝ] Lp 𝕜 p μ` coercing a real-valued `Lp` function to its
+`𝕜`-valued counterpart via `RCLike.ofRealCLM`. -/
+noncomputable def ofReal : Lp ℝ p μ →L[ℝ] Lp 𝕜 p μ :=
+  (RCLike.ofRealCLM : ℝ →L[ℝ] 𝕜).compLpL p μ
+
+lemma ofReal_apply (f : Lp ℝ p μ) :
+    (ofReal 𝕜 p μ f : α → 𝕜) =ᵐ[μ] fun x ↦ ((f : α → ℝ) x : 𝕜) :=
+  ContinuousLinearMap.coeFn_compLpL _ f
+
+end OfReal
 
 section PosPart
 

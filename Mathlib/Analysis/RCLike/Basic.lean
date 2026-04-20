@@ -1233,6 +1233,29 @@ lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
 
 end RCLike
 
+namespace ContinuousLinearMap
+
+variable {K E : Type*} [RCLike K] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedSpace K E] [IsScalarTower ℝ K E]
+
+/-- The real part of a scalar-valued continuous linear functional `E →L[𝕜] 𝕜`, as a real-linear
+functional `E →L[ℝ] ℝ`, obtained by composing with `RCLike.reCLM`. -/
+noncomputable def reFunctional (φ : E →L[K] K) : E →L[ℝ] ℝ :=
+  RCLike.reCLM.comp (φ.restrictScalars ℝ)
+
+/-- The imaginary part of a scalar-valued continuous linear functional `E →L[𝕜] 𝕜`, as a
+real-linear functional `E →L[ℝ] ℝ`, obtained by composing with `RCLike.imCLM`. -/
+noncomputable def imFunctional (φ : E →L[K] K) : E →L[ℝ] ℝ :=
+  RCLike.imCLM.comp (φ.restrictScalars ℝ)
+
+@[simp]
+lemma reFunctional_apply (φ : E →L[K] K) (x : E) : φ.reFunctional x = RCLike.re (φ x) := rfl
+
+@[simp]
+lemma imFunctional_apply (φ : E →L[K] K) (x : E) : φ.imFunctional x = RCLike.im (φ x) := rfl
+
+end ContinuousLinearMap
+
 namespace AddChar
 variable {G : Type*} [Finite G]
 

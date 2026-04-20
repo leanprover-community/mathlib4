@@ -225,6 +225,56 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
       (EventuallyEq.fun_add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
   rw [Set.indicator_union_of_disjoint hst]
 
+/-- The indicator of a countable disjoint union is the `HasSum` of the individual indicators in
+`Lp` for a finite measure and any `p ≠ ∞`. -/
+theorem hasSum_indicatorConstLp_disjoint [IsFiniteMeasure μ] [Fact (1 ≤ p)] (hp : p ≠ ∞)
+    {f : ℕ → Set α} (hf : ∀ i, MeasurableSet (f i))
+    (hdisj : Pairwise (Function.onFun Disjoint f)) (c : E) :
+    HasSum (fun i ↦ indicatorConstLp p (hf i) (measure_ne_top μ (f i)) c)
+           (indicatorConstLp p (MeasurableSet.iUnion hf) (measure_ne_top μ (⋃ i, f i)) c) := by
+  have hpart : ∀ F : Finset ℕ, ∑ i ∈ F, indicatorConstLp p (hf i)
+        (measure_ne_top μ (f i)) c = indicatorConstLp p
+        (F.measurableSet_biUnion fun i _ ↦ hf i) (measure_ne_top μ _) c := fun F ↦ by
+    induction F using Finset.induction with
+    | empty => simp
+    | @insert i F hiF ih =>
+      rw [Finset.sum_insert hiF, ih, ← indicatorConstLp_disjoint_union (hf i)
+        (F.measurableSet_biUnion fun j _ ↦ hf j)
+        (measure_ne_top μ _) (measure_ne_top μ _)
+        (Set.disjoint_iUnion₂_right.mpr fun j hj ↦ hdisj fun heq ↦ hiF (heq ▸ hj))]
+      congr 1
+      rw [Finset.set_biUnion_insert]
+  change Tendsto _ atTop (𝓝 _)
+  simp_rw [hpart]
+  refine tendsto_indicatorConstLp_set hp ?_
+  -- `μ ((⋃ i ∈ F, f i) ∆ (⋃ i, f i)) → 0` as `F → atTop`.
+  have hsub (F : Finset ℕ) : (⋃ i ∈ F, f i) ⊆ ⋃ i, f i :=
+    Set.iUnion₂_subset fun i _ ↦ Set.subset_iUnion f i
+  simp_rw [symmDiff_of_le (hsub _)]
+  have hμF (F : Finset ℕ) : μ (⋃ i ∈ F, f i) = ∑ i ∈ F, μ (f i) :=
+    measure_biUnion_finset (hdisj.set_pairwise _) fun i _ ↦ hf i
+  have hdiff (F : Finset ℕ) : μ ((⋃ i, f i) \ ⋃ i ∈ F, f i) =
+      μ (⋃ i, f i) - ∑ i ∈ F, μ (f i) := by
+    rw [measure_diff (hsub F) (F.measurableSet_biUnion fun i _ ↦ hf i).nullMeasurableSet
+      (measure_lt_top μ _).ne, hμF]
+  simp_rw [hdiff]
+  have hsum : HasSum (fun i ↦ μ (f i)) (μ (⋃ i, f i)) := by
+    rw [measure_iUnion hdisj hf]; exact ENNReal.summable.hasSum
+  have hconst : Tendsto (fun _ : Finset ℕ ↦ μ (⋃ i, f i)) atTop (𝓝 (μ (⋃ i, f i))) :=
+    tendsto_const_nhds
+  simpa using ENNReal.Tendsto.sub hconst hsum (.inl (measure_ne_top μ _))
+
+/-- The scalar inclusion `Lp.ofReal 𝕜 p μ` sends a real indicator to the scalar indicator of the
+same set with the coerced constant. -/
+theorem Lp.ofReal_indicatorConstLp (𝕜 : Type*) [RCLike 𝕜] [Fact (1 ≤ p)]
+    {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) :
+    Lp.ofReal 𝕜 p μ (indicatorConstLp p hs hμs c) = indicatorConstLp p hs hμs (c : 𝕜) := by
+  refine Lp.ext <| (Lp.ofReal_apply _ _ _ _).trans ?_
+  filter_upwards [indicatorConstLp_coeFn (μ := μ) (p := p) (hs := hs) (hμs := hμs) (c := c),
+    indicatorConstLp_coeFn (μ := μ) (p := p) (hs := hs) (hμs := hμs) (c := (c : 𝕜))]
+    with x hx1 hx2
+  rw [hx1, hx2]; by_cases hxs : x ∈ s <;> simp [hxs]
+
 end IndicatorConstLp
 
 section const

@@ -5243,7 +5243,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreser
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Continuous
-public import Mathlib.MeasureTheory.Function.LpSpace.DualityLOneInfty
+public import Mathlib.MeasureTheory.Function.LpSpace.Dual
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 public import Mathlib.MeasureTheory.Function.Piecewise
 public import Mathlib.MeasureTheory.Function.SimpleFunc
