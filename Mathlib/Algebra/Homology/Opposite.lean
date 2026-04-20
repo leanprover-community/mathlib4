@@ -374,7 +374,7 @@ lemma opcyclesOpIso_hom_naturality :
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
