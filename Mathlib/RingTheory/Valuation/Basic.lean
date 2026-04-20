@@ -721,6 +721,26 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
 
 end Polynomial
 
+section Transcendental
+
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
+  (K L : Type*) [CommRing K] [Field L] [Algebra K L] {v : Valuation L Γ} [hv : v.IsTrivialOn K]
+
+/--
+For a `K`-algebra `L` and a valuation `v` over `L` which is trivial on `K`.
+If `y : L` is such that `y ≠ 0` and `v y < 1`, then it is transcendental over `K`. -/
+theorem transcendental_of_lt_one (y : L) (h0 : y ≠ 0) (hy : v y < 1) : Transcendental K y := by
+  simp_all only [ne_eq, Transcendental]
+  by_contra!
+  rw [val_lt_one_iff _ (by contrapose! h0; aesop)] at hy
+  replace ha : IsAlgebraic K y := .algebraMap this
+  rw [← IsAlgebraic.inv_iff] at ha
+  obtain ⟨p, hpnt, hp⟩ := ha
+  suffices v y⁻¹ ^ p.natDegree = 0 by simp_all
+  rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ _ hy] <;> simp_all
+
+end Transcendental
+
 end IsTrivialOn
 
 namespace IsEquiv

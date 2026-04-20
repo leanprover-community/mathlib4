@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 
 /-!
