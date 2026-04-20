@@ -833,11 +833,32 @@ theorem pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq
     (hαβ : ofBasedPath x₀ α = ofBasedPath x₀ β) :
     pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α =
       pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) β := by
-  -- This requires extracting a path homotopy `α.toPath ≃ β.toPath` from the sigma equality
-  -- `ofBasedPath α = ofBasedPath β`, modulo dependent-type casts. The argument uses
-  -- `Path.Homotopic.Quotient.exact` plus saturation (`pathComponent_preimage_saturated`).
-  -- See `PLAN.md` for the full proof outline.
-  sorry
+  cases α with
+  | mk αf hα0 =>
+    cases β with
+    | mk βf hβ0 =>
+      simp [ofBasedPath] at hαβ
+      rcases hαβ with ⟨hend, hq⟩
+      have hβ_end : βf 1 ∈ U := hend ▸ hα_end
+      let p : Path x₀ (βf 1) :=
+        ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)).cast
+          rfl hend.symm
+      have hp_heq : HEq
+          (Path.Homotopic.Quotient.mk
+            ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)))
+          (Path.Homotopic.Quotient.mk p) := by
+        apply Path.Homotopic.hpath_hext
+        intro t
+        rfl
+      have hq' : Path.Homotopic.Quotient.mk p =
+          Path.Homotopic.Quotient.mk
+            ({ toContinuousMap := βf, source' := hβ0, target' := rfl } : Path x₀ (βf 1)) := by
+        exact eq_of_heq (HEq.trans hp_heq.symm hq)
+      have hhom : Path.Homotopic p
+          ({ toContinuousMap := βf, source' := hβ0, target' := rfl } : Path x₀ (βf 1)) :=
+        Path.Homotopic.Quotient.exact hq'
+      have this := BasedPath.pathComponent_preimage_saturated (x₀ := x₀) hβ_end hhom
+      simpa [p, BasedPath.ofPath] using this
 
 /-- The preimage of a sheet under `ofBasedPath` is the corresponding `basedPathSheet`.
 This expresses that the sheet is saturated under the `ofBasedPath` quotient. -/

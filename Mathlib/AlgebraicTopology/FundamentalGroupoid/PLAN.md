@@ -11,6 +11,39 @@ The remaining work is to turn the surviving “last rung” into a path-componen
 
 The implementation should reuse the `#31576` machinery rather than duplicate any ladder/tube proof.
 
+## Status on This Branch
+
+As of commit `74ec3326354` plus the follow-up proof completed in this worktree:
+
+- Step 1 is implemented as `BasedPath.joinedIn_preimage_of_append`.
+- Step 2 is implemented as `BasedPath.exists_open_nhd_pathComponent_preimage`.
+- Step 3 is implemented as `BasedPath.isOpen_pathComponent_preimage`.
+- Step 4 is implemented as `BasedPath.pathComponent_preimage_saturated`.
+- Step 4b is implemented as `UniversalCover.isOpenMap_proj`.
+- The quotient-saturation bridge needed by step 5 is now implemented as
+  `UniversalCover.pathComponentIn_endpoint_preimage_eq_of_ofBasedPath_eq`.
+- Step 5 is implemented through:
+  `UniversalCover.basedPathSheet`,
+  `UniversalCover.sheet`,
+  `UniversalCover.preimage_sheet`,
+  `UniversalCover.isOpen_sheet`,
+  `UniversalCover.mem_sheet_self`.
+
+The remaining `sorry`s are now concentrated in steps 6, 7, 9, and 10.
+
+The next missing ingredient is more specific than the original plan stated:
+
+- Step 6 needs a globalization lemma of the form:
+  if `α` and `β` are joined inside `BasedPath.endpoint ⁻¹' U`, then there exists a path
+  `δ : Path (endpoint α) (endpoint β)` with `Set.range δ ⊆ U` such that
+  `Path.Homotopic (α.toPath.trans δ) β.toPath`.
+
+This is the global version of the local “final rung” statement already proved in step 2.
+Once this lemma exists, sheet injectivity follows by applying it to two points over the same
+endpoint and then killing the resulting loop in `U` with the SLSC uniqueness hypothesis.
+The current plan should therefore be read as requiring this intermediate theorem before the
+existing step-6 statement can be completed cleanly.
+
 ## Current Foundation
 
 ### In `SemilocallySimplyConnected.lean`
