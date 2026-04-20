@@ -844,6 +844,32 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
   -- Now combine everything: γ · α_n ≃ γ_aux n ≃ γ_aux 0 ≃ α_0 · γ'
   exact h_final.symm.trans ((h_chain (Fin.last n)).trans h_base)
 
+/-- A loop in an SLSC neighborhood is null-homotopic if its range lies in that neighborhood. -/
+theorem Path.nullhomotopic_of_range_subset_slsc {x : X} (γ : Path x x)
+    (U : Set X) (h_U_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U → b ∈ U →
+      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    (hxU : x ∈ U) (hγU : Set.range γ ⊆ U) :
+    Path.Homotopic γ (Path.refl x) :=
+  h_U_slsc γ (Path.refl x) hxU hxU hγU <| by
+    rintro _ ⟨_, rfl⟩
+    simpa using hxU
+
+/-- Composing on the left with a null-homotopic loop does not change the homotopy class. -/
+theorem Path.trans_left_of_nullhomotopic {x y : X} {γ₀ : Path x x} {γ₁ : Path x y}
+    (hγ₀ : Path.Homotopic γ₀ (Path.refl x)) :
+    Path.Homotopic (γ₀.trans γ₁) γ₁ := by
+  have step1 : Path.Homotopic (γ₀.trans γ₁) ((Path.refl x).trans γ₁) :=
+    Path.Homotopic.hcomp hγ₀ (Path.Homotopic.refl γ₁)
+  exact step1.trans <| Path.Homotopic.refl_trans γ₁
+
+/-- Composing on the right with a null-homotopic loop does not change the homotopy class. -/
+theorem Path.trans_right_of_nullhomotopic {x y : X} {γ₀ : Path x y} {γ₁ : Path y y}
+    (hγ₁ : Path.Homotopic γ₁ (Path.refl y)) :
+    Path.Homotopic (γ₀.trans γ₁) γ₀ := by
+  have step1 : Path.Homotopic (γ₀.trans γ₁) (γ₀.trans (Path.refl y)) :=
+    Path.Homotopic.hcomp (Path.Homotopic.refl γ₀) hγ₁
+  exact step1.trans <| Path.Homotopic.trans_refl γ₀
+
 /-- One-sided specialization of `paste_segment_homotopies` that kills the source loop.
 
 Given the same rectangle homotopies, plus:
@@ -870,29 +896,12 @@ theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
   let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
-    apply h_U₀_slsc
+    apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ h_U₀_slsc
     · have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
       rw [← this]
       exact h_α₀_in_U₀ ⟨0, rfl⟩
-    · have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
-      rw [← this]
-      exact h_α₀_in_U₀ ⟨0, rfl⟩
-    · show Set.range α₀ ⊆ U₀
-      simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
-    · intro z hz
-      simp only [Path.refl, Path.coe_mk', ContinuousMap.coe_const, Set.mem_range,
-        Function.const_apply, exists_const] at hz
-      rw [← hz]
-      have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
-      rw [← this]
-      exact h_α₀_in_U₀ ⟨0, rfl⟩
-  have rhs : Path.Homotopic (α₀.trans γ') γ' := by
-    have step1 : Path.Homotopic (α₀.trans γ') ((Path.refl x).trans γ') :=
-      Path.Homotopic.hcomp h_α₀_null (Path.Homotopic.refl γ')
-    have step2 : Path.Homotopic ((Path.refl x).trans γ') γ' :=
-      Path.Homotopic.refl_trans γ'
-    exact step1.trans step2
-  exact h_paste.trans rhs
+    · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
+  exact h_paste.trans <| Path.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
 SLSC neighborhoods, then both endpoint loops are null-homotopic and we get γ ≃ γ' directly. -/
@@ -917,37 +926,13 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     simpa only [αₙ] using
       paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ h_U₀_slsc h_α₀_in_U₀
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
-    apply h_Uₙ_slsc
-    · -- y ∈ Uₙ
-      have : (α (Fin.last n)) 0 = y := by
+    apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ h_Uₙ_slsc
+    · have : (α (Fin.last n)) 0 = y := by
         simp [(α (Fin.last n)).source, part.h_end]
       rw [← this]
       exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-    · -- y ∈ Uₙ (same proof)
-      have : (α (Fin.last n)) 0 = y := by
-        simp [(α (Fin.last n)).source, part.h_end]
-      rw [← this]
-      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-    · -- range αₙ ⊆ Uₙ
-      show Set.range αₙ ⊆ Uₙ
-      simp only [αₙ, Path.cast, Set.range]
-      exact h_αₙ_in_Uₙ
-    · -- range (refl y) ⊆ Uₙ
-      intro z hz
-      simp only [Path.refl, Path.coe_mk', ContinuousMap.coe_const, Set.mem_range,
-        Function.const_apply, exists_const] at hz
-      rw [← hz]
-      have : (α (Fin.last n)) 0 = y := by
-        simp [(α (Fin.last n)).source, part.h_end]
-      rw [← this]
-      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-  have h_left : Path.Homotopic (γ.trans αₙ) γ := by
-    have step1 : Path.Homotopic (γ.trans αₙ) (γ.trans (Path.refl y)) :=
-      Path.Homotopic.hcomp (Path.Homotopic.refl γ) h_αₙ_null
-    have step2 : Path.Homotopic (γ.trans (Path.refl y)) γ :=
-      Path.Homotopic.trans_refl γ
-    exact step1.trans step2
-  exact h_left.symm.trans h_source
+    · simpa only [αₙ, Path.cast, Set.range] using h_αₙ_in_Uₙ
+  exact (Path.trans_right_of_nullhomotopic h_αₙ_null).symm.trans h_source
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
 This is the main result that combines all the previous lemmas:
