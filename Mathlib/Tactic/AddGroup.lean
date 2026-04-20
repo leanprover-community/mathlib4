@@ -89,7 +89,7 @@ syntax (name := aux_add_group₂) "aux_add_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_add_group₂ $[at $location]?) =>
-  `(tactic| ring_nf -failIfUnchanged $[at $location]?)
+  `(tactic| ring_nf (ifUnchanged := .silent) $[at $location]?)
 
 /-- `add_group` normalizes expressions in additive groups that occur in the goal. `add_group` does
 not assume commutativity, instead using only the additive group axioms without any information about
