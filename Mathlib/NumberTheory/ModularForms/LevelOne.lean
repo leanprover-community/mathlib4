@@ -108,7 +108,7 @@ lemma levelOne_weight_zero_const [ModularFormClass F Γ(1) 0] (f : F) :
 end ModularFormClass
 
 lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 0) = 1 := by
-  haveI : ModularFormClass (ModularForm 𝒮ℒ 0) Γ(1) 0 :=
+  have : ModularFormClass (ModularForm 𝒮ℒ 0) Γ(1) 0 :=
     Gamma_one_coe_eq_SL ▸ inferInstance
   refine rank_eq_one (const 1) (by simp [DFunLike.ne_iff]) fun g ↦ ?_
   obtain ⟨c', hc'⟩ := levelOne_weight_zero_const g
@@ -116,7 +116,7 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
 
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) = 0 := by
-  haveI : ModularFormClass (ModularForm 𝒮ℒ k) Γ(1) k :=
+  have : ModularFormClass (ModularForm 𝒮ℒ k) Γ(1) k :=
     Gamma_one_coe_eq_SL ▸ inferInstance
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
   simpa [← coe_eq_zero_iff] using levelOne_neg_weight_eq_zero hk f

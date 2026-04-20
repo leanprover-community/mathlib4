@@ -108,7 +108,7 @@ instance (priority := 100) ModularForm.funLike :
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
-instance (priority := 100) ModularFormClass.modularForm :
+instance (priority := 100) ModularForm.instModularFormClass :
     ModularFormClass (ModularForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
   holo := ModularForm.holo'
@@ -134,6 +134,19 @@ initialize_simps_projections ModularForm (toFun → coe, as_prefix coe)
 initialize_simps_projections CuspForm (toFun → coe, as_prefix coe)
 
 variable {F Γ k}
+
+/-- Build a `ModularForm Γ k` from any element of a type carrying a `ModularFormClass Γ k`
+instance. -/
+def ModularFormClass.modularForm [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+    ModularForm Γ k where
+  toFun := f
+  slash_action_eq' := SlashInvariantFormClass.slash_action_eq f
+  holo' := ModularFormClass.holo f
+  bdd_at_cusps' := ModularFormClass.bdd_at_cusps f
+
+@[simp]
+lemma ModularFormClass.modularForm_apply [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) (z : ℍ) :
+    ModularFormClass.modularForm f z = f z := rfl
 
 theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
   rfl
@@ -516,20 +529,12 @@ instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFo
   holo := CuspFormClass.holo
   bdd_at_cusps f _ hc g hg := (CuspFormClass.zero_at_cusps f hc g hg).boundedAtFilter
 
-/-- The underlying modular form of a cusp form. -/
-def toModularForm (f : CuspForm Γ k) : ModularForm Γ k where
-  toSlashInvariantForm := f.toSlashInvariantForm
-  holo' := f.holo'
-  bdd_at_cusps' hc g hg := (f.zero_at_cusps' hc g hg).boundedAtFilter
-
-@[simp]
-lemma toModularForm_apply (f : CuspForm Γ k) (z : ℍ) : (toModularForm f) z = f z := rfl
-
 /-- A cusp form can be viewed as a modular form. -/
-instance : Coe (CuspForm Γ k) (ModularForm Γ k) := ⟨toModularForm⟩
+instance : Coe (CuspForm Γ k) (ModularForm Γ k) := ⟨ModularFormClass.modularForm⟩
 
 @[simp]
-lemma coe_toModularForm (f : CuspForm Γ k) (z : ℍ) : ((f : ModularForm Γ k) : ℍ → ℂ) z = f z := rfl
+lemma coe_toModularForm_apply (f : CuspForm Γ k) (z : ℍ) :
+    ((f : ModularForm Γ k) : ℍ → ℂ) z = f z := rfl
 
 /-- Transport a cusp form along an equality of subgroups. -/
 def ofSubgroupEq {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : CuspForm Γ k) :

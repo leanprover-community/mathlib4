@@ -44,7 +44,7 @@ namespace CuspForm
 
 /-- The inclusion of cusp forms into modular forms, as a ℂ-linear map. -/
 def toModularFormₗ [Γ.HasDetOne] : CuspForm Γ k →ₗ[ℂ] ModularForm Γ k where
-  toFun := toModularForm
+  toFun := ModularFormClass.modularForm
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -81,9 +81,8 @@ def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [
 /-- A modular form is a cusp form if and only if it vanishes at every cusp. This is the
 general characterization valid for any subgroup. -/
 lemma isCuspForm_iff [Γ.HasDetOne] (f : ModularForm Γ k) :
-    IsCuspForm f ↔ ∀ {c : OnePoint ℝ}, IsCusp c Γ → c.IsZeroAt f k := by
-  refine ⟨fun ⟨g, hg⟩ c hc ↦ hg ▸ g.zero_at_cusps' hc, fun h ↦
-    ⟨⟨f.toSlashInvariantForm, f.holo', h⟩, rfl⟩⟩
+    IsCuspForm f ↔ ∀ {c : OnePoint ℝ}, IsCusp c Γ → c.IsZeroAt f k :=
+  ⟨fun ⟨g, hg⟩ _ hc ↦ hg ▸ g.zero_at_cusps' hc, fun h ↦ ⟨⟨f.toSlashInvariantForm, f.holo', h⟩, rfl⟩⟩
 
 instance [Γ.HasDetOne] : FunLike (cuspFormSubmodule Γ k) ℍ ℂ where
   coe f := (f : ModularForm Γ k)
@@ -104,7 +103,7 @@ variable {k : ℤ}
 lemma isZeroAtImInfty_of_valueAtInfty_eq_zero
     (f : ModularForm 𝒮ℒ k) (h : valueAtInfty f = 0) : IsZeroAtImInfty f := by
   change Filter.Tendsto f atImInfty (𝓝 0)
-  rw [show (0 : ℂ) = cuspFunction 1 f 0 from by
+  rw [show (0 : ℂ) = cuspFunction 1 f 0 by
     rw [cuspFunction_apply_zero f one_pos one_mem_strictPeriods_SL]; exact h.symm]
   exact ((analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL).continuousAt.tendsto.comp
     (qParam_tendsto_atImInfty one_pos)).congr
@@ -136,12 +135,10 @@ lemma toCuspForm_apply (f : ModularForm 𝒮ℒ k) (h : (qExpansion 1 f).coeff 0
 constant term. -/
 lemma isCuspForm_iff_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k) :
     IsCuspForm f ↔ (qExpansion 1 f).coeff 0 = 0 := by
-  constructor
-  · intro ⟨g, hg⟩
-    rw [qExpansion_coeff_zero f one_pos one_mem_strictPeriods_SL]
-    exact congr_arg valueAtInfty (congr_arg DFunLike.coe hg.symm) ▸
-      (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
-  · exact fun h ↦ (isCuspForm_iff f).mpr (isZeroAt_of_coeffZero_eq_zero f h)
+  refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun h ↦ (isCuspForm_iff f).mpr (isZeroAt_of_coeffZero_eq_zero f h)⟩
+  rw [qExpansion_coeff_zero f one_pos one_mem_strictPeriods_SL]
+  exact congr_arg valueAtInfty (congr_arg DFunLike.coe hg.symm) ▸
+    (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
 
 end SL2Z
 
