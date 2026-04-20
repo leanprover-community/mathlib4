@@ -91,6 +91,12 @@ lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_zero_iff x := by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]
 
+lemma charP_to_charZero [CharP R 0] [IsLeftCancelAdd R] : CharZero R where
+  cast_injective m n := by simp [cast_eq_iff_mod_eq]
+
+lemma charP_zero_iff_charZero [IsLeftCancelAdd R] : CharP R 0 ↔ CharZero R :=
+  ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
+
 end AddMonoidWithOne
 
 section AddGroupWithOne
@@ -104,12 +110,6 @@ lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   · simp
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-
-lemma charP_to_charZero [CharP R 0] : CharZero R :=
-  charZero_of_inj_zero fun n h0 => eq_zero_of_zero_dvd ((cast_eq_zero_iff R 0 n).mp h0)
-
-lemma charP_zero_iff_charZero : CharP R 0 ↔ CharZero R :=
-  ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
 
 end AddGroupWithOne
 
