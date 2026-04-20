@@ -7,11 +7,9 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Schreier
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
-public import Mathlib.Algebra.Group.PUnit
 
 /-!
 # Finitely Presented Groups
