@@ -337,7 +337,7 @@ instance {J : GrothendieckTopology C} (X : C) :
     rw [dsimp% PreZeroHypercover.sieve₀_map (F := Over.forget X)]
     exact E.mem₀
   · intro i₁ i₂ W p₁ p₂ w
-    have := congr($(w) ≫ Over.hom _)
+    have := w =≫ Over.hom _
     simp only [Over.forget_obj, Over.forget_map, Category.assoc, Over.w] at this
     have := E.mem₁ i₁ i₂ (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₁)
       (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₂ this.symm) (by ext; simpa)
