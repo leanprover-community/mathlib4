@@ -90,7 +90,7 @@ lemma localInverseAt_apply_other {k : M}
   · simp [localInverseAt, (localHomeomorphAt G p).right_inv h', localHomeomorphAt_eq_quotientMk]
 
 /-- The local inverse at `p` sends the class `⟦p⟧` back to `p`. -/
-lemma localInverseAt_apply_self : localInverseAt G p ⟦p⟧ = p :=
+@[simp] lemma localInverseAt_apply_self : localInverseAt G p ⟦p⟧ = p :=
   localInverseAt_apply_other mem_localHomeomorphAt_source mem_localInverseAt_source
 
 end QuotientMk
