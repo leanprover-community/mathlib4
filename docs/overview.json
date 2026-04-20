@@ -63,7 +63,7 @@
   {"stopping time": "MeasureTheory.IsStoppingTime",
    "optional stopping theorem": "MeasureTheory.submartingale_iff_expected_stoppedValue_mono",
    "martingale": "MeasureTheory.Martingale",
-   "hitting time": "MeasureTheory.hitting",
+   "hitting time": "MeasureTheory.hittingBtwn",
    "Gaussian processes": "ProbabilityTheory.IsGaussianProcess"},
   "Random variables and their laws":
   {"variance of a real-valued random variable": "ProbabilityTheory.variance",
@@ -172,7 +172,7 @@
   {"symmetric bilinear form": "LinearMap.BilinForm.IsSymm",
    "quadratic form": "QuadraticForm",
    "polar form of a quadratic": "QuadraticMap.polar",
-   "matrix representation": "BilinForm.toMatrix",
+   "matrix representation": "LinearMap.BilinForm.toMatrix",
    "bilinear form": "LinearMap.BilinForm",
    "alternating bilinear form": "LinearMap.BilinForm.IsAlt"}},
  "Geometry":
@@ -280,7 +280,7 @@
    "solutions to Pell's equation": "Pell.pell",
    "ring of Witt vectors": "WittVector",
    "quadratic reciprocity": "legendreSym.quadratic_reciprocity",
-   "perfection of a ring": "Ring.Perfection",
+   "perfection of a ring": "Perfection",
    "arithmetic functions": "ArithmeticFunction",
    "Matiyasevič's theorem": "Pell.matiyasevic",
    "Hensel's lemma (for $\\mathbb{Z}_p$)": "hensels_lemma",
@@ -341,7 +341,7 @@
    "algebraic extension": "Algebra.IsAlgebraic",
    "Galois correspondence": "IsGalois.intermediateFieldEquivSubgroup",
    "Frobenius morphism": "frobenius",
-   "Abel-Ruffini theorem (one direction)": "solvableByRad.isSolvable",
+   "Abel-Ruffini theorem (one direction)": "isSolvable_gal_minpoly",
    "$\\C$ is algebraically closed": "Complex.exists_root"},
   "Divisibility in integral domains":
   {"unique factorisation domain": "UniqueFactorizationMonoid",
@@ -368,7 +368,7 @@
    "adjunction": "CategoryTheory.Adjunction",
    "abelian category": "CategoryTheory.Abelian",
    "Yoneda embedding": "CategoryTheory.yoneda",
-   "Cartesian closed": "CategoryTheory.CartesianClosed"},
+   "Cartesian closed": "CategoryTheory.MonoidalClosed"},
   "Algebras over a ring":
   {"the category of algebras over a ring": "AlgCat",
    "tensor product of algebras": "Algebra.TensorProduct.instAlgebra",
@@ -569,7 +569,7 @@
    "maximum modulus principle": "Complex.eventually_eq_of_isLocalMax_norm",
    "fundamental theorem of algebra": "Complex.isAlgClosed",
    "analyticity of holomorphic functions": "DifferentiableOn.analyticAt",
-   "Schwarz lemma": "Complex.norm_le_norm_of_mapsTo_ball_self",
+   "Schwarz lemma": "Complex.norm_le_norm_of_mapsTo_ball",
    "Phragmen-Lindelöf principle": "PhragmenLindelof.horizontal_strip",
    "Liouville theorem": "Differentiable.apply_eq_apply_of_bounded",
    "First Main Theorem of Value Distribution Theory":
