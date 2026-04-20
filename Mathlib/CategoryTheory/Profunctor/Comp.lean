@@ -470,12 +470,12 @@ noncomputable def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) := by
   refine NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦
     associatorComponents P Q R X Y) ?_) ?_
   · intro f f' g
-    ext ⟨e, ⟨d, p, x⟩, r⟩
+    ext ⟨e, ⟨d, p, q⟩, r⟩
     dsimp
     erw [associatorComponents_apply, associatorComponents_apply]
     simp [chosenCoend.map_apply, Quot.map]
   · intro f f' g
-    ext _ ⟨e, ⟨d, p, x⟩, r⟩
+    ext _ ⟨e, ⟨d, p, q⟩, r⟩
     dsimp
     erw [associatorComponents_apply, associatorComponents_apply]
     simp [chosenCoend.map_apply, Quot.map]
