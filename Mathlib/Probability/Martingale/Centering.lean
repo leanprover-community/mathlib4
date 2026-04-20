@@ -82,6 +82,21 @@ lemma Martingale.predictablePart_eq_zero (hf : Martingale f ℱ μ) (n : ℕ) :
   _ =ᵐ[μ] f i - f i := (hf.condExp_ae_eq (Nat.le_succ i)).sub (hf.condExp_ae_eq le_rfl)
   _ =ᵐ[μ] 0 := by simp
 
+lemma Submartingale.monotone_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
+    (hf : Submartingale f ℱ μ) :
+    ∀ᵐ ω ∂μ, Monotone (predictablePart f ℱ μ · ω) := by
+  have := ae_all_iff.2 <| fun n : ℕ ↦ hf.condExp_sub_nonneg n.le_succ
+  filter_upwards [this] with ω h
+  simp only [Pi.zero_apply, Nat.succ_eq_add_one, ← ge_iff_le] at h
+  refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)
+  grw [predictablePart_add_one, Pi.add_apply, h n, add_zero]
+
+lemma Submartingale.nonneg_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
+    (hf : Submartingale f ℱ μ) :
+    ∀ᵐ ω ∂μ, ∀ n, 0 ≤ predictablePart f ℱ μ n ω := by
+  filter_upwards [hf.monotone_predictablePart] with ω hω n
+  simpa [predictablePart_zero] using hω (Nat.zero_le n)
+
 lemma IsPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
     [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
@@ -130,21 +145,6 @@ lemma Martingale.martingalePart_eq (hf : Martingale f ℱ μ) (n : ℕ) :
     martingalePart f ℱ μ n =ᵐ[μ] f n := by
   filter_upwards [hf.predictablePart_eq_zero n] with ω hω
   simp [martingalePart, hω]
-
-lemma Submartingale.monotone_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
-    (hf : Submartingale f ℱ μ) :
-    ∀ᵐ ω ∂μ, Monotone (predictablePart f ℱ μ · ω) := by
-  have := ae_all_iff.2 <| fun n : ℕ ↦ hf.condExp_sub_nonneg n.le_succ
-  filter_upwards [this] with ω h
-  simp only [Pi.zero_apply, Nat.succ_eq_add_one, ← ge_iff_le] at h
-  refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)
-  grw [predictablePart_add_one, Pi.add_apply, h n, add_zero]
-
-lemma Submartingale.nonneg_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
-    (hf : Submartingale f ℱ μ) :
-    ∀ᵐ ω ∂μ, ∀ n, 0 ≤ predictablePart f ℱ μ n ω := by
-  filter_upwards [hf.monotone_predictablePart] with ω hω n
-  simpa [predictablePart_zero] using hω (Nat.zero_le n)
 
 lemma IsPredictable.martingalePart_eq [SecondCountableTopology E] [MeasurableSpace E]
     [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
