@@ -179,12 +179,8 @@ lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = 
 
 /-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
   `f : K →+* L` to `𝓞 K`. -/
-def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) where
-  toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
-  map_zero' := by ext; simp only [map_mk, map_zero]
-  map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y := by ext; simp only [map_mk, map_add]
-  map_mul' x y := by ext; simp only [map_mk, map_mul]
+def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+* (𝓞 L) :=
+  f.toIntAlgHom.mapIntegralClosure.toRingHom
 
 @[simp]
 theorem mapRingHom_apply {K L : Type*} [Field K] [Field L] (f : K →+* L) (x : 𝓞 K) :
