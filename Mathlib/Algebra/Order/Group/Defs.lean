@@ -70,12 +70,6 @@ section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
-
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
   match lt_trichotomy a 1 with

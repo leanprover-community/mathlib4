@@ -417,11 +417,7 @@ instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducib
 
 theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.isIrreducible'
 
-@[deprecated (since := "2025-10-14")] alias is_irreducible' := isIrreducible
-
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
-
-@[deprecated (since := "2025-10-14")] alias is_closed' := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s

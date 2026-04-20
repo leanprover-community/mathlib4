@@ -226,6 +226,7 @@ lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding 
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.isInducing.continuous_iff
 
+@[fun_prop]
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
