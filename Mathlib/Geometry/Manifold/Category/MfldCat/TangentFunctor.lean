@@ -12,7 +12,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 # The tangent functor on `MfldCat`
 
 We define the tangent functor `MfldCat.tangentFunctor : MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n`, sending a
-`C^(n+1)` manifold to its tangent bundle and a `C^(n+1)` map to its pushforward (tangent map).
+`C^(n+1)` manifold to its tangent bundle and a `C^(n+1)` map to its pushforward `tangentMap`.
 -/
 
 @[expose] public section
@@ -34,7 +34,7 @@ local instance : ContMDiffVectorBundle n M.E (TangentSpace M.I : M → Type u₃
   TangentBundle.contMDiffVectorBundle
 -- The above instance implies `TangentBundle M.I M` is a manifold by `Bundle.TotalSpace.isManifold`.
 
-/-- Sends a `C^(n+1)` manifold to its tangent bundle and a `C^(n+1)` map to its `TangentMap`. -/
+/-- Sends a `C^(n+1)` manifold to its tangent bundle and a `C^(n+1)` map to its `tangentMap`. -/
 noncomputable def tangentFunctor :
     MfldCat 𝕜 (n + 1) ⥤ MfldCat 𝕜 n where
   obj M := of (TangentBundle M.I M) (M.E × M.E) (ModelProd M.H M.E) M.I.tangent
