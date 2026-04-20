@@ -79,12 +79,16 @@ instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I where
 
 /-- Transfer the `LieAlgebra` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
-  fast_instance% show LieAlgebra R I.toLieSubalgebra from inferInstance
+  inferInstanceAs <| LieAlgebra R I.toLieSubalgebra
+
+instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) [Bracket L M] : Bracket I M where
+  bracket x m := ⁅(x : L), m⁆
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
-  fast_instance% show LieRingModule I.toLieSubalgebra M from inferInstance
+  inferInstanceAs <| LieRingModule I.toLieSubalgebra M
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
