@@ -34,20 +34,17 @@ def processDb (env : Environment) (file : String) : IO Bool := do
       missing := missing.push entry
     else if let some newName := Linter.getDeprecatedNewName env decl then
       deprecated := deprecated.push (entry, newName)
-  let mut success := true
   unless missing.isEmpty do
     IO.println s!"Entries in `docs/{file}.yaml` refer to {missing.size} declaration(s) that don't \
       exist. Please correct the following:"
     for (key, decl) in missing do
       IO.println s!"  {key}: '{decl}'"
-    success := false
   unless deprecated.isEmpty do
     IO.println s!"Entries in `docs/{file}.yaml` refer to {deprecated.size} declaration(s) that are \
       deprecated. Please update the document to refer to the following declaration(s):"
     for ((key, decl), newName) in deprecated do
       IO.println s!"  {key}: '{newName}' (previously '{decl}')"
-    success := false
-  return success
+  return missing.isEmpty && deprecated.isEmpty
 
 public unsafe def main : IO Unit := do
   initSearchPath (← findSysroot)
