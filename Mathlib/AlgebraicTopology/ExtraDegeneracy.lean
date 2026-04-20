@@ -116,6 +116,23 @@ attribute [local simp←] Functor.map_comp in
 def section_ : (SimplicialObject.const C).obj X.right ⟶ X.left where
   app n := ed.s' ≫ X.left.map (SimplexCategory.isTerminalZero.from _).op
 
+@[reassoc (attr := simp)]
+lemma section_app_comp_map {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) :
+    dsimp% ed.section_.app n ≫ X.left.map f = ed.section_.app m := by
+  dsimp [section_]
+  simp only [Category.assoc, ← Functor.map_comp]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma section_app_comp_δ {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% ed.section_.app (op ⦋n + 1⦌) ≫ X.left.δ i = ed.section_.app (op ⦋n⦌) :=
+  ed.section_app_comp_map _
+
+@[reassoc (attr := simp)]
+lemma section_app_comp_σ {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% ed.section_.app (op ⦋n⦌) ≫ X.left.σ i = ed.section_.app (op ⦋n + 1⦌) :=
+  ed.section_app_comp_map _
+
 @[simp]
 lemma section_app_op_mk_zero :
     ed.section_.app (op ⦋0⦌) = ed.s' := by

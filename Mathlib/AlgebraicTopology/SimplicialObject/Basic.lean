@@ -389,6 +389,16 @@ variable (C)
 abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
+variable {C} in
+@[simp]
+lemma const_obj_δ (X : C) {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% ((const C).obj X).δ i = 𝟙 X := rfl
+
+variable {C} in
+@[simp]
+lemma const_obj_σ (X : C) {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% ((const C).obj X).σ i = 𝟙 X := rfl
+
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
