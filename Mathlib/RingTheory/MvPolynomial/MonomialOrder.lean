@@ -461,13 +461,17 @@ theorem degree_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
   add_comm (m.degree f) (m.degree g) ▸ mul_comm f g ▸ degree_mul_of_left_mem_nonZeroDivisors hg hf
 
 theorem leadingCoeff_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) (hg : g ≠ 0) :
+    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases hg : g = 0
+  · simp [hg]
   simp only [leadingCoeff, degree_mul_of_left_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
 
 theorem leadingCoeff_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases hf : f = 0
+  · simp [hf]
   simp only [leadingCoeff, degree_mul_of_right_mem_nonZeroDivisors hf hg, coeff_mul_of_degree_add]
 
 /-- Monomial degree of product -/
@@ -481,8 +485,10 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
-    (hf : IsRegular (m.leadingCoeff f)) (hg : g ≠ 0) :
+    (hf : IsRegular (m.leadingCoeff f)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases hg : g = 0
+  · simp [hg]
   simp only [leadingCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 
 /-- Monomial degree of product -/
@@ -493,8 +499,10 @@ theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
+    (hg : IsRegular (m.leadingCoeff g)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
+  by_cases hf : f = 0
+  · simp [hf]
   simp only [leadingCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
 
 theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
@@ -829,7 +837,7 @@ lemma mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors
   intro g
   rw [← not_imp_not, ← m.leadingCoeff_eq_zero_iff (f := f * g)]
   intro h
-  rwa [m.leadingCoeff_mul_of_left_mem_nonZeroDivisors hf h,
+  rwa [m.leadingCoeff_mul_of_left_mem_nonZeroDivisors hf,
     mul_left_mem_nonZeroDivisors_eq_zero_iff hf, m.leadingCoeff_eq_zero_iff]
 
 end Semiring
