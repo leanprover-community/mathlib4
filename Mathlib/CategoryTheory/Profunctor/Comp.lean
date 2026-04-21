@@ -42,7 +42,27 @@ variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ Type max w u)
 
 inductive coendRel : (W : J) × (F.obj (op W)).obj W → (W : J) × (F.obj (op W)).obj W → Prop where
   | mk {W W' : J} (f : W ⟶ W') (x : (F.obj (op W')).obj W) :
-    coendRel ⟨W, ConcreteCategory.hom ((F.map f.op).app _) x⟩ ⟨W', ConcreteCategory.hom ((F.obj _).map f) x⟩
+    coendRel ⟨W, ConcreteCategory.hom ((F.map f.op).app _) x⟩
+      ⟨W', ConcreteCategory.hom ((F.obj _).map f) x⟩
+
+lemma coendRel_iff (W W' : J) (x : (F.obj (op W)).obj W) (y : (F.obj (op W')).obj W') :
+    coendRel F ⟨W, x⟩ ⟨W', y⟩ ↔
+      ∃ (f : W ⟶ W') (z : (F.obj (op W')).obj W),
+        (F.map f.op).app _ z = x ∧ (F.obj _).map f z = y := by
+  constructor
+  · intro h
+    cases h with
+    | mk f x =>
+      use f
+      use x
+  · intro h
+    obtain ⟨f, z, h1, h2⟩ := h
+    rw [← h1, ← h2]
+    exact coendRel.mk f z
+
+lemma eqvGen_coendRel_iff (x y : (W : J) × (F.obj (op W)).obj W) :
+    Relation.EqvGen (coendRel F) x y ↔ coendRel F x y ∨ coendRel F y x :=
+  sorry
 
 def coend : Type max w u := Quot (coendRel F)
 
@@ -442,43 +462,169 @@ noncomputable def compIso₃' (X : C) (Y : Fᵒᵖ) :
         · rfl
         · simp; rfl
 
-noncomputable def associatorComponents (X : C) (Y : Fᵒᵖ) :
+noncomputable def associatorComponents' (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y :=
   (compIso₃ P Q R X Y).symm ≪≫ fubini.app (P.compDiagram₃' Q R X (unop Y)) ≪≫
     (_ ⋙ chosenCoendFunctor).mapIso (compDiagram₃Iso P Q R X (unop Y)).symm ≪≫ compIso₃' P Q R X Y
 
+lemma associatorComponents'_apply (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
+    (r : (R.obj e).obj Y) (p : (P.obj X).obj (Opposite.op d)) (q : (Q.obj d).obj (Opposite.op e)) :
+    (associatorComponents' P Q R X Y).hom (Quot.mk _ ⟨e, Quot.mk _ ⟨d, (p, q)⟩, r⟩) =
+      Quot.mk _ ⟨d, (p, Quot.mk _ ⟨e, (q, r)⟩)⟩ := by
+  sorry
 
-noncomputable def associatorComponents' (X : C) (Y : Fᵒᵖ) :
+lemma relation_map {α β : Type*} (f : α → β) (r : β → β → Prop) (x y : α)
+    (h : Relation.EqvGen (fun x y ↦ r (f x) (f y)) x y) :
+    Relation.EqvGen r (f x) (f y) := by
+  induction h with
+  | rel => exact Relation.EqvGen.rel _ _ (by assumption)
+  | refl => exact Relation.EqvGen.refl _
+  | symm => exact Relation.EqvGen.symm _ _ (by assumption)
+  | trans => exact Relation.EqvGen.trans _ _ _ (by assumption) (by assumption)
+
+@[simp]
+lemma Relation.eqvGen_eqvGen {α : Type*} (r : α → α → Prop) :
+    Relation.EqvGen (Relation.EqvGen r) = Relation.EqvGen r := by
+  ext x y
+  refine ⟨fun h ↦ ?_, fun h ↦ Relation.EqvGen.rel _ _ h⟩
+  induction h with
+  | rel => assumption
+  | refl => exact Relation.EqvGen.refl _
+  | symm => exact Relation.EqvGen.symm _ _ (by assumption)
+  | trans => exact Relation.EqvGen.trans _ _ _ (by assumption) (by assumption)
+
+set_option backward.isDefEq.respectTransparency false in
+def associatorComponents (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y where
-  hom := ↾fun x ↦ Quot.mk _ ⟨x.out.2.1.out.1, x.out.2.1.out.2.1,
-    Quot.mk _ ⟨x.out.1, x.out.2.1.out.2.2, x.out.2.2⟩⟩
-  inv := ↾fun x ↦ Quot.mk _ ⟨x.out.2.2.out.1,
-    Quot.mk _ ⟨x.out.1, x.out.2.1, x.out.2.2.out.2.1⟩, x.out.2.2.out.2.2⟩
-  hom_inv_id :=
-    sorry
-  inv_hom_id :=
-    sorry
+  hom := by
+    refine ↾Quot.lift (fun ⟨e, x, r⟩ ↦ Quot.map (fun ⟨d, p, q⟩ ↦ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩) ?_ x) ?_
+    · intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
+      cases h with
+      | mk f x =>
+        convert coendRel.mk (F := (P.compDiagram (Q.comp R) X (unop Y)))
+          f ⟨x.1, Quot.mk _ ⟨e, x.2, r⟩⟩
+        dsimp
+        ext
+        · rfl
+        · apply Quot.sound
+          convert coendRel.mk (F := Q.compDiagram R d' (unop Y)) (𝟙 e) ⟨(Q.map f).app _ x.2, r⟩
+          · simp
+          · apply Prod.ext
+            · rfl
+            · simp; rfl
+    · rintro ⟨e, ⟨d, p, q⟩, r⟩ ⟨e', ⟨d', p', q'⟩, r'⟩ h
+      dsimp
+      rw [coendRel_iff] at h
+      obtain ⟨f, ⟨x, r''⟩, h₁, h₂⟩ := h
+      simp only [compDiagram_obj_obj, comp_obj_obj, op_unop, compDiagram_map_app, comp_obj_map,
+        Quiver.Hom.unop_op, hom_ofHom, Fun.coe_mk, Prod.map_apply, id_eq, Prod.mk.injEq,
+        compDiagram_obj_map] at h₁ h₂
+      obtain ⟨rfl, rfl⟩ := h₂
+      obtain ⟨h₁, rfl⟩ := h₁
+      simp only [chosenCoend.map_apply, Quot.map, compDiagram_obj_obj, compDiagramMap_app_app,
+        map_id, NatTrans.id_app, ofHom_apply, Prod.map_apply, id_apply] at h₁
+      symm
+      simp only [Quot.map]
+      rw [Quot.eq] at h₁ ⊢
+      have h₁' := relation_map (fun ⟨d, p, q⟩ ↦ ⟨d, (p, Quot.mk _ ⟨e, q, r''⟩)⟩)
+          (Relation.EqvGen (coendRel (P.compDiagram (Q.comp R) X (unop Y)))) _ _ (h₁.mono <| by
+        intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
+        apply Relation.EqvGen.rel
+        simp only [compDiagram_obj_obj, op_unop, comp_obj_obj, coendRel_iff, compDiagram_map_app,
+          hom_ofHom, Fun.coe_mk, compDiagram_obj_map, comp_map_app, Prod.exists, Prod.map_apply,
+          id_eq, Prod.mk.injEq, ↓existsAndEq, and_true, true_and]
+        rw [coendRel_iff] at h
+        obtain ⟨f, x, h₁, h₂⟩ := h
+        use f
+        simp_all [Prod.ext_iff, chosenCoend.map_apply, Quot.map])
+      simp only [compDiagram_obj_obj, op_unop, comp_obj_obj, Relation.eqvGen_eqvGen] at h₁'
+      refine (Relation.EqvGen.trans _ _ _ ?_ h₁')
+      apply Relation.EqvGen.rel
+      rw [coendRel_iff]
+      use 𝟙 _
+      simp only [compDiagram_obj_obj, op_unop, comp_obj_obj, op_id, map_id, NatTrans.id_app,
+        id_apply, compDiagram_obj_map, ofHom_apply, exists_eq_left, Prod.map_apply, id_eq,
+        Prod.mk.injEq, true_and]
+      symm
+      apply Quot.sound
+      exact coendRel.mk (F := Q.compDiagram R _ _) f (_, _)
+  inv := by
+    refine ↾Quot.lift (fun ⟨d, p, x⟩ ↦ Quot.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩) ?_ x) ?_
+    · intro ⟨e, q, r⟩ ⟨e', q', r'⟩ h
+      cases h with
+      | mk f x =>
+        convert coendRel.mk (F := (P.comp Q).compDiagram R X (unop Y))
+          f ⟨_, _⟩
+        dsimp
+        ext
+        · apply Quot.sound
+          convert coendRel.mk (F := P.compDiagram Q X e) (𝟙 d) ⟨p, (Q.obj _).map f.op x.1⟩
+          · apply Prod.ext
+            · simp
+            · rfl
+          · simp; rfl
+        · rfl
+    · rintro ⟨d, p, e, q, r⟩ ⟨d', p', e', q', r'⟩ h-- ⟨e', ⟨d', p', q'⟩, r'⟩ h
+      dsimp
+      rw [coendRel_iff] at h
+      obtain ⟨f, ⟨p, x⟩, h₁, h₂⟩ := h
+      simp only [compDiagram_obj_obj, op_unop, comp_obj_obj, compDiagram_map_app, hom_ofHom,
+        Fun.coe_mk, Prod.map_apply, id_eq, Prod.mk.injEq, compDiagram_obj_map,
+        comp_map_app] at h₁ h₂
+      obtain ⟨rfl, rfl⟩ := h₁
+      obtain ⟨rfl, h₂⟩ := h₂
+      simp only [chosenCoend.map_apply, Quot.map, compDiagram_obj_obj, op_unop,
+        compDiagramMap_app_app, op_id, map_id, ofHom_apply, Prod.map_apply, id_apply] at h₂
+      dsimp [Quot.map]
+      rw [Quot.eq] at h₂ ⊢
+      have h₂' := relation_map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d', p, q⟩, r⟩)
+          (Relation.EqvGen (coendRel ((P.comp Q).compDiagram R X (unop Y)))) _ _ (h₂.mono <| by
+        intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
+        apply Relation.EqvGen.rel
+        simp only [compDiagram_obj_obj, comp_obj_obj, op_unop, coendRel_iff, compDiagram_map_app,
+          comp_obj_map, Quiver.Hom.unop_op, hom_ofHom, Fun.coe_mk, compDiagram_obj_map, Prod.exists,
+          Prod.map_apply, id_eq, Prod.mk.injEq, ↓existsAndEq, and_true, true_and]
+        rw [coendRel_iff] at h
+        obtain ⟨f, x, h₁, h₂⟩ := h
+        use f
+        simp_all [Prod.ext_iff, chosenCoend.map_apply, Quot.map])
+      simp only [compDiagram_obj_obj, comp_obj_obj, op_unop, Relation.eqvGen_eqvGen] at h₂'
+      refine (Relation.EqvGen.trans _ _ _ ?_ h₂')
+      apply Relation.EqvGen.rel
+      rw [coendRel_iff]
+      use 𝟙 _
+      simp only [compDiagram_obj_obj, comp_obj_obj, op_unop, op_id, map_id, NatTrans.id_app,
+        id_apply, compDiagram_obj_map, ofHom_apply, exists_eq_left, Prod.map_apply, id_eq,
+        Prod.mk.injEq, and_true]
+      apply Quot.sound
+      exact coendRel.mk (F := P.compDiagram Q _ _) f (_, _)
+  hom_inv_id := by
+    ext ⟨e, ⟨d, p, q⟩, r⟩
+    simp [Quot.map]
+  inv_hom_id := by
+    ext ⟨d, p, ⟨e, q, r⟩⟩
+    simp [Quot.map]
 
 lemma associatorComponents_apply (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
     (r : (R.obj e).obj Y) (p : (P.obj X).obj (Opposite.op d)) (q : (Q.obj d).obj (Opposite.op e)) :
     (associatorComponents P Q R X Y).hom (Quot.mk _ ⟨e, Quot.mk _ ⟨d, (p, q)⟩, r⟩) =
       Quot.mk _ ⟨d, (p, Quot.mk _ ⟨e, (q, r)⟩)⟩ := by
-  sorry
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) := by
+def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) := by
   refine NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦
     associatorComponents P Q R X Y) ?_) ?_
   · intro f f' g
     ext ⟨e, ⟨d, p, q⟩, r⟩
     dsimp
     erw [associatorComponents_apply, associatorComponents_apply]
-    simp [chosenCoend.map_apply, Quot.map]
+    simp
   · intro f f' g
     ext _ ⟨e, ⟨d, p, q⟩, r⟩
     dsimp
     erw [associatorComponents_apply, associatorComponents_apply]
-    simp [chosenCoend.map_apply, Quot.map]
+    simp
 
 end Associator
 
