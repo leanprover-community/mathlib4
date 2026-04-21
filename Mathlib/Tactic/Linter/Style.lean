@@ -52,7 +52,8 @@ namespace Mathlib.Linter
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
 It also warns on an option containing `maxHeartbeats`
-(as these should be scoped as `set_option ... in` instead). -/
+(as these should be scoped as `set_option ... in` instead), and on the
+`tactic.skipAssignedInstances` option. -/
 public register_option linter.style.setOption : Bool := {
   defValue := false
   descr := "enable the `setOption` linter"
@@ -76,13 +77,15 @@ public def isSetOption : Syntax → Bool :=
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
-`synthInstance.maxHeartbeats` option) or the `linter.flexible` option is set.
+`synthInstance.maxHeartbeats` option), `tactic.skipAssignedInstances` or `linter.flexible` is set.
 
 **Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
 
 `maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
 explaining the need for them; another linter enforces this).
+The `tactic.skipAssignedInstances` option was only added for backwards compatibility, and new uses
+should not be introduced.
 The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
 **How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
@@ -115,6 +118,12 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
         else if name == `linter.style.commandStart then
           logWarningAt stx "The `linter.style.commandStart` option is deprecated, \
             use `linter.style.whitespace` instead."
+        else if name == `tactic.skipAssignedInstances then
+          -- Note: this does not check the option's value;
+          -- setting it to `false` also warns. As that is superfluous, it should be fine.
+          Linter.logLint linter.style.setOption head
+            m!"The 'tactic.skipAssignedInstances' option was only added for backwards compatibility \
+            with existing code: please do not add new uses of it."
 
 initialize addLinter setOptionLinter
 
