@@ -54,6 +54,9 @@ variable {C : Type u} [Category.{v} C]
 attribute [local simp] PushoutObjObj.ι ofHasPushout_pt ofHasPushout_inl ofHasPushout_inr
   PullbackObjObj.ofHasPullback_π
 
+instance [MonoidalCategory C] (A : C) [Closed A] : (ihom A).IsRightAdjoint :=
+  (ihom.adjunction A).isRightAdjoint
+
 namespace MonoidalCategory
 
 namespace Arrow
@@ -204,8 +207,12 @@ set_option backward.isDefEq.respectTransparency false in
 initial object. -/
 @[simps!]
 def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
-    (X □ i.to W) ≅ Arrow.mk (X.hom ▷ W) :=
-  Arrow.isoMk' _ _ (Limits.pushout.isInitialWhiskerLeftIso X.hom i) (Iso.refl _)
+    (X □ i.to W) ≅ X.hom ▷ W :=
+  haveI : IsIso (X.hom ▷ I) :=
+    isIso_of_isInitial (i.ofIso (zeroMul i).symm) (i.ofIso (zeroMul i).symm) _
+  haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
+    .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
     (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp))
 
 set_option backward.isDefEq.respectTransparency false in
@@ -214,7 +221,11 @@ an initial object. -/
 @[simps!]
 def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (i.to W □ X) ≅ Arrow.mk (W ◁ X.hom) :=
-  Arrow.isoMk' _ _ (Limits.pushout.isInitialWhiskerRightIso X.hom i) (Iso.refl _)
+  haveI : IsIso (I ◁ X.hom) :=
+    isIso_of_isInitial (i.ofIso (mulZero i).symm) (i.ofIso (mulZero i).symm) _
+  haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
+    .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
     (pushout.hom_ext (by simp) ((i.ofIso (mulZero i).symm).hom_ext _ _))
 
 /-- The arrow isomorphism `X □ (∅ ⟶ ⋆) ≅ X` in a CCC with pushouts, an initial object, and a
@@ -234,7 +245,7 @@ terminal object. -/
 @[simps!]
 def isInitialIsTerminalIso' (X : Arrow C) {I : C} (i : IsInitial I) {T : C} (t : IsTerminal T) :
     (X □ t.from I) ≅ X :=
-  ((pushoutProduct.obj X).mapIso (Arrow.isoMk' _ _ (Iso.refl _) (Iso.refl _) (i.hom_ext _ _))) ≪≫
+  (mapIso _ (Arrow.isoMk' _ _ (Iso.refl _) (Iso.refl _) (i.hom_ext _ _))) ≪≫
     (isInitialIsTerminalIso X i t)
 
 end
@@ -284,8 +295,16 @@ category with pullbacks and a terminal object. -/
 def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
     (X : Arrow C) {T : C} (t : IsTerminal T) {W : C} :
     ((Opposite.op X) ⋔ Arrow.mk (t.from W)) ≅ Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
-  Arrow.isoMk' _ _ (Iso.refl _) (Limits.pullback.ihomMapIsTerminalIso X.hom t) (by simp)
+  haveI : IsIso ((MonoidalClosed.pre X.hom).app T) :=
+    isIso_of_isTerminal (IsTerminal.isTerminalObj (ihom _) _ t)
+      (IsTerminal.isTerminalObj (ihom _) _ t) _
+  haveI : IsPullback (𝟙 _) ((IsTerminal.isTerminalObj (ihom _) _ t).from _)
+      ((ihom X.left).map (t.from W)) ((MonoidalClosed.pre X.hom).app T) :=
+    .of_horiz_isIso (sq := ⟨(IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..⟩)
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+    (pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..)))
 
+open CartesianMonoidalCategory in
 set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(∅ ⟶ W) ⋔ (f : A ⟶ B) ≅ (W ⟹ A ⟶ W ⟹ B)` in a braided CCC with
 pullbacks and an initial object. -/
@@ -293,7 +312,14 @@ pullbacks and an initial object. -/
 def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]
     (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (Opposite.op (Arrow.mk (i.to W)) ⋔ X) ≅ Arrow.mk ((ihom W).map X.hom) :=
-  Arrow.isoMk' _ _ (Iso.refl _) (Limits.pullback.preAppIsInitialIso X.hom i) (by simp)
+  haveI : IsIso ((ihom I).map X.hom) :=
+    isIso_of_isTerminal (isTerminalTensorUnit.ofIso (powZero i).symm)
+      (isTerminalTensorUnit.ofIso (powZero i).symm) _
+  haveI : IsPullback ((isTerminalTensorUnit.ofIso (powZero i).symm).from _) (𝟙 _)
+      ((ihom I).map X.hom) ((MonoidalClosed.pre (i.to W)).app X.right) :=
+    .of_vert_isIso (sq := ⟨(isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..⟩)
+  Arrow.isoMk' _ _ (Iso.refl _) this.isoPullback.symm ((this.isoPullback).eq_comp_inv.2
+    (pullback.hom_ext ((isTerminalTensorUnit.ofIso (powZero i).symm).hom_ext ..) (by simp)))
 
 end
 

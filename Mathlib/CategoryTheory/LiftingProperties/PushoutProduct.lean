@@ -105,7 +105,6 @@ lemma hasLiftingProperty_mk_isInitial_isTerminal_iff [HasPushouts C] [HasPullbac
     HasLiftingProperty (i.to B □ g).hom (t.from X) ↔
       HasLiftingProperty g (t.from ((ihom B).obj X)) := by
   rw [hasLiftingProperty_mk_isInitial_iff]
-  have : (ihom B).IsRightAdjoint := Closed.adj.isRightAdjoint
   exact HasLiftingProperty.iff_of_arrow_iso_right g
     (Arrow.isoMk' _ _ (Iso.refl _) ((IsTerminal.isTerminalObj (ihom B) _ t).uniqueUpToIso t)
       (t.hom_ext _ _))
@@ -118,7 +117,6 @@ lemma hasLiftingProperty_mk_isInitial_isTerminal_iff' [HasPushouts C] [HasPullba
     HasLiftingProperty (f □ i.to L).hom (t.from X) ↔
       HasLiftingProperty f (t.from ((ihom L).obj X)) := by
   rw [hasLiftingProperty_mk_isInitial_iff']
-  have : (ihom L).IsRightAdjoint := Closed.adj.isRightAdjoint
   exact HasLiftingProperty.iff_of_arrow_iso_right f
     (Arrow.isoMk' _ _ (Iso.refl _) ((IsTerminal.isTerminalObj (ihom L) _ t).uniqueUpToIso t)
       (t.hom_ext _ _))
