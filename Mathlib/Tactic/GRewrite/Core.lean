@@ -5,7 +5,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public import Lean
+public meta import Lean.Meta.Tactic.Rewrite
 public import Mathlib.Tactic.GCongr.Core
 
 /-!

@@ -126,7 +126,7 @@ lemma Hom.w' {x y : F ⊡ G} (f : x ⟶ y) :
     G.map f.snd ≫ y.iso.inv = x.iso.inv ≫ F.map f.fst := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, f.w]
 
-/-- Extensionnality principle for morphisms in `CategoricalPullback F G`. -/
+/-- Extensionality principle for morphisms in `CategoricalPullback F G`. -/
 @[ext]
 theorem hom_ext {x y : F ⊡ G} {f g : x ⟶ y}
     (hₗ : f.fst = g.fst) (hᵣ : f.snd = g.snd) : f = g := by
@@ -247,7 +247,7 @@ lemma hom_ext {S S' : CatCommSqOver F G X} {f g : S ⟶ S'}
     (h₁ : f.fst = g.fst) (h₂ : f.snd = g.snd) : f = g :=
   Hom.ext h₁ h₂
 
-/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
+/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps]
 instance asSquare (S : CatCommSqOver F G X) : CatCommSq S.fst S.snd F G where
   iso := S.iso

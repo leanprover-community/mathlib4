@@ -20,6 +20,7 @@ We define
 * Given `{X Y : TopCat.{w}}` and `f : X ⟶ Y`, we define
   `TopCat.Presheaf.pushforward C f : X.Presheaf C ⥤ Y.Presheaf C`,
   with notation `f _* ℱ` for `ℱ : X.Presheaf C`.
+
 and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.id : (𝟙 X) _* ℱ ≅ ℱ`
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
@@ -27,7 +28,7 @@ and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 
 We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
-`TopCat.Presheaf.pushforwardPullbackAdjunction`.
+`TopCat.Presheaf.pullbackPushforwardAdjunction`.
 -/
 
 @[expose] public section
@@ -141,6 +142,11 @@ theorem map_restrict
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
+
+@[simp]
+lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
+    x |_ U = x := by
+  simp [restrictOpen, restrict]
 
 open CategoryTheory.Limits
 
@@ -269,20 +275,23 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
+
+@[deprecated (since := "2026-03-03")]
+alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
 def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
 
 variable {C}
@@ -317,13 +326,13 @@ theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y
     (fun j ↦ ?_)
   have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
       ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
-      (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op  =
+      (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op =
       ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
       ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
       (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by cat_disch
   rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
     Limits.IsColimit.comp_coconePointUniqueUpToIso_hom,
-    Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
+    Limits.coconeOfDiagramTerminal_ι_app, Limits.coconeOfDiagramTerminal_ι_app]
   dsimp
   rw [← Functor.map_comp]
   cat_disch

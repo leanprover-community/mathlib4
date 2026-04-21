@@ -37,6 +37,58 @@ open Limits Opposite
 
 variable {C : Type*} [Category* C]
 
+namespace PreZeroHypercover
+
+variable {S : C}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If the pre-`0`-hypercover `E` has pairwise pullbacks, the sections over the multifork
+associated to a presheaf of types are equivalent to the compatible families on `E`. -/
+@[simps]
+def sectionsEquivOfHasPullbacks (E : PreZeroHypercover S)
+    [E.HasPullbacks] (F : Cᵒᵖ ⥤ Type*) :
+    (E.toPreOneHypercover.multicospanIndex F).sections ≃
+      Subtype (Presieve.Arrows.Compatible F E.f) where
+  toFun s :=
+    ⟨s.val, fun i j W gi gj hgij ↦ by
+      have heq := s.property ⟨(i, j), ⟨⟩⟩
+      dsimp at heq
+      rw [← pullback.lift_fst _ _ hgij]
+      conv_rhs => rw [← pullback.lift_snd _ _ hgij]
+      rw [op_comp, Functor.map_comp, op_comp, Functor.map_comp]
+      simp [heq]⟩
+  invFun s := ⟨s.val, fun r ↦ s.property _ _ _ _ _ pullback.condition⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPullbacks]
+    (F : Cᵒᵖ ⥤ Type*) :
+    Nonempty (IsLimit <| E.toPreOneHypercover.multifork F) ↔ E.presieve₀.IsSheafFor F := by
+  rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
+    ← Function.Bijective.of_comp_iff' (E.sectionsEquivOfHasPullbacks F).symm.bijective]
+  rfl
+
+end PreZeroHypercover
+
+lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K : Precoverage C}
+    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*} {𝒰 𝒱 : K.ZeroHypercover S}
+    (f : 𝒰.Hom K 𝒱) (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
+    (H₂ : ∀ {X : C} (f : X ⟶ S),
+      Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
+    Presieve.IsSheafFor F (.ofArrows 𝒱.X 𝒱.f) := by
+  rw [Presieve.isSheafFor_iff_generate]
+  apply Presieve.isSheafFor_subsieve_aux (S := .generate (.ofArrows 𝒰.X 𝒰.f))
+  · rw [← Sieve.generate_le_iff, Sieve.generate_sieve, Sieve.generate_le_iff,
+      Presieve.ofArrows_le_iff]
+    intro i
+    rw [← f.w₀]
+    exact ⟨_, f.h₀ i, 𝒱.f _, ⟨_⟩, rfl⟩
+  · rwa [← Presieve.isSheafFor_iff_generate]
+  · intro Y f hf
+    rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate,
+      ← Presieve.ofArrows_pullback]
+    apply H₂
+
 namespace PreOneHypercover
 
 variable {X : C} {E : PreOneHypercover.{w} X} {F : Cᵒᵖ ⥤ Type*}
@@ -72,8 +124,8 @@ lemma IsStronglySeparatedFor.arrowsCompatible (h : E.IsStronglySeparatedFor F)
     Presieve.Arrows.Compatible _ E.f x := by
   rintro i₁ i₂ Z g₁ g₂ heq
   refine (h.isSeparatedFor_sieve₁ g₁ g₂ heq).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
-  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
+  rw [← comp_apply, ← Functor.map_comp, ← op_comp, h₁]
+  conv_rhs => rw [← comp_apply, ← Functor.map_comp, ← op_comp, h₂]
   simp [hc]
 
 /-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
@@ -102,7 +154,8 @@ def IsStronglySheafFor.isLimitMultifork (h : E.IsStronglySheafFor F) :
   rw [Multifork.isLimit_types_iff]
   refine ⟨fun s t hst ↦ ?_, fun s ↦ ?_⟩
   · exact h.isSheafFor_presieve₀.isSeparatedFor.ext fun _ _ ⟨i⟩ ↦ congr($(hst).val i)
-  · exact ⟨h.amalgamate s.val fun i j k ↦ s.property ⟨(i, j), k⟩, by ext; simp⟩
+  · exact ⟨h.amalgamate s.val fun i j k ↦ s.property ⟨(i, j), k⟩, by
+      ext; exact map_amalgamate _ _ _ _⟩
 
 lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafFor F)
     (h₂ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)
@@ -116,11 +169,11 @@ lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafF
   have hr : Presieve.Arrows.Compatible _ E.f s := by
     intro i j Z gi gj hgij
     refine (h₁.isSeparatedFor_sieve₁ gi gj hgij).ext fun Y f ⟨k, h, hf₁, hf₂⟩ ↦ ?_
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, hf₁, hf₂]
-    simp only [op_comp, FunctorToTypes.map_comp_apply]
+    simp only [← comp_apply, ← Functor.map_comp, ← op_comp, hf₁, hf₂]
+    simp only [op_comp, Functor.map_comp, comp_apply]
     congr! 1
     refine (H' k).ext fun W p hp ↦ ?_
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp, hs i (p ≫ E.p₁ k) (by simpa),
+    simp only [← comp_apply, ← Functor.map_comp, ← op_comp, hs i (p ≫ E.p₁ k) (by simpa),
       hs j (p ≫ E.p₂ k) (by simpa [← E.w])]
     dsimp only [Presieve.FamilyOfElements.pullback]
     congr 1
@@ -129,7 +182,7 @@ lemma IsStronglySheafFor.isSheafFor_sieve_of_pullback (h₁ : E.IsStronglySheafF
   obtain ⟨t', ht', hunique⟩ := (Presieve.isSheafFor_arrows_iff _ _).mp h₁.isSheafFor_presieve₀ _ hr
   refine ⟨t', fun T f hf ↦ (h₂ f).ext fun Z g hg ↦ ?_, fun y hy ↦ ?_⟩
   · obtain ⟨W, w, u, ⟨i⟩, heq⟩ := hg
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+    rw [← comp_apply, ← Functor.map_comp, ← op_comp]
     have : t (g ≫ f) (by simp [hf]) = t (w ≫ E.f i) (by simp [heq, hf]) := by
       congr 1
       rw [heq]

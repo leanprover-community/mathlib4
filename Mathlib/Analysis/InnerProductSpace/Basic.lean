@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Properties of inner product spaces
@@ -667,8 +668,7 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r : 𝕜} (hx : x ≠ 0)
     (hr : r ≠ 0) : ‖⟪x, r • x⟫‖ / (‖x‖ * ‖r • x‖) = 1 := by
   have hx' : ‖x‖ ≠ 0 := by simp [hx]
@@ -678,8 +678,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r
     mul_div_cancel_right₀ _ hr', div_self hx']
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F} {r : ℝ}
     (hx : x ≠ 0) (hr : r ≠ 0) : |⟪x, r • x⟫_ℝ| / (‖x‖ * ‖r • x‖) = 1 :=
   norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul hx hr
@@ -700,7 +699,6 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
@@ -886,11 +884,11 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
 instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
-  inner x y := y * conj x
-  norm_sq_eq_re_inner x := by simp only [mul_conj, ← ofReal_pow, ofReal_re]
-  conj_inner_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
-  add_left x y z := by simp only [mul_add, map_add]
-  smul_left x y z := by simp only [mul_comm (conj z), mul_assoc, smul_eq_mul, map_mul]
+  inner x y := y * star x
+  norm_sq_eq_re_inner x := by rw [star_def, mul_conj, ← ofReal_pow, ofReal_re]
+  conj_inner_symm x y := by rw [star_def, map_mul, starRingEnd_self_apply, mul_comm]
+  add_left x y z := by rw [star_def, map_add, mul_add]
+  smul_left x y z := by rw [star_def, smul_eq_mul, map_mul, mul_left_comm]
 
 @[simp]
 theorem RCLike.inner_apply (x y : 𝕜) : ⟪x, y⟫ = y * conj x :=
@@ -913,6 +911,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
+@[implicit_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure.
@@ -951,6 +950,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
+@[implicit_reducible]
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
@@ -969,13 +969,30 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm x y := inner_re_symm ..
   add_left x y z :=
-    show re (_ * _) = re (_ * _) + re (_ * _) by simp only [map_add, mul_re, conj_re, conj_im]; ring
+    show re (_ * _) = re (_ * _) + re (_ * _) by
+      simp only [star_def, map_add, mul_re, conj_re, conj_im]; ring
   smul_left x y r :=
     show re (_ * _) = _ * re (_ * _) by
-      simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
+      simp only [star_def, mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
 -- The instance above does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
+
+section IsPosSemidef
+
+variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+
+lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
+  eq x y := by simp [real_inner_comm]
+
+lemma isNonneg_inner : LinearMap.IsNonneg (innerₗ E) where
+  nonneg x := by simp
+
+lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
+  isSymm := isSymm_inner
+  isNonneg := isNonneg_inner
+
+end IsPosSemidef
