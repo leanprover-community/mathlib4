@@ -37,7 +37,6 @@ criterion.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
-@[expose] public section
 
 namespace LieModule
 
