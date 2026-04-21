@@ -502,6 +502,34 @@ theorem _root_.Cardinal.iSup_lt_of_lt_cof_ord {f : α → Cardinal.{u}} {a : Car
   rw [← ord_lt_ord, iSup_ord]
   apply Ordinal.iSup_lt_of_lt_cof <;> simpa
 
+theorem bddAbove_Iio_of_lt_cof {o : Ordinal.{u}} {s : Set (Iio o)}
+    (hs : #s < Cardinal.lift.{u + 1} o.cof) : BddAbove s := by
+  refine ⟨⟨sSup ((↑) '' s), ?_⟩, ?_⟩
+  · apply sSup_lt_of_lt_cof
+    · rwa [mk_image_eq Subtype.val_injective, ← lift_cof]
+    · grind
+  · simp only [mem_upperBounds, ← Subtype.coe_le_coe]
+    intro x hx
+    apply le_csSup bddAbove_of_small
+    grind
+
+theorem bddAbove_toType_of_lt_cof {o : Ordinal.{u}} {s : Set o.ToType} (hs : #s < o.cof) :
+    BddAbove s := by
+  rw [← ToType.mk.bddAbove_preimage]
+  apply bddAbove_Iio_of_lt_cof
+  rwa [← Cardinal.lift_id'.{u, u + 1} #_, ← EquivLike.coe_coe, mk_preimage_equiv_lift,
+    Cardinal.lift_lt]
+
+theorem bddAbove_range_Iio_of_lt_cof {o : Ordinal.{u}} {ι : Type v} {f : ι → Iio o}
+    (hι : Cardinal.lift.{u} #ι < Cardinal.lift.{v} o.cof) : BddAbove (Set.range f) :=
+  bddAbove_Iio_of_lt_cof (by
+    grw [← Cardinal.lift_lt.{_, v}, mk_range_le_lift]
+    simpa using Cardinal.lift_lt.{_, u + 1}.2 hι)
+
+theorem bddAbove_range_toType_of_lt_cof {o : Ordinal.{u}} {ι : Type v} {f : ι → o.ToType}
+    (hι : Cardinal.lift.{u} #ι < Cardinal.lift.{v} o.cof) : BddAbove (Set.range f) :=
+  bddAbove_toType_of_lt_cof (by grw [← Cardinal.lift_lt.{_, v}, mk_range_le_lift]; exact hι)
+
 set_option linter.deprecated false in
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 @[deprecated "to build an increasing function with limit o, use the fundamental sequence API."
@@ -740,6 +768,17 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
   simp_rw [univ, ← lift_cof, ← lift_card, Cardinal.lift_le, cof_type, card_type, le_cof_iff,
     ← not_bddAbove_iff_isCofinal]
   exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
+
+@[simp]
+theorem _root_.Order.cof_ordinal : Order.cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
+  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.subrelIso.{u, u + 1}).lift_cof_congr
+  rw [Cardinal.lift_id'.{_, u + 2}] at this
+  change Order.cof (Iio univ) = _ at this
+  rwa [cof_Iio, ← lift_cof, Cardinal.lift_inj, cof_univ, eq_comm] at this
+
+@[simp]
+theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
+  rw [← preAleph.cof_congr, cof_ordinal]
 
 end Ordinal
 

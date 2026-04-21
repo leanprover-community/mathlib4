@@ -790,6 +790,45 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 
+theorem mk_bounded_set_le_powerlt (α : Type u) (c : Cardinal) :
+    #{t : Set α // #t < c} ≤ c * max #α ℵ₀ ^< c := by
+  trans #(⋃ i : Set.Iio c.ord, {t : Set α | #t ≤ i.1.card})
+  · rw [← coe_setOf]
+    apply mk_le_mk_of_subset
+    intro t ht
+    simp only [Set.mem_setOf, Set.mem_iUnion] at ht ⊢
+    exists ⟨(#t).ord, by simpa⟩
+    simp
+  rw [← lift_le.{u + 1}]
+  apply mk_iUnion_le_sum_mk_lift.trans
+  apply (sum_le_lift_mk_mul_iSup_lift _).trans
+  simp only [mk_Iio_ordinal, card_ord, lift_lift, coe_setOf]
+  rw [← lift_iSup bddAbove_of_small, ← lift_mul, lift_le]
+  apply mul_le_mul_right
+  rw [powerlt]
+  refine ciSup_le' fun ⟨i, hi⟩ => ?_
+  simp only [mem_Iio, lt_ord] at hi
+  refine le_ciSup_of_le bddAbove_of_small ⟨i.card, hi⟩ ?_
+  apply mk_bounded_set_le
+
+theorem mk_bounded_subset_le_powerlt {α : Type u} (s : Set α) (c : Cardinal.{u}) :
+    #{ t : Set α // t ⊆ s ∧ #t < c } ≤ c * max #s ℵ₀ ^< c := by
+  apply (mk_bounded_set_le_powerlt s c).trans'
+  refine ⟨Embedding.codRestrict {t : Set s | #t < c} ⟨fun t => (↑) ⁻¹' t.1, ?_⟩ ?_⟩
+  · rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
+    apply Subtype.ext
+    dsimp only at h ⊢
+    refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
+  · rintro ⟨t, _, h2t⟩
+    exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans_lt h2t
+
+theorem mk_range_le_powerlt {ι α} {f : ι → Set α} (c : Cardinal.{u}) (s : Set α)
+    (hf : ∀ i, f i ⊆ s) (hf' : ∀ i, #(f i) < c) : #(Set.range f) ≤ c * max #s ℵ₀ ^< c := by
+  apply (mk_bounded_subset_le_powerlt s c).trans'
+  rw [← coe_setOf]
+  apply mk_le_mk_of_subset
+  grind
+
 end computing
 
 /-! ### Properties of `compl` -/

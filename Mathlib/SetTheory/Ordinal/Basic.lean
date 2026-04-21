@@ -533,6 +533,8 @@ def ToType.mk {o : Ordinal} : Set.Iio o ≃o o.ToType where
 /-- Convert an element of `α.toType` to the corresponding `Ordinal` -/
 abbrev ToType.toOrd {o : Ordinal} (α : o.ToType) : Set.Iio o := ToType.mk.symm α
 
+instance {o : Ordinal} : WellFoundedLT (Set.Iio o) := ToType.mk.toOrderEmbedding.wellFoundedLT
+
 instance (o : Ordinal) : Coe o.ToType (Set.Iio o) where
   coe := ToType.toOrd
 instance (o : Ordinal) : CoeOut o.ToType Ordinal where
@@ -1188,6 +1190,10 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
 
+theorem mk_Iio_Iio_ord_lt {c : Cardinal.{u}} (i : Iio c.ord) :
+    #(Iio i) < Cardinal.lift.{u + 1} c := by
+  simpa using mk_Iio_lt i
+
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
 set_option linter.deprecated false in
@@ -1195,6 +1201,10 @@ set_option linter.deprecated false in
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
   mk_Iio_toType_ord_lt x
+
+theorem mk_Iio_Iio_ord_eq {c : Cardinal.{u}} (i : Iio c.ord) :
+    #(Iio i) = Cardinal.lift.{u + 1} i.1.card := by
+  rw [← mk_Iio_ordinal, ← Set.image_subtype_val_Iio_Iio, mk_image_eq Subtype.val_injective]
 
 theorem ord_injective : Injective ord := by
   intro c c' h

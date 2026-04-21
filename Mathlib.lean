@@ -5779,6 +5779,7 @@ public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Circular.ZMod
 public import Mathlib.Order.Closure
+public import Mathlib.Order.Club
 public import Mathlib.Order.Cofinal
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.CompactlyGenerated.Intervals
@@ -6888,6 +6889,7 @@ public import Mathlib.SetTheory.Cardinal.Cofinality
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
 public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.DeltaSystem
 public import Mathlib.SetTheory.Cardinal.Divisibility
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Cardinal.Embedding
