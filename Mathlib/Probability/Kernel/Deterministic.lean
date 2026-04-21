@@ -92,14 +92,23 @@ class IsZeroOneMeasure (μ : Measure α) : Prop where
 lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
     ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1 := IsZeroOneMeasure.zero_one'
 
+lemma Measure.zero_one₀ (μ : Measure α) [IsZeroOneMeasure μ] :
+    ∀ s, μ s = 0 ∨ μ s = 1 := by
+  intro s
+  by_cases hs : MeasurableSet s
+  · exact μ.zero_one hs
+  · obtain ⟨t, _, mt, ht⟩ := exists_measurable_superset μ s
+    rw [← ht]
+    exact μ.zero_one mt
+
 variable {μ : Measure α} [IsZeroOneMeasure μ]
 
 instance : IsZeroOrProbabilityMeasure μ where
   measure_univ := μ.zero_one MeasurableSet.univ
 
-lemma exists_one_iff_univ_one : (∃ s, MeasurableSet s ∧ μ s = 1) ↔ μ univ = 1 := by
+lemma exists_one_iff_univ_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
   constructor
-  · rintro ⟨s, hs, h⟩
+  · rintro ⟨s, h⟩
     cases μ.zero_one MeasurableSet.univ with
     | inr h₁ => exact h₁
     | inl h₀ =>
@@ -107,13 +116,12 @@ lemma exists_one_iff_univ_one : (∃ s, MeasurableSet s ∧ μ s = 1) ↔ μ uni
       rw [h] at this
       simp_all
   · intro h
-    exact ⟨univ, MeasurableSet.univ, h⟩
+    exact ⟨univ, h⟩
 
-lemma univ_one {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ univ = 1 :=
-  (exists_one_iff_univ_one).mp ⟨s, hs, hμs⟩
+lemma univ_one {s : Set α} (hμs : μ s = 1) : μ univ = 1 := (exists_one_iff_univ_one).mp ⟨s, hμs⟩
 
 lemma compl_eq_zero {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ sᶜ = 0 := by
-  rw [measure_compl hs (by simp), univ_one hs hμs, hμs, tsub_self]
+  rw [measure_compl hs (by simp), univ_one hμs, hμs, tsub_self]
 
 lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
@@ -122,7 +130,7 @@ lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
   cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
   all_goals try simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
-    rw [measure_compl (hs.inter ht) (by simp), univ_one hs ‹_›] at this
+    rw [measure_compl (hs.inter ht) (by simp), univ_one ‹_›] at this
     simp_all
   calc
   _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
