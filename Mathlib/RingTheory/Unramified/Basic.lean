@@ -344,7 +344,7 @@ lemma exists_algEquiv_prod (R S : Type u) [CommRing R] [CommRing S]
   let e₂ : (S ⊗[R] S ⧸ Ideal.span {e}) ≃ₐ[S] S :=
     ((Ideal.span {e}).quotientEquivAlgOfEq S hsp.symm).trans
       (Ideal.quotientKerAlgEquivOfSurjective <|
-      fun x ↦ by use x ⊗ₜ 1; simp [Algebra.TensorProduct.lmul''])
+        (⟨· ⊗ₜ 1, by simp [Algebra.TensorProduct.lmul'']⟩))
   exact ⟨(S ⊗[R] S) ⧸ Ideal.span {1 - e}, inferInstance, inferInstance,
     ⟨e₁.trans (.prodCongr e₂ .refl)⟩⟩
 
