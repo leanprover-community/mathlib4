@@ -159,7 +159,6 @@ lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
     (hf : ∀ r > 0, ∀ᶠ R in atTop, ∀ x, ‖x‖ < r → ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
@@ -175,7 +174,7 @@ lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
   refine (isCompact_iff_finite.mp (isCompact_closedBall (0 : L.lattice) R)).subset ?_
   intros l hl
   obtain ⟨s, hs, hs'⟩ : ∃ x, ‖x‖ < r ∧ u r l < ‖f l x‖ := by simpa using hl
-  simp only [Metric.mem_closedBall, dist_zero_right, AddSubgroupClass.coe_norm]
+  simp only [Metric.mem_closedBall, dist_zero_right]
   contrapose! hs'
   exact hR _ hs'.le _ hs _ rfl
 

@@ -346,7 +346,6 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
   GrpObj.toMonObj_injective H
 
 -- Note: `Invertible` has no additive variant
-set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
 @[implicit_reducible]
 def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
