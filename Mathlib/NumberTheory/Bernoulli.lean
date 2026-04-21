@@ -420,7 +420,7 @@ von Staudt-Clausen correction sum. -/
 private abbrev vonStaudtPrimes (k : ℕ) : Finset ℕ :=
   (Finset.range (2 * k + 2)).filter fun q => q.Prime ∧ (q - 1) ∣ 2 * k
 
-/-- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
+/- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
 private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
     (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) +
     (if (p - 1) ∣ l then (1 : ZMod p) else 0) = 0 := by
@@ -439,7 +439,7 @@ private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
   grind
 
-/-- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
+/- A rational number `x` is `p`-integral if `p` does not divide its denominator. -/
 private abbrev pIntegral (p : ℕ) (x : ℚ) [Fact p.Prime] : Prop := Rat.padicValuation p x ≤ 1
 
 private lemma den_sum_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
@@ -455,7 +455,7 @@ private lemma pIntegral_mul (p : ℕ) [Fact p.Prime] (x y : ℚ)
     (hx : pIntegral p x) (hy : pIntegral p y) : pIntegral p (x * y) :=
   ((Rat.padicValuation p).map_mul x y).trans_le (mul_le_one' hx hy)
 
-/-- Denominators of the "other primes" part of the indicator sum
+/- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
 private lemma prod_one_div_prime_den_coprime (k p : ℕ) [Fact p.Prime] :
     (∏ q ∈ vonStaudtPrimes k with q ≠ p, ((1 : ℚ) / q).den).Coprime p := by
@@ -467,7 +467,7 @@ private lemma prod_one_div_prime_den_coprime (k p : ℕ) [Fact p.Prime] :
   rw [h2]
   exact (Nat.coprime_primes h1 Fact.out).mpr hq.2
 
-/-- Splits the prime-indexed correction sum into the `p`-term (`vonStaudtIndicator / p`)
+/- Splits the prime-indexed correction sum into the `p`-term (`vonStaudtIndicator / p`)
 plus the rest. -/
 private lemma sum_one_div_prime_eq_indicator_div_add (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     (∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q) =
@@ -491,7 +491,7 @@ private lemma sum_one_div_prime_eq_indicator_div_add (k p : ℕ) (hk : k > 0) [F
     rintro rfl
     exact hdvd hq.2.2
 
-/-- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
+/- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
 private lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
     (hv : M.factorization p ≤ N) : pIntegral p ((p : ℚ) ^ N / M) := by
   set e := M.factorization p
@@ -513,7 +513,7 @@ private lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
     (hM'_cop.coprime_dvd_left (by
       rw [hM'_eq]; exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _))).symm)
 
-/-- The `i = 1` Faulhaber term is `p`-integral (handled separately for `p = 2` and odd `p`). -/
+/- The `i = 1` Faulhaber term is `p`-integral (handled separately for `p = 2` and odd `p`). -/
 private lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     pIntegral p (bernoulli 1 * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k)) := by
   rw [bernoulli_one]
@@ -534,7 +534,7 @@ private lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prim
           have := Nat.le_of_dvd two_pos h; have := (Fact.out : p.Prime).two_le; lia)]
         exact Nat.zero_le _))
 
-/-- Main valuation estimate behind the contradiction step for even-index summands. -/
+/- Main valuation estimate behind the contradiction step for even-index summands. -/
 private lemma factorization_succ_le_sub_one (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
     (d + 1).factorization p ≤ d - 1 := by
   -- Special case: p = 2, d = 2 (since 3 is not divisible by 2)
@@ -556,7 +556,7 @@ private lemma factorization_succ_le_sub_one (p d : ℕ) [Fact p.Prime] (hd : d �
           _ ≤ p ^ (m - 1) * p := by nlinarith [Nat.one_le_pow (m - 1) p (by lia)]
           _ = p ^ m := by rw [hm_eq]; exact pow_succ ..
 
-/-- Multiplicative variant of the binomial coefficient denominator rewrite
+/- Multiplicative variant of the binomial coefficient denominator rewrite
 as in Rado's summand. -/
 private lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < k) :
     ((2 * k + 1).choose (2 * m) : ℚ) * x / (2 * k + 1) =
@@ -570,7 +570,7 @@ private lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < 
   rw [mul_comm ((2 * k + 1).choose (2 * m) : ℚ) x, mul_div_assoc,
       mul_comm ((2 * k).choose (2 * m) : ℚ) x, mul_div_assoc, h]
 
-/-- `p`-integrality of the core even-index summand after denominator normalization. -/
+/- `p`-integrality of the core even-index summand after denominator normalization. -/
 private lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
     (hd : 2 * k - 2 * m ≥ 2) :
     pIntegral p (((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m - 1) /
@@ -584,7 +584,7 @@ private lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p
   exact pIntegral_mul p _ _ (by exact_mod_cast Int.padicValuation_le_one p ((2 * k).choose (2 * m)))
     (pIntegral_pow_div p (d + 1) (d - 1) hd_plus_one_ne_zero (factorization_succ_le_sub_one p d hd))
 
-/-- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
+/- Uses the induction hypothesis on `B_{2m} + e_{2m}(p)/p`
 to prove `p`-integrality of the even term. -/
 private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
     (ih : pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
@@ -615,7 +615,7 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
     · simp only [one_mul]; rw [choose_two_mul_succ_mul_div_eq k m _ hm_lt]; exact hcmp
     · simp only [zero_mul, zero_div, map_zero]; exact bot_le
 
-/-- The full remainder sum in Faulhaber's formula is `p`-integral. -/
+/- The full remainder sum in Faulhaber's formula is `p`-integral. -/
 private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     (ih : ∀ m, 0 < m → m < k → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
     pIntegral p (∑ i ∈ Finset.range (2 * k),
@@ -684,7 +684,7 @@ private lemma faulhaber_sum_div_prime_eq (k p : ℕ) [Fact p.Prime] :
     rw [hsub, pow_succ]
     field_simp [hp_ne]
 
-/-- Rearranges the Faulhaber identity and power-sum congruence to isolate
+/- Rearranges the Faulhaber identity and power-sum congruence to isolate
 `bernoulli (2*k) + vonStaudtIndicator (2*k) p / p`. -/
 private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ∃ T : ℤ, bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
@@ -699,7 +699,7 @@ private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Pr
     field_simp [hp_ne]; linarith [hT, sum_pow_filter_eq_faulhaber k p hk]
   rw [hAlg]; congr 1; simpa using faulhaber_sum_div_prime_eq k p
 
-/-- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
+/- For fixed prime `p`, the denominator of `B_{2k} + e_{2k}(p)/p` is not divisible by `p`. -/
 private lemma bernoulli_add_indicator_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p).den := by
   induction k using Nat.strong_induction_on with
@@ -714,7 +714,7 @@ private lemma bernoulli_add_indicator_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact
       exact Rat.padicValuation_le_one_iff.2 (ih m hm_lt hm_pos)
     exact Rat.padicValuation_le_one_iff.1 ((Rat.padicValuation p).map_sub_le hT_int hR)
 
-/-- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
+/- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
 private lemma vonStaudt_sum_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q).den := by
   rw [sum_one_div_prime_eq_indicator_div_add k p hk, ← add_assoc]
