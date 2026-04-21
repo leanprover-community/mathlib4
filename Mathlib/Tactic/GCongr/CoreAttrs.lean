@@ -20,8 +20,6 @@ namespace Mathlib.Tactic.GCongr
 
 variable {a b c : Prop}
 
-lemma imp_trans (h : a → b) : (b → c) → a → c := fun g ha => g (h ha)
-
 lemma imp_right_mono (h : a → b → c) : (a → b) → a → c :=
   fun h' ha => h ha (h' ha)
 
@@ -29,13 +27,13 @@ lemma and_right_mono (h : a → b → c) : (a ∧ b) → a ∧ c :=
   fun ⟨ha, hb⟩ => ⟨ha, h ha hb⟩
 
 attribute [gcongr] mt
-  Or.imp Or.imp_left Or.imp_right
-  And.imp And.imp_left GCongr.and_right_mono
-  imp_imp_imp GCongr.imp_trans GCongr.imp_right_mono
+  Or.imp
+  And.imp GCongr.and_right_mono
+  imp_imp_imp GCongr.imp_right_mono
   forall_imp Exists.imp
-  List.Sublist.append List.Sublist.append_left List.Sublist.append_right
+  List.Sublist.append
   List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
-  List.Perm.cons List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
+  List.Perm.cons List.Perm.append List.Perm.map
   List.cons_subset_cons
   Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
 
