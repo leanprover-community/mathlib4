@@ -107,7 +107,7 @@ def FiniteEtale.baseChange : FiniteEtale.{v} R ⥤ FiniteEtale.{max w v} S where
   map {A B} f := FiniteEtale.ofHom (Algebra.TensorProduct.map (.id _ _) f.hom.hom)
 
 /-- Base change from `R` to `R` is isomorphic to the identity. -/
-@[expose, simps!]
+@[expose]
 def FiniteEtale.baseChangeSelfIso : baseChange R R ≅ 𝟭 (FiniteEtale R) :=
   NatIso.ofComponents (fun A ↦ isoMk (Algebra.TensorProduct.lid _ _)) <| fun {A B} f ↦ by
     dsimp [baseChange]
@@ -131,7 +131,7 @@ def FiniteEtale.finiteSpec (k : Type u) [Field k] : (FiniteEtale.{v} k)ᵒᵖ �
 
 /-- If the geometric point `Ω` factors through `S`, the fiber can be computed after base change
 to `S`. -/
-@[expose, simps!]
+@[expose]
 def FiniteEtale.fiberIsoBaseChangeFiber :
     FiniteEtale.fiber.{v} R Ω ≅
       (FiniteEtale.baseChange.{v} R S).op ⋙ FiniteEtale.fiber S Ω :=
@@ -140,7 +140,7 @@ def FiniteEtale.fiberIsoBaseChangeFiber :
 
 /-- If `Ω` is separably closed, the fiber functor for finite étale `Ω`-algebras
 is naturally isomorphic to the (finite) `Spec` functor. -/
-@[expose, simps!]
+@[expose]
 noncomputable
 def FiniteEtale.fiberIsoFiniteSpec [IsSepClosed Ω] :
     FiniteEtale.fiber Ω Ω ≅ FiniteEtale.finiteSpec Ω :=
@@ -149,7 +149,7 @@ def FiniteEtale.fiberIsoFiniteSpec [IsSepClosed Ω] :
 
 /-- If `Ω` is separably closed, the fiber `S →ₐ[R] Ω`
 is isomorphic to the prime spectrum of the base change `Ω ⊗[R] S`. -/
-@[expose, simps!]
+@[expose]
 noncomputable
 def FiniteEtale.fiberIsoComp [IsSepClosed Ω] :
     FiniteEtale.fiber.{v} R Ω ≅
