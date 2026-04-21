@@ -52,6 +52,10 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
   ⟨fun s ↦ h.sInf s⟩
 
+@[to_dual]
+instance OrderDual.orderSupSet (α) [LE α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
+  isLUB_sSup_of_isLUB _ _ := isGLB_sInf_of_isGLB (α := α)
+
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 

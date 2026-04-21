@@ -834,6 +834,13 @@ theorem sSup_apply_eq_sSup_image {α : Type*} {β : α → Type*} [∀ i, SupSet
     sSup s a = sSup (eval a '' s) := by
   simp [sSup_apply, iSup, image_eq_range]
 
+@[to_dual]
+instance {α : Type*} {β : α → Type*} [∀ i, Preorder (β i)] [∀ i, OrderSupSet (β i)] :
+    OrderSupSet (∀ i, β i) where
+  isLUB_sSup_of_isLUB _ _ h := by
+    simp only [isLUB_pi, sSup_apply_eq_sSup_image] at h ⊢
+    exact fun i ↦ (h i).isLUB_sSup
+
 instance Pi.instCompleteLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
     CompleteLattice (∀ i, β i) where
   __ := instBoundedOrder
@@ -923,6 +930,12 @@ theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=
   congr_arg₂ Prod.mk (fst_iSup _) (snd_iSup _)
+
+@[to_dual]
+instance [Preorder α] [OrderSupSet α] [Preorder β] [OrderSupSet β] : OrderSupSet (α × β) where
+  isLUB_sSup_of_isLUB _ _ h := by
+    rw [isLUB_prod] at h ⊢
+    exact ⟨h.1.isLUB_sSup, h.2.isLUB_sSup⟩
 
 instance instCompleteLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) where
   __ := instBoundedOrder α β
