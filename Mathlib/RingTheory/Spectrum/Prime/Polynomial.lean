@@ -123,7 +123,6 @@ lemma mem_image_comap_basicOpen (f : A) (x) :
     ← mem_image_comap_zeroLocus_sdiff f ∅ x, zeroLocus_empty, ← Set.compl_eq_univ_diff,
     basicOpen_eq_zeroLocus_compl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an `R`-algebra. If `A ⧸ I` is finite free over `R`,
 then the image of `Z(I) ∩ D(f) ⊆ Spec S` in `Spec R` is compact open. -/
 lemma exists_image_comap_of_finite_of_free (f : A) (s : Set A)

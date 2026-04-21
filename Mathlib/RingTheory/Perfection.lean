@@ -227,13 +227,11 @@ variable {R p}
 theorem ext {f g : Perfection R p} (h : ∀ n, coeff R p n f = coeff R p n g) : f = g :=
   extMonoid h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma pthRoot_eq_symm_frobeniusEquiv :
     pthRoot R p = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
   ext : 1
   simpa [RingEquiv.eq_symm_apply] using ext <| coeffMonoidHom_pow_p' _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ p).symm :=
   congr($pthRoot_eq_symm_frobeniusEquiv)
 
@@ -241,7 +239,6 @@ lemma coe_pthRoot_eq_symm_frobeniusEquiv : ⇑(pthRoot R p) = (frobeniusEquiv _ 
 
 lemma pthRootMonoidHom_eq_pthRoot : ⇑(pthRootMonoidHom R p) = pthRoot R p := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pthRootMonoidHom_eq_symm_frobeniusEquiv :
     ⇑(pthRootMonoidHom R p) = RingHomClass.toRingHom (frobeniusEquiv _ p).symm := by
   simp
@@ -251,13 +248,11 @@ lemma coeff_toMonoidHom (n : ℕ) : (coeff R p n).toMonoidHom = coeffMonoidHom R
 @[simp]
 theorem coeff_mk (f : ℕ → R) (hf) (n : ℕ) : coeff R p n ⟨f, hf⟩ = f n := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_symm_frobeniusEquiv (f : Perfection R p) (n : ℕ) :
     coeff R p n ((frobeniusEquiv _ p).symm f) = coeff R p (n + 1) f :=
   coeffMonoidHom_symm_powMulEquiv ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_iterate_symm_frobeniusEquiv (f : Perfection R p) (n m : ℕ) :
     coeff R p n ((frobeniusEquiv _ p).symm^[m] f) = coeff R p (n + m) f :=
@@ -423,7 +418,6 @@ theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift 
 
 variable (p R P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical perfection map from the perfection of a ring. -/
 theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
   mk' (RingEquiv.refl _) <| (Equiv.apply_eq_iff_eq_symm_apply _).2 rfl
@@ -508,7 +502,6 @@ theorem map_map {π : P →+* R} (m : PerfectionMap p π) {σ : Q →+* S} (n : 
     (φ : R →+* S) (x : P) : σ (map p m n φ x) = φ (π x) :=
   RingHom.ext_iff.1 (comp_map p m n φ) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_eq_map (φ : R →+* S) : map p (of p R) (of p S) φ = Perfection.map p φ :=
   hom_ext _ (of p S) fun f => by rw [map_map, Perfection.coeff_map]
 
@@ -649,7 +642,6 @@ instance : CommRing (PreTilt O p) :=
 instance : CharP (PreTilt O p) p :=
   inferInstanceAs <| CharP (Perfection _ _) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : PerfectRing (PreTilt O p) p :=
   inferInstanceAs <| PerfectRing (Perfection _ _) p
 
