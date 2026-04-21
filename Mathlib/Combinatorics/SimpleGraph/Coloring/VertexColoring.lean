@@ -523,6 +523,56 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
+theorem colorable_two_of_maxDegree_le_one [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+ (h : G.maxDegree = 1) : G.Colorable 2 := by
+  have unique_neighbor : ∀ x y z, G.Adj x y → G.Adj x z → y = z := by
+    intro x y z hxy hxz
+    by_contra h_neq
+    have h_sub : ({y, z} : Finset V) ⊆ G.neighborFinset x := by
+      intro a ha
+      simp only [Finset.mem_insert, Finset.mem_singleton] at ha
+      rcases ha with rfl | rfl
+      · rw [G.mem_neighborFinset]
+        exact hxy
+      · rw [G.mem_neighborFinset]
+        exact hxz
+    have h_card := Finset.card_le_card h_sub
+    rw [Finset.card_pair h_neq] at h_card
+    have h_deg : (G.neighborFinset x).card ≤ 1 := by
+      calc (G.neighborFinset x).card = G.degree x := rfl
+        _ ≤ G.maxDegree := G.degree_le_maxDegree x
+        _ = 1 := h
+    omega
+  letI : ∀ (p : Prop), Decidable p := fun _ => Classical.propDecidable _
+  have e : V ≃ Fin (Fintype.card V) := Fintype.equivFin V
+  let c : V → Fin 2 := fun v =>
+    if ∃ w, G.Adj v w ∧ e w < e v then 1 else 0
+  use c
+  intro v w h_adj
+  dsimp [c]
+  rcases lt_trichotomy (e v) (e w) with h_lt | h_eq | h_gt
+  · have hw_cond : ∃ u, G.Adj w u ∧ e u < e w := ⟨v, h_adj.symm, h_lt⟩
+    rw [if_pos hw_cond]
+    have hv_cond : ¬ ∃ u, G.Adj v u ∧ e u < e v := by
+      rintro ⟨u, h_adj_vu, h_lt_uv⟩
+      have h_eq_uv := unique_neighbor v w u h_adj h_adj_vu
+      rw [← h_eq_uv] at h_lt_uv
+      exact lt_asymm h_lt h_lt_uv
+    rw [if_neg hv_cond]
+    simp
+  · have h_vw : v = w := e.injective h_eq
+    have h_ne := G.ne_of_adj h_adj
+    exact (h_ne h_vw).elim
+  · have hv_cond : ∃ u, G.Adj v u ∧ e u < e v := ⟨w, h_adj, h_gt⟩
+    rw [if_pos hv_cond]
+    have hw_cond : ¬ ∃ u, G.Adj w u ∧ e u < e w := by
+      rintro ⟨u, h_adj_wu, h_lt_uw⟩
+      have h_eq_uw := unique_neighbor w v u h_adj.symm h_adj_wu
+      rw [← h_eq_uw] at h_lt_uw
+      exact lt_asymm h_gt h_lt_uw
+    rw [if_neg hw_cond]
+    simp
+
 /-! ### Cliques -/
 
 theorem IsClique.card_le_of_colorable {s : Finset V} (h : G.IsClique s) (hc : G.Colorable n) :
