@@ -129,7 +129,7 @@ end AlgebraicClosure
 open AlgebraicClosure in
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
-@[stacks 09GT, expose] -- We need to expose this, otherwise the rest of the file breaks.
+@[stacks 09GT]
 public def AlgebraicClosure : Type u :=
   MvPolynomial (Vars k) k ⧸ maxIdeal k
 
@@ -152,32 +152,14 @@ public instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [A
     [Algebra R k] [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
   inferInstanceAs <| IsScalarTower R S (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-public instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
-  letI : Field (MvPolynomial (Vars k) k ⧸ maxIdeal k) := Ideal.Quotient.field _
-  inferInstanceAs <| GroupWithZero (MvPolynomial (Vars k) k ⧸ maxIdeal k)
+public instance instField : Field (AlgebraicClosure k) :=
+  letI : Field (MvPolynomial (Vars k) k ⧸ maxIdeal k) := Ideal.Quotient.field (maxIdeal k)
+  inferInstanceAs <| Field (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-@[expose] -- Particular care is given to the defeqs of `ratCast` and friends.
-public instance instField : Field (AlgebraicClosure k) where
-  __ := instCommRing _
-  __ := instGroupWithZero _
-  nnqsmul := (· • ·)
-  qsmul := (· • ·)
-  nnratCast q := algebraMap k _ q
-  ratCast q := algebraMap k _ q
-  nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
-  ratCast_def q := by
-    change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
-
-set_option backward.isDefEq.respectTransparency false in
 public instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) := by
   constructor
   intro z
   apply IsIntegral.isAlgebraic
-  unfold AlgebraicClosure
   obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective z
   induction p using MvPolynomial.induction_on with
   | C => exact isIntegral_algebraMap
@@ -186,15 +168,17 @@ public instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) := by
     obtain ⟨f, i⟩ := fi
     rw [map_mul]
     refine ih.mul ⟨f.1, f.2, ?_⟩
-    rw [← eval_map, Monics.map_eq_prod, eval_prod, Finset.prod_eq_zero (Finset.mem_univ i)]
+    unfold AlgebraicClosure
+    set_option backward.isDefEq.respectTransparency false in
+      rw [← eval_map, Monics.map_eq_prod, eval_prod, Finset.prod_eq_zero (Finset.mem_univ i)]
     simp
 
 public instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
   unfold AlgebraicClosure
   have := Monics.map_eq_prod k ⟨f, hf⟩
-  dsimp +instances at this
-  erw [this]
-  -- rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod k ⟨f, hf⟩]
+  dsimp at this
+  set_option backward.isDefEq.respectTransparency false in
+    rw [this]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
 public instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
