@@ -20,7 +20,7 @@ properties about them.
 * `Kernel.IsDeterministic`: a kernel is deterministic if copying then applying the kernel to the
   two copies is the same as first applying the kernel then copying.
 * `IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0`
-  and `1`.
+  or `1`.
 
 ## Main statements
 
@@ -85,7 +85,7 @@ end ProbabilityTheory.Kernel
 
 namespace MeasureTheory
 
-/-- A measure is a zero-one measure if it only takes the values `0` and `1`. -/
+/-- A measure is a zero-one measure if it only takes the values `0` or `1`. -/
 class IsZeroOneMeasure (μ : Measure α) : Prop where
   zero_one' : ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1
 
