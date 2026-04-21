@@ -46,7 +46,8 @@ composition is deterministic, the equation fails.
 ## References
 
 * [A synthetic approach to
-  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020].
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+* [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
 @[expose] public section
