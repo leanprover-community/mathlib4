@@ -283,8 +283,9 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-abbrev Interval (α : Type*) [LE α] :=
+def Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α)
+deriving Inhabited, LE, OrderBot
 
 namespace Interval
 
@@ -292,15 +293,11 @@ section LE
 
 variable [LE α]
 
--- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
--- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
-instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.instLE
-instance : OrderBot (Interval α) := WithBot.instOrderBot
+/-- Canonical coercion from nonempty intervals to intervals -/
+@[coe] def coe (x : NonemptyInterval α) : Interval α := (x : WithBot _)
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
-  WithBot.coe
+  ⟨coe⟩
 
 instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
   WithBot.canLift
@@ -340,7 +337,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (Interval α) :=
-  WithBot.instPreorder
+  inferInstanceAs <| Preorder (WithBot _)
 
 /-- `{a}` as an interval. -/
 def pure (a : α) : Interval α :=
@@ -386,10 +383,14 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
   · rfl
   · exact WithBot.map_comm rfl _
 
+@[simp, norm_cast]
+lemma coe_le_coe {s t : NonemptyInterval α} : (s : Interval α) ≤ t ↔ s ≤ t :=
+  WithBot.coe_le_coe
+
 variable [BoundedOrder α]
 
 instance boundedOrder : BoundedOrder (Interval α) :=
-  WithBot.instBoundedOrder
+  inferInstanceAs <| BoundedOrder (WithBot _)
 
 @[simp]
 theorem dual_top : dual (⊤ : Interval α) = ⊤ :=
@@ -402,7 +403,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 
 instance partialOrder : PartialOrder (Interval α) :=
-  WithBot.instPartialOrder
+  inferInstanceAs <| PartialOrder (WithBot _)
 
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=
@@ -469,7 +470,7 @@ section Lattice
 variable [Lattice α]
 
 instance semilatticeSup : SemilatticeSup (Interval α) :=
-  WithBot.semilatticeSup
+  inferInstanceAs <| SemilatticeSup (WithBot _)
 
 section Decidable
 
@@ -483,8 +484,7 @@ instance lattice : Lattice (Interval α) :=
       | _, ⊥ => ⊥
       | some s, some t =>
         if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
-          WithBot.some
-            ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
+          coe ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
               sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
         else ⊥
     inf_le_left := fun s t =>
@@ -514,8 +514,8 @@ instance lattice : Lattice (Interval α) :=
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
-        simp only [WithBot.coe_le_coe] at hb hc ⊢
-        rw [dif_pos, WithBot.coe_le_coe]
+        simp only [Interval.coe_le_coe] at hb hc ⊢
+        rw [dif_pos, Interval.coe_le_coe]
         · exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
         -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`
@@ -529,6 +529,12 @@ instance lattice : Lattice (Interval α) :=
         -- Porting note: originally it just had `hb.1` etc. in this next line
         exact ⟨hb₁.trans <| s.fst_le_snd.trans hc₂, hc₁.trans <| s.fst_le_snd.trans hb₂⟩ }
 
+lemma inf_coe (s t : NonemptyInterval α) :
+    (s : Interval α) ⊓ t = if h : s.fst ≤ t.snd ∧ t.fst ≤ s.snd then
+      coe ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
+        sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
+      else ⊥ := rfl
+
 @[simp, norm_cast]
 theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
   | ⊥, _ => by
@@ -538,8 +544,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
     rw [inf_bot_eq]
     exact (inter_empty _).symm
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
-    simp only [Min.min, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc,
-      SemilatticeInf.inf, Lattice.inf]
+    simp only [coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc, inf_coe]
     split_ifs with h
     · simp only [coe_coe, NonemptyInterval.coe_def]
     · refine (Icc_eq_empty <| mt ?_ h).symm
@@ -562,7 +567,7 @@ namespace NonemptyInterval
 
 section Preorder
 
-variable [Preorder α] {s : NonemptyInterval α} {a : α}
+variable [Preorder α] {s t : NonemptyInterval α} {a : α}
 
 @[simp, norm_cast]
 theorem coe_pure_interval (a : α) : (pure a : Interval α) = Interval.pure a :=
@@ -601,7 +606,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
   sSup := fun S =>
     if h : S ⊆ {⊥} then ⊥
     else
-      WithBot.some
+      coe
         ⟨⟨⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
             ⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩, by
           obtain ⟨s, hs, ha⟩ := not_subset.1 h
@@ -617,7 +622,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
       · -- Porting note: This case was
         -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
         -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
-        apply WithBot.coe_le_coe.2
+        apply Interval.coe_le_coe.2
         constructor
         · apply iInf₂_le
           exact ha
@@ -628,7 +633,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
       obtain ⟨b, hs, hb⟩ := not_subset.1 h
       lift s to NonemptyInterval α using ne_bot_of_le_ne_bot hb (ha hs)
       exact
-        WithBot.coe_le_coe.2
+        Interval.coe_le_coe.2
           ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha hc).1,
             iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha hc).2⟩
   sInf := fun S =>
@@ -636,7 +641,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
         ⊥ ∉ S ∧
           ∀ ⦃s : NonemptyInterval α⦄,
             ↑s ∈ S → ∀ ⦃t : NonemptyInterval α⦄, ↑t ∈ S → s.fst ≤ t.snd then
-      WithBot.some
+      coe
         ⟨⟨⨆ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.fst,
             ⨅ (s : NonemptyInterval α) (_ : ↑s ∈ S), s.snd⟩,
           iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩

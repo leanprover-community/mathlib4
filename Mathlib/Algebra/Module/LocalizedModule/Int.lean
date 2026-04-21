@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 

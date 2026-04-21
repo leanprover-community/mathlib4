@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    Cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.MonoidalClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:
@@ -129,7 +129,7 @@ General algebra:
     splitting field: 'Polynomial.SplittingField'
     perfect closure: 'PerfectClosure'
     Galois correspondence: 'IsGalois.intermediateFieldEquivSubgroup'
-    Abel-Ruffini theorem (one direction): 'solvableByRad.isSolvable'
+    Abel-Ruffini theorem (one direction): 'isSolvable_gal_minpoly'
 
   Homological algebra:
     chain complex: 'ChainComplex'
@@ -146,7 +146,7 @@ General algebra:
     Chevalley-Warning theorem: 'char_dvd_card_solutions'
     "Hensel's lemma (for $\\mathbb{Z}_p$)": 'hensels_lemma'
     ring of Witt vectors: 'WittVector'
-    perfection of a ring: 'Ring.Perfection'
+    perfection of a ring: 'Perfection'
   Transcendental numbers:
     Liouville's theorem on existence of transcendental numbers: 'transcendental_liouvilleNumber'
 
@@ -200,7 +200,7 @@ Linear algebra:
     bilinear form: 'LinearMap.BilinForm'
     alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
-    matrix representation: 'BilinForm.toMatrix'
+    matrix representation: 'LinearMap.BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
@@ -366,7 +366,7 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
@@ -391,6 +391,7 @@ Probability Theory:
     independent sigma-algebras: 'ProbabilityTheory.iIndep'
     conditional probability: 'ProbabilityTheory.cond'
     conditional expectation: 'MeasureTheory.condExp'
+    characteristic function: 'MeasureTheory.charFun'
   Random variables and their laws:
     discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
@@ -400,6 +401,11 @@ Probability Theory:
     mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
+    binomial law: 'ProbabilityTheory.binomial'
+    geometric law: 'ProbabilityTheory.geometricMeasure'
+    Poisson law: 'ProbabilityTheory.poissonMeasure'
+    exponential law: 'ProbabilityTheory.expMeasure'
+    Gaussian law: 'ProbabilityTheory.gaussianReal'
     Gaussian measures: 'ProbabilityTheory.IsGaussian'
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
@@ -414,7 +420,7 @@ Probability Theory:
     martingale: 'MeasureTheory.Martingale'
     optional stopping theorem: 'MeasureTheory.submartingale_iff_expected_stoppedValue_mono'
     stopping time: 'MeasureTheory.IsStoppingTime'
-    hitting time: 'MeasureTheory.hitting'
+    hitting time: 'MeasureTheory.hittingBtwn'
     Gaussian processes: 'ProbabilityTheory.IsGaussianProcess'
 
 Geometry:
@@ -454,11 +460,6 @@ Geometry:
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
 
-  Riemannian manifolds:
-    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
-    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
-    Riemannian manifold: 'IsRiemannianManifold'
-
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
     (smooth) vector bundle: 'ContMDiffVectorBundle'
@@ -466,6 +467,12 @@ Geometry:
     (smooth) direct sum of vector bundles: 'Bundle.Prod.contMDiffVectorBundle'
     (smooth) pullback vector bundle: 'ContMDiffVectorBundle.pullback'
     (smooth) Hom bundle: 'ContMDiffVectorBundle.continuousLinearMap'
+    covariant derivatives: 'CovariantDerivative'
+
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'

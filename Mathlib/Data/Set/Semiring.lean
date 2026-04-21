@@ -111,13 +111,12 @@ section Mul
 
 variable [Mul α]
 
-instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
-  { (inferInstance : AddCommMonoid (SetSemiring α)) with
-    mul := fun s t => (image2 (· * ·) s.down t.down).up
-    zero_mul := fun _ => empty_mul
-    mul_zero := fun _ => mul_empty
-    left_distrib := fun _ _ _ => mul_union
-    right_distrib := fun _ _ _ => union_mul }
+instance : NonUnitalNonAssocSemiring (SetSemiring α) where
+  mul := fun s t => (image2 (· * ·) s.down t.down).up
+  zero_mul := fun _ => empty_mul
+  mul_zero := fun _ => mul_empty
+  left_distrib := fun _ _ _ => mul_union
+  right_distrib := fun _ _ _ => union_mul
 
 theorem mul_def (s t : SetSemiring α) : s * t = (s.down * t.down).up :=
   rfl
@@ -164,27 +163,33 @@ theorem _root_.Set.up_one : (1 : Set α).up = 1 :=
 
 end One
 
-noncomputable instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
-  { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
-    Set.mulOneClass with }
+instance [MulOneClass α] : MulOneClass (SetSemiring α) :=
+  inferInstanceAs <| MulOneClass (Set α)
 
-instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
-  { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
+noncomputable instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
+
+instance [Semigroup α] : Semigroup (SetSemiring α) :=
+  inferInstanceAs <| Semigroup (Set α)
+
+instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
+
+instance : CompleteBooleanAlgebra (SetSemiring α) :=
+  inferInstanceAs <| CompleteBooleanAlgebra (Set α)
 
 noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
-    (inferInstance : CompleteBooleanAlgebra (Set α)) with }
+    (inferInstance : CompleteBooleanAlgebra (SetSemiring α)) with }
 
-instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
-  { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
+instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
+  inferInstanceAs <| CommSemigroup (Set α)
 
-noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
-  { (inferInstance : IdemSemiring (SetSemiring α)),
-    (inferInstance : CommMonoid (Set α)) with }
+instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 
 noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
-  { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
+  inferInstanceAs <| CommMonoid (Set α)
+
+noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
@@ -201,7 +206,6 @@ noncomputable def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
   map_one' := rfl
   map_mul' _ _ := image2_singleton.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
 noncomputable def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) :
