@@ -212,13 +212,12 @@ def elabGRewriteLemma (stx : Syntax) (symm : Bool) (config : Config) :
   return { symm, levelParams, proof, numHyps?, headIdx, headNumArgs, relName }
 
 public def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
-    (config : Config) : TermElabM GRewriteResult := do
+    (config : Config) : Tactic.TacticM GRewriteResult := do
   let mvarCounterSaved := (← getMCtx).mvarCounter
   let lem ← elabGRewriteLemma stx (symm := symm) (config := config)
-  -- TODO: decide whether to prove `→` or `↔`.
   if lem.relName matches ``Eq | ``Iff && config.useRewrite then
-    let r ← mvarId.rewrite e (← lem.getValue) (symm := symm) config.toConfig
-    let { eNew, eqProof, mvarIds } ← Elab.Tactic.finishElabRewrite r
+    -- Elaborate `stx` again, because `rw` elaborates its arguments a bit differently.
+    let { eNew, eqProof, mvarIds } ← Elab.Tactic.elabRewrite mvarId e stx symm
     let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
     let impProof ← mkAppOptM mp #[e, eNew, eqProof]
     return { eNew, impProof, mvarIds }
