@@ -599,6 +599,28 @@ lemma normalizedPrimPartIntegerNormalization_ne_zero [Nontrivial R] (hp : p ≠ 
     normalizedPrimPartIntegerNormalization M p ≠  0 := by
   simp [normalizedPrimPartIntegerNormalization_eq_zero_iff, hp]
 
+variable {M} in
+lemma normalizedPrimPartIntegerNormalization_algebraMap [IsDomain R] (hM : M ≤ nonZeroDivisors R)
+    {p : R[X]} (hp : p ≠ 0) :
+    normalizedPrimPartIntegerNormalization M (p.map (algebraMap R S)) = normalize p.primPart := by
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  have hp' : p.map (algebraMap R S) ≠ 0 := by
+    rwa [Polynomial.map_ne_zero_iff <| IsLocalization.injective S hM]
+  simp [normalizedPrimPartIntegerNormalization, hp']
+  sorry
+
+variable {M p} in
+theorem normalizedPrimPartIntegerNormalization_C_mul_eq [IsDomain R] (hM : M ≤ nonZeroDivisors R)
+    (hp : p ≠ 0) {a : S} (hc : a ≠ 0) : normalizedPrimPartIntegerNormalization M (C a * p) =
+    normalizedPrimPartIntegerNormalization M p := by
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  have hap : C a * p ≠ 0 := by aesop
+  simp [normalizedPrimPartIntegerNormalization, hp, hap]
+
+
+
+  sorry
+
 variable {p} in
 theorem normalizedPrimPartIntegerNormalization_IsPrimtive (hp : p ≠ 0) :
     (normalizedPrimPartIntegerNormalization M p).IsPrimitive := by
@@ -645,9 +667,13 @@ lemma normalizedPrimPartIntegerNormalization_degree_eq [IsDomain R]
 
 theorem normalizedPrimPartIntegerNormalization_irreducible_iff [IsDomain R] (hpirr : Irreducible p):
     Irreducible (normalizedPrimPartIntegerNormalization M p) := by
-
+  have hp : p ≠ 0 := by
+    contrapose hpirr
+    simp_all
   obtain ⟨c, hc⟩ := normalizedPrimPartIntegerNormalization_dvd' M p
-  nth_rw 2 [hc]
+  --rw [hc]
+  simp [normalizedPrimPartIntegerNormalization, hp]
+  --rw [hc]
 
   sorry
 
