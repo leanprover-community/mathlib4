@@ -12,7 +12,7 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 # Topological Pairs
 
 In this file we introduce `TopPair`, the category of topological pairs. It is defined as the
-category of arrows in `TopCat` which are topologically inducing.
+category of arrows in `TopCat` which are topological embeddings.
 
 We provide the inclusion and diagonal functors `TopCat` ⥤ `TopPair` and show that they are left and
 right adjoint to the first projection functor, respectively.
@@ -39,10 +39,10 @@ abbrev fst : TopCat := X.right
 /-- The second space of the pair -/
 abbrev snd : TopCat := X.left
 
-/-- The map that induces the topology on A -/
+/-- The embedding of the second into the first space -/
 abbrev map : X.snd ⟶ X.fst := X.hom
 
-lemma isInducing_map (X : TopPair) : Topology.IsEmbedding X.map := X.prop
+lemma isEmbedding_map (X : TopPair) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
 abbrev of {A X : TopCat} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair :=
