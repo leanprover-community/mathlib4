@@ -90,12 +90,13 @@ instance [IsFiniteSplit R S] : Etale R S := by
 variable {n : ℕ} {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
 
 /-- If `S` is finite étale over `R` of (constant) rank `n`, there exists
-a faithfully flat, étale `R`-algebra `T` such that `T ⊗[R] S` is split of rank `n`
+a finite faithfully flat, étale `R`-algebra `T` such that `T ⊗[R] S` is split of rank `n`
 over `T`. -/
 lemma exists_tensorProduct_of_etale [Etale R S] [Module.Finite R S] {n : ℕ}
     (hn : Module.rankAtStalk (R := R) S = n) :
-    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T) (_ : Module.FaithfullyFlat R T)
-      (_ : Algebra.Etale R T),
+    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T)
+      (_ : Module.FaithfullyFlat R T)
+      (_ : Module.Finite R T) (_ : Algebra.Etale R T),
       IsFiniteSplit T (T ⊗[R] S) := by
   induction n generalizing R S with
   | zero =>
