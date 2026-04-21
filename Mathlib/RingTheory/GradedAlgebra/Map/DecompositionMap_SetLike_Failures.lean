@@ -27,22 +27,59 @@ section ADDITIVE
 -/
 
 
+/-
+section RecallMonoid
 open DirectSum
-
 variable {M : Type*} [AddCommMonoid M]
-variable {ι : Type*} [DecidableEq ι]
-variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [CompleteLattice σ] [IsConcreteLE σ M]
-variable (ℳ : ι → σ)
+variable {ι : Type*}
+variable (ℳ : ι → AddSubmonoid M)
+variable [DecidableEq ι]
 
-def SetLike.inclusion {p q : σ} (h : p ≤ q) : ↥p →+ ↥q :=
-    (AddSubmonoidClass.subtype p).codRestrict q
-      (fun x ↦ IsConcreteLE.coe_subset_coe'.mpr h x.2)
-
-def toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : σ) :=
-    DirectSum.toAddMonoid fun i ↦ SetLike.inclusion (le_iSup ℳ i)
+def toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : AddSubmonoid M) :=
+  DirectSum.toAddMonoid fun i => AddSubmonoid.inclusion (le_iSup ℳ i)
 
 lemma toIsup_surjective : Function.Surjective (toIsup ℳ):= by
-  sorry
+  sorry -- proof in other file
+
+end RecallMonoid
+
+
+
+lemma domain_equal : (⨁ i, ℳ i) = (⨁ i, AddSubmonoid.ofClass (ℳ i)) := rfl
+lemma codomain_equal : ↥(⨆ i, (ℳ i : σ)) = (⨆ i, AddSubmonoid.ofClass (ℳ i)) := by
+  rw [← SetLike.iSup_toAddSubmonoid]
+  rfl
+
+#check cast (codomain_equal ℳ)
+#check cast (domain_equal ℳ)
+
+lemma maps_equal :
+  (cast (codomain_equal ℳ)) ∘ (SetLike.toIsup ℳ)
+  = (toIsup (fun i => (ℳ i))) ∘ (cast (domain_equal ℳ)) := by
+    sorry
+
+
+/- This proof is still quite long because I did not have a short proof in the
+   submonoid case to begin with.
+-/
+
+lemma SetLike.toIsup_surjective' : Function.Surjective (SetLike.toIsup ℳ) := by
+  --change Function.Surjective (toIsup (fun i => (ℳ i)))
+  intro ⟨y, hy⟩
+  change y ∈ AddSubmonoid.ofClass _ at hy
+  rw [SetLike.iSup_toAddSubmonoid] at hy
+  obtain ⟨a, ha⟩ := toIsup_surjective (fun i => AddSubmonoid.ofClass (ℳ i)) ⟨y, hy⟩
+  refine ⟨a, Subtype.ext ?_⟩
+  have hy_eq : ((toIsup (fun i => AddSubmonoid.ofClass (ℳ i))) a : M) = y :=
+    congrArg Subtype.val ha
+  rw [← hy_eq]
+  -- remaining: the M-values of the two toIsup maps agree on a
+  clear hy_eq ha hy
+  induction a using DirectSum.induction_on with
+  | H_zero => rfl
+  | H_basic i x => rfl
+  | H_plus a b iha ihb => simp [map_add, iha, ihb]
+-/
 
 /-
 This is where things break.

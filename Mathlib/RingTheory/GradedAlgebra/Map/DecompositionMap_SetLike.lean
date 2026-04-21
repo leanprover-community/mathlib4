@@ -2,22 +2,6 @@ import Mathlib
 open DirectSum
 
 
-/-
-This file contains:
-- a definition of `DirectSum.Decomposition.map`
-  for additive commutative monoids,
-- a proof that the induced decomposition of a graded additive commutative monoid
-  is indeed a graded additive commutative monoid.
-It is thus an `AddCommMonoid` version of the first half of the file
-
-    DecompositionMap_Module.lean.
-
-It does not seem easily possible to unify the two files, see notes in
-
-    DecompositionMap_SetLike_Failures.lean.
--/
-
-
 section DirectSum.of
 /- additional _of lemmas for isos already present in Mathlib -/
 
@@ -72,10 +56,6 @@ def DirectSum.sigmaFiberAddEquiv
      let iso₂ := sigmaCurryEquiv (δ := fun (j : ι₂) ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i))
      --let iso' : (⨁ (k : (y : ι₂) × { x // f x = y }), M ((Equiv.sigmaFiberEquiv f).symm.symm k))
      --        ≃+ (⨁ (k : (y : ι₂) × { x // f x = y }), M k.snd) := by exact?
-     #check iso₂
-     #check iso'
-     #check iso'.trans iso₂
-     #check iso₁.trans iso'
      --exact iso₁.trans (iso'.trans iso₂)
      exact iso₁.trans iso₂
      -/
@@ -108,65 +88,44 @@ lemma DirectSum.sigmaFiberAddEquiv_of'
 end DirectSum.sigmaFiberAddEquiv
 
 
-section coeAddMonoidHom
-/- `coeLinearMap` is the map from the direct sum of some submoduls of M to M.
-    We show here that it's restriction to its codomain (the span of those submodules)
-    is surjective.
-
-   **Note:**  The proofs and constructions further below actually use
-   the map toIsup instead (not present in the construction of the module
-   version of the induced decomposition.)
--/
-
-theorem AddMonoidHom.mrange_coeAddMonoidHom {ι : Type*} [DecidableEq ι]
-  {M : Type*} [AddCommMonoid M] (ℳ : ι → AddSubmonoid M) :
-  AddMonoidHom.mrange (DirectSum.coeAddMonoidHom ℳ) = ⨆ i, ℳ i :=
-  (AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom ℳ).symm
-  /-
-  by
-  apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
-    induction x using DirectSum.induction_on with
-    | zero => exact zero_mem _
-    | of i x =>
-        simp only [DirectSum.coeAddMonoidHom_of]
-        exact AddSubmonoid.mem_iSup_of_mem i x.2
-    | add x y hx hy => simpa using add_mem hx hy
-  · exact iSup_le fun i => by
-      rintro x hx
-      exact ⟨DirectSum.of _ i ⟨x, hx⟩, by simp [DirectSum.coeAddMonoidHom_of]⟩
-  -/
-  --(Submodule.iSup_eq_range_dfinsupp_lsum _).symm
-
+section toIsup
+open DirectSum
 variable {M : Type*} [AddCommMonoid M]
-variable {ι : Type*}
-variable (ℳ : ι → AddSubmonoid M)
-variable [DecidableEq ι]
+variable {ι : Type*} [DecidableEq ι]
+variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [CompleteLattice σ] [IsConcreteLE σ M]
+variable (ℳ : ι → σ)
 
-abbrev DirectSum.coeAddMonoidHom.codRestrict :
-  (⨁ (i : ι), ℳ i) →+ (⨆ (i : ι), ℳ i : AddSubmonoid M)
-  := (AddEquiv.addSubmonoidCongr (AddMonoidHom.mrange_coeAddMonoidHom ℳ)).toAddMonoidHom.comp
-     (DirectSum.coeAddMonoidHom ℳ).mrangeRestrict
-  -- This is just an `abbrev` so that `simp` and other tactics will unfold it automatically.
+def SetLike.inclusion {p q : σ} (h : p ≤ q) : ↥p →+ ↥q :=
+    (AddSubmonoidClass.subtype p).codRestrict q
+      (fun x ↦ IsConcreteLE.coe_subset_coe'.mpr h x.2)
 
-lemma DirectSum.coeAddMonoidHom.mrangeRestrict_surjective :
-  Function.Surjective (⇑(coeAddMonoidHom.codRestrict ℳ)) := by
-  simpa using AddMonoidHom.mrangeRestrict_surjective _
+def SetLike.toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : σ) :=
+    DirectSum.toAddMonoid fun i ↦ SetLike.inclusion (le_iSup ℳ i)
 
-/- **Alternative:** (This is what is actually used below.)  -/
+/- To verify that the map `toIsup` is surjective, I introduce the *assumption
+   that the iSup in σ is just the usual iSup of additive submonoids.
+   For now, I formulate this assumption as a sorried lemma
+   that's modelled on the corresponding lemma for modules:
 
-def toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : AddSubmonoid M) :=
-    DirectSum.toAddMonoid fun i => AddSubmonoid.inclusion (le_iSup ℳ i)
+   theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
+     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
+-/
+lemma SetLike.iSup_toAddSubmonoid  :
+  AddSubmonoid.ofClass (⨆ i, ℳ i : σ) = ⨆ i, AddSubmonoid.ofClass (ℳ i) := by
+  sorry  -- this is really just an assumption I want to make
 
-lemma toIsup_surjective : Function.Surjective (toIsup ℳ):= by
-  intro ⟨y, hy⟩
-  have ⟨a,ha⟩: ∃ a, ((toIsup ℳ) a : M) = y := by
-    induction hy using AddSubmonoid.iSup_induction' with
-    | mem i x hxS => exact ⟨DirectSum.of _ i ⟨x,hxS⟩, by simp [toIsup]⟩
+lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ):= by
+  intro ⟨y, hy'⟩
+  change y ∈ AddSubmonoid.ofClass (⨆ i, ℳ i) at hy'
+  rw [SetLike.iSup_toAddSubmonoid] at hy'
+  have ⟨a, ha⟩ : ∃ a, ((toIsup ℳ) a : M) = y := by
+    induction hy' using AddSubmonoid.iSup_induction' with
+    | mem i x hxS => exact ⟨DirectSum.of _ i ⟨x, hxS⟩, by simp [toIsup,SetLike.inclusion]⟩
     | zero => exact ⟨0, by simp⟩
-    | add x y _ _ hx hy =>
-      obtain ⟨a, ha⟩ := hx
-      obtain ⟨b, hb⟩ := hy
+    | add x y u v hx hy =>
+      rw [←SetLike.iSup_toAddSubmonoid] at u v
+      obtain ⟨a, ha⟩ := (hx u)
+      obtain ⟨b, hb⟩ := (hy v)
       exact ⟨a + b, by simp [ha, hb]⟩
   subst ha
   simp_all only [Subtype.coe_eta, exists_apply_eq_apply]
@@ -177,35 +136,58 @@ lemma toIsup_surjective : Function.Surjective (toIsup ℳ):= by
     toIsup seems to work better than DirectSum.coeAddMonoidHom.codRestrict:
        in the construction of the decomposition instance below, the first proof now works with simp
 -/
-end coeAddMonoidHom
+end toIsup
+
 
 section Decomposition
 /- MAIN PART:  Construction of induced decomposition -/
 
 universe u
+variable {M : Type*} [AddCommMonoid M]
 variable {ι₁ ι₂ : Type u} [DecidableEq ι₁] [DecidableEq ι₂]
 variable (f : ι₁ → ι₂)
-variable {M : Type*} [AddCommMonoid M] (ℳ : ι₁ → AddSubmonoid M)
-variable [DirectSum.Decomposition ℳ]
+variable {σ : Type*} [SetLike σ M] [CompleteLattice σ]
+variable (ℳ : ι₁ → σ)
 
-def DirectSum.Decomposition.map : ι₂ → AddSubmonoid M
-  := fun j ↦ (⨆ (i : { i : ι₁ // f i = j}), ℳ i : AddSubmonoid M)
+def DirectSum.Decomposition.map : ι₂ → σ
+  := fun j ↦ (⨆ (i : { i : ι₁ // f i = j}), ℳ i)
 
-/-
-There's some tension here between the way the `DirectSum.Decomposition` itself is set up and
-my definition of an induced decompositions.  `DirectSum.Decomposition` makes a claim about
-the direct sum of some submodules *without reference to the lattice structure on submodules*.
-For the induced decomposition, however, I need to view certain partial direct sums as
-submodules, and so I *am* using the lattice structure on submodules.
--/
+
+variable [AddSubmonoidClass σ M]
+#check DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))
+
+
+variable [IsConcreteLE σ M] [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
+
+/- one option: definition as composable maps of sets -/
+/-
+abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toFun
+abbrev decomp := (decomposeAddEquiv ℳ).toFun -- now it's just a map of sets
+abbrev decomp' : M → (⨁ j, (Decomposition.map f ℳ) j) :=
+    (map (fun (j : ι₂)
+    ↦ SetLike.toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).toFun.comp
+    ((sigma f ℳ).comp (decomp ℳ))
+
+#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ) (M := M)).toFun
+#check decomp' f ℳ (M:=M)
+#check (decomp' f ℳ) ∘ (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ))
+#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ)) ∘ (decomp' f ℳ)
+-/
+/- probably better option: definition as additive maps -/
 abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toAddMonoidHom
 abbrev decomp := (decomposeAddEquiv ℳ).toAddMonoidHom
 abbrev decomp' : M →+ (⨁ j, (Decomposition.map f ℳ) j) :=
     (map (fun (j : ι₂)
-    ↦ toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).comp
+    ↦ SetLike.toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).comp
     ((sigma f ℳ).comp (decomp ℳ))
+
+#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ) (M := M)).toFun
+#check decomp' f ℳ (M:=M)
+#check (decomp' f ℳ) ∘ (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ))
+#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ)) ∘ (decomp' f ℳ)
+
 
 instance DirectSum.Decomposition.map.decomposition :
   (DirectSum.Decomposition (Decomposition.map f ℳ) )
@@ -219,30 +201,31 @@ instance DirectSum.Decomposition.map.decomposition :
       apply addHom_ext'
     -- now simplify everything:
       unfold decomp'
-      unfold Decomposition.map toIsup
+      unfold Decomposition.map SetLike.toIsup SetLike.inclusion
       intro i
       ext m
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
         Function.comp_apply, coeAddMonoidHom_of, decomposeAddEquiv_apply, decompose_coe,
-        sigmaFiberAddEquiv_of, map_of, toAddMonoid_of, AddSubmonoid.coe_inclusion,
-        AddMonoidHom.id_comp]
+        sigmaFiberAddEquiv_of, map_of, toAddMonoid_of, AddMonoidHom.codRestrict_apply,
+        AddSubmonoidClass.subtype_apply, AddMonoidHom.id_comp]
       ) (by
     -- 3 reduction steps:
       apply addHom_ext'
       intro j
       unfold Decomposition.map -- needed in v4.29r8, but not in v4.28.0
       rw [← AddMonoidHom.cancel_right
-        (toIsup_surjective (fun (i : { i : ι₁ // f i = j}) ↦ ((ℳ ↑i))))]
+        (SetLike.toIsup_surjective (fun (i : { i : ι₁ // f i = j}) ↦ ((ℳ ↑i))))]
       apply addHom_ext'
     -- now simplify everything:
-      unfold decomp' toIsup
+      unfold decomp' SetLike.toIsup SetLike.inclusion
       intro ⟨i, hi⟩
       subst hi
       ext m : 1
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
-        Function.comp_apply, toAddMonoid_of, coeAddMonoidHom_of, AddSubmonoid.coe_inclusion,
-        decomposeAddEquiv_apply, decompose_coe, sigmaFiberAddEquiv_of, map_of, AddMonoidHom.id_comp]
-    )
+        Function.comp_apply, toAddMonoid_of, AddMonoidHom.codRestrict_apply,
+        AddSubmonoidClass.subtype_apply, coeAddMonoidHom_of, decomposeAddEquiv_apply, decompose_coe,
+        sigmaFiberAddEquiv_of, map_of, AddMonoidHom.id_comp]
+      )
 end Decomposition
 
 section ModuleDecomposition
