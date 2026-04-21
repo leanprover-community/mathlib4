@@ -44,7 +44,8 @@ def Monics : Type u := {f : k[X] // f.Monic}
 
 /-- `Vars k` provides `n` variables $X_{f,1}, \dots, X_{f,n}$ for each monic polynomial
 `f : k[X]` of degree `n`. -/
-public def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
+public -- TODO: this shouldn't be public
+def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
 
 variable {k} in
 /-- Given a monic polynomial `f : k[X]`,
