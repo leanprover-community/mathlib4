@@ -5,7 +5,9 @@ Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.Distribution.DerivNotation
 
 /-!
 # Continuously differentiable functions with compact support
@@ -314,7 +316,6 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
 
 @[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
@@ -512,9 +513,9 @@ lemma fderivCLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
     fderivCLM 𝕜 n k f = fderiv ℝ f := by
   simp [hk]
 
-lemma fderivCLM_apply_of_gt (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
-    fderivCLM 𝕜 n k f = 0 := by
-  ext : 1
+lemma fderivCLM_apply_of_gt (hk : n < k + 1) :
+    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F)) = 0 := by
+  ext : 2
   simp [not_le_of_gt hk]
 
 variable (𝕜) in
@@ -532,5 +533,98 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 end FDerivCLM
+
+section LineDerivCLM
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜) in
+/-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative along the vector `v`, which is an element of `𝓓^{k}_{K}(E, F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
+notation typeclass. -/
+noncomputable def lineDerivCLM (v : E) :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F) :=
+  -- Cannot use `ContinuousLinearMap.apply` here because we are mixing `ℝ` and `𝕜`
+  letI ev_v : (E →L[ℝ] F) →L[𝕜] F :=
+  { toFun f := f v
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
+  postcompCLM ev_v ∘L fderivCLM 𝕜 n k
+
+lemma lineDerivCLM_eq_fderivCLM {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = fderivCLM 𝕜 n k f x v :=
+  rfl
+
+@[simp]
+lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
+  rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
+  split_ifs with hk
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
+  · rfl
+
+lemma lineDerivCLM_apply_of_le {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} (hk : k + 1 ≤ n) :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = lineDeriv ℝ f x v := by
+  simp [hk]
+
+lemma lineDerivCLM_apply_of_gt {v : E} (hk : n < k + 1) :
+    (lineDerivCLM 𝕜 v : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) = 0 := by
+  ext
+  simp [not_le_of_gt hk]
+
+variable (𝕜) in
+lemma lineDerivCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F]
+    {v : E} : (lineDerivCLM 𝕜 v : 𝓓^{n}(Ω, F) → 𝓓^{k}(Ω, F)) = lineDerivCLM 𝕜' v :=
+  rfl
+
+lemma lineDerivCLM_add {v₁ v₂ : E} :
+    (lineDerivCLM 𝕜 (v₁ + v₂) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) =
+      lineDerivCLM 𝕜 v₁ + lineDerivCLM 𝕜 v₂ := by
+  ext
+  simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
+
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM 𝕜 (c • v) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) =
+      c • lineDerivCLM 𝕜 v := by
+  ext
+  simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
+
+open LineDeriv
+
+/-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
+because (by design) the target type `𝓓^{k}_{K}(E, F)` is not determined by the input type
+`𝓓^{n}_{K}(E, F)`. -/
+noncomputable instance : LineDeriv E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp v := lineDerivCLM ℝ v
+
+variable (𝕜) in
+lemma lineDerivOp_eq_lineDerivCLM {v : E} {f : 𝓓(Ω, F)} :
+    ∂_{v} f = lineDerivCLM 𝕜 v f :=
+  rfl
+
+noncomputable instance : LineDerivAdd E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_add v := map_add (lineDerivCLM ℝ v)
+  lineDerivOp_left_add _ _ f := congr($lineDerivCLM_add f)
+
+noncomputable instance : LineDerivSMul 𝕜 E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_smul v := map_smul (lineDerivCLM 𝕜 v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_left_smul _ _ f := congr($lineDerivCLM_smul f)
+
+noncomputable instance : ContinuousLineDeriv E 𝓓(Ω, F) 𝓓(Ω, F) where
+  continuous_lineDerivOp v := (lineDerivCLM ℝ v).continuous
+
+lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
+    lineDerivOpCLM 𝕜 𝓓(Ω, F) v = lineDerivCLM 𝕜 v :=
+  rfl
+
+end LineDerivCLM
 
 end TestFunction

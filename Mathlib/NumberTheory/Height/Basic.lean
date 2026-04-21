@@ -170,7 +170,7 @@ lemma logHeight₁_eq (x : K) :
   rw [mulHeight₁_eq] at H
   have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
     intro a ha
-    contrapose! ha
+    contrapose ha
     rw [ha]
     exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
   rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
@@ -398,7 +398,7 @@ lemma mulHeight_sumElim_zero_eq (x : ι → K) :
   have : Nonempty ι := .intro i
   have hx' : Sum.elim x (0 : ι' → K) ≠ 0 := ne_iff.mpr ⟨.inl i, by simpa using hi⟩
   rw [mulHeight_eq hx, mulHeight_eq hx']
-  have H (v : AbsoluteValue K ℝ) :  ⨆ j, v (Sum.elim x (0 : ι' → K) j) = ⨆ i, v (x i) := by
+  have H (v : AbsoluteValue K ℝ) : ⨆ j, v (Sum.elim x (0 : ι' → K) j) = ⨆ i, v (x i) := by
     refine le_antisymm ?_ <| ciSup_le fun i ↦ Finite.le_ciSup_of_le (.inl i) le_rfl
     refine ciSup_le fun j ↦ ?_
     cases j with
@@ -421,7 +421,7 @@ lemma mulHeight_eq_mulHeight_restrict_support (x : ι → K) :
     simp only [comp_apply]
     cases i with
     | inl val => simp [e]
-    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _ ).mp val.prop
+    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _).mp val.prop
   rw [← mulHeight_comp_equiv e, hx]
   exact mulHeight_sumElim_zero_eq ..
 
