@@ -159,7 +159,7 @@ instance [LocallyQuasiFinite f] (y : Y) : IsLocallyArtinian (f.fiber y) :=
 lemma Scheme.Hom.isDiscrete_preimage_singleton [LocallyQuasiFinite f] (y : Y) :
     IsDiscrete (f ⁻¹' {y}) := by
   simpa [Scheme.Hom.range_fiberι] using
-    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding
+    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding.toIsInducing
 
 lemma Scheme.Hom.isDiscrete_preimage [LocallyQuasiFinite f] {s : Set Y} (hs : IsDiscrete s) :
     IsDiscrete (f ⁻¹' s) :=

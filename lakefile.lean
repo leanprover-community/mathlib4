@@ -6,14 +6,13 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.94" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "batteries" @ git "v4.30.0-rc2"
+require "leanprover-community" / "Qq" @ git "v4.30.0-rc2"
+require "leanprover-community" / "aesop" @ git "v4.30.0-rc2"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.98"
   with NameMap.empty.insert `errorOnBuild
-    "ProofWidgets not up-to-date. \
-    Please run `lake exe cache get` to fetch the latest ProofWidgets. \
-    If this does not work, report your issue on the Lean Zulip."
+    "ProofWidgets failed to reuse pre-built JS code. \
+    Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"

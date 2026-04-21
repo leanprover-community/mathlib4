@@ -822,7 +822,11 @@ def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodab
       by_cases h : p a <;> simp [h]; rfl⟩
 
 instance fin {n} : Primcodable (Fin n) :=
-  @ofEquiv _ _ (subtype <| nat_lt.comp .id (const n)) Fin.equivSubtype
+  letI : Primcodable { i : ℕ // i < n } := subtype <| nat_lt.comp .id (const n)
+  ofEquiv { i : ℕ // i < n } Fin.equivSubtype
+
+example (n) : (fin (n := n)).toEncodable = Fin.encodable n := by
+  with_reducible_and_instances rfl
 
 section ULower
 
@@ -839,7 +843,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
   this.of_eq fun _ => decode₂_ne_none_iff
 
 instance ulower : Primcodable (ULower α) :=
-  Primcodable.subtype mem_range_encode
+  fast_instance% Primcodable.subtype mem_range_encode
 
 end ULower
 
@@ -882,14 +886,14 @@ theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
 
 theorem ulower_down : Primrec (ULower.down : α → ULower α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  subtype_mk .encode
+  subtype_mk .encode (hp := Primcodable.mem_range_encode)
 
 theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  option_get (Primrec.decode₂.comp subtype_val)
+  option_get (Primrec.decode₂.comp (subtype_val (hp := Primcodable.mem_range_encode)))
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
-  letI : Primcodable { a // id a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
+  letI : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
   exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
 
 theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=
