@@ -43,10 +43,6 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩,
-    -- Start from the legacy permissive `[defeq]` behavior; files are progressively migrated away
-    -- from this option either by local `set_option backward.defeqAttrib.useBackward true in`
-    -- on individual proofs, or by making the underlying definitions `@[implicit_reducible]`.
-    ⟨`backward.defeqAttrib.useBackward, true⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
