@@ -124,9 +124,8 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
   have smem : ∀ x ∈ s, x ∈ J.toAssociatedGraded I := fun x hx ↦ by
     simpa [← hs] using Ideal.subset_span hx
   have : (J.toAssociatedGraded I).comap (reesAlgebraToAssociatedGraded I) = _ :=
-    (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I)
-      Ideal.Quotient.mk_surjective ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans
-        (sup_comm _ _)
+    (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I) Ideal.Quotient.mk_surjective
+      ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans (sup_comm _ _)
   let g : s → reesAlgebra I := fun x ↦ Classical.choose
     (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
   have g_spec (x : s) : g x ∈ _ ∧ reesAlgebraToAssociatedGraded I (g x) = x := Classical.choose_spec
