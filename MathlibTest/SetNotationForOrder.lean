@@ -119,7 +119,7 @@ variable (p : List Nat → Prop) in
 #check ∀ s, ∃ t ⊆ s, p t
 
 /-!
-These tests show something that used to be possible, but does now work anymore:
+These tests show something that used to be possible, but does not work anymore:
 If you write `_ ⊆ _`, the type cannot be inferred, and hence, elaboration of this term
 is either postposed, or it elaborates to `Subset _ _`.
 -/
