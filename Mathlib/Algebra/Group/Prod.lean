@@ -221,11 +221,11 @@ theorem coe_snd : ⇑(snd M N) = Prod.snd :=
       `f.prod g : AddHom M (N × P)` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →ₙ* N) (g : M →ₙ* P) :
     M →ₙ* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →ₙ* N) (g : M →ₙ* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]
@@ -387,12 +387,12 @@ given by `(f.prod g) x = (f x, g x)`. -/
       `f.prod g : M →+ N × P` given by `(f.prod g) x = (f x, g x)` -/]
 protected def prod (f : M →* N) (g : M →* P) :
     M →* N × P where
-  toFun := Pi.prod f g
+  toFun := Function.prod f g
   map_one' := Prod.ext f.map_one g.map_one
   map_mul' x y := Prod.ext (f.map_mul x y) (g.map_mul x y)
 
 @[to_additive coe_prod]
-theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : M →* N) (g : M →* P) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[to_additive (attr := simp) prod_apply]

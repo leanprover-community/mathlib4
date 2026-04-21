@@ -123,13 +123,13 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
   rw [comap_map_eq_self]
   · ext ⟨m, n⟩
     constructor
-    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Pi.prod_apply, Subtype.exists,
-      Prod.exists, prodMap_apply, subtype_apply, Prod.mk.injEq, Subtype.ext_iff,
-      submoduleMap_coe_apply, fst_apply, snd_apply]
+    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Function.prod_apply,
+      Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
+      Subtype.ext_iff, submoduleMap_coe_apply, fst_apply, snd_apply]
       grind
-    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Pi.prod_apply, Subtype.exists,
-      Prod.exists, prodMap_apply, subtype_apply, Prod.mk.injEq, snd_apply, fst_apply,
-      Subtype.ext_iff, submoduleMap_coe_apply]
+    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Function.prod_apply,
+      Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
+      snd_apply, fst_apply, Subtype.ext_iff, submoduleMap_coe_apply]
       grind
   · convert goursatFst_prod_goursatSnd_le (range <| P.prod Q)
     simp only [ker_prodMap, ker_mkQ, Submodule.ext_iff]

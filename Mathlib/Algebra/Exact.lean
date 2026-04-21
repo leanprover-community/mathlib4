@@ -428,7 +428,7 @@ def Exact.splitInjectiveEquiv
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
-      simp only [LinearMap.prod_apply, Pi.prod, Prod.mk.injEq] at e
+      simp only [LinearMap.prod_apply, Function.prod_apply, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
       rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩

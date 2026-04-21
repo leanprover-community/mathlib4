@@ -93,8 +93,8 @@ variable {ι κ} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i
 
 theorem prod_def : f ▽ g = fun i => (f i, g i) := rfl
 
-@[simp] theorem fst_dcomp : Prod.fst ∘' h = fstComp h := rfl
-@[simp] theorem snd_dcomp : Prod.snd ∘' h = sndComp h := rfl
+theorem fst_dcomp : Prod.fst ∘' h = fstComp h := rfl
+theorem snd_dcomp : Prod.snd ∘' h = sndComp h := rfl
 
 @[simp, grind! .] theorem fstComp_prod {f : ∀ i, α i} {g : ∀ i, β i} :
     fstComp (f ▽ g) = f := rfl
@@ -160,8 +160,14 @@ section
 variable {α β γ δ : Type*} {ι κ : Sort*} (f : ι → α) (g : ι → β)
   (a : α) (b : β) (p : α × β)
 
-@[simp] theorem fst_comp (h : ι → α × β) : Prod.fst ∘ h = fstComp h := rfl
-@[simp] theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = sndComp h := rfl
+theorem fst_comp (h : ι → α × β) : Prod.fst ∘ h = fstComp h := rfl
+theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = sndComp h := rfl
+
+@[simp] theorem fstComp_mk : fstComp (Prod.mk a : β → α × β) = const β a := rfl
+@[simp] theorem sndComp_mk : sndComp (Prod.mk a : β → α × β) = id := rfl
+
+@[simp] theorem fstComp_mk_flip : fstComp ((Prod.mk · b) : α → α × β) = id := rfl
+@[simp] theorem sndComp_mk_flip : sndComp ((Prod.mk · b) : α → α × β) = const α b := rfl
 
 @[simp] theorem fst_prod_snd : (Prod.fst : _ → α) ▽ (Prod.snd : _ → β) = id := rfl
 @[simp] theorem snd_prod_fst : (Prod.snd : _ → β) ▽ (Prod.fst : _ → α) = .swap := rfl
@@ -235,3 +241,9 @@ end Function
 
 @[deprecated (since := "2026-04-21")]
 alias Pi.prod := Function.prod
+
+@[deprecated (since := "2026-04-21")]
+alias Pi.prod_fst_snd := Function.fst_prod_snd
+
+@[deprecated (since := "2026-04-21")]
+alias Pi.prod_snd_fst := Function.snd_prod_fst
