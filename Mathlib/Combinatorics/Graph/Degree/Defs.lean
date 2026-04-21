@@ -5,11 +5,11 @@ Authors: Peter Nelson, Jun Kwon
 -/
 module
 
+public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENat
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Topology.Instances.ENat
 
 /-!
 # Definitions of degrees
@@ -30,7 +30,7 @@ public section
 
 open Function Set
 
-variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β}
+variable {α β : Type*} {x y : α} {e : β} {G : Graph α β}
 
 namespace Graph
 
