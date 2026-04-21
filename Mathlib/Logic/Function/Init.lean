@@ -6,7 +6,7 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Init
-public import Batteries.Tactic.Alias
+import Batteries.Tactic.Alias
 
 /-!
 # Dependent composition, pairing, and diagonal for functions
@@ -37,7 +37,7 @@ namespace Function
 
 /-- Composition of dependent functions: `(f ∘' g) i = f (g i)`, where the type of `g i` depends on
 `i` and the type of `f (g i)` depends on `i` and `g i`. -/
-@[inline] def dcomp {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*}
+@[inline, reducible] def dcomp {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*}
     (f : ∀ {i : ι} (y : β i), φ y) (g : ∀ i, β i) (i : ι) : φ (g i) := f (g i)
 
 @[inherit_doc] infixr:90 " ∘' " => dcomp
@@ -47,7 +47,7 @@ section
 variable {ι} {β : ι → Sort*} {φ : ∀ {i : ι}, β i → Sort*} (f : ∀ {i : ι} (y : β i), φ y)
     (g : ∀ i, β i) (i : ι)
 
-@[simp] theorem dcomp_apply : dcomp f g i = f (g i) := rfl
+theorem dcomp_apply : dcomp f g i = f (g i) := rfl
 
 theorem dcomp_def : f ∘' g = fun i => f (g i) := rfl
 
