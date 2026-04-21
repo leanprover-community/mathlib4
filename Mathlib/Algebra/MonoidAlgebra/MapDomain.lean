@@ -120,8 +120,8 @@ lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
 lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
     comapDomain f hf (single n r) = 0 := by simp [comapDomain, coeff, single, *]
 
-/-- `comapDomain` as an `AddMonoidHom. -/
-@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom. -/]
+/-- `comapDomain` as an `AddMonoidHom`. -/
+@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
 def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
   toFun := comapDomain f hf
   map_zero' := by simp

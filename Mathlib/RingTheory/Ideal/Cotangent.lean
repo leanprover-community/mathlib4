@@ -223,11 +223,16 @@ lemma mapCotangent_toCotangent
     (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
     Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
+lemma mapCotangent_id (I : Ideal A) :
+    mapCotangent I I (AlgHom.id R A) (by simp) = LinearMap.id := LinearMap.ext fun x ↦ by
+  rcases I.toCotangent_surjective x with ⟨x, rfl⟩
+  simp
+
 lemma mapCotangent_comp {C : Type*} [CommRing C] [Algebra R C] {I₁ : Ideal A} {I₂ : Ideal B}
-  {I₃ : Ideal C} (f : A →ₐ[R] B) (g : B →ₐ[R] C)
-  (h₁ : I₁ ≤ Ideal.comap f I₂) (h₂ : I₂ ≤ Ideal.comap g I₃) :
-  Ideal.mapCotangent I₁ I₃ (g.comp f) (fun _ hx ↦ h₂ (h₁ hx)) =
-    (Ideal.mapCotangent I₂ I₃ g h₂).comp (Ideal.mapCotangent I₁ I₂ f h₁) := by
+    {I₃ : Ideal C} (f : A →ₐ[R] B) (g : B →ₐ[R] C)
+    (h₁ : I₁ ≤ Ideal.comap f I₂) (h₂ : I₂ ≤ Ideal.comap g I₃) :
+    Ideal.mapCotangent I₁ I₃ (g.comp f) (fun _ hx ↦ h₂ (h₁ hx)) =
+      (Ideal.mapCotangent I₂ I₃ g h₂).comp (Ideal.mapCotangent I₁ I₂ f h₁) := by
   ext ⟨_, _⟩; rfl
 
 namespace Cotangent
