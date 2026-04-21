@@ -47,6 +47,7 @@ open Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
+/-- The quotient of paths by homotopy inherits its topology as a quotient of the path space. -/
 instance instTopologicalSpaceHomotopicQuotient (x₀ x : X) :
     TopologicalSpace (Path.Homotopic.Quotient x₀ x) := by
   delta Path.Homotopic.Quotient
@@ -87,11 +88,6 @@ def toPath (γ : BasedPath x₀) : Path x₀ (endpoint γ) where
         exact h t
       subst hfun
       simp
-
-@[simp] theorem eta (γ : BasedPath x₀) :
-    (⟨endpoint γ, Path.Homotopic.Quotient.mk (toPath γ)⟩ :
-      Σ x : X, Path.Homotopic.Quotient x₀ x) =
-    ⟨γ.1 1, Path.Homotopic.Quotient.mk (toPath γ)⟩ := rfl
 
 /-- View an ordinary path out of `x₀` as a based path. -/
 def ofPath {y : X} (γ : Path x₀ y) : BasedPath x₀ :=
