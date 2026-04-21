@@ -178,7 +178,27 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
     (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
       r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
-  --Ideal.mem_span_range_iff_exists_fun
+  #check Ideal.mem_span_range_iff_exists_fun
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, monomial_mem_reesAlgebra I n rmem_pow⟩ ∈
+    J.toAssociatedGraded I := by
+    apply Ideal.mem_map_of_mem
+    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff]
+    intro m
+    by_cases eq : m = n
+    · simpa [eq]
+    · simp [coeff_monomial_of_ne _ eq]
+  rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
+  rcases this with ⟨c, hc⟩
+  let c' : ι → (reesAlgebra I) := fun i ↦ Classical.choose (Ideal.Quotient.mk_surjective (c i))
+  let c'_spec (i : ι) : (reesAlgebraToAssociatedGraded I) (c' i) = c i :=
+    Classical.choose_spec (Ideal.Quotient.mk_surjective (c i))
+  have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, monomial_mem_reesAlgebra I n rmem_pow⟩ =
+    (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
+  rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
+  have coeff_eq := this n
+  simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finset_sum, MulMemClass.coe_mul, eq,
+    coeff_sub, coeff_monomial_same, finset_sum_coeff] at coeff_eq
+
   sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
