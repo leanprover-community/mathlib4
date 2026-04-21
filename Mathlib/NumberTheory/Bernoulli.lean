@@ -415,6 +415,11 @@ namespace bernoulli
 private noncomputable def vonStaudtIndicator (k p : ℕ) : ℚ :=
   if (p - 1) ∣ k then 1 else 0
 
+/- The primes `q < 2k + 2` with `(q - 1) ∣ 2k` — the primes appearing in the
+von Staudt-Clausen correction sum. -/
+private abbrev vonStaudtPrimes (k : ℕ) : Finset ℕ :=
+  (Finset.range (2 * k + 2)).filter fun q => q.Prime ∧ (q - 1) ∣ 2 * k
+
 /-- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
 private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
     (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) +
@@ -453,36 +458,38 @@ private lemma pIntegral_mul (p : ℕ) [Fact p.Prime] (x y : ℚ)
 /-- Denominators of the "other primes" part of the indicator sum
 stay coprime to a fixed prime `p`. -/
 private lemma prod_one_div_prime_den_coprime (k p : ℕ) [Fact p.Prime] :
-    (∏ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p,
-      ((1 : ℚ) / q).den).Coprime p := by
+    (∏ q ∈ vonStaudtPrimes k with q ≠ p, ((1 : ℚ) / q).den).Coprime p := by
   apply Nat.Coprime.prod_left
   intro q hq
-  have h1 : q.Prime := (Finset.mem_filter.mp hq).2.1
+  simp only [Finset.mem_filter, Finset.mem_range] at hq
+  have h1 : q.Prime := hq.1.2.1
   have h2 : ((1 : ℚ) / q).den = q := by simp [h1.ne_zero]
   rw [h2]
-  exact (Nat.coprime_primes h1 Fact.out).mpr (Finset.mem_filter.mp hq).2.2.2
+  exact (Nat.coprime_primes h1 Fact.out).mpr hq.2
 
 /-- Splits the prime-indexed correction sum into the `p`-term (`vonStaudtIndicator / p`)
 plus the rest. -/
 private lemma sum_one_div_prime_eq_indicator_div_add (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
-    (∑ q ∈ Finset.range (2 * k + 2) with q.Prime ∧ (q - 1) ∣ 2 * k, (1 : ℚ) / q) =
-    vonStaudtIndicator (2 * k) p / p + ∑ q ∈ Finset.range (2 * k + 2) with
-      q.Prime ∧ (q - 1) ∣ 2 * k ∧ q ≠ p, (1 : ℚ) / q := by
+    (∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q) =
+    vonStaudtIndicator (2 * k) p / p + ∑ q ∈ vonStaudtPrimes k with q ≠ p, (1 : ℚ) / q := by
   by_cases hdvd : (p - 1) ∣ 2 * k
   · -- p is in the filtered set; extract its term
-    have hp_mem : p ∈ (Finset.range (2 * k + 2)).filter (fun q ↦ q.Prime ∧ (q - 1) ∣ 2 * k) := by
-      simp only [Finset.mem_filter, Finset.mem_range]
+    have hp_mem : p ∈ vonStaudtPrimes k := by
+      simp only [vonStaudtPrimes, Finset.mem_filter, Finset.mem_range]
       exact ⟨by have := Nat.le_of_dvd (by lia) hdvd; lia, Fact.out, hdvd⟩
     rw [← Finset.add_sum_erase _ _ hp_mem]
     simp only [vonStaudtIndicator, if_pos hdvd]
     congr 1
-    apply Finset.sum_congr _ (fun _ _ ↦ rfl)
-    grind
-  · -- p is not in the filtered set; indicator is 0, filter sets are equal
+    exact Finset.sum_congr (Finset.filter_ne' _ _).symm fun _ _ ↦ rfl
+  · -- p is not in the filtered set; filter is redundant since p ∉ vonStaudtPrimes k
     simp only [vonStaudtIndicator, if_neg hdvd, zero_div, zero_add]
-    exact Finset.sum_congr (Finset.filter_congr fun q _ ↦
-      ⟨fun ⟨hpr, hd⟩ ↦ ⟨hpr, hd, fun h ↦ hdvd (h ▸ hd)⟩,
-       fun ⟨hpr, hd, _⟩ ↦ ⟨hpr, hd⟩⟩) fun _ _ ↦ rfl
+    refine Finset.sum_congr ?_ fun _ _ ↦ rfl
+    symm
+    apply Finset.filter_true_of_mem
+    intro q hq
+    simp only [vonStaudtPrimes, Finset.mem_filter] at hq
+    rintro rfl
+    exact hdvd hq.2.2
 
 /-- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
 private lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
@@ -709,8 +716,7 @@ private lemma bernoulli_add_indicator_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact
 
 /-- Extends the fixed-prime nondivisibility result to the full prime correction sum. -/
 private lemma vonStaudt_sum_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
-    ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ Finset.range (2 * k + 2) with
-      q.Prime ∧ (q - 1) ∣ 2 * k, (1 : ℚ) / q).den := by
+    ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q).den := by
   rw [sum_one_div_prime_eq_indicator_div_add k p hk, ← add_assoc]
   have hcop_ind := ((Nat.Prime.coprime_iff_not_dvd Fact.out).2
     (bernoulli_add_indicator_den_not_dvd k p hk)).symm
