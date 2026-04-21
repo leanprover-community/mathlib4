@@ -49,6 +49,10 @@ protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+/-- The trivial group is the normal closure of a finite set of relations. -/
+protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) :=
+  ⟨∅, Finite.of_subsingleton, normalClosure_empty⟩
+
 end Subgroup.IsNormalClosureFG
 
 /-- A group is finitely presented if it has a finite generating set such that the kernel
@@ -65,5 +69,15 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
+
+/-- A free group (with a finite number of generators) is finitely presented. -/
+instance [Finite α] : Group.IsFinitelyPresented (FreeGroup α) := by
+  have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
+  refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
+  · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
+    exact Subgroup.IsNormalClosureFG.bot
+
+instance : IsFinitelyPresented (Multiplicative ℤ) :=
+  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
 
 end Group.IsFinitelyPresented
