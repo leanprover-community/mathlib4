@@ -74,7 +74,7 @@ class Group.IsFinitelyPresented (G : Type*) [Group G] : Prop where
 namespace Group.IsFinitelyPresented
 
 /-- Finitely presented groups are closed under isomorphism. -/
-@[to_additive /-- Finitely presented additive groups are closed under isomorphism. -/
+@[to_additive /-- Finitely presented additive groups are closed under additive isomorphism. -/
 ]
 theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented H := by
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
