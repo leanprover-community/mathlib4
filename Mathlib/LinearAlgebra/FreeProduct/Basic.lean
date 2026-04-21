@@ -46,6 +46,8 @@ general $R$-algebras.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe u v w w'
 
@@ -179,7 +181,8 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
     ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
-    aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
+    show _ = (mkAlgHom R A).toLinearMap (TensorAlgebra.ι R x)
+    rfl
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
 theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by

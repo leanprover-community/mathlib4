@@ -391,7 +391,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
-  rw [toMeasurable]
+  rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
     exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
@@ -458,7 +458,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
-  rw [toMeasurable]
+  rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
     exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)

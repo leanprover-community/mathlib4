@@ -65,6 +65,7 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 set_option backward.defeqAttrib.useBackward true
 
+
 namespace Tactic.ComputeAsymptotics.Seq
 
 open Stream' Seq
@@ -121,7 +122,6 @@ theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2�
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t
@@ -132,7 +132,8 @@ theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2�
     PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h')]
   simp only [show (1 / 2 : ℝ) = 2⁻¹ by simp, ← pow_succ']
   congr
-  simp only [val_cons, PiNat.firstDiff, ne_eq, Classical.dite_not, Subtype.coe_ne_coe.mpr h,
+  rw [PiNat.firstDiff_def, PiNat.firstDiff_def]
+  simp only [val_cons, ne_eq, Classical.dite_not, Subtype.coe_ne_coe.mpr h,
     not_false_eq_true, ↓reduceDIte, val_eq_get]
   split_ifs with h_if
   · contrapose! h'

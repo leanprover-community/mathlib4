@@ -47,6 +47,8 @@ basis, det, determinant
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 
 
@@ -276,7 +278,7 @@ theorem det_zero [Module.Free A M] :
   simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, map_one]
 
 theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
-  rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
+  rw [LinearMap.det_def, dif_neg, MonoidHom.one_apply]
   exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
 
 @[nontriviality]

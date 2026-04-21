@@ -70,7 +70,7 @@ theorem norm_self : Algebra.norm R = MonoidHom.id R := by
   simp [norm_apply]
 
 theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
-    norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
+    norm R x = 1 := by rw [norm_apply, LinearMap.det_def]; split_ifs <;> trivial
 
 variable {R}
 

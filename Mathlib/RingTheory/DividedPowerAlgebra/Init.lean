@@ -58,6 +58,8 @@ divided powers.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 noncomputable section
 
@@ -103,7 +105,8 @@ lemma mkAlgHom_C (a : R) :
 
 lemma mkRingHom_C (a : R) :
     mkRingHom (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
-  rw [← mkAlgHom_C, mkAlgHom, AlgHom.coe_mk]
+  have : mkRingHom (Rel R M) (C a) = mkAlgHom R (Rel R M) (C a) := rfl
+  rw [this, mkAlgHom_C]
 
 variable (R) in
 /-- `dp R n m` is the equivalence class of `X (⟨n, m⟩)` in `DividedPowerAlgebra R M`. -/

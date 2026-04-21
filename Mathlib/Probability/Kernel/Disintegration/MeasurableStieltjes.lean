@@ -293,7 +293,7 @@ include hf
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
-  rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]
+  rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux_def]
   refine Equiv.iInf_congr ?_ ?_
   · exact
       { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩

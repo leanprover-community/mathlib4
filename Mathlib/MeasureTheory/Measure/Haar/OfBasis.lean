@@ -26,7 +26,6 @@ In particular, we declare a `MeasureSpace` instance on any finite-dimensional in
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -86,7 +86,7 @@ section ByDefinition
 theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDecomposition μ ν] :
     Measurable (μ.rnDeriv ν) ∧
       μ.singularPart ν ⟂ₘ ν ∧ μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) := by
-  rw [singularPart, rnDeriv, dif_pos h, dif_pos h]
+  rw [singularPart_def, rnDeriv_def, dif_pos h, dif_pos h]
   exact Classical.choose_spec h.lebesgue_decomposition
 
 lemma rnDeriv_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecomposition μ ν) :

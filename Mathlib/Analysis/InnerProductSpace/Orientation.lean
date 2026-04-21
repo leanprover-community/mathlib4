@@ -34,7 +34,6 @@ This file provides definitions and proves lemmas about orientations of real inne
   space, is equal up to sign to the product of the lengths of the vectors.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
