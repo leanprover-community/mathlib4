@@ -159,7 +159,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
   have hPairwise : (S : Set (HeightOneSpectrum _)).Pairwise
       fun i j ↦ i.maxPowDividing (span {a}) ⊔ j.maxPowDividing (span {a}) = ⊤ :=
     fun r hr s hs hrs ↦ (isCoprime_pow_of_ne _ _ hrs _ _).sup_eq
-  rw [this, ← Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf hPairwise] at hmem
+  rw [this, ← iSup_torsionBySet_ideal_eq_torsionBySet_iInf hPairwise] at hmem
   revert x
   rw [← SetLike.le_def]
   refine iSup_mono (fun P x hxmem ↦ ?_)
@@ -187,7 +187,7 @@ theorem iSupIndep_primaryComponent :
   apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero
     (fun i ↦ torsionBySet A M ↑(i.asIdeal ^ m : Ideal A)) (R := A)).mp _ s p _ d
   · rw [iSupIndep_iff_supIndep]
-    exact fun _ ↦ Submodule.supIndep_torsionBySet_ideal
+    exact fun _ ↦ supIndep_torsionBySet_ideal
       fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
   · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
 
