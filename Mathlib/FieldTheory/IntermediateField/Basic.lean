@@ -436,8 +436,6 @@ instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebr
 
 section shortcut_instances
 
-set_option backward.isDefEq.respectTransparency false
-
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
 
 instance : Algebra S T := T.algebra
