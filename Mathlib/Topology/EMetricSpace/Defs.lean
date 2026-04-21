@@ -944,7 +944,7 @@ instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
     WeakEMetricSpace α where
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
 
-/-- `WeakEMetric` space can be induced with injective -/
+/-- `WeakEMetric` space can be induced with injective function. -/
 abbrev WeakEMetricSpace.induced
   {α β : Type*} [n : TopologicalSpace β]
   {f : α → β} (hf : Function.Injective f) (m : WeakEMetricSpace β) :
@@ -953,7 +953,7 @@ abbrev WeakEMetricSpace.induced
   { WeakPseudoEMetricSpace.IsInducing (f := f) {eq_induced := rfl} m.toWeakPseudoEMetricSpace with
     eq_of_edist_eq_zero := fun h => hf (m.eq_of_edist_eq_zero h) }
 
-/-- Weak EMetric space instance on subsets of emetric spaces -/
+/-- `WeakEMetricSpace` instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace α] :
     WeakEMetricSpace (Subtype p) :=
   WeakEMetricSpace.induced Subtype.coe_injective ‹_›
