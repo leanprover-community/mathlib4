@@ -537,6 +537,26 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
 
 end Module
 
+namespace NonUnitalRing
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [Nonempty ι]
+
+variable (P : Type*) [NonUnitalNonAssocSemiring P]
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another
+NonUnitalNonAsssocSemiRing that respect the directed system structure
+(i.e. make some diagram commute) give rise to a unique map out of the direct limit.
+-/
+noncomputable def lift
+    (g : ∀ i, (G i) →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →ₙ+* P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+  map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]
+  map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
+  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add (g i)]
+
+end NonUnitalRing
+
 namespace Ring
 
 variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] [Nonempty ι]
@@ -560,12 +580,11 @@ that respect the directed system structure (i.e. make some diagram commute) give
 to a unique map out of the direct limit.
 -/
 def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
-    DirectLimit G f →+* P where
-  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]
-  map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul]
-  map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
-  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add]
+    DirectLimit G f →+* P := {
+    (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg) with
+    toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+    map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]}
+
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
@@ -597,27 +616,25 @@ noncomputable def of (i) : G i →⋆ₙ+* DirectLimit G f where
 
 @[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
-variable (A : Type*) [NonUnitalNonAssocSemiring A] [StarRing A]
+variable (P : Type*) [NonUnitalNonAssocSemiring P] [StarRing P]
 variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another StarRing
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
 noncomputable def lift
-    (g : ∀ i, (G i) →⋆ₙ+* A) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
-    DirectLimit G f →⋆ₙ+* A where
-  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
-  map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]
-  map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
-  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add (g i)]
-  map_star' := DirectLimit.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]
+    (g : ∀ i, (G i) →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₙ+* P := {
+    (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg) with
+    toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+    map_star' := DirectLimit.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]}
 
-variable (g : ∀ i, G i →⋆ₙ+* A) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+variable (g : ∀ i, G i →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp] theorem lift_of (i x) : lift G f A g Hg (of G f i x) = g i x := rfl
+@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
-theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* A}
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
     (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
   g₁ = g₂ := by
   ext x
