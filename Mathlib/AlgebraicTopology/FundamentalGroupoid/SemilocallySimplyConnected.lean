@@ -664,14 +664,10 @@ theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
     (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
     (hα_start : Set.range α_start ⊆ U) (hα_end : Set.range α_end ⊆ U) :
     Path.Homotopic (γ.trans α_end) (α_start.trans γ') := by
-  -- Both paths go from a to d and lie entirely in U
-  -- Endpoints are in U because they're on the paths
-  have ha : a ∈ U := by
-    convert hγ (Set.mem_range_self 0)
-    exact γ.source.symm
-  have hd : d ∈ U := by
-    convert hγ' (Set.mem_range_self 1)
-    exact γ'.target.symm
+  -- Both paths go from a to d and lie entirely in U.
+  -- Endpoints are in U because they're on the paths.
+  have ha : a ∈ U := γ.source ▸ hγ (Set.mem_range_self 0)
+  have hd : d ∈ U := γ'.target ▸ hγ' (Set.mem_range_self 1)
   -- So we can apply the SLSC property
   apply h_slsc
   · exact ha
@@ -1080,12 +1076,15 @@ theorem Path.Homotopic.Quotient.discreteTopology
   -- Use quotient induction to get a representative path
   induction a using Quotient.inductionOn with
   | h p =>
-    -- The preimage of {⟦p⟧} is the homotopy class {p' | Homotopic p' p}, which is open
+    -- In the quotient topology, `{⟦p⟧}` is open iff its preimage is open.
     change IsOpen ((Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹'
       ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)))
-    convert isOpen_setOf_homotopic p
-    ext p'
-    simp only [Set.mem_preimage, Set.mem_setOf_eq]
-    exact Path.Homotopic.Quotient.eq
+    -- The preimage is the homotopy class `{p' | Homotopic p' p}`, which is open.
+    have heq :
+        (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
+          {p' : Path x y | Path.Homotopic p' p} :=
+      Set.ext fun _ => Path.Homotopic.Quotient.eq
+    rw [heq]
+    exact isOpen_setOf_homotopic p
 
 end
