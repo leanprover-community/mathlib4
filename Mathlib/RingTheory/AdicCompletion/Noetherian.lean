@@ -22,7 +22,9 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 
 open IsLocalRing Module
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+universe u
+
+variable {R : Type u} [CommRing R] (I : Ideal R)
 
 section
 
@@ -114,19 +116,30 @@ noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
   ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
 
 lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
-    ∃ (s : Finset (reesAlgebra I)) (deg : s → ℕ) (coeff : s → R),
-      (∀ x : s, x.1 = monomial (deg x) (coeff x)) ∧ (∀ x : s, coeff x ∈ J) ∧
-        (Ideal.span (s : Set (reesAlgebra I))).map (reesAlgebraToAssociatedGraded I) =
+    ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
+      (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
+        (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
           J.toAssociatedGraded I := by
+  obtain ⟨s, hs⟩ := fg
+  have smem : ∀ x ∈ s, x ∈ J.toAssociatedGraded I := fun x hx ↦ by
+    simpa [← hs] using Ideal.subset_span hx
+  have : (J.toAssociatedGraded I).comap (reesAlgebraToAssociatedGraded I) = _ :=
+    (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I)
+      Ideal.Quotient.mk_surjective ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans
+        (sup_comm _ _)
+  let g : s → reesAlgebra I := fun x ↦ Classical.choose
+    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
+  have g_spec (x : s) : g x ∈ _ ∧ reesAlgebraToAssociatedGraded I (g x) = x := Classical.choose_spec
+    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
   sorry
 
-lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (s : Finset (reesAlgebra I)) (deg : s → ℕ)
-    (coeff : s → R) (eq : ∀ x : s, x.1 = monomial (deg x) (coeff x)) (memJ : ∀ x : s, coeff x ∈ J)
-    (span_eq : (Ideal.span (s : Set (reesAlgebra I))).map (reesAlgebraToAssociatedGraded I) =
-      J.toAssociatedGraded I)
-    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : s → R),
-    (∀ x : s, coeff' x ∈ I ^ (n - deg x)) ∧ (∀ x : s, deg x > n → coeff' x = 0) ∧
-      r - ∑ x : s, coeff' x * coeff x ∈ I ^ (n + 1) := by
+lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
+    (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
+    (memJ : ∀ i : ι, coeff i ∈ J) (span_eq : (Ideal.span (Set.range f)).map
+      (reesAlgebraToAssociatedGraded I) = J.toAssociatedGraded I)
+    (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
+    (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
+      r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
   sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
