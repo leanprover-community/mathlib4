@@ -60,7 +60,7 @@ variable [HasExplicitFiniteCoproduct X]
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
 union with its usual topology.
 -/
-def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
+abbrev finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 
 /--
 The inclusion of one of the factors into the explicit finite coproduct.
@@ -156,6 +156,7 @@ lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (finiteCoproduct.ι X a) :=
   .sigmaMk (σ := fun a ↦ X a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.isOpenEmbedding_ι (a : α) :
     IsOpenEmbedding (Sigma.ι X a) := by

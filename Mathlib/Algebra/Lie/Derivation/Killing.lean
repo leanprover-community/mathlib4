@@ -5,7 +5,7 @@ Authors: Frédéric Marbach
 -/
 module
 
-public import Mathlib.Algebra.Lie.Derivation.AdjointAction
+public import Mathlib.Algebra.Lie.AdjointAction.Derivation
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
@@ -17,12 +17,12 @@ This file establishes that all derivations of finite-dimensional Killing Lie alg
 ## Main statements
 
 - `LieDerivation.Killing.ad_mem_orthogonal_of_mem_orthogonal`: if a derivation `D` is in the Killing
-orthogonal of the range of the adjoint action, then, for any `x : L`, `ad (D x)` is also in this
-orthogonal.
+  orthogonal of the range of the adjoint action, then, for any `x : L`, `ad (D x)` is also in this
+  orthogonal.
 - `LieDerivation.Killing.range_ad_eq_top`: in a finite-dimensional Lie algebra with non-degenerate
-Killing form, the range of the adjoint action is full,
+  Killing form, the range of the adjoint action is full,
 - `LieDerivation.Killing.exists_eq_ad`: in a finite-dimensional Lie algebra with non-degenerate
-Killing form, any derivation is an inner derivation.
+  Killing form, any derivation is an inner derivation.
 -/
 
 @[expose] public section
@@ -94,6 +94,7 @@ lemma killingForm_restrict_range_ad_nondegenerate :
   convert LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
   exact killingForm_restrict_range_ad R L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
 @[simp]
 lemma range_ad_eq_top : 𝕀 = ⊤ := by

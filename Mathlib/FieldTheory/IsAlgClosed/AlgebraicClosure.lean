@@ -129,21 +129,21 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
-instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
+deriving instance CommRing, Inhabited for AlgebraicClosure
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
-  Submodule.Quotient.instSMul' _
+  inferInstanceAs <| SMul S (_ ⧸ _)
 
 instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R (_ ⧸ _)
 
 instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
     [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  Ideal.Quotient.isScalarTower _ _ _
+  inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
 
-instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) where
-  __ := Ideal.Quotient.field _
+attribute [local instance] Ideal.Quotient.field in
+instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  inferInstanceAs <| GroupWithZero (_ ⧸ _)
 
 instance instField : Field (AlgebraicClosure k) where
   __ := instCommRing _
@@ -160,6 +160,7 @@ instance instField : Field (AlgebraicClosure k) where
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Monics.map_eq_prod {f : Monics k} :
     f.1.map (algebraMap k (AlgebraicClosure k)) =
       ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
@@ -169,6 +170,7 @@ theorem Monics.map_eq_prod {f : Monics k} :
     ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
   refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   ⟨fun z =>
     IsIntegral.isAlgebraic <| by

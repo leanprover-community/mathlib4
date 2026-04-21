@@ -214,6 +214,7 @@ theorem aux_algebraMap (r) :
     aux f (algebraMap R (even Q) r) = algebraMap R A r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   obtain ⟨x, x_property⟩ := x

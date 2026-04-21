@@ -468,7 +468,7 @@ lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
 lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
-  contrapose! pnq
+  contrapose pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
@@ -514,7 +514,11 @@ lemma toTree_ofTree : ∀ t, (ofTree t).toTree = t
   | Tree.node _ _ _ => by simp [ofTree, toTree, toTree_ofTree]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
-@[simps] def equivTree : DyckWord ≃ Tree Unit := ⟨toTree, ofTree, ofTree_toTree, toTree_ofTree⟩
+@[simps] def equivTree : DyckWord ≃ Tree Unit where
+  toFun := toTree
+  invFun := ofTree
+  left_inv := ofTree_toTree
+  right_inv := toTree_ofTree
 
 @[simp]
 lemma numNodes_toTree (p : DyckWord) : p.toTree.numNodes = p.semilength := by

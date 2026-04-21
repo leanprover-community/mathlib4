@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Aesop
 public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 
@@ -27,11 +28,9 @@ assert_not_exists HeytingAlgebra
 
 open Function
 
-universe u v
-
 namespace Set
 
-variable {α : Type u} {s t : Set α} {a b : α}
+variable {α β : Type*} {s t : Set α} {a b : α}
 
 /-!
 ### Lemmas about `insert`
@@ -371,6 +370,11 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
     s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
   rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
+theorem range_ite_const {p : α → Prop} [DecidablePred p] {x y : β}
+    (hp : ∃ a, p a) (hn : ∃ a, ¬ p a) :
+    Set.range (fun a ↦ if p a then x else y) = {x, y} := by
+  grind
+
 /-! ### Powerset -/
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
@@ -391,7 +395,7 @@ end
 
 /-! ### Decidability instances for sets -/
 
-variable {α : Type u} (s t : Set α) (a b : α)
+variable (s t : Set α) (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))

@@ -17,10 +17,10 @@ We construct etale neighborhoods that split fibers of finite algebras.
 
 ## Main results
 - `Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq`:
-Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
-We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
-such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
-This prime will also lie over `q`.
+  Let `S` be a module-finite `R`-algebra, and `q` a prime lying over `p`.
+  We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
+  such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
+  This prime will also lie over `q`.
 
 -/
 
@@ -83,6 +83,7 @@ universe u v
 variable {R : Type u} {S : Type v} {T : Type*}
   [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f : S →ₐ[R] T` is an `R`-algebra homomorphism with `S` integral and `T` of finite type,
 such that the induced map `S[1/g] → T[1/g]` is surjective for some `g : S`.
 Then for any prime `p` of `R` such that `1 ⊗ₜ g` is invertible in `κ(p) ⊗ S`,
@@ -138,6 +139,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     refine RingHom.finiteType_algebraMap.mpr ?_
     exact .of_restrictScalars_finiteType R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
 /-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
@@ -191,7 +193,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     rw [IsLocalization.map_mk', ← e.symm.commutes, ← map_mul,
       IsScalarTower.algebraMap_eq _ S _] at this
     replace this : e.symm ((algebraMap _ (Localization.Away s₂.1)) s₃) ∈ q's := by
-      simpa [-map_mul, -map_pow, - AlgEquiv.commutes] using this
+      simpa [-map_mul, -map_pow, -AlgEquiv.commutes] using this
     replace this : s₃ ∈ q' := by simpa [← Ideal.mem_comap, ← q's.over_def q'] using this
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
@@ -291,6 +293,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
       (P''.over_def P)).comp_algebraMap, ← Polynomial.map_map, ← ha']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
     {R S R' R'' : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
     [CommRing R'] [Algebra R R'] [CommRing R''] [Algebra R R''] [Algebra R'' S]
@@ -335,7 +338,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
         (Ideal.notMem_of_isUnit (m.comap Algebra.TensorProduct.includeRight)
         (IsLocalization.Away.algebraMap_isUnit _))
     rw [← hP'q]
-    exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm:))
+    exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm :))
   rw [he₀e] at hf
   refine ⟨f, hfP, ?_⟩
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
@@ -358,7 +361,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   refine RingHom.finite_algebraMap.mp ?_
   convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
-  dsimp [- AlgEquiv.symm_toRingEquiv,
+  dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower,
     Algebra.ofId_apply]

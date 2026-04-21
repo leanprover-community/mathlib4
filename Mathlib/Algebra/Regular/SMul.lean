@@ -19,9 +19,9 @@ predicate is called `IsSMulRegular`.
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
 is a commutative ring `R` acting on a module `M`. Since the properties are "multiplicative", there
 is no actual requirement of having an addition, but there is a zero in both `R` and `M`.
-SMultiplications involving `0` are, of course, all trivial.
+Scalar multiplications involving `0` are, of course, all trivial.
 
-The defining property is that an element `a ∈ R` is `M`-regular if the smultiplication map
+The defining property is that an element `a ∈ R` is `M`-regular if the scalar multiplication map
 `M → M`, defined by `m ↦ a • m`, is injective.
 
 This property is the direct generalization to modules of the property `IsLeftRegular` defined in
@@ -190,7 +190,7 @@ theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
 theorem not_zero_iff : ¬IsSMulRegular M (0 : R) ↔ Nontrivial M := by
   rw [nontrivial_iff, not_iff_comm, zero_iff_subsingleton, subsingleton_iff]
-  push_neg
+  push Not
   exact Iff.rfl
 
 /-- The element `0` is `M`-regular when `M` is trivial. -/
@@ -257,15 +257,6 @@ lemma isSMulRegular_iff_right_eq_zero_of_smul [AddGroup M] [DistribSMul R M] {r 
   mpr h m₁ m₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [smul_sub, eq, sub_self]
 
 alias ⟨_, IsSMulRegular.of_right_eq_zero_of_smul⟩ := isSMulRegular_iff_right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias IsSMulRegular.eq_zero_of_smul_eq_zero := IsSMulRegular.right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_iff_smul_eq_zero_imp_eq_zero := isSMulRegular_iff_right_eq_zero_of_smul
-
-@[deprecated (since := "2025-08-04")]
-alias isSMulRegular_of_smul_eq_zero_imp_eq_zero := IsSMulRegular.of_right_eq_zero_of_smul
 
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :

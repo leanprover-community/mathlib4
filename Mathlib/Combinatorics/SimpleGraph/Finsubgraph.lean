@@ -80,7 +80,7 @@ lemma coe_inf (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊓ G₂) = (G₁ ⊓ G₂ 
 lemma coe_sdiff (G₁ G₂ : G.Finsubgraph) : ↑(G₁ \ G₂) = (G₁ \ G₂ : G.Subgraph) := rfl
 
 instance instGeneralizedCoheytingAlgebra : GeneralizedCoheytingAlgebra G.Finsubgraph :=
-  Subtype.coe_injective.generalizedCoheytingAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  Subtype.coe_injective.generalizedCoheytingAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 section Finite
 variable [Finite V]
@@ -114,8 +114,8 @@ lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f 
   rw [iInf, coe_sInf, iInf_range]
 
 instance instCompletelyDistribLattice : CompletelyDistribLattice G.Finsubgraph :=
-  Subtype.coe_injective.completelyDistribLattice _ coe_sup coe_inf coe_sSup coe_sInf coe_top coe_bot
-    coe_compl coe_himp coe_hnot coe_sdiff
+  Subtype.coe_injective.completelyDistribLattice _ .rfl .rfl coe_sup coe_inf coe_sSup coe_sInf
+    coe_top coe_bot coe_compl coe_himp coe_hnot coe_sdiff
 
 end Finite
 end Finsubgraph
@@ -145,9 +145,9 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 
 /-- The inverse system of finite homomorphisms. -/
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
-    G.Finsubgraphᵒᵖ ⥤ Type max u v where
+    G.Finsubgraphᵒᵖ ⥤ Type (max u v) where
   obj G' := G'.unop →fg F
-  map g f := f.restrict (CategoryTheory.leOfHom g.unop)
+  map g := TypeCat.ofHom (fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/

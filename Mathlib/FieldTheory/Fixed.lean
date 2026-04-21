@@ -20,16 +20,15 @@ public import Mathlib.RingTheory.Polynomial.Subring
 
 This is the basis of the Fundamental Theorem of Galois Theory.
 Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
-the subfield consisting of elements of `F` fixed_points by every element of `G`.
+the subfield consisting of elements of `F` fixed by every element of `G`.
 
 This subfield is then normal and separable, and in addition if `G` acts faithfully on `F`
 then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed_points by every
-element of `G`, where `G` is a group that acts on `F`.
-
+- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
+  element of `G`, where `G` is a group that acts on `F`.
 -/
 
 @[expose] public section
@@ -382,10 +381,10 @@ theorem toAlgAut_surjective [Finite G] :
     MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
   let Q := G ⧸ f.ker
   let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
-  have : FaithfulSMul Q F := ⟨by
-    intro q₁ q₂
-    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
-    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
+  have : FaithfulSMul Q F := ⟨fun {q₁ q₂} ↦ by
+    induction q₁, q₂ using Quotient.inductionOn₂ with | _ g₁ g₂
+    intro h
+    rwa [QuotientGroup.eq, MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
   intro f
   obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
     (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))

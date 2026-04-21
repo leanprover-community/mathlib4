@@ -87,9 +87,11 @@ def limitCone : Cone F where
   pt := SemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
-      naturality := fun {_ _} f ↦ hom_ext <| RingHom.coe_inj
-        ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -97,19 +99,15 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
     (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_ })
     (fun s => rfl)
-  · simp only [Functor.mapCone_π_app, forget_map, map_one]
+  · simp
     rfl
   · intro x y
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map, map_mul, EquivLike.coe_apply]
-    rw [← equivShrink_mul]
+    simp [← equivShrink_mul]
     rfl
-  · simp only [Functor.mapCone_π_app, forget_map, map_zero]
+  · simp
     rfl
   · intro x y
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map, map_add, EquivLike.coe_apply]
-    rw [← equivShrink_add]
+    simp [← equivShrink_add]
     rfl
 
 end HasLimits
@@ -322,8 +320,9 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
-        naturality := fun _ _ f => hom_ext <| RingHom.coe_inj
-          ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+        naturality _ _ f := by
+          ext
+          simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -448,9 +447,9 @@ instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
-          naturality :=
-            fun _ _ f => hom_ext <| RingHom.coe_inj
-              ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+          naturality _ _ f := by
+            ext
+            simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ } }
     createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t

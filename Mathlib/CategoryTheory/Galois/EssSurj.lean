@@ -86,7 +86,7 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
     let q' (p : G × (f i).V) : (f i).V := ((f i).ρ p.1).hom p.2
     have heq : q ∘ r'' = r.hom ∘ q' := by
       ext (p : G × (f i).V)
-      exact (DFunLike.congr_fun (r.comm p.1) p.2).symm
+      exact (ConcreteCategory.congr_hom (r.comm p.1) p.2).symm
     have hrinj : Function.Injective r.hom :=
       (ConcreteCategory.mono_iff_injective_of_preservesPullback r).mp <| mono_comp _ _
     let t₁ : TopologicalSpace (G × (f i).V) := inferInstance
@@ -103,6 +103,7 @@ lemma has_decomp_quotients (X : Action FintypeCat G)
   choose g ui using this
   exact ⟨ι, hf, g, ⟨(Sigma.mapIso (fun i ↦ (ui i).some)).symm ≪≫ u⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
@@ -151,6 +152,7 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :
     Cocone (quotientDiag V h u ⋙ functorToAction F) where
@@ -170,6 +172,7 @@ private def coconeQuotientDiag :
     apply (QuotientGroup.leftRel_apply).mpr
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiagDesc
     (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
@@ -183,10 +186,7 @@ private def coconeQuotientDiagDesc
         s.ι.naturality m
       conv_rhs => rw [← h1]
       have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-        simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
-          functorToAction_map_quotientToEndObjectHom V h u m]
-        change (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
-        simp [m]
+        simp [J', functorToAction_map_quotientToEndObjectHom V h u m, ← comp_apply, m]
       simp [← h2, J'])
   comm g := by
     ext (x : Aut F ⧸ V.toSubgroup)
@@ -200,6 +200,7 @@ private def coconeQuotientDiagDesc
     rw [← this, u.inv.comm g]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
 private def coconeQuotientDiagIsColimit :
     IsColimit (coconeQuotientDiag h u hUinV) where
@@ -219,6 +220,7 @@ private def coconeQuotientDiagIsColimit :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For every open subgroup `V` of `Aut F`, there exists an `X : C` such that
 `F.obj X ≅ Aut F ⧸ V` as `Aut F`-sets. -/
 lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
@@ -248,7 +250,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
-    simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
+    simp only [FintypeCat.id_apply, NatTrans.naturality_apply, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
   have := V.quotient_finite_of_isOpen' (U.subgroupOf V) V.isOpen (V.subgroupOf_isOpen U U.isOpen)
   exact ⟨colimit (quotientDiag V hUnormal u),

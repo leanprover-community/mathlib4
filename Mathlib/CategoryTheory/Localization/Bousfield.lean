@@ -220,6 +220,7 @@ lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.
   dsimp [Adjunction.homEquiv]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     isLocal (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
   have := adj.unit.naturality f
@@ -253,6 +254,7 @@ lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj
   dsimp [Adjunction.homEquiv]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_iff_isIso_map {X Y : C} (f : X ⟶ Y) :
     isColocal (· ∈ Set.range G.obj) f ↔ IsIso (F.map f) := by
   have := adj.counit.naturality f

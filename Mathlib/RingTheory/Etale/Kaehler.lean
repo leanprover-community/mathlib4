@@ -92,7 +92,7 @@ variable {P : Extension.{u} R S} {Q : Extension.{u} R T} (f : P.Hom Q)
 
 /-- If `P → Q` is formally étale, then `T ⊗ₛ (S ⊗ₚ Ω[P/R]) ≃ T ⊗_Q Ω[Q/R]`. -/
 noncomputable
-def tensorCotangentSpace
+def tensorCotangentSpaceOfFormallyEtale
     (H : f.toRingHom.FormallyEtale) :
     T ⊗[S] P.CotangentSpace ≃ₗ[T] Q.CotangentSpace :=
   letI := f.toRingHom.toAlgebra
@@ -230,8 +230,8 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
 
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally étale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
-def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)
-    [Module.Flat S T]
+def tensorH1CotangentOfFormallyEtale [alg : Algebra P.Ring Q.Ring]
+    (halg : algebraMap P.Ring Q.Ring = f.toRingHom) [Module.Flat S T]
     (H₁ : f.toRingHom.FormallyEtale)
     (H₂ : Function.Bijective ((f.mapKer halg).liftBaseChange Q.Ring)) :
     T ⊗[S] P.H1Cotangent ≃ₗ[T] Q.H1Cotangent := by
@@ -252,7 +252,7 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
     have : Function.Exact (h1Cotangentι.baseChange T) (P.cotangentComplex.baseChange T) :=
       Module.Flat.lTensor_exact T (LinearMap.exact_subtype_ker_map _)
     obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
-      apply (Extension.tensorCotangentSpace f H₁).injective
+      apply (Extension.tensorCotangentSpaceOfFormallyEtale f H₁).injective
       rw [LinearEquiv.map_zero, ← x.2]
       have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
           Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
@@ -271,6 +271,8 @@ end Extension
 
 variable {S}
 
+set_option backward.inferInstanceAs.wrap.data false in
+set_option backward.isDefEq.respectTransparency false in
 /-- let `p` be a submonoid of an `R`-algebra `S`. Then `Sₚ ⊗ H¹(L_{S/R}) ≃ H¹(L_{Sₚ/R})`. -/
 noncomputable
 def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
@@ -297,7 +299,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
   haveI : FormallySmooth P.Ring (Localization M') := .of_isLocalization M'
   haveI : FormallySmooth R Q.Ring := .comp R P.Ring (Localization M')
   haveI : Module.Flat S T := IsLocalization.flat T M
-  letI : Algebra P.Ring Q.Ring := inferInstanceAs (Algebra P.Ring (Localization M'))
+  letI : Algebra P.Ring Q.Ring := (inferInstance : Algebra P.Ring (Localization M'))
   letI := ((algebraMap S T).comp (algebraMap P.Ring S)).toAlgebra
   letI := fQ.toRingHom.toAlgebra
   haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
@@ -307,7 +309,8 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     rw [isLocalizedModule_iff_isLocalization]
     convert ‹IsLocalization M T› using 1
     exact Submonoid.map_comap_eq_of_surjective P.algebraMap_surjective _
-  refine Extension.tensorH1Cotangent f rfl ?_ ?_ ≪≫ₗ Extension.equivH1CotangentOfFormallySmooth _
+  refine Extension.tensorH1CotangentOfFormallyEtale f rfl ?_ ?_ ≪≫ₗ
+      Extension.equivH1CotangentOfFormallySmooth _
   · exact RingHom.formallyEtale_algebraMap.mpr
       (FormallyEtale.of_isLocalization (M := M') (Rₘ := Localization M'))
   · let F : P.ker →ₗ[P.Ring] RingHom.ker fQ := f.mapKer rfl
@@ -335,6 +338,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
     rw [this]
     exact IsLocalizedModule.of_linearEquiv _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tensorH1CotangentOfIsLocalization_toLinearMap
     (M : Submonoid S) [IsLocalization M T] :
     (tensorH1CotangentOfIsLocalization R T M).toLinearMap =
@@ -343,8 +347,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
-    Generators.toExtension_commRing, Generators.toExtension_algebra₂,
-    Extension.tensorH1Cotangent,
+    Extension.tensorH1CotangentOfFormallyEtale,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension

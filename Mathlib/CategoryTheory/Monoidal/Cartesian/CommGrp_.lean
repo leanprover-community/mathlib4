@@ -28,17 +28,13 @@ variable (X) in
 commutative monoid object. -/
 class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
-@[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
-
 variable (X) in
 /-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
+@[implicit_reducible]
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrpCat.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat GrpCat) α
   __ := IsCommMonObj.ofRepresentableBy X (F ⋙ forget₂ CommGrpCat CommMonCat) α
-
-@[deprecated (since := "2025-09-13")]
-alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]
@@ -51,6 +47,7 @@ def yonedaCommGrpGrpObj (G : CommGrp C) : (Grp C)ᵒᵖ ⥤ CommGrpCat where
       ext
       simpa using ((yonedaGrpObj G.X).map f.unop.hom.hom.op).hom.map_mul g.hom.hom h.hom.hom }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommGrp C` into presheaves of groups. -/
 @[simps]
 def yonedaCommGrpGrp : CommGrp C ⥤ (Grp C)ᵒᵖ ⥤ CommGrpCat where

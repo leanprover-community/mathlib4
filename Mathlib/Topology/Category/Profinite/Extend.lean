@@ -47,7 +47,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, ⟨(g : _ → _)⟩, ?_⟩
+  refine ⟨i, ⟨TypeCat.ofHom g⟩, ?_⟩
   ext x
   exact LocallyConstant.congr_fun h x
 
@@ -77,6 +77,7 @@ def functorOp : Iᵒᵖ ⥤ CostructuredArrow toProfinite.op ⟨c.pt⟩ :=
 -- We check that the opposite of the original diagram factors through `Profinite.Extend.functorOp`.
 example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F.op := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] uliftCategory in
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then

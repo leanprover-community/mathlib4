@@ -43,8 +43,6 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
-@[deprecated (since := "2025-09-14")] alias Mod_Class := ModObj
-
 attribute [reassoc] ModObj.mul_smul' ModObj.one_smul'
 
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
@@ -143,7 +141,7 @@ structure Hom (M N : Mod_ D A) where
 attribute [instance] Hom.isMod_Hom
 
 /-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, as well as the relevant
+taking a morphism without a `[isMod_Hom]` instance, as well as the relevant
 equality to put such an instance. -/
 @[simps!]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
@@ -152,7 +150,7 @@ def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
   ⟨f⟩
 
 /-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, between objects with
+taking a morphism without a `[isMod_Hom]` instance, between objects with
 a `ModObj` instance (rather than bundled as `Mod_`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]
@@ -219,7 +217,7 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f.hom ⊵ₗ M ≫ γ[B, M]`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
   smul := f ⊵ₗ M ≫ γ[B,M]
   one_smul' := by

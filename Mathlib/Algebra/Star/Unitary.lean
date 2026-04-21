@@ -29,7 +29,7 @@ unitary
 @[expose] public section
 
 
-/-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
+/-- In a \*-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
 `R` such that `star U * U = 1` and `U * star U = 1`.
 -/
 def unitary (R : Type*) [Monoid R] [StarMul R] : Submonoid R where
@@ -357,7 +357,7 @@ section CommMonoid
 variable [CommMonoid R] [StarMul R]
 
 instance : CommGroup (unitary R) :=
-  { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
+  { (inferInstance : Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
   mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h

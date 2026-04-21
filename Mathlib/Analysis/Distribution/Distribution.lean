@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
 # Distributions
@@ -52,7 +53,7 @@ We could introduce another notation `∞` for `⊤ : ℕ∞`, but we believe it 
 
 ### `abbrev` or `def`
 
-At this point in time, it is not clear wether we should enforce a separation between the API
+At this point in time, it is not clear whether we should enforce a separation between the API
 for `𝓓'(Ω, F)` and the more generic API about `𝓓(Ω, ℝ) →L_c[ℝ] F`.
 For now, we have made the "default" choice to implement `Distribution` as an `abbrev`, which means
 that we get a lot of instances for free, but also that there is no such separation of APIs.
@@ -127,7 +128,7 @@ which we follow here.
 
 Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
 converges pointwise
-(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Théorème XIII][schwartz1950]).
 Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
 gives the same converging sequences as the topology of bounded/compact convergence, this is no
 longer true for general filters.
@@ -187,5 +188,29 @@ lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω,
     mapCLM A T f = A (T f) := rfl
 
 end mapCLM
+
+section DiracDelta
+
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
+def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+  rfl
+
+@[simp]
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
+end DiracDelta
 
 end Distribution

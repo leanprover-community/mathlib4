@@ -184,9 +184,9 @@ theorem exists_ge_ge [LE α] [IsDirectedOrder α] (a b : α) : ∃ c, a ≤ c �
 instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ := by
   assumption
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- A monotone function on an upwards-directed type is directed. -/
-@[to_dual none] -- @[to_dual directed_of_isDirected_ge]
+@[to_dual (reorder := H (i j)) directed_of_isDirected_ge
+/-- An antitone function on a downwards-directed type is directed. -/]
 theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
   directed_id.mono_comp _ H
@@ -196,23 +196,26 @@ theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f
     Monotone f → Directed (· ≤ ·) f :=
   directed_of_isDirected_le
 
-/-- An antitone function on a downwards-directed type is directed. -/
-@[to_dual none]
-theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β → Prop} {f : α → β}
-    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
-  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
-
 @[to_dual directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Antitone f) : Directed (· ≤ ·) f :=
   directed_of_isDirected_ge hf
 
+@[to_dual]
+lemma directedOn_iff_isDirectedOrder [LE α] {s : Set α} :
+    DirectedOn (· ≤ ·) s ↔ IsDirectedOrder s := by
+  rw [directedOn_iff_directed, IsDirectedOrder]
+  exact ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
+
+@[to_dual]
+alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directedOn_iff_isDirectedOrder
+
 section Reflexive
 
-protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
-  · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
+  · exact ⟨y, Set.mem_insert _ _, refl _, refl _⟩
   · obtain ⟨w, hws, hwr⟩ := ha y hy
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
   · obtain ⟨w, hws, hwr⟩ := ha x hx
@@ -220,16 +223,16 @@ protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd 
   · obtain ⟨w, hws, hwr⟩ := hd x hx y hy
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
-theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
+theorem directedOn_singleton [Std.Refl r] (a : α) : DirectedOn r ({a} : Set α) :=
+  fun x hx _ hy => ⟨x, hx, refl _, hx.symm ▸ hy.symm ▸ refl _⟩
 
-theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
-  (directedOn_singleton h _).insert h _ fun c hc => ⟨c, hc, hc.symm ▸ hab, h _⟩
+theorem directedOn_pair [Std.Refl r] {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
+  (directedOn_singleton _).insert _ fun c hc => ⟨c, hc, hc.symm ▸ hab, refl _⟩
 
-theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
+theorem directedOn_pair' [Std.Refl r] {a b : α} (hab : a ≼ b) :
     DirectedOn r ({b, a} : Set α) := by
   rw [Set.pair_comm]
-  apply directedOn_pair h hab
+  apply directedOn_pair hab
 
 end Reflexive
 
@@ -255,6 +258,15 @@ theorem isTop_or_exists_gt [IsDirectedOrder α] (a : α) : IsTop a ∨ ∃ b, a 
 @[to_dual]
 theorem isTop_iff_isMax [IsDirectedOrder α] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
+
+/-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
+theorem Monotone.forall_le_of_antitone [IsDirectedOrder α] [Preorder β] {f g : α → β}
+    (hf : Monotone f) (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n := by
+  obtain ⟨k, hkm, hkn⟩ := exists_ge_ge m n
+  calc
+    f m ≤ f k := hf hkm
+    _ ≤ g k := h _
+    _ ≤ g n := hg hkn
 
 end Preorder
 
@@ -295,8 +307,8 @@ variable [Preorder α] {f : α → β} {s : Set α}
 /-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
 lemma constant_of_monotone_antitone [IsDirectedOrder α] (hf : Monotone f) (hf' : Antitone f)
     (a b : α) : f a = f b := by
-  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
+  have := hf.forall_le_of_antitone hf' le_rfl
+  exact le_antisymm (this a b) (this b a)
 
 /-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
 lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
