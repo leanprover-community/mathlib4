@@ -413,7 +413,7 @@ theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
   intro _
   constructor
   · intro ⟨_, h⟩
-    grw [← h, Nat.mul_div_cancel_left _ (by lia)]
+    grw' [← h, Nat.mul_div_cancel_left _ (by lia)]
   · intro hm
     grw [hm]
     simp [mul_div_le, div_le_self]
