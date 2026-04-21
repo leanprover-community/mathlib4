@@ -153,4 +153,19 @@ theorem isUnit_inv {m : ℕ} {n : ℤ} (h : IsUnit (n : ZMod m)) :
   rw [isUnit_iff_exists]
   exact ⟨n, inv_mul_of_unit _ h, mul_inv_of_unit _ h⟩
 
+theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
+    IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
+  constructor
+  · intro h
+    rcases eq_or_ne m 0 with rfl | hm
+    · simpa [isCoprime_zero_left] using h
+    · haveI : NeZero m := ⟨hm⟩
+      obtain ⟨u, hu⟩ := h
+      rw [isCoprime_comm, Int.isCoprime_iff_gcd_eq_one, ← Int.gcd_emod, ← val_intCast]
+      have hc := val_coe_unit_coprime u
+      rw [hu] at hc
+      rwa [Nat.coprime_iff_gcd_eq_one, ← Int.gcd_natCast_natCast] at hc
+  · intro h
+    exact ⟨unitOfIsCoprime n (isCoprime_comm.mp h), rfl⟩
+
 end ZMod
