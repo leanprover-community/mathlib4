@@ -44,6 +44,7 @@ types used for indexing.
 
 basis, det, determinant
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
