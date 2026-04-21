@@ -663,6 +663,7 @@ def getFiles
     checkForManifestMismatch
 
   let mathlibDepPath := (← read).mathlibDepPath
+  let startTime ← IO.monoMsNow
 
   -- Start background decompression of already-cached files before downloading.
   -- Skip when forceDownload is set, since downloadFiles will re-download (and pipeline-decompress)
@@ -674,9 +675,8 @@ def getFiles
           ({plan.alreadyDecompressed} already decompressed)"
       else
         IO.println s!"Decompressing {plan.needsDecomp} already-cached file(s)"
-      let now ← IO.monoMsNow
       let task ← IO.asTask (IO.spawnLeanTarDecompress plan.config forceUnpack)
-      pure (some (task, plan.needsDecomp, now))
+      pure (some (task, plan.needsDecomp))
     else pure none
   else pure none
 
@@ -714,22 +714,22 @@ def getFiles
       IO.Process.exit 1
 
   -- Wait for decompression of already-cached files to complete
-  if let some (task, size, startTime) := bgDecomp then
+  if let some (task, size) := bgDecomp then
     match task.get with
     | .ok exitCode =>
-      let elapsed := (← IO.monoMsNow) - startTime
       if exitCode != 0 then
         IO.eprintln s!"Decompression of already-cached files failed (exit code {exitCode})"
         IO.Process.exit 1
-      IO.println s!"Decompressed {size} already-cached file(s) in {elapsed} ms"
+      IO.println s!"Decompressed {size} already-cached file(s)"
     | .error e =>
       IO.eprintln s!"Decompression of already-cached files error: {e}"
       IO.Process.exit 1
 
+  let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
     if bgDecomp.isSome && parallel then
       -- Background task handled pre-cached files, download pipeline handled new files
-      IO.println "Completed successfully!"
+      IO.println s!"Completed successfully in {elapsed} ms!"
     else
       -- Either no background decompression ran, or non-parallel mode needs final sweep
       IO.unpackCache hashMap forceUnpack
