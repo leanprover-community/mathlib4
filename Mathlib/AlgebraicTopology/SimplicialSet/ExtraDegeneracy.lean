@@ -260,7 +260,6 @@ lemma σ_σ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
       reassoc_of% hi' _ j'.succ (by grind) (by grind),
       ← σ_comp_σ (by simp), Fin.castSucc_zero]
 
---#exit
 end SimplexCategory
 
 namespace CategoryTheory.SimplicialObject
