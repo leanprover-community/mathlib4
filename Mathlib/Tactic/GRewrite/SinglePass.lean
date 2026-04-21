@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.GRewrite.Core
+public meta import Lean.Elab.Tactic.Rewrite
 
 /-!
 # The generalized rewriting tactic 2.0
@@ -214,8 +215,8 @@ public def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp 
   let lem ← elabGRewriteLemma stx (symm := symm) (config := config)
   -- TODO: decide whether to prove `→` or `↔`.
   if lem.relName matches ``Eq | ``Iff && config.useRewrite then
-    let { eNew, eqProof, mvarIds } ←
-      mvarId.rewrite e (← lem.getValue) (symm := symm) config.toConfig
+    let r ← mvarId.rewrite e (← lem.getValue) (symm := symm) config.toConfig
+    let { eNew, eqProof, mvarIds } ← Elab.Tactic.finishElabRewrite r
     let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
     let impProof ← mkAppOptM mp #[e, eNew, eqProof]
     return { eNew, impProof, mvarIds }
