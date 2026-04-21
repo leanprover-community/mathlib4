@@ -405,7 +405,6 @@ namespace Real
 def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
     Gamma s = ∫ x in Ioi 0, exp (-x) * x ^ (s - 1) := by
   rw [Gamma, Complex.Gamma_eq_integral (RCLike.ofReal_pos.mp hs), Complex.GammaIntegral_ofReal,
