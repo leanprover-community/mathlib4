@@ -26,7 +26,7 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
 * `SemilocallySimplyConnectedAt x` - The property at a single point: `x` has a neighborhood with
   trivial fundamental group relative to the ambient space.
 * `SemilocallySimplyConnectedOn s` - The property holds at every point of `s`.
-* `SemilocallySimplyConnected X` - The property holds at every point of `X`.
+* `SemilocallySimplyConnectedSpace X` - The property holds at every point of `X`, as a class.
 
 ## Main theorems
 
@@ -166,44 +166,46 @@ theorem semilocallySimplyConnectedOn_iff_paths :
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
   forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff_paths
 
-/-! ### SemilocallySimplyConnected -/
+/-! ### SemilocallySimplyConnectedSpace -/
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
 such that the map from `π₁(U, base)` to `π₁(X, base)` induced by the inclusion is trivial for all
 basepoints in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
-def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
-  ∀ x : X, SemilocallySimplyConnectedAt x
+class SemilocallySimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
+  exists_small_neighborhood : ∀ x : X, SemilocallySimplyConnectedAt x
 
-theorem SemilocallySimplyConnected.at (h : SemilocallySimplyConnected X) (x : X) :
-    SemilocallySimplyConnectedAt x :=
-  h x
+theorem SemilocallySimplyConnectedAt.of_semilocallySimplyConnectedSpace
+    [SemilocallySimplyConnectedSpace X] (x : X) : SemilocallySimplyConnectedAt x :=
+  SemilocallySimplyConnectedSpace.exists_small_neighborhood x
 
-theorem SemilocallySimplyConnected.on (h : SemilocallySimplyConnected X) (s : Set X) :
-    SemilocallySimplyConnectedOn s :=
-  fun x _ => h x
+theorem SemilocallySimplyConnectedOn.of_semilocallySimplyConnectedSpace
+    [SemilocallySimplyConnectedSpace X] (s : Set X) : SemilocallySimplyConnectedOn s :=
+  fun x _ => .of_semilocallySimplyConnectedSpace x
 
 theorem semilocallySimplyConnectedOn_univ :
-    SemilocallySimplyConnectedOn (univ : Set X) ↔ SemilocallySimplyConnected X :=
-  ⟨fun h x => h x (mem_univ x), fun h x _ => h x⟩
+    SemilocallySimplyConnectedOn (univ : Set X) ↔ SemilocallySimplyConnectedSpace X :=
+  ⟨fun h => ⟨fun x => h x (mem_univ x)⟩, fun ⟨h⟩ x _ => h x⟩
 
 /-- Simply connected spaces are semilocally simply connected. -/
-theorem SemilocallySimplyConnected.of_simplyConnected [SimplyConnectedSpace X] :
-    SemilocallySimplyConnected X :=
-  fun x => SemilocallySimplyConnectedAt.of_simplyConnected x
+instance SemilocallySimplyConnectedSpace.of_simplyConnected [SimplyConnectedSpace X] :
+    SemilocallySimplyConnectedSpace X where
+  exists_small_neighborhood x := .of_simplyConnected x
 
-theorem semilocallySimplyConnected_iff :
-    SemilocallySimplyConnected X ↔
+theorem semilocallySimplyConnectedSpace_iff :
+    SemilocallySimplyConnectedSpace X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u : X} (γ : Path u u) (_ : range γ ⊆ U),
         Path.Homotopic γ (Path.refl u) :=
-  forall_congr' fun _ => semilocallySimplyConnectedAt_iff
+  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff.mp (h x),
+    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff.mpr (h x)⟩⟩
 
-theorem semilocallySimplyConnected_iff_paths :
-    SemilocallySimplyConnected X ↔
+theorem semilocallySimplyConnectedSpace_iff_paths :
+    SemilocallySimplyConnectedSpace X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
-  forall_congr' fun _ => semilocallySimplyConnectedAt_iff_paths
+  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff_paths.mp (h x),
+    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff_paths.mpr (h x)⟩⟩
 
 /-! ### Helper lemmas for discreteness of path homotopy quotients -/
 
@@ -243,12 +245,11 @@ This is a key reformulation of the SLSC property: it says that SLSC neighborhood
 This is derived from the basic SLSC definition by composing paths: if p and q are two paths
 from a to b in U, then p · q⁻¹ is a loop at a contained in U, hence nullhomotopic by SLSC,
 which implies p ≃ q. -/
-theorem exists_uniquePath_neighborhood (hX : SemilocallySimplyConnected X) (x : X) :
+theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X] (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
         Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
-  rw [semilocallySimplyConnected_iff] at hX
-  obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := hX x
+  obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := semilocallySimplyConnectedSpace_iff.mp ‹_› x
   refine ⟨U, hU_open, hx_in_U, ?_⟩
   intro a b ha hb p q hp_range hq_range
   apply Path.homotopic_of_loops_nullhomotopic_in_neighborhood U
@@ -260,13 +261,13 @@ theorem exists_uniquePath_neighborhood (hX : SemilocallySimplyConnected X) (x : 
 /-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
 we can use the path component of x in an SLSC neighborhood V to get a neighborhood that is both
 open, path-connected, and has the SLSC property (paths with same endpoints in U are homotopic). -/
-theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected X)
+theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsPathConnected U ∧
       (∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
         Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
   -- Get an SLSC neighborhood from the SLSC property
-  obtain ⟨V, hV_open, hx_in_V, hV_slsc⟩ := exists_uniquePath_neighborhood hX x
+  obtain ⟨V, hV_open, hx_in_V, hV_slsc⟩ := exists_uniquePath_neighborhood x
   -- The path component of x in V is open (since V is open and X is locally path-connected)
   let W := pathComponentIn V x
   refine ⟨W, hV_open.pathComponentIn x, mem_pathComponentIn_self hx_in_V,
@@ -374,7 +375,7 @@ def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
 /-- In an SLSC space, given a path γ, there exists a tubular neighborhood structure
 such that γ stays in the tube. This uses compactness of the path's image and the
 Lebesgue number lemma. -/
-theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConnected X)
+theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] {x y : X} (γ : Path x y) :
     ∃ (n : ℕ) (part : IntervalPartition n) (T : TubeData X x y n), PathInTube γ part T := by
   -- Apply the generic partition lemma with the property:
@@ -386,7 +387,7 @@ theorem Path.exists_partition_in_slsc_neighborhoods (hX : SemilocallySimplyConne
     (by
       intro z hz
       -- For each point z on the path, we get a path-connected SLSC neighborhood
-      exact exists_pathConnected_slsc_neighborhood hX z
+      exact exists_pathConnected_slsc_neighborhood z
     )
   -- Extract U sets from the partition using choice
   choose U hU_open hU_prop hU_contains using h_partition
@@ -1007,12 +1008,12 @@ This shows that the SLSC property gives us not just any open set around p, but s
 an open set where ALL paths are homotopic to p. This is what makes homotopy classes open.
 -/
 theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
-    (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
   -- Step 1: Get partition and SLSC neighborhoods
   obtain ⟨n, part, T_data, hp_in_tube⟩ :=
-    Path.exists_partition_in_slsc_neighborhoods hX p
+    Path.exists_partition_in_slsc_neighborhoods p
   -- Step 2: The tube T is just T_data.toSet part
   refine ⟨T_data.toSet part, ?_, ?_, ?_⟩
   · -- Show T is open
@@ -1040,7 +1041,7 @@ Since every point in H(p) has an open neighborhood contained in H(p), the set H(
 
 This is the main topological consequence of the SLSC property: homotopy classes of paths are
 not just equivalence classes, but also open sets in the path space. -/
-theorem Path.isOpen_setOf_homotopic (hX : SemilocallySimplyConnected X)
+theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] {x y : X} (p : Path x y) :
     IsOpen {p' : Path x y | Path.Homotopic p' p} := by
   -- Strategy: show every point in the homotopy class has an open neighborhood in the class
@@ -1048,7 +1049,7 @@ theorem Path.isOpen_setOf_homotopic (hX : SemilocallySimplyConnected X)
   intro q hq
   -- q is homotopic to p, so get a tubular neighborhood around q
   obtain ⟨T_q, hT_open, hq_in_T, hT_subset⟩ :=
-    exists_open_tubular_neighborhood_in_homotopy_class hX q
+    exists_open_tubular_neighborhood_in_homotopy_class q
   -- T_q is an open neighborhood of q, so we just need to show T_q ⊆ {p' | Homotopic p' p}
   rw [mem_nhds_iff]
   refine ⟨T_q, ?_, hT_open, hq_in_T⟩
@@ -1062,7 +1063,7 @@ In a semilocally simply connected, locally path-connected space, the quotient of
 homotopy has discrete topology.
 -/
 theorem Path.Homotopic.Quotient.discreteTopology
-    (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X] (x y : X) :
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] (x y : X) :
     @DiscreteTopology (Path.Homotopic.Quotient x y)
       (inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))) := by
   letI : Setoid (Path x y) := Path.Homotopic.setoid x y
@@ -1082,7 +1083,7 @@ theorem Path.Homotopic.Quotient.discreteTopology
     -- The preimage of {⟦p⟧} is the homotopy class {p' | Homotopic p' p}, which is open
     change IsOpen ((Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹'
       ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)))
-    convert isOpen_setOf_homotopic hX p
+    convert isOpen_setOf_homotopic p
     ext p'
     simp only [Set.mem_preimage, Set.mem_setOf_eq]
     exact Path.Homotopic.Quotient.eq
