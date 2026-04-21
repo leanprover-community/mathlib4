@@ -541,11 +541,11 @@ noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
 
 @[simp]
 theorem idealOrderIsoENat_symm_apply_coe (n : ℕ) :
-    (idealOrderIsoENat R).symm (.toDual n) = maximalIdeal R ^ n :=
+    (idealOrderIsoENat R).symm n = maximalIdeal R ^ n :=
   rfl
 
 theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ : Irreducible ϖ) :
-    (idealOrderIsoENat R).symm (.toDual n) = Ideal.span {ϖ ^ n} := by
+    (idealOrderIsoENat R).symm n = Ideal.span {ϖ ^ n} := by
   rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
 
 theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
