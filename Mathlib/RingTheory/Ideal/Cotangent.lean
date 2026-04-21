@@ -235,8 +235,6 @@ lemma mapCotangent_comp {C : Type*} [CommRing C] [Algebra R C] {I₁ : Ideal A} 
       (Ideal.mapCotangent I₂ I₃ g h₂).comp (Ideal.mapCotangent I₁ I₂ f h₁) := by
   ext ⟨_, _⟩; rfl
 
-lemma
-
 namespace Cotangent
 
 section Lift
