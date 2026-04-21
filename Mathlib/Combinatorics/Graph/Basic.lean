@@ -422,6 +422,7 @@ theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x 
 
 /-! ### Set of vertices incident to an edge -/
 
+/-- `G.endPoint e` is the set of vertices incident to the edge `e`. -/
 def endPoint (G : Graph α β) (e : β) : Set α := {x | G.Inc e x}
 
 @[simp, grind =]
