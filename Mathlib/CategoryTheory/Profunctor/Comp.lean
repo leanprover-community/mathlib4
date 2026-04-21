@@ -64,7 +64,7 @@ def coend : Type max w u := Quot (coendRel F)
 
 def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F := TypeCat.ofHom fun x ↦ Quot.mk _ ⟨j, x⟩
 
-def coend.condition {j j' : J} (f : j ⟶ j') :
+lemma coend.condition {j j' : J} (f : j ⟶ j') :
     (F.map f.op).app _ ≫ coend.ι F j = (F.obj _).map f ≫ coend.ι F j' := by
   ext
   apply Quot.sound
@@ -307,6 +307,7 @@ variable {C : Type u} [Category.{u} C] {D : Type u} [Category* D]
 open Limits TypeCat
 
 set_option backward.isDefEq.respectTransparency false in
+@[simps! hom_app_app inv_app_app]
 def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ {
       hom := ↾Quot.lift (fun ⟨d, f, x⟩ ↦ (P.map f).app _ x) fun _ _ h ↦ by cases h; simp
@@ -335,6 +336,7 @@ open Limits TypeCat
 variable {C : Type u} [Category* C] {D : Type u} [Category.{u} D]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simps! hom_app_app inv_app_app]
 def rightUnitor (P : Profunctor.{u} C D) : P.comp .id ≅ P :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ {
       hom := ↾Quot.lift (fun ⟨d, x, f⟩ ↦ (P.obj X).map f.op x) fun _ _ h ↦ by cases h; simp
@@ -490,6 +492,7 @@ lemma Relation.eqvGen_eqvGen {α : Type*} (r : α → α → Prop) :
   | trans => exact Relation.EqvGen.trans _ _ _ (by assumption) (by assumption)
 
 set_option backward.isDefEq.respectTransparency false in
+@[simps hom inv]
 def associatorComponents (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y where
   hom := by
@@ -603,6 +606,7 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
     ext ⟨d, p, ⟨e, q, r⟩⟩
     simp [Quot.map]
 
+@[simp]
 lemma associatorComponents_apply (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
     (r : (R.obj e).obj Y) (p : (P.obj X).obj (Opposite.op d)) (q : (Q.obj d).obj (Opposite.op e)) :
     (associatorComponents P Q R X Y).hom (Quot.mk _ ⟨e, Quot.mk _ ⟨d, (p, q)⟩, r⟩) =
@@ -610,23 +614,156 @@ lemma associatorComponents_apply (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+@[simps! hom_app_app inv_app_app]
 def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) := by
   refine NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦
     associatorComponents P Q R X Y) ?_) ?_
   · intro f f' g
     ext ⟨e, ⟨d, p, q⟩, r⟩
-    dsimp
+    dsimp [-associatorComponents_hom]
     erw [associatorComponents_apply, associatorComponents_apply]
     simp
   · intro f f' g
     ext _ ⟨e, ⟨d, p, q⟩, r⟩
-    dsimp
+    dsimp [-associatorComponents_hom]
     erw [associatorComponents_apply, associatorComponents_apply]
     simp
 
 end Associator
 
+section WhiskerLeft
+
+open TypeCat Limits Types Functor MonoidalCategory
+
+variable {C D E : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} E]
+variable (P : Profunctor.{u} C D) {Q R : Profunctor.{u} D E} (f : Q ⟶ R)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps app_app]
+def whiskerLeft' : P.comp Q ⟶ P.comp R where
+  app X := {
+    app Y := chosenCoend.map {
+      app d := {
+        app d' := ↾Prod.map id ((f.app _).app _)
+        naturality := by
+          intro d₁ d₂ g
+          ext
+          dsimp
+          apply Prod.ext
+          · simp
+          · simp [← comp_apply, -types_comp_apply] } }
+    naturality := by
+      intros
+      ext ⟨_, _, _⟩
+      simp [chosenCoend.map_apply, Quot.map] }
+  naturality := by
+    intros
+    ext _ ⟨_, _, _⟩
+    simp [chosenCoend.map_apply, Quot.map]
+
+end WhiskerLeft
+
+section WhiskerRight
+
+open TypeCat Limits Types Functor MonoidalCategory
+
+variable {C D E : Type u} [Category.{u} C] [Category.{u} D] [Category.{u} E]
+variable {P Q : Profunctor.{u} C D} (R : Profunctor.{u} D E) (f : P ⟶ Q)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps app_app]
+def whiskerRight : P.comp R ⟶ Q.comp R where
+  app X := { app Y := chosenCoend.map { app d := { app d' := ↾Prod.map ((f.app _).app _) id } } }
+  naturality := by
+    intros
+    ext _ ⟨_, _, _⟩
+    dsimp [chosenCoend.map_apply, Quot.map]
+    apply Quot.sound
+    rw [coendRel_iff]
+    use 𝟙 _
+    simp [← comp_apply, -types_comp_apply]
+
+end WhiskerRight
+
 end Composition
+
+section Bicategory
+
+@[nolint checkUnivs]
+structure ProfCat where
+  of ::
+  obj : Type u
+  [str : Category.{v} obj]
+
+instance : CoeSort ProfCat (Type u) :=
+  ⟨ProfCat.obj⟩
+
+attribute [instance] ProfCat.str
+
+open Limits Types
+
+set_option backward.isDefEq.respectTransparency false in
+instance : Bicategory ProfCat.{u, u} where
+  Hom X Y := Profunctor.{u} X Y
+  id X := .id
+  comp P Q := P.comp Q
+  whiskerLeft P _ _ f := P.whiskerLeft' f
+  whiskerRight f R := whiskerRight R f
+  associator P Q R := P.associator Q R
+  leftUnitor P := P.leftUnitor
+  rightUnitor P := P.rightUnitor
+  whiskerLeft_id _ _ := by
+    ext _ _ ⟨_, _, _⟩
+    rfl
+  whiskerLeft_comp _ _ _ _ _ _ := by
+    ext _ _ ⟨_, _, _⟩
+    rfl
+  id_whiskerLeft _ := by
+    ext _ _ ⟨_, f, _⟩
+    dsimp [chosenCoend.map_apply, Quot.map]
+    apply Quot.sound
+    rw [coendRel_iff]
+    use f
+    simp [← comp_apply, -types_comp_apply]
+  comp_whiskerLeft _ _ _ _ _ := by
+    ext _ _ ⟨_, ⟨_, _, _⟩, _⟩
+    rfl
+  id_whiskerRight _ _ := by
+    ext _ _ ⟨_, _, _⟩
+    rfl
+  comp_whiskerRight _ _ _ := by
+    ext _ _ ⟨_, _, _⟩
+    rfl
+  whiskerRight_id _ := by
+    ext _ _ ⟨_, _, f⟩
+    dsimp [chosenCoend.map_apply, Quot.map]
+    symm
+    apply Quot.sound
+    rw [coendRel_iff]
+    use f
+    simp [← comp_apply, -types_comp_apply]
+  whiskerRight_comp _ _ _ := by
+    ext _ _ ⟨_, _, _, _, _⟩
+    rfl
+  whisker_assoc _ _ _ _ _ := by
+    ext _ _ ⟨_, ⟨_, _, _⟩, _⟩
+    rfl
+  whisker_exchange _ _ := by
+    ext _ _ ⟨_, _, _⟩
+    rfl
+  pentagon _ _ _ _ := by
+    ext _ _ ⟨_, ⟨_, ⟨_, _, _⟩, _⟩, _⟩
+    rfl
+  triangle _ _ := by
+    ext _ _ ⟨_, ⟨_, _, f⟩, _⟩
+    dsimp [chosenCoend.map_apply, Quot.map]
+    symm
+    apply Quot.sound
+    rw [coendRel_iff]
+    use f
+    simp
+
+end Bicategory
 
 end Profunctor
 
