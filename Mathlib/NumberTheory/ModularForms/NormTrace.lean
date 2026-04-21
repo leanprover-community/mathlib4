@@ -149,7 +149,7 @@ lemma ModularForm.isZero_of_neg_weight [𝒢.IsArithmetic]
 private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.HasDetOne]
     (f : ModularForm 𝒢 0) : ∃ c, (f : ℍ → ℂ) = Function.const ℍ c := by
   -- Consider the norm of `f - (f I)`. This must be a constant, since it's a weight 0 level 1 form.
-  letI : ModularFormClass (ModularForm 𝒮ℒ (0 * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ))) 𝒮ℒ 0 := by
+  let : ModularFormClass (ModularForm 𝒮ℒ (0 * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ))) 𝒮ℒ 0 := by
     rw [zero_mul]; infer_instance
   obtain ⟨c, hc⟩ := ModularFormClass.levelOne_weight_zero_const
     (ModularForm.norm 𝒮ℒ (f - .const (f I)))
