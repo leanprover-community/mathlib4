@@ -140,7 +140,7 @@ theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) 
   intro n hn
   rw [binomialFamily_apply, add_sub_cancel_left, coeff_smul, single_pow, coeff_single_of_ne,
     smul_zero]
-  · contrapose! hn
+  · contrapose hn
     apply (StrictMono.injective (nsmul_left_strictMono hg)) hn.symm
   · by_cases hr : r = 0 <;> simp [hr, hg]
 
