@@ -419,10 +419,9 @@ theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : Set X} 
         simp [ofPath] }
   refine ⟨γ, ?_⟩
   intro t
+  -- Unfold `γ t = ofPath (H.eval t)` and apply `endpoint_ofPath`.
   change endpoint (ofPath (H.eval t)) ∈ U
-  have hty : endpoint (ofPath (H.eval t)) = y := by
-    simp [BasedPath.endpoint, ofPath]
-  rw [hty]
+  rw [endpoint_ofPath]
   exact hy
 
 /-- Appending a path that stays inside `U` moves a based path within the same path component of
@@ -456,6 +455,7 @@ theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x₀)
           congrArg (append γ) (Path.initialSegmentFamily_one δ) }
     refine ⟨η, ?_⟩
     intro t
+    -- Unfold `η t = append γ (Path.initialSegmentFamily δ t)` and apply `endpoint_append`.
     change endpoint (append γ (Path.initialSegmentFamily δ t)) ∈ U
     rw [BasedPath.endpoint_append]
     exact hδU ⟨t, rfl⟩

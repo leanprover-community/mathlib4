@@ -95,6 +95,10 @@ def proj : UniversalCover x₀ → X :=
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
   rfl
 
+theorem ofBasedPath_eq (α : BasedPath x₀) :
+    ofBasedPath x₀ α = ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩ := by
+  cases α; rfl
+
 @[simp] theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
     ofBasedPath x₀ (BasedPath.ofPath p) = ⟨y, Path.Homotopic.Quotient.mk p⟩ := by
   refine Sigma.ext p.target ?_
@@ -112,27 +116,12 @@ theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
           simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) h
         exact heq.symm))
       β.toPath := by
-  cases α with
-  | mk αf hα0 =>
-    cases β with
-    | mk βf hβ0 =>
-      simp only [ofBasedPath, Sigma.mk.injEq] at h
-      obtain ⟨hend, hq⟩ := h
-      let p : Path x₀ (βf 1) :=
-        ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)).cast
-          rfl hend.symm
-      have hp_heq : HEq
-          (Path.Homotopic.Quotient.mk
-            ({ toContinuousMap := αf, source' := hα0, target' := rfl } : Path x₀ (αf 1)))
-          (Path.Homotopic.Quotient.mk p) := by
-        apply Path.Homotopic.hpath_hext
-        intro t
-        rfl
-      have hq' : Path.Homotopic.Quotient.mk p =
-          Path.Homotopic.Quotient.mk
-            ({ toContinuousMap := βf, source' := hβ0, target' := rfl } : Path x₀ (βf 1)) := by
-        exact eq_of_heq (HEq.trans hp_heq.symm hq)
-      exact Path.Homotopic.Quotient.exact hq'
+  rw [ofBasedPath_eq α, ofBasedPath_eq β, Sigma.mk.injEq] at h
+  obtain ⟨hend, hq⟩ := h
+  have hcast : HEq (Path.Homotopic.Quotient.mk α.toPath)
+      (Path.Homotopic.Quotient.mk (α.toPath.cast rfl hend.symm)) :=
+    Path.Homotopic.hpath_hext (fun _ => rfl)
+  exact Path.Homotopic.Quotient.exact (eq_of_heq (hcast.symm.trans hq))
 
 /-- If two based paths have the same endpoint and homotopic `toPath`s (after casting to a
 common target), then they represent the same element of the `UniversalCover`. -/
@@ -140,23 +129,12 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
     (heq : BasedPath.endpoint α = BasedPath.endpoint β)
     (h : Path.Homotopic (α.toPath.cast rfl heq.symm) β.toPath) :
     ofBasedPath x₀ α = ofBasedPath x₀ β := by
-  obtain ⟨αf, hα0⟩ := α
-  obtain ⟨βf, hβ0⟩ := β
-  change αf 1 = βf 1 at heq
-  change (⟨αf 1, Path.Homotopic.Quotient.mk
-      (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1))⟩ : Σ _ : X, _) =
-    ⟨βf 1, Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1))⟩
+  rw [ofBasedPath_eq α, ofBasedPath_eq β]
   refine Sigma.ext heq ?_
-  have h1 :
-      HEq (Path.Homotopic.Quotient.mk (⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)))
-        (Path.Homotopic.Quotient.mk
-          ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm)) :=
+  have h1 : HEq (Path.Homotopic.Quotient.mk α.toPath)
+      (Path.Homotopic.Quotient.mk (α.toPath.cast rfl heq.symm)) :=
     Path.Homotopic.hpath_hext (fun _ => rfl)
-  have h2 :
-      Path.Homotopic.Quotient.mk ((⟨αf, hα0, rfl⟩ : Path x₀ (αf 1)).cast rfl heq.symm) =
-        Path.Homotopic.Quotient.mk (⟨βf, hβ0, rfl⟩ : Path x₀ (βf 1)) :=
-    Quotient.sound h
-  exact h1.trans (heq_of_eq h2)
+  exact h1.trans (heq_of_eq (Quotient.sound h))
 
 @[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
@@ -196,9 +174,7 @@ noncomputable def fiberEquiv (x₀ x : X) :
     dsimp [proj] at hp ⊢
     subst hp
     simp
-  right_inv q := by
-    change q.cast rfl rfl = q
-    simp
+  right_inv q := by simp
 
 /-! ### Sheet construction over a good neighborhood
 
@@ -236,7 +212,7 @@ theorem sheet_subset_proj_preimage (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     sheet U hxU q ⊆ proj (x₀ := x₀) ⁻¹' U := by
   rintro _ ⟨α, hα, rfl⟩
-  change BasedPath.endpoint α ∈ U
+  rw [Set.mem_preimage, proj_ofBasedPath]
   exact basedPathSheet_subset_endpoint_preimage U hxU q hα
 
 /-- Two based paths with equal `ofBasedPath` images lie in the same path component of any
@@ -265,7 +241,7 @@ theorem mem_basedPathComponent_of_ofBasedPath_eq {U : Set X} {y : X} {p : Path x
     have heq : BasedPath.endpoint α = BasedPath.endpoint β := by
       simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) hαβ
     exact heq ▸ hβ.target_mem
-  change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
+  unfold basedPathComponent
   have hself : α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α :=
     mem_pathComponentIn_self hα_end
   rw [pathComponent_preimage_eq_of_ofBasedPath_eq hα_end hαβ,
@@ -282,6 +258,7 @@ theorem ofBasedPath_preimage_sheet (U : Set X) (hxU : x ∈ U)
     obtain ⟨β, hβ, hαβ⟩ := hα
     induction q using Quotient.inductionOn with
     | h p =>
+      -- `basedPathSheet U hxU ⟦p⟧` reduces to `basedPathComponent U p` by `basedPathSheet_mk`.
       change β ∈ basedPathComponent U p at hβ
       change α ∈ basedPathComponent U p
       exact mem_basedPathComponent_of_ofBasedPath_eq hβ hαβ.symm
@@ -324,7 +301,7 @@ theorem sheet_surjOn [LocPathConnectedSpace X]
       BasedPath.joinedIn_preimage_of_append (BasedPath.ofPath p) hp_end δ' hδ'_range
     have hγ_in : γ ∈ basedPathComponent U p := h_joined
     refine ⟨ofBasedPath x₀ γ, ⟨γ, hγ_in, rfl⟩, ?_⟩
-    change BasedPath.endpoint γ = v
+    rw [proj_ofBasedPath]
     exact BasedPath.endpoint_append _ _
 
 /-- Sheets over the same good neighborhood, indexed by `Path.Homotopic.Quotient`, are pairwise
@@ -346,6 +323,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
     | h p₂ =>
       obtain ⟨α₁, hα₁, rfl⟩ := he₁
       obtain ⟨α₂, hα₂, hαeq⟩ := he₂
+      -- `basedPathSheet U hxU ⟦pᵢ⟧` reduces to `basedPathComponent U pᵢ` by `basedPathSheet_mk`.
       change α₁ ∈ basedPathComponent U p₁ at hα₁
       change α₂ ∈ basedPathComponent U p₂ at hα₂
       have hα₁_end : BasedPath.endpoint α₁ ∈ U := hα₁.target_mem
@@ -377,8 +355,6 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
           ofBasedPath x₀ (BasedPath.ofPath p₂) :=
         ofBasedPath_eq_of_homotopic_toPath h_end_eq h_hom
       -- Extract `⟦p₁⟧ = ⟦p₂⟧` from the `ofBasedPath` equality.
-      change (Path.Homotopic.Quotient.mk p₁ : Path.Homotopic.Quotient x₀ x) =
-        Path.Homotopic.Quotient.mk p₂
       rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_uc_eq
       exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_uc_eq).2
 
@@ -389,20 +365,18 @@ theorem sheet_exhaustive [LocPathConnectedSpace X]
     (proj (x₀ := x₀) ⁻¹' U) ⊆ ⋃ q : Path.Homotopic.Quotient x₀ x, sheet U hxU q := by
   intro e he
   obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ e
-  change BasedPath.endpoint α ∈ U at he
+  rw [Set.mem_preimage, proj_ofBasedPath] at he
   -- Get a path from `endpoint α` to `x` inside `U`.
   obtain ⟨η, hη_range⟩ := hU_pathConn.exists_path he hxU
   -- Use `p := α.toPath.trans η : Path x₀ x` as the sheet index.
   let p : Path x₀ x := α.toPath.trans η
   refine Set.mem_iUnion.mpr ⟨Path.Homotopic.Quotient.mk p, α, ?_, rfl⟩
-  -- Show α ∈ basedPathComponent U p.
+  -- `basedPathSheet U hxU ⟦p⟧ = basedPathComponent U p = pathComponentIn _ (ofPath p)`.
   change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
-  -- `BasedPath.ofPath p = append α η`, so α is joined to it by `joinedIn_preimage_of_append`.
+  -- α is joined to `ofPath p = append α η` inside `endpoint ⁻¹' U`.
   have h_join : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α
       (BasedPath.append α η) :=
     BasedPath.joinedIn_preimage_of_append α he η hη_range
-  -- `BasedPath.append α η = BasedPath.ofPath p` by definition.
-  change JoinedIn _ α (BasedPath.ofPath (α.toPath.trans η)) at h_join
   exact h_join.symm
 
 /-- In a good neighborhood `U`, the projection `proj` is injective on each sheet. -/
@@ -418,6 +392,7 @@ theorem sheet_proj_injOn [LocPathConnectedSpace X]
     basedPathSheet_subset_endpoint_preimage U hxU q hα₁
   induction q using Quotient.inductionOn with
   | h p =>
+    -- `basedPathSheet U hxU ⟦p⟧` reduces to `basedPathComponent U p` by `basedPathSheet_mk`.
     change α₁ ∈ basedPathComponent U p at hα₁
     change α₂ ∈ basedPathComponent U p at hα₂
     have h_joined : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ α₂ :=

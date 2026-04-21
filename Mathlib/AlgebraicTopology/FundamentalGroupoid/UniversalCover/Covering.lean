@@ -70,9 +70,7 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
         · intro hvW
           have hvU : v ∈ U := hWU hvW
           obtain ⟨e, he_sheet, he_proj⟩ := sheet_surjOn hU_pathConn hxU q hvU
-          refine ⟨e, ⟨?_, he_sheet⟩, he_proj⟩
-          change proj (x₀ := x₀) e ∈ W
-          rw [he_proj]; exact hvW
+          exact ⟨e, ⟨by rw [Set.mem_preimage, he_proj]; exact hvW, he_sheet⟩, he_proj⟩
       rw [← h_image_eq]
       exact isOpenMap_proj x₀ _ h_open_inter
   have h_inj : ∀ q, (S q).InjOn (proj (x₀ := x₀)) :=
@@ -224,9 +222,10 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
   obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ z
   let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) := p.map (continuous_proj x₀)
   have hγ0 : γ 0 = BasedPath.endpoint α := by
+    -- `γ 0` unfolds to `proj (p 0)`; then `p.source` gives `p 0 = ofBasedPath x₀ α`,
+    -- and `proj (ofBasedPath x₀ α) = endpoint α` by `proj_ofBasedPath`.
     change proj (p 0) = BasedPath.endpoint α
-    rw [p.source]
-    rfl
+    rw [p.source, proj_ofBasedPath]
   have hp_eq_lift :
       (p : C(I, UniversalCover x₀)) =
         (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
