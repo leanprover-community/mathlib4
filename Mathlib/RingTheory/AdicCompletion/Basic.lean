@@ -606,7 +606,7 @@ lemma lift_add (f g : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodul
 theorem lift_smul (c : R) (f : ∀ n, M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (hf : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
     lift I (c • f) (fun h ↦ by simp [LinearMap.comp_smul, hf h]) =
-    c • (lift I f hf) := by
+      c • (lift I f hf) := by
   ext; simp [val_smul]
 
 section Bijective
