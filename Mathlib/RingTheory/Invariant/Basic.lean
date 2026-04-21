@@ -529,3 +529,34 @@ lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
   exact IsGalois.finiteDimensional_of_finite _ _
 
 end normal
+
+namespace IsFractionRing
+
+/-- If `G` acts on `B/A` with `A` as the fixed subring, then `G` also acts on `L/K` with `K` as
+the fixed subfield, where `K` and `L` are the fraction fields of `A` and `B` respectively. -/
+theorem isInvariant (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+    [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
+    [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
+    [MulSemiringAction G L] [SMulDistribClass G B L] [Finite G] [hAB : Algebra.IsInvariant A B G]
+    [SMulCommClass G A B] :
+    Algebra.IsInvariant K L G := by
+  refine ⟨fun x h ↦ ?_⟩
+  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
+    simp_rw [← IsScalarTower.algebraMap_apply]
+  have := hAB.isIntegral A B G
+  have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
+  have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
+  have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
+  obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
+  rw [mul_comm, Algebra.smul_def, mul_comm] at hb
+  replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by simpa [← hc]
+  have hxy : algebraMap B L x / algebraMap B L y =
+    algebraMap B L b / algebraMap B L (algebraMap A B a) := by
+    rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
+  obtain ⟨b, rfl⟩ := hAB.isInvariant b
+    (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
+  use algebraMap A K b / algebraMap A K a
+  simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+
+end IsFractionRing

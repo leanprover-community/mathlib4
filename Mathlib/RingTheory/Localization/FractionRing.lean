@@ -561,6 +561,46 @@ theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
   h.nontrivial_iff_nontrivial.mp hR
 
+section MulAction
+
+variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+  [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
+  [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
+
+/-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
+on the fraction field `L` of `B`. -/
+@[implicit_reducible]
+noncomputable def mulSemiringAction [SMulCommClass G A B] :
+    MulSemiringAction G L :=
+  MulSemiringAction.compHom L
+    ((fieldEquivOfAlgEquivHom K L).comp (MulSemiringAction.toAlgAut G A B))
+
+/-- The action of `G` on the fraction field `L` of `B` given by `IsFractionRing.mulSemiringAction`
+is compatible with the embedding `B ⊆ L`. -/
+instance smulDistribClass [SMulCommClass G A B] :
+    letI := mulSemiringAction G A B K L
+    SMulDistribClass G B L :=
+  let := mulSemiringAction G A B K L
+  ⟨fun g b x ↦ by
+    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+    congr
+    exact fieldEquivOfAlgEquiv_algebraMap K _ _ _ b⟩
+
+variable [MulSemiringAction G L] [SMulDistribClass G B L]
+
+theorem faithfulSMul [FaithfulSMul G B] : FaithfulSMul G L :=
+  ⟨fun h ↦ eq_of_smul_eq_smul fun x ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L x)⟩
+
+theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
+  ⟨fun g x y ↦ by
+    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
+    simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
+      IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
+      ← algebraMap.coe_smul', smul_algebraMap]⟩
+
+end MulAction
+
 end IsFractionRing
 
 section algebraMap_injective

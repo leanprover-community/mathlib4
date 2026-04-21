@@ -353,6 +353,32 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
 
 end FaithfulSMul
 
+/-- If `R` embeds faithfully into `A` and `G` satisfies `SMulDistribClass G R A`, then
+the `SMul` of `G` on `R` extends to a `MulSemiringAction`. -/
+@[implicit_reducible]
+noncomputable def mulSemiringAction_of_smulDistribClass (G : Type*) [Group G]
+    [MulSemiringAction G A] [SMul G R] [SMulDistribClass G R A] :
+    MulSemiringAction G R where
+  one_smul _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', one_smul]
+  smul_zero _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_zero, smul_zero]
+  mul_smul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', algebraMap.smul', algebraMap.smul', mul_smul]
+  smul_add _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_add, smul_add, ← algebraMap.smul', ← algebraMap.smul', ← map_add]
+  smul_one _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_one, smul_one]
+  smul_mul _ _ _ := by
+    apply FaithfulSMul.algebraMap_injective R A
+    rw [algebraMap.smul', map_mul, map_mul, algebraMap.smul', algebraMap.smul',
+      MulSemiringAction.smul_mul]
+
 namespace algebraMap
 
 @[norm_cast, simp]

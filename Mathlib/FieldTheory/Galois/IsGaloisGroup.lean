@@ -135,30 +135,12 @@ variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAct
 
 /-- `IsGaloisGroup` for rings implies `IsGaloisGroup` for their fraction fields. -/
 theorem IsGaloisGroup.to_isFractionRing [Finite G] [hGAB : IsGaloisGroup G A B] :
-    IsGaloisGroup G K L := by
-  have hc (a : A) : (algebraMap K L) (algebraMap A K a) = (algebraMap B L) (algebraMap A B a) := by
-    simp_rw [← IsScalarTower.algebraMap_apply]
-  refine ⟨⟨fun h ↦ ?_⟩, ⟨fun g x y ↦ ?_⟩, ⟨fun x h ↦ ?_⟩⟩
-  · have := hGAB.faithful
-    exact eq_of_smul_eq_smul fun y ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L y)
-  · obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
-    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
-    simp [Algebra.smul_def, smul_mul', smul_div₀', hc, ← algebraMap.coe_smul']
-  · have := hGAB.isInvariant.isIntegral
-    have : Nontrivial A := (IsFractionRing.nontrivial_iff_nontrivial A K).mpr inferInstance
-    have : Nontrivial B := (IsFractionRing.nontrivial_iff_nontrivial B L).mpr inferInstance
-    obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective B x
-    have hy' : algebraMap B L y ≠ 0 := by simpa using nonZeroDivisors.ne_zero hy
-    obtain ⟨b, a, ha, hb⟩ := (Algebra.IsAlgebraic.isAlgebraic (R := A) y).exists_smul_eq_mul x hy
-    rw [mul_comm, Algebra.smul_def, mul_comm] at hb
-    replace ha : (algebraMap B L) (algebraMap A B a) ≠ 0 := by simpa [← hc]
-    have hxy : algebraMap B L x / algebraMap B L y =
-      algebraMap B L b / algebraMap B L (algebraMap A B a) := by
-      rw [div_eq_div_iff hy' ha, ← map_mul, hb, map_mul]
-    obtain ⟨b, rfl⟩ := hGAB.isInvariant.isInvariant b
-      (by simpa [ha, hxy, smul_div₀', ← algebraMap.coe_smul'] using h)
-    use algebraMap A K b / algebraMap A K a
-    simp [hc, div_eq_div_iff ha hy', ← map_mul, ← map_mul, hb]
+    IsGaloisGroup G K L where
+  faithful :=
+    have := hGAB.faithful
+    IsFractionRing.faithfulSMul G B L
+  commutes := IsFractionRing.smulCommClass G A B K L
+  isInvariant := IsFractionRing.isInvariant G A B K L
 
 /-- If `B` is an integral extension of an integrally closed domain `A`, then `IsGaloisGroup` for
 their fraction fields implies `IsGaloisGroup` for these rings. -/
@@ -187,17 +169,8 @@ theorem IsGaloisGroup.iff_isFractionRing [Finite G] [IsIntegrallyClosed A] :
   ⟨fun h ↦ ⟨h.isInvariant.isIntegral, h.to_isFractionRing G A B K L⟩,
     fun ⟨_, h⟩ ↦ h.of_isFractionRing G A B K L⟩
 
-attribute [local instance] FractionRing.liftAlgebra in
-/--
-Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulSemiringAction`
-on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
--/
-@[implicit_reducible]
-noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
-    [IsTorsionFree A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
-  MulSemiringAction.compHom (FractionRing B)
-    ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
-      (MulSemiringAction.toAlgAut G A B))
+@[deprecated (since := "2026-04-20")] alias FractionRing.mulSemiringAction_of_isGaloisGroup :=
+  IsFractionRing.mulSemiringAction
 
 attribute [local instance] FractionRing.liftAlgebra in
 /--
@@ -207,9 +180,9 @@ a Galois group for `FractionRing B / FractionRing A` for the action defined by
 -/
 theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
     [IsGaloisGroup G A B] :
-    letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+    letI := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
     IsGaloisGroup G (FractionRing A) (FractionRing B) := by
-  letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
   have : SMulDistribClass G B (FractionRing B) := ⟨fun g b x ↦ by
     rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
     congr
@@ -447,122 +420,166 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
   rw [← ofDual_intermediateFieldEquivSubgroup_apply, ← intermediateFieldEquivSubgroup_symm_apply,
     OrderIso.symm_apply_apply]
 
+include K in
+theorem fixingSubgroup_range_algebraMap [Finite G] (R : Type*) [CommSemiring R] [Algebra R L]
+    [IsGaloisGroup H R L] :
+    fixingSubgroup G (Set.range (algebraMap R L)) = H := by
+  suffices Set.range (algebraMap R L) =
+      ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) by
+    rw [this, fixingSubgroup_fixedPoints]
+  ext
+  rw [SetLike.mem_coe, FixedPoints.mem_intermediateField_iff, Set.mem_range]
+  refine ⟨?_, IsGaloisGroup.isInvariant.isInvariant _⟩
+  rintro ⟨x, rfl⟩ h
+  exact smul_algebraMap h x
+
+attribute [local instance] FractionRing.liftAlgebra in
+/-- The ring analogue of `fixingSubgroup_range_algebraMap`: if `G` acts on an integral domain `B`
+with `IsGaloisGroup G A B`, and a subgroup `H` acts on `B` with `IsGaloisGroup H R B`,
+then the fixing subgroup of `algebraMap R B` equals `H`. -/
+theorem fixingSubgroup_range_algebraMap_of_isDomain [Finite G] (A B : Type*) [CommRing A]
+    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
+    (H : Subgroup G) [hGAB : IsGaloisGroup G A B] (R : Type*) [CommRing R] [Algebra R B]
+    [FaithfulSMul R B] [hH : IsGaloisGroup H R B] :
+    fixingSubgroup G (Set.range (algebraMap R B)) = H := by
+  have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
+  have : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
+  let K := FractionRing A
+  let L := FractionRing B
+  let : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A B K L
+  have : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A B
+  have : IsGaloisGroup H (FractionRing R) L := IsGaloisGroup.toFractionRing H R B
+  suffices h : fixingSubgroup G (Set.range (algebraMap R B)) =
+               fixingSubgroup G (Set.range (algebraMap (FractionRing R) L)) by
+    rw [h]
+    exact fixingSubgroup_range_algebraMap G K L H (FractionRing R)
+  ext g
+  simp only [mem_fixingSubgroup_iff, Set.mem_range]
+  refine ⟨?_, ?_⟩
+  · rintro h _ ⟨x, rfl⟩
+    have {x} : g • (algebraMap R L) x = (algebraMap R L) x := by
+      rw [IsScalarTower.algebraMap_apply R B L, ← algebraMap.smul', h _ ⟨x, rfl⟩]
+    obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective R x
+    simp only [map_div₀, ← IsScalarTower.algebraMap_apply, smul_div₀', this]
+  · rintro h _ ⟨x, rfl⟩
+    apply FaithfulSMul.algebraMap_injective B L
+    rw [algebraMap.smul']
+    apply h
+    use algebraMap R (FractionRing R) x
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+
 end IsGaloisGroup
 
 end GaloisCorrespondence
 
-section Quotient'
+section Quotient
 
-variable (A C : Type*) [CommSemiring A] [Semiring C] [Algebra A C] [MulSemiringAction G C]
-variable (N : Subgroup G) [N.Normal] (B : Type*) [CommSemiring B] [Algebra B C]
-  [hB : IsGaloisGroup N B C]
+variable (A B C : Type*) [CommSemiring A] [Semiring C] [Algebra A C] [MulSemiringAction G C]
+variable (N : Subgroup G) [CommSemiring B] [Algebra B C]
 
-/-- Docstring -/
-@[reducible]
-noncomputable def SMulOfNormal : SMul G B where
+/-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then `G` acts on `B`.
+For `g : G` and `x : B`, `g • x` is the unique element of `B` whose image in `C` is
+`g • algebraMap B C x`, see `algebraMap_smulOfNormal`. -/
+@[implicit_reducible]
+noncomputable def sMulOfNormal [N.Normal] [IsGaloisGroup N B C] : SMul G B where
   smul g x := (smul_mem_of_normal' G C B N g x).choose
 
-lemma algebraMap_smul_of_normal (g : G) (x : B) :
-    haveI := SMulOfNormal G C N B
+@[simp]
+theorem algebraMap_smulOfNormal [N.Normal] [IsGaloisGroup N B C] (g : G) (x : B) :
+    letI := sMulOfNormal G B C
     algebraMap B C (g • x) = g • algebraMap B C x :=
   (smul_mem_of_normal' G C B N g x).choose_spec
 
+/-- If `N` is normal and `IsGaloisGroup N B C`, the action `sMulOfNormal G B C` satisfies
+`SMulDistribClass G B C`. -/
+theorem smulDistribClass_smulOfNormal [N.Normal] [IsGaloisGroup N B C] :
+    letI := sMulOfNormal G B C
+    SMulDistribClass G B C :=
+  let := sMulOfNormal G B C
+  ⟨fun g b c ↦ by simp [Algebra.smul_def]⟩
+
 variable [FaithfulSMul B C]
 
-/-- Docstring -/
-@[reducible]
-noncomputable def mulSemiringActionOfNormal : MulSemiringAction G B where
-  smul := (SMulOfNormal G C N B).smul
-  one_smul _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, one_smul]
-  smul_zero _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, map_zero, smul_zero]
-  mul_smul _ _ _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, algebraMap_smul_of_normal, algebraMap_smul_of_normal, mul_smul]
-  smul_add _ _ _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, map_add, smul_add, ← algebraMap_smul_of_normal G C N,
-      ← algebraMap_smul_of_normal G C N, ← map_add]
-  smul_one _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, map_one, smul_one]
-  smul_mul _ _ _ := by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap_smul_of_normal, map_mul, map_mul, algebraMap_smul_of_normal,
-      algebraMap_smul_of_normal, MulSemiringAction.smul_mul]
-
-/-- Docstring -/
-@[reducible]
-noncomputable def SMulQuotOfNormal : SMul (G ⧸ N) B :=
-  let := SMulOfNormal G C N B
+/-- The `SMul (G ⧸ N) B` structure induced by the action of `G` on `B`. This is well-defined
+since elements of `N` act trivially on `B`, as guaranteed by `IsGaloisGroup N B C`. -/
+@[implicit_reducible]
+noncomputable def sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
+    SMul (G ⧸ N) B :=
   ⟨fun g x ↦ Quotient.liftOn' g (· • x) fun g g' h ↦
     FaithfulSMul.algebraMap_injective B C (by
-      rw [algebraMap_smul_of_normal, algebraMap_smul_of_normal, smul_eq_iff_eq_inv_smul,
+      rw [algebraMap.smul', algebraMap.smul', smul_eq_iff_eq_inv_smul,
         ← smul_assoc, smul_eq_mul, smul_eq_self' G C N]
       rwa [← QuotientGroup.leftRel_apply])⟩
 
 @[simp]
-lemma coe_quotient_smul' (g : G) (x : B) :
-    letI := SMulOfNormal G C N B
-    letI := SMulQuotOfNormal G C N B
+theorem coe_smul_sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] (g : G)
+    (x : B) :
+    letI := sMulQuotient G B C
     (g : G ⧸ N) • x = g • x := rfl
 
-/-- Docstring -/
-@[reducible]
-noncomputable def mulSemiringActionQuotOfNormal : MulSemiringAction (G ⧸ N) B where
-  smul := (SMulQuotOfNormal G C N B).smul
-  one_smul _ := by
-    let := mulSemiringActionOfNormal G C N B
-    rw [← QuotientGroup.mk_one, coe_quotient_smul', one_smul]
-  smul_zero g :=
-    let := mulSemiringActionOfNormal G C N B
-    Quotient.inductionOn' g fun g ↦ by simp
-  mul_smul g g' x :=
-    let := mulSemiringActionOfNormal G C N B
-    Quotient.inductionOn₂' g g' fun g g' ↦ by simp [← QuotientGroup.mk_mul, mul_smul]
-  smul_add g x y :=
-    let := mulSemiringActionOfNormal G C N B
-    Quotient.inductionOn' g fun g ↦ by simp [smul_add]
-  smul_one g :=
-    let := mulSemiringActionOfNormal G C N B
-    Quotient.inductionOn' g fun g ↦ by simp
-  smul_mul g x y :=
-    let := mulSemiringActionOfNormal G C N B
-    Quotient.inductionOn' g fun g ↦ by simp
+/-- The action `sMulQuotient G B C` is compatible with the coercion `G → G ⧸ N`. -/
+theorem isScalarTower_sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
+    letI := sMulQuotient G B C
+    IsScalarTower G (G ⧸ N) B := by
+  let := sMulQuotient G B C
+  refine ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ ?_⟩
+  apply FaithfulSMul.algebraMap_injective B C
+  simp only [coe_smul_sMulQuotient, MulAction.Quotient.smul_coe, algebraMap.smul', smul_assoc]
+
+/-- The `sMulQuotient G B C` action promotes to a `MulAction (G ⧸ N) B`. -/
+@[implicit_reducible]
+noncomputable def mulActionQuotient [N.Normal] [SMul G B] [SMulDistribClass G B C]
+    [IsGaloisGroup N B C] :
+    letI := sMulQuotient G B C
+    MulAction (G ⧸ N) B :=
+  let _ := sMulQuotient G B C
+  { one_smul x := by
+      apply FaithfulSMul.algebraMap_injective B C
+      rw [← QuotientGroup.mk_one, coe_smul_sMulQuotient, algebraMap.smul', one_smul]
+    mul_smul g h x := Quotient.inductionOn₂' g h fun g h ↦ by
+      apply FaithfulSMul.algebraMap_injective B C
+      simp [← QuotientGroup.mk_mul, coe_smul_sMulQuotient, algebraMap.smul', mul_smul] }
+
+@[simp]
+theorem coe_quotient_smul [N.Normal] [MulSemiringAction G B] [MulAction (G ⧸ N) B]
+    [IsScalarTower G (G ⧸ N) B] (g : G) (x : B) :
+    (g : G ⧸ N) • x = g • x := by
+  rw [← smul_one_smul (G ⧸ N) g x, ← QuotientGroup.mk_one, MulAction.Quotient.smul_coe, smul_eq_mul,
+    mul_one]
+
+/-- Given `MulSemiringAction G B`, a compatible `MulAction (G ⧸ N) B`, and
+`IsScalarTower G (G ⧸ N) B`, the quotient group `G ⧸ N` inherits a `MulSemiringAction` on `B`. -/
+@[implicit_reducible]
+noncomputable instance instMulSemiringActionQuotient [N.Normal] [MulSemiringAction G B]
+    [MulAction (G ⧸ N) B] [IsScalarTower G (G ⧸ N) B] :
+    MulSemiringAction (G ⧸ N) B where
+  one_smul _ := by rw [← QuotientGroup.mk_one, coe_quotient_smul , one_smul]
+  smul_zero g := Quotient.inductionOn' g fun g ↦ by simp
+  mul_smul g g' x := Quotient.inductionOn₂' g g' fun g g' ↦ by
+      rw [← QuotientGroup.mk_mul, coe_quotient_smul, mul_smul, coe_quotient_smul, coe_quotient_smul]
+  smul_add g x y := Quotient.inductionOn' g fun g ↦ by simp [smul_add]
+  smul_one g := Quotient.inductionOn' g fun g ↦ by simp
+  smul_mul g x y := Quotient.inductionOn' g fun g ↦ by simp
 
 variable [Algebra A B] [IsScalarTower A B C]
 
-theorem sMulCommClassOfNormal [SMulCommClass G A C] :
-    letI := SMulOfNormal G C N B
-    SMulCommClass G A B := by
-  let := SMulOfNormal G C N B
-  refine ⟨fun g k x ↦ ?_⟩
-  apply FaithfulSMul.algebraMap_injective B C
-  simp [algebraMap.smul, algebraMap_smul_of_normal, smul_comm]
-
-theorem sMulCommClassQuotOfNormal [SMulCommClass G A C] :
-    letI := SMulQuotOfNormal G C N B
-    SMulCommClass (G ⧸ N) A B := by
-  let := SMulQuotOfNormal G C N B
-  let := SMulOfNormal G C N B
-  refine ⟨fun g k x ↦  Quotient.inductionOn' g fun g ↦ ?_⟩
-  apply FaithfulSMul.algebraMap_injective B C
-  simp [algebraMap.smul, algebraMap_smul_of_normal, smul_comm]
-
-omit hB in
-theorem quotient' [hG : IsGaloisGroup G A C] [MulSemiringAction G B] [MulSemiringAction (G ⧸ N) B]
-    [SMulCommClass (G ⧸ N) A B] [SMulDistribClass G B C]
-    (h₁ : ∀ (g : G) (x : B), (g : G ⧸ N) • x = g • x)
-    (h₂ : ∀ (g : G), (∀ x : B, g • x = x) → g ∈ N) :
+/-- If `G` is a Galois group for `C/A`, and the normal subgroup `N ≤ G` is a Galois group for
+`C/B`, then the quotient `G ⧸ N` is a Galois group for `B/A`. -/
+theorem quotient (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
+    [Finite G] [N.Normal] [MulSemiringAction G C] [hG : IsGaloisGroup G A C]
+    [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulCommClass (G ⧸ N) A B]
+    [SMulDistribClass G B C] [IsScalarTower G (G ⧸ N) B] [IsGaloisGroup N B C] :
     IsGaloisGroup (G ⧸ N) A B where
   faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
+    have h' : ∀ g : G, (∀ x : B, g • x = x) → g ∈ N := by
+      simp only [← fixingSubgroup_range_algebraMap_of_isDomain G A C N B, mem_fixingSubgroup_iff,
+        Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, ← algebraMap.smul',
+        (FaithfulSMul.algebraMap_injective B C).eq_iff, imp_self, implies_true]
     have {g : G} : Quotient.mk'' g = QuotientGroup.mk' N g := rfl
     simp_rw [← inv_smul_eq_iff, this, ← map_inv, smul_smul, ← map_mul,
-      QuotientGroup.mk'_apply, h₁] at h
-    have := h₂ _ h
+      QuotientGroup.mk'_apply, coe_quotient_smul] at h
+    have := h' _ h
     rwa [QuotientGroup.eq, ← Subgroup.inv_mem_iff, mul_inv_rev, inv_inv]
   commutes := inferInstance
   isInvariant.isInvariant x h := by
@@ -570,71 +587,65 @@ theorem quotient' [hG : IsGaloisGroup G A C] [MulSemiringAction G B] [MulSemirin
     apply hG.isInvariant.isInvariant (algebraMap B C x)
     intro g
     have := (FaithfulSMul.algebraMap_injective B C).eq_iff.mpr <| h g
-    rwa [h₁, algebraMap.smul'] at this
+    rwa [coe_quotient_smul, algebraMap.smul'] at this
 
-end Quotient'
+noncomputable section IntermediateField
 
-section Quotient
+variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 
-variable (N : Subgroup G) [N.Normal] [hF : IsGaloisGroup N F L]
+instance : SMul (G ⧸ N) F :=
+  let := sMulOfNormal G F L N
+  have := smulDistribClass_smulOfNormal G F L N
+  sMulQuotient G F L N
 
-instance : SMul (G ⧸ N) F where
-  smul g x := Quotient.liftOn' g (fun g ↦ ⟨g • (x : L), smul_mem_of_normal G K L F N g x⟩)
-    fun g g' h ↦ Subtype.ext <| by
-      rw [smul_eq_iff_eq_inv_smul, ← smul_assoc, smul_eq_mul, smul_eq_self G K L N]
-      rwa [← QuotientGroup.leftRel_apply]
+instance : MulSemiringAction (G ⧸ N) F :=
+  let := sMulOfNormal G F L N
+  have := smulDistribClass_smulOfNormal G F L N
+  have := isScalarTower_sMulQuotient G F L N
+  let := mulActionQuotient G F L N
+  let := mulSemiringAction_of_smulDistribClass F L G
+  instMulSemiringActionQuotient G F N
 
-@[simp]
-lemma coe_quotient_smul (g : G) (x : F) :
-    ((g : G ⧸ N) • x : F) = g • (x : L) := rfl
-
-instance : MulSemiringAction (G ⧸ N) F where
-  one_smul _ := Subtype.ext <| by rw [← QuotientGroup.mk_one, coe_quotient_smul, one_smul]
-  smul_zero g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
-  mul_smul g g' x := Quotient.inductionOn₂' g g' fun g g' ↦ Subtype.ext <| by
-    simp [← QuotientGroup.mk_mul, coe_quotient_smul, mul_smul]
-  smul_add g x y := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_add]
-  smul_one g := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp
-  smul_mul g x y := Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_mul']
-
-instance [SMulCommClass G K L] : SMulCommClass (G ⧸ N) K F :=
-  ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦ Subtype.ext <| by simp [smul_comm]⟩
-
-variable [hK : IsGaloisGroup G K L]
-
-instance quotient [Finite G] : IsGaloisGroup (G ⧸ N) K F where
-  faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
-    rw [QuotientGroup.eq, ← fixingSubgroup_fixedPoints G K L N, subgroup_iff.mp hF,
-      mem_fixingSubgroup_iff]
-    intro x hx
-    rw [mul_smul, inv_smul_eq_iff]
-    simpa [eq_comm, coe_quotient_smul] using congr_arg Subtype.val <| h ⟨x, hx⟩
-  commutes := inferInstance
-  isInvariant.isInvariant := fun x h ↦ by
-    have : ∀ (g : G), g • (x : L) = x := fun g ↦ by
-      simpa [coe_quotient_smul] using congr_arg Subtype.val (h g)
-    obtain ⟨a, ha⟩ := hK.isInvariant.isInvariant x this
-    refine ⟨a, FaithfulSMul.algebraMap_injective F L ?_⟩
-    rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply]
+/-- If `G` is a finite Galois group for `L/K` and `N` is a normal subgroup of `G` that is a
+Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
+instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
+    IsGaloisGroup (G ⧸ N) K F  :=
+  let := sMulOfNormal G F L N
+  have := smulDistribClass_smulOfNormal G F L N
+  have := isScalarTower_sMulQuotient G F L N
+  let := mulSemiringAction_of_smulDistribClass F L G
+  have : SMulCommClass (G ⧸ N) K F :=
+    ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦
+      FaithfulSMul.algebraMap_injective F L (by simp [algebraMap.smul, smul_comm])⟩
+  quotient G N K F L
 
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
-theorem quotientMap [Finite G] (h : E ≤ F) :
+/-- If `G` is a finite Galois group for `L/K`, `N` is a normal subgroup that is a Galois group for
+`L/F`, and `H` is a subgroup that is a Galois group for `L/E` with `E ≤ F`, then the image of `H`
+under the canonical quotient map `G → G ⧸ N` is a Galois group for `F/E`. -/
+theorem quotientMap [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   have hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
   let : Algebra E F := (IntermediateField.inclusion h).toAlgebra
+  have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
   { faithful := by have := hFN.faithful; infer_instance
     commutes := ⟨by
       intro ⟨_, g, hg, rfl⟩ x y
-      exact FaithfulSMul.algebraMap_injective F L (hE.commutes.smul_comm ⟨g, hg⟩ x (y : L))⟩
+      apply FaithfulSMul.algebraMap_injective F L
+      simpa [algebraMap.coe_smul] using hE.commutes.smul_comm ⟨g, hg⟩ x (y : L)⟩
     isInvariant := ⟨fun x h ↦ by
-      obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant x
-        fun ⟨g, hg⟩ ↦ congr_arg Subtype.val (h ⟨g, g, hg, rfl⟩)
-      have : IsScalarTower E F L := IsScalarTower.of_algebraMap_eq' rfl
+      obtain ⟨a, ha⟩ := hE.isInvariant.isInvariant x (by
+        rintro ⟨g, hg⟩
+        simpa [MulAction.subgroup_smul_def] using congr_arg (algebraMap F L) <| h ⟨g, ⟨g, hg, rfl⟩⟩)
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply])⟩⟩ }
+
+end IntermediateField
 
 end Quotient
 
 end IsGaloisGroup
+
+#lint
