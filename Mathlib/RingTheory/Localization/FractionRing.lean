@@ -56,6 +56,11 @@ abbrev IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] 
 instance {R : Type*} [Field R] : IsFractionRing R R :=
   IsLocalization.at_units _ (fun _ ↦ isUnit_of_mem_nonZeroDivisors)
 
+theorem IsFractionRing.of_algEquiv {R : Type*} [CommSemiring R] {K L : Type*}
+    [CommSemiring K] [Algebra R K] [CommSemiring L] [Algebra R L] [h : IsFractionRing R K]
+    (e : K ≃ₐ[R] L) :
+    IsFractionRing R L := IsLocalization.isLocalization_of_algEquiv _ e
+
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units := by

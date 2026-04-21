@@ -52,13 +52,11 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
   section_ := L.preimage (h.counit.app (L.obj X))
@@ -75,13 +73,11 @@ instance [L.Full] [L.Faithful] (X : C) : IsIso (h.unit.app X) :=
 instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
   NatIso.isIso_of_isIso_app _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism. -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg :=
     R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism. -/
 noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
   retraction := R.preimage (h.unit.app (R.obj X))

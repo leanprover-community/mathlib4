@@ -132,7 +132,7 @@ lemma HasProdUniformlyOn_sineTerm_prod_on_compact (hZ2 : Z ⊆ ℂ_ℤ)
 lemma HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
-  apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_compl_range_intCast
+  apply hasProdLocallyUniformlyOn_of_forall_compact Complex.isOpen_compl_range_intCast
   exact fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 /-- `sin π z` is non vanishing on the complement of the integers in `ℂ`. -/
@@ -270,7 +270,7 @@ lemma eqOn_iteratedDerivWithin_cotTerm_integerComplement (d : ℕ) :
       (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℂ_ℤ)
       (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) + (z - (d + 1)) ^ (-1 - k : ℤ)))
       ℂ_ℤ := by
-  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen isOpen_compl_range_intCast)
+  apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen Complex.isOpen_compl_range_intCast)
   exact eqOn_iteratedDeriv_cotTerm ..
 
 lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :

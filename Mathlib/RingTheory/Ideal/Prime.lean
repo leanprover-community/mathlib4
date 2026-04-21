@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
@@ -120,6 +121,11 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 @[simp]
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+  ext
+  simp
 
 end Ideal
 
