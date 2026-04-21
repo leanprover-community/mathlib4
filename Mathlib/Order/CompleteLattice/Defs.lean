@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
