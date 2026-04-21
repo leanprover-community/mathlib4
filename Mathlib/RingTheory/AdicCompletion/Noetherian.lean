@@ -130,7 +130,19 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
     (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
   have g_spec (x : s) : g x ∈ _ ∧ reesAlgebraToAssociatedGraded I (g x) = x := Classical.choose_spec
     (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
-  sorry
+  let ι := Sigma (fun (x : s) ↦ (g x).1.support)
+  let deg : ι → ℕ := fun ⟨i, j⟩ ↦ j
+  let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
+  have monomial_mem (i : ι) : monomial (deg i) (coeff i) ∈ reesAlgebra I := by
+    match i with
+    | ⟨i, j⟩ =>
+      simp only [deg, coeff]
+      sorry
+  let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
+  use ι, f, deg, coeff
+  refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, ?_⟩
+  · sorry
+  · sorry
 
 lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
     (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
@@ -139,6 +151,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
     (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
       r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
+  --Ideal.mem_span_range_iff_exists_fun
   sorry
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
