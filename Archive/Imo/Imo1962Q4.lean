@@ -59,8 +59,7 @@ Now we can solve for `x` using basic-ish trigonometry.
 -/
 theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_sq]
-  simp only [add_eq_left, div_eq_zero_iff]
-  norm_num
+  simp only [add_eq_left, div_eq_zero_iff, OfNat.ofNat_ne_zero, or_false]
   rw [cos_eq_zero_iff]
   constructor <;>
     · rintro ⟨k, h⟩

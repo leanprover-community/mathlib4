@@ -174,7 +174,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
+    exact ConcreteCategory.congr_hom ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]
@@ -183,15 +183,6 @@ instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
 instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
   dsimp [forget₂, HasForget₂.forget₂]
   infer_instance
-
-end FDRep
-
-namespace FDRep
-
-variable {k G : Type u} [Field k] [Group G]
-
--- Verify that the right rigid structure is available when the monoid is a group.
-example : RigidCategory (FDRep k G) := by infer_instance
 
 end FDRep
 

@@ -15,13 +15,13 @@ public import Mathlib.Analysis.LocallyConvex.WeakBilin
 /-!
 # Weak dual of normed space
 
-Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-*
+Let `E` be a normed space over a field `𝕜`. This file is concerned with properties of the weak-\*
 topology on the dual of `E`. By the dual, we mean either of the type synonyms
 `StrongDual 𝕜 E` or `WeakDual 𝕜 E`, depending on whether it is viewed as equipped with its usual
-operator norm topology or the weak-* topology.
+operator norm topology or the weak-\* topology.
 
 It is shown that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous, and
-as a consequence the weak-* topology is coarser than the topology obtained from the operator norm
+as a consequence the weak-\* topology is coarser than the topology obtained from the operator norm
 (dual norm).
 
 The file also equips `WeakDual 𝕜 E` with the norm bornology inherited from `StrongDual 𝕜 E`, so
@@ -29,11 +29,11 @@ that `IsBounded` refers to operator-norm boundedness. This is a pragmatic choice
 further in the implementation notes.
 
 We establish the Banach-Alaoglu theorem about the compactness of closed balls in the dual of `E`
-(as well as sets of somewhat more general form) with respect to the weak-* topology.
+(as well as sets of somewhat more general form) with respect to the weak-\* topology.
 
 The first main result concerns the comparison of the operator norm topology on `StrongDual 𝕜 E` and
-the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
-* `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
+the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
+* `dual_norm_topology_le_weak_dual_topology`: The weak-\* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
   neighborhood of the origin in a normed space `E` over `𝕜` is compact in `WeakDual _ E`, if the
@@ -46,22 +46,22 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 
 * `StrongDual.toWeakDual` and `WeakDual.toStrongDual`: Linear equivalences between the dual types.
 * `WeakDual.instBornology`: The norm bornology on `WeakDual 𝕜 E`.
-* `WeakDual.seminormFamily`: The family of seminorms `fun x f ↦ ‖f x‖` generating the weak-*
+* `WeakDual.seminormFamily`: The family of seminorms `fun x f ↦ ‖f x‖` generating the weak-\*
   topology.
 * `WeakDual.polar`: The polar set of `s : Set E` viewed as a subset of `WeakDual 𝕜 E`.
 
 ## Main results
 
 ### Topology comparison
-* `NormedSpace.Dual.toWeakDual_continuous`: The weak-* topology is coarser than the norm topology.
+* `NormedSpace.Dual.toWeakDual_continuous`: The weak-\* topology is coarser than the norm topology.
 
 ### Bornology and pointwise bounds
-* `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-* boundedness for
+* `WeakDual.isBounded_iff_isVonNBounded`: Equivalence of norm and weak-\* boundedness for
   Banach spaces.
 
 ### Compactness and Banach-Alaoglu
-* `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-* compact.
-* `WeakDual.isCompact_closedBall`: Closed balls are weak-* compact.
+* `WeakDual.isCompact_polar`: Polars of neighborhoods of the origin are weak-\* compact.
+* `WeakDual.isCompact_closedBall`: Closed balls are weak-\* compact.
 * `WeakDual.isSeqCompact_closedBall`: Sequential version for separable spaces.
 
 ## Implementation notes
@@ -75,19 +75,19 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
   1. **Practicality:** In the normed setting, "bounded" is almost universally synonymous with
      "norm-bounded". This allows `IsBounded` to be used directly in statements like Banach-Alaoglu.
   2. **Clarity:** It preserves a clear distinction between norm-boundedness (`IsBounded`) and
-     topological weak-* boundedness (`IsVonNBounded`).
+     topological weak-\* boundedness (`IsVonNBounded`).
   3. **Consistency:** By the Uniform Boundedness Principle, these notions coincide whenever
      `E` is a Banach space (`isBounded_iff_isVonNBounded`).
 * **Polar sets:** The polar set `polar 𝕜 s` of a subset `s` of `E` is originally defined as a
-  subset of the dual `StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-* topology,
+  subset of the dual `StrongDual 𝕜 E`. We care about properties of these w.r.t. weak-\* topology,
   and for this purpose give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a
   subset of `WeakDual 𝕜 E` (a type synonym of the dual but with a different topology instance).
 * **Banach-Alaoglu Proof:** The weak dual of `E` is embedded in the space of functions `E → 𝕜`
   with the topology of pointwise convergence.
 
 ## TODO
-* Add that in finite dimensions, the weak-* topology and the dual norm topology coincide.
-* Add that in infinite dimensions, the weak-* topology is strictly coarser than the dual norm
+* Add that in finite dimensions, the weak-\* topology and the dual norm topology coincide.
+* Add that in infinite dimensions, the weak-\* topology is strictly coarser than the dual norm
   topology.
 * Add metrizability of the dual unit ball (more generally weak-star compact subsets) of
   `WeakDual 𝕜 E` under the assumption of separability of `E`.
@@ -148,9 +148,9 @@ end WeakDual
 /-!
 ### Weak star topology on duals of normed spaces
 
-In this section, we prove properties about the weak-* topology on duals of normed spaces.
+In this section, we prove properties about the weak-\* topology on duals of normed spaces.
 We prove in particular that the canonical mapping `StrongDual 𝕜 E → WeakDual 𝕜 E` is continuous,
-i.e., that the weak-* topology is coarser (not necessarily strictly) than the topology given
+i.e., that the weak-\* topology is coarser (not necessarily strictly) than the topology given
 by the dual-norm (i.e. the operator-norm).
 -/
 
@@ -186,7 +186,7 @@ open NormedSpace
 ### Bornology and pointwise bounds
 
 This section relates the inherited norm bornology (`IsBounded`) to the intrinsic
-von Neumann bornology of the weak-* topology (`IsVonNBounded`).
+von Neumann bornology of the weak-\* topology (`IsVonNBounded`).
 
 The following results justify using the norm bornology as the default instance: by the
 Uniform Boundedness Principle, it coincides with the von Neumann bornology whenever
@@ -195,7 +195,7 @@ $E$ is a Banach space.
 
 variable (𝕜 E) in
 /-- The family of seminorms on `WeakDual 𝕜 E` given by `fun x f ↦ ‖f x‖`, indexed by `E`.
-This is the seminorm family associated to the weak-* topology via `topDualPairing`. -/
+This is the seminorm family associated to the weak-\* topology via `topDualPairing`. -/
 def seminormFamily : SeminormFamily 𝕜 (WeakDual 𝕜 E) E := (topDualPairing 𝕜 E).toSeminormFamily
 
 @[simp]
@@ -254,8 +254,8 @@ theorem isBounded_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsBounded (toStrongDual ⁻¹' closedBall x' r) :=
   isBounded_toStrongDual_preimage_iff_isBounded.mpr Metric.isBounded_closedBall
 
-/-- The weak-* closure of a norm-bounded set is norm-bounded, because norm-closed balls
-are weak-* closed. -/
+/-- The weak-\* closure of a norm-bounded set is norm-bounded, because norm-closed balls
+are weak-\* closed. -/
 theorem isBounded_closure {s : Set (WeakDual 𝕜 E)} (hb : IsBounded s) :
     IsBounded (closure s) := by
   obtain ⟨R, hR⟩ := (Metric.isBounded_iff_subset_closedBall (0 : StrongDual 𝕜 E)).mp hb
@@ -363,7 +363,7 @@ theorem isSeqCompact_polar {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
   isSeqCompact_of_isBounded_of_isClosed 𝕜 _ (isBounded_polar 𝕜 s_nhd) (isClosed_polar _ _)
 
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
-normed space `V` are sequentially compact in the weak-* topology. -/
+normed space `V` are sequentially compact in the weak-\* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 E) (r : ℝ) :
     IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
   isSeqCompact_of_isBounded_of_isClosed 𝕜 _ (isBounded_closedBall x' r) (isClosed_closedBall x' r)
