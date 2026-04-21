@@ -145,15 +145,15 @@ lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
   rw [charFun_apply,
       integral_map (measurable_of_countable _).aemeasurable (by fun_prop),
       integral_poissonMeasure r]
-  simp_rw [show ∀ (a : ℕ), inner ℝ (↑a : ℝ) t = ↑a * t from
-           fun a => by change t * ↑a = ↑a * t; ring]
-  calc ∑' a, ((rexp (-↑r) * ↑r ^ a / ↑a ! : ℝ) : ℂ) * cexp (↑(↑a * t) * I)
-  _ = ∑' a, ↑(rexp (-↑r)) * ((↑r * cexp (↑t * I)) ^ a / ↑a !) := by
+  simp_rw [show ∀ (a : ℕ), inner ℝ (a : ℝ) t = a * t from
+           fun a => by change t * a = a * t; ring]
+  calc ∑' a, ((rexp (-r) * r ^ a / a ! : ℝ) : ℂ) * cexp (↑(a * t) * I)
+  _ = ∑' a, (rexp (-r)) * ((r * cexp (t * I)) ^ a / a !) := by
       congr 1 with a; push_cast; rw [mul_pow, ← Complex.exp_nat_mul]; ring_nf
-  _ = ↑(rexp (-↑r)) * ∑' a, ((↑r * cexp (↑t * I)) ^ a / ↑a !) := tsum_mul_left
-  _ = ↑(rexp (-↑r)) * cexp (↑r * cexp (↑t * I)) := by
-      rw [(NormedSpace.expSeries_div_hasSum_exp (↑r * cexp (↑t * I))).tsum_eq, exp_eq_exp_ℂ]
-  _ = cexp (↑r * (cexp (↑t * I) - 1)) := by
+  _ = (rexp (-r)) * ∑' a, ((r * cexp (t * I)) ^ a / a !) := tsum_mul_left
+  _ = (rexp (-r)) * cexp (r * cexp (t * I)) := by
+      rw [(NormedSpace.expSeries_div_hasSum_exp (r * cexp (t * I))).tsum_eq, exp_eq_exp_ℂ]
+  _ = cexp (r * (cexp (t * I) - 1)) := by
       rw [ofReal_exp, exp_eq_exp_ℂ, ← NormedSpace.exp_add]; congr 1; push_cast; ring
 
 /-- Convolution of Poisson distributions on `ℝ`. -/
