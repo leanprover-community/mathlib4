@@ -401,6 +401,18 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
+lemma limitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.limitsOfShape J X ↔ Nonempty (IsTerminal X) := by
+  refine ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦
+    .intro <| isLimitEquivIsTerminalOfIsEmpty _ _ q, fun ⟨h⟩ ↦ ?_⟩
+  exact ⟨⟨(Functor.const _).obj X, 𝟙 _, (isLimitEquivIsTerminalOfIsEmpty _ _).symm h⟩, by simp⟩
+
+lemma colimitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.colimitsOfShape J X ↔ Nonempty (IsInitial X) := by
+  refine ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦
+    .intro <| isColimitEquivIsInitialOfIsEmpty _ _ q, fun ⟨h⟩ ↦ ?_⟩
+  exact ⟨⟨(Functor.const _).obj X, 𝟙 _, (isColimitEquivIsInitialOfIsEmpty _ _).symm h⟩, by simp⟩
+
 end ObjectProperty
 
 end CategoryTheory
