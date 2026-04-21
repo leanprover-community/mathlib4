@@ -265,7 +265,6 @@ lemma continuous_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙ�
     Continuous (h.nonUnitalStarAlgHom φ) :=
   hφ.comp <| (continuous_postcomp _).comp (continuous_precomp _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable [CompleteSpace R] in
 lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (hφ : IsClosedEmbedding φ) {f : C(S, R)} (h : QuasispectrumRestricts a f)

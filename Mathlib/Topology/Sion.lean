@@ -35,14 +35,11 @@ The classical case of the theorem assumes that `f` is continuous,
 As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
-* `Sion.minimax` is a variant of that result that
-  avoids complete linear orders using `IsLUB` and `IsGLB`.
-
-We follow the proof of [Komiya-1988][Komiya (1988)].
+We follow the proof of [Komiya (1988)][Komiya-1988].
 
 ## Remark on implementation
 
-* The initial proof in [Komiya-1988][Komiya (1988)] is written for `β := ℝ`
+* The initial proof in [Komiya (1988)][Komiya-1988] is written for `β := ℝ`
   but it holds verbatim for any dense linearly ordered set.
   Using `Order.exists_dense_continuous_completion`, it applies to any linear order.
 
@@ -52,14 +49,14 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## References
 
-- [vonNeumann-1928][Neumann, John von (1928).
-  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320]
+- [Neumann, John von (1928).
+  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320][vonNeumann-1928]
 
-- [Sion-1958][Sion, Maurice (1958).
-  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.]
+- [Sion, Maurice (1958).
+  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.][Sion-1958]
 
-- [Komiya-1988][Komiya, Hidetoshi (1988).
-  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
+- [Komiya, Hidetoshi (1988).
+  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).][Komiya-1988]
 
 -/
 
@@ -175,8 +172,7 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
 
 variable (X Y f) in
 /-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
-def setOf_sublevelLeft_subset [AddCommGroup F] [Module ℝ F]
-    (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
+def setOf_sublevelLeft_subset (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
 
 include ne_X kX hfx hfx' cY hfy hfy' in
