@@ -20,7 +20,7 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
 * `SemilocallySimplyConnectedAt x` - The property at a single point: `x` has a neighborhood with
   trivial fundamental group relative to the ambient space.
 * `SemilocallySimplyConnectedOn s` - The property holds at every point of `s`.
-* `SemilocallySimplyConnected X` - The property holds at every point of `X`.
+* `SemilocallySimplyConnectedSpace X` - The property holds at every point of `X`, as a class.
 
 ## Main theorems
 
@@ -137,41 +137,43 @@ theorem semilocallySimplyConnectedOn_iff_paths :
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
   forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff_paths
 
-/-! ### SemilocallySimplyConnected -/
+/-! ### SemilocallySimplyConnectedSpace -/
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
 such that the map from `π₁(U, base)` to `π₁(X, base)` induced by the inclusion is trivial for all
 basepoints in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
-def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
-  ∀ x : X, SemilocallySimplyConnectedAt x
+class SemilocallySimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
+  exists_small_neighborhood : ∀ x : X, SemilocallySimplyConnectedAt x
 
-theorem SemilocallySimplyConnected.at (h : SemilocallySimplyConnected X) (x : X) :
-    SemilocallySimplyConnectedAt x :=
-  h x
+theorem SemilocallySimplyConnectedAt.of_semilocallySimplyConnectedSpace
+    [SemilocallySimplyConnectedSpace X] (x : X) : SemilocallySimplyConnectedAt x :=
+  SemilocallySimplyConnectedSpace.exists_small_neighborhood x
 
-theorem SemilocallySimplyConnected.on (h : SemilocallySimplyConnected X) (s : Set X) :
-    SemilocallySimplyConnectedOn s :=
-  fun x _ => h x
+theorem SemilocallySimplyConnectedOn.of_semilocallySimplyConnectedSpace
+    [SemilocallySimplyConnectedSpace X] (s : Set X) : SemilocallySimplyConnectedOn s :=
+  fun x _ => .of_semilocallySimplyConnectedSpace x
 
 theorem semilocallySimplyConnectedOn_univ :
-    SemilocallySimplyConnectedOn (univ : Set X) ↔ SemilocallySimplyConnected X :=
-  ⟨fun h x => h x (mem_univ x), fun h x _ => h x⟩
+    SemilocallySimplyConnectedOn (univ : Set X) ↔ SemilocallySimplyConnectedSpace X :=
+  ⟨fun h => ⟨fun x => h x (mem_univ x)⟩, fun ⟨h⟩ x _ => h x⟩
 
 /-- Simply connected spaces are semilocally simply connected. -/
-theorem SemilocallySimplyConnected.of_simplyConnected [SimplyConnectedSpace X] :
-    SemilocallySimplyConnected X :=
-  fun x => SemilocallySimplyConnectedAt.of_simplyConnected x
+instance SemilocallySimplyConnectedSpace.of_simplyConnected [SimplyConnectedSpace X] :
+    SemilocallySimplyConnectedSpace X where
+  exists_small_neighborhood x := .of_simplyConnected x
 
-theorem semilocallySimplyConnected_iff :
-    SemilocallySimplyConnected X ↔
+theorem semilocallySimplyConnectedSpace_iff :
+    SemilocallySimplyConnectedSpace X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u : X} (γ : Path u u) (_ : range γ ⊆ U),
         Path.Homotopic γ (Path.refl u) :=
-  forall_congr' fun _ => semilocallySimplyConnectedAt_iff
+  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff.mp (h x),
+    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff.mpr (h x)⟩⟩
 
-theorem semilocallySimplyConnected_iff_paths :
-    SemilocallySimplyConnected X ↔
+theorem semilocallySimplyConnectedSpace_iff_paths :
+    SemilocallySimplyConnectedSpace X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
-  forall_congr' fun _ => semilocallySimplyConnectedAt_iff_paths
+  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff_paths.mp (h x),
+    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff_paths.mpr (h x)⟩⟩
