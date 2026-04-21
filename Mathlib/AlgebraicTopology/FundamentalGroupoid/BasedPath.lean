@@ -597,7 +597,7 @@ theorem exists_open_nhd_pathComponent_preimage
             (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
       intro i
       have hab : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
-        part.h_mono.monotone i.castSucc_lt_succ.le
+        part.h_mono i.castSucc_lt_succ.le
       have hα_sub :
           Set.range (α.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i :=
         hα_tube.subpathOn_range_subset i
