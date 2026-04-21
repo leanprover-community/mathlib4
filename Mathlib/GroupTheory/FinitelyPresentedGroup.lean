@@ -77,4 +77,7 @@ instance [Finite α] : Group.IsFinitelyPresented (FreeGroup α) := by
   · rw [(FreeGroup.map f).ker_eq_bot_iff.mpr (FreeGroup.map_injective hf_inj.injective)]
     exact Subgroup.IsNormalClosureFG.bot
 
+instance : IsFinitelyPresented (Multiplicative ℤ) :=
+  equiv (FreeGroup.mulEquivIntOfUnique : FreeGroup Unit ≃* Multiplicative ℤ) inferInstance
+
 end Group.IsFinitelyPresented
