@@ -881,6 +881,8 @@ structure Config where
   attrs : Array Attribute := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
+  /-- simplify the left-hand side of the generated lemmas using `dsimp`. -/
+  dsimpLhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
   /-- TransparencyMode used to reduce the right-hand side in order to detect whether it is a
@@ -984,6 +986,11 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
     prf := result.proof?.getD prf
+  -- dsimplify `lhs` if `cfg.dsimpLhs` is true
+  let mut lhs := lhs
+  if cfg.dsimpLhs then
+    let ctx ← mkSimpContext
+    (lhs, _) ← dsimp lhs ctx
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
@@ -1212,7 +1219,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=

@@ -65,7 +65,8 @@ lemma glueDataObjι_ι (U : X.affineOpens) : I.glueDataObjι U ≫ U.1.ι =
 
 lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
-  let φ := CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
+  let φ : Γ(X, U) ⟶ CommRingCat.of (Γ(X, U) ⧸ I.ideal U) :=
+    CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
   change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
   rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
@@ -84,7 +85,8 @@ lemma range_glueDataObjι (U : X.affineOpens) :
   simp only [glueDataObjι, Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
   erw [range_comap_of_surjective]
   swap; · exact Ideal.Quotient.mk_surjective
-  simp only [Ideal.mk_ker, CommRingCat.hom_ofHom]
+  simp
+  rfl
 
 lemma range_glueDataObjι_ι (U : X.affineOpens) :
     Set.range (I.glueDataObjι U ≫ U.1.ι) = X.zeroLocus (U := U) (I.ideal U) ∩ U := by
@@ -219,7 +221,6 @@ def glueDataT (U V : X.affineOpens) :
     rw [Scheme.Hom.liftQuotient_comp_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id,
       Category.comp_id, Category.assoc, X.homOfLE_homOfLE]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 private lemma glueDataT_snd (U V : X.affineOpens) :
     I.glueDataT U V ≫ pullback.snd _ _ = pullback.snd _ _ ≫ X.homOfLE (by simp) :=
@@ -333,7 +334,6 @@ private lemma ι_gluedTo (U : X.affineOpens) :
     I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
   Multicoequalizer.π_desc _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
     I.glueDataObjMap h ≫ I.glueData.ι V = I.glueData.ι U := by
@@ -759,7 +759,6 @@ lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
   rintro _ ⟨U, hU, rfl⟩
   exact f.toImage_app_injective ⟨U, hU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
 @[simps]
