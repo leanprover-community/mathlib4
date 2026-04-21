@@ -84,56 +84,6 @@ theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) 
   refine ⟨?_, surjective_ofBasedPath x₀⟩
   exact ⟨rfl⟩
 
-/-- The raw quotient relation on based paths induced by endpoint-preserving homotopy. -/
-abbrev BasedPathSetoid (x₀ : X) : Setoid (BasedPath x₀) :=
-  Setoid.ker (ofBasedPath x₀)
-
-instance instSetoidBasedPath (x₀ : X) : Setoid (BasedPath x₀) :=
-  BasedPathSetoid x₀
-
-/-- The raw quotient of based paths by endpoint-preserving homotopy. -/
-abbrev RawUniversalCover (x₀ : X) :=
-  Quotient (BasedPathSetoid x₀)
-
-instance instTopologicalSpaceRawUniversalCover (x₀ : X) :
-    TopologicalSpace (RawUniversalCover x₀) := by
-  delta RawUniversalCover BasedPathSetoid
-  infer_instance
-
-/-- The canonical quotient map from based paths to the raw universal-cover quotient. -/
-def quotientMk (x₀ : X) : BasedPath x₀ → RawUniversalCover x₀ :=
-  @Quotient.mk' _ (BasedPathSetoid x₀)
-
-@[continuity] theorem continuous_quotientMk (x₀ : X) :
-    Continuous (quotientMk (x₀ := x₀)) :=
-  continuous_quotient_mk'
-
-/-- The raw quotient maps continuously to `UniversalCover`. -/
-noncomputable def quotientToUniversalCover (x₀ : X) :
-    RawUniversalCover x₀ → UniversalCover x₀ :=
-  Quotient.lift (ofBasedPath x₀) fun _ _ h => h
-
-@[simp] theorem quotientToUniversalCover_mk (x₀ : X) (p : BasedPath x₀) :
-    quotientToUniversalCover x₀ (quotientMk x₀ p) = ofBasedPath x₀ p :=
-  rfl
-
-@[continuity] theorem continuous_quotientToUniversalCover (x₀ : X) :
-    Continuous (quotientToUniversalCover x₀) :=
-  (continuous_ofBasedPath x₀).quotient_lift fun _ _ h => h
-
-/-- `UniversalCover x₀` really is the quotient of based paths by endpoint-preserving homotopy. -/
-noncomputable def quotientHomeomorph (x₀ : X) :
-    RawUniversalCover x₀ ≃ₜ UniversalCover x₀ := by
-  let f : C(BasedPath x₀, UniversalCover x₀) :=
-    ⟨ofBasedPath x₀, continuous_ofBasedPath x₀⟩
-  let hq : IsQuotientMap f := isQuotientMap_ofBasedPath x₀
-  simpa [RawUniversalCover, BasedPathSetoid] using
-    (Topology.IsQuotientMap.homeomorph hq)
-
-@[simp] theorem quotientHomeomorph_mk (x₀ : X) (p : BasedPath x₀) :
-    quotientHomeomorph x₀ (quotientMk x₀ p) = ofBasedPath x₀ p := by
-  rfl
-
 /-- The endpoint projection. -/
 def proj : UniversalCover x₀ → X :=
   Sigma.fst
