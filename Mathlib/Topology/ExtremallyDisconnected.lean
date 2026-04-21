@@ -314,7 +314,7 @@ variable {X}
 /-- A preirreducible space is extremally disconnected. -/
 instance (priority := 100) [h : PreirreducibleSpace X] : ExtremallyDisconnected X where
   open_closure U hU := by
-    by_cases Un : U = ∅
+    by_cases! Un : U = ∅
     · simp_all
     · exact ((preirreducibleSpace_iff_open_dense X).mp h hU Un).closure_eq ▸ isOpen_univ
 
