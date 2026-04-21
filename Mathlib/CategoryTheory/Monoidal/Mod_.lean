@@ -154,7 +154,7 @@ def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
 
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, between objects with
-a `ModObj` instance (rather than bundled as `Mod_`),
+a `ModObj` instance (rather than bundled as `Mod`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]
 def Hom.mk'' {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N)
