@@ -99,10 +99,9 @@ instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
 instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K) :=
-  inferInstanceAs <|
-  DFunLike (Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K])
-    (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K)
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
+  coe a := a.1
+  coe_injective' _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
 
@@ -137,10 +136,6 @@ variable {R} in
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : ∀ v, a₁ v = a₂ v) : a₁ = a₂ :=
   Subtype.ext <| funext h
-
-instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
-  coe a := a.1
-  coe_injective' _a _b h := ext K (congrFun h)
 
 section Topology
 

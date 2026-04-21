@@ -627,8 +627,10 @@ namespace Subgroup
 variable {H : Subgroup G}
 
 @[to_additive]
-instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm]⟩
+instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
+    H.Normal := ⟨by simp [mul_comm']⟩
+
+@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 

@@ -1675,7 +1675,7 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
+  decl: exists_wellFoundedLT
   authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
@@ -3506,7 +3506,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
-  decl: mellin_inversion
+  decl: mellinInv_mellin_eq
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3623,7 +3623,6 @@ Q7208500:
   title: Poisson limit theorem
   decls:
     - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
-    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
   authors: Yi Yuan
   date: 2026
 
