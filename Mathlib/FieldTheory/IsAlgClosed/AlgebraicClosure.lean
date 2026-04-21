@@ -29,8 +29,6 @@ In this file we construct the algebraic closure of a field
 algebraic closure, algebraically closed
 -/
 
-@[expose] public section
-
 universe u v w
 
 noncomputable section
@@ -42,11 +40,13 @@ variable (k : Type u) [Field k]
 namespace AlgebraicClosure
 
 /-- The subtype of monic polynomials. -/
-def Monics : Type u := {f : k[X] // f.Monic}
+@[expose] -- We need to expose this, otherwise the rest of the file breaks.
+public def Monics : Type u := {f : k[X] // f.Monic}
 
 /-- `Vars k` provides `n` variables $X_{f,1}, \dots, X_{f,n}$ for each monic polynomial
 `f : k[X]` of degree `n`. -/
-def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
+@[expose] -- We need to expose this, otherwise the rest of the file breaks.
+public def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
 
 variable {k} in
 /-- Given a monic polynomial `f : k[X]`,
@@ -109,10 +109,10 @@ theorem spanCoeffs_ne_top : spanCoeffs k ≠ ⊤ := by
   rw [smul_eq_mul, map_mul, toSplittingField_coeff (Finset.mem_image_of_mem _ hj), mul_zero]
 
 /-- A random maximal ideal that contains `spanEval k` -/
-def maxIdeal : Ideal (MvPolynomial (Vars k) k) :=
+public def maxIdeal : Ideal (MvPolynomial (Vars k) k) :=
   Classical.choose <| Ideal.exists_le_maximal _ <| spanCoeffs_ne_top k
 
-instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal :=
+public instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal :=
   (Classical.choose_spec <| Ideal.exists_le_maximal _ <| spanCoeffs_ne_top k).1
 
 theorem le_maxIdeal : spanCoeffs k ≤ maxIdeal k :=
@@ -123,29 +123,35 @@ end AlgebraicClosure
 open AlgebraicClosure in
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
-@[stacks 09GT]
-def AlgebraicClosure : Type u :=
+@[stacks 09GT, expose] -- We need to expose this, otherwise the rest of the file breaks.
+public def AlgebraicClosure : Type u :=
   MvPolynomial (Vars k) k ⧸ maxIdeal k
 
 namespace AlgebraicClosure
 
-deriving instance CommRing, Inhabited for AlgebraicClosure
+public instance instCommRing : CommRing (AlgebraicClosure k) :=
+  inferInstanceAs <| CommRing (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
-  inferInstanceAs <| SMul S (_ ⧸ _)
+public instance : Inhabited (AlgebraicClosure k) :=
+  inferInstanceAs <| Inhabited (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] : Algebra R (AlgebraicClosure k) :=
-  inferInstanceAs <| Algebra R (_ ⧸ _)
+public instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
+  inferInstanceAs <| SMul S (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k] [Algebra R k]
-    [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
-  inferInstanceAs <| IsScalarTower R S (_ ⧸ _)
+public instance instAlgebra {R : Type*} [CommSemiring R] [Algebra R k] :
+    Algebra R (AlgebraicClosure k) :=
+  inferInstanceAs <| Algebra R (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-attribute [local instance] Ideal.Quotient.field in
-instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
-  inferInstanceAs <| GroupWithZero (_ ⧸ _)
+public instance {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Algebra S k]
+    [Algebra R k] [IsScalarTower R S k] : IsScalarTower R S (AlgebraicClosure k) :=
+  inferInstanceAs <| IsScalarTower R S (MvPolynomial (Vars k) k ⧸ maxIdeal k)
 
-instance instField : Field (AlgebraicClosure k) where
+public instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  letI : Field (MvPolynomial (Vars k) k ⧸ maxIdeal k) := Ideal.Quotient.field _
+  inferInstanceAs <| GroupWithZero (MvPolynomial (Vars k) k ⧸ maxIdeal k)
+
+@[expose] -- Particular care is given to the defeqs of `ratCast` and friends.
+public instance instField : Field (AlgebraicClosure k) where
   __ := instCommRing _
   __ := instGroupWithZero _
   nnqsmul := (· • ·)
@@ -171,7 +177,7 @@ theorem Monics.map_eq_prod {f : Monics k} :
   refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
 set_option backward.isDefEq.respectTransparency false in
-instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
+public instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   ⟨fun z =>
     IsIntegral.isAlgebraic <| by
       let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
@@ -190,19 +196,19 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
           erw [eval_C]
           simp⟩
 
-instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
+public instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
   rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
-instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
+public instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
 
-instance [CharZero k] : CharZero (AlgebraicClosure k) :=
+public instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
 
-instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
+public instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
-instance {L : Type*} [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+public instance {L : Type*} [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
     IsAlgClosure k (AlgebraicClosure L) where
   isAlgebraic := .trans k L _
   isAlgClosed := inferInstance
@@ -213,15 +219,15 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
-instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
+public instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
   ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
 
-theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
+public theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
     Normal K (AlgebraicClosure K⟮x⟯) :=
   have : Algebra.IsAlgebraic K K⟮x⟯ := isAlgebraic_adjoin_simple hx
   IsAlgClosure.normal _ _
 
-theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
+public theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
     (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
   have : Algebra.IsAlgebraic K K⟮x, y⟯ := isAlgebraic_adjoin_pair hx hy
   IsAlgClosure.normal _ _
