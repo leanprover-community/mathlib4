@@ -523,8 +523,9 @@ theorem CompleteBipartiteGraph.chromaticNumber {V W : Type*} [Nonempty V] [Nonem
   · exact ⟨_, he'⟩
   · simpa using two_lt_card_iff.2 ⟨_, _, _, C.valid h, he, he'⟩
 
-theorem colorable_two_of_maxDegree_le_one [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+theorem colorable_two_of_maxDegree_le_one [Fintype V] [DecidableRel G.Adj]
  (h : G.maxDegree = 1) : G.Colorable 2 := by
+  classical
   have unique_neighbor : ∀ x y z, G.Adj x y → G.Adj x z → y = z := by
     intro x y z hxy hxz
     by_contra h_neq
