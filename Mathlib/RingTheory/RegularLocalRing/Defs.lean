@@ -108,14 +108,8 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
   have := isNoetherianRing_of_ringEquiv R e
   rw [isRegularRing_iff]
   intro p hp
-  suffices (p.comap e).primeCompl.map e = p.primeCompl from
-    IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
-      (Localization.AtPrime (p.comap e)) (Localization.AtPrime p) e this
-  ext x
-  have : (∃ y, e y ∉ p ∧ e y = x) ↔ x ∉ p := by
-    refine ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy, fun h ↦ ⟨e.symm x, ?_⟩⟩
-    simpa
-  simpa
+  exact IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
+    (Localization.AtPrime (p.comap e)) (Localization.AtPrime p) e (e.map_primeCompl_comap_eq p)
 
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
