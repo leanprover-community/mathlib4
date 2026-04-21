@@ -19,6 +19,10 @@ For a Noetherian local ring `R`, we define `IsRegularLocalRing` as
 the dimension of the cotangent space over the residue field being equal to `ringKrullDim R`,
 (see `IsRegularLocalRing.iff_finrank_cotangentSpace`).
 
+For the next section, we define regular rings as Noetherian rings whose localization at every prime
+are regular local rings.
+(Note that a regular local ring is a regular ring, but this is not immediate under this definition).
+
 # Main Definition and Results
 
 * `IsRegularLocalRing` : A Noetherian local ring is regular if
@@ -27,6 +31,13 @@ the dimension of the cotangent space over the residue field being equal to `ring
 
 * `IsRegularLocalRing.iff_finrank_cotangentSpace` : the equivalence of `IsRegularLocalRing` and
   `Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R`
+
+* `IsRegularRing` : A noetherian ring is regular if its localization at any prime
+  `IsRegularLocalRing`.
+
+## TODO
+Show that regular local rings are regular under this definition.
+This follows from localizations of regular local rings being regular (@Thmoas-Guan).
 
 -/
 
@@ -76,20 +87,6 @@ instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalR
         Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton x)
 
 end IsRegularLocalRing
-
-/-!
-
-# Definition of regular rings
-
-In this section, we define regular rings as noetherian rings whose localization at every prime are
-regular local rings.
-(Note that a regular local ring is a regular ring, but this is not immediate under this definition).
-
-## TODO
-Show that regular local rings are regular under this definition.
-This follows from localizations of regular local rings being regular (@Thmoas-Guan).
-
--/
 
 /-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing (R : Type*) [CommRing R] : Prop extends IsNoetherianRing R where
