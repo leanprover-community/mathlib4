@@ -239,6 +239,10 @@ section Preorder
 variable [Preorder α] [Preorder β] {a b c : α}
 
 @[to_dual self]
+theorem not_covBy_iff_nonempty_Ioo (h : a < b) : ¬a ⋖ b ↔ (Ioo a b).Nonempty :=
+  not_covBy_iff h
+
+@[to_dual self]
 theorem CovBy.le (h : a ⋖ b) : a ≤ b :=
   h.1.le
 
@@ -373,11 +377,9 @@ theorem CovBy.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c
 theorem covBy_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
   ⟨fun h => ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covBy_of_eq_or_eq⟩
 
+@[to_dual]
 theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
   rw [← Ioo_union_left h.lt, h.Ioo_eq, empty_union]
-
-theorem CovBy.Ioc_eq (h : a ⋖ b) : Ioc a b = {b} := by
-  rw [← Ioo_union_right h.lt, h.Ioo_eq, empty_union]
 
 @[to_dual none]
 theorem CovBy.Icc_eq (h : a ⋖ b) : Icc a b = {a, b} :=
@@ -404,12 +406,9 @@ theorem CovBy.Ioi_eq (h : a ⋖ b) : Ioi a = Ici b := by
 theorem CovBy.Iio_eq (h : a ⋖ b) : Iio b = Iic a := by
   rw [← Iic_union_Ioo_eq_Iio h.lt, h.Ioo_eq, union_empty]
 
+@[to_dual]
 theorem CovBy.Ioo_eq_Ico (h : a ⋖ b) (c : α) : Ioo a c = Ico b c :=
   subset_antisymm (fun _x hx ↦ ⟨h.ge_of_gt hx.1, hx.2⟩) <| Ico_subset_Ioo_left h.lt
-
-@[to_dual existing]
-theorem CovBy.Ioo_eq_Ioc (h : a ⋖ b) (c : α) : Ioo c b = Ioc c a :=
-  subset_antisymm (fun _x hx ↦ ⟨hx.1, h.le_of_lt hx.2⟩) <| Ioc_subset_Ioo_right h.lt
 
 @[to_dual unique_right]
 theorem CovBy.unique_left (ha : a ⋖ c) (hb : b ⋖ c) : a = b :=
