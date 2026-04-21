@@ -865,7 +865,7 @@ private theorem toIxxMod_total' (a b c : α) :
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
   rw [toIxxMod_iff, toIxxMod_iff]
-  grw [← toIcoMod_le_toIocMod, ← toIcoMod_le_toIocMod] at this
+  grw [← toIcoMod_le_toIocMod] at this
   exact this
 
 private theorem toIxxMod_total (a b c : α) :
