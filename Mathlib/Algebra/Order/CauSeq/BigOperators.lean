@@ -50,7 +50,7 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
     simp only [add_assoc, sub_eq_add_neg]
     simp only [sub_eq_add_neg] at hi
-    grw [abv_add abv, hm _ (by omega), hi]
+    grw' [abv_add abv, hm _ (by omega), hi]
 
 lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
