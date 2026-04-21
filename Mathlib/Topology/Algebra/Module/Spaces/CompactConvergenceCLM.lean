@@ -134,4 +134,79 @@ alias postcomp_compactConvergenceCLM_apply := postcompCompactConvergenceCLM_appl
 
 end comp
 
+namespace ContinuousLinearEquiv
+
+/-! ### Continuous linear equivalences -/
+
+open scoped CompactConvergenceCLM
+
+section Semilinear
+
+variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
+  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NormedField 𝕜] [NormedField 𝕜₂] [NormedField 𝕜₃] [NormedField 𝕜₄]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
+  [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₄ H]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
+  {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄} [RingHomInvPair σ₁₂ σ₂₁]
+  [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+  [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+
+/-- A pair of continuous (semi)linear equivalences generates a (semi)linear equivalence between the
+spaces of continuous (semi)linear maps. This version is for the type alias
+`CompactConvergenceCLM`. -/
+def compactConvergenceCLMCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
+    (E →SL_c[σ₁₄] H) ≃SL[σ₄₃] (F →SL_c[σ₂₃] G) :=
+  ContinuousLinearEquiv.uniformConvergenceCLMCongrSL e₁₂ e₄₃ _ _ fun s ↦ by
+    simp [← e₁₂.toHomeomorph.isCompact_preimage]
+
+@[simp]
+lemma compactConvergenceCLMCongrSL_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (φ : E →SL_c[σ₁₄] H) (f : F) :
+    compactConvergenceCLMCongrSL e₁₂ e₄₃ φ f = e₄₃ (φ (e₁₂.symm f)) :=
+  rfl
+
+@[simp]
+lemma compactConvergenceCLMCongrSL_symm_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (φ : F →SL_c[σ₂₃] G) (e : E) :
+    (compactConvergenceCLMCongrSL e₁₂ e₄₃).symm φ e = e₄₃.symm (φ (e₁₂ e)) :=
+  rfl
+
+end Semilinear
+
+section Linear
+
+variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*}
+  [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+  [NormedField 𝕜] [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H]
+  [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
+  [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
+  [ContinuousConstSMul 𝕜 G] [ContinuousConstSMul 𝕜 H]
+
+/-- A pair of continuous linear equivalences generates a continuous linear equivalence between
+the spaces of continuous linear maps. This version is for the type alias
+`CompactConvergenceCLM`. -/
+def compactConvergenceCLMCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (E →L_c[𝕜] H) ≃L[𝕜] (F →L_c[𝕜] G) :=
+  e₁.compactConvergenceCLMCongrSL e₂
+
+@[simp]
+lemma compactConvergenceCLMCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
+    (φ : E →L_c[𝕜] H) (f : F) :
+    compactConvergenceCLMCongr e₁ e₂ φ f = e₂ (φ (e₁.symm f)) :=
+  rfl
+
+@[simp]
+lemma compactConvergenceCLMCongr_symm_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G)
+    (φ : F →L_c[𝕜] G) (e : E) :
+    (compactConvergenceCLMCongr e₁ e₂).symm φ e = e₂.symm (φ (e₁ e)) :=
+  rfl
+
+end Linear
+
+end ContinuousLinearEquiv
+
 end CompactSets
