@@ -47,7 +47,7 @@ variable {k : Type v} [Field k] [Algebra Λ k]
 /-- The category of local `Λ`-algebras with residue field `k` and their morphisms. An object of
 `LocAlgCat` consists of a local `Λ`-algebra `A` equipped with a surjective map to `k`. -/
 structure LocAlgCat (Λ : Type u) (k : Type v) [CommRing Λ] [Field k] [Algebra Λ k] : Type _ where
-  private mk ::
+  of (Λ k) ::
   /-- The underlying type of the local `Λ`-algebras. -/
   carrier : Type w
   [commRing : CommRing carrier]
@@ -91,15 +91,6 @@ lemma residue_surjective : Surjective (residue A) := A.surj
 
 lemma residue_eq_zero_iff {x : A} : residue A x = 0 ↔ x ∈ maximalIdeal A := by
   rw [← RingHom.mem_ker, ker_residue]
-
-variable (Λ k) in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-/-- The object in the category of local `Λ`-algebras associated to a type equipped with
-the appropriate typeclasses. This is a preferred way to construct a term of `LocAlgCat`. -/
-abbrev of (X : Type w) [CommRing X] [IsLocalRing X] [Algebra Λ X] [Algebra X k]
-    [IsScalarTower Λ X k] (h : Surjective (algebraMap X k)) : LocAlgCat Λ k :=
-  ⟨X, h⟩
 
 variable (X) in
 lemma coe_of : (of Λ k X hX : Type w) = X := rfl
