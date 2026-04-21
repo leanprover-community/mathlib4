@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Star
 public import Mathlib.Data.Int.Cast.Basic
 
 /-!
