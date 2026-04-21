@@ -67,19 +67,19 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
-theorem IsGaloisGroup.smul_eq_self' (H : Subgroup G) (C : Type*) [CommSemiring C] [Algebra C B]
+theorem IsGaloisGroup.smul_eq_self (H : Subgroup G) (C : Type*) [CommSemiring C] [Algebra C B]
     [IsGaloisGroup H C B] (g : G) (hg : g ∈ H) (x : C) :
     g • algebraMap C B x = algebraMap C B x :=
   smul_algebraMap (⟨g, hg⟩ : H) x
 
-theorem smul_mem_of_normal' (C : Type*) [CommSemiring C] [Algebra C B] (N : Subgroup G)
+theorem smul_mem_of_normal (C : Type*) [CommSemiring C] [Algebra C B] (N : Subgroup G)
     [hN : N.Normal] [hC : IsGaloisGroup N C B] (g : G) (x : C) :
     g • algebraMap C B x ∈ Set.range (algebraMap C B) := by
   have : ∀ (n : N), n • g • (algebraMap C B x) = g • algebraMap C B x := by
     intro n
     rw [← smul_assoc, MulAction.subgroup_smul_def, smul_eq_mul,
       show n * g = g * (g⁻¹ * n * g) by group, ← smul_eq_mul, smul_assoc,
-      IsGaloisGroup.smul_eq_self' G B N C (g⁻¹ * (n : G) * g)]
+      IsGaloisGroup.smul_eq_self G B N C (g⁻¹ * (n : G) * g)]
     exact hN.conj_mem' n n.prop g
   obtain ⟨y, hy⟩ := hC.isInvariant.isInvariant (g • algebraMap C B x) this
   simp [← hy]
@@ -298,20 +298,6 @@ theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H F L ↔ FixedPoints.intermediateField H = F :=
   ⟨fun _ ↦ fixedPoints_of_isGaloisGroup G K L H F, fun h ↦ of_fixedPoints_eq G K L H F h⟩
 
-theorem smul_eq_self [IsGaloisGroup H F L] (g : G) (hg : g ∈ H) (x : F) :
-    g • (x : L) = x :=
-  smul_algebraMap (⟨g, hg⟩ : H) x
-
-theorem smul_mem_of_normal (N : Subgroup G) [hN : N.Normal] [hF : IsGaloisGroup N F L] (g : G)
-    (x : F) : g • (x : L) ∈ F := by
-  have : ∀ (n : N), n • g • (x : L) = g • x := by
-    intro n
-    rw [← smul_assoc, MulAction.subgroup_smul_def, smul_eq_mul,
-      show n * g = g * (g⁻¹ * n * g) by group, ← smul_eq_mul, smul_assoc,
-      IsGaloisGroup.smul_eq_self G K L N F (g⁻¹ * (n : G) * g)]
-    exact hN.conj_mem' n n.prop g
-  obtain ⟨y, hy⟩ := hF.isInvariant.isInvariant (g • x) this
-  simp [← hy]
 
 @[simp]
 theorem finrank_fixedPoints_eq_card_subgroup [IsGaloisGroup G K L] :
@@ -481,21 +467,21 @@ variable (N : Subgroup G) [CommSemiring B] [Algebra B C]
 For `g : G` and `x : B`, `g • x` is the unique element of `B` whose image in `C` is
 `g • algebraMap B C x`, see `algebraMap_smulOfNormal`. -/
 @[implicit_reducible]
-noncomputable def sMulOfNormal [N.Normal] [IsGaloisGroup N B C] : SMul G B where
-  smul g x := (smul_mem_of_normal' G C B N g x).choose
+noncomputable def smulOfNormal [N.Normal] [IsGaloisGroup N B C] : SMul G B where
+  smul g x := (smul_mem_of_normal G C B N g x).choose
 
 @[simp]
 theorem algebraMap_smulOfNormal [N.Normal] [IsGaloisGroup N B C] (g : G) (x : B) :
-    letI := sMulOfNormal G B C
+    letI := smulOfNormal G B C
     algebraMap B C (g • x) = g • algebraMap B C x :=
-  (smul_mem_of_normal' G C B N g x).choose_spec
+  (smul_mem_of_normal G C B N g x).choose_spec
 
-/-- If `N` is normal and `IsGaloisGroup N B C`, the action `sMulOfNormal G B C` satisfies
+/-- If `N` is normal and `IsGaloisGroup N B C`, the action `smulOfNormal G B C` satisfies
 `SMulDistribClass G B C`. -/
 theorem smulDistribClass_smulOfNormal [N.Normal] [IsGaloisGroup N B C] :
-    letI := sMulOfNormal G B C
+    letI := smulOfNormal G B C
     SMulDistribClass G B C :=
-  let := sMulOfNormal G B C
+  let := smulOfNormal G B C
   ⟨fun g b c ↦ by simp [Algebra.smul_def]⟩
 
 variable [FaithfulSMul B C]
@@ -503,42 +489,42 @@ variable [FaithfulSMul B C]
 /-- The `SMul (G ⧸ N) B` structure induced by the action of `G` on `B`. This is well-defined
 since elements of `N` act trivially on `B`, as guaranteed by `IsGaloisGroup N B C`. -/
 @[implicit_reducible]
-noncomputable def sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
+noncomputable def smulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
     SMul (G ⧸ N) B :=
   ⟨fun g x ↦ Quotient.liftOn' g (· • x) fun g g' h ↦
     FaithfulSMul.algebraMap_injective B C (by
       rw [algebraMap.smul', algebraMap.smul', smul_eq_iff_eq_inv_smul,
-        ← smul_assoc, smul_eq_mul, smul_eq_self' G C N]
+        ← smul_assoc, smul_eq_mul, smul_eq_self G C N]
       rwa [← QuotientGroup.leftRel_apply])⟩
 
 @[simp]
-theorem coe_smul_sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] (g : G)
+theorem coe_smul_smulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] (g : G)
     (x : B) :
-    letI := sMulQuotient G B C
+    letI := smulQuotient G B C
     (g : G ⧸ N) • x = g • x := rfl
 
-/-- The action `sMulQuotient G B C` is compatible with the coercion `G → G ⧸ N`. -/
-theorem isScalarTower_sMulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
-    letI := sMulQuotient G B C
+/-- The action `smulQuotient G B C` is compatible with the coercion `G → G ⧸ N`. -/
+theorem isScalarTower_smulQuotient [SMul G B] [SMulDistribClass G B C] [IsGaloisGroup N B C] :
+    letI := smulQuotient G B C
     IsScalarTower G (G ⧸ N) B := by
-  let := sMulQuotient G B C
+  let := smulQuotient G B C
   refine ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ ?_⟩
   apply FaithfulSMul.algebraMap_injective B C
-  simp only [coe_smul_sMulQuotient, MulAction.Quotient.smul_coe, algebraMap.smul', smul_assoc]
+  simp only [coe_smul_smulQuotient, MulAction.Quotient.smul_coe, algebraMap.smul', smul_assoc]
 
-/-- The `sMulQuotient G B C` action promotes to a `MulAction (G ⧸ N) B`. -/
+/-- The `smulQuotient G B C` action promotes to a `MulAction (G ⧸ N) B`. -/
 @[implicit_reducible]
 noncomputable def mulActionQuotient [N.Normal] [SMul G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] :
-    letI := sMulQuotient G B C
+    letI := smulQuotient G B C
     MulAction (G ⧸ N) B :=
-  let _ := sMulQuotient G B C
+  let _ := smulQuotient G B C
   { one_smul x := by
       apply FaithfulSMul.algebraMap_injective B C
-      rw [← QuotientGroup.mk_one, coe_smul_sMulQuotient, algebraMap.smul', one_smul]
+      rw [← QuotientGroup.mk_one, coe_smul_smulQuotient, algebraMap.smul', one_smul]
     mul_smul g h x := Quotient.inductionOn₂' g h fun g h ↦ by
       apply FaithfulSMul.algebraMap_injective B C
-      simp [← QuotientGroup.mk_mul, coe_smul_sMulQuotient, algebraMap.smul', mul_smul] }
+      simp [← QuotientGroup.mk_mul, coe_smul_smulQuotient, algebraMap.smul', mul_smul] }
 
 @[simp]
 theorem coe_quotient_smul [N.Normal] [MulSemiringAction G B] [MulAction (G ⧸ N) B]
@@ -594,14 +580,14 @@ noncomputable section IntermediateField
 variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
 
 instance : SMul (G ⧸ N) F :=
-  let := sMulOfNormal G F L N
+  let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
-  sMulQuotient G F L N
+  smulQuotient G F L N
 
 instance : MulSemiringAction (G ⧸ N) F :=
-  let := sMulOfNormal G F L N
+  let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
-  have := isScalarTower_sMulQuotient G F L N
+  have := isScalarTower_smulQuotient G F L N
   let := mulActionQuotient G F L N
   let := mulSemiringAction_of_smulDistribClass F L G
   instMulSemiringActionQuotient G F N
@@ -610,9 +596,9 @@ instance : MulSemiringAction (G ⧸ N) F :=
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
 instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
     IsGaloisGroup (G ⧸ N) K F  :=
-  let := sMulOfNormal G F L N
+  let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
-  have := isScalarTower_sMulQuotient G F L N
+  have := isScalarTower_smulQuotient G F L N
   let := mulSemiringAction_of_smulDistribClass F L G
   have : SMulCommClass (G ⧸ N) K F :=
     ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦
@@ -624,7 +610,7 @@ variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 /-- If `G` is a finite Galois group for `L/K`, `N` is a normal subgroup that is a Galois group for
 `L/F`, and `H` is a subgroup that is a Galois group for `L/E` with `E ≤ F`, then the image of `H`
 under the canonical quotient map `G → G ⧸ N` is a Galois group for `F/E`. -/
-theorem quotientMap [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
+theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
     IsGaloisGroup (H.map (QuotientGroup.mk' N)) E F :=
   have hFN : IsGaloisGroup (G ⧸ N) K F := inferInstance
@@ -642,10 +628,10 @@ theorem quotientMap [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply])⟩⟩ }
 
+@[deprecated (since := "2026-04-21")] alias quotientMap := map_quotientMk'
+
 end IntermediateField
 
 end Quotient
 
 end IsGaloisGroup
-
-#lint

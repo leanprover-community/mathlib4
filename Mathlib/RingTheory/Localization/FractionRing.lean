@@ -588,10 +588,10 @@ instance smulDistribClass [SMulCommClass G A B] :
 
 variable [MulSemiringAction G L] [SMulDistribClass G B L]
 
-theorem faithfulSMul [FaithfulSMul G B] : FaithfulSMul G L :=
+protected theorem faithfulSMul [FaithfulSMul G B] : FaithfulSMul G L :=
   ⟨fun h ↦ eq_of_smul_eq_smul fun x ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L x)⟩
 
-theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
+protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
   ⟨fun g x y ↦ by
     obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
     obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
