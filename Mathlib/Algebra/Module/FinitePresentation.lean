@@ -315,10 +315,8 @@ theorem exists_exact_and_surjective [Module.FinitePresentation R M] :
   let g : (Fin n → R) →ₗ[R] M := iso.symm.toLinearMap.comp (Submodule.mkQ K)
   have h : g.ker = f.range := Eq.trans (b := K) (by simp [g]) <| by
     simp [← hS, f, gens, (Finset.equivFin S).symm.surjective.range_comp Subtype.val]
-  have : Function.Surjective g := by
-    simp only [g, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
-      Submodule.mkQ_surjective]
-  exact ⟨n, m, f, g, LinearMap.exact_iff.mpr h, this⟩
+  refine ⟨n, m, f, g, LinearMap.exact_iff.mpr h, ?_⟩
+  simp [g, Submodule.mkQ_surjective, LinearEquiv.surjective]
 
 end Module.FinitePresentation
 
