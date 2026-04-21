@@ -381,14 +381,14 @@ noncomputable def fderivLM :
     else 0
   map_add' f g := by
     split_ifs with hk
-    · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
       ext
       simp [fderiv_add (f.contDiff.differentiable hk'.ne').differentiableAt
                        (g.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
   map_smul' c f := by
     split_ifs with hk
-    · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
+    · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
     · simp
@@ -438,13 +438,13 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
     · simp
@@ -820,7 +820,7 @@ lemma monoCLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
-    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i+1} f := by
+    N[𝕜]_{K, k, i} (fderivLM 𝕜 n k f) ≤ N[𝕜]_{K, n, i + 1} f := by
   by_cases! hk : k + 1 ≤ n
   · rw [ContDiffMapSupportedIn.seminorm_le_iff 𝕜 (apply_nonneg ..)]
     intro hi x hx
@@ -830,7 +830,7 @@ theorem seminorm_fderivLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   · simp [fderivLM_apply_of_gt 𝕜 f hk]
 
 theorem seminorm_fderivLM_top {i : ℕ} (f : 𝓓_{K}(E, F)) :
-    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i+1} f := by
+    N[𝕜]_{K, i} (fderivLM 𝕜 ⊤ ⊤ f) = N[𝕜]_{K, i + 1} f := by
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_eq_iSup_norm,
     norm_iteratedFDeriv_fderiv]
 

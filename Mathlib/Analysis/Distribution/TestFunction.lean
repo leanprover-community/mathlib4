@@ -320,7 +320,6 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
 
 @[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
@@ -569,7 +568,7 @@ lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
     (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
   rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
   split_ifs with hk
-  · have hk' : 0 < (n : WithTop ℕ∞) := mod_cast (ENat.add_one_pos.trans_le hk)
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
     rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
   · rfl
 

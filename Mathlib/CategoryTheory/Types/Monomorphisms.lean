@@ -31,29 +31,31 @@ universe v' u' u
 
 namespace CategoryTheory.Types
 
-open MorphismProperty Limits
+open MorphismProperty Limits ConcreteCategory
 
 instance : (monomorphisms (Type u)).IsStableUnderCobaseChange where
   of_isPushout {X₁ X₂ X₃ X₄ t l r b} sq ht := by
     simp only [monomorphisms.iff] at ht ⊢
     exact Limits.Types.pushoutCocone_inr_mono_of_isColimit sq.flip.isColimit
 
-instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'} (monomorphisms (Type u)) where
+set_option backward.isDefEq.respectTransparency false in
+instance : MorphismProperty.IsStableUnderFilteredColimits.{v', u'}
+    (monomorphisms (Type u)) where
   isStableUnderColimitsOfShape J _ _ := ⟨fun F₁ F₂ c₁ c₂ hc₁ hc₂ f hf φ hφ ↦ by
     simp only [functorCategory, monomorphisms.iff, mono_iff_injective] at hf ⊢
-    replace hφ (j : J) := congr_fun (hφ j)
-    dsimp at hφ
+    replace hφ (j : J) := congr_hom (hφ j)
+    simp only [Functor.const_obj_obj, comp_apply] at hφ
     intro x₁ y₁ h
     obtain ⟨j, x₁, y₁, rfl, rfl⟩ : ∃ (j : J) (x₁' y₁' : F₁.obj j),
         x₁ = c₁.ι.app j x₁' ∧ y₁ = c₁.ι.app j y₁' := by
       obtain ⟨j, x₁, rfl⟩ := Types.jointly_surjective_of_isColimit hc₁ x₁
       obtain ⟨l, y₁, rfl⟩ := Types.jointly_surjective_of_isColimit hc₁ y₁
-      exact ⟨_,  _, _, congr_fun (c₁.w (IsFiltered.leftToMax j l)).symm _,
-        congr_fun (c₁.w (IsFiltered.rightToMax j l)).symm _⟩
-    rw [hφ, hφ] at h
+      exact ⟨_,  _, _, congr_hom (c₁.w (IsFiltered.leftToMax j l)).symm _,
+        congr_hom (c₁.w (IsFiltered.rightToMax j l)).symm _⟩
+    simp only [Functor.const_obj_obj, hφ] at h
     obtain ⟨k, α, hk⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc₂ _ _).1 h
-    simp only [← FunctorToTypes.naturality] at hk
-    rw [← c₁.w α, types_comp_apply, types_comp_apply, hf _ hk]⟩
+    simp only [← NatTrans.naturality_apply] at hk
+    rw [← c₁.w α, comp_apply, comp_apply, hf _ hk]⟩
 
 instance (T : Type u') : MorphismProperty.IsStableUnderCoproductsOfShape
     (monomorphisms (Type u)) T :=
@@ -67,10 +69,10 @@ instance (T : Type u') : MorphismProperty.IsStableUnderCoproductsOfShape
       (coproductIsCoproduct X₁) x₂
     simp only [cofan_mk_inj] at hx ⊢
     replace hx : Sigma.ι X₂ i₁ (f i₁ x₁) = Sigma.ι X₂ i₂ (f i₂ x₂) := by
-      have h₁ := congr_fun (Sigma.ι_map f i₁) x₁
-      have h₂ := congr_fun (Sigma.ι_map f i₂) x₂
-      dsimp at h₁ h₂
-      rw [← h₁, ← h₂, hx]
+      have h₁ := congr_hom (Sigma.ι_map f i₁) x₁
+      have h₂ := congr_hom (Sigma.ι_map f i₂) x₂
+      simp only [comp_apply] at h₁ h₂ hx
+      simpa [← h₁, ← h₂]
     obtain rfl := Cofan.eq_of_inj_apply_eq_of_isColimit (coproductIsCoproduct X₂) _ _ hx
     obtain rfl := h _ (Cofan.inj_injective_of_isColimit (coproductIsCoproduct X₂) i₁ hx)
     rfl)

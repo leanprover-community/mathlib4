@@ -557,13 +557,11 @@ protected theorem orthogonalProjection_apply_eq_sum {U : Submodule 𝕜 E} [U.Ha
 @[deprecated (since := "2025-12-31")] alias orthogonalProjection_eq_sum :=
   OrthonormalBasis.orthogonalProjection_apply_eq_sum
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem orthogonalProjection_eq_sum_rankOne {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (b : OrthonormalBasis ι 𝕜 U) :
     U.orthogonalProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i : E) := by
   ext; simp [b.orthogonalProjection_apply_eq_sum]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem starProjection_eq_sum_rankOne {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
     (b : OrthonormalBasis ι 𝕜 U) :
     U.starProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i : E) (b i : E) := by
@@ -737,7 +735,6 @@ protected theorem span_apply [DecidableEq E] {v' : ι' → E} (h : Orthonormal �
 
 open Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite orthonormal family of vectors whose span has trivial orthogonal complement is an
 orthonormal basis. -/
 protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) :
@@ -1157,7 +1154,6 @@ variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
