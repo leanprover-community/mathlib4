@@ -214,7 +214,6 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
-  let J_rees := (J.map Polynomial.C).comap (reesAlgebra I).val
   have := reesAlgebra_quotient_isNoetherian I fg
   obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
     exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
@@ -252,6 +251,17 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
       simp only [coeffs'_spec_aux, Pi.add_apply, left_eq_add]
       intro i gt
       exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).2.1 i gt
+    let coeffs'_seq (i : ι) : ℕ → R := fun n ↦ (coeffs' (n + d)).1 i
+    have coeffs'_seq_cauchy (i : ι) : AdicCompletion.IsAdicCauchy I R (coeffs'_seq i) := by
+      rw [AdicCompletion.isAdicCauchy_iff]
+      intro n
+      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
+      simp only [coeffs'_seq]
+      rw [add_assoc n 1 d, add_comm 1 d, ← add_assoc n d 1]
+      have : n ≤ n + d + 1 - deg i := by
+        have := led i
+        omega
+      exact Ideal.pow_le_pow_right this (coeffs'_spec (n + d) i)
     sorry
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
