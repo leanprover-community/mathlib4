@@ -658,7 +658,38 @@ theorem mem_divisors : ∀ {z} {x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
   | -[n +1], (x : ℕ)
   | (n + 1 : ℕ), (x : ℕ)
   | (n + 1 : ℕ), -[x +1] => by
-    simpa [divisors, -Nat.cast_add, -natCast_add] using Iff.symm ofNat_dvd
+    simpa [divisors, -Nat.cast_add, -natCast_add] using ofNat_dvd.symm
+
+theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
+
+theorem ne_zero_of_mem_divisors (h : x ∈ divisors z) : z ≠ 0 := (mem_divisors.mp h).2
+
+theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem neg_one_mem_divisors : -1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+@[simp]
+lemma divisors_zero : divisors 0 = ∅ := by
+  ext
+  simp
+
+@[simp]
+lemma nonempty_divisors : (divisors z).Nonempty ↔ z ≠ 0 :=
+  ⟨fun ⟨z, hz⟩ hx ↦ by simp [hx] at hz, fun hx ↦ ⟨_, one_mem_divisors.mpr hx⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 := by
+  contrapose!; exact nonempty_divisors
+
+@[simp]
+theorem divisors_one : divisors 1 = {1, -1} := rfl
+
+lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
+  mem_divisors.mpr ⟨dvd_rfl, hz⟩
+
+@[simp] theorem divisors_neg : divisors (-z) = divisors z := by
+  ext x
+  simp
 
 @[simp]
 lemma mem_divisorsAntidiag :
@@ -699,6 +730,14 @@ lemma mem_divisorsAntidiag :
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
     simp +contextual [eq_comm]
+
+theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
+  ext x
+  simp [Eq.comm, Dvd.dvd]
+
+theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
+  ext x
+  simp [Eq.comm, mul_comm, Dvd.dvd]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
 
