@@ -544,7 +544,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
           _ = b := by field_simp [hn_pos'.ne']; ring⟩
     have ht_strict : StrictMono t := by
       intro i j hij
-      change (t i : ℝ) < (t j : ℝ)
+      rw [← Subtype.coe_lt_coe]
       simp only [t]
       have hij' : (i : ℝ) < (j : ℝ) := Nat.cast_lt.mpr hij
       have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
