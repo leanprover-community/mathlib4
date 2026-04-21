@@ -31,6 +31,13 @@ properties about them.
 and `κ` independently. This corresponds to the equation of a Positive Markov category.
 See Example 11.25 of [fritz2020].
 
+## Implementation notes
+
+`parallelComp_id_comp_copy_comp` is true only when considering Markov kernels. To see why, consider
+the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_
+{\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their
+composition is deterministic, the equation fails.
+
 ## References
 
 * [A synthetic approach to
