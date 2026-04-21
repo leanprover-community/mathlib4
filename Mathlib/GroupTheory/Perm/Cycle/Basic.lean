@@ -641,7 +641,7 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
   intro x hx
   simp only [Equiv.trans_apply]
   obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  simp [← Perm.mul_apply, ← pow_succ']
+  simp [← Perm.mul_apply, ← pow_succ', -Perm.mul_apply]
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     IsConj σ τ ↔ #σ.support = #τ.support where
