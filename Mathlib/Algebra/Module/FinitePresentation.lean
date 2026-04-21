@@ -304,7 +304,7 @@ instance pi {ι : Type*} (M : ι → Type*)
   · introv hN hN'
     infer_instance
 
-variable (R M)
+variable (R M) in
 theorem exists_exact_and_surjective [Module.FinitePresentation R M] :
     ∃ (n m : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
       Function.Exact f g ∧ Function.Surjective g := by
