@@ -308,6 +308,14 @@ theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.ce
   simp [commutator, Subgroup.commutator_eq_bot_iff_le_centralizer]
 
 @[to_additive]
+theorem commutator_eq_bot_iff : commutator G = ⊥ ↔ IsMulCommutative G := by
+  rw [commutator_eq_bot_iff_center_eq_top, center_eq_top_iff]
+
+@[to_additive]
+theorem commutator_eq_bot [hG : IsMulCommutative G] : commutator G = ⊥ :=
+  (commutator_eq_bot_iff G).mpr hG
+
+@[to_additive]
 lemma commutator_centralizer_commutator_le_center :
     ⁅centralizer (commutator G : Set G), centralizer (commutator G)⁆ ≤ Subgroup.center G := by
   rw [← Subgroup.centralizer_univ, ← Subgroup.coe_top, ←
