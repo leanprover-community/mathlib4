@@ -5,7 +5,7 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Tactic 
+import Mathlib.Tactic
 
 open scoped InnerProductSpace
 
@@ -80,7 +80,7 @@ structure FrenetFrame where
   /-- Binormal vector `B(t) = T(t) × N(t)`. -/
   binormal : ℝ³
 
-/-- The **Frenet trihedron** `{T(t), N(t), B(t)}` of a curve `α` 
+/-- The **Frenet trihedron** `{T(t), N(t), B(t)}` of a curve `α`
   parametrized by arc length at `t`. -/
 noncomputable def frenetTrihedron (α : ParametrizedDifferentiableCurve)
     (h : isArcLengthParametrized α) (t : ℝ) : FrenetFrame where
@@ -117,11 +117,11 @@ private lemma dot_tangent (α : ParametrizedDifferentiableCurve)
 
 
 private lemma orthogonality_tangent_normal (α : ParametrizedDifferentiableCurve)
-      (h : isArcLengthParametrized α) (t : ℝ) (ht : t ∈ Set.Ioo α.a α.b) : 
-    ⟪curveTangent α h t, curveNormal α h t⟫_ℝ = 0 := by 
+      (h : isArcLengthParametrized α) (t : ℝ) (ht : t ∈ Set.Ioo α.a α.b) :
+    ⟪curveTangent α h t, curveNormal α h t⟫_ℝ = 0 := by
     simp only [curveTangent, curveNormal]
     rw [real_inner_smul_right]
-    apply mul_eq_zero_of_right 
+    apply mul_eq_zero_of_right
     -- T is differentiable at t (from C^∞ of α)
     have hdiff : DifferentiableAt ℝ (curveTangent α h) t := by
       -- ContDiffOn ℝ ⊤ α implies ContDiffOn ℝ 1 (deriv α) on the open interval
@@ -242,7 +242,7 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve)
     deriv (curveNormal α h) t =
       -(Curvature α t) • curveTangent α h t + Torsion α h t • curveBinormal α h t := by
   set e := EuclideanSpace.equiv (Fin 3) ℝ
-  have hn : curveNormal α h t = 
+  have hn : curveNormal α h t =
   e.symm (crossProduct (e (curveBinormal α h t)) (e (curveTangent α h t))) :=
       binormal_cross α h t ht
   have hn' : deriv (curveNormal α h) t =
@@ -253,9 +253,9 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve)
         fun s => e.symm (crossProduct (e (curveBinormal α h s)) (e (curveTangent α h s))) :=
       Filter.eventually_of_mem (isOpen_Ioo.mem_nhds ht) (fun s hs => binormal_cross α h s hs)
     rw [heq.deriv_eq]
-    -- HasDerivAt for e ∘ curveBinormal: curveBinormal is smooth (C^∞ of α), 
+    -- HasDerivAt for e ∘ curveBinormal: curveBinormal is smooth (C^∞ of α),
     --then chain rule with CLM e
-    have hB : HasDerivAt (fun s => e (curveBinormal α h s)) (e (deriv (curveBinormal α h) t)) t 
+    have hB : HasDerivAt (fun s => e (curveBinormal α h s)) (e (deriv (curveBinormal α h) t)) t
     := by
       have hBdiff : DifferentiableAt ℝ (curveBinormal α h) t := by
         have hTdiff : DifferentiableAt ℝ (curveTangent α h) t := by
