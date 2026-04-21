@@ -343,8 +343,7 @@ instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomCl
 instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
     [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
     : StarRing (DirectLimit G f) where
-  star_mul := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, star_def, star_mul, mul_def]
-  star_add := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [add_def, star_def, star_add, add_def]
+  star_add := star_add
 
 instance [∀ i, NonUnitalSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalSemiring (DirectLimit G f) where
