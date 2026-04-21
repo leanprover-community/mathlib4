@@ -546,6 +546,7 @@ nonrec def of (i) : G i →ₙ+* DirectLimit G f where
   map_zero' := (zero_def i).symm
   map_add' _ _ := (add_def ..).symm
 
+@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [NonUnitalNonAssocSemiring P]
 variable (G f) in
@@ -560,6 +561,17 @@ noncomputable def lift
   map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]
   map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
   map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add (g i)]
+
+variable (g : ∀ i, G i →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙ+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)):
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
 
 end NonUnitalRing
 
