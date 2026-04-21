@@ -302,13 +302,6 @@ def relativeGluingData {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
   natTrans := Functor.whiskerRight α.rightOp Scheme.Spec ≫ (restrictIsoSpec X).inv
   equifibered := (H.rightOp.whiskerRight _).comp (.of_isIso _)
 
-instance {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
-    {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F}
-    (H : α.Coequifibered) : ((relativeGluingData H).functor ⋙ forget).IsLocallyDirected :=
-  -- Why doesn't typeclass synthesis work here?
-  -- It does fire if one adds `(C := no_index(_))` to the composition in the instance.
-  Cover.RelativeGluingData.instIsLocallyDirectedI₀CompFunctorForgetOfIsThin ..
-
 @[deprecated "By `inferInstance`." (since := "2026-02-01")]
 lemma PreservesLocalization.isLocallyDirected (F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat)
     (α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F)

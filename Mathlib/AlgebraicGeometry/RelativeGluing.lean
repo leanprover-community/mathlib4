@@ -81,7 +81,11 @@ instance {i j : 𝒰.I₀} (hij : i ⟶ j) : IsOpenImmersion (d.functor.map hij)
   apply MorphismProperty.of_isPullback (d.equifibered hij).flip
   infer_instance
 
-instance [Quiver.IsThin 𝒰.I₀] : (d.functor ⋙ Scheme.forget).IsLocallyDirected := by
+-- Note: the no index is necessary or else the instance does not fire correctly when the open
+-- cover is an abbrev and lean gets confused about the underlying category.
+-- This should not hamper performance as the `⋙ Scheme.forget` part is still keyed.
+instance [Quiver.IsThin 𝒰.I₀] :
+    (d.functor.comp (C := no_index(_)) Scheme.forget).IsLocallyDirected := by
   apply isLocallyDirected_of_equifibered_of_injective d.natTrans d.equifibered
   intro i j hij
   exact (d.functor.map hij).injective
