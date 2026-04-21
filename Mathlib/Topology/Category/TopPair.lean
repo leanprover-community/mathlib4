@@ -203,4 +203,20 @@ theorem equivalence : Equivalence (@Homotopic X Y) :=
 
 end Homotopic
 
+section Embedding
+
+structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
+  fst : Topology.IsEmbedding (Hom.fst f)
+  snd : Topology.IsEmbedding (Hom.snd f)
+
+end Embedding
+
+section Complement
+
+protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
+  fst : TopCat.IsCompl (Hom.fst f) (Hom.fst g)
+  snd : TopCat.IsCompl (Hom.snd f) (Hom.snd g)
+
+end Complement
+
 end TopPair
