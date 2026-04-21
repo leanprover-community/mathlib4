@@ -349,9 +349,8 @@ instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : Grothendiec
       Sieve.functorPushforward_ofArrows, Sieve.overEquiv_ofArrows]
     exact E'.mem₀
   · intro i₁ i₂ W p₁ p₂ w
-    rw [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁]
-    simp_rw [← PreOneHypercover.map_comp, Over.post_forget_eq_forget_comp,
-      PreOneHypercover.map_comp]
+    simp_rw [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁,
+      ← PreOneHypercover.map_comp, Over.post_forget_eq_forget_comp, PreOneHypercover.map_comp]
     exact E'.mem₁ _ _ _ _ congr($(w).left)
 
 open Limits
