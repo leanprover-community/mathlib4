@@ -20,7 +20,7 @@ the Jordan–Chevalley decomposition.
 * `LieAlgebra.ad_mem_adjoin_of_isNilpotent`: for a JC decomposition, `ad(n) ∈ K[ad(n + s)]`.
 -/
 
-@[expose] public section
+public section
 
 namespace LieAlgebra
 
