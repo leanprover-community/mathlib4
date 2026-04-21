@@ -245,9 +245,8 @@ def baseCotangentMap [Algebra.IsIntegral Λ k] (A : LocAlgCat.{w} Λ k) :
 @[simp]
 lemma baseCotangentMap_tmul [Algebra.IsIntegral Λ k] (r : k) (a : CotangentSpace Λ) :
     A.baseCotangentMap (r ⊗ₜ a) = r • ((maximalIdeal Λ).mapCotangent (maximalIdeal A)
-      (Algebra.ofId Λ A) (by
-        change _ ≤ Ideal.comap (algebraMap Λ A) _
-        rw [comap_algebraMap_maximalIdeal]) a) := rfl
+      (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe, Algebra.toRingHom_ofId,
+        comap_algebraMap_maximalIdeal]) a) := rfl
 
 @[simp]
 lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] (f : A ⟶ B)
