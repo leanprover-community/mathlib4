@@ -359,6 +359,8 @@ lemma exists_units_eq_smul_zpow_of_irreducible
 
 open Submodule.IsPrincipal
 
+/-- Every nonzero ideal in a DVR is a power of the maximal ideal.
+See `idealOrderIsoENat` for a precise classification of ideals in a DVR. -/
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, s = Ideal.span {ϖ ^ n} := by
   have gen_ne_zero : generator s ≠ 0 := by
@@ -510,7 +512,7 @@ lemma addVal_eq_iff_associated (x y : R) :
 variable (R)
 
 /-- The ideals of a discrete valuation ring are exactly the powers of the maximal ideal. -/
-@[simps]
+@[simps apply]
 noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
   toFun I := .toDual (addVal R (generator I))
   invFun n := n.ofDual.recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n)
@@ -525,17 +527,26 @@ noncomputable def idealOrderIsoENat : Ideal R ≃o ENatᵒᵈ where
       rw [hu, addVal_def' u hϖ, span_singleton_mul_left_unit u.isUnit,
         ENat.recTopCoe_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
   right_inv n := by
-    let k := n.ofDual
-    change addVal R (generator (k.recTopCoe ⊥ fun n ↦ maximalIdeal R ^ n)) = k
-    induction k
-    case top => simp
-    case coe k =>
+    obtain ⟨k, rfl⟩ := OrderDual.toDual.surjective n
+    dsimp
+    induction k with
+    | top => simp
+    | coe k =>
       obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
-      rw [ENat.recTopCoe_coe, hϖ.maximalIdeal_eq, span_singleton_pow,
-        ← hϖ.addVal_pow k, addVal_eq_iff_associated]
+      rw [OrderDual.toDual_inj, ENat.recTopCoe_coe, hϖ.maximalIdeal_eq,
+        span_singleton_pow, ← hϖ.addVal_pow k, addVal_eq_iff_associated]
       exact associated_generator_span_self (ϖ ^ k)
   map_rel_iff' {I J} := by
     simp [addVal_le_iff_dvd, ← span_singleton_le_span_singleton]
+
+@[simp]
+theorem idealOrderIsoENat_symm_apply_coe (n : ℕ) :
+    (idealOrderIsoENat R).symm (.toDual n) = maximalIdeal R ^ n :=
+  rfl
+
+theorem idealOrderIsoENat_symm_apply_coe_of_irreducible (n : ℕ) {ϖ : R} (hϖ : Irreducible ϖ) :
+    (idealOrderIsoENat R).symm (.toDual n) = Ideal.span {ϖ ^ n} := by
+  rw [idealOrderIsoENat_symm_apply_coe, hϖ.maximalIdeal_eq, span_singleton_pow]
 
 theorem coheight_pow_maximalIdeal (n : ℕ) : Order.coheight (maximalIdeal R ^ n) = n := by
   simpa only [Order.coheight_toDual, Order.height_enat] using
