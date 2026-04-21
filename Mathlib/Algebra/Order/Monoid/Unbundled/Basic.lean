@@ -124,7 +124,7 @@ theorem mul_lt_mul_iff_right [MulRightStrictMono α]
 -- Note: in this section, we use `@[gcongr high]` so that these lemmas have a higher priority than
 -- lemmas like `mul_lt_mul_of_pos_left`, which have an extra side condition.
 
-@[to_additive (attr := gcongr high - 1)]
+@[to_additive (attr := gcongr high)]
 theorem mul_lt_mul_right [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
@@ -135,7 +135,7 @@ theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
     b < c :=
   ContravariantClass.elim _ bc
 
-@[to_additive (attr := gcongr high - 1)]
+@[to_additive (attr := gcongr high)]
 theorem mul_lt_mul_left [i : MulRightStrictMono α] {b c : α} (bc : b < c)
     (a : α) :
     b * a < c * a :=
