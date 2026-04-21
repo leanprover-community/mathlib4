@@ -77,6 +77,12 @@ public meta section
 
 open Lean Meta Elab Tactic
 
+structure Convert.Config extends Congr!.Config where
+  partialApp := false
+  sameFun := true
+
+declare_config_elab Convert.elabConfig Convert.Config
+
 /--
 Close the goal `g` using `Eq.mp v e`,
 where `v` is a metavariable asserting that the type of `g` and `e` are equal.
@@ -192,7 +198,7 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
 elab_rules : tactic
 | `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
-    let config ← Congr!.elabConfig (mkOptionalNode cfg)
+    let config := { ← Convert.elabConfig cfg with }
     let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
@@ -226,14 +232,14 @@ pattern-matched, like `rintro` would, using the `with` keyword.
 * `convert_to (config := cfg) t` uses the configuration options in `cfg` to control the congruence
   rules (see `Congr!.Config`).
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convertTo) "convert_to" Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? (Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert_to $[$cfg:config]? $[←%$sym]? $newType $[using $n]?
+| `(tactic| convert_to $cfg $[←%$sym]? $newType $[using $n]?
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
-  let config ← Congr!.elabConfig (mkOptionalNode cfg)
+  let config := { ← Convert.elabConfig cfg with }
   let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
