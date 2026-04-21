@@ -468,14 +468,14 @@ If `α : BasedPath x₀` has endpoint in a neighborhood `U` satisfying the path-
 element of `N` has endpoint in `U` and lies in the same path component of `endpoint ⁻¹' U` as
 `α`. -/
 theorem exists_open_nhd_pathComponent_preimage
-    (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U) :
     ∃ N : Set (BasedPath x₀), IsOpen N ∧ α ∈ N ∧
       N ⊆ endpoint (x₀ := x₀) ⁻¹' U ∧
       ∀ β ∈ N, JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) α β := by
   classical
-  obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_partition_in_slsc_neighborhoods hX
+  obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_partition_in_slsc_neighborhoods
   -- Rule out `n = 0`; the rest of the proof assumes `n = n' + 1`.
   match n, part, T, hα_tube with
   | 0, part, _, _ => exact (IntervalPartition.not_zero part).elim
@@ -655,14 +655,14 @@ theorem exists_open_nhd_pathComponent_preimage
 
 /-- For an open neighborhood `U`, path components of `endpoint ⁻¹' U` are open. -/
 theorem isOpen_pathComponent_preimage
-    (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
     {U : Set X} (hU_open : IsOpen U) (α : BasedPath x₀) :
     IsOpen (pathComponentIn (endpoint (x₀ := x₀) ⁻¹' U) α) := by
   apply isOpen_iff_mem_nhds.mpr
   intro β hβ
   have hβ_end_U : endpoint β ∈ U := hβ.target_mem
   obtain ⟨N, hN_open, hβ_N, _, hN_joined⟩ :=
-    exists_open_nhd_pathComponent_preimage hX hU_open β hβ_end_U
+    exists_open_nhd_pathComponent_preimage hU_open β hβ_end_U
   refine mem_nhds_iff.mpr ⟨N, ?_, hN_open, hβ_N⟩
   intro γ hγ_N
   exact hβ.trans (hN_joined γ hγ_N)

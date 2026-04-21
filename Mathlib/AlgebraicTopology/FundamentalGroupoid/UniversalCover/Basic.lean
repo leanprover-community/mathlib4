@@ -288,14 +288,14 @@ theorem ofBasedPath_preimage_sheet (U : Set X) (hxU : x ∈ U)
   · intro α hα
     exact ⟨α, hα, rfl⟩
 
-theorem isOpen_sheet [LocPathConnectedSpace X] (hX : SemilocallySimplyConnected X)
+theorem isOpen_sheet [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
     (U : Set X) (hU_open : IsOpen U) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     IsOpen (sheet U hxU q) := by
   rw [(isQuotientMap_ofBasedPath x₀).isOpen_preimage.symm]
   rw [ofBasedPath_preimage_sheet]
   induction q using Quotient.inductionOn with
-  | h p => exact BasedPath.isOpen_pathComponent_preimage hX hU_open _
+  | h p => exact BasedPath.isOpen_pathComponent_preimage hU_open _
 
 theorem mem_sheet_self {U : Set X} (hxU : x ∈ U) (p : Path x₀ x) :
     ofBasedPath x₀ (BasedPath.ofPath p) ∈ sheet U hxU (Path.Homotopic.Quotient.mk p) :=

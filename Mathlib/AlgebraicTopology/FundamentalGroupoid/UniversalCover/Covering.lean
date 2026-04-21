@@ -41,11 +41,11 @@ variable {x₀ x : X}
 /-- The endpoint projection `proj` is a covering map, assuming `X` is semilocally simply
 connected, locally path-connected, and path-connected. -/
 theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X) :
+    [SemilocallySimplyConnectedSpace X] (x₀ : X) :
     IsCoveringMap (proj (x₀ := x₀)) := by
   intro x
   -- Get a good neighborhood of `x`.
-  obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood hX x
+  obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
   -- Shorthand.
   let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q => sheet U hxU q
   -- Nonempty instances needed by `trivializationDiscrete`.
@@ -59,7 +59,7 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
     intro q W hWU
     constructor
     · intro hW_open
-      exact (hW_open.preimage (continuous_proj x₀)).inter (isOpen_sheet hX U hU_open hxU q)
+      exact (hW_open.preimage (continuous_proj x₀)).inter (isOpen_sheet U hU_open hxU q)
     · intro h_open_inter
       -- Use surjectivity of sheet → U and `isOpenMap_proj`.
       have h_image_eq : proj (x₀ := x₀) '' (proj (x₀ := x₀) ⁻¹' W ∩ S q) = W := by
@@ -85,7 +85,7 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   have h_exhaustive : proj (x₀ := x₀) ⁻¹' U ⊆ ⋃ q, S q :=
     sheet_exhaustive hU_pathConn hxU
   haveI _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
-    Path.Homotopic.Quotient.discreteTopology hX x₀ x
+    Path.Homotopic.Quotient.discreteTopology x₀ x
   refine (IsEvenlyCovered.of_trivialization (t :=
     IsOpen.trivializationDiscrete (f := proj (x₀ := x₀))
       S U hU_open h_open_iff h_inj h_surj h_disjoint h_exhaustive) ?_).to_isEvenlyCovered_preimage
@@ -94,9 +94,9 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
 
 /-- Fibers of the universal cover are discrete, as for any covering map. -/
 theorem discreteTopology_fiber [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ x : X) :
+    [SemilocallySimplyConnectedSpace X] (x₀ x : X) :
     DiscreteTopology (proj (x₀ := x₀) ⁻¹' {x}) :=
-  ((isCoveringMap hX x₀) x).discreteTopology_fiber
+  ((isCoveringMap x₀) x).discreteTopology_fiber
 
 /-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
 private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
@@ -165,9 +165,9 @@ theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
 simply-connectedness proof. -/
 private theorem liftPath_apply_one_eq_ofBasedPath_append
     [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) {α : BasedPath x₀} {y : X}
+    [SemilocallySimplyConnectedSpace X] {α : BasedPath x₀} {y : X}
     (γ : Path (BasedPath.endpoint α) y) :
-    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+    (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
       (by simpa [BasedPath.endpoint] using γ.source) 1 =
       ofBasedPath x₀ (BasedPath.append α γ) := by
   let Γ : C(I, UniversalCover x₀) := by
@@ -199,14 +199,14 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
       · simpa [BasedPath.endpoint] using γ.source
     exact ofBasedPath_eq_of_homotopic_toPath (x₀ := x₀) h0_end h0_hom
   have hΓ_eq_lift :
-      Γ = (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+      Γ = (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
         (by simpa [BasedPath.endpoint] using γ.source) := by
-    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
+    refine ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
       (e := ofBasedPath x₀ α)
       (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2 ?_
     exact ⟨hΓ_lifts, hΓ_zero⟩
   calc
-    (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α)
+    (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
         (by simpa [BasedPath.endpoint] using γ.source) 1 = Γ 1 := by
       simp [hΓ_eq_lift]
     _ = ofBasedPath x₀ (BasedPath.append α γ) := by
@@ -216,7 +216,7 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
 
 /-- The universal cover is simply connected. -/
 theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X) :
+    [SemilocallySimplyConnectedSpace X] (x₀ : X) :
     SimplyConnectedSpace (UniversalCover x₀) := by
   rw [simply_connected_iff_loops_nullhomotopic]
   refine ⟨pathConnectedSpace x₀, ?_⟩
@@ -229,16 +229,16 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
     rfl
   have hp_eq_lift :
       (p : C(I, UniversalCover x₀)) =
-        (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
-    refine ((isCoveringMap hX x₀).eq_liftPath_iff' (γ := γ)
+        (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
+    refine ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
       (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2 ?_
     exact ⟨by ext t; rfl, p.source⟩
   have h_end : ofBasedPath x₀ (BasedPath.append α γ) = ofBasedPath x₀ α := by
     calc
       ofBasedPath x₀ (BasedPath.append α γ) =
-          (isCoveringMap hX x₀).liftPath γ (ofBasedPath x₀ α) hγ0 1 := by
+          (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 1 := by
         symm
-        exact liftPath_apply_one_eq_ofBasedPath_append hX γ
+        exact liftPath_apply_one_eq_ofBasedPath_append γ
       _ = p 1 := by
         rw [← hp_eq_lift]
         rfl
@@ -281,7 +281,7 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
           rw [h_append_eq]
       _ = Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by simp
   rw [← Path.Homotopic.Quotient.eq]
-  apply (isCoveringMap hX x₀).injective_path_homotopic_map
+  apply (isCoveringMap x₀).injective_path_homotopic_map
     (ofBasedPath x₀ α) (ofBasedPath x₀ α)
   simpa [γ, Path.Homotopic.Quotient.mk_map] using hγ_null
 
@@ -294,9 +294,9 @@ This is a thin wrapper over `IsCoveringMap.existsUnique_continuousMap_lifts` app
 theorem existsUnique_continuousMap_lifts {A : Type*} [TopologicalSpace A]
     [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     [LocPathConnectedSpace X] [PathConnectedSpace X]
-    (hX : SemilocallySimplyConnected X) (x₀ : X)
+    [SemilocallySimplyConnectedSpace X] (x₀ : X)
     (f : C(A, X)) (a₀ : A) (e₀ : UniversalCover x₀) (he : proj e₀ = f a₀) :
     ∃! F : C(A, UniversalCover x₀), F a₀ = e₀ ∧ proj ∘ F = f :=
-  (isCoveringMap hX x₀).existsUnique_continuousMap_lifts f a₀ e₀ he
+  (isCoveringMap x₀).existsUnique_continuousMap_lifts f a₀ e₀ he
 
 end UniversalCover
