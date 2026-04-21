@@ -39,6 +39,14 @@ The pairing integral is defined through the extension process described in the f
 
 3. Define the pairing integral on integrable functions `f` as `setToFun (...) f`.
 
+## Notations
+
+* `Bμ` is the pair of `B : E →L[ℝ] F →L[ℝ] G` and `μ : VectorMeasure X F`.
+* TODO `∫ᵛ x, B (f x) ∂Bμ` : the `G`-v)alued integral of an `E`-valued function `f` against the
+  vector measure paired through `B`.
+* `∫ x, f x ∂•μ` : the special case where `f` is a `F`-valued function and `μ` is an `F`-valued
+  vector measure, with the pairing being the scalar multiplication by `ℝ`.
+
 ## Note
 
 Let `Bμ : VectorMeasureWithPairing`.
@@ -135,7 +143,7 @@ abbrev Integrable (Bμ : VectorMeasureWithPairing X E F G) (f : X → E) : Prop 
   MeasureTheory.Integrable f Bμ.transpose.variation
 
 open Classical in
-/-- The pairing integral in L1 space as a continuous linear map. -/
+/-- The pairing integral for `E`-valued function and the vector measure with paring `Bμ`. -/
 noncomputable def integral (Bμ : VectorMeasureWithPairing X E F G) (f : X → E) : G :=
   if _ : CompleteSpace G then
   setToFun Bμ.transpose.variation Bμ.transpose
@@ -153,7 +161,7 @@ local notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral
 variable {Bμ : VectorMeasureWithPairing X E F G}
 
 @[integral_simps]
-theorem integral_fun_add (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+theorem integral_fun_add {f g : X → E} (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
     ∫ᵛ x, (fun x => f x + g x) x ∂Bμ = ∫ᵛ x, f x ∂Bμ + ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
@@ -161,12 +169,8 @@ theorem integral_fun_add (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integ
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_add (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
-    ∫ᵛ x, (f + g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ + ∫ᵛ x, g x ∂Bμ := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
-  · simp [integral, hG]
+theorem integral_add {f g : X → E} (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+    ∫ᵛ x, (f + g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ + ∫ᵛ x, g x ∂Bμ := integral_fun_add hf hg
 
 variable (Bμ) in
 @[integral_simps]
@@ -178,14 +182,10 @@ theorem integral_fun_neg (f : X → E) : ∫ᵛ x, (fun x => -f x) x ∂Bμ = -�
 
 variable (Bμ) in
 @[integral_simps]
-theorem integral_neg (f : X → E) : ∫ᵛ x, (-f) x ∂Bμ = -∫ᵛ x, f x ∂Bμ := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) f
-  · simp [integral, hG]
+theorem integral_neg (f : X → E) : ∫ᵛ x, (-f) x ∂Bμ = -∫ᵛ x, f x ∂Bμ := integral_fun_neg Bμ f
 
 @[integral_simps]
-theorem integral_fun_sub (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
+theorem integral_fun_sub {f g : X → E} (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
     ∫ᵛ x, (fun x => f x - g x) x ∂Bμ = ∫ᵛ x, f x ∂Bμ - ∫ᵛ x, g x ∂Bμ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
@@ -194,11 +194,7 @@ theorem integral_fun_sub (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integ
 
 @[integral_simps]
 theorem integral_sub (f g : X → E) (hf : Bμ.Integrable f) (hg : Bμ.Integrable g) :
-    ∫ᵛ x, (f - g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ - ∫ᵛ x, g x ∂Bμ := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure) hf hg
-  · simp [integral, hG]
+    ∫ᵛ x, (f - g) x ∂Bμ = ∫ᵛ x, f x ∂Bμ - ∫ᵛ x, g x ∂Bμ := integral_fun_sub hf hg
 
 variable (Bμ) in
 @[integral_simps]
@@ -213,12 +209,7 @@ theorem integral_smul (c : ℝ) (f : X → E) :
 variable (Bμ) in
 @[integral_simps]
 theorem integral_fun_smul (c : ℝ) (f : X → E) :
-    ∫ᵛ x, c • f x ∂Bμ = c • ∫ᵛ x, f x ∂Bμ := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure Bμ.pairing Bμ.vectorMeasure)
-      (by simp) c f
-  · simp [integral, hG]
+    ∫ᵛ x, c • f x ∂Bμ = c • ∫ᵛ x, f x ∂Bμ := integral_smul Bμ c f
 
 end VectorMeasureWithPairing
 
