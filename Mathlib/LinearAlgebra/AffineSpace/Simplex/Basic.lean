@@ -619,8 +619,8 @@ lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace 
 point between the subspace and the `Affine.Simplex.closedInterior` is the vertex itself. -/
 -- Redeclaring all type variables because `k` needs to be a `DivisionRing`.
 theorem closedInterior_inter_affineSubspaceMk'_affineSpan_faceOpposite {k V P : Type*}
-    [DivisionRing k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [Module k V]
-    [AffineSpace V P] {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    [DivisionRing k] [PartialOrder k] [IsOrderedAddMonoid k] [ZeroLEOneClass k] [AddCommGroup V]
+    [Module k V] [AffineSpace V P] {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.closedInterior ∩ AffineSubspace.mk' (s.points i)
     (affineSpan k <| Set.range (s.faceOpposite i).points).direction = {s.points i} := by
   refine Set.Subset.antisymm ?_ <| by simp [s.point_mem_closedInterior i]
