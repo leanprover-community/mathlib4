@@ -439,7 +439,7 @@ lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
 
 end Bundle.Trivialization
 
-/-! # Determining smoothness of a section via its local frame coefficients
+/-! ## Determining smoothness of a section via its local frame coefficients
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients
 in a local frame induced by a local trivialisation are. In many contexts, this statement holds for
 *any* local frame (e.g., for all real bundles which admit a continuous bundle metric, as is
