@@ -538,6 +538,15 @@ namespace NonUnitalRing
 variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
 variable [Nonempty ι]
 
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+nonrec def of (i) : G i →ₙ+* DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  map_mul' _ _ := (mul_def ..).symm
+  map_zero' := (zero_def i).symm
+  map_add' _ _ := (add_def ..).symm
+
+
 variable (P : Type*) [NonUnitalNonAssocSemiring P]
 variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another
@@ -561,11 +570,9 @@ variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f where
+  __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
   map_one' := (one_def i).symm
-  map_mul' _ _ := (mul_def ..).symm
-  map_zero' := (zero_def i).symm
-  map_add' _ _ := (add_def ..).symm
 
 @[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
@@ -605,10 +612,8 @@ variable [Nonempty ι]
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
 noncomputable def of (i) : G i →⋆ₙ+* DirectLimit G f where
+  __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
-  map_mul' _ _ := (mul_def ..).symm
-  map_add' _ _ := (add_def ..).symm
-  map_zero' := (zero_def ..).symm
   map_star' _ := (star_def ..).symm
 
 @[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
