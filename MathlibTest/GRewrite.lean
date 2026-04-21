@@ -23,8 +23,7 @@ private axiom test_sorry : ∀ {α}, α
 section inequalities
 
 variable {α : Type*} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d e : α)
--- set_option trace.Meta.synthInstance true in
--- set_option trace.Meta.isDefEq true in
+
 example (h₁ : a ≤ b) (h₂ : b ≤ c) : a + 5 ≤ c + 6 := by
   grw' [h₁, h₂]
   guard_target =ₛ c + 5 ≤ c + 6
@@ -323,9 +322,35 @@ axiom f : α → α
 @[gcongr]
 axiom f_congr' : a ≤ b → f a ≤ f b
 
+/--
+error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
+  a
+in the target expression
+  f a ≤ f b
+
+α : Type u
+inst✝ : Preorder α
+a b : α
+h : AntisymmRel (fun x1 x2 => x1 ≤ x2) a b
+⊢ f a ≤ f b
+-/
+#guard_msgs in
 example (h : a ≈ b) : f a ≤ f b := by
   grw' [h]
 
+/--
+error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
+  b
+in the target expression
+  f a ≤ f b
+
+α : Type u
+inst✝ : Preorder α
+a b : α
+h : AntisymmRel (fun x1 x2 => x1 ≤ x2) b a
+⊢ f a ≤ f b
+-/
+#guard_msgs in
 example (h : b ≈ a) : f a ≤ f b := by
   grw' [h]
 

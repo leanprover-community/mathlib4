@@ -13,9 +13,10 @@ public import Mathlib.Tactic.GRewrite.Elab
 
 public meta section
 
-open Lean Meta
 
 namespace Mathlib.Tactic.GRewrite
+
+open Lean Meta GCongr
 
 initialize registerTraceClass `Meta.grewrite
 initialize registerTraceClass `Meta.grewrite.gcongr (inherited := true)
@@ -28,45 +29,87 @@ structure GRewriteLemma where
   headNumArgs : Nat
   relName : Name
 
+abbrev GRewriteM := ReaderT GRewriteLemma StateRefT (Std.HashSet Expr) GCongr.GCongrM
+
 def GRewriteLemma.getValue (lem : GRewriteLemma) : MetaM Expr := do
   let us ← lem.levelParams.mapM fun _ => mkFreshLevelMVar
   return lem.proof.instantiateLevelParamsArray lem.levelParams us
 
-abbrev GRewriteM := ReaderT GRewriteLemma GCongr.GCongrM
+def GRewriteLemma.apply (g : MVarId) (lem : GRewriteLemma) (config : GRewrite.Config) :
+    GRewriteM Unit := do
+  let proof ← lem.getValue
+  let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof)
+  guard <| ← withConfig (fun oldConfig => { config, oldConfig with }) <|
+    isDefEq (← g.getType) rel
+  for mvar in mvars do
+    unless ← mvar.mvarId!.isAssigned do
+      let type ← mvar.mvarId!.getType
+      if (← isClass? type).isSome then
+        if let some inst ← synthInstance? type then
+          guard <| ← isDefEq mvar inst
+          continue
+    pushNewGoal mvar.mvarId!
+  g.assign (mkAppN proof mvars)
 
-open GCongr
+mutual
 
-private partial def grewriteCongr (g : MVarId) (lem : GRewriteLemma) (inv : Bool)
-    (config : GRewrite.Config) : StateRefT (Std.HashSet Expr) GCongrM Bool := g.withContext do
-  -- TODO: try `symm` tactic if `symm` holds
+private partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
+    (config : GRewrite.Config) :
+    GRewriteM Bool := do
+  let (mainGoals, sideGoals) ←
+    try applyGCongrLemma g lem catch _ => return false
+  /- Synthesize instances. Allow Synthesis to get stuck, because e.g. with
+  `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
+  either `s` or `t` is still a metavariable at this point. -/
+  let mut unsolvedSideGoals := #[]
+  for mvarId in sideGoals do
+    let type ← mvarId.getType
+    if (← isClass? type).isSome then
+      match ← trySynthInstance type with
+      | .some inst => mvarId.assign inst; continue
+      | .none => return false
+      | .undef => pure ()
+    unsolvedSideGoals := unsolvedSideGoals.push mvarId
+  -- Then, recursively rewrite in the main subgoals
+  trace[Meta.grewrite.gcongr] "applied lemma {.ofConstName lem.declName}"
+  let mut anyProgress := false
+  for (g, isContra) in mainGoals do
+    if ← grewriteCongr g (inv != isContra) config then
+      anyProgress := true
+    else
+      try g.applyRfl catch _ => return false
+  -- Only continue if at least one rewrite happened
+  unless anyProgress do return false
+  -- Finally, close all remaining side goals
+  for mvarId in unsolvedSideGoals do
+    let type ← mvarId.getType
+    if (← isClass? type).isSome then
+      let some inst ← synthInstance? type | return false
+      mvarId.assign inst
+    else
+      dischargeSide mvarId
+  return true
+
+private partial def grewriteCongr (g : MVarId) (inv : Bool)
+    (config : GRewrite.Config) : GRewriteM Bool := g.withContext do
   let rel ← g.getType'
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"rewriting {rel}") do
   let some (relName, lhs, rhs) := getRel rel |
     throwTacticEx `grewrite g m!"{rel} is not a relation"
-  let cacheKey := updateRel rel (.fvar ⟨`grw⟩) inv
+  let cacheKey := updateRel rel (.fvar ⟨`grewrite.placeholder⟩) inv
   if (← get).contains cacheKey then
     trace[Meta.grewrite] "cached: no rewrite"
     return false
   let e := if inv then rhs else lhs
   let eWhnf ← whnf e
   -- Try to use the grewrite lemma.
-  if inv == lem.symm && relName == lem.relName &&
-    eWhnf.toHeadIndex == lem.headIdx && eWhnf.headNumArgs == lem.headNumArgs then
+  let lem ← read
+  if relName == lem.relName && eWhnf.toHeadIndex == lem.headIdx &&
+      eWhnf.headNumArgs == lem.headNumArgs then
     let mctx ← getMCtx
     try
-      let proof ← lem.getValue
-      let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof)
-      guard <| ← withConfig (fun oldConfig => { config, oldConfig with }) <|
-        isDefEq (← g.getType) rel
-      for mvar in mvars do
-        unless ← mvar.mvarId!.isAssigned do
-          let type ← mvar.mvarId!.getType
-          if (← isClass? type).isSome then
-            if let some inst ← synthInstance? type then
-              guard <| ← isDefEq mvar inst
-              continue
-        pushNewGoal mvar.mvarId!
-      g.assign (mkAppN proof mvars)
+      let g ← if inv == lem.symm then pure g else g.applySymm
+      lem.apply g config
       trace[Meta.grewrite] "applied rewrite lemma `{lem.proof}` to{indentExpr (← g.getType)}"
       return true
     catch _ =>
@@ -78,44 +121,14 @@ private partial def grewriteCongr (g : MVarId) (lem : GRewriteLemma) (inv : Bool
       lemmas := lemmas ++ relImpRelLemma args.size
     let mctx ← getMCtx
     for gcongrLem in lemmas do
-      try
-        let (mainGoals, sideGoals) ← applyGCongrLemma g gcongrLem
-        /- Synthesize instances. Allow Synthesis to get stuck, because e.g. with
-        `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
-        `s` or `t` is still a metavariable at this point. -/
-        let sideGoals ← sideGoals.filterM fun mvarId ↦ do
-          let type ← mvarId.getType
-          if (← isClass? type).isNone then return true
-          match ← trySynthInstance type with
-          | .some inst => guard <| ← isDefEq (.mvar mvarId) inst; return false
-          | .none => failure
-          | .undef => return true
-        -- Then, recursively rewrite in the main subgoals
-        trace[Meta.grewrite.gcongr] "applied lemma {.ofConstName gcongrLem.declName}"
-        let mut progress := false
-        let mut unsolved := #[]
-        for (g, isContra) in mainGoals do
-          if ← grewriteCongr g lem (inv != isContra) config then
-            progress := true
-          else
-            unsolved := unsolved.push g
-        -- Only continue if at least one rewrite happened
-        guard progress
-        -- The subgoals where no rewrites happened are closed with `rfl`.
-        unsolved.forM (·.applyRfl)
-        -- Finally, close all remaining side goals
-        sideGoals.forM fun mvarId ↦ do
-          let type ← mvarId.getType
-          if (← isClass? type).isSome then
-            let some inst ← synthInstance? type | failure
-            guard <| ← isDefEq (.mvar mvarId) inst
-          else
-            dischargeSide mvarId
+      if ← processGCongrLemma g gcongrLem inv config then
         return true
-      catch _ =>
+      else
         setMCtx mctx
   modify (·.insert cacheKey)
   return false
+
+end
 
 def _root_.Lean.MVarId.grewriteImp (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
     (forwardImp : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
@@ -126,7 +139,7 @@ def _root_.Lean.MVarId.grewriteImp (goal : MVarId) (e : Expr) (lem : GRewriteLem
     let imp := if forwardImp then mkImp e eNew else mkImp eNew e
     let congrGoal ← mkFreshExprMVar imp
     let (progress, newGoals) ←
-      grewriteCongr congrGoal.mvarId! lem (!forwardImp) config |>.run' {} |>.run
+      grewriteCongr congrGoal.mvarId! (!forwardImp) config |>.run lem |>.run' {} |>.run
     if progress then
       let eNew ← instantiateMVars eNew
       return { eNew, impProof := congrGoal, mvarIds := newGoals.toList }
@@ -142,15 +155,12 @@ open Lean Meta Elab Parser
 
 private def elabGRewriteLemma (stx : Syntax) (symm : Bool) :
     TermElabM GRewriteLemma := do
-  -- TODO: special case constants
   Term.withoutModifyingElabMetaStateWithInfo <| withRef stx do
   let e ← Term.elabTerm stx none
   Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   let e ← instantiateMVars e
   if e.hasSyntheticSorry then
     throwAbortTactic
-  let e := e.eta
-  -- TODO: try `symm` tactic if `symm` holds
   withReducible do
   let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType e)
   let backward := rel.getAppFn'.constName?.any
@@ -168,7 +178,7 @@ private def elabGRewriteLemma (stx : Syntax) (symm : Bool) :
   let (levelParams, proof) ←
     if e.hasMVar then
       let r ← abstractMVars e
-      pure (r.paramNames, r.expr)
+      pure (r.paramNames, r.expr.eta)
     else
       pure (#[], e)
   return { symm, levelParams, proof, headIdx, headNumArgs, relName }
