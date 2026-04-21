@@ -393,7 +393,7 @@ theorem limit.pre_pre [h : HasLimit (D ⋙ E ⋙ F)] : haveI : HasLimit ((D ⋙ 
 variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- -
+/--
 If we have particular limit cones available for `E ⋙ F` and for `F`,
 we obtain a formula for `limit.pre F E`.
 -/
@@ -965,7 +965,7 @@ theorem colimit.pre_pre [h : HasColimit (D ⋙ E ⋙ F)] :
 variable {E F}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- -
+/--
 If we have particular colimit cocones available for `E ⋙ F` and for `F`,
 we obtain a formula for `colimit.pre F E`.
 -/

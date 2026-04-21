@@ -292,6 +292,7 @@ theorem preimage_Iic {a : R} (ha : 0 ≤ a) : (Nat.cast : ℕ → R) ⁻¹' Set.
   ext
   simp [le_floor_iff, ha]
 
+@[push]
 theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n :=
   eq_of_forall_le_iff fun b => by
     rw [le_floor_iff (add_nonneg ha n.cast_nonneg)]
@@ -306,9 +307,11 @@ theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊
 
 variable [IsStrictOrderedRing R]
 
+@[push]
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_natCast ha 1]
 
+@[push]
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
