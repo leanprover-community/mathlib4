@@ -86,13 +86,12 @@ theorem cbmApplyMeasure_union (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasur
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
     cbmApplyMeasure B μ (s ∪ t) = cbmApplyMeasure B μ s + cbmApplyMeasure B μ t := by
   ext x
-  simp [cbmApplyMeasure_apply, of_union hdisj hs ht, (B x).map_add]
+  simp [of_union hdisj hs ht]
 
 theorem dominatedFinMeasAdditive_cbmApplyMeasure (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) :
     DominatedFinMeasAdditive (μ.mapRange B.flip.toAddMonoidHom B.flip.continuous).variation
     (cbmApplyMeasure B μ : Set X → E →L[ℝ] G) 1 := by
-  refine ⟨fun s t hs ht _ _ hdisj => cbmApplyMeasure_union B μ hs ht hdisj, ?_⟩
-  intro s hs hsf
+  refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union B μ hs ht hdisj, fun s hs hsf ↦ ?_⟩
   simpa using norm_measure_le_variation hsf.ne
 
 theorem norm_cbmApplyMeasure_le (B : E →L[ℝ] F →L[ℝ] G) (μ : VectorMeasure X F) (s : Set X) :
