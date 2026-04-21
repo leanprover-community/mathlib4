@@ -49,7 +49,7 @@ local notation "φ" => toEnd K L M
 
 open Algebra LieAlgebra LinearMap Module Module.End Polynomial
 
-private lemma exists_polynomial_eval_sub_aux
+lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
     {E : Submodule R K} (a : ι → K) (ha : ∀ i, a i ∈ E) (f : E →+ R) :
     ∃ r : K[X], ∀ i j, r.eval (a i - a j) =
@@ -64,7 +64,7 @@ private lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
-theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm K L M = 0) :
+public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
