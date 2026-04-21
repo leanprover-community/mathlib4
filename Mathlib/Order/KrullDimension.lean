@@ -893,6 +893,11 @@ lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : kr
 lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
   (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
+lemma coheight_lt_top [FiniteDimensionalOrder α] (x : α) : coheight x < ⊤ := by
+  rw [← WithBot.coe_lt_coe]
+  apply lt_of_le_of_lt (coheight_le_krullDim x)
+  simpa using krullDim_ne_top_of_finiteDimensionalOrder.lt_top
+
 end finiteDimensional
 
 section typeclass
@@ -1150,6 +1155,12 @@ lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
     (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
   Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
+
+lemma krullDim_le_of_orderEmbedding (e : α ↪o β) : Order.krullDim α ≤ Order.krullDim β := by
+  have (b : β) : Subsingleton (e ⁻¹' {b}) := Set.Subsingleton.coe_sort <|
+    Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
+    Order.krullDim_nonpos_of_subsingleton
 
 end orderHom
 
