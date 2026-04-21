@@ -229,11 +229,26 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     constructor
     · rw [factorization_mul (pow_ne_zero e hp.ne_zero) hm₀, Finsupp.add_apply,
         factorization_pow_self hp, factorization_eq_zero_of_not_dvd hpm, add_zero]
-    · simpa using Nat.ordCompl_pow_mul_of_not_dvd e hp hpm
+    · nth_rewrite 2 [← prod_primeFactorsList hm₀]
+      refine prod_eq <|
+        (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
+      rw [filter_append, hp.primeFactorsList_pow,
+          filter_eq_nil_iff.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
+          nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_true]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
-    simp only [Subtype.mk.injEq]
-    simpa using Nat.ordProj_mul_ordCompl_eq_self m p
+    rw [Subtype.mk.injEq, ← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
+    nth_rewrite 3 [← prod_primeFactorsList hm₀]
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
+      refine (filter_congr fun q hq ↦ ?_).symm
+      simp only [decide_not]
+      rcases Finset.mem_insert.mp <| hm _ hq with h | h
+      · simp only [h, hs, decide_false, Bool.not_false, decide_true]
+      · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
+        exact fun H ↦ hs <| H ▸ h
+    refine prod_eq <| (filter_eq p).symm ▸ this ▸ perm_append_comm.trans ?_
+    simp only [decide_not]
+    exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
 @[simp]
 lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
