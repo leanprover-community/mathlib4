@@ -624,6 +624,7 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
+/-- `divisors z` is the `Finset` of divisors of `z`. By convention, we set `divisors 0 = ∅`. -/
 def divisors : (z : ℤ) -> Finset ℤ
   | (n : ℕ) =>
     let s := n.divisors
@@ -649,6 +650,15 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
+
+@[simp, grind =]
+theorem mem_divisors : ∀ {z} {x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
+  | 0, _ => by simp [divisors]
+  | -[n +1], -[x +1]
+  | -[n +1], (x : ℕ)
+  | (n + 1 : ℕ), (x : ℕ)
+  | (n + 1 : ℕ), -[x +1] => by
+    simpa [divisors, -Nat.cast_add, -natCast_add] using Iff.symm ofNat_dvd
 
 @[simp]
 lemma mem_divisorsAntidiag :
