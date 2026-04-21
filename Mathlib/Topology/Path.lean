@@ -664,7 +664,7 @@ theorem exists_partition_in_cover
     {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
     {x y : X} (γ : Path x y) (hU_cover : Set.range γ ⊆ ⋃ i, U i) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ j : ι,
         Icc (t i.castSucc) (t i.succ) ⊆ γ ⁻¹' U j) := by
   -- Pull back the cover along γ to get an open cover of unitInterval
@@ -674,9 +674,7 @@ theorem exists_partition_in_cover
     intro s _
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hU_cover (Set.mem_range_self s))
     exact Set.mem_iUnion.mpr ⟨i, hi⟩
-  obtain ⟨n, t, ht_strict, ht0, htn, ht_cover⟩ :=
-    exists_strictMono_Icc_subset_open_cover_unitInterval hV_open hV_cover
-  exact ⟨n, t, ht_strict, ht0, htn, ht_cover⟩
+  exact exists_monotone_partition_unitInterval hV_open hV_cover
 
 /-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
 has a neighborhood with property P, then there exists a partition such that each segment lies
@@ -684,7 +682,7 @@ in an open set with property P. This follows immediately from the cover version.
 theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
     (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
         Icc (t i.castSucc) (t i.succ) ⊆ γ ⁻¹' U) := by
   -- For each z, choose a neighborhood U z with property P
