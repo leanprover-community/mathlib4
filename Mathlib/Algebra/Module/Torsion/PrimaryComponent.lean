@@ -176,17 +176,21 @@ theorem iSupIndep_primaryComponent :
   rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
   intro s p h d
   simp only [primaryComponent_mem] at h
-  have (n : ℕ) := supIndep_torsionBySet_ideal (S := s) (M := M) (p := (·.asIdeal ^ n)) ?_
-  · choose! f h using h
-    let m := s.sup (f ·)
-    have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
-    apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero
-      (fun i ↦ torsionBySet A M ↑(i.asIdeal ^ m : Ideal A)) (R := A)).mp _ s p _ d
-    · rw [iSupIndep_iff_supIndep]
-      exact fun _ ↦ Submodule.supIndep_torsionBySet_ideal
-        fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-    · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
-  · exact fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+  have hPairwise (n : ℕ) : (s : Set (HeightOneSpectrum A)).Pairwise
+      fun i j ↦ (fun x ↦ (x.asIdeal) ^ n) i ⊔ (fun x ↦ (x.asIdeal) ^ n) j = ⊤ :=
+    fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+  have (n : ℕ) := @supIndep_torsionBySet_ideal A M (@CommRing.toCommSemiring A _) _ _ _ (S := s)
+    (p := (fun x ↦ (IsDedekindDomain.HeightOneSpectrum.asIdeal x) ^ n))
+    (hPairwise n)
+  choose! f h using h
+  let m := s.sup (f ·)
+  have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
+  apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero
+    (fun i ↦ torsionBySet A M ↑(i.asIdeal ^ m : Ideal A)) (R := A)).mp _ s p _ d
+  · rw [iSupIndep_iff_supIndep]
+    exact fun _ ↦ Submodule.supIndep_torsionBySet_ideal
+      fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+  · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
 
 end IsDedekindDomain
 
