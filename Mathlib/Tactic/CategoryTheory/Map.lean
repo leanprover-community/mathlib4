@@ -122,9 +122,7 @@ initialize registerBuiltinAttribute {
   | _ => throwUnsupportedSyntax }
 
 /--
-`map_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
-produces the corresponding statement with a functor applied and
-`simp only [Functor.map_comp, Functor.map_id]` on each side.
+Auxiliary definition for `map_of%`
 -/
 private partial def elabMapOfTerm (t : Syntax) : Term.TermElabM Expr := do
   match t with
@@ -137,6 +135,11 @@ private partial def elabMapOfTerm (t : Syntax) : Term.TermElabM Expr := do
       Term.elabTerm t none
   | _ => Term.elabTerm t none
 
+/--
+`map_of% t`, where `t` is an equality `f = g` between morphisms (possibly under `∀` binders),
+produces the corresponding statement with a functor applied and
+`simp only [Functor.map_comp, Functor.map_id]` on each side.
+-/
 elab "map_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| elabMapOfTerm t
   mapExprMVars e
