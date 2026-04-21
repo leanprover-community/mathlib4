@@ -122,7 +122,7 @@ def op (P : Profunctor.{w} C D) : Profunctor.{w} Dᵒᵖ Cᵒᵖ :=
 
 /-- Whisker a profunctor from `C` to `D` with functors into `C` and `D`. -/
 @[simps! obj_obj obj_map map_app]
-def whiskerLeft {A B : Type*} [Category* A] [Category* B]
+def whiskerLeft₂ {A B : Type*} [Category* A] [Category* B]
     (P : Profunctor.{w} C D) (F : A ⥤ C) (G : B ⥤ D) : Profunctor.{w} A B :=
   (((Functor.whiskeringLeft₂ _).obj F).obj G.op).obj P
 
@@ -141,11 +141,11 @@ end Profunctor
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `C` to `D`. -/
 @[simps! obj_obj obj_map map_app]
 def Functor.toProfunctor (F : C ⥤ D) : Profunctor.{v₂} C D :=
-  (Profunctor.id (C := D)).whiskerLeft F (𝟭 _)
+  (Profunctor.id (C := D)).whiskerLeft₂ F (𝟭 _)
 
 /-- Given a functor from `C` to `D`, this is the corresponding profunctor from `D` to `C`. -/
 @[simps! obj_obj obj_map map_app]
 def Functor.toProfunctorRev (F : C ⥤ D) : Profunctor.{v₂} D C :=
-  (Profunctor.id (C := D)).whiskerLeft (𝟭 _) F
+  (Profunctor.id (C := D)).whiskerLeft₂ (𝟭 _) F
 
 end CategoryTheory

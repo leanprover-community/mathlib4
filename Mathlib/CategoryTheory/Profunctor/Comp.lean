@@ -640,7 +640,7 @@ variable (P : Profunctor.{u} C D) {Q R : Profunctor.{u} D E} (f : Q ⟶ R)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simps app_app]
-def whiskerLeft' : P.comp Q ⟶ P.comp R where
+def whiskerLeft : P.comp Q ⟶ P.comp R where
   app X := {
     app Y := chosenCoend.map {
       app d := {
@@ -707,7 +707,7 @@ instance : Bicategory ProfCat.{u, u} where
   Hom X Y := Profunctor.{u} X Y
   id X := .id
   comp P Q := P.comp Q
-  whiskerLeft P _ _ f := P.whiskerLeft' f
+  whiskerLeft P _ _ f := P.whiskerLeft f
   whiskerRight f R := whiskerRight R f
   associator P Q R := P.associator Q R
   leftUnitor P := P.leftUnitor
