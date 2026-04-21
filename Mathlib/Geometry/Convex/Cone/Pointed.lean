@@ -58,11 +58,13 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
   restrictScalars_inj ..
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_le_ofSubmodule {S T : Submodule R E} : ofSubmodule S ≤ ofSubmodule T ↔ S ≤ T :=
-  .rfl
+  restrictScalars_le ..
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_lt_ofSubmodule {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
-  .rfl
+  restrictScalars_lt ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
