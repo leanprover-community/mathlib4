@@ -60,10 +60,6 @@ lemma coendRel_iff (W W' : J) (x : (F.obj (op W)).obj W) (y : (F.obj (op W')).ob
     rw [← h1, ← h2]
     exact coendRel.mk f z
 
-lemma eqvGen_coendRel_iff (x y : (W : J) × (F.obj (op W)).obj W) :
-    Relation.EqvGen (coendRel F) x y ↔ coendRel F x y ∨ coendRel F y x :=
-  sorry
-
 def coend : Type max w u := Quot (coendRel F)
 
 def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F := TypeCat.ofHom fun x ↦ Quot.mk _ ⟨j, x⟩
@@ -497,7 +493,8 @@ set_option backward.isDefEq.respectTransparency false in
 def associatorComponents (X : C) (Y : Fᵒᵖ) :
     (P.comp Q |>.comp R |>.obj X |>.obj Y) ≅ P.comp (Q.comp R) |>.obj X |>.obj Y where
   hom := by
-    refine ↾Quot.lift (fun ⟨e, x, r⟩ ↦ Quot.map (fun ⟨d, p, q⟩ ↦ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩) ?_ x) ?_
+    refine ↾Quot.lift (fun ⟨e, x, r⟩ ↦
+        Quot.map (fun ⟨d, p, q⟩ ↦ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩) ?_ x) ?_
     · intro ⟨d, p, q⟩ ⟨d', p', q'⟩ h
       cases h with
       | mk f x =>
@@ -549,7 +546,8 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       apply Quot.sound
       exact coendRel.mk (F := Q.compDiagram R _ _) f (_, _)
   inv := by
-    refine ↾Quot.lift (fun ⟨d, p, x⟩ ↦ Quot.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩) ?_ x) ?_
+    refine ↾Quot.lift (fun ⟨d, p, x⟩ ↦
+        Quot.map (fun ⟨e, q, r⟩ ↦ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩) ?_ x) ?_
     · intro ⟨e, q, r⟩ ⟨e', q', r'⟩ h
       cases h with
       | mk f x =>
