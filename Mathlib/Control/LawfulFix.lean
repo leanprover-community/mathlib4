@@ -174,6 +174,24 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
     intro i
     exists i.succ
 
+/-- `Part.fix g` is the least fixed point of the ω-Scott continuous functional `g`. -/
+theorem fix_eq_lfp (hc : ωScottContinuous g) :
+    Part.fix g = ContinuousHom.lfp (.ofFun g hc) := by
+  have h : approxChain (⟨g, hc.monotone⟩ : (∀ a, Part (β a)) →o _) =
+      fixedPoints.iterateChain ⟨g, hc.monotone⟩ ⊥ bot_le := by
+    apply Chain.ext
+    funext n
+    change Fix.approx _ n = g^[n] ⊥
+    induction n with
+    | zero => rfl
+    | succ n ih =>
+      change g (Fix.approx _ n) = g^[n + 1] ⊥
+      rw [ih, ← Function.iterate_succ_apply' g n ⊥]
+  rw [fix_eq_ωSup_of_ωScottContinuous hc]
+  change _ = ωSup _
+  rw [h]
+  rfl
+
 /-- **Scott induction** for `Part.fix`: for an ω-Scott continuous functional `g` and a
 predicate `p` that holds at `⊥`, is preserved by `g`, and is closed under ωSup of chains,
 `p` holds at `Part.fix g`. -/
@@ -181,12 +199,8 @@ theorem fix_scott_induction {p : (∀ a, Part (β a)) → Prop} (hc : ωScottCon
     (h_bot : p ⊥) (h_step : ∀ f, p f → p (g f))
     (h_sup : ∀ c : Chain (∀ a, Part (β a)), (∀ n, p (c n)) → p (ωSup c)) :
     p (Part.fix g) := by
-  rw [fix_eq_ωSup_of_ωScottContinuous hc]
-  apply h_sup
-  intro n
-  induction n with
-  | zero => exact h_bot
-  | succ k ih => exact h_step _ ih
+  rw [fix_eq_lfp hc]
+  exact ContinuousHom.lfp_induction _ h_bot h_step h_sup
 
 /-- Pointwise Scott induction for `Part.fix`: to prove `P x y` whenever `y ∈ Part.fix g x`,
 it suffices that for any approximation `f` on which `P` holds pointwise, `g f` still satisfies
