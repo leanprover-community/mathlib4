@@ -624,6 +624,16 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
+def divisors : (z : ℤ) -> Finset ℤ
+  | (n : ℕ) =>
+    let s := n.divisors
+    (s.map natCast).disjUnion (s.map negNatCast) <| by
+      simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
+  | -[n +1] =>
+    let s := (n + 1).divisors
+    (s.map natCast).disjUnion (s.map negNatCast) <| by
+      simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
+
 /-- Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
