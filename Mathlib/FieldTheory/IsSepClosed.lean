@@ -104,9 +104,9 @@ theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
     [IsSepClosed k] {n : ℕ} (a b c : k) (hn : (n : k) = 0) (hn' : 2 ≤ n) (hb : b ≠ 0) :
     ∃ x, a * x ^ n + b * x + c = 0 := by
   let f : k[X] := C a * X ^ n + C b * X + C c
-  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
+  -- Specify `n := 0` below, otherwise Lean unfolds `0` to `Zero.zero`.
+  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne (n := 0) <| by
     have : C 0 * X ^ n + C b * X = 0 * X ^ n + C b * X := by grind
-    have : 0 = Zero.zero := rfl
     by_cases ha : a = 0
     · grind [zero_add]
     · grind [natDegree_add_eq_left_of_natDegree_lt]
