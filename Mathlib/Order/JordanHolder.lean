@@ -266,6 +266,7 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
   ⟨h₁.choose.trans h₂.choose,
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)

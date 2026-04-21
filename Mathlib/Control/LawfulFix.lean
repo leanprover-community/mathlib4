@@ -175,6 +175,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
   ext ⟨⟩ : 1
@@ -228,6 +229,7 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by

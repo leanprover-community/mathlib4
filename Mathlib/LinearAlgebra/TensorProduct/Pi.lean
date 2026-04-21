@@ -122,6 +122,7 @@ TODO: generalize to `S`-linear. -/
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
