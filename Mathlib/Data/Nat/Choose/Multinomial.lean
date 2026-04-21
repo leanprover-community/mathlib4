@@ -434,7 +434,7 @@ theorem multinomial_cons (x : ℕ) (l : List ℕ) :
   congr 1
   · congr
     exact List.toFinsupp_sum (x :: l)
-  let succEmb : ℕ ↪ ℕ :=  { toFun := Nat.succ, inj' := Nat.succ_injective }
+  let succEmb : ℕ ↪ ℕ := { toFun := Nat.succ, inj' := Nat.succ_injective }
   simp only [toFinsupp_cons_eq_single_add_embDomain, Finsupp.multinomial_eq]
   have : (Finsupp.single 0 x + l.toFinsupp.embDomain succEmb).update 0 0 =
     (l.toFinsupp.embDomain succEmb).update 0 0 := by
