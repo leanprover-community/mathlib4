@@ -160,7 +160,6 @@ noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_sumSMulX (i : n) :
     (sumSMulX c).coeff (Finsupp.single i 1) = c i := by
   classical

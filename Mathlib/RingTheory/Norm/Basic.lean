@@ -105,7 +105,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
       leftMulMatrix_mulVec_repr] at hv
     refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
     · simpa only [map_zero, Pi.zero_apply] using congr_fun hv i
-    · contrapose! v_ne with sum_eq
+    · contrapose v_ne with sum_eq
       apply b.equivFun.symm.injective
       rw [b.equivFun_symm_apply, sum_eq, map_zero]
 
@@ -141,13 +141,12 @@ section IntermediateField
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬IsIntegral K x) :
     norm K (AdjoinSimple.gen K x) = 1 := by
   rw [norm_eq_one_of_not_exists_basis]
-  contrapose! hx
+  contrapose hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =

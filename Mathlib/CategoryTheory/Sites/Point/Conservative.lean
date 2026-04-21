@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 public import Mathlib.CategoryTheory.Types.Epimorphisms
@@ -91,7 +92,7 @@ lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 include hP hJ in
 @[stacks 00YL "(2)"]
 lemma jointlyReflectEpimorphisms
-    [J.WEqualsLocallyBijective A] [HasSheafify J A] :
+    [HasWeakSheafify J A] [HasProducts.{w} A] :
     JointlyReflectEpimorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyReflectEpimorphisms
@@ -103,6 +104,17 @@ lemma jointlyFaithful [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyFaithful
 
+variable {A} in
+include hP hJ in
+lemma W_iff {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [HasWeakSheafify J A]
+    [HasProducts.{w} A] :
+    J.W f ↔ ∀ (Φ : P.FullSubcategory), IsIso (Φ.obj.presheafFiber.map f) := by
+  rw [GrothendieckTopology.W_iff, (hP.jointlyReflectIsomorphisms A).isIso_iff]
+  exact forall_congr'
+    (fun Φ ↦ (MorphismProperty.isomorphisms A).arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso
+        (Φ.obj.presheafToSheafCompSheafFiberIso A)).app (Arrow.mk f)))
+
 omit [(forget A).ReflectsIsomorphisms] hJ in
 include hP in
 variable {A} in
@@ -112,7 +124,7 @@ lemma jointly_reflect_isLocallySurjective
     (hf : ∀ (Φ : P.FullSubcategory),
       Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
-  simp only [← epi_iff_surjective] at hf
+  simp only [← ofHom_epi_iff_surjective] at hf
   rw [Presheaf.isLocallySurjective_iff_whisker_forget,
     ← Presheaf.isLocallySurjective_presheafToSheaf_map_iff,
     Sheaf.isLocallySurjective_iff_epi,
@@ -120,7 +132,7 @@ lemma jointly_reflect_isLocallySurjective
   exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end
@@ -142,7 +154,8 @@ lemma jointly_reflect_ofArrows_mem
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := congr_fun (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := ConcreteCategory.congr_hom
+      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
     dsimp at this ⊢
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
@@ -188,7 +201,8 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (congr_fun (NatTrans.congr_app (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
+      (pullback.condition (f := f)) (op V)) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_
@@ -209,7 +223,7 @@ private lemma mk'.isLocallySurjective
   refine ⟨V, t, ⟨y, ht.symm.trans ?_⟩, v, ?_⟩
   · simpa using (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm t.op (𝟙 _)).symm
   · refine (Φ.obj.shrinkYonedaCompPresheafFiberIso.symm.app U).toEquiv.injective ?_
-    dsimp
+    dsimp [-Functor.comp_obj]
     trans (Φ.obj.toPresheafFiber V v (shrinkYoneda.{w}.obj U)) (shrinkYonedaObjObjEquiv.symm t)
     · rw [← Φ.obj.presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app]
       exact Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality_apply t v
@@ -231,7 +245,6 @@ lemma mk' [HasSheafify J (Type w)]
     JointlyFaithful.jointlyReflectsIsomorphisms
       (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun _ _ f _ hf ↦ by
         have : Epi f := by
-          have : Mono f.val := inferInstanceAs (Mono ((sheafToPresheaf _ _).map f))
           rw [← Sheaf.isLocallySurjective_iff_epi]
           exact mk'.isLocallySurjective hP _
             (fun Φ ↦ ((isIso_iff_bijective _).1 (hf Φ)).2)

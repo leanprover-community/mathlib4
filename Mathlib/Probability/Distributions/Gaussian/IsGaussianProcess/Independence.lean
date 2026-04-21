@@ -10,12 +10,12 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
-import Mathlib.Probability.Independence.Process
+import Mathlib.Probability.Independence.Process.Basic
 
 /-!
 # Independence of Gaussian processes
 
-This file contains properties about indepence of Gaussian processes. More precisely, we prove
+This file contains properties about independence of Gaussian processes. More precisely, we prove
 different versions of the following statement: if some stochastic processes are jointly Gaussian,
 then they are independent if their marginals are uncorrelated.
 

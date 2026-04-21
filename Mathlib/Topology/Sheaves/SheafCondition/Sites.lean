@@ -176,7 +176,6 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
 
 variable (f)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U
@@ -217,12 +216,12 @@ variable {X : TopCat.{w}} {ι : Type*} {B : ι → Opens X}
 variable (F : X.Presheaf C) (F' : Sheaf C X)
 
 /-- The empty component of a sheaf is terminal. -/
-def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.val.obj (op ⊥)) :=
+def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :=
   F.isTerminalOfBotCover ⊥ (fun _ h => h.elim)
 
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
-    Limits.IsTerminal (F.val.obj (op U)) := by
+    Limits.IsTerminal (F.obj.obj (op U)) := by
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
@@ -253,9 +252,9 @@ namespace TopologicalSpace.Opens
 
 instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
-    [Functor.IsContinuous.{w} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
-    [Functor.IsContinuous.{w} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
-    Functor.IsContinuous.{w} (F ⋙ G) (Opens.grothendieckTopology _)
+    [Functor.IsContinuous F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
+    [Functor.IsContinuous G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
+    Functor.IsContinuous (F ⋙ G) (Opens.grothendieckTopology _)
       (Opens.grothendieckTopology _) :=
   Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
 

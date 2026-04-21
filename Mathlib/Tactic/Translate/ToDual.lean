@@ -14,8 +14,6 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
-- Reordering arguments of arguments is not yet supported.
-  This usually comes up in constructors of structures. e.g. `Pow.mk` or `OrderTop.mk`
 - When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
@@ -88,6 +86,10 @@ generates `_assoc` theorems that aren't dual to any other theorem. To deal with 
 attribute will add a `to_dual none` tag to an `_assoc` theorem if the original theorem was
 already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma min_foo (x y z : α) ...` to `lemma max_foo (a z y : α) ...`.
+
 Some definitions are dual to something other than the dual of their value. Some examples:
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
@@ -145,6 +147,10 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("bot", ["Top"]),
   ("inf", ["Sup"]),
   ("sup", ["Inf"]),
+  ("inf₂", ["Sup₂"]),
+  ("sup₂", ["Inf₂"]),
+  ("sinf", ["SSup"]),
+  ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
@@ -179,6 +185,12 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("l", ["U"]),
   ("next", ["Prev"]),
   ("prev", ["Next"]),
+  ("heyting", ["Coheyting"]),
+  ("coheyting", ["Heyting"]),
+  ("frame", ["Coframe"]),
+  ("coframe", ["Frame"]),
+  ("epigraph", ["Hypograph"]),
+  ("hypograph", ["Epigraph"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -223,15 +235,23 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
   ("wellFoundedGT", "WellFoundedLT"),
-  ("succColimit", "SuccLimit"),
-  ("predColimit", "PredLimit"),
-  ("codirectedOrder", "DirectedOrder"),
-  ("directedOrder", "CodirectedOrder"),
   ("nhdsLT", "NhdsGT"),
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
-  ("neTop", "NeBot")
+  ("relIsoLT", "RelIsoGT"),
+  ("relIsoGT", "RelIsoLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit"),
+  ("codirectedOrder", "DirectedOrder"),
+  ("directedOrder", "CodirectedOrder"),
+  ("galoisInsertion", "GaloisCoinsertion"),
+  ("galoisCoinsertion", "GaloisInsertion"),
+  ("leftOrdContinuous", "RightOrdContinuous"),
+  ("rightOrdContinuous", "LeftOrdContinuous"),
+
+  ("neTop", "NeBot"),
+  ("decidableSucc", "DecidablePred"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/

@@ -4,9 +4,17 @@ This directory contains miscellaneous scripts that are useful for working on or 
 When adding a new script, please make sure to document it here, so other readers have a chance
 to learn about it as well!
 
-Note: CI automation scripts have been moved to `mathlib-ci`.
-Workflows that use those scripts now execute them from external checkouts (typically
-under `ci-tools/`).
+## Where does a new script belong?
+
+A script belongs in [**`leanprover-community/mathlib-ci`**](https://github.com/leanprover-community/mathlib-ci)
+if it is a CI automation script that interacts with GitHub (e.g. managing labels, posting
+comments, triggering bots), runs from a trusted external checkout in CI, or requires access
+to secrets. CI automation scripts have been moved there; workflows that use them execute
+them from external checkouts (typically under `ci-tools/`).
+
+A script belongs in **this directory** (`scripts/`) if it is a developer or maintainer tool
+to be run locally, a code maintenance or analysis utility, a style linting tool, or a data
+file used by the library's own linters.
 
 
 ## Current scripts and their purpose
@@ -50,6 +58,15 @@ under `ci-tools/`).
 - `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
   automatically generates the `deprecated_module` entries, gathering information from `git`.
   The expectation is that this will be expanded to a fully automated process that happens in CI.
+- `runSkimmer.sh` applies all interactive text suggestions generated within Mathlib (the
+  `lean_lib`). `runSkimmer.sh --on tgt1 tgt2 ...` applies only to those lake targets (libraries,
+  modules) within mathlib. If oleans for the refactored targets are already present, it will use them;
+  else it will build any necessary oleans. This script may be copy-pasted to other repos with altered
+  config variables, then set up with `runSkimmer.sh --init`. This sets up a minimal side package
+  `SideSkimmer` which avoids the need for including `skimmer` as a dependency.
+  See `runSkimmer.sh -h` and the bash module doc for more details.
+  NOTE: the functionality exposed by this script is very experimental, and subject to change.
+  Please report issues to Thomas Murrills on Zulip.
 - `migrate_to_fork.py`
   Helps contributors migrate from having direct write access to the main repository
   to using a fork-based workflow. This comprehensive script automates the entire migration process:
@@ -127,7 +144,7 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
   falls back to one-at-a-time removal.
-  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...]`
+  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
 
 **CI workflow**
 - `lake-build-with-retry.sh`
@@ -153,10 +170,39 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
   (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
+**Nightly testing**
+- `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
+  at Batteries and Mathlib. Run via `lake exe nightly-testing-checklist`.
+
+  **What it checks:**
+  - Whether each repo's toolchain matches the latest lean4 nightly
+  - Whether upstream dependencies (e.g. Batteries in Mathlib) are up to date
+  - CI status, with inline display of failing jobs and Lean error messages
+
+  **What it can fix:**
+  - Bumps stale `lean-toolchain` files
+  - Runs `lake update` for stale upstream dependencies
+  - Removes duplicate declarations ("has already been declared" errors) using Lean's parser
+    to identify command boundaries
+
+  **Flags:**
+  - `--watch`: wait for in-progress CI runs to complete (wakes on first job failure)
+  - `--fix`: commit and push fixes (default is dry-run: generate `.patch` files)
+  - `--no-clone`: report only, don't clone repos to `/tmp`
+  - `--no-build`: clone and update deps, but don't build or fix errors
+
+- `find_command_range.lean` is a helper used by `nightly-testing-checklist.lean`.
+  Given a file and position, it uses Lean's parser to find the byte range of the enclosing
+  top-level command (including preceding attributes and doc comments). It is copied to
+  cloned repos at runtime and executed via `lake env lean --run`.
+
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `extract-unique-nonascii.lean` is used for updating the list of non-ascii characters in
+  `Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
+  which have an abbreviation provided by the Lean VSCode extension.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
@@ -170,6 +216,15 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
+
+**Grind tactic analysis**
+- `grind_unused_lemmas.sh` `[N] [logfile]`
+  Builds Mathlib with `set_option grind.unusedLemmaThreshold N` (default 10) and reports
+  E-matching lemmas that are activated N+ times but do not appear in the final proof term.
+  Outputs `grind-unused-lemmas.md` with a table of lemmas ranked by how many files they
+  appear as unused in. If a logfile is given, skips the build and processes that log instead.
+  Requires a Lean toolchain with `grind.unusedLemmaThreshold` support
+  (leanprover/lean4#12805 or later).
 
 **API surrounding CI**
 - `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).

@@ -47,6 +47,7 @@ namespace TopologicalSpace
 /-- Given a family of topological spaces `X i`, the `X`-generated topology on
 a topological space `Y` is the topology that is coinduced
 by all continuous maps `X i → Y`. -/
+@[implicit_reducible]
 def generatedBy : TopologicalSpace Y :=
   ⨆ (i : ι) (f : C(X i, Y)), coinduced f inferInstance
 
@@ -72,7 +73,9 @@ def equiv : WithGeneratedByTopology X Y ≃ Y := Equiv.refl _
 
 instance {Y : Type v} [TopologicalSpace Y] :
     TopologicalSpace (WithGeneratedByTopology X Y) :=
-  .generatedBy X (Y := Y)
+  -- fast_instance% .generatedBy X (Y := Y) fails
+  letI : TopologicalSpace Y := .generatedBy X (Y := Y)
+  inferInstanceAs <| TopologicalSpace Y
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_iff {U : Set (WithGeneratedByTopology X Y)} :
@@ -148,7 +151,7 @@ section
 variable [IsGeneratedBy X Y]
 
 /-- The homeomorphism `WithGeneratedByTopology X Y ≃ₜ Y` when `Y` is `X`-generated. -/
-def homeomorph [IsGeneratedBy X Y] : WithGeneratedByTopology X Y ≃ₜ Y where
+def homeomorph : WithGeneratedByTopology X Y ≃ₜ Y where
   toEquiv := WithGeneratedByTopology.equiv
   continuous_toFun := by dsimp; fun_prop
   continuous_invFun := by dsimp; fun_prop

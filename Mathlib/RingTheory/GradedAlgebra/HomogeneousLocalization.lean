@@ -497,7 +497,6 @@ lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 :=
   have := subsingleton 𝒜 (h ▸ f.den_mem)
   exact Subsingleton.elim _ _
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝒜 x) in
 /-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
 def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
@@ -647,12 +646,22 @@ end
 section
 
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
-variable (𝒜 : ι → σ) [GradedRing 𝒜]
+variable {𝒜 : ι → σ} [GradedRing 𝒜]
 variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
-variable (ℬ : ι → τ) [GradedRing ℬ]
+variable {ℬ : ι → τ} [GradedRing ℬ]
+variable {C ψ : Type*} [CommRing C] [SetLike ψ C] [AddSubgroupClass ψ C]
+variable {𝒞 : ι → ψ} [GradedRing 𝒞]
 variable {P : Submonoid A} {Q : Submonoid B}
 
 open Graded
+
+/-- Map `NumDenSameDeg` along a graded ring hom. -/
+@[simps] def NumDenSameDeg.map (f : 𝒜 →+*ᵍ ℬ) {W₁ : Submonoid A} {W₂ : Submonoid B}
+    (hw : W₁ ≤ W₂.comap f) (c : NumDenSameDeg 𝒜 W₁) : NumDenSameDeg ℬ W₂ where
+  deg := c.deg
+  den := f.gradedAddHom _ c.den
+  num := f.gradedAddHom _ c.num
+  den_mem := hw c.den_mem
 
 /--
 Let `A, B` be two graded rings with the same indexing set and `g : 𝒜 →+*ᵍ ℬ` be a graded ring
@@ -677,28 +686,86 @@ def map (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) :
   map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'',
     num_one, den_one, map_one]; rfl
 
+variable (𝒜) in
 /--
 Let `A` be a graded ring and `P ≤ Q` be two submonoids, then the homogeneous localization of `A`
 at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
-  map 𝒜 𝒜 (.id _) h
+  map (.id _) h
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
-    map 𝒜 ℬ g comap_le (mk x) =
-    mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
+    map g comap_le (mk x) = mk ⟨x.1, ⟨_, map_mem g x.2.2⟩, ⟨_, map_mem g x.3.2⟩, comap_le x.4⟩ :=
   rfl
+
+variable (𝒜) in
+@[simp] theorem map_id (P : Submonoid A) : map (.id 𝒜) (P := P) (Q := P) le_rfl = .id _ := by
+  ext x
+  obtain ⟨c, rfl⟩ := x.mk_surjective
+  simp [map_mk]
+
+theorem map_comp {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+    {P : Submonoid A} {Q : Submonoid B} {R : Submonoid C}
+    (hpq : P ≤ Q.comap f) (hqr : Q ≤ R.comap g) :
+    map (g.comp f) (hpq.trans <| Submonoid.monotone_comap hqr) = (map g hqr).comp (map f hpq) := by
+  ext x
+  obtain ⟨c, rfl⟩ := x.mk_surjective
+  simp [map_mk]
+
+theorem map_map {f : 𝒜 →+*ᵍ ℬ} {g : ℬ →+*ᵍ 𝒞}
+    {P : Submonoid A} {Q : Submonoid B} {R : Submonoid C}
+    (hpq : P ≤ Q.comap f) (hqr : Q ≤ R.comap g) (x : HomogeneousLocalization 𝒜 P) :
+    map g hqr (map f hpq x) = map (g.comp f) (hpq.trans <| Submonoid.monotone_comap hqr) x :=
+  congr($(map_comp hpq hqr |>.symm) x)
 
 /-- If `g : 𝒜 →+*ᵍ ℬ` is a graded ring homomorphism and `f : A` then we have a map
 `Away 𝒜 f →+* Away ℬ (g f)`. -/
 protected def Away.map (g : 𝒜 →+*ᵍ ℬ) (f : A) : Away 𝒜 f →+* Away ℬ (g f) :=
-  map _ _ g <| by rintro _ ⟨n, rfl⟩; exact ⟨n, by simp⟩
+  map g <| by rintro _ ⟨n, rfl⟩; exact ⟨n, by simp⟩
 
 @[simp] lemma Away.map_mk {d : ι} (g : 𝒜 →+*ᵍ ℬ) (f : A) (hf : f ∈ 𝒜 d) (n : ℕ) (x : A)
     (hx : x ∈ 𝒜 (n • d)) :
-    Away.map 𝒜 ℬ g f (.mk 𝒜 hf n x hx) = .mk ℬ (map_mem g hf) n (g x) (map_mem g hx) := by
+    Away.map g f (.mk 𝒜 hf n x hx) = .mk ℬ (map_mem g hf) n (g x) (map_mem g hx) := by
   simp [Away.map, Away.mk, HomogeneousLocalization.map_mk]
+
+variable (𝒜) in
+@[simp] lemma Away.map_id (f : A) : Away.map (.id 𝒜) f = .id _ :=
+  HomogeneousLocalization.map_id ..
+
+@[simp] lemma Away.map_comp (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (s : A) :
+    Away.map (g.comp f) s = (Away.map g (f s)).comp (Away.map f s) :=
+  HomogeneousLocalization.map_comp ..
+
+theorem Away.map_map (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) (s : A) (x : Away 𝒜 s) :
+    Away.map g (f s) (Away.map f s x) = Away.map (g.comp f) s x :=
+  HomogeneousLocalization.map_map ..
+
+section AtPrime
+
+variable (f : 𝒜 →+*ᵍ ℬ) (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime] (hIJ : I = J.comap f)
+
+-- NB: this is to be consistent with `Localization.localRingHom`. We might change both to
+-- `AtPrime.map` one day.
+/-- If `f : 𝒜 →+*ᵍ ℬ` is a graded ring homomorphism and `I` is a prime ideal of `A` and
+`J` is a prime ideal of `B` and `f⁻¹ J = I` then we have a map `AtPrime 𝒜 I →+* AtPrime ℬ J`. -/
+noncomputable def localRingHom : AtPrime 𝒜 I →+* AtPrime ℬ J :=
+  map f <| Localization.le_comap_primeCompl_iff.mpr <| hIJ ▸ le_rfl
+
+variable {f I J hIJ}
+
+@[simp] lemma val_localRingHom (x : AtPrime 𝒜 I) :
+    (localRingHom f I J hIJ x).val = Localization.localRingHom _ _ f hIJ x.val := by
+  obtain ⟨⟨i, x, s, hs⟩, rfl⟩ := x.mk_surjective
+  simp [localRingHom, map_mk]
+
+instance : IsLocalHom (localRingHom f I J hIJ) where
+  map_nonunit x hx := by
+    rw [← isUnit_iff_isUnit_val] at hx ⊢
+    rw [val_localRingHom] at hx
+    exact IsLocalHom.map_nonunit _ hx
+
+end AtPrime
 
 end
 
@@ -866,7 +933,6 @@ end isLocalization
 
 section span
 
-set_option backward.isDefEq.respectTransparency false in
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,

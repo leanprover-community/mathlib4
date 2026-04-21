@@ -313,9 +313,6 @@ theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid 
     rwa [ConcreteCategory.isIso_iff_bijective] at this
   infer_instance
 
-@[deprecated (since := "2025-10-11")]
-alias Spec_map_localization_isIso := isIso_SpecMap_stakMap_localization
-
 namespace StructureSheaf
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum R)
@@ -357,7 +354,6 @@ def toPushforwardStalkAlgHom :
   { (StructureSheaf.toPushforwardStalk (CommRingCat.ofHom (algebraMap R S)) p).hom with
     commutes' := fun _ => rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
@@ -369,7 +365,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
       (homOfLE hrU) p hpr _).trans e
   set s' := (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
       (homOfLE hrU).op s with h
-  replace e : ((Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).val).germ _
+  replace e : ((Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).germ _
       p hpr) s' = y := by
     rw [h]; exact e
   clear_value s'; clear! U
@@ -384,7 +380,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
       (homOfLE le_top) p hpr]
   rw [← e]
   let f := TopCat.Presheaf.germ (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _*
-      (structureSheaf S).val) _ p hpr
+      (structureSheaf S).obj) _ p hpr
   rw [← map_mul, mul_comm]
   dsimp only [Subtype.coe_mk] at hsn
   rw [← map_pow (algebraMap R S)] at hsn
