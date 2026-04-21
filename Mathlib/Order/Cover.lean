@@ -273,6 +273,10 @@ theorem not_covBy_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
   (not_covBy_iff (h₁.trans h₂)).2 ⟨b, h₁, h₂⟩
 
 @[to_dual self]
+theorem not_covBy_iff_exists_mem_Ioo (h : a < b) : ¬a ⋖ b ↔ ∃ c, c ∈ Set.Ioo a b :=
+  not_covBy_iff h
+
+@[to_dual self]
 theorem covBy_iff_wcovBy_and_lt : a ⋖ b ↔ a ⩿ b ∧ a < b :=
   ⟨fun h => ⟨h.wcovBy, h.lt⟩, fun h => h.1.covBy_of_lt h.2⟩
 
