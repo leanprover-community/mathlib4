@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes
@@ -344,6 +345,38 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+open IrreducibleCloseds Set in
+@[stacks 02I4]
+lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpenImmersion f] :
+    Order.coheight (f.base x) = Order.coheight x := f.isOpenEmbedding.coheight_eq
+
+open Order in
+lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
+    x.asIdeal.height = coheight x := by
+  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
+  congr
+  ext a b
+  exact le_primeSpectrum_iff_le_spec R a b
+
+open Order in
+@[stacks 02IZ]
+lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
+    ringKrullDim (X.presheaf.stalk x) = Order.coheight x := by
+  wlog h : ∃ R, X = Spec R
+  · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
+      (show x ∈ ⊤ from trivial)
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
+    rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]
+    exact Order.krullDim_eq_of_orderIso
+      (PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  obtain ⟨R, rfl⟩ := h
+  let k : Algebra ↑R ↑((Spec R).presheaf.stalk x) := StructureSheaf.stalkAlgebra (↑R) x
+  have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk x)) x.asIdeal :=
+    StructureSheaf.IsLocalization.to_stalk R x
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
+  apply WithBot.coe_eq_coe.mpr
+  exact idealHeight_eq_coheight R x
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by
