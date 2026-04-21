@@ -65,20 +65,21 @@ namespace PositiveCategory
 
 variable [PositiveCategory C]
 
-instance {X Y : C} {e : X ≅ Y} : Deterministic e.hom where
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : Deterministic f where
   hom_comul := by
     calc
-    _ = e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = f ≫ Δ ≫ (inv f ⊗ₘ 𝟙 Y) ≫ (f ⊗ₘ 𝟙 Y) := by
       cat_disch
-    _ = (e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = (f ≫ Δ ≫ (inv f ⊗ₘ 𝟙 Y)) ≫ (f ⊗ₘ 𝟙 Y) := by
       simp
-    _ = (Δ ≫ (𝟙 X ⊗ₘ e.hom)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
-      simp only [copy_comp_natural, Iso.hom_inv_id]
-    _ = Δ ≫ (𝟙 X ⊗ₘ e.hom) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = (Δ ≫ (𝟙 X ⊗ₘ f)) ≫ (f ⊗ₘ 𝟙 Y) := by
+      rw [copy_comp_natural (h := by rw [IsIso.hom_inv_id]; infer_instance)]
       simp
-    _ = Δ ≫ ((𝟙 X ≫ e.hom) ⊗ₘ (e.hom ≫ 𝟙 Y)) := by
+    _ = Δ ≫ (𝟙 X ⊗ₘ f) ≫ (f ⊗ₘ 𝟙 Y) := by
+      simp
+    _ = Δ ≫ ((𝟙 X ≫ f) ⊗ₘ (f ≫ 𝟙 Y)) := by
       rw [MonoidalCategory.tensorHom_comp_tensorHom]
-    _ = Δ ≫ (e.hom ⊗ₘ e.hom) := by cat_disch
+    _ = Δ ≫ (f ⊗ₘ f) := by cat_disch
 
 end PositiveCategory
 
