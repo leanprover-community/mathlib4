@@ -57,10 +57,10 @@ def mk' {l : List (MvPolynomial σ R)} (hl1 : 0 ∉ l)
 noncomputable instance instFunLike : FunLike (TriangularSet σ R) ℕ (MvPolynomial σ R) where
   coe S n := S.toList[n]?.getD 0
   coe_injective' := by
-    rintro ⟨lS, hs1, hs2⟩ ⟨lT, ht1, ht2⟩ h
+    rintro ⟨ls, hs1, hs2⟩ ⟨lt, ht1, ht2⟩ h
     congr
     apply List.ext_getElem? fun n ↦ ?_
-    have h : lS[n]?.getD 0 = lT[n]?.getD 0 := congrFun h n
+    have h : ls[n]?.getD 0 = lt[n]?.getD 0 := congrFun h n
     grind
 
 @[ext]
@@ -199,58 +199,26 @@ theorem exists_index_max_vars_between_of_max_vars_first_lt
   have := this (S.length - 1) <| Nat.sub_le S.length 1
   exact (con this).2 rfl
 
+theorem toList_nodup (S : TriangularSet σ R) : S.toList.Nodup := by
+  refine List.nodup_iff_injective_getElem.mpr ?_
+  intro ⟨i, hi⟩ ⟨j, hj⟩ (h : S.toList[i] = S.toList[j])
+  rw [toList_getElem, toList_getElem] at h
+  exact (Fin.mk.injEq ..) ▸ index_eq_of_apply_eq hi hj h
+
 /-! ### Set-like behavior -/
 
 instance instSetLike : SetLike (TriangularSet σ R) (MvPolynomial σ R) where
   coe := fun S ↦ {p | ∃ n < S.length, S n = p}
   coe_injective' := by
-    intro S T (h : (fun p ↦ ∃ n < S.length, S n = p) = fun p ↦ ∃ n < T.length, T n = p)
-    have h (p : MvPolynomial σ R) : (∃ n, S n = p) ↔ ∃ n, T n = p := by
-      suffices ∀ U : TriangularSet σ R, (∃ n, U n = p) ↔ p = 0 ∨ ∃ n < U.length, U n = p by
-        rw [this S, this T, Eq.to_iff (funext_iff.mp h p)]
-      refine fun U ↦ ⟨fun ⟨n, hn⟩ ↦ ?_, fun hp ↦ ?_⟩
-      · exact or_iff_not_imp_left.mpr fun hp ↦ ⟨n, ne_zero_iff_lt_length.mpr (hn ▸ hp), hn⟩
-      rcases hp with hp | hp
-      · exact ⟨U.length, hp ▸ apply_length_eq_zero⟩
-      exact ⟨hp.choose, hp.choose_spec.2⟩
-    refine ext fun i ↦ ?_
-    induction i using Nat.strong_induction_on with | h i hi =>
-    have {S T : TriangularSet σ R} (h : ∀ p, (∃ n, S n = p) ↔ ∃ n, T n = p)
-        (hi : ∀ m < i, S m = T m) : S i = 0 → T i = 0 := fun hs ↦ by
-      by_contra ht
-      have ⟨j ,hj⟩ := (h (T i)).mpr <| Exists.intro i rfl
-      have h1 : i < T.length:= ne_zero_iff_lt_length.mpr ht
-      rw [← hj] at ht
-      have h2 : j < i := by
-        apply lt_of_lt_of_le (ne_zero_iff_lt_length.mpr ht) ?_
-        exact eq_zero_iff_length_le.mpr hs
-      have hj : (T j).vars.max = (T i).vars.max := congrArg (·.vars.max) (hi j h2 ▸ hj)
-      exact False.elim <| Eq.not_lt hj <| max_vars_lt_of_index_lt h1 h2
-    have : S i = 0 ↔ T i = 0 :=
-      ⟨this h hi, this (fun p ↦ (h p).symm) (fun i hi' ↦ (hi i hi').symm)⟩
-    by_cases hst : S i = 0 ∨ T i = 0
-    · rw [this, or_self] at hst
-      rw [hst, this, hst]
-    rw [not_or] at hst
-    have ⟨h1, h2⟩ := And.intro (ne_zero_iff_lt_length.mpr hst.1) (ne_zero_iff_lt_length.mpr hst.2)
-    have ⟨j ,hj⟩ := (h (S i)).mp <| Exists.intro i rfl
-    by_cases hij : j ≤ i
-    · match Nat.eq_or_lt_of_le hij with
-      | .inl hij => exact (hij ▸ hj).symm
-      | .inr hij =>
-        absurd (max_vars_lt_of_index_lt h1 hij)
-        rw [hi j hij, hj]
-        exact Eq.not_lt rfl
-    have ⟨k ,hk⟩ := (h (T i)).mpr <| Exists.intro i rfl
-    have : j < T.length := ne_zero_iff_lt_length.mpr <| ne_of_eq_of_ne hj hst.1
-    have : (T i).vars.max < (T j).vars.max :=
-      max_vars_lt_of_index_lt this (not_le.mp hij)
-    have hs : (S k).vars.max < (S i).vars.max := by rw [← hk, hj] at this; exact this
-    have : k < S.length := ne_zero_iff_lt_length.mpr <| ne_of_eq_of_ne hk hst.2
-    have klti : k < i := index_lt_of_max_vars_lt this hs
-    have : T k = T i := (hi k klti).symm.trans hk
-    absurd (congrArg (·.vars.max) this : (T k).vars.max = (T i).vars.max)
-    exact ne_of_lt <| max_vars_lt_of_index_lt h2 klti
+    intro S T (h : (fun p ↦ ∃ n < S.length, S n = p) = (fun p ↦ ∃ n < T.length, T n = p))
+    have h (p : MvPolynomial σ R) : p ∈ S.toList ↔ p ∈ T.toList := by
+      rw [mem_toList_iff', mem_toList_iff']
+      exact Iff.of_eq (congrFun h p)
+    rw [← toList_eq_iff_eq]
+    exact List.Perm.eq_of_pairwise
+      (fun _ _ _ _ h1 h2 ↦ absurd h2 <| Std.not_gt_of_lt h1)
+      S.toList_pairwise T.toList_pairwise
+      ((List.perm_ext_iff_of_nodup S.toList_nodup T.toList_nodup).mpr h)
 
 theorem mem_def : p ∈ S ↔ ∃ n < S.length, S n = p := Eq.to_iff rfl
 
@@ -295,21 +263,21 @@ theorem mem_of_subset (p : MvPolynomial σ R) (h : S ⊆ T) : p ∈ S → p ∈ 
 theorem ssubset_def : S ⊂ T ↔ S ⊆ T ∧ ¬T ⊆ S := Iff.rfl
 
 /-- Converts a triangular set to a finite set. -/
-noncomputable def toFinset (S : TriangularSet σ R) : Finset (MvPolynomial σ R) :=
+def toFinset (S : TriangularSet σ R) : Finset (MvPolynomial σ R) :=
   (@Finset.univ (Fin S.length) _).map
-    ⟨fun i ↦ S i.1, fun ⟨_, hi⟩ ⟨_, hj⟩ hij ↦ (Fin.mk.injEq ..) ▸ index_eq_of_apply_eq hi hj hij⟩
+    ⟨fun i ↦ S.toList[i], List.nodup_iff_injective_getElem.mp S.toList_nodup⟩
 
 @[simp] theorem card_toFinset (S : TriangularSet σ R) : S.toFinset.card = S.length := by
-  simp only [toFinset, Finset.card_map, Finset.card_univ, Fintype.card_fin]
+  simp [toFinset]
 
 @[simp] theorem mem_toFinset_iff : p ∈ S.toFinset ↔ p ∈ S := by
   refine Iff.trans ?_ SetLike.mem_coe
-  simp [toFinset, Finset.map, SetLike.coe, Fin.exists_iff]
+  simp [toFinset, SetLike.coe, Fin.exists_iff, toList_getElem]
 
 @[simp] theorem toFinset_eq_iff_eq : S.toFinset = T.toFinset ↔ S = T := by
   refine ⟨fun h ↦ SetLike.ext fun p ↦ ?_, congrArg _⟩
   rw [← mem_toFinset_iff, ← mem_toFinset_iff]
-  exact Eq.to_iff (congrFun (congrArg Membership.mem h) p)
+  aesop
 
 theorem toFinset_eq_coe_set (S : TriangularSet σ R) : S.toFinset = (S : Set (MvPolynomial σ R)) :=
   Set.ext fun _ ↦ ⟨SetLike.mem_coe.mpr ∘ mem_toFinset_iff.mp, mem_toFinset_iff.mpr⟩
@@ -325,14 +293,14 @@ theorem length_lt_of_ssubset : S ⊂ T → S.length < T.length := fun h ↦ by
 
 
 /-- The empty triangular set. -/
-protected noncomputable def empty : TriangularSet σ R where
+protected def empty : TriangularSet σ R where
   toList := []
   zero_notMem' := List.not_mem_nil
   isChain_max_vars' := List.IsChain.nil
 
-noncomputable instance : EmptyCollection (TriangularSet σ R) := ⟨.empty⟩
+instance : EmptyCollection (TriangularSet σ R) := ⟨.empty⟩
 
-noncomputable instance : Inhabited (TriangularSet σ R) := ⟨∅⟩
+instance : Inhabited (TriangularSet σ R) := ⟨∅⟩
 
 theorem empty_eq_default : (∅ : TriangularSet σ R) = default := rfl
 
@@ -359,7 +327,7 @@ theorem eq_empty_of_forall_notMem : (∀ p, p ∉ S) → S = ∅ := fun h ↦ by
   exact ⟨S 0, apply_mem <| length_gt_zero_iff.mpr h⟩
 
 /-- A triangular set with exactly one non-zero element. -/
-noncomputable def single' (hp : p ≠ 0) : TriangularSet σ R where
+def single' (hp : p ≠ 0) : TriangularSet σ R where
   toList := [p]
   zero_notMem' := by simpa only [List.mem_cons, List.not_mem_nil, or_false, ne_eq] using hp.symm
   isChain_max_vars' := List.IsChain.singleton p
@@ -374,7 +342,7 @@ theorem single'_apply (hp : p ≠ 0) :
 theorem length_single' (hp : p ≠ 0) : (single' hp).length = 1 := rfl
 
 /-- Takes the first `n` elements of a triangular set. -/
-noncomputable def take (S : TriangularSet σ R) (n : ℕ) : TriangularSet σ R where
+def take (S : TriangularSet σ R) (n : ℕ) : TriangularSet σ R where
   toList := S.toList.take n
   zero_notMem' := fun h ↦ absurd (List.mem_of_mem_take h) S.zero_notMem_toList
   isChain_max_vars' := List.IsChain.take S.toList_isChain n
@@ -445,7 +413,7 @@ theorem empty_canConcat : p ≠ 0 → (∅ : TriangularSet σ R).canConcat p :=
 theorem not_canConcat_zero : ¬ S.canConcat 0 := not_and.mpr fun a _ ↦ a rfl
 
 /-- Appends a polynomial `p` to the end of `S`. Requires `S.canConcat p`. -/
-noncomputable def concat (S : TriangularSet σ R) (p : MvPolynomial σ R)
+def concat (S : TriangularSet σ R) (p : MvPolynomial σ R)
     (h : S.canConcat p := by assumption) : TriangularSet σ R where
   toList := S.toList.concat p
   zero_notMem' := fun hz ↦ by
