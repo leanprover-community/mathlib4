@@ -29,8 +29,8 @@ properties about them.
   Dirac measure.
 * `is_deterministic_iff_zero_one`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
-* `isDeterministic_eq_deterministic`: in a standard Borel space, a Markov kernel is
-  deterministic if and only if it equals the deterministic kernel of some measurable function.
+* `isDeterministic_eq_deterministic`: in a standard Borel space, a deterministic Markov kernel is
+  a Dirac kernel of some measurable function.
 * `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. This corresponds to the equation of a Positive Markov category.
@@ -251,8 +251,8 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (is_deterministic_iff_zero_one κ).mp ‹_›
 
-/-- In a standard Borel space, a Markov kernel is deterministic if and only if it equals the
-deterministic kernel of some measurable function. -/
+/-- in a standard Borel space, a deterministic Markov kernel is a Dirac kernel of ome measurable
+function. -/
 theorem isDeterministic_eq_deterministic [StandardBorelSpace β] (κ : Kernel α β)
     [IsMarkovKernel κ] [IsDeterministic κ] :
     ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
