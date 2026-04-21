@@ -35,29 +35,41 @@ def GRewriteLemma.getValue (lem : GRewriteLemma) : MetaM Expr := do
   let us ← lem.levelParams.mapM fun _ => mkFreshLevelMVar
   return lem.proof.instantiateLevelParamsArray lem.levelParams us
 
-def GRewriteLemma.apply (g : MVarId) (lem : GRewriteLemma) (config : GRewrite.Config) :
-    GRewriteM Unit := do
+def applyGRewrite (g : MVarId) (symm : Bool) (config : GRewrite.Config) : GRewriteM Unit := do
+  let lem ← read
   let proof ← lem.getValue
   let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof)
-  guard <| ← withConfig (fun oldConfig => { config, oldConfig with }) <|
-    isDefEq (← g.getType) rel
+  let proof := mkAppN proof mvars
+  let (rel, proof) ←
+    if symm then
+      let proof ← proof.applySymm
+      pure (← inferType proof, proof)
+    else
+      pure (rel, proof)
+  withConfig (fun oldConfig => { config, oldConfig with }) do
+    if ← isDefEq (← g.getType) rel then
+      g.assign proof
+    else
+      let mctx ← getMCtx
+      for (_, tac) in (forwardExt.getState (← getEnv)).2 do
+        try tac.eval proof g; return
+        catch _ => setMCtx mctx
+      failure
   for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      let type ← mvar.mvarId!.getType
-      if (← isClass? type).isSome then
-        if let some inst ← synthInstance? type then
-          guard <| ← isDefEq mvar inst
-          continue
+    if ← mvar.mvarId!.isAssigned then continue
+    let type ← mvar.mvarId!.getType
+    if (← isClass? type).isSome then
+      if let some inst ← synthInstance? type then
+        mvar.mvarId!.assign inst
+        continue
     pushNewGoal mvar.mvarId!
-  g.assign (mkAppN proof mvars)
 
 mutual
 
 private partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
     (config : GRewrite.Config) :
     GRewriteM Bool := do
-  let (mainGoals, sideGoals) ←
-    try applyGCongrLemma g lem catch _ => return false
+  let (mainGoals, sideGoals) ← try applyGCongrLemma g lem catch _ => return false
   /- Synthesize instances. Allow Synthesis to get stuck, because e.g. with
   `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
   either `s` or `t` is still a metavariable at this point. -/
@@ -104,16 +116,12 @@ private partial def grewriteCongr (g : MVarId) (inv : Bool)
   let eWhnf ← whnf e
   -- Try to use the grewrite lemma.
   let lem ← read
-  if relName == lem.relName && eWhnf.toHeadIndex == lem.headIdx &&
-      eWhnf.headNumArgs == lem.headNumArgs then
-    let mctx ← getMCtx
+  if eWhnf.toHeadIndex == lem.headIdx && eWhnf.headNumArgs == lem.headNumArgs then
     try
-      let g ← if inv == lem.symm then pure g else g.applySymm
-      lem.apply g config
+      applyGRewrite g (inv != lem.symm) config
       trace[Meta.grewrite] "applied rewrite lemma `{lem.proof}` to{indentExpr (← g.getType)}"
       return true
-    catch _ =>
-      setMCtx mctx
+    catch _ => pure ()
   if let some (head, args) := getCongrAppFnArgs e then
     let key := { relName, head, arity := args.size }
     let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []

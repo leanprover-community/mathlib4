@@ -45,7 +45,7 @@ example (h₁ : c ≤ b) (h₂ : a + 5 < c + 6) : a + 5 < b + 6 := by
   exact h₂
 
 example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d + e := by
-  grw' [h₂.le, h₃] at h₁
+  grw' [h₂, h₃] at h₁
   guard_hyp h₁ :ₛ a + e ≤ d + e
   exact h₁
 
@@ -322,35 +322,9 @@ axiom f : α → α
 @[gcongr]
 axiom f_congr' : a ≤ b → f a ≤ f b
 
-/--
-error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
-  a
-in the target expression
-  f a ≤ f b
-
-α : Type u
-inst✝ : Preorder α
-a b : α
-h : AntisymmRel (fun x1 x2 => x1 ≤ x2) a b
-⊢ f a ≤ f b
--/
-#guard_msgs in
 example (h : a ≈ b) : f a ≤ f b := by
   grw' [h]
 
-/--
-error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
-  b
-in the target expression
-  f a ≤ f b
-
-α : Type u
-inst✝ : Preorder α
-a b : α
-h : AntisymmRel (fun x1 x2 => x1 ≤ x2) b a
-⊢ f a ≤ f b
--/
-#guard_msgs in
 example (h : b ≈ a) : f a ≤ f b := by
   grw' [h]
 
