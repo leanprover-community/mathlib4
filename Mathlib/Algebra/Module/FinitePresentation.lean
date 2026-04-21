@@ -310,7 +310,7 @@ theorem exists_exact_and_surjective [Module.FinitePresentation R M] :
       Function.Exact f g ∧ Function.Surjective g := by
   obtain ⟨n, K, e, S, hS⟩ := exists_fin R M
   let m := S.card
-  let gens : Fin m → (Fin n → R) := Subtype.val ∘ (Finset.equivFin S).symm
+  let o : Fin m → (Fin n → R) := Subtype.val ∘ (Finset.equivFin S).symm
   let f : (Fin m → R) →ₗ[R] (Fin n → R) := Fintype.linearCombination R gens
   let g : (Fin n → R) →ₗ[R] M := iso.symm.toLinearMap.comp (Submodule.mkQ K)
   have h : g.ker = f.range := Eq.trans (b := K) (by simp [g]) <| by
