@@ -394,7 +394,7 @@ theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
 
 end IsScalarTower
 
-/-- The algebra morphism underlying `algebraMap` -/
+/-- The algebra morphism underlying `algebraMap`. -/
 alias Algebra.algHom := IsScalarTower.toAlgHom
 
 alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
