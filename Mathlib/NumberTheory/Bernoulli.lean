@@ -441,7 +441,7 @@ private lemma pIntegral_iff_not_dvd (p : ℕ) (x : ℚ) [Fact p.Prime] :
     pIntegral p x ↔ ¬ p ∣ x.den := by
   simp only [pIntegral, Rat.padicValuation_le_one_iff]
 
-private lemma sum_den_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
+private lemma den_sum_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
     (∑ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den := by
   classical
   induction s using Finset.induction_on with
@@ -730,7 +730,7 @@ private lemma vonStaudt_sum_den_not_dvd (k p : ℕ) (hk : k > 0) [Fact p.Prime] 
   rw [sum_one_div_prime_eq_indicator_div_add k p hk, ← add_assoc]
   have hcop_ind := ((Nat.Prime.coprime_iff_not_dvd Fact.out).2
     (bernoulli_add_indicator_den_not_dvd k p hk)).symm
-  have hcop_rest := Nat.Coprime.of_dvd_left (sum_den_dvd_prod_den _ _)
+  have hcop_rest := Nat.Coprime.of_dvd_left (den_sum_dvd_prod_den _ _)
     (prod_one_div_prime_den_coprime k p)
   have hcop := (Nat.Coprime.of_dvd_left (Rat.add_den_dvd _ _) (hcop_ind.mul_left hcop_rest)).symm
   exact (Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop
