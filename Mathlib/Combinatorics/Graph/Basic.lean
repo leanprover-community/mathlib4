@@ -259,6 +259,7 @@ def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 
 @[simp]
 lemma isLink_self_iff : G.IsLink e x x ↔ G.IsLoopAt e x := Iff.rfl
+alias ⟨_, IsLoopAt.isLink⟩ := isLink_self_iff
 
 lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
   IsLink.inc_left h
@@ -314,7 +315,7 @@ alias ⟨Inc.isLoopAt_or_isNonloopAt, _⟩ := inc_iff_isLoopAt_or_isNonloopAt
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
 lemma adj_iff : G.Adj x y ↔ ∃ e, G.IsLink e x y := Iff.rfl
-alias ⟨_, Adj.exists⟩ := adj_iff
+alias ⟨Adj.exists, _⟩ := adj_iff
 
 @[symm]
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
@@ -447,7 +448,7 @@ the incidence relation (i.e., which pairs of vertices it links) is the same in b
 -/
 
 /-- Two graphs are compatible if their shared edges have the same ends in both graphs. -/
-def Compatible (G H : Graph α β) : Prop :=
+@[expose] def Compatible (G H : Graph α β) : Prop :=
   ∀ ⦃e⦄, e ∈ E(G) → e ∈ E(H) → ∀ x y, G.IsLink e x y ↔ H.IsLink e x y
 
 lemma Compatible.isLink_congr (heG : e ∈ E(G)) (heH : e ∈ E(H)) (h : G.Compatible H) {x y : α} :
