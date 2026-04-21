@@ -59,9 +59,9 @@ def lake_build_modules(modules: list[str], timeout: int = 600) -> bool:
     return True
 
 
-def has_option(filepath: Path, option: str) -> bool:
+def has_option(filepath: Path, option: str, value: str) -> bool:
     """Check if a file has the module-level set_option line."""
-    pat = module_set_option_pattern(option)
+    pat = module_set_option_pattern(option, value)
     text = filepath.read_text()
     for line in text.splitlines():
         if pat.match(line):
@@ -69,9 +69,9 @@ def has_option(filepath: Path, option: str) -> bool:
     return False
 
 
-def remove_option(filepath: Path, option: str) -> str | None:
+def remove_option(filepath: Path, option: str, value: str) -> str | None:
     """Remove the module-level set_option line. Returns original text or None."""
-    pat = module_set_option_pattern(option)
+    pat = module_set_option_pattern(option, value)
     text = filepath.read_text()
     lines = text.splitlines(keepends=True)
     for i, line in enumerate(lines):
@@ -98,6 +98,7 @@ def bisect_remove(
     candidates: list[str],
     check_modules: list[str],
     option: str,
+    value: str,
     timeout: int,
 ) -> list[str]:
     """Binary-search remove options from candidates while check_modules build.
@@ -115,7 +116,7 @@ def bisect_remove(
         if info is None:
             continue
         fp = dag.project_root / info.filepath
-        orig = remove_option(fp, option)
+        orig = remove_option(fp, option, value)
         if orig is not None:
             originals[mod] = orig
 
@@ -148,7 +149,7 @@ def bisect_remove(
         if info is None:
             continue
         fp = dag.project_root / info.filepath
-        orig = remove_option(fp, option)
+        orig = remove_option(fp, option, value)
         if orig is not None:
             left_originals[mod] = orig
 
@@ -160,7 +161,7 @@ def bisect_remove(
             if info:
                 restore_file(dag.project_root / info.filepath, orig)
         lake_build_modules(check_modules, timeout)
-        needed_left = bisect_remove(dag, left, check_modules, option, timeout)
+        needed_left = bisect_remove(dag, left, check_modules, option, value, timeout)
     else:
         needed_left = []
 
@@ -172,7 +173,7 @@ def bisect_remove(
         if info is None:
             continue
         fp = dag.project_root / info.filepath
-        orig = remove_option(fp, option)
+        orig = remove_option(fp, option, value)
         if orig is not None:
             right_originals[mod] = orig
 
@@ -184,7 +185,7 @@ def bisect_remove(
             if info:
                 restore_file(dag.project_root / info.filepath, orig)
         lake_build_modules(check_modules, timeout)
-        needed_right = bisect_remove(dag, right, check_modules, option, timeout)
+        needed_right = bisect_remove(dag, right, check_modules, option, value, timeout)
     else:
         needed_right = []
 
@@ -206,6 +207,11 @@ def main():
         help=f"Option name (default: {DEFAULT_OPTION})",
     )
     parser.add_argument(
+        "--value",
+        default="true",
+        help="Value to set the option to (default: true)",
+    )
+    parser.add_argument(
         "--timeout",
         type=int,
         default=600,
@@ -214,6 +220,7 @@ def main():
     args = parser.parse_args()
 
     option = args.option
+    value = args.value
 
     print("Building import DAG...", flush=True)
     dag = DAG.from_directories(PROJECT_DIR)
@@ -240,8 +247,8 @@ def main():
         if info is None:
             continue
         fp = dag.project_root / info.filepath
-        if not has_option(fp, option):
-            if add_to_file(fp, option, dry_run=False):
+        if not has_option(fp, option, value):
+            if add_to_file(fp, option, value, dry_run=False):
                 added.append(d)
     print(f"  Added option to {len(added)} dependencies of {len(args.modules)} modules",
           flush=True)
@@ -256,7 +263,7 @@ def main():
     print(f"  Build OK. Now minimizing {len(added)} additions...", flush=True)
 
     # Step 4: binary search remove unnecessary options
-    needed = bisect_remove(dag, added, check_modules, option, args.timeout)
+    needed = bisect_remove(dag, added, check_modules, option, value, args.timeout)
 
     removed_count = len(added) - len(needed)
     print(f"\n{'='*60}")
