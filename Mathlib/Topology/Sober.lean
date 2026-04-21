@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Order.KrullDimension
 
 /-!
 # Sober spaces
@@ -269,6 +270,68 @@ lemma quasiSober_of_quasisober_inter_isClosed_left {V : Set α} (W : Set α) [Qu
     (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
   rw [inter_comm]
   exact quasiSober_of_quasisober_inter_isClosed_right V hW
+open Order in
+/--
+In a sober space `α` set of points with coheight `0` in the specialization order is order iso to
+the set of irreducible components of `α`.
+-/
+noncomputable
+def coheightZeroSetOrderIsoIrreducibleComponents [QuasiSober α] [T0Space α] :
+    {x : α | Order.coheight x = 0} ≃o irreducibleComponents α := by
+  have : {x : α | Order.coheight x = 0} = {x : α | Maximal ⊤ x} := by simp [maximal_true_iff_isMax]
+  rw [irreducibleComponents_eq_maximals_closed, this]
+  exact OrderIso.mapSetOfMaximal <| OrderIso.trans
+    (OrderIso.trans (OrderHom.subtypeUnivOrderIso (by tauto : ∀ x : α, ⊤))
+    (irreducibleSetEquivPoints (α := α)).symm) <|
+    TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' α
+
+/--
+For types `α, β` where `Y` is a quasisober, irreducible space, we can lift a function `f : X → Y`
+to a function `f' : WithTop X → Y` sending `⊤` to a generic point of `Y`.
+-/
+noncomputable
+def QuasiSober.withTopLift [DecidableEq α] [IrreducibleSpace β] [QuasiSober β] (f : α → β) :
+    WithTop α → β := fun a ↦ if h : a = ⊤ then genericPoint β else f (WithTop.untop a h)
+
+attribute [local instance] specializationPreorder in
+lemma QuasiSober.withTopLift_strictMono [DecidableEq α]
+    [QuasiSober β] [IrreducibleSpace β]
+    (f : α → β) (hf : @StrictMono _ _ (specializationPreorder α) (specializationPreorder β) f)
+    (hf2 : ∀ x : α, f x < genericPoint β) :
+    @StrictMono _ _ (@WithTop.instPreorder _ (specializationPreorder α)) (specializationPreorder β)
+    (QuasiSober.withTopLift f) := fun a ↦ by aesop (add simp QuasiSober.withTopLift)
+
+lemma QuasiSober.val_lt_genericPoint_of_closure_ne_top [QuasiSober α] [IrreducibleSpace α]
+    {p : Set α} (hp : closure p ≠ univ) :
+    ∀ x : p, @LT.lt α (specializationPreorder α).toLT (Subtype.val x) (genericPoint α) := by
+  simp_all only [ne_eq, Subtype.forall]
+  refine fun x hx ↦ ⟨genericPoint_specializes x, fun h ↦ ?_⟩
+  have : closure {Subtype.val ⟨x, hx⟩} ⊆ closure p := closure_mono (by simp [hx])
+  simp_all [specializes_iff_closure_subset]
+
+open Order in
+attribute [local instance] specializationPreorder in
+/--
+In a quasisober, irreducible space `X`, any set `p` which is not dense satisfies that the
+set of points in `X` which lie in `p` and have coheight `1` in the specialization order on `X` have
+coheight `0` in the specialization order on `p`.
+-/
+lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one {p : Set α}
+    [QuasiSober α] [IrreducibleSpace α] (hp : closure p ≠ ⊤) :
+    {x : α | x ∈ p ∧ coheight x = 1} ⊆ Subtype.val '' {x : p | coheight x = 0} := by
+  classical
+  simp only [Set.subset_def, Set.mem_setOf_eq, Set.mem_image,
+    Subtype.exists, exists_and_right, exists_eq_right, and_imp]
+  intro x hx kx
+  use hx
+  convert @coheight_zero_of_coheight_one_of_strictMono (Subtype p) α
+    (specializationPreorder (Subtype p)) (specializationPreorder α)
+    (QuasiSober.withTopLift (Subtype.val : Subtype p → α))
+    (QuasiSober.withTopLift_strictMono (Subtype.val : Subtype p → α)
+    Specializes.strictMono_val <| QuasiSober.val_lt_genericPoint_of_closure_ne_top hp) ⟨x, hx⟩ kx
+  simp only [Subtype.preorder, Preorder.lift, specializationPreorder]
+  ext a b
+  exact (subtype_specializes_iff b a).symm
 
 end Sober
 

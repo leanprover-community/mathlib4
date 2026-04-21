@@ -108,6 +108,10 @@ theorem minimal_iff_isMin (hP : ∀ ⦃x y⦄, P y → x ≤ y → P x) : Minima
   ⟨fun h ↦ ⟨h.prop, fun _ h' ↦ h.le_of_le (hP h.prop h') h'⟩, fun h ↦ ⟨h.1, fun _ _  h' ↦ h.2 h'⟩⟩
 
 @[to_dual]
+lemma minimal_true_iff_isMin {α : Type*} (x : α) [LE α] : Minimal ⊤ x ↔ IsMin x := by
+  simp [Minimal, IsMin]
+
+@[to_dual]
 theorem Minimal.mono (h : Minimal P x) (hle : Q ≤ P) (hQ : Q x) : Minimal Q x :=
   ⟨hQ, fun y hQy ↦ h.le_of_le (hle y hQy)⟩
 

@@ -1060,6 +1060,29 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     let p' := p.map _ WithTop.coe_strictMono
     apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
 
+/--
+For preorders `α` and `β`, if there is a strictly monotone function `f : WithTop α → β`, then if
+`f x` has coheight `1`, then `x` has coheight `0`.
+-/
+lemma coheight_zero_of_coheight_one_of_strictMono
+    {α β : Type*} [Preorder α] [Preorder β] (f : WithTop α → β) (hf : StrictMono f) (x : α)
+    (h : coheight (f x) = 1) : coheight x = 0 := by
+  suffices coheight (x : WithTop α) = 1 by
+    simp only [coheight_coe_withTop] at this
+    by_cases m : coheight x = ⊤
+    · rw [m] at this
+      contradiction
+    · push Not at m
+      rw [ENat.ne_top_iff_exists] at m
+      obtain ⟨a, ha⟩ := m
+      rw [← ha] at this ⊢
+      rw [← Nat.cast_one, ← ENat.coe_add, ENat.coe_inj] at this
+      simp only [Nat.add_eq_right] at this
+      rw [this, ENat.coe_zero]
+  refine le_antisymm ?_ (by simp)
+  have := coheight_le_coheight_apply_of_strictMono f hf ↑x
+  rwa [h] at this
+
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
 
