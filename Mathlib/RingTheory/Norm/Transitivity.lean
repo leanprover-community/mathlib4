@@ -223,7 +223,9 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
     norm_gen_eq_prod_roots _ (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
-  suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa
+  suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by
+    rw [aeval_map_algebraMap] at this
+    rwa [← aeval_def]
   obtain ⟨P, hP⟩ := minpoly.dvd K x (show aeval x ((minpoly R x).map (algebraMap R K)) = 0 by simp)
   simp [hP, aeval_mul, (mem_aroots'.mp hy).2]
 
