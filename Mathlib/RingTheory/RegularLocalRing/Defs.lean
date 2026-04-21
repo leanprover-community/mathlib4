@@ -19,6 +19,10 @@ For a Noetherian local ring `R`, we define `IsRegularLocalRing` as
 the dimension of the cotangent space over the residue field being equal to `ringKrullDim R`,
 (see `IsRegularLocalRing.iff_finrank_cotangentSpace`).
 
+For the next section, we define regular rings as Noetherian rings whose localization at every prime
+are regular local rings.
+(Note that a regular local ring is a regular ring, but this is not immediate under this definition).
+
 # Main Definition and Results
 
 * `IsRegularLocalRing` : A Noetherian local ring is regular if
@@ -27,6 +31,13 @@ the dimension of the cotangent space over the residue field being equal to `ring
 
 * `IsRegularLocalRing.iff_finrank_cotangentSpace` : the equivalence of `IsRegularLocalRing` and
   `Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R`
+
+* `IsRegularRing` : A noetherian ring is regular if its localization at any prime
+  `IsRegularLocalRing`.
+
+## TODO
+Show that regular local rings are regular under this definition.
+This follows from localizations of regular local rings being regular (@Thmoas-Guan).
 
 -/
 
@@ -67,7 +78,7 @@ lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
 
 instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalRing R := by
   by_cases isf : IsField R
-  · let _ := isf.toField
+  · let := isf.toField
     simp [isRegularLocalRing_iff, maximalIdeal_eq_bot]
   · apply of_spanFinrank_maximalIdeal_le
     rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩
@@ -77,24 +88,12 @@ instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalR
 
 end IsRegularLocalRing
 
-/-!
-
-# Definition of Regular Ring
-
-In this section, we define regular rings as noetherian rings whose localization at every prime are
-regular local rings.
-(Note that regular local ring is not natrually regular ring in this definition).
-
-## TODO
-Show that regular local rings are regular under this definition.
-This follows from localizations of regular local rings being regular (@Thmoas-Guan).
-
--/
-
 /-- A noetherian ring is regular if its localization at any prime `IsRegularLocalRing`. -/
 class IsRegularRing (R : Type*) [CommRing R] : Prop extends IsNoetherianRing R where
-  isRegularLocalRing_localization : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
+  isRegularLocalRing_localization (p : Ideal R) [p.IsPrime] :
     IsRegularLocalRing (Localization.AtPrime p)
+
+attribute [instance low] IsRegularRing.isRegularLocalRing_localization
 
 section IsRegularRing
 
@@ -104,27 +103,23 @@ lemma isRegularRing_iff [IsNoetherianRing R] : IsRegularRing R ↔
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 variable {R} in
-lemma isRegularRing_of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [IsRegularRing R] :
+lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [IsRegularRing R] :
     IsRegularRing R' := by
   have := isNoetherianRing_of_ringEquiv R e
-  apply isRegularRing_iff.mpr (fun p' hp' ↦ ?_)
-  have := isRegularRing_iff.mp ‹_› (p'.comap e) (Ideal.comap_isPrime e p')
-  suffices (p'.comap e).primeCompl.map e = p'.primeCompl from
-    IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
-      (Localization.AtPrime (p'.comap e)) (Localization.AtPrime p') e this
-  ext x
-  simpa using ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
-    fun h ↦ ⟨e.symm x, (e.apply_symm_apply x).symm ▸ h, e.apply_symm_apply x⟩⟩
+  rw [isRegularRing_iff]
+  intro p hp
+  exact IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
+    (Localization.AtPrime (p.comap e)) (Localization.AtPrime p) e (e.map_primeCompl_comap_eq p)
 
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
-  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
   let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
     IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
 
 instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
-  refine isRegularRing_iff.mpr (fun p hp ↦ ?_)
+  rw [isRegularRing_iff]
+  intro p hp
   by_cases eqbot : p = ⊥
   · let : Field (Localization.AtPrime p) := IsField.toField <| by
       simp [isField_iff_maximalIdeal_eq, ← Localization.AtPrime.map_eq_maximalIdeal, eqbot]
