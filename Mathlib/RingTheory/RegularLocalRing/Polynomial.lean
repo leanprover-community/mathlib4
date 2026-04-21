@@ -119,8 +119,8 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularR
 lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] {ι : Type*} [Finite ι] :
     IsRegularRing (MvPolynomial ι R) := by
   induction ι using Finite.induction_empty_option with
-  | of_equiv e H => exact isRegularRing_of_ringEquiv (renameEquiv _ e).toRingEquiv
-  | h_empty => exact isRegularRing_of_ringEquiv (isEmptyRingEquiv R _).symm
+  | of_equiv e H => exact IsRegularRing.of_ringEquiv (renameEquiv _ e).toRingEquiv
+  | h_empty => exact IsRegularRing.of_ringEquiv (isEmptyRingEquiv R _).symm
   | h_option IH =>
     have := Polynomial.isRegularRing_of_isRegularRing
-    exact isRegularRing_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv.symm
+    exact IsRegularRing.of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv.symm
