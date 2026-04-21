@@ -52,7 +52,7 @@ namespace CategoryTheory
 open MonoidalCategory CopyDiscardCategory ComonObj
 
 /-- Markov category where copy is natural given deterministic composition of morphisms. -/
-class PositiveCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
+class PositiveCategory (C : Type u) [Category.{v} C] [MonoidalCategory C] extends
     MarkovCategory C where
   /-- Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, if their composition is deterministic, then
   process `f`, copy and then process `g` equals copy and process `f` and `g` independently. -/
