@@ -148,3 +148,39 @@ example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜ
   exact test_sorry
 
 end membership
+
+section abs
+
+example (a b : ℝ) : |a * b| = |a| * |b| := by
+  push abs
+  rfl
+
+example (a : ℝ) (n : ℕ) : |a ^ n| = |a| ^ n := by
+  push abs
+  rfl
+
+example (a : ℝ) : |a⁻¹| = |a|⁻¹ := by
+  push abs
+  rfl
+
+example (a b : ℝ) : |a / b| = |a| / |b| := by
+  push abs
+  rfl
+
+example (a : ℝ) (p : ℤ) : |a ^ p| = |a| ^ p := by
+  push abs
+  rfl
+
+example (a : ℝ) : |-a| = |a| := by
+  push abs
+  rfl
+
+example (a : ℝ) : |a * a| = |a| * |a| := by
+  push abs
+  rfl
+
+example (a b : ℝ) (n : ℕ) : |a ^ n * b⁻¹ / (-a)| = |a| ^ n * |b|⁻¹ / |a| := by
+  push abs
+  rfl
+
+end abs

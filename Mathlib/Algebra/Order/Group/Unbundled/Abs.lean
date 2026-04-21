@@ -73,7 +73,8 @@ meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
 @[to_additive] lemma mabs_le_mabs (h₀ : a ≤ b) (h₁ : a⁻¹ ≤ b) : |a|ₘ ≤ |b|ₘ :=
   (mabs_le'.2 ⟨h₀, h₁⟩).trans (le_mabs_self b)
 
-@[to_additive (attr := simp)] lemma mabs_inv (a : α) : |a⁻¹|ₘ = |a|ₘ := by simp [mabs, sup_comm]
+@[to_additive (attr := simp, push)]
+lemma mabs_inv (a : α) : |a⁻¹|ₘ = |a|ₘ := by simp [mabs, sup_comm]
 
 @[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
 
