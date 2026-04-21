@@ -63,7 +63,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
 namespace PositiveCategory
 
-variable [PositiveCategory C] {X Y : C} {e : X ≅ Y}
+variable [PositiveCategory C]
 
 instance {X Y : C} {e : X ≅ Y} : Deterministic e.hom where
   hom_comul := by
