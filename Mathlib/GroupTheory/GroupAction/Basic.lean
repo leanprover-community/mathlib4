@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Data.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
@@ -253,6 +254,11 @@ theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
   ext h
   rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
     inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+
+/-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
+theorem stabilizer_smul_eq_conj_stabilizer (g : G) (a : α) :
+    stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom :=
+  stabilizer_smul_eq_stabilizer_map_conj g a
 
 variable {g h k : G} {a b c : α}
 
