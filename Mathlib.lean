@@ -7863,6 +7863,7 @@ public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
+public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
