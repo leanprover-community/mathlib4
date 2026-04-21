@@ -643,15 +643,18 @@ theorem IsCodetector.def {G : C} :
     IsCodetector G → ∀ ⦃X Y : C⦄ (f : X ⟶ Y), (∀ h : X ⟶ G, ∃! h', f ≫ h' = h) → IsIso f :=
   (isCodetector_def _).1
 
+open ConcreteCategory
+
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
     IsSeparator G ↔ (coyoneda.obj (op G)).Faithful :=
-  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_fun hfg)⟩, fun _ =>
-    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective (funext hfg)⟩
+  ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_hom hfg)⟩, fun _ =>
+    (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective
+      (by ext; apply hfg)⟩
 
 theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yoneda.obj G).Faithful :=
-  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_fun hfg))⟩, fun _ =>
+  ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_hom hfg))⟩, fun _ =>
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
-      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
+      Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (by ext; apply hfg)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => G] :

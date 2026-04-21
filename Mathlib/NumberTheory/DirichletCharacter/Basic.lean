@@ -315,7 +315,7 @@ lemma primitiveCharacter_one [NeZero n] : (1 : DirichletCharacter R n).primitive
 theorem conductor_dvd_of_mem_conductorSet {d : ℕ} [NeZero n] (hd : d ∈ χ.conductorSet) :
     χ.conductor ∣ d := by
   have : NeZero d := ⟨by
-    contrapose! hd
+    contrapose hd
     exact hd ▸ zero_ne_mem_conductorSet χ⟩
   suffices d.gcd χ.conductor ∈ χ.conductorSet by
     have : χ.conductor ≤ d.gcd χ.conductor := Nat.sInf_le this

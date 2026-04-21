@@ -244,7 +244,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
   · rw [ofPowerSeries_apply, embDomain_notin_range]
     · contrapose! h
       exact order_le_of_coeff_ne_zero h.symm
-    · contrapose! h
+    · contrapose h
       simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
       lia
 

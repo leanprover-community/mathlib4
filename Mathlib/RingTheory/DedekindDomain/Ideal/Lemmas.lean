@@ -764,7 +764,7 @@ theorem Ideal.count_associates_eq'
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
   apply Ideal.count_associates_eq hx _ hq
-  contrapose! hlt with hdvd
+  contrapose hlt with hdvd
   obtain ⟨q', hq'⟩ := hdvd
   use q'
   rw [hq, hq']

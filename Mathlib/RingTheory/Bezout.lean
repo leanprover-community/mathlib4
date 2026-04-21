@@ -38,7 +38,9 @@ theorem iff_span_pair_isPrincipal :
       constructor
       apply Submodule.fg_induction
       · exact fun _ => ⟨⟨_, rfl⟩⟩
-      · rintro _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩; rw [← Submodule.span_insert]; exact H _ _
+      · rintro _ _ _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩
+        rw [← Submodule.span_insert]
+        exact H _ _
 
 theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) [IsBezout R] : IsBezout S := by

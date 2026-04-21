@@ -182,7 +182,7 @@ end
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
-    (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
+    (Λ[n, i] : SSet.{u}).obj (op ⦋1⦌) :=
   ⟨stdSimplex.edge n a b hab, by
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
       have := Finset.card_le_card hS.symm.le
@@ -191,7 +191,7 @@ def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) 
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
-    -- this was produced by `simp? [horn_eq_iSup]`
+    -- this was produced by `simp? [horn_eq_iSup, -Fin.forall_fin_two]`
     simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
       Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
       mem_singleton, exists_prop]
@@ -230,7 +230,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
-    (k : ℕ) (h : k < n + 2) : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ := by
+    (k : ℕ) (h : k < n + 2) : (Λ[n + 3, i] : SSet.{u}).obj (op ⦋2⦌) := by
   refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by lia⟩ ⟨k+1, by lia⟩ ⟨k+2, by lia⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]

@@ -440,7 +440,7 @@ lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
     simp [mul_assoc]
   intro a u μ hμ
   rw [spectrum.mem_iff] at hμ ⊢
-  contrapose! hμ
+  contrapose hμ
   simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
 
 /-- Conjugation by a unit preserves the spectrum, inverse on left. -/

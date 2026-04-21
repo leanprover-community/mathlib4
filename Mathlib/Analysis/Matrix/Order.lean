@@ -183,7 +183,7 @@ theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
   obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hx.nonneg
   simp_rw [dotProduct_mulVec, ← vecMul_vecMul, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec, dotProduct_star_self_pos_iff]
-  contrapose! hv
+  contrapose hv
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
@@ -195,6 +195,10 @@ theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
 alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPositive_iff_posDef
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
+
+lemma PosSemidef.posDef_iff_det_ne_zero [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    A.PosDef ↔ A.det ≠ 0 := by
+  simp [hA.posDef_iff_isUnit, isUnit_iff_isUnit_det]
 
 @[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :

@@ -410,7 +410,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     · exact measurable_snd hs
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     {Ω} {mΩ : MeasurableSpace Ω} (X : Ω → β) {μ : Measure Ω} {f : Ω → F} (hf_int : Integrable f μ) :
@@ -422,7 +422,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     exact hf_int.2
   · rw [Measure.map_of_not_aemeasurable]
     · simp
-    · contrapose! hX; exact measurable_fst.comp_aemeasurable hX
+    · contrapose hX; exact measurable_fst.comp_aemeasurable hX
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
     [TopologicalSpace F] {X : Ω → β} {μ : Measure Ω} (hX : Measurable X) {f : Ω → F} :

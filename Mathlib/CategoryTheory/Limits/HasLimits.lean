@@ -271,9 +271,9 @@ def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
   (limit.isLimit F).homIso W
 
 @[simp]
-theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} (f : ULift (W ⟶ limit F)) :
-    (limit.homIso F W).hom f = (const J).map f.down ≫ (limit.cone F).π :=
-  (limit.isLimit F).homIso_hom f
+theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
+    (limit.homIso F W).hom = TypeCat.ofHom (fun f ↦ (const J).map f.down ≫ (limit.cone F).π) :=
+  (limit.isLimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from a specified object `W` to the limit object,
@@ -831,9 +831,10 @@ def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso W
 
 @[simp]
-theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} (f : ULift (colimit F ⟶ W)) :
-    (colimit.homIso F W).hom f = (colimit.cocone F).ι ≫ (const J).map f.down :=
-  (colimit.isColimit F).homIso_hom f
+theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
+    (colimit.homIso F W).hom =
+      TypeCat.ofHom (fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down) :=
+  (colimit.isColimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
 morphisms from the colimit object to a specified object `W`,

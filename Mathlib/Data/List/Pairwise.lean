@@ -54,12 +54,12 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 
-theorem pairwise_of_reflexive_of_forall_ne (hr : Reflexive R)
-    (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) : l.Pairwise R := by
+theorem pairwise_of_reflexive_of_forall_ne [Std.Refl R] (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → R a b) :
+    l.Pairwise R := by
   rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
-    cases heq; apply hr
+    cases heq; apply refl
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq

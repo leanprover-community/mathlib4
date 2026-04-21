@@ -34,7 +34,7 @@ namespace CategoryTheory
 @[simps -isSimp]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
-  map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
+  map f := TypeCat.ofHom fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -51,13 +51,14 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D)
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps -isSimp]
 def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
-  { app := fun _ => (F.mapComposableArrows _).obj }
+  { app _ := TypeCat.ofHom (fun X ↦ (F.mapComposableArrows _).obj X) }
 
 lemma nerveMap_app_mk₀ (x : C) :
     (nerveMap F).app (op ⦋0⦌) (ComposableArrows.mk₀ x) =
       ComposableArrows.mk₀ (F.obj x) :=
   ComposableArrows.ext₀ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
     (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
       ComposableArrows.mk₁ (F.map f) :=
@@ -244,7 +245,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
     (f : x ⟶ y) (F : C ⥤ D) :
-    homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
+    dsimp% homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
   simp [homEquiv, nerveMap_app]
 
 end

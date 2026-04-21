@@ -310,7 +310,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   have := x.prop
   rw [posSubmonoid_def] at this
-  contrapose! this
+  contrapose this
   simp [this]
 
 variable (R) in
