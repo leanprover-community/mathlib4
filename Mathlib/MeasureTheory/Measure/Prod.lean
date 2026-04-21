@@ -1122,7 +1122,7 @@ theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX
+      contrapose hX
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
@@ -1184,7 +1184,7 @@ theorem snd_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX 
       Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
       univ_inter]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hY
+      contrapose hY
       exact measurable_snd.comp_aemeasurable hY
     simp [map_of_not_aemeasurable, hY, this]
 

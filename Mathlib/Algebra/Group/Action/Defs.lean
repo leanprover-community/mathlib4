@@ -619,10 +619,10 @@ but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
 export MulDistribMulAction (smul_one)
 
@@ -653,7 +653,7 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
     a • b = a • c → b = c := IsLeftCancelSMul.left_cancel' a b c
 
 @[to_additive]
-instance [LeftCancelMonoid G] : IsLeftCancelSMul G G where
+instance [Mul G] [IsLeftCancelMul G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right.

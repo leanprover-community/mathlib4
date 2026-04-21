@@ -235,7 +235,7 @@ lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AESt
   rcases hq.eq_or_lt with (rfl | hq)
   · grind
   rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
-  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf  (by simp [hq]) (by simp)] at hint
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf (by simp [hq]) (by simp)] at hint
   exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
 
 lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
