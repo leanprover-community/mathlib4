@@ -54,7 +54,8 @@ def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Unit 
       g.assign proof
     else
       let mctx ← getMCtx
-      for (_, tac) in (forwardExt.getState (← getEnv)).2 do
+      for (n, tac) in (forwardExt.getState (← getEnv)).2 do
+        if n matches ``GCongr.exact | ``GCongr.symmExact | ``GCongr.exactRefl then continue
         try tac.eval proof g; return
         catch _ => setMCtx mctx
       failure
@@ -115,10 +116,9 @@ partial def grewriteCongr (g : MVarId) (inv : Bool) (config : Config) : GRewrite
     trace[Meta.grewrite] "cached: no rewrite"
     return false
   let e := if inv then rhs else lhs
-  let eWhnf ← whnf e
   -- Try the given grewrite lemma.
   let lem ← read
-  if eWhnf.toHeadIndex == lem.headIdx && eWhnf.headNumArgs == lem.headNumArgs then
+  if e.toHeadIndex == lem.headIdx && e.headNumArgs == lem.headNumArgs then
     try
       applyGRewrite g (inv != lem.symm) config
       trace[Meta.grewrite] "applied rewrite lemma `{lem.proof}` to{indentExpr (← g.getType)}"
