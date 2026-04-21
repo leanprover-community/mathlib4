@@ -388,6 +388,22 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
 end Semiring
 end AlgHom
 
+namespace IsScalarTower
+
+variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Semiring A]
+  [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+
+theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
+
+@[simp]
+theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+  RingHom.ext fun _ => rfl
+
+@[simp]
+theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+
+end IsScalarTower
+
 namespace AlgHomClass
 
 @[simp]
