@@ -138,8 +138,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : A ⊗[R] B ⊗[R] C ≃ₗ[R] 
     A ⊗[R] B ⊗[R] C ≃ₐ[R] D :=
   AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
     ext
-    dsimp
-    exact h_mul _ _ _ _ _ _
+    simpa using h_mul _ _ _ _ _ _
 
 @[simp]
 theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
