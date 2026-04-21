@@ -377,7 +377,7 @@ theorem conductor_changeLevel {m : ℕ} [NeZero m] (hm : n ∣ m) :
 /-- The primitive character of `changeLevel hm χ` is equal to the primitive character of `χ`.
 This is stated as a pointwise equality because the equality of Dirichlet characters does
 not typecheck. -/
-theorem primitiveCharacter_changeLevel [Nontrivial R] {m : ℕ} [NeZero m] (hm : n ∣ m)
+theorem primitiveCharacter_changeLevel_apply [Nontrivial R] {m : ℕ} [NeZero m] (hm : n ∣ m)
     (χ : DirichletCharacter R n) (a : ℤ) :
     (changeLevel hm χ).primitiveCharacter a = χ.primitiveCharacter a := by
   by_cases ha : IsCoprime a χ.conductor
@@ -470,8 +470,7 @@ def subgroupOfMapToOne {a : ℤ} (ha : IsCoprime a n) :
     Subgroup (DirichletCharacter R n) where
   carrier := {χ | χ a = 1}
   mul_mem' hχ hψ := by rw [Set.mem_setOf, MulChar.mul_apply, hχ, hψ, one_mul]
-  one_mem' := by
-    rw [Set.mem_setOf_eq, MulChar.one_apply ((ZMod.coe_int_isUnit_iff_isCoprime a n).mpr ha.symm)]
+  one_mem' := by simp [MulChar.one_apply, ZMod.coe_int_isUnit_iff_isCoprime, ha.symm]
   inv_mem' hχ := by rw [Set.mem_setOf_eq, MulChar.inv_apply_eq_inv, hχ, Ring.inverse_one]
 
 @[simp]
@@ -495,10 +494,10 @@ theorem mem_subgroupOfPrimitiveMapToOne_iff [NeZero n] [Nontrivial R] (p : ℕ) 
   rw [subgroupOfPrimitiveMapToOne]
   refine ⟨?_, fun h ↦ ⟨?_, ?_, ?_⟩⟩
   · rintro ⟨ψ, hψ, rfl⟩
-    rw [← Int.cast_natCast, primitiveCharacter_changeLevel, primitiveCharacter_apply_of_isCoprime,
-      hψ]
+    rw [← Int.cast_natCast, primitiveCharacter_changeLevel_apply,
+      primitiveCharacter_apply_of_isCoprime, hψ]
     exact Nat.isCoprime_iff_coprime.mpr <| Nat.coprime_ordCompl hp.out (NeZero.ne n)
-  · haveI : χ.conductor ∣ n / p ^ n.factorization p := by
+  · have : χ.conductor ∣ n / p ^ n.factorization p := by
       apply Nat.dvd_ordCompl_of_dvd_not_dvd χ.conductor_dvd_level
       simp [← hp.out.coprime_iff_not_dvd, ← Nat.isCoprime_iff_coprime,
         ← apply_ne_zero_iff (χ := χ.primitiveCharacter), h]
