@@ -134,39 +134,41 @@ section IsDedekindDomain
 
 variable [IsDedekindDomain A]
 
+open nonZeroDivisors
+
 theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
     ⨆ P : HeightOneSpectrum A, primaryComponent M P.asIdeal = ⊤ := by
   rw [eq_top_iff']
   intro x
-  obtain ⟨⟨a, ha⟩, h0⟩ := h (x := x)
-  have hmem : x ∈ torsionBySet A M (span {a}) := by
+  obtain ⟨⟨a : A, ha : a ∈ A⁰⟩, hmem : a • x = 0⟩ := h (x := x)
+  replace hmem : x ∈ torsionBySet A M (span {a}) := by
     simp_all [← torsionBySet_eq_torsionBySet_span {a}]
-  have ha0 : span {a} ≠ 0 := by simpa using nonZeroDivisors.ne_zero ha
+  have ha0 : span {a} ≠ ⊥ := by simpa using nonZeroDivisors.ne_zero ha
   rw [← iInf_maxPowDividing_eq ha0] at hmem
   let : Fintype (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})) :=
     Finite.fintype (hasFiniteMulSupport ha0)
   let S := (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})).toFinset
   have : (⨅ i : HeightOneSpectrum A, i.maxPowDividing (span {a})) =
-    (⨅ i ∈ S, i.maxPowDividing (span {a})) := by
+      (⨅ i ∈ S, i.maxPowDividing (span {a})) := by
     ext x
     constructor
     · aesop
     · simp only [mem_iInf]
       intro h i
       by_cases htop : i.maxPowDividing (span {a}) = ⊤ <;> simp_all [S]
-  rw [this, ← Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf] at hmem
-  · clear h0
-    revert x
-    rw [← SetLike.le_def]
-    refine iSup_mono (fun P x hxmem ↦ ?_)
-    by_cases hPS : P ∈ S
-    · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
-      one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
-      Subtype.forall, iSup_pos, S]
-      exact ⟨_, fun a₁ b ↦ hxmem _ b⟩
-    · simp_all
-  · intro r hr s hs hrs
-    exact (isCoprime_pow_of_ne _ _ hrs _ _).sup_eq
+  have hPairwise : (S : Set (HeightOneSpectrum _)).Pairwise
+      fun i j ↦ i.maxPowDividing (span {a}) ⊔ j.maxPowDividing (span {a}) = ⊤ :=
+    fun r hr s hs hrs ↦ (isCoprime_pow_of_ne _ _ hrs _ _).sup_eq
+  rw [this, ← Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf hPairwise] at hmem
+  revert x
+  rw [← SetLike.le_def]
+  refine iSup_mono (fun P x hxmem ↦ ?_)
+  by_cases hPS : P ∈ S
+  · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
+    one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
+    Subtype.forall, iSup_pos, S]
+    exact ⟨_, fun a₁ b ↦ hxmem _ b⟩
+  · simp_all
 
 variable (A M) in
 theorem iSupIndep_primaryComponent :
