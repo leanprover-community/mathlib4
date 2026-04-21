@@ -524,7 +524,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     simp only [mem_genWeightSpace]
     intro x
     have h : (toEnd R L M₂ x - χ x • ↑1) ∘ₗ f =
-            f ∘ₗ (toEnd R L M x - χ x • ↑1) := by ext; simp
+             f ∘ₗ (toEnd R L M x - χ x • ↑1) := by ext; simp
     obtain ⟨k, hk⟩ := hm x
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by

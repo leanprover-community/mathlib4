@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-
 public import Mathlib.Algebra.Lie.Weights.Basic
+
 /-!
 
 # The Lie algebra `sl₂` and its representations
@@ -245,43 +245,35 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
     congr 1
     ring
 
-section Field
+section CharZero
 
-variable {L M : Type*} (K : Type*) [Field K] [CharZero K]
-  [LieRing L] [LieAlgebra K L]
-  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
-  {h e f : L} (t : IsSl2Triple h e f)
+variable [IsDomain R] [CharZero R]
+  [Nontrivial M] [IsTorsionFree R M] [Module.Finite R M] [IsTriangularizable R L M]
+  (t : IsSl2Triple h e f)
 
-lemma exists_hasPrimitiveVectorWith
-    [IsTriangularizable K L M] [FiniteDimensional K M] [Nontrivial M] :
-    ∃ (μ : K) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
-  obtain ⟨μ₀, hμ₀⟩ := IsTriangularizable.exists_hasEigenvalue K L M h
+lemma exists_hasPrimitiveVectorWith :
+    ∃ (μ : R) (m : M), m ≠ 0 ∧ HasPrimitiveVectorWith t m μ := by
+  obtain ⟨μ₀, hμ₀⟩ := IsTriangularizable.exists_hasEigenvalue R L M h
   obtain ⟨m₀, hm₀⟩ := hμ₀.exists_hasEigenvector
-  let evals : ℕ → K := fun n ↦ μ₀ + 2 * (n : K)
-  let e_vecs : ℕ → M := fun n ↦ ((toEnd K L M e) ^ n) m₀
-  have h_exists_zero : ∃ (k : ℕ), e_vecs k = 0 := by
+  let evals (n : ℕ) : R := μ₀ + 2 * (n : R)
+  let e_vecs (n : ℕ) : M := ((toEnd R L M e) ^ n) m₀
+  have h_exists_zero : ∃ k, e_vecs k = 0 := by
     by_contra! contra
     have h_inj : Function.Injective evals := fun a b hab ↦ by
       simpa [evals, add_right_inj, mul_eq_mul_left_iff, Nat.cast_inj] using hab
-    have h_indep := Module.End.eigenvectors_linearIndependent
-      (toEnd K L M h) (Set.range evals) (fun ⟨γ, hγ⟩ ↦ e_vecs (Classical.choose hγ)) (by
-        rintro ⟨γ, hγ⟩
-        let n := Classical.choose hγ
-        refine ⟨?_, contra n⟩
-        rw [Module.End.mem_eigenspace_iff, toEnd_apply_apply]
-        change ⁅h, e_vecs n⁆ = γ • e_vecs n
-        rw [← Classical.choose_spec hγ]
-        exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n)
-    haveI := h_indep.finite
+    have aux (μ : range evals) : (toEnd R L M h).HasEigenvector μ (e_vecs μ.property.choose) := by
+      set n := μ.property.choose
+      refine ⟨?_, contra n⟩
+      rw [Module.End.mem_eigenspace_iff, toEnd_apply_apply, ← μ.property.choose_spec]
+      exact t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+    have _i := ((toEnd R L M h).eigenvectors_linearIndependent (range evals) _ aux).finite
     exact (Set.infinite_range_of_injective h_inj) (Set.toFinite _)
   obtain ⟨n, hn_ne, hn_zero⟩ := Nat.exists_not_and_succ_of_not_zero_of_exists hm₀.2 h_exists_zero
-  refine ⟨evals n, e_vecs n, hn_ne, {
-    ne_zero := hn_ne
-    lie_h := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
-    lie_e := by
-      rw [lie_e_pow_toEnd_e n]
-      exact hn_zero
-  }⟩
+  exact ⟨evals n, e_vecs n, hn_ne,
+    { ne_zero := hn_ne
+      lie_h := t.lie_h_pow_toEnd_e hm₀.apply_eq_smul n
+      lie_e := by rwa [lie_e_pow_toEnd_e n] }⟩
 
-end Field
+end CharZero
+
 end IsSl2Triple
