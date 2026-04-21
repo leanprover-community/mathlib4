@@ -30,7 +30,7 @@ Markov kernels, conditional independence and theorems on sufficient statistics][
 
 open CategoryTheory ProbabilityTheory MeasureTheory
 
-open scoped MonoidalCategory
+open scoped MonoidalCategory SFinKer
 
 universe u
 

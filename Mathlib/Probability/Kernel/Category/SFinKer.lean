@@ -55,8 +55,10 @@ structure Hom (X Y : SFinKer.{u}) where
 
 instance {X Y : SFinKer} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
 
-@[simps]
-noncomputable instance : LargeCategory SFinKer where
+noncomputable section
+
+@[simps (attr := scoped simp) -isSimp]
+instance : LargeCategory SFinKer where
   Hom X Y := Hom X Y
   id X := ⟨Kernel.id, inferInstance⟩
   comp κ η := ⟨η.1 ∘ₖ κ.1, inferInstance⟩
@@ -66,20 +68,16 @@ noncomputable instance : LargeCategory SFinKer where
 lemma hom_ext {X Y : SFinKer.{u}} {κ η : X ⟶ Y} (h : κ.hom = η.hom) :
     κ = η := SFinKer.Hom.ext h
 
-end SFinKer
-
-noncomputable section
-
 open MeasurableEquiv in
-@[simps]
+@[simps (attr := scoped simp) -isSimp]
 instance : MonoidalCategory SFinKer.{u} where
   tensorObj X Y := SFinKer.of (X × Y)
   whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.1, inferInstance⟩
   whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, inferInstance⟩
   tensorUnit := SFinKer.of PUnit
   associator X Y Z := by
-    refine ⟨⟨Kernel.deterministic prodAssoc <| MeasurableEquiv.measurable _, inferInstance⟩,
-      ⟨Kernel.deterministic prodAssoc.symm <| MeasurableEquiv.measurable _, inferInstance⟩, ?_, ?_⟩
+    refine ⟨⟨Kernel.deterministic prodAssoc (by fun_prop), inferInstance⟩,
+      ⟨Kernel.deterministic prodAssoc.symm (by fun_prop), inferInstance⟩, ?_, ?_⟩
     · ext : 1; dsimp
       rw [Kernel.deterministic_comp_deterministic, Kernel.id]
       congr
@@ -170,7 +168,7 @@ instance : MonoidalCategory SFinKer.{u} where
     simp [Kernel.deterministic_comp_deterministic]
     congr 1
 
-@[simps]
+@[simps (attr := scoped simp) -isSimp]
 instance : SymmetricCategory SFinKer.{u} where
   braiding X Y := by
     refine ⟨⟨Kernel.swap _ _, by rw [Kernel.swap]; infer_instance⟩,
@@ -198,7 +196,7 @@ instance : SymmetricCategory SFinKer.{u} where
   symmetry X Y := by
     ext : 1; simp
 
-@[simps]
+@[simps (attr := scoped simp) -isSimp]
 instance {X : SFinKer} : ComonObj X where
   counit := ⟨Kernel.discard X, by rw [Kernel.discard]; infer_instance⟩
   comul := ⟨Kernel.copy X, by rw [Kernel.copy]; infer_instance⟩
@@ -242,3 +240,5 @@ instance : CopyDiscardCategory SFinKer.{u} where
     simp [Kernel.copy_apply, Kernel.deterministic_apply]
 
 end
+
+end SFinKer

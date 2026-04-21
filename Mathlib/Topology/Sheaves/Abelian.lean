@@ -92,7 +92,7 @@ lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X) :
   intro h
   let f : F ⟶ 0 := (isZero_zero (Sheaf C X)).from_ F
   have : IsIso f := by
-    rw[Presheaf.isIso_iff_stalkFunctor_map_iso]
+    rw [Presheaf.isIso_iff_stalkFunctor_map_iso]
     exact fun x => isIso_of_source_target_iso_zero _ (h x).isoZero
       ((forget C X ⋙ stalkFunctor C x).map_isZero (isZero_zero _)).isoZero
   exact (isZero_zero _).of_iso (asIso f)

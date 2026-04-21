@@ -74,7 +74,7 @@ theorem FractionRing.isSeparable_of_isLocalization (hM : M ≤ R⁰) :
     (FractionRing.algEquiv Sₘ L).symm.toRingEquiv
   apply ringHom_ext R⁰
   ext
-  simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp,
+  simp only [RingHom.coe_comp,
       RingHom.coe_coe, Function.comp_apply, ← algebraMap_apply]
   rw [algebraMap_apply R Rₘ (FractionRing R), AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
     algebraMap_apply R S L, algebraMap_apply S Sₘ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
