@@ -21,8 +21,8 @@ locally totally split.
 
 ## Main results
 
-- `Algebra.IsFiniteSplit.exists_tensorProduct_of_etale`: If `S` is finite, étale over `R` of
-  some constant rank, there exists a faithfully flat, étale `R`-algebra `T` such that
+- `Algebra.IsFiniteSplit.exists_tensorProduct_of_etale`: If `S` is finite étale over `R` of
+  some constant rank, there exists a faithfully flat, finite étale `R`-algebra `T` such that
   `T ⊗[R] S` is finite split.
 -/
 
