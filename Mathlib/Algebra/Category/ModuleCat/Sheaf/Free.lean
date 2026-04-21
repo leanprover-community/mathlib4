@@ -206,6 +206,8 @@ lemma ιFree_mapFreeIso_inv (η : F.obj (unit R) ≅ unit S) (i : I) :
   IsColimit.ι_map (isColimitFreeCofan I) (F.mapCocone (freeCofan I))
     (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
 
+@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_inv
+
 end
 
 end SheafOfModules
