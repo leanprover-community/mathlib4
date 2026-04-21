@@ -113,7 +113,7 @@ theorem degree_eq_iff_natDegree_eq_of_neZero {n : ℕ} [NeZero n] :
     p.degree = n ↔ p.natDegree = n :=
   degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_neZero n)
 
-theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) : natDegree p = n := by
+theorem natDegree_eq_of_degree_eq_some {n : ℕ} (h : degree p = n) : natDegree p = n := by
   rw [natDegree, h, Nat.cast_withBot, WithBot.unbotD_coe]
 
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
