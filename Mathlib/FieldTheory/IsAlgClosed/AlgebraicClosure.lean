@@ -40,12 +40,10 @@ variable (k : Type u) [Field k]
 namespace AlgebraicClosure
 
 /-- The subtype of monic polynomials. -/
-@[expose] -- We need to expose this, otherwise the rest of the file breaks.
-public def Monics : Type u := {f : k[X] // f.Monic}
+def Monics : Type u := {f : k[X] // f.Monic}
 
 /-- `Vars k` provides `n` variables $X_{f,1}, \dots, X_{f,n}$ for each monic polynomial
 `f : k[X]` of degree `n`. -/
-@[expose] -- We need to expose this, otherwise the rest of the file breaks.
 public def Vars : Type u := Σ f : Monics k, Fin f.1.natDegree
 
 variable {k} in
@@ -167,7 +165,7 @@ public instance instField : Field (AlgebraicClosure k) where
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem Monics.map_eq_prod {f : Monics k} :
+private theorem Monics.map_eq_prod {f : Monics k} :
     f.1.map (algebraMap k (AlgebraicClosure k)) =
       ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
   ext
