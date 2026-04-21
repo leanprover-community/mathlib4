@@ -9,8 +9,9 @@ public import Mathlib.Algebra.DirectSum.LinearMap
 public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.PID
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # The trace and Killing forms of a Lie algebra.
