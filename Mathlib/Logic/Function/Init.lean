@@ -6,19 +6,27 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Init
+public import Batteries.Tactic.Alias
 
 /-!
+# Dependent composition, pairing, and diagonal for functions
 
-This file defines `(f ▽ g)`, the operation that pairs two functions `f : ι → α` and
-`g : ι → β` into a function `ι → α × β`.
+This file develops a small API around pairing and diagonal maps on (possibly dependent) functions,
+living in the `Function` namespace so that dot notation is available.
 
-It also defines the special case when `f = g = id`, `diag`. This is the canonical injection
-of a type into its prouduct with itself onto its diagonal.
+## Main definitions
 
+* `Function.dcomp` (notation `∘'`): dependent composition of functions.
+* `Function.prod` (notation `▽`): given `f : ∀ i, α i` and `g : ∀ i, β i`, the pointwise pair
+  `fun i ↦ (f i, g i)`.
+* `Function.fstComp`, `Function.sndComp`: the two components of a function `h : ∀ i, α i × β i`,
+  inverse to `Function.prod`.
+* `Function.diag` (notation `⟋`): the diagonal `a ↦ (a, a)`, i.e. `id ▽ id`.
+* `Function.prodMap`: `Prod.map` re-exposed under `Function` so that `f.prodMap g` works via dot
+  notation.
 
-This file should not depend on anything defined in Mathlib (except for notation), so that it can be
-upstreamed to Batteries or the Lean standard library easily.
-
+This file should not depend on anything defined in Mathlib (other than notation), so that it can
+be upstreamed to Batteries or the Lean standard library easily.
 -/
 
 @[expose] public section
@@ -45,10 +53,22 @@ theorem dcomp_def : f ∘' g = fun i => f (g i) := rfl
 
 @[simp] theorem dcomp_eq_comp {α β γ} (f : β → γ) (g : α → β) : f ∘' g = f ∘ g := rfl
 
+@[simp] theorem id_dcomp {α β} (f : α → β) : (fun {_} => id) ∘' f = f := rfl
+
+@[simp] theorem dcomp_id {α β} (f : α → β) : f ∘' (id : α → α) = f := rfl
+
+theorem dcomp_assoc {κ : Sort*} (h : κ → ι) : f ∘' g ∘' h = (f ∘' g) ∘' h := rfl
+
+@[simp] theorem const_dcomp {α β γ} (a : α) (g : γ → β) :
+    (const β a) ∘' g = const γ a := rfl
+
+@[simp] theorem dcomp_const {α β δ} (f : α → δ) (a : α) :
+    f ∘' (const β a) = const β (f a) := rfl
+
 end
 
-/-- Product of functions: `(f ▽ g) x = (f i, g i)`, where the types of `f i` and `g i`
-depend on `i`. -/
+/-- Product of functions: `(f ▽ g) i = (f i, g i)`, where the types of `f i` and `g i`
+may depend on `i`. -/
 @[inline] def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := ⟨f i, g i⟩
 
@@ -69,7 +89,7 @@ variable {ι κ} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i
 
 @[simp, grind =] theorem prod_apply : (f ▽ g) i = (f i, g i) := rfl
 @[simp, grind =] theorem fstComp_apply : fstComp h i = (h i).1 := rfl
-@[simp, grind =] theorem sndComp_apply : fstComp h i = (h i).1 := rfl
+@[simp, grind =] theorem sndComp_apply : sndComp h i = (h i).2 := rfl
 
 theorem prod_def : f ▽ g = fun i => (f i, g i) := rfl
 
@@ -106,10 +126,6 @@ theorem prod_eq_iff : f ▽ g = h ↔ f = fstComp h ∧ g = sndComp h := by grin
 theorem eq_prod_iff : h = f ▽ g ↔ fstComp h = f ∧ sndComp h = g := by grind
 
 theorem prod_dcomp (h : κ → ι) : (f ▽ g) ∘' h = (f ∘' h) ▽ (g ∘' h) := rfl
-
-theorem prod_dcomp_prod {γ δ : ∀ {i : ι}, α i × β i → Type*}
-    (h : {i : ι} → (ab : α i × β i) → γ ab) (k : {i : ι} → (ab : α i × β i) → δ ab) :
-    (h ▽ k) ∘' (f ▽ g) = (h ∘' (f ▽ g)) ▽ (k ∘' (f ▽ g)) := rfl
 
 theorem dcomp_prod_dcomp {γ : ∀ {i : ι}, α i → Type*} {δ : ∀ {i : ι}, β i → Type*}
     (h : ∀ {i : ι}, (a : α i) → γ a) (k : ∀ {i : ι}, (b : β i) → δ b) :
@@ -156,9 +172,6 @@ theorem const_of_prod : const ι p = (const ι p.1) ▽ (const ι p.2) := rfl
 
 theorem prod_comp (h : κ → ι) : (f ▽ g) ∘ h = (f ∘ h) ▽ (g ∘ h) := rfl
 
-theorem prod_comp_prod (h : α × β → γ) (k : α × β → δ) :
-    (h ▽ k) ∘ (f ▽ g) = (h ∘ (f ▽ g)) ▽ (k ∘ (f ▽ g)) := rfl
-
 theorem comp_prod_comp (h : α → γ) (k : β → δ) :
     (h ∘ f) ▽ (k ∘ g) = (h ∘ Prod.fst) ▽ (k ∘ Prod.snd) ∘ f ▽ g := rfl
 
@@ -182,7 +195,7 @@ variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 
 @[simp] theorem id_prod_id : id ▽ id = diag (α := α) := rfl
 @[simp] theorem fstComp_diag : fstComp (diag (α := α)) = id := rfl
-@[simp] theorem sndComp_diag : fstComp (diag (α := α)) = id := rfl
+@[simp] theorem sndComp_diag : sndComp (diag (α := α)) = id := rfl
 
 @[simp] theorem diag_comp : diag ∘ f = f ▽ f := rfl
 
@@ -197,7 +210,8 @@ theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⟋a = p) ↔ p.1 = p.2 :
 
 end
 
-/-- `prodMap` is `Prod.map` in the `Function` namespace. -/
+/-- Dot-notation alias for `Prod.map`. Collapses to `Prod.map` under `simp` via
+`prodMap_eq_prod_map`, so existing `Prod.map` API applies unchanged. -/
 @[inline] def prodMap {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) : α₁ × β₁ → α₂ × β₂ :=
   (f ∘ Prod.fst) ▽ (g ∘ Prod.snd)
 
@@ -210,9 +224,14 @@ theorem prodMap_apply : f.prodMap g p = (f p.1, g p.2) := rfl
 
 theorem prodMap_comp : f₂.prodMap g₂ ∘ f₁.prodMap g₁ = (f₂ ∘ f₁).prodMap (g₂ ∘ g₁) := rfl
 
+@[simp] theorem prodMap_id : (id : α₁ → α₁).prodMap (id : β₁ → β₁) = id := rfl
+
 @[simp, grind =]
 theorem prodMap_eq_prod_map : f.prodMap g = Prod.map f g := rfl
 
 end
 
 end Function
+
+@[deprecated (since := "2026-04-21")]
+alias Pi.prod := Function.prod
