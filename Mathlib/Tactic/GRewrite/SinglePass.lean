@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.GRewrite.Elab
+public import Mathlib.Tactic.GRewrite.Core
 
 /-!
 # The generalized rewriting tactic 2.0
@@ -70,9 +70,9 @@ private partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : B
     (config : GRewrite.Config) :
     GRewriteM Bool := do
   let (mainGoals, sideGoals) ← try applyGCongrLemma g lem catch _ => return false
-  /- Synthesize instances. Allow Synthesis to get stuck, because e.g. with
+  /- Synthesize instances. At this point, we allow Synthesis to get stuck, because e.g. with
   `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
-  either `s` or `t` is still a metavariable at this point. -/
+  either `s` or `t` is still a metavariable. -/
   let mut unsolvedSideGoals := #[]
   for mvarId in sideGoals do
     let type ← mvarId.getType
@@ -138,7 +138,7 @@ private partial def grewriteCongr (g : MVarId) (inv : Bool)
 
 end
 
-def _root_.Lean.MVarId.grewriteImp (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
+def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
     (forwardImp : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
   withReducible do goal.withContext do
     goal.checkNotAssigned `grewrite
@@ -202,7 +202,7 @@ private def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp
     let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
     let impProof ← mkAppOptM mp #[e, eNew, eqProof]
     return { eNew, impProof, mvarIds }
-  let r ← mvarId.grewriteImp e lem forwardImp config
+  let r ← mvarId.grewrite e lem forwardImp config
   let mctx ← getMCtx
   let mvarIds := r.mvarIds.filter fun mvarId => (mctx.getDecl mvarId |>.index) >= mvarCounterSaved
   return { r with mvarIds }
@@ -210,7 +210,7 @@ private def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp
 open Tactic
 
 /-- Apply the `grewrite` tactic to the current goal. -/
-def grewriteTarget' (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
+def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
   goal.withContext do
     let target ← goal.getType
@@ -220,7 +220,7 @@ def grewriteTarget' (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : Ta
     replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
 /-- Apply the `grewrite` tactic to a local hypothesis. -/
-def grewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
+def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
     TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let type ← fvarId.getType
@@ -228,64 +228,5 @@ def grewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : 
   let proof := .app (r.impProof) (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
-
-/--
-`grewrite [e]` is like `grw [e]`, but it doesn't try to close the goal with `rfl`.
-This is analogous to `rw` and `rewrite`, where `rewrite` doesn't try to close the goal with `rfl`.
--/
-syntax (name := grewriteSeq') "grewrite'" optConfig rwRuleSeq (location)? : tactic
-
-@[tactic grewriteSeq', inherit_doc grewriteSeq'] def evalGRewriteSeq' : Tactic := fun stx => do
-  let cfg ← elabGRewriteConfig stx[1]
-  let loc := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (grewriteLocalDecl' term symm · cfg)
-      (grewriteTarget' term symm cfg)
-      (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
-
-/--
-`grw [e]` works just like `rw [e]`, but `e` can be a relation other than `=` or `↔`.
-
-For example:
-
-```lean
-variable {a b c d n : ℤ}
-
-example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
-  grw [h₁, h₂]
-
-example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
-  grw [h]
-
-example (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
-  grw [h₁] at *
-  exact h₂
-```
-
-To replace the RHS with the LHS of the given relation, use the `←` notation (just like in `rw`):
-
-```
-example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
-  grw [← h₂, ← h₁]
-```
-
-The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
-A future version of `grw` may get special support for making better use of strict inequalities.
-
-To rewrite only in the `n`-th position, use `nth_grw n`.
-This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
-
-To be able to use `grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
-To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
-
-To let `grw` unfold more aggressively, as in `erw`, use `grw (transparency := default)`.
--/
-macro (name := grwSeq) "grw' " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
-  match s with
-  | `(rwRuleSeq| [$rs,*]%$rbrak) =>
-    -- We show the `rfl` state on `]`
-    `(tactic| (grewrite' $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
-  | _ => Macro.throwUnsupported
 
 end Mathlib.Tactic.GRewrite

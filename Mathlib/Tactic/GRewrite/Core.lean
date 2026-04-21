@@ -68,7 +68,7 @@ If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]
 
 The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
-def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
+def _root_.Lean.MVarId.grewrite' (goal : MVarId) (e : Expr) (hrel : Expr)
     (forwardImp symm : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
   goal.withContext do
     goal.checkNotAssigned `grewrite

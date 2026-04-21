@@ -395,7 +395,7 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
 
 theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 := by
-  grw [card_le_card_biUnion_add_card_fiber hs,
+  grw' [card_le_card_biUnion_add_card_fiber hs,
     card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm]
 
 end DoubleCounting

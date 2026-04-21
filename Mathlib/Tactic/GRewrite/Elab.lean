@@ -7,6 +7,7 @@ module
 
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
+public import Mathlib.Tactic.GRewrite.SinglePass
 
 /-!
 
@@ -23,12 +24,12 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 
 public meta section
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.GRewrite
 
 open Lean Meta Elab Parser Tactic
 
 /-- Apply the `grewrite` tactic to the current goal. -/
-def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
+def grewriteTarget' (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
   Term.withSynthesize <| goal.withContext do
     let e ← elabTerm stx none true
@@ -36,13 +37,13 @@ def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : Tac
       throwAbortTactic
     let goal ← getMainGoal
     let target ← goal.getType
-    let r ← goal.grewrite target e (forwardImp := false) (symm := symm) (config := config)
+    let r ← goal.grewrite' target e (forwardImp := false) (symm := symm) (config := config)
     let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
     goal.assign (mkApp r.impProof mvarNew)
     replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
 /-- Apply the `grewrite` tactic to a local hypothesis. -/
-def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
+def grewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
     TacticM Unit := withMainContext do
   -- Note: we cannot execute `replace` inside `Term.withSynthesize`.
   -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
@@ -52,7 +53,7 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
     if e.hasSyntheticSorry then
       throwAbortTactic
     let localDecl ← fvarId.getDecl
-    goal.grewrite localDecl.type e (forwardImp := true) (symm := symm) (config := config)
+    goal.grewrite' localDecl.type e (forwardImp := true) (symm := symm) (config := config)
   let proof := .app (r.impProof) (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
@@ -102,6 +103,18 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
     withLocation loc
       (grewriteLocalDecl term symm · cfg)
       (grewriteTarget term symm cfg)
+      (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
+
+@[tactic_alt grewriteSeq]
+syntax (name := grewriteSeq') "grewrite'" optConfig rwRuleSeq (location)? : tactic
+
+@[tactic grewriteSeq', inherit_doc grewriteSeq] def evalGRewriteSeq' : Tactic := fun stx => do
+  let cfg ← elabGRewriteConfig stx[1]
+  let loc := expandOptLocation stx[3]
+  withRWRulesSeq stx[0] stx[2] fun symm term => do
+    withLocation loc
+      (grewriteLocalDecl' term symm · cfg)
+      (grewriteTarget' term symm cfg)
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
 /--
@@ -162,6 +175,14 @@ macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   | `(rwRuleSeq| [$rs,*]%$rbrak) =>
     -- We show the `rfl` state on `]`
     `(tactic| (grewrite $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
+  | _ => Macro.throwUnsupported
+
+@[tactic_alt grwSeq]
+macro (name := grwSeq') "grw' " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
+  match s with
+  | `(rwRuleSeq| [$rs,*]%$rbrak) =>
+    -- We show the `rfl` state on `]`
+    `(tactic| (grewrite' $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported
 
 /--
@@ -231,7 +252,7 @@ inequalities.
 * `nth_grewrite n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
 macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+  `(tactic| grewrite' $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
 `nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
@@ -261,6 +282,6 @@ inequalities.
 * `nth_grw n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
 macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+  `(tactic| grw' $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
-end Mathlib.Tactic
+end Mathlib.Tactic.GRewrite
