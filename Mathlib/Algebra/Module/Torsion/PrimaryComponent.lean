@@ -137,7 +137,7 @@ variable [IsDedekindDomain A]
 open nonZeroDivisors
 
 theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
-    ⨆ P : HeightOneSpectrum A, primaryComponent M P.asIdeal = ⊤ := by
+    ⨆ P : HeightOneSpectrum A, primaryComponent M (P : Ideal A) = ⊤ := by
   rw [eq_top_iff']
   intro x
   obtain ⟨⟨a : A, ha : a ∈ A⁰⟩, hmem : a • x = 0⟩ := h (x := x)
@@ -172,16 +172,15 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
 
 variable (A M) in
 theorem iSupIndep_primaryComponent :
-    iSupIndep fun P : HeightOneSpectrum A => primaryComponent M P.asIdeal := by
+    iSupIndep fun P : HeightOneSpectrum A => primaryComponent M (P : Ideal A) := by
   rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
   intro s p h d
   simp only [primaryComponent_mem] at h
   have hPairwise (n : ℕ) : (s : Set (HeightOneSpectrum A)).Pairwise
-      fun i j ↦ (fun x ↦ (x.asIdeal) ^ n) i ⊔ (fun x ↦ (x.asIdeal) ^ n) j = ⊤ :=
+      fun i j ↦ (·.asIdeal ^ n) i ⊔ (·.asIdeal ^ n) j = ⊤ :=
     fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-  have (n : ℕ) := @supIndep_torsionBySet_ideal A M (@CommRing.toCommSemiring A _) _ _ _ (S := s)
-    (p := (fun x ↦ (IsDedekindDomain.HeightOneSpectrum.asIdeal x) ^ n))
-    (hPairwise n)
+  have (n : ℕ) := supIndep_torsionBySet_ideal (R := A) (M := M) (S := s)
+    (p := (fun x ↦ (asIdeal x) ^ n)) (hPairwise n)
   choose! f h using h
   let m := s.sup (f ·)
   have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
