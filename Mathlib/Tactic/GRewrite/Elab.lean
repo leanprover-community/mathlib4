@@ -22,7 +22,7 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 
 -/
 
-public meta section
+meta section
 
 namespace Mathlib.Tactic.GRewrite
 
@@ -57,6 +57,27 @@ def grewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : 
   let proof := .app (r.impProof) (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
+
+/-- Apply the `grewrite` tactic to the current goal. -/
+def grewriteTarget (stx : Syntax) (symm : Bool) (config : Config) : TacticM Unit := do
+  let goal ← getMainGoal
+  goal.withContext do
+    let target ← goal.getType
+    let r ← elabGRewrite goal target stx (forwardImp := false) (symm := symm) (config := config)
+    let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
+    goal.assign (mkApp r.impProof mvarNew)
+    replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
+
+/-- Apply the `grewrite` tactic to a local hypothesis. -/
+def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Config) :
+    TacticM Unit := withMainContext do
+  let goal ← getMainGoal
+  let type ← fvarId.getType
+  let r ← elabGRewrite goal type stx (forwardImp := true) (symm := symm) (config := config)
+  let proof := .app (r.impProof) (.fvar fvarId)
+  let { mvarId, .. } ← goal.replace fvarId proof r.eNew
+  replaceMainGoal (mvarId :: r.mvarIds)
+
 
 /-- Function elaborating `GRewrite.Config`. -/
 declare_config_elab elabGRewriteConfig GRewrite.Config
@@ -96,7 +117,8 @@ interprets `· → ·` as a relation instead of adding the hypothesis as a side 
 -/
 syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 
-@[tactic grewriteSeq, inherit_doc grewriteSeq] def evalGRewriteSeq : Tactic := fun stx => do
+@[tactic grewriteSeq, inherit_doc grewriteSeq]
+public def evalGRewriteSeq : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
   let loc := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
@@ -108,7 +130,8 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 @[tactic_alt grewriteSeq]
 syntax (name := grewriteSeq') "grewrite'" optConfig rwRuleSeq (location)? : tactic
 
-@[tactic grewriteSeq', inherit_doc grewriteSeq] def evalGRewriteSeq' : Tactic := fun stx => do
+@[tactic grewriteSeq', inherit_doc grewriteSeq]
+public def evalGRewriteSeq' : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
   let loc := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do

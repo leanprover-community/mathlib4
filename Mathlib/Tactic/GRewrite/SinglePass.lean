@@ -11,7 +11,7 @@ public import Mathlib.Tactic.GRewrite.Core
 # The generalized rewriting tactic 2.0
 -/
 
-public meta section
+meta section
 
 
 namespace Mathlib.Tactic.GRewrite
@@ -25,6 +25,7 @@ structure GRewriteLemma where
   symm : Bool
   levelParams : Array Name := #[]
   proof : Expr
+  numHyps? : Option Nat
   headIdx : HeadIndex
   headNumArgs : Nat
   relName : Name
@@ -35,11 +36,13 @@ def GRewriteLemma.getValue (lem : GRewriteLemma) : MetaM Expr := do
   let us ← lem.levelParams.mapM fun _ => mkFreshLevelMVar
   return lem.proof.instantiateLevelParamsArray lem.levelParams us
 
-def applyGRewrite (g : MVarId) (symm : Bool) (config : GRewrite.Config) : GRewriteM Unit := do
-  let lem ← read
+def GRewriteLemma.metaTelescope (lem : GRewriteLemma) : MetaM (Array Expr × Expr × Expr) := do
   let proof ← lem.getValue
-  let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof)
-  let proof := mkAppN proof mvars
+  let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof) lem.numHyps?
+  return (mvars, rel, mkAppN proof mvars)
+
+def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Unit := do
+  let (mvars, rel, proof) ← (← read).metaTelescope
   let (rel, proof) ←
     if symm then
       let proof ← proof.applySymm
@@ -66,9 +69,8 @@ def applyGRewrite (g : MVarId) (symm : Bool) (config : GRewrite.Config) : GRewri
 
 mutual
 
-private partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
-    (config : GRewrite.Config) :
-    GRewriteM Bool := do
+partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
+    (config : Config) : GRewriteM Bool := do
   let (mainGoals, sideGoals) ← try applyGCongrLemma g lem catch _ => return false
   /- Synthesize instances. At this point, we allow Synthesis to get stuck, because e.g. with
   `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
@@ -102,8 +104,8 @@ private partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : B
       dischargeSide mvarId
   return true
 
-private partial def grewriteCongr (g : MVarId) (inv : Bool)
-    (config : GRewrite.Config) : GRewriteM Bool := g.withContext do
+partial def grewriteCongr (g : MVarId) (inv : Bool) (config : Config) : GRewriteM Bool :=
+  g.withContext do
   let rel ← g.getType'
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"rewriting {rel}") do
   let some (relName, lhs, rhs) := getRel rel |
@@ -114,7 +116,7 @@ private partial def grewriteCongr (g : MVarId) (inv : Bool)
     return false
   let e := if inv then rhs else lhs
   let eWhnf ← whnf e
-  -- Try to use the grewrite lemma.
+  -- Try the given grewrite lemma.
   let lem ← read
   if eWhnf.toHeadIndex == lem.headIdx && eWhnf.headNumArgs == lem.headNumArgs then
     try
@@ -122,6 +124,7 @@ private partial def grewriteCongr (g : MVarId) (inv : Bool)
       trace[Meta.grewrite] "applied rewrite lemma `{lem.proof}` to{indentExpr (← g.getType)}"
       return true
     catch _ => pure ()
+  -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
     let key := { relName, head, arity := args.size }
     let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
@@ -133,13 +136,14 @@ private partial def grewriteCongr (g : MVarId) (inv : Bool)
         return true
       else
         setMCtx mctx
+  -- Cache the fact that there are no applicable lemmas
   modify (·.insert cacheKey)
   return false
 
 end
 
 def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
-    (forwardImp : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
+    (forwardImp : Bool) (config : Config) : MetaM GRewriteResult :=
   withReducible do goal.withContext do
     goal.checkNotAssigned `grewrite
     let eNew ← mkFreshExprMVar (Expr.sort 0)
@@ -152,7 +156,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
       let eNew ← instantiateMVars eNew
       return { eNew, impProof := congrGoal, mvarIds := newGoals.toList }
     else
-      let (_, _, rel) ← forallMetaTelescopeReducing (← inferType (← lem.getValue))
+      let (_, rel, _) ← lem.metaTelescope
       let some (_, lhs, rhs) := getRel (← whnf rel) | unreachable!
       let pattern := if lem.symm then rhs else lhs
       throwTacticEx `grewrite goal
@@ -161,16 +165,28 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
 
 open Lean Meta Elab Parser
 
-private def elabGRewriteLemma (stx : Syntax) (symm : Bool) :
+def elabGRewriteLemma (stx : Syntax) (symm : Bool) (config : Config) :
     TermElabM GRewriteLemma := do
-  Term.withoutModifyingElabMetaStateWithInfo <| withRef stx do
+  Term.withoutModifyingElabMetaStateWithInfo do
+  -- Fully elaborate `stx`, not allowing e.g any postponed `by` blocks.
   let e ← Term.elabTerm stx none
   Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   let e ← instantiateMVars e
   if e.hasSyntheticSorry then
     throwAbortTactic
   withReducible do
-  let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType e)
+  -- When using `apply_rw`, restrict the depth of the forall telescope.
+  let type ← inferType e
+  let numHyps? ←
+    if config.implicationHyp then
+      if let arity + 1 := type.getForallArity then
+        pure (some arity)
+      else
+        throwError m!"Invalid apply_rw argument: Expected an implication, not {type}"
+    else
+      pure none
+  let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType e) numHyps?
+  -- Since `a ≥ b` gets reduced to `b ≤ a`, we need to flip the rewrite direction.
   let backward := rel.getAppFn'.constName?.any
     (· matches ``GE.ge | ``GT.gt | ``Superset | ``SSuperset)
   let symm := symm != backward
@@ -178,6 +194,7 @@ private def elabGRewriteLemma (stx : Syntax) (symm : Bool) :
     let valueDescr := if (← Meta.isProp rel) then "a proof of" else "a value of type"
     throwError m!"Invalid grewrite argument: Expected a relation or definition name, \
       but{inlineExpr (mkAppN e mvars)}is {valueDescr}{indentExpr rel}"
+  -- Just like in `rw`, The head index and number of arguments determine where we try to rewrite.
   let (headIdx, headNumArgs) :=
     if symm then (rhs.toHeadIndex, rhs.headNumArgs) else (lhs.toHeadIndex, lhs.headNumArgs)
   if headIdx matches .mvar _ then
@@ -189,12 +206,12 @@ private def elabGRewriteLemma (stx : Syntax) (symm : Bool) :
       pure (r.paramNames, r.expr.eta)
     else
       pure (#[], e)
-  return { symm, levelParams, proof, headIdx, headNumArgs, relName }
+  return { symm, levelParams, proof, numHyps?, headIdx, headNumArgs, relName }
 
-private def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
-    (config : GRewrite.Config) : TermElabM GRewriteResult := do
+public def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
+    (config : Config) : TermElabM GRewriteResult := do
   let mvarCounterSaved := (← getMCtx).mvarCounter
-  let lem ← elabGRewriteLemma stx (symm := symm)
+  let lem ← elabGRewriteLemma stx (symm := symm) (config := config)
   -- TODO: decide whether to prove `→` or `↔`.
   if lem.relName matches ``Eq | ``Iff && config.useRewrite then
     let { eNew, eqProof, mvarIds } ←
@@ -208,25 +225,5 @@ private def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp
   return { r with mvarIds }
 
 open Tactic
-
-/-- Apply the `grewrite` tactic to the current goal. -/
-def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
-  let goal ← getMainGoal
-  goal.withContext do
-    let target ← goal.getType
-    let r ← elabGRewrite goal target stx (forwardImp := false) (symm := symm) (config := config)
-    let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
-    goal.assign (mkApp r.impProof mvarNew)
-    replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
-
-/-- Apply the `grewrite` tactic to a local hypothesis. -/
-def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
-    TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let type ← fvarId.getType
-  let r ← elabGRewrite goal type stx (forwardImp := true) (symm := symm) (config := config)
-  let proof := .app (r.impProof) (.fvar fvarId)
-  let { mvarId, .. } ← goal.replace fvarId proof r.eNew
-  replaceMainGoal (mvarId :: r.mvarIds)
 
 end Mathlib.Tactic.GRewrite
