@@ -102,7 +102,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] : IsRegularR
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
     exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
-  have := isRegularRing_iff.mp ‹_› q (comap_isPrime C p)
+  have := isRegularRing_iff.mp ‹_› q
   have eq : comap C pS = maximalIdeal (Localization.AtPrime q) := by
     rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
       ← IsLocalization.map_comap q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
