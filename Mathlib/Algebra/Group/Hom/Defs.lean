@@ -971,6 +971,11 @@ theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 @[to_additive (attr := simp) coe_mul]
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
 
+@[to_additive (attr := ext)]
+theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) :
+    f = g :=
+  DFunLike.ext _ _ h
+
 end End
 
 end Monoid
