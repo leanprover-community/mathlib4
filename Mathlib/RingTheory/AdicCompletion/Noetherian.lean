@@ -262,7 +262,29 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
         have := led i
         omega
       exact Ideal.pow_le_pow_right this (coeffs'_spec (n + d) i)
-    sorry
+    let coeffs'_lim (i : ι) : R :=
+      Classical.choose (complete.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
+    have coeffs'_lim_spec (i : ι) : ∀ (n : ℕ), coeffs'_seq i n ≡
+      coeffs'_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
+      Classical.choose_spec (complete.prec' (coeffs'_seq i) (coeffs'_seq_cauchy i))
+    have sum_mod_eq (n : ℕ) : ∑ i, coeffs'_lim i * coeff i ≡
+      ∑ i, (coeffs'_seq i n) * coeff i [SMOD I ^ n • (⊤ : Ideal R)] := by
+      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem, ← Finset.sum_sub_distrib]
+      apply sum_mem
+      intro i hi
+      rw [← sub_mul]
+      apply Ideal.mul_mem_right
+      simpa [SModEq.sub_mem] using coeffs'_lim_spec i n
+    have mod_eqj (n : ℕ) : ∑ i, (coeffs'_seq i n) * coeff i ≡ j [SMOD I ^ n • (⊤ : Ideal R)] := by
+      rw [smul_eq_mul, Ideal.mul_top, SModEq.comm, SModEq.sub_mem]
+      have : n ≤ n + d + 1 := by omega
+      apply Ideal.pow_le_pow_right this
+      exact (coeffs' (n + d)).2
+    rw [Ideal.mem_span_range_iff_exists_fun]
+    use coeffs'_lim
+    rw [IsHausdorff.eq_iff_smodEq (I := I)]
+    intro n
+    exact (sum_mod_eq n).trans (mod_eqj n)
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by
