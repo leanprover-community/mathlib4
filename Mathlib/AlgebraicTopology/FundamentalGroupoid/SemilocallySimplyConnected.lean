@@ -519,12 +519,9 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
     rw [this]
     apply isOpen_iInter_of_finite
     intro j
-    -- Show {γ' | γ'(part.t j) ∈ V[j]} is open
-    change IsOpen ((fun γ' : Path x y => γ' (part.t j)) ⁻¹' (T.V j))
-    apply IsOpen.preimage _ (T.h_V_open j)
-    -- Evaluation is continuous: coercion then evaluation
-    change Continuous fun γ' : Path x y => (γ' : C(unitInterval, X)) (part.t j)
-    exact (continuous_eval_const (part.t j)).comp continuous_induced_dom
+    -- `{γ' | γ'(part.t j) ∈ V[j]}` is the preimage of `V[j]` under evaluation, hence open.
+    exact (T.h_V_open j).preimage <|
+      (continuous_eval_const (part.t j)).comp continuous_induced_dom
 
 /-! ### Proof strategy for discrete topology on Path.Homotopic.Quotient
 
@@ -733,18 +730,12 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
           (γ'.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
         (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
       (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
-    have hproof :
-        part.h_mono.monotone (Fin.zero_le (Fin.last n)) =
-          (by
-            simp [part.h_start, part.h_end]) := by
-      simp
-    have hsub :
-        B = Path.Homotopic.Quotient.mk γ' := by
+    -- `convert` handles the motive issue of replacing `part.t 0`/`part.t (Fin.last n)` with
+    -- `0`/`1` inside the dependent `subpathOn` application.
+    have hsub : B = Path.Homotopic.Quotient.mk γ' := by
       dsimp [B]
-      convert
-        congrArg
-          (fun q => q.cast γ'.source.symm γ'.target.symm)
-          (Path.Homotopic.Quotient.subpathOn_zero_one γ')
+      convert congrArg (fun q => q.cast γ'.source.symm γ'.target.symm)
+        (Path.Homotopic.Quotient.subpathOn_zero_one γ')
       · simp [part.h_start]
       · simp
     calc
@@ -772,18 +763,12 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
           (γ.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
         (show x = γ (part.t 0) by rw [part.h_start, γ.source])
         (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target]))
-    have hproof :
-        part.h_mono.monotone (Fin.zero_le (Fin.last n)) =
-          (by
-            simp [part.h_start, part.h_end]) := by
-      simp
-    have hsub :
-        B = Path.Homotopic.Quotient.mk γ := by
+    -- `convert` handles the motive issue of replacing `part.t 0`/`part.t (Fin.last n)` with
+    -- `0`/`1` inside the dependent `subpathOn` application.
+    have hsub : B = Path.Homotopic.Quotient.mk γ := by
       dsimp [B]
-      convert
-        congrArg
-          (fun q => q.cast γ.source.symm γ.target.symm)
-          (Path.Homotopic.Quotient.subpathOn_zero_one γ)
+      convert congrArg (fun q => q.cast γ.source.symm γ.target.symm)
+        (Path.Homotopic.Quotient.subpathOn_zero_one γ)
       · simp [part.h_start]
       · simp
     calc
