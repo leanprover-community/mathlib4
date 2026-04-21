@@ -165,10 +165,11 @@ structure GCongrLemma where
   /-- The name of the lemma. -/
   declName : Name
   /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. They store
+  - the indices of the two compared variables
   - the index of the hypothesis
   - the number of parameters in the hypothesis
   - whether it is contravariant (i.e. switches the order of the two arguments) -/
-  mainSubgoals : Array (Nat × Nat × Bool)
+  mainSubgoals : Array (Nat × Nat × Nat × Nat × Bool)
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
   /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
@@ -255,47 +256,49 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
   for e1 in lhsArgs, e2 in rhsArgs do
     -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
     -- (and not proofs)
-    let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
-    if !isEq then
-      -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-      let .fvar e1 := e1.eta | fail "Not all varying arguments are free variables"
-      let .fvar e2 := e2.eta | fail "Not all varying arguments are free variables"
-      -- add such a pair to the `pairs` array
-      pairs := pairs.push (e1, e2)
+    if ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2) then continue
+    let e1 := e1.eta; let e2 := e2.eta
+    -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+    unless e1.isFVar && e2.isFVar do  fail "Not all varying arguments are free variables"
+    if (← e1.fvarId!.getBinderInfo).isInstImplicit &&
+        (← e2.fvarId!.getBinderInfo).isInstImplicit then
+      continue
+    -- add such a pair to the `pairs` array
+    pairs := pairs.push (e1, e2)
   let numVarying := pairs.size
   if numVarying = 0 then
     fail "LHS and RHS are the same"
   let mut mainSubgoals := #[]
-  let mut i := 0
   -- iterate over antecedents `hyp` to the lemma
-  for hyp in hyps do
-    mainSubgoals ← forallTelescopeReducing (← inferType hyp) fun args hypTy => do
+  for hyp in hyps, i in 0...* do
+    let some mainSubgoal@(n, m, _, _, isContra) ←
+      forallTelescopeReducing (← inferType hyp) fun args hypTy => do
       -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
       -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
       -- `rel` above)
-      let hypTy ← whnf hypTy
-      let findPair (lhs rhs : FVarId) : Option Bool :=
-        pairs.findSome? fun pair =>
+      let findGoal (lhs rhs : Expr) (numHyps : Nat) : Option (Nat × Nat × Nat × Nat × Bool) := do
+        guard <| lhs.getAppArgs.all (·.isFVar) && lhs.getAppArgs == rhs.getAppArgs
+        let lhs := lhs.getAppFn; let rhs := rhs.getAppFn
+        let n ← hyps.idxOf? lhs
+        let m ← hyps.idxOf? rhs
+        let isContra ← pairs.findSome? fun pair =>
           if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
+        -- if yes, record the index of this antecedent as a "main subgoal", together with the
+        -- index of the "varying argument" pair it corresponds to
+        some (n, m, i, numHyps, isContra)
+      let hypTy ← whnf hypTy
       if let some (_, lhs₁, rhs₁) := getRel hypTy then
-        if let .fvar lhs₁ := lhs₁.getAppFn then
-        if let .fvar rhs₁ := rhs₁.getAppFn then
+        return findGoal lhs₁ rhs₁ args.size
+      else if let some lastFVar := args.back? then
+        return findGoal (← inferType lastFVar) hypTy (args.size - 1)
         -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
         -- the conclusion to the lemma
-        if let some isContra := findPair lhs₁ rhs₁ then
-          -- if yes, record the index of this antecedent as a "main subgoal", together with the
-          -- index of the "varying argument" pair it corresponds to
-          return mainSubgoals.push (i, args.size, isContra)
-      else
-        -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
-        -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
-        if let .fvar rhs₁ := hypTy.getAppFn then
-        if let some lastFVar := args.back? then
-        if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
-        if let some isContra := findPair lhs₁ rhs₁ then
-          return mainSubgoals.push (i, args.size - 1, isContra)
-      return mainSubgoals
-    i := i + 1
+      return none
+      | pure ()
+    mainSubgoals := mainSubgoals.push mainSubgoal
+    pairs := pairs.erase <| if isContra then (hyps[m]!, hyps[n]!) else (hyps[n]!, hyps[m]!)
+  unless pairs.isEmpty do
+    fail "Not all varying arguments have a corresponding hypothesis"
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
   return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
@@ -400,6 +403,16 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
+def _root_.Lean.MVarId.applyRflOrId (goal : MVarId) : MetaM Unit := goal.withContext do
+  let t ← whnfR (← goal.getType)
+  if t.isForall then
+    let lhs := t.bindingDomain!
+    let rhs := t.bindingBody!
+    guard !rhs.hasLooseBVars
+    guard <| ← isDefEq lhs rhs
+    goal.assign (.lam t.bindingName! lhs (.bvar 0) t.bindingInfo!)
+  else
+    goal.applyRfl
 /-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
 
 This is an extensible tactic using [`macro_rules`](lean-manual://section/tactic-macro-extension).
@@ -510,7 +523,7 @@ For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a 
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
     declName := ``rel_imp_rel
-    mainSubgoals := #[(7, 0, true), (8, 0, false)]
+    mainSubgoals := #[(5, 3, 7, 0, true), (4, 6, 8, 0, false)]
     numHyps := 9
     key := default, prio := default, numVarying := default
   }]
@@ -576,9 +589,9 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
     unless ← mvar.mvarId!.isAssigned do
-      unless lem.mainSubgoals.any (·.1 == i) do
+      unless lem.mainSubgoals.any (fun (n, m, k, _) ↦ n == i || m == i || k == i) do
         sideGoals := sideGoals.push mvar.mvarId!
-  let mainGoals ← lem.mainSubgoals.mapM fun (i, numHyps, isContra) ↦
+  let mainGoals ← lem.mainSubgoals.mapM fun (_, _, i, numHyps, isContra) ↦
     return (← introN (mvars[i]!).mvarId! numHyps, isContra)
   return (mainGoals, sideGoals)
 
@@ -595,7 +608,7 @@ partial def _root_.Lean.MVarId.gcongr
   if mdataLhs?.isNone then
     -- A. If there is no pattern annotation, try to resolve the goal by reflexivity, or
     -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
-    try withReducible g.applyRfl; return true
+    try withReducible g.applyRflOrId; return true
     catch _ =>
       if ← dischargeMain g then
         return true
@@ -619,7 +632,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
     -- we report that the provided pattern doesn't apply.
     unless containsHoleAnnotation mdataExpr do
-      try withDefault g.applyRfl; return true
+      try withDefault g.applyRflOrId; return true
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"

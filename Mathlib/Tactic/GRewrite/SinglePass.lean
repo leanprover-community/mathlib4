@@ -73,10 +73,10 @@ mutual
 
 partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
     (config : Config) : GRewriteM Bool := do
+  withTraceNode `Meta.grewrite.gcongr (fun _ ↦ return m!"applying {.ofConstName lem.declName}") do
   let (mainGoals, sideGoals) ← try applyGCongrLemma g lem catch _ => return false
-  /- Synthesize instances. At this point, we allow Synthesis to get stuck, because e.g. with
-  `{hs : s.Finite} {ht : t.Finite} : s ⊆ t → hs.toFinset ⊆ ht.toFinset`,
-  either `s` or `t` is still a metavariable. -/
+  /- Firstly, synthesize instances to ensure that the lemma is applicable in this setting.
+  We allow synthesis to get stuck, because there are still metavariables to be filled in. -/
   let mut unsolvedSideGoals := #[]
   for mvarId in sideGoals do
     let type ← mvarId.getType
@@ -87,13 +87,15 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       | .undef => pure ()
     unsolvedSideGoals := unsolvedSideGoals.push mvarId
   -- Then, recursively rewrite in the main subgoals
-  trace[Meta.grewrite.gcongr] "applied lemma {.ofConstName lem.declName}"
   let mut anyProgress := false
   for (g, isContra) in mainGoals do
     if ← grewriteCongr g (inv != isContra) config then
       anyProgress := true
     else
-      try g.applyRfl catch _ => return false
+      try g.applyRflOrId
+      catch _ =>
+        trace[Meta.grewrite] "{← g.getType} could not be closed with `rfl`"
+        return false
   -- Only continue if at least one rewrite happened
   unless anyProgress do return false
   -- Finally, close all remaining side goals

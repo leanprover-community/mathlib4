@@ -51,8 +51,6 @@ example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d +
 
 example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
-  guard_target =ₛ g a + f b ≤ 5
-  grw [h]
   guard_target =ₛ g a + g b ≤ 5
   grw [h₂]
 
