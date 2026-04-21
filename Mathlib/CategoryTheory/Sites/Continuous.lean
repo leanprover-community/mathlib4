@@ -73,6 +73,10 @@ def map : PreOneHypercover (F.obj X) where
   p₂ _ _ j := F.map (E.p₂ j)
   w _ _ j := by simpa using F.congr_map (E.w j)
 
+@[simp]
+lemma map_id : E.map (𝟭 _) = E :=
+  rfl
+
 lemma map_comp {D' : Type*} [Category* D'] (G : D ⥤ D') : E.map (F ⋙ G) = (E.map F).map G :=
   rfl
 
