@@ -83,4 +83,10 @@ example {D : Type*} [Category* D] {x y z : C} (F : C ⥤ D) (f : x ⟶ y) (g : y
   rw [map_of% foo]
   exact w
 
+example {D : Type*} [Category* D] {x y z : C} (F : C ⥤ D) (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (w : f ≫ g = h) :
+    F.map f ≫ F.map g = F.map h := by
+  rw [map_of% (foo)]
+  exact w
+
 end Tests.Map
