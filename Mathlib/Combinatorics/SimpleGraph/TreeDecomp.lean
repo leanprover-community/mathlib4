@@ -51,7 +51,7 @@ open Finset Fintype
 namespace SimpleGraph
 
 universe u v
-variable {V : Type u} {V' : Type v}
+variable {V V' : Type u}
 variable {G : SimpleGraph V} {G' : SimpleGraph V'}
 
 /-! ## Tree decompositions -/
@@ -103,8 +103,7 @@ def hasTreeDecomp.mono {n m : ℕ∞} (h : n ≤ m) : G.hasTreeDecomp n → G.ha
   exact le_trans ht h
 
 /-- Transport a tree decomposition along a graph isomorphism by mapping each bag. -/
-noncomputable def TreeDecomp.map {V V' : Type u} {G : SimpleGraph V} {G' : SimpleGraph V'}
-    (φ : G ≃g G') (t : G.TreeDecomp) : G'.TreeDecomp := { t with
+noncomputable def TreeDecomp.map (φ : G ≃g G') (t : G.TreeDecomp) : G'.TreeDecomp := { t with
   𝓧 w := (t.𝓧 w).map φ
   vertexCover v' := (t.vertexCover (φ.symm v')).imp fun _ => Finset.mem_map_equiv.mpr
   edgeCover u' v' huv :=
@@ -116,8 +115,7 @@ noncomputable def TreeDecomp.map {V V' : Type u} {G : SimpleGraph V} {G' : Simpl
     exact this ▸ t.connectedBags (φ.symm v') }
 
 @[simp]
-lemma TreeDecomp.ewidth_map {V V' : Type u} {G : SimpleGraph V} {G' : SimpleGraph V'}
-    (φ : G ≃g G') (t : G.TreeDecomp) : (t.map φ).ewidth = t.ewidth := by
+lemma TreeDecomp.ewidth_map (φ : G ≃g G') (t : G.TreeDecomp) : (t.map φ).ewidth = t.ewidth := by
   simp only [TreeDecomp.ewidth_eq, TreeDecomp.map, Finset.card_map]
 
 lemma Iso.hasTreeDecomp_iff {n : ℕ∞} {V' : Type u}
