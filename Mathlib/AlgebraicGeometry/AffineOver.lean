@@ -91,6 +91,7 @@ section Equivalence
 
 instance {f : MorphismProperty.Over @IsAffineHom ⊤ X} : IsAffineHom f.hom := f.prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The "relative Spec" functor from quasi-coherent `𝒪ₓ`-algebras to
 affine `X`-schemes. Use `coequifiberedQCohAlgCatEquivOver` directly. -/
 noncomputable def coequifiberedQCohAlgCatToOver (X : Scheme.{u}) :
@@ -105,13 +106,15 @@ noncomputable def coequifiberedQCohAlgCatToOver (X : Scheme.{u}) :
     ext U
     simp [← Spec.map_comp_assoc, ← NatTrans.comp_app, Under.w α.unop.hom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sections functor from affine `X`-schemes to quasi-coherent `𝒪ₓ`-algebras.
 Use `coequifiberedQCohAlgCatEquivOver` directly. -/
 noncomputable def coequifiberedQCohAlgCatOfOver (X : Scheme.{u}) :
     (MorphismProperty.Over @IsAffineHom ⊤ X)ᵒᵖ ⥤ X.CoequifiberedQCohAlgCat where
   obj f := .mk (.mk (Y := ((preimage f.unop.hom).op ⋙ (toOpensFunctor _).op) ⋙ f.unop.left.presheaf)
       (Functor.whiskerLeft _ f.unop.hom.c)) <| coequifibered_iff_forall_isLocalizationAway.mpr
-    fun U r ↦ (U.2.preimage _).isLocalization_of_eq_basicOpen _ _ (f.unop.hom.preimage_basicOpen r)
+    fun U r ↦
+      (U.2.preimage _).isLocalization_of_eq_basicOpen _ _ (f.unop.hom.preimage_basicOpen r)
   map {f g} α :=
     letI β : preimage g.unop.hom ⋙ toOpensFunctor g.unop.left ⟶ preimage f.unop.hom ⋙
         toOpensFunctor f.unop.left ⋙ TopologicalSpace.Opens.map α.unop.hom.left.base :=
@@ -127,6 +130,7 @@ noncomputable def coequifiberedQCohAlgCatOfOver (X : Scheme.{u}) :
     ext U : 4
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between quasi-coherent `𝒪ₓ`-algebras and affine `X`-schemes.
 The forwards direction is the relative Spec functor, taking `F` to `colim (F ⋙ Spec)`.
 The inverse direction takes `f : Y ⟶ X` to `f_* 𝒪_Y`. -/
@@ -234,6 +238,7 @@ lemma coequifiberedQCohAlgCatEquivOver_inverse_map_unop_hom_right_app
     (X.coequifiberedQCohAlgCatEquivOver.inverse.map f).unop.hom.right.app U =
     f.hom.left.appLE _ _ congr(($(MorphismProperty.Over.w f)) ⁻¹ᵁ U.unop.1).ge := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_unitIso_hom_app_unop_hom_right_app
     (F : X.CoequifiberedQCohAlgCatᵒᵖ) (U) :
@@ -251,6 +256,7 @@ end Equivalence
 
 section PreservesLimits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the equivalence of categories between affine `X`-schemes and quasi-coherent `𝒪ₓ`-algebras,
 the pullback functor on affine `X`-schemes along an open immersion `U ⟶ X` corresponds
 to the restriction functor `F ↦ F|ᵤ` of quasi-coherent `𝒪ₓ`-algebras. -/
@@ -280,6 +286,7 @@ noncomputable def coequifiberedQCohAlgCatRestrict [IsOpenImmersion f] :
       inv_eqToHom]
     simp [Hom.appIso_hom', Scheme.Hom.appLE_comp_appLE, -Scheme.Hom.comp_appLE]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] preservesLimitsOfSize_op in
 -- This is true for arbitrary `f`. The instance is provided at the end of the file.
 private instance [IsOpenImmersion f] :
@@ -302,6 +309,7 @@ private instance [IsOpenImmersion f] :
   exact preservesLimits_of_natIso ((coequifiberedQCohAlgCatRestrict f).isoInverseComp
       (G := Y.coequifiberedQCohAlgCatEquivOver.symm))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PreservesLimits (MorphismProperty.Over.forget @IsAffineHom ⊤ X) := by
   clear Y f
   wlog hX : IsAffine X
