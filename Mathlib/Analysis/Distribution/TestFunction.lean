@@ -672,8 +672,8 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
 - `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
   contained in `Ω`)
 
-For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` wrt Lebesgue satisfies
-and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence `μ` defines
+For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` with respect to the Lebesgue
+measure and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence `μ` defines
 a distribution on `Ω`) but the other two conditions are not satisfied.
 -/
 protected theorem integrable {μ : Measure E}
