@@ -23,14 +23,6 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-/-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
-and type of `f (g x)` depends on `x` and `g x`. -/
-@[inline, reducible]
-def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
-
-@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
-
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
