@@ -52,7 +52,23 @@ theorem eLpNormEssSup_add_le :
 theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp1 : 1 ≤ p) : eLpNorm (f + g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   by_cases hp0 : p = 0
-  · simp [hp0]
+  · simp only [hp0, eLpNorm_exponent_zero, Pi.add_apply]
+    calc
+      _ ≤ μ (Function.support fun x ↦ ‖f x‖ₑ + ‖g x‖ₑ) := by
+        apply measure_mono
+        simp only [Function.support_subset_iff, ne_eq, Function.mem_support, add_eq_zero, not_and]
+        intro x fg fx
+        contrapose! fg
+        apply le_antisymm ?_ <| zero_le _
+        rw [← add_zero 0]
+        nth_rw 1 [← fx, ← fg]
+        exact enorm_add_le (f x) (g x)
+      _ ≤ μ ((Function.support fun x ↦ ‖f x‖ₑ) ∪ Function.support fun x ↦ ‖g x‖ₑ) := by
+        apply measure_mono
+        simp only [Function.support_subset_iff, ne_eq, add_eq_zero, not_and, Set.mem_union,
+          Function.mem_support]
+        tauto
+      _ ≤ _ := measure_union_le _ _
   by_cases hp_top : p = ∞
   · simp [hp_top, eLpNormEssSup_add_le]
   have hp1_real : 1 ≤ p.toReal := by
@@ -64,7 +80,23 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
     (p : ℝ≥0∞) :
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
-  · simp
+  · simp only [eLpNorm_exponent_zero, Pi.add_apply, LpAddConst_zero, one_mul]
+    calc
+      _ ≤ μ (Function.support fun x ↦ ‖f x‖ₑ + ‖g x‖ₑ) := by
+        apply measure_mono
+        simp only [Function.support_subset_iff, ne_eq, Function.mem_support, add_eq_zero, not_and]
+        intro x fg fx
+        contrapose! fg
+        apply le_antisymm ?_ <| zero_le _
+        rw [← add_zero 0]
+        nth_rw 1 [← fx, ← fg]
+        exact enorm_add_le (f x) (g x)
+      _ ≤ μ ((Function.support fun x ↦ ‖f x‖ₑ) ∪ Function.support fun x ↦ ‖g x‖ₑ) := by
+        apply measure_mono
+        simp only [Function.support_subset_iff, ne_eq, add_eq_zero, not_and, Set.mem_union,
+          Function.mem_support]
+        tauto
+      _ ≤ _ := measure_union_le _ _
   rcases lt_or_ge p 1 with (h'p | h'p)
   · simp only [eLpNorm_eq_eLpNorm' hp (h'p.trans ENNReal.one_lt_top).ne]
     convert eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _

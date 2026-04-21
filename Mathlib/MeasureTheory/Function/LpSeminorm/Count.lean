@@ -39,7 +39,7 @@ lemma eLpNorm_count_lt_top_of_lt [Finite α] (h : ∀ i, ‖f i‖ₑ < ∞) :
   letI _ := Fintype.ofFinite α
   simp_rw [eLpNorm]
   split_ifs with h2 h3
-  · exact ENNReal.zero_lt_top
+  · exact measure_lt_top .count _
   · refine (essSup_le_of_ae_le (Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
     · filter_upwards with x
       exact Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ _)

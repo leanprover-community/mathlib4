@@ -333,18 +333,18 @@ theorem eLpNormEssSup_mono_nnnorm_ae {f g : α → F} (hfg : ∀ᵐ x ∂μ, ‖
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
   essSup_mono_ae <| hfg.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
-theorem _root_.Function.support_enorm_eq' {α ε : Type*} [Zero ε] [ENorm ε] {f : α → ε}
+theorem _root_.Function.support_enorm' {α ε : Type*} [Zero ε] [ENorm ε] {f : α → ε}
     (h : ∀ x : ε, ‖x‖ₑ = 0 ↔ x = 0) : Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
   ext
   simp [h]
 
-theorem _root_.Function.support_enorm_eq {α ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem _root_.Function.support_enorm {α ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
     {f : α → ε} : Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
   ext
   simp
 
-theorem measure_support_enorm_of_le {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
-    μ (Function.support fun x ↦ ‖f x‖ₑ) ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := by
+theorem measure_support_mono {f g : α → ℝ≥0∞}
+    (h : ∀ᵐ x ∂μ, f x ≤ g x) : μ (Function.support f) ≤ μ (Function.support g) := by
   refine measure_mono_ae <| ae_le_set.mpr ?_
   contrapose! h
   refine frequently_iff.mpr (fun {U} hU ↦ ?_)
@@ -358,12 +358,32 @@ theorem measure_support_enorm_of_le {f : α → ε} {g : α → ε'} (h : ∀ᵐ
   have := gy ▸ h y (tU yt)
   simp_all
 
+theorem measure_support_mono' {f g : α → ℝ} (hf : ∀ᵐ x ∂μ, 0 ≤ f x)
+    (h : ∀ᵐ x ∂μ, f x ≤ g x) : μ (Function.support f) ≤ μ (Function.support g) := by
+  refine measure_mono_ae <| ae_le_set.mpr ?_
+  contrapose! h
+  refine frequently_iff.mpr (fun {U} hU ↦ ?_)
+  contrapose! h
+  refine exists_measurable_superset_iff_measure_eq_zero.mp ?_
+  obtain ⟨t, ta, tm, tU⟩ := (MeasureTheory.ae_isMeasurablyGenerated (μ := μ)).1 hU
+  obtain ⟨r, ra, rm, rU⟩ := (MeasureTheory.ae_isMeasurablyGenerated (μ := μ)).1 hf
+  refine ⟨(t ∩ r)ᶜ, fun y ↦ ?_, ?_, ?_⟩
+  · simp only [Set.mem_diff, Function.mem_support, ne_eq, Decidable.not_not, Set.mem_compl_iff,
+      and_imp]
+    intro _ gy yt
+    have := gy ▸ h y (tU yt.1)
+    have := rU yt.2
+    simp_all only [Set.mem_inter_iff, Set.mem_setOf_eq]
+    order
+  · exact MeasurableSet.compl_iff.mpr <| tm.inter rm
+  · exact mem_ae_iff.mp <| inter_mem ta ra
+
 theorem eLpNorm_mono_enorm_ae {f : α → ε} {g : α → ε'}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
   split_ifs
-  · exact measure_support_enorm_of_le h
+  · exact measure_support_mono h
   · exact essSup_mono_ae h
   · exact eLpNorm'_mono_enorm_ae ENNReal.toReal_nonneg h
 
@@ -371,7 +391,7 @@ theorem eLpNorm_mono_nnnorm_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   simp only [eLpNorm]
   split_ifs
-  · apply measure_support_enorm_of_le
+  · apply measure_support_mono
     simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, h]
   · exact essSup_mono_ae (h.mono fun x hx => ENNReal.coe_le_coe.mpr hx)
   · exact eLpNorm'_mono_nnnorm_ae ENNReal.toReal_nonneg h
@@ -380,10 +400,15 @@ theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (h : ∀ᵐ x ∂μ, ‖f 
     eLpNorm f p μ ≤ eLpNorm g p μ := by
   rcases eq_or_ne p 0 with rfl|hp
   · rw [eLpNorm_exponent_zero, eLpNorm_exponent_zero]
-    apply measure_support_enorm_of_le
+    apply measure_support_mono
     simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← norm_toNNReal]
     simpa
   exact eLpNorm_mono_enorm_ae (by simpa only [enorm_le_iff_norm_le] using h)
+
+theorem eLpNorm_mono_ae' {ε' : Type*} [ENorm ε']
+    {f : α → ε} {g : α → ε'} (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
+    eLpNorm f p μ ≤ eLpNorm g p μ :=
+  eLpNorm_mono_enorm_ae (by simpa only [enorm_le_iff_norm_le] using h)
 
 theorem eLpNorm_mono_ae_real {f : α → F} {g : α → ℝ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -553,14 +578,14 @@ theorem MemLp.of_le_enorm {f : α → ε} {g : α → ε'} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) : MemLp f p μ := by
   rcases eq_or_ne p 0 with rfl|_
   · simp only [MemLp, eLpNorm, ↓reduceIte] at hg ⊢
-    exact ⟨hf, lt_of_le_of_lt (measure_support_enorm_of_le hfg) hg.2⟩
+    exact ⟨hf, lt_of_le_of_lt (measure_support_mono hfg) hg.2⟩
   exact ⟨hf, (eLpNorm_mono_enorm_ae hfg).trans_lt hg.2⟩
 
 theorem MemLp.of_le {f : α → E} {g : α → F} (hg : MemLp g p μ) (hf : AEStronglyMeasurable f μ)
     (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) : MemLp f p μ := by
   rcases eq_or_ne p 0 with rfl|_
   · simp only [MemLp, eLpNorm, ↓reduceIte] at hg ⊢
-    refine ⟨hf, lt_of_le_of_lt (measure_support_enorm_of_le ?_) hg.2⟩
+    refine ⟨hf, lt_of_le_of_lt (measure_support_mono ?_) hg.2⟩
     simp_rw [enorm_eq_nnnorm, ENNReal.coe_le_coe, ← norm_toNNReal]
     simpa
   exact ⟨hf, (eLpNorm_mono_ae hfg).trans_lt (by finiteness)⟩
@@ -658,7 +683,7 @@ theorem eLpNorm_restrict_eq_of_support_subset {s : Set α} {f : α → ε} (hsf 
   by_cases hp0 : p = 0
   · simp only [hp0, eLpNorm_exponent_zero]
     apply Measure.restrict_eq_self μ
-    rwa [Function.support_enorm_eq]
+    rwa [Function.support_enorm]
   by_cases hp_top : p = ∞
   · simp only [hp_top, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
     exact ENNReal.essSup_restrict_eq_of_support_subset fun x hx ↦ hsf <| enorm_ne_zero.1 hx

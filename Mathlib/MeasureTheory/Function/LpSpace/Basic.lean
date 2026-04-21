@@ -310,19 +310,19 @@ theorem norm_neg (f : Lp E p μ) : ‖-f‖ = ‖f‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) (nnnorm_neg f)
 
 theorem nnnorm_le_mul_nnnorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp F p μ}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : ‖f‖₊ ≤ c * ‖g‖₊ := by
+    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (hp : p ≠ 0) : ‖f‖₊ ≤ c * ‖g‖₊ := by
   simp only [nnnorm_def]
-  have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h p
+  have := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul h hp
   rwa [← ENNReal.toNNReal_le_toNNReal, ENNReal.smul_def, smul_eq_mul, ENNReal.toNNReal_mul,
     ENNReal.toNNReal_coe] at this
   · finiteness
   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (by finiteness)
 
 theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
-    (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
+    (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) (hp : p ≠ 0) : ‖f‖ ≤ c * ‖g‖ := by
   rcases le_or_gt 0 c with hc | hc
   · lift c to ℝ≥0 using hc
-    exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h)
+    exact NNReal.coe_le_coe.mpr (nnnorm_le_mul_nnnorm_of_ae_le_mul h hp)
   · simp only [norm_def]
     have := eLpNorm_eq_zero_and_zero_of_ae_le_mul_neg h hc p
     simp [this]
@@ -357,18 +357,18 @@ theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) 
   mem_Lp_iff_memLp.2 <| MemLp.of_bound f.aestronglyMeasurable _ hfC
 
 theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) (hp : p ≠ 0) : ‖f‖₊ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   by_cases hμ : μ = 0
   · simp [hμ, nnnorm_def]
   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
-  refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
+  refine (eLpNorm_le_of_ae_nnnorm_bound hfC hp).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
 
 theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
-    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
+    (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) (hp : p ≠ 0) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by
   lift C to ℝ≥0 using hC
-  have := nnnorm_le_of_ae_bound hfC
+  have := nnnorm_le_of_ae_bound hfC hp
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
 instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
