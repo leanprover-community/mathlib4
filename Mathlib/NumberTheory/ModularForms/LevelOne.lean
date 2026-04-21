@@ -32,24 +32,22 @@ namespace SlashInvariantForm
 
 variable [SlashInvariantFormClass F 𝒮ℒ k]
 
-/-- Slash action equation for forms invariant under `𝒮ℒ`, applied to an `SL(2, ℤ)` matrix. -/
-theorem slash_action_eqn_SL (f : F) (γ : SL(2, ℤ)) (z : ℍ) :
-    f (γ • z) = (denom γ z) ^ k * f z :=
-  slash_action_eqn'' f (MonoidHom.mem_range.mpr ⟨γ, rfl⟩) z
-
 lemma exists_one_half_le_im_and_norm_le (hk : k ≤ 0) (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1 / 2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ :=
   let ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
-  ⟨γ • τ, hγ, by simpa only [slash_action_eqn_SL _ γ, norm_mul, norm_zpow]
-    using le_mul_of_one_le_left (norm_nonneg _) <|
-      one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
+  ⟨γ • τ, hγ, by
+    have : SlashInvariantFormClass F Γ(1) k := Gamma_one_coe_eq_SL ▸ ‹_›
+    simpa only [slash_action_eqn_SL'' _ (mem_Gamma_one γ), norm_mul, norm_zpow]
+      using le_mul_of_one_le_left (norm_nonneg _) <|
+        one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
 
 variable (k) in
 /-- If a constant function is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
 lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) :
     k = 0 ∨ c = 0 := by
-  have hI := slash_action_eqn_SL f S I
-  have h2I2 := slash_action_eqn_SL f S ((⟨2, two_pos⟩ : {x : ℝ // 0 < x}) • .I)
+  have : SlashInvariantFormClass F Γ(1) k := Gamma_one_coe_eq_SL ▸ ‹_›
+  have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) I
+  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ((⟨2, two_pos⟩ : {x : ℝ // 0 < x}) • .I)
   simp_rw [sl_moeb, hf, Function.const, denom_S] at hI h2I2
   suffices (2 : ℂ) ^ k = 1 ↔ k = 0 by
     simpa [mul_zpow, zpow_ne_zero, this] using h2I2.symm.trans hI

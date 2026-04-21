@@ -172,20 +172,20 @@ theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
 /-- Copy of a `ModularForm` with a new `toFun` equal to the old one, optionally transporting
 along an equality of subgroups. Useful to fix definitional equalities. -/
 protected def ModularForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : ModularForm Γ k) (f' : ℍ → ℂ)
-    (h : f' = ⇑f) (hΓ : Γ = Γ' := by rfl) : ModularForm Γ' k where
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' k where
   toFun := f'
-  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ.symm ▸ hA)
+  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
-  bdd_at_cusps' hc := h.symm ▸ f.bdd_at_cusps' (hΓ.symm ▸ hc)
+  bdd_at_cusps' hc := h.symm ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
 /-- Copy of a `CuspForm` with a new `toFun` equal to the old one, optionally transporting
 along an equality of subgroups. Useful to fix definitional equalities. -/
 protected def CuspForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : CuspForm Γ k) (f' : ℍ → ℂ)
-    (h : f' = ⇑f) (hΓ : Γ = Γ' := by rfl) : CuspForm Γ' k where
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : CuspForm Γ' k where
   toFun := f'
-  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ.symm ▸ hA)
+  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
-  zero_at_cusps' hc := h.symm ▸ f.zero_at_cusps' (hΓ.symm ▸ hc)
+  zero_at_cusps' hc := h.symm ▸ f.zero_at_cusps' (hΓ ▸ hc)
 
 end ModularForm
 
