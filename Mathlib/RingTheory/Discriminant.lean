@@ -233,7 +233,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       PowerBasis.lift_gen, implies_true, Equiv.symm_apply_apply,
       Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
   · #adaptation_note /-- Before #38329, this used to be
-    `simpa [aeval_def, eval₂_eq_eval_map] using hσ.2.2` -/
+    `simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2` -/
     rw [aeval_def, eval₂_eq_eval_map]
     exact hσ.2.2
   · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
