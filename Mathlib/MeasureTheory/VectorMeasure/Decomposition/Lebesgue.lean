@@ -134,9 +134,9 @@ theorem singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
     exact ⟨i, hi, hpos.1, hneg.1⟩
   · rw [not_haveLebesgueDecomposition_iff] at hl
     rcases hl with hp | hn
-    · rw [Measure.singularPart, dif_neg hp]
+    · rw [Measure.singularPart_def, dif_neg hp]
       exact MutuallySingular.zero_left
-    · rw [Measure.singularPart, Measure.singularPart, dif_neg hn]
+    · rw [Measure.singularPart_def, Measure.singularPart_def, dif_neg hn]
       exact MutuallySingular.zero_right
 
 theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :

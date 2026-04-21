@@ -221,7 +221,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
     ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
       ∫ x, M (f x) (fourierIntegral e ν L.flip g x) ∂μ := by
-  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  by_cases hG : CompleteSpace G; swap; · simp [integral_def, hG]
   calc
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
@@ -257,7 +257,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
     ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
       ∫ x, M (f x) (fourierIntegral e ν (-L.flip) g x) ∂μ := by
-  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  by_cases hG : CompleteSpace G; swap; · simp [integral_def, hG]
   calc
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by

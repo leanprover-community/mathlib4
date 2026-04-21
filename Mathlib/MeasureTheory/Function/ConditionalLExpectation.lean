@@ -96,19 +96,19 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
 #check P⁻[X|mΩ] (sorry : Ω)
 
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
-  rw [condLExp, dif_neg hm_not]
+  rw [condLExp_def, dif_neg hm_not]
 
 theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFinite (P.trim hm)) :
-    P⁻[X|mΩ] = 0 := by simp [condLExp, dif_pos hm, hμm_not]
+    P⁻[X|mΩ] = 0 := by simp [condLExp_def, dif_pos hm, hμm_not]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
-  simp [condLExp, hm, hσ, hX]
+  simp [condLExp_def, hm, hσ, hX]
 
 theorem condLExp_of_not_sub_sigma_measurable (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω)
     [hσ : SigmaFinite (P.trim hm)] {X : Ω → ℝ≥0∞} (hX : ¬Measurable[mΩ] X) :
     P⁻[X|mΩ] = ∂((P.withDensity X).trim hm)/∂(P.trim hm) := by
-  simp [condLExp, hm, hσ, hX]
+  simp [condLExp_def, hm, hσ, hX]
 
 @[fun_prop]
 theorem measurable_condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :

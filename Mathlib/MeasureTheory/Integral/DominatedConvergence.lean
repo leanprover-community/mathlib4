@@ -62,10 +62,10 @@ theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
     Tendsto (fun n => ∫ a, F n a ∂μ) atTop (𝓝 <| ∫ a, f a ∂μ) := by
   by_cases hG : CompleteSpace G
-  · simp only [integral, hG, L1.integral]
+  · simp only [integral_def, hG, L1.integral_def]
     exact tendsto_setToFun_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
       bound F_measurable bound_integrable h_bound h_lim
-  · simp [integral, hG]
+  · simp [integral_def, hG]
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l.IsCountablyGenerated]
@@ -74,10 +74,10 @@ theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
     Tendsto (fun n => ∫ a, F n a ∂μ) l (𝓝 <| ∫ a, f a ∂μ) := by
   by_cases hG : CompleteSpace G
-  · simp only [integral, hG, L1.integral]
+  · simp only [integral_def, hG, L1.integral_def]
     exact tendsto_setToFun_filter_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
       bound hF_meas h_bound bound_integrable h_lim
-  · simp [integral, hG, tendsto_const_nhds]
+  · simp [integral_def, hG, tendsto_const_nhds]
 
 /-- Lebesgue dominated convergence theorem for series. -/
 theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → α → G} {f : α → G}
@@ -111,7 +111,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
+  · simp [integral_def, hG]
   have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
@@ -143,7 +143,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, hasSum_zero]
+  · simp [integral_def, hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded fun i ↦ norm_integral_le_integral_norm _).hasSum
   have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
@@ -248,7 +248,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE, hasSum_zero]
+  · simp [intervalIntegral, integral_def, hE, hasSum_zero]
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
     (fun i => (map_continuous <| f i).aestronglyMeasurable)

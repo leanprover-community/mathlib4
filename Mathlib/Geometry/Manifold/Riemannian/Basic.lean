@@ -158,7 +158,7 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
-  · simp only [riemannianEDist, le_iInf_iff]
+  · simp only [riemannianEDist_def, le_iInf_iff]
     intro γ hγ
     let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
     have D : ContDiffOn ℝ 1 e (Icc 0 1) :=

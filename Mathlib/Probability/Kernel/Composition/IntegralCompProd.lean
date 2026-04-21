@@ -239,7 +239,7 @@ theorem integral_compProd :
     ∀ {f : β × γ → E} (_ : Integrable f ((κ ⊗ₖ η) a)),
       ∫ z, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
+  · simp [integral_def, hE]
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
@@ -417,7 +417,7 @@ theorem continuous_integral_integral_comp :
 theorem integral_comp : ∀ {f : γ → E} (_ : Integrable f ((η ∘ₖ κ) a)),
     ∫ z, f z ∂(η ∘ₖ κ) a = ∫ x, ∫ y, f y ∂η x ∂κ a := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
+  · simp [integral_def, hE]
   apply Integrable.induction
   · intro c s hs ms
     simp_rw [integral_indicator hs, MeasureTheory.setIntegral_const, integral_smul_const,

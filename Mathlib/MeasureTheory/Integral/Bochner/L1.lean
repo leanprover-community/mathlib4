@@ -539,16 +539,16 @@ irreducible_def integral : (α →₁[μ] E) → E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by
-  simp only [integral]
+  simp only [integral_def]
 
 theorem integral_eq_setToL1 (f : α →₁[μ] E) :
     integral f = setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f := by
-  simp only [integral]; rfl
+  simp only [integral_def]; rfl
 
 @[norm_cast]
 theorem SimpleFunc.integral_L1_eq_integral (f : α →₁ₛ[μ] E) :
     L1.integral (f : α →₁[μ] E) = SimpleFunc.integral f := by
-  simp only [integral, L1.integral]
+  simp only [integral_def, L1.integral_def]
   exact setToL1_eq_setToL1SCLM (dominatedFinMeasAdditive_weightedSMul μ) f
 
 @[norm_cast]
@@ -570,24 +570,24 @@ variable (α E)
 
 @[simp]
 theorem integral_zero : integral (0 : α →₁[μ] E) = 0 := by
-  simp only [integral]
+  simp only [integral_def]
   exact map_zero integralCLM
 
 variable {α E}
 
 @[integral_simps]
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
-  simp only [integral]
+  simp only [integral_def]
   exact map_add integralCLM f g
 
 @[integral_simps]
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
-  simp only [integral]
+  simp only [integral_def]
   exact map_neg integralCLM f
 
 @[integral_simps]
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
-  simp only [integral]
+  simp only [integral_def]
   exact map_sub integralCLM f g
 
 @[integral_simps]
@@ -602,7 +602,7 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
-    ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
+    ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral_def]
     _ ≤ ‖integralCLM (α := α) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
@@ -612,7 +612,7 @@ theorem nnnorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f�
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
-  simp only [integral]
+  simp only [integral_def]
   exact L1.integralCLM.continuous
 
 section PosPart
@@ -623,7 +623,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
   refine @isClosed_property _ _ _ ((↑) : (α →₁ₛ[μ] ℝ) → α →₁[μ] ℝ)
       (fun f : α →₁[μ] ℝ => integral f = ‖Lp.posPart f‖ - ‖Lp.negPart f‖)
       (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_) ?_ f
-  · simp only [integral]
+  · simp only [integral_def]
     exact cont _
   · refine Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
       (continuous_norm.comp Lp.continuous_negPart)

@@ -243,7 +243,7 @@ theorem integral_deriv_smul_comp''' (hf : ContinuousOn f [[a, b]])
     (hg2 : IntegrableOn (fun x ↦ f' x • (g ∘ f) x) [[a, b]]) :
     (∫ x in a..b, f' x • (g ∘ f) x) = ∫ u in f a..f b, g u := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE]
+  · simp [intervalIntegral, integral_def, hE]
   rw [hf.image_uIcc, ← intervalIntegrable_iff'] at hg1
   have h_cont : ContinuousOn (fun u ↦ ∫ t in f a..f u, g t) [[a, b]] := by
     refine (continuousOn_primitive_interval' hg1 ?_).comp hf ?_

@@ -91,11 +91,11 @@ theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDec
 
 lemma rnDeriv_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecomposition μ ν) :
     μ.rnDeriv ν = 0 := by
-  rw [rnDeriv, dif_neg h]
+  rw [rnDeriv_def, dif_neg h]
 
 lemma singularPart_of_not_haveLebesgueDecomposition (h : ¬ HaveLebesgueDecomposition μ ν) :
     μ.singularPart ν = 0 := by
-  rw [singularPart, dif_neg h]
+  rw [singularPart_def, dif_neg h]
 
 @[fun_prop]
 theorem measurable_rnDeriv (μ ν : Measure α) : Measurable <| μ.rnDeriv ν := by
@@ -198,14 +198,14 @@ theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · conv_rhs => rw [haveLebesgueDecomposition_add μ ν]
     exact Measure.le_add_right le_rfl
-  · rw [singularPart, dif_neg hl]
+  · rw [singularPart_def, dif_neg hl]
     exact Measure.zero_le μ
 
 theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv ν) ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · conv_rhs => rw [haveLebesgueDecomposition_add μ ν]
     exact Measure.le_add_left le_rfl
-  · rw [rnDeriv, dif_neg hl, withDensity_zero]
+  · rw [rnDeriv_def, dif_neg hl, withDensity_zero]
     exact Measure.zero_le μ
 
 lemma _root_.AEMeasurable.singularPart {β : Type*} {_ : MeasurableSpace β} {f : α → β}
@@ -372,7 +372,7 @@ theorem lintegral_rnDeriv_lt_top_of_measure_ne_top (ν : Measure α) {s : Set α
       _ ≤ (singularPart μ ν) (toMeasurable μ s) + _ := le_add_self
       _ = μ s := by rw [← Measure.add_apply, ← haveLebesgueDecomposition_add, measure_toMeasurable]
       _ < ⊤ := hs.lt_top
-  · simp only [Measure.rnDeriv, dif_neg hl, Pi.zero_apply, lintegral_zero, ENNReal.zero_lt_top]
+  · simp only [Measure.rnDeriv_def, dif_neg hl, Pi.zero_apply, lintegral_zero, ENNReal.zero_lt_top]
 
 theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
     ∫⁻ x, μ.rnDeriv ν x ∂ν < ∞ := by
@@ -444,7 +444,7 @@ theorem singularPart_smul (μ ν : Measure α) (r : ℝ≥0) :
           (MutuallySingular.smul r (mutuallySingular_singularPart _ _)) ?_).symm
     rw [withDensity_smul _ (measurable_rnDeriv _ _), ← smul_add,
       ← haveLebesgueDecomposition_add μ ν, ENNReal.smul_def]
-  · rw [singularPart, singularPart, dif_neg hl, dif_neg, smul_zero]
+  · rw [singularPart_def, singularPart_def, dif_neg hl, dif_neg, smul_zero]
     refine fun hl' ↦ hl ?_
     rw [← inv_smul_smul₀ hr μ]
     infer_instance
@@ -461,7 +461,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]
-  · rw [singularPart, singularPart, dif_neg hl, dif_neg]
+  · rw [singularPart_def, singularPart_def, dif_neg hl, dif_neg]
     refine fun hl' ↦ hl ?_
     rw [← inv_smul_smul₀ hr ν]
     infer_instance

@@ -290,7 +290,7 @@ open scoped Classical in
 lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :
     𝓕₊ i = if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i := by
-  simp +instances only [rightCont, OrderTopology.topology_eq_generate_intervals]
+  simp +instances only [rightCont_def, OrderTopology.topology_eq_generate_intervals]
 
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :

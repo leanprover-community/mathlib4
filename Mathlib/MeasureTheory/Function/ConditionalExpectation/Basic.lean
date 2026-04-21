@@ -121,10 +121,10 @@ meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 #guard_msgs in
 #check μ[f | m] (sorry : α)
 
-theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dif_neg hm_not]
+theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp_def, dif_neg hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
+    μ[f | m] = 0 := by rw [condExp_def, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -133,7 +133,7 @@ theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm
         if StronglyMeasurable[m] f then f
         else aestronglyMeasurable_condExpL1.mk (condExpL1 hm μ f)
       else 0 := by
-  rw [condExp, dif_pos hm]
+  rw [condExp_def, dif_pos hm]
   grind
 
 theorem condExp_of_stronglyMeasurable (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}

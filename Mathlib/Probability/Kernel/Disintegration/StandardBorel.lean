@@ -366,7 +366,7 @@ irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)
 lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
     ρ.condKernel a = condKernelUnitBorel (const Unit ρ) ((), a) := by
-  rw [Measure.condKernel]; rfl
+  rw [Measure.condKernel_def]; rfl
 
 instance _root_.MeasureTheory.Measure.condKernel.instIsCondKernel (ρ : Measure (α × Ω))
     [IsFiniteMeasure ρ] : ρ.IsCondKernel ρ.condKernel where
@@ -382,7 +382,7 @@ instance _root_.MeasureTheory.Measure.condKernel.instIsCondKernel (ρ : Measure 
 
 instance _root_.MeasureTheory.Measure.instIsMarkovKernelCondKernel
     (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] : IsMarkovKernel ρ.condKernel := by
-  rw [Measure.condKernel]
+  rw [Measure.condKernel_def]
   infer_instance
 
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,

@@ -181,8 +181,7 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
     ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
-    show _ = (mkAlgHom R A).toLinearMap (TensorAlgebra.ι R x)
-    rfl
+    aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom_def, mkRingHom_def])
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/
 theorem identify_one (i : I) : ι' R A (DirectSum.lof R I A i 1) = 1 := by
@@ -231,17 +230,17 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   invFun π i := π ∘ₐ ι R A i
   left_inv π := by
     ext i aᵢ
-    aesop (add simp [ι, ι'])
+    aesop (add simp [ι_def, ι'])
   right_inv maps := by
     ext i a
-    aesop (add simp [ι, ι'])
+    aesop (add simp [ι_def, ι'])
 
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
 to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`. -/
 @[simp↓] theorem lift_comp_ι : lift R A maps ∘ₐ ι R A i = maps := by
   ext a
-  simp [lift_apply, ι]
+  simp [lift_apply, ι_def]
 
 @[simp↓] theorem lift_algebraMap (r : R) : lift R A maps (algebraMap R _ r) = algebraMap R _ r := by
   rw [lift_apply, AlgHom.commutes]
@@ -250,6 +249,6 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
     f = lift R A maps := by
   ext i a; simp_rw [AlgHom.ext_iff] at h; specialize h i a
-  simp [h.symm, ι]
+  simp [h.symm, ι_def]
 
 end LinearAlgebra.FreeProduct

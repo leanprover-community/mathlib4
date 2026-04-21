@@ -119,7 +119,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     (hg : ∀ x ∈ tsupport f, HasLineDerivAt ℝ g (g' x) x v) :
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
-  · simp [integral, hW]
+  · simp [integral_def, hW]
   rcases eq_or_ne v 0 with rfl | hv
   · have Hf' x : B (f' x) (g x) = 0 := by
       by_cases hx : x ∈ tsupport g

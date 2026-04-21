@@ -105,8 +105,7 @@ lemma mkAlgHom_C (a : R) :
 
 lemma mkRingHom_C (a : R) :
     mkRingHom (Rel R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
-  have : mkRingHom (Rel R M) (C a) = mkAlgHom R (Rel R M) (C a) := rfl
-  rw [this, mkAlgHom_C]
+  rw [← mkAlgHom_coe R]; exact mkAlgHom_C a
 
 variable (R) in
 /-- `dp R n m` is the equivalence class of `X (⟨n, m⟩)` in `DividedPowerAlgebra R M`. -/
@@ -123,13 +122,13 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
   induction F using MvPolynomial.induction_on generalizing f with
   | C a =>
       convert h_C a using 1
-      rw [mkAlgHom, AlgHom.coe_mk]
+      rw [mkAlgHom_def, AlgHom.coe_mk]
   | add g1 g2 hg1 hg2 =>
       rw [map_add]
       exact h_add _ _ (hg1 ((mkRingHom (Rel R M)) g1) rfl) (hg2 ((mkRingHom (Rel R M)) g2) rfl)
   | mul_X g nm h =>
       have h' : (mkRingHom (Rel R M)) (X nm) = dp R nm.1 nm.2 := by
-        simp only [dp_def, Prod.mk.eta, mkAlgHom, AlgHom.coe_mk]
+        simp only [dp_def, Prod.mk.eta, mkAlgHom_def, AlgHom.coe_mk]
       rw [_root_.map_mul, h']
       exact h_dp _ _ _ (h (mkRingHom (Rel R M) g) rfl)
 
@@ -141,7 +140,7 @@ protected theorem induction_on {P : DividedPowerAlgebra R M → Prop} (f : Divid
 
 theorem dp_eq_mkRingHom (n : ℕ) (m : M) :
     dp R n m = mkRingHom (Rel R M) (X (⟨n, m⟩)) := by
-  simp [dp, mkRingHom, mkAlgHom]
+  simp [dp, mkRingHom_def, mkAlgHom_def]
 
 @[simp]
 theorem dp_zero {m : M} : dp R 0 m = 1 := by

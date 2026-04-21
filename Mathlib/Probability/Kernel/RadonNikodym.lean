@@ -246,7 +246,7 @@ lemma measurable_rnDeriv_right (κ η : Kernel α γ) (a : α) :
 
 lemma rnDeriv_eq_top_iff (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
-  simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
+  simp only [rnDeriv_def, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
     mutuallySingularSet, mem_setOf_eq, and_iff_right_iff_imp]
   exact fun h ↦ zero_lt_one.trans_le h
@@ -277,7 +277,7 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :
     singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
-  rw [singularPart, Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
+  rw [singularPart_def, Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
     ae_restrict_iff]
   all_goals simp_rw [ofNNReal_toNNReal]
   rotate_left
@@ -287,7 +287,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   · exact measurable_singularPart_fun κ η
   refine ae_of_all _ (fun x hx ↦ ?_)
   simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
-  simp_rw [rnDeriv]
+  simp_rw [rnDeriv_def]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
     mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]
   · simp only [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
@@ -304,7 +304,7 @@ lemma singularPart_of_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
     (hs : s ⊆ mutuallySingularSetSlice κ η a) :
     singularPart κ η a s = κ a s := by
   have hs' : ∀ x ∈ s, 1 ≤ rnDerivAux κ (κ + η) a x := fun _ hx ↦ hs hx
-  rw [singularPart, Kernel.withDensity_apply']
+  rw [singularPart_def, Kernel.withDensity_apply']
   swap; · exact measurable_singularPart_fun κ η
   calc
     ∫⁻ x in s, ↑(Real.toNNReal (rnDerivAux κ (κ + η) a x)) -
@@ -349,7 +349,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   · fun_prop
   · fun_prop
   · exact measurable_rnDeriv _ _
-  simp_rw [rnDeriv]
+  simp_rw [rnDeriv_def]
   have hs' : ∀ x ∈ s, rnDerivAux κ (κ + η) a x < 1 := by
     simp_rw [← notMem_mutuallySingularSetSlice]
     exact fun x hx hx_mem ↦ hs hx hx_mem

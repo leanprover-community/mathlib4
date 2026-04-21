@@ -150,7 +150,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
   · convert pow_zero _
-    simp only [PiNat.firstDiff, ne_eq, Classical.dite_not, dite_eq_left_iff,
+    simp only [PiNat.firstDiff_def, ne_eq, Classical.dite_not, dite_eq_left_iff,
       Nat.find_eq_zero]
     intro h'
     simpa [Stream'.cons]

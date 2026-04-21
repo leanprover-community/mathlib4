@@ -68,7 +68,7 @@ irreducible_def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :
-    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ := by simp [pathELength]
+    pathELength I γ a b = ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ := by simp [pathELength_def]
 
 lemma pathELength_eq_lintegral_mfderiv_Ioo :
     pathELength I γ a b = ∫⁻ t in Ioo a b, ‖mfderiv% γ t 1‖ₑ := by
@@ -84,7 +84,7 @@ lemma pathELength_eq_lintegral_mfderivWithin_Icc :
   exact Icc_mem_nhds ht.1 ht.2
 
 @[simp] lemma pathELength_self : pathELength I γ a a = 0 := by
-  simp [pathELength]
+  simp [pathELength_def]
 
 lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo a b)) :
     pathELength I γ a b = pathELength I γ' a b := by
@@ -107,9 +107,9 @@ lemma pathELength_add (h : a ≤ b) (h' : b ≤ c) :
     pathELength I γ a b + pathELength I γ b c = pathELength I γ a c := by
   symm
   have : Icc a c = Icc a b ∪ Ioc b c := (Icc_union_Ioc_eq_Icc h h').symm
-  rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
+  rw [pathELength_def, this, lintegral_union measurableSet_Ioc]; swap
   · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
-  simp [restrict_Ioc_eq_restrict_Icc, pathELength]
+  simp [restrict_Ioc_eq_restrict_Icc, pathELength_def]
 
 attribute [local instance] Measure.Subtype.measureSpace
 
@@ -231,7 +231,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
     refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
     simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
   have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv% g x 1‖ₑ := by
-    rw [riemannianEDist]; exact biInf_le _ hf
+    rw [riemannianEDist_def]; exact biInf_le _ hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
   have E : pathELength I (g ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
@@ -251,7 +251,7 @@ For a more precise version giving locally constant paths around the endpoints, s
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     ∃ γ : ℝ → M, γ 0 = x ∧ γ 1 = y ∧ CMDiff[Icc 0 1] 1 γ ∧
     pathELength I γ 0 1 < r := by
-  simp only [riemannianEDist, iInf_lt_iff, exists_prop] at hr
+  simp only [riemannianEDist_def, iInf_lt_iff, exists_prop] at hr
   rcases hr with ⟨γ, γ_smooth, hγ⟩
   refine ⟨γ ∘ (projIcc 0 1 zero_le_one), by simp, by simp,
     contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩

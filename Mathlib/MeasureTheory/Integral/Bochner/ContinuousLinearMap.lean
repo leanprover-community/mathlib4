@@ -78,7 +78,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
     · simp [Subsingleton.eq_zero v]
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
-      simp [integral, hE, this]
+      simp [integral_def, hE, this]
 
 theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
     [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
@@ -89,7 +89,7 @@ theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι]
   · by_cases! hm : ∀ i, m i ≠ 0
     · have : ¬ CompleteSpace (ContinuousMultilinearMap 𝕜 M E) := by
         rwa [SeparatingDual.completeSpace_continuousMultilinearMap_iff _ _ hm]
-      simp [integral, hE, this]
+      simp [integral_def, hE, this]
     · rcases hm with ⟨i, hi⟩
       simp [ContinuousMultilinearMap.map_coord_zero _ i hi]
 
@@ -128,7 +128,7 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
   obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
-  · simp [integral, *]
+  · simp [integral_def, *]
 
 end ContinuousLinearEquiv
 
@@ -204,7 +204,7 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.fst ℝ E F).integral_comp_comm hf).symm
   · have : ¬(CompleteSpace (E × F)) := fun h ↦ hE <| .fst_of_prod (β := F)
-    simp [integral, *]
+    simp [integral_def, *]
 
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
@@ -238,7 +238,7 @@ lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
   by_cases hA : CompleteSpace A
   · change ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
-  · simp [integral, hA]
+  · simp [integral_def, hA]
 
 lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
@@ -247,11 +247,11 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
   · change ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
       = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
-  · simp [integral, hA]
+  · simp [integral_def, hA]
 
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
+  by_cases hE : CompleteSpace E; swap; · simp [integral_def, hE]
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]

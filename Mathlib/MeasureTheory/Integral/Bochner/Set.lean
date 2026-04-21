@@ -740,7 +740,7 @@ theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   by_cases hE : CompleteSpace E
   · exact integral_mono_ae hf hg h
-  · simp [integral, hE]
+  · simp [integral_def, hE]
 
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
