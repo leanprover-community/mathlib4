@@ -10,8 +10,6 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
 
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-
 /-!
 # Connected limits in the over category
 
