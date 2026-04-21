@@ -411,7 +411,7 @@ Rado's proof is based on Faulhaber's theorem and induction on $k$.
 
 namespace bernoulli
 
-/-- Indicator function that is `1` if `(p - 1) ∣ k` and `0` otherwise. -/
+/- Indicator function that is `1` if `(p - 1) ∣ k` and `0` otherwise. -/
 private noncomputable def vonStaudtIndicator (k p : ℕ) : ℚ :=
   if (p - 1) ∣ k then 1 else 0
 
@@ -502,7 +502,7 @@ private lemma sum_one_div_prime_eq_indicator_div_add (k p : ℕ) (hk : k > 0) [F
 
 /-- If the `p`-adic valuation of `M` is at most `N`, then `p^N / M` is `p`-integral. -/
 private lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
-    (hv : M.factorization p ≤ N) : pIntegral p ((p : ℚ)^N / M) := by
+    (hv : M.factorization p ≤ N) : pIntegral p ((p : ℚ) ^ N / M) := by
   set e := M.factorization p
   set M' := M / p ^ e
   have hM'_cop : M'.Coprime p := (Nat.coprime_ordCompl Fact.out hM).symm
@@ -747,7 +747,7 @@ theorem vonStaudt_clausen (k : ℕ) :
     refine ⟨_, Rat.coe_int_num_of_den_eq_one ?_⟩
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
-    exact absurd hdvd (by letI : Fact p.Prime := ⟨hp⟩; exact vonStaudt_sum_den_not_dvd k p hk)
+    exact absurd hdvd (by let : Fact p.Prime := ⟨hp⟩; exact vonStaudt_sum_den_not_dvd k p hk)
 
 end bernoulli
 
