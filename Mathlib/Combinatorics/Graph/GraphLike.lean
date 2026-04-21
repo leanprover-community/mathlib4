@@ -5,7 +5,7 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Combinatorics.GraphLike.Basic
+public import Mathlib.Combinatorics.GraphLike.Symm
 public import Mathlib.Combinatorics.Graph.Basic
 
 /-!
@@ -34,13 +34,26 @@ class HasDart (G : Graph α β) (γ : outParam Type*) where
   basePt : γ → α
   isLink : ∀ ⦃d⦄, d ∈ dartSet → G.IsLink (edge d) (basePt d) (basePt (symm d))
 
-instance [HasDart G γ] : GraphLike α γ G where
+attribute [simp] HasDart.symm_invol
+
+@[simp]
+lemma HasDart.symm_mem_dartSet_iff [HasDart G γ] {d : γ} :
+    HasDart.symm G d ∈ HasDart.dartSet G ↔ d ∈ HasDart.dartSet G :=
+  ⟨fun h ↦ symm_invol (G := G) (d := d) ▸ symm_mem (d := symm G d) h, symm_mem (d := d)⟩
+
+instance [HasDart G γ] : SymmGraphLike α γ G where
   verts := V(G)
   darts := HasDart.dartSet G
   fst := HasDart.basePt G
   snd := (HasDart.basePt G <| HasDart.symm G ·)
-  fst_mem_of_darts hd := (HasDart.isLink hd).left_mem
-  snd_mem_of_darts hd := (HasDart.isLink hd).right_mem
+  fst_mem_of_darts d hd := (HasDart.isLink hd).left_mem
+  snd_mem_of_darts d hd := (HasDart.isLink hd).right_mem
+  symm := HasDart.symm G
+  symm_invol := HasDart.symm_invol
+  symm_ne d hd := HasDart.symm_ne (d := d)
+  symm_fst d := by simp
+  symm_snd d := by simp
+  symm_mem_darts_iff d := HasDart.symm_mem_dartSet_iff
   Adj u v := G.Adj u v
   exists_darts_iff_adj {u v : α} := by
     refine ⟨?_, fun ⟨e, he⟩ => ?_⟩

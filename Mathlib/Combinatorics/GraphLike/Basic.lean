@@ -30,12 +30,12 @@ class GraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) where
   fst : D → V
   /-- The second/target vertex of a dart. -/
   snd : D → V
-  fst_mem_of_darts {d : D} : d ∈ darts → fst d ∈ verts
-  snd_mem_of_darts {d : D} : d ∈ darts → snd d ∈ verts
+  fst_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → fst d ∈ verts
+  snd_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → snd d ∈ verts
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, fst d = u ∧ snd d = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj {u v : V} : (∃ d ∈ darts, fst d = u ∧ snd d = v) ↔ Adj u v
+  exists_darts_iff_adj : ∀ ⦃u v⦄, (∃ d ∈ darts, fst d = u ∧ snd d = v) ↔ Adj u v
 
 namespace GraphLike
 
@@ -63,6 +63,8 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
+
+@[expose] def toProd (d : D(G)) : V × V := (fst G d.val, snd G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
@@ -165,13 +167,14 @@ class SimpleGraphLike {Gr : Type _ → Type*} (G : Gr V) where
   /-- The set of darts (oriented edges) of a graph-like structure. -/
   darts : Set (V × V)
   /-- The first/source vertex of a dart is in the set of vertices. -/
-  fst_mem_of_darts {d : V × V} : d ∈ darts → d.fst ∈ verts
+  fst_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.fst ∈ verts
   /-- The second/target vertex of a dart is in the set of vertices. -/
-  snd_mem_of_darts {d : V × V} : d ∈ darts → d.snd ∈ verts
+  snd_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.snd ∈ verts
+  loopless : ∀ ⦃d⦄, d ∈ darts → d.fst ≠ d.snd
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, d.fst = u ∧ d.snd = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj {u v : V} : (∃ d ∈ darts, d.fst = u ∧ d.snd = v) ↔ Adj u v
+  exists_darts_iff_adj : ∀ ⦃u v⦄, (∃ d ∈ darts, d.fst = u ∧ d.snd = v) ↔ Adj u v
 
 instance [SimpleGraphLike G] : GraphLike V (V × V) G where
   verts := SimpleGraphLike.verts G
@@ -204,6 +207,14 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
+
+lemma Adj.ne {u v : V} (h : Adj G u v) : u ≠ v := by
+  rw [← exists_darts_iff_adj (G := G)] at h
+  obtain ⟨d, hd, rfl, rfl⟩ := h
+  exact SimpleGraphLike.loopless hd
+
+instance : Std.Irrefl (Adj G) where
+  irrefl _ h := h.ne rfl
 
 @[simp]
 lemma val_step_eq {s : step G u v} : s.val = (u, v) := by
