@@ -66,7 +66,9 @@ def ord (Z : X) (hZ : coheight Z = 1) : X.functionField →*₀ ℤᵐ⁰ :=
 
 /--
 The order of vanishing of a non-zero element of the function field at any point is not zero. Since
-`Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element.
+`Scheme.ord` is valued in `ℤᵐ⁰`, `0` does not denote a value of `ℤ` but an added `⊥` element. With
+that in mind, this theorem is really saying that the order of vanishing of any nonzero element of
+the function field at any point of codimension one is some finite value.
 -/
 lemma ord_ne_zero {Z : X} (hZ : coheight Z = 1) {f : X.functionField} (hf : f ≠ 0) :
     Scheme.ord Z hZ f ≠ 0 := (map_ne_zero (Scheme.ord Z hZ)).mpr hf
@@ -80,6 +82,10 @@ lemma ord_of_isUnit {U : X.Opens}
   have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
   rw [germToFunctionField_eq_algebraMap_germ hx']
   exact Ring.ordFrac_of_isUnit (hf.map (X.presheaf.germ U x hx').hom)
+
+lemma not_mem_of_ord_neq_one (f : X.functionField) {U : X.Opens} [Nonempty U] {g : Γ(X, U)}
+    (hg : IsUnit g) (hgf : X.germToFunctionField U g = f) {x : X} {hx : coheight x = 1}
+    (h : Scheme.ord x hx f ≠ 1) : x ∉ U := fun a ↦ h (hgf ▸ ord_of_isUnit hg hx a)
 
 end Scheme
 end AlgebraicGeometry
