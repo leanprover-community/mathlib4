@@ -681,6 +681,8 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
   ext
   simp
 
+/-! ### Partitioning paths using Lebesgue numbers -/
+
 /-- Generic Lebesgue partition lemma for paths: Given an open cover of a path's range,
 there exists a finite partition of [0,1] such that each segment lies entirely in one set
 from the cover. -/
@@ -688,7 +690,7 @@ theorem exists_partition_in_cover
     {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
     {x y : X} (γ : Path x y) (hU_cover : Set.range γ ⊆ ⋃ i, U i) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ j : ι,
         ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
   -- Pull back the cover along γ to get an open cover of unitInterval
@@ -698,9 +700,9 @@ theorem exists_partition_in_cover
     intro s _
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hU_cover (Set.mem_range_self s))
     exact Set.mem_iUnion.mpr ⟨i, hi⟩
-  obtain ⟨n, t, ht_strict, ht0, htn, ht_cover⟩ :=
-    exists_strictMono_Icc_subset_open_cover_unitInterval hV_open hV_cover
-  refine ⟨n, t, ht_strict, ht0, htn, ?_⟩
+  obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
+    exists_monotone_partition_unitInterval hV_open hV_cover
+  refine ⟨n, t, ht_mono, ht0, htn, ?_⟩
   -- Each segment is in some U j
   intro i
   obtain ⟨j, hj⟩ := ht_cover i
@@ -713,7 +715,7 @@ in an open set with property P. This follows immediately from the cover version.
 theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
     (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
-      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
         ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
   -- For each z, choose a neighborhood U z with property P

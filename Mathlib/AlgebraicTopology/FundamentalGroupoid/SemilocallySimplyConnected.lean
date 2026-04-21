@@ -282,14 +282,14 @@ theorem exists_pathConnected_slsc_neighborhood [SemilocallySimplyConnectedSpace 
 /-! ### Tube data structures -/
 
 /-- A partition of the unit interval [0,1] into n segments.
-This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
+This bundles a monotone sequence 0 = t₀ ≤ t₁ ≤ ... ≤ tₙ = 1. -/
 -- If this proves more generally useful, we should move it to `UnitInterval.lean`
 -- and provide further API (e.g. compositions, induction principles, ...)
 structure IntervalPartition (n : ℕ) where
-  /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
+  /-- Partition points 0 = t₀ ≤ t₁ ≤ ... ≤ tₙ = 1 -/
   t : Fin (n + 1) → unitInterval
-  /-- t is strictly monotone -/
-  h_mono : StrictMono t
+  /-- t is monotone -/
+  h_mono : Monotone t
   /-- t starts at 0 -/
   h_start : t 0 = 0
   /-- t ends at 1 -/
@@ -362,7 +362,7 @@ lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] {x y : 
   intro z hz
   obtain ⟨t, rfl⟩ := hz
   have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
-    part.h_mono.monotone i.castSucc_lt_succ.le
+    part.h_mono i.castSucc_lt_succ.le
   simpa [Path.subpathOn_apply] using
     hγ.stays_in_U i (Set.Icc.convexCombo (part.t i.castSucc) (part.t i.succ) t)
       ⟨Set.Icc.le_convexCombo h_mono t, Set.Icc.convexCombo_le h_mono t⟩
@@ -407,9 +407,9 @@ theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedS
       exact hU_contains i (t j) <| by
         cases hi with
         | inl h =>
-            constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def]
+            constructor <;> apply h_mono <;> simp [h, Fin.le_def]
         | inr h =>
-            constructor <;> apply h_mono.monotone <;> simp [h, Fin.le_def, Fin.succ]
+            constructor <;> apply h_mono <;> simp [h, Fin.le_def, Fin.succ]
     -- Take the path component of γ(t_j) in the intersection
     refine ⟨pathComponentIn U_inter (γ (t j)),
       ?_, isPathConnected_pathComponentIn hγ_in_inter,
@@ -804,13 +804,13 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
     -- Decompose γ|[0, i+1] = γ|[0, i] · γ|[i, i+1]
     rw [← Path.Homotopic.Quotient.subpathOn_trans γ
       (part.t 0) (part.t i.castSucc) (part.t i.succ)
-      (part.h_mono.monotone (Fin.zero_le i.castSucc))
-      (part.h_mono.monotone i.castSucc_lt_succ.le)]
+      (part.h_mono (Fin.zero_le i.castSucc))
+      (part.h_mono i.castSucc_lt_succ.le)]
     -- Decompose γ'|[i, last n] = γ'|[i, i+1] · γ'|[i+1, last n]
     rw [← Path.Homotopic.Quotient.subpathOn_trans γ'
       (part.t i.castSucc) (part.t i.succ) (part.t (Fin.last n))
-      (part.h_mono.monotone i.castSucc_lt_succ.le)
-      (part.h_mono.monotone (Fin.le_last i.succ))]
+      (part.h_mono i.castSucc_lt_succ.le)
+      (part.h_mono (Fin.le_last i.succ))]
     -- Right-associate everything so rectangle_with_suffix can fire
     simp only [trans_assoc]
     -- Now apply the rectangle homotopy with suffix
