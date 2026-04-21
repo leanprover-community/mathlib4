@@ -93,6 +93,8 @@ class IsRegularRing (R : Type*) [CommRing R] : Prop extends IsNoetherianRing R w
   isRegularLocalRing_localization (p : Ideal R) [p.IsPrime] :
     IsRegularLocalRing (Localization.AtPrime p)
 
+attribute [instance low] IsRegularRing.isRegularLocalRing_localization
+
 section IsRegularRing
 
 variable {R} in
@@ -106,7 +108,6 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
   have := isNoetherianRing_of_ringEquiv R e
   rw [isRegularRing_iff]
   intro p hp
-  have := isRegularRing_iff.mp ‹_› (p.comap e) (Ideal.comap_isPrime e p)
   suffices (p.comap e).primeCompl.map e = p.primeCompl from
     IsRegularLocalRing.of_ringEquiv <| IsLocalization.ringEquivOfRingEquiv
       (Localization.AtPrime (p.comap e)) (Localization.AtPrime p) e this
@@ -118,7 +119,6 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
 
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
-  have := isRegularRing_iff.mp ‹_› (maximalIdeal R) (Ideal.IsMaximal.isPrime' _)
   let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
     IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
