@@ -188,12 +188,6 @@ theorem iSupIndep_primaryComponent :
     · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
   · exact fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
 
-open Classical in
-theorem isInternal_primaryComponent (h : IsTorsion A M) :
-    IsInternal (fun P : HeightOneSpectrum A ↦ primaryComponent M P.asIdeal) := by
-  rw [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
-  exact ⟨iSupIndep_primaryComponent A M, iSup_primaryComponent_eq_top h⟩
-
 end IsDedekindDomain
 
 end AddCommGroup
