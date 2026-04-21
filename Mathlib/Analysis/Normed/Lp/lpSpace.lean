@@ -347,7 +347,7 @@ namespace PreLp
 
 @[simp] lemma add_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
 @[simp] lemma zero_apply {i : α} : (0 : PreLp E) i = 0 := rfl
-@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x + y) i = x i + y i := rfl
+@[simp] lemma sub_apply {x y : PreLp E} {i : α} : (x - y) i = x i - y i := rfl
 @[simp] lemma neg_apply {x : PreLp E} {i : α} : (-x) i = -(x i) := rfl
 @[simp] lemma nsmul_apply {n : ℕ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl
 @[simp] lemma zsmul_apply {n : ℤ} {x : PreLp E} {i : α} : (n • x) i = n • (x i) := rfl

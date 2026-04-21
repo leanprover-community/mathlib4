@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Tactic.Positivity.Finset
 
-/-! # Hölder's inquality for `lp` spaces
+/-! # Hölder's inequality for `lp` spaces
 
 This file proves Hölder's inequality for `lp` spaces. We follow the established pattern for
 Hölder's inequality for `MeasureTheory.Lp` of generalizing multiplication to any continuous bilinear
@@ -44,9 +44,7 @@ on the `lp` space. -/
 noncomputable def mapCLM (p : ℝ≥0∞) [Fact (1 ≤ p)]
     (T : ∀ i, E i →L[𝕜] F i) {K : ℝ} (hK : 0 ≤ K) (hTK : ∀ i, ‖T i‖ ≤ K) :
     lp E p →L[𝕜] lp F p :=
-  haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := by
-    simpa only [norm_smul, RCLike.norm_ofReal, abs_of_nonneg hK]
-      using (T i).le_of_opNorm_le (hTK i) _
+  haveI key (i : α) (x : E i) : ‖T i x‖ ≤ K * ‖x‖ := (T i).le_of_opNorm_le (hTK i) _
   LinearMap.mkContinuous
     { toFun x := ⟨fun i ↦ T i (⇑x i), lp.memℓp x |>.norm.const_mul K |>.mono
         (fun _ ↦ by simpa [abs_of_nonneg hK] using key ..) |>.of_norm⟩
@@ -108,9 +106,7 @@ theorem bilin_of_zero_left (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
     {e : Π i, E i} {f : Π i, F i} (he : Memℓp e 0) :
     Memℓp (fun i ↦ B i (e i) (f i)) 0 := by
   rw [memℓp_zero_iff] at he ⊢
-  apply he.subset
-  rw [← Set.compl_subset_compl, Set.compl_setOf, Set.compl_setOf]
-  simp +contextual
+  exact he.subset fun i hi h ↦ hi <| by simp [h]
 
 theorem bilin_of_zero_right (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
     {e : Π i, E i} {f : Π i, F i} (hf : Memℓp f 0) :
@@ -120,9 +116,9 @@ theorem bilin_of_zero_right (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
 lemma holder_top_left_bound
     {e : (i : ι) → E i} {f : (i : ι) → F i} (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i)
     {K C D : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) (hK : 0 ≤ K) (hC : 0 ≤ C)
-    (hCe : ∀ i, ‖e i‖ ≤ C) (hKe : ∀ s, ∑ i ∈ s, ‖f i‖ ^ q.toReal ≤ D) (s : Finset ι) :
+    (hCe : ∀ i, ‖e i‖ ≤ C) (hDf : ∀ s, ∑ i ∈ s, ‖f i‖ ^ q.toReal ≤ D) (s : Finset ι) :
     ∑ i ∈ s, ‖B i (e i) (f i)‖ ^ q.toReal ≤ (K * C) ^ q.toReal * D := by
-  grw [← hKe s, s.mul_sum]
+  grw [← hDf s, s.mul_sum]
   apply s.sum_le_sum fun i hi ↦ ?_
   rw [← Real.mul_rpow (by positivity) (by positivity)]
   gcongr
