@@ -283,7 +283,7 @@ theorem exists_pathConnected_slsc_neighborhood (hX : SemilocallySimplyConnected 
 /-- A partition of the unit interval [0,1] into n segments.
 This bundles a strictly monotone sequence 0 = t₀ < t₁ < ... < tₙ = 1. -/
 -- If this proves more generally useful, we should move it to `UnitInterval.lean`
--- and providfe further API (e.g. compositions, induction principles, ...)
+-- and provide further API (e.g. compositions, induction principles, ...)
 structure IntervalPartition (n : ℕ) where
   /-- Partition points 0 = t₀ < t₁ < ... < tₙ = 1 -/
   t : Fin (n + 1) → unitInterval
