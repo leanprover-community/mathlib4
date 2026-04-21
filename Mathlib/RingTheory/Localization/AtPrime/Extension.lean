@@ -78,7 +78,6 @@ theorem liesOver_map_of_liesOver [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsSc
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 include p in
 theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
     (x : Sₚ ⧸ P.map (algebraMap S Sₚ)) :
@@ -104,7 +103,7 @@ the complement of `p` and `P` is a maximal ideal of `S` above `p`.
 Note that this isomorphism makes the obvious diagram involving `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`
 commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`.
 -/
-noncomputable def equivQuotientMapOfIsMaximal [p.IsPrime] [P.IsMaximal] :
+noncomputable def equivQuotientMapOfIsMaximal [P.IsMaximal] :
     S ⧸ P ≃+* Sₚ ⧸ P.map (algebraMap S Sₚ) :=
   .trans
     (Ideal.quotEquivOfEq (by
@@ -118,7 +117,6 @@ theorem equivQuotientMapOfIsMaximal_apply_mk [P.IsMaximal] (x : S) :
     equivQuotientMapOfIsMaximal p Sₚ P (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotientMapOfIsMaximal_symm_apply_mk [P.IsMaximal] (x : S)
     (s : algebraMapSubmonoid S p.primeCompl) :
@@ -178,10 +176,10 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
 theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] [IsTorsionFree R Rₚ]
-    [IsTorsionFree R Sₚ] [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ]
-    [IsDedekindDomain S] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
-    (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ) (P.map (algebraMap S Sₚ)) =
-      p.ramificationIdx (algebraMap R S) P := by
+    [IsTorsionFree S Sₚ] [IsTorsionFree Rₚ Sₚ] [IsDedekindDomain S] [IsDedekindDomain Rₚ]
+    [IsDedekindDomain Sₚ] (hp : p ≠ ⊥) [P.IsPrime] :
+    (maximalIdeal Rₚ).ramificationIdx (P.map (algebraMap S Sₚ)) =
+      p.ramificationIdx P := by
   have h₁ : maximalIdeal Rₚ ≠ ⊥ := by
     rw [← map_eq_maximalIdeal p]
     exact map_ne_bot_of_ne_bot hp
@@ -190,12 +188,14 @@ theorem ramificationIdx_map_eq_ramificationIdx [IsDomain R] [IsTorsionFree R S] 
   · simp_rw [hP, Ideal.map_bot, ramificationIdx_bot' hp
       (FaithfulSMul.algebraMap_injective _ _),
       ramificationIdx_bot' h₁ (FaithfulSMul.algebraMap_injective Rₚ Sₚ)]
-  have h₂ : Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ) ≤ P.map (algebraMap S Sₚ) := by
-    rw [map_le_iff_le_comap]
-    exact le_of_eq <| (liesOver_iff _ _).mp <| liesOver_map_of_liesOver p Rₚ Sₚ P
-  have h_main := Eq.trans
-    (ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot h₁) (map_ne_bot_of_ne_bot hp) h₂).symm
-    (ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP) (map_ne_bot_of_ne_bot hp) le_rfl)
+  have : P.IsMaximal := IsPrime.isMaximal inferInstance hP
+  have : (Ideal.map (algebraMap S Sₚ) P).LiesOver (maximalIdeal Rₚ) :=
+    liesOver_map_of_liesOver p Rₚ Sₚ P
+  have : (Ideal.map (algebraMap S Sₚ) P).LiesOver P := by
+    rw [liesOver_iff, under_def, comap_map_eq_self_of_isMaximal _ (IsPrime.ne_top')]
+  have h_main :=
+  (ramificationIdx_algebra_tower' p (maximalIdeal Rₚ) (Ideal.map (algebraMap S Sₚ) P)).symm.trans
+    <| ramificationIdx_algebra_tower' p P (Ideal.map (algebraMap S Sₚ) P)
   rwa [ramificationIdx_map_self_eq_one IsPrime.ne_top' (map_ne_bot_of_ne_bot hP), mul_one,
     ← map_eq_maximalIdeal p, ramificationIdx_map_self_eq_one _ (map_ne_bot_of_ne_bot hp), one_mul,
     map_eq_maximalIdeal p] at h_main
@@ -251,11 +251,11 @@ theorem primesOverEquivPrimesOver_inertiagDeg_eq [p.IsMaximal] (hp : p ≠ ⊥) 
   exact inertiaDeg_map_eq_inertiaDeg p _ _ _
 
 theorem primesOverEquivPrimesOver_ramificationIdx_eq (hp : p ≠ ⊥) [NoZeroSMulDivisors R Rₚ]
-    [NoZeroSMulDivisors R Sₚ] [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ]
-    [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ] (P : p.primesOver S) :
-    (maximalIdeal Rₚ).ramificationIdx (algebraMap Rₚ Sₚ)
+    [NoZeroSMulDivisors S Sₚ] [NoZeroSMulDivisors Rₚ Sₚ] [IsDedekindDomain Rₚ] [IsDedekindDomain Sₚ]
+    (P : p.primesOver S) :
+    (maximalIdeal Rₚ).ramificationIdx
       (primesOverEquivPrimesOver p Rₚ Sₚ hp P : Ideal Sₚ) =
-        p.ramificationIdx (algebraMap R S) P.val :=
+        p.ramificationIdx P.val :=
   ramificationIdx_map_eq_ramificationIdx p _ _ _ hp
 
 end IsDedekindDomain

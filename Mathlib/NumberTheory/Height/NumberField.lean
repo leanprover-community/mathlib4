@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
+Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
@@ -13,6 +13,12 @@ public import Mathlib.NumberTheory.Height.Basic
 
 We provide an instance of `Height.AdmissibleAbsValues` for algebraic number fields
 and set up some API.
+
+## TODO
+
+Prove that the height of `(x₀ : x₁ : ··· : xₙ) ∈ ℙⁿ(ℚ)` equals the
+maximum of the absolute values of the `xᵢ` when they are chosen to be coprime integers. This
+should then be split off into a separate `Mathlib.NumberTheory.Height.Rat` file.
 -/
 
 @[expose] public section
@@ -59,7 +65,7 @@ instance instAdmissibleAbsValues : AdmissibleAbsValues K where
   archAbsVal := multisetInfinitePlace K
   nonarchAbsVal := {v | IsFinitePlace v}
   isNonarchimedean v hv := FinitePlace.add_le ⟨v, by simpa using hv⟩
-  mulSupport_finite := FinitePlace.mulSupport_finite
+  hasFiniteMulSupport := FinitePlace.hasFiniteMulSupport
   product_formula {x} hx := private prod_multisetInfinitePlace_eq (· x) ▸ prod_abs_eq_one hx
 
 open AdmissibleAbsValues
@@ -132,6 +138,36 @@ lemma totalWeight_pos : 0 < totalWeight K := by
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
 end NumberField
+
+/-!
+### Heights of rational numbers
+
+Since `ℚ` has a unique infinite place (the usual absolute value)
+and every finite place satisfies `v n ≤ 1` for `n : ℕ`, the height simplifies to
+`mulHeight₁ (n : ℚ) = n` and `logHeight₁ (n : ℚ) = Real.log n` for `1 ≤ n`.
+-/
+
+namespace Rat
+
+open NumberField Height
+
+/-- The multiplicative height of a positive natural number cast to `ℚ` equals `n`. -/
+theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
+    mulHeight₁ (n : ℚ) = n := by
+  have hfin (v : FinitePlace ℚ) : max (v n) 1 = 1 :=
+    max_eq_right (IsNonarchimedean.apply_natCast_le_one_of_isNonarchimedean
+      (NonarchimedeanHomClass.map_add_le_max v))
+  rw [NumberField.mulHeight₁_eq, finprod_eq_one_of_forall_eq_one hfin, Fintype.prod_unique,
+    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _]
+  have hn : 1 ≤ n := by grind [NeZero.ne n]
+  simp [hn, InfinitePlace.mult, isReal_infinitePlace]
+
+/-- The logarithmic height of a positive natural number cast to `ℚ` equals `log n`. -/
+theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
+    logHeight₁ (n : ℚ) = Real.log n := by
+  simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n]
+
+end Rat
 
 /-!
 ### Positivity extension for totalWeight on number fields

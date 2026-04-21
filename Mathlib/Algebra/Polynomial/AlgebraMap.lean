@@ -239,12 +239,25 @@ variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
+variable (R A) in
+/-- Given a valuation `x` of the variable in an `R`-algebra `A`, the bijection induced by the unique
+`R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`. -/
+@[simps! symm_apply]
+def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
+  toFun x := eval₂AlgHom (Algebra.ofId _ _) x (Algebra.commutes · _)
+  invFun f := f X
+  left_inv := eval₂_X _
+  right_inv _ := algHom_ext' (Subsingleton.elim ..) <| eval₂_X ..
+
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
-  eval₂AlgHom (Algebra.ofId _ _) x (Algebra.commutes · _)
+  aevalEquiv R A x
+
+lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
+  rfl
 
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
 def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
@@ -254,7 +267,7 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
-  algHom_ext' (Subsingleton.elim _ _) hX
+  algHom_ext' (Subsingleton.elim ..) hX
 
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
@@ -400,6 +413,12 @@ theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 
+theorem aeval_op_apply (x : A) (p : R[X]) :
+    aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) := by
+  induction p using Polynomial.induction_on' with
+  | add p q hp hq => simp [map_add, hp, hq]
+  | monomial n c => simp [aeval_monomial, MulOpposite.op_pow, Algebra.commutes]
+
 theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
   rw [← MulSemiringAction.toAlgHom_apply R, aeval_algHom_apply, MulSemiringAction.toAlgHom_apply]
@@ -479,6 +498,11 @@ theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Se
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
   conv_rhs => rw [← eval_map_algebraMap]
   rw [map_map, h, ← map_map, eval_map, eval₂_at_apply, aeval_def, eval_map]
+
+theorem aeval_eq_aeval_map [Semiring S] [CommSemiring T] [Algebra R S]
+    [Algebra T S] {φ : R →+* T} (h : (algebraMap T S).comp φ = (algebraMap R S))
+    (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
+  map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by

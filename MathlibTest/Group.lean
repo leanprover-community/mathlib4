@@ -1,4 +1,7 @@
+module
 import Mathlib.Tactic.Group
+
+open scoped commutatorElement
 
 variable {G : Type} [Group G]
 

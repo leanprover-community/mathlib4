@@ -62,7 +62,7 @@ end Semiring
 instance (R A : Type*) [CommRing R] [IsDomain R] [Field A] [Algebra R A] [IsFractionRing R A] :
     Algebra.IsEpi R A := by
   refine (isEpi_iff_forall_one_tmul_eq R A).mpr fun x ↦ ?_
-  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective R x
   set f := algebraMap R A with hf
   replace hb : f b ≠ 0 := by aesop
   calc 1 ⊗ₜ[R] (f a / f b)
@@ -76,7 +76,6 @@ section Ring
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
     Algebra.IsEpi R A ↔ Surjective (algebraMap R A) := by
   refine ⟨fun h ↦ ?_, isEpi_of_surjective_algebraMap R A⟩

@@ -401,7 +401,6 @@ theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimp
   obtain ⟨x, -, hx⟩ := hx
   exact ⟨x, hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 omit [IsDomain R] in
 theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
@@ -416,7 +415,6 @@ theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
   rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective g.injective).eq_iff
 
-set_option backward.isDefEq.respectTransparency false in
 omit [IsDomain R] in
 theorem Splits.image_rootSet_of_map_ne_zero (hf : (f.map (algebraMap R A)).Splits)
     (φ : A →ₐ[R] B) (hφ : f.map (algebraMap R B) ≠ 0) : φ '' f.rootSet A = f.rootSet B := by
@@ -470,7 +468,7 @@ theorem splits_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
     rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero_iff] at hn
     exact ⟨splits_of_natDegree_eq_zero hn.1, splits_of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
-    obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)
+    obtain ⟨a, ha⟩ := Splits.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by simp)
     have := dvd_iff_isRoot.mpr ha
     rw [← hp, (prime_X_sub_C a).dvd_mul] at this
     wlog hf : X - C a ∣ f with hf2
@@ -895,12 +893,6 @@ alias nextCoeff_eq_neg_sum_roots_mul_leadingCoeff_of_splits :=
 
 @[deprecated (since := "2025-12-12")]
 alias nextCoeff_eq_neg_sum_roots_of_monic_of_splits := Splits.nextCoeff_eq_neg_sum_roots_of_monic
-
-@[deprecated (since := "2025-10-08")]
-alias prod_roots_eq_coeff_zero_of_monic_of_splits := coeff_zero_eq_prod_roots_of_monic_of_splits
-
-@[deprecated (since := "2025-10-08")]
-alias sum_roots_eq_nextCoeff_of_monic_of_split := nextCoeff_eq_neg_sum_roots_of_monic_of_splits
 
 end Splits
 

@@ -377,11 +377,13 @@ theorem smul_support_subset_prod (s : SummableFamily Γ R α)
     Set.mem_setOf_eq]
   exact ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
-theorem smul_support_finite (s : SummableFamily Γ R α)
+theorem hasFiniteSupport_smul (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
     (fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2).HasFiniteSupport :=
   Set.Finite.subset (Set.toFinite ((s.finite_co_support' gh.1).prod
     (t.finite_co_support' gh.2)).toFinset) (smul_support_subset_prod s t gh)
+
+@[deprecated (since := "2026-03-03")] alias smul_support_finite := hasFiniteSupport_smul
 
 variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
@@ -411,7 +413,7 @@ theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
     Finite {(ab : α × β) |
       ((fun (ab : α × β) ↦ (of R).symm (s ab.1 • (of R) (t ab.2))) ab).coeff g ≠ 0} := by
   apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
-    (fun gh _ => smul_support_finite s t gh)).subset _
+    (fun gh _ => hasFiniteSupport_smul s t gh)).subset _
   exact fun ab hab => by
     simp only [ne_eq, Set.mem_setOf_eq] at hab
     obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero hab
@@ -448,9 +450,9 @@ theorem coeff_smul {R} {V} [Semiring R] [AddCommMonoid V] [Module R V]
   rw [coeff_hsum]
   simp only [coeff_hsum_eq_sum, smul_toFun, HahnModule.coeff_smul, Equiv.symm_apply_apply]
   simp_rw [sum_vAddAntidiagonal_eq, Finset.smul_sum, Finset.sum_smul]
-  rw [← sum_finsum_comm _ _ <| fun gh _ => smul_support_finite s t gh]
+  rw [← sum_finsum_comm _ _ <| fun gh _ => hasFiniteSupport_smul s t gh]
   refine sum_congr rfl fun gh _ => ?_
-  rw [finsum_eq_sum _ (smul_support_finite s t gh), ← sum_product_right']
+  rw [finsum_eq_sum _ (hasFiniteSupport_smul s t gh), ← sum_product_right']
   refine sum_subset (fun ab hab => ?_) (fun ab _ hab => by simp_all)
   have hsupp := smul_support_subset_prod s t gh
   simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
@@ -579,7 +581,7 @@ def ofFinsupp (f : α →₀ R⟦Γ⟧) : SummableFamily Γ R α where
   finite_co_support' g := by
     refine f.support.finite_toSet.subset fun a ha => ?_
     simp only [mem_coe, Finsupp.mem_support_iff, Ne]
-    contrapose! ha
+    contrapose ha
     simp [ha]
 
 @[simp]
@@ -594,7 +596,7 @@ theorem hsum_ofFinsupp {f : α →₀ R⟦Γ⟧} : (ofFinsupp f).hsum = f.sum fu
   rw [map_sum, finsum_eq_sum_of_support_subset]
   intro x h
   simp only [mem_coe, Finsupp.mem_support_iff, Ne]
-  contrapose! h
+  contrapose h
   simp [h]
 
 end OfFinsupp

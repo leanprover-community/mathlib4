@@ -65,7 +65,11 @@ open Finset Finsupp
 
 variable (σ R) in
 /-- The ideal spanned by all variables. -/
-noncomputable def idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+noncomputable abbrev idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+
+variable (σ R) in
+lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
+  Submodule.fg_span <| Set.finite_range _
 
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
