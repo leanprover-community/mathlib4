@@ -181,7 +181,6 @@ section principal
 
 variable {S : Set ι}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=

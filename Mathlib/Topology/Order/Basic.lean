@@ -428,23 +428,17 @@ theorem exists_Ioc_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
   ⟨max l l', ⟨le_max_left _ _, max_lt hl hl'a⟩,
     (Ioc_subset_Ioc_left <| le_max_right _ _).trans hl's⟩
 
+@[to_dual]
 theorem exists_Icc_mem_subset_of_mem_nhdsGE {a : α} {s : Set α} (hs : s ∈ 𝓝[≥] a) :
     ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
   · rcases (nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
-    rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
+    rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hc⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
-    · refine ⟨c, hac.le, Icc_mem_nhdsGE hac, ?_⟩
-      exact (Icc_subset_Ico_right hcb).trans hbs
-
-@[to_dual existing]
-theorem exists_Icc_mem_subset_of_mem_nhdsLE {a : α} {s : Set α} (hs : s ∈ 𝓝[≤] a) :
-    ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
-  simpa only [Icc_toDual, toDual.surjective.exists] using
-    exists_Icc_mem_subset_of_mem_nhdsGE (α := αᵒᵈ) (a := toDual a) hs
+    · exact ⟨c, hc.1.le, Icc_mem_nhdsGE hc.1, (Icc_subset_Ico_right hc.2).trans hbs⟩
 
 theorem exists_Icc_mem_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
@@ -539,15 +533,21 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α}
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
-@[to_dual hasBasis_nhds_Ioc_of_exists_gt]
+@[to_dual hasBasis_nhds_Ico_of_exists_gt]
 theorem SuccOrder.hasBasis_nhds_Ioc_of_exists_lt [SuccOrder α] {a : α} (ha : ∃ l, l < a) :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ha
 
-@[to_dual hasBasis_nhds_Ioc]
+@[deprecated (since := "2026-04-19")]
+alias PredOrder.hasBasis_nhds_Ioc_of_exists_gt := PredOrder.hasBasis_nhds_Ico_of_exists_gt
+
+@[to_dual]
 theorem SuccOrder.hasBasis_nhds_Ioc [SuccOrder α] {a : α} [NoMinOrder α] :
     (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
   SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (exists_lt a)
+
+@[deprecated (since := "2026-04-19")]
+alias PredOrder.hasBasis_nhds_Ioc := PredOrder.hasBasis_nhds_Ico
 
 variable (α) in
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
@@ -561,6 +561,9 @@ theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered 
 
 /-- The set of points which are isolated on the right is countable when the space is
 second-countable. -/
+@[to_dual countable_setOf_covBy_left
+/-- The set of points which are isolated on the left is countable when the space is
+second-countable. -/]
 theorem countable_setOf_covBy_right [SecondCountableTopology α] :
     Set.Countable { x : α | ∃ y, x ⋖ y } := by
   nontriviality α
@@ -596,19 +599,10 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
-  suffices H : Ioc (z x) x = Ioo (z x) (y x) by
-    rw [H]
-    exact isOpen_Ioo
-  exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The set of points which are isolated on the left is countable when the space is
-second-countable. -/
-@[to_dual existing countable_setOf_covBy_right]
-theorem countable_setOf_covBy_left [SecondCountableTopology α] :
-    Set.Countable { x : α | ∃ y, y ⋖ x } := by
-  convert countable_setOf_covBy_right (α := αᵒᵈ) using 5
-  exact toDual_covBy_toDual_iff.symm
+  suffices H : Ioc (z x) x = Ioo (z x) (y x) by rw [H]; exact isOpen_Ioo
+  apply (Ioc_subset_Ioo_right (hy x hx.1).lt).antisymm
+  simp_rw [subset_def, mem_Ioo, mem_Ioc]
+  exact fun u hu ↦ ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
 /-- The set of points which are isolated on the left is countable when the space is
 second-countable. -/
@@ -620,17 +614,22 @@ theorem countable_of_isolated_left' [SecondCountableTopology α] :
 Then the family is countable.
 This is not a straightforward consequence of second-countability as some of these intervals might be
 empty (but in fact this can happen only for countably many of them). -/
+@[to_dual none]
 theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α]
     {y : α → α} {s : Set α} (h : PairwiseDisjoint s fun x => Ioo x (y x))
     (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
-      fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
+    (h.subset diff_subset).countable_of_isOpen (fun _ _ ↦ isOpen_Ioo) fun x hx ↦
+      (not_covBy_iff_exists_mem_Ioo (h' _ hx.1)).1 <| mt (Exists.intro (y x)) hx.2
   this.of_diff countable_setOf_covBy_right
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give
 here a version relative to a set `t`. -/
+@[to_dual
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. We give
+here a version relative to a set `t`. -/]
 theorem countable_image_lt_image_Ioi_within
     [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, x < y → z ≤ f y} := by
@@ -668,6 +667,9 @@ theorem countable_image_lt_image_Ioi_within
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
+@[to_dual
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/]
 theorem countable_image_lt_image_Ioi [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
   simpa using countable_image_lt_image_Ioi_within univ f
@@ -675,6 +677,10 @@ theorem countable_image_lt_image_Ioi [LinearOrder β] (f : β → α)
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. We give
 here a version relative to a set `t`. -/
+@[to_dual
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. We give
+here a version relative to a set `t`. -/]
 theorem countable_image_gt_image_Ioi_within
     [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, x < y → f y ≤ z} :=
@@ -682,42 +688,14 @@ theorem countable_image_gt_image_Ioi_within
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
+@[to_dual
+/-- For a function taking values in a second countable space, the set of points `x` for
+which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/]
 theorem countable_image_gt_image_Ioi [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, x < y → f y ≤ z} :=
   countable_image_lt_image_Ioi (α := αᵒᵈ) f
 
-/-- For a function taking values in a second countable space, the set of points `x` for
-which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. We give
-here a version relative to a set `t`. -/
-@[to_dual existing countable_image_gt_image_Ioi_within]
-theorem countable_image_lt_image_Iio_within
-    [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
-    Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} :=
-  countable_image_lt_image_Ioi_within (β := βᵒᵈ) t f
-
-/-- For a function taking values in a second countable space, the set of points `x` for
-which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
-@[to_dual existing countable_image_gt_image_Ioi]
-theorem countable_image_lt_image_Iio [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, y < x → z ≤ f y} :=
-  countable_image_lt_image_Ioi (β := βᵒᵈ) f
-
-/-- For a function taking values in a second countable space, the set of points `x` for
-which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. We give
-here a version relative to a set `t`. -/
-@[to_dual existing countable_image_lt_image_Ioi_within]
-theorem countable_image_gt_image_Iio_within
-    [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
-    Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, y < x → f y ≤ z} :=
-  countable_image_lt_image_Ioi_within (α := αᵒᵈ) (β := βᵒᵈ) t f
-
-/-- For a function taking values in a second countable space, the set of points `x` for
-which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
-@[to_dual existing countable_image_lt_image_Ioi]
-theorem countable_image_gt_image_Iio [LinearOrder β] (f : β → α)
-    [SecondCountableTopology α] : Set.Countable {x | ∃ z, z < f x ∧ ∀ y, y < x → f y ≤ z} :=
-  countable_image_lt_image_Ioi (α := αᵒᵈ) (β := βᵒᵈ) f
-
+@[to_dual]
 instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     IsCountablyGenerated (atTop : Filter α) := by
   obtain (h | ⟨x, hx⟩) := Set.eq_empty_or_nonempty {x : α | IsTop x}
@@ -731,11 +709,6 @@ instance instIsCountablyGenerated_atTop [SeparableSpace α] :
     exact ⟨_, s_count.image _, rfl⟩
   · rw [atTop_eq_pure_of_isTop hx]
     exact isCountablyGenerated_pure x
-
-@[to_dual existing]
-instance instIsCountablyGenerated_atBot [SeparableSpace α] :
-    IsCountablyGenerated (atBot : Filter α) :=
-  @instIsCountablyGenerated_atTop αᵒᵈ _ _ _ _
 
 end OrderTopology
 
@@ -823,6 +796,6 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
 the function is between conditionally complete linear orders with order topologies, and the domain
 is densely ordered. -/
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
-    ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
+    ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
 end ConditionallyCompleteLinearOrder
