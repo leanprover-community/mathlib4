@@ -51,10 +51,6 @@ namespace Deterministic
 
 variable {X Y Z : C}
 
-instance {e : X ≅ Y} : Deterministic (e.hom ≫ e.inv) where
-
-instance {e : X ≅ Y} : Deterministic (e.inv ≫ e.hom) where
-
 /-- Deterministic morphisms commute with copying. -/
 lemma copy_natural (f : X ⟶ Y) [Deterministic f] : f ≫ Δ[Y] = Δ[X] ≫ (f ⊗ₘ f) :=
   IsComonHom.hom_comul f
