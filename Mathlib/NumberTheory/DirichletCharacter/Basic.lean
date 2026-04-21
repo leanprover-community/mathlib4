@@ -6,7 +6,6 @@ Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
-public import Mathlib.Data.ZMod.Coprime
 public import Mathlib.Data.ZMod.Units
 public import Mathlib.NumberTheory.MulChar.Basic
 
