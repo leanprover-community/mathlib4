@@ -344,7 +344,6 @@ instance instNonUnitalSemiring [Fintype n] [NonUnitalSemiring A] :
     NonUnitalSemiring (CStarMatrix n n A) :=
   inferInstanceAs <| NonUnitalSemiring (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instNonAssocSemiring [Fintype n] [DecidableEq n] [NonAssocSemiring A] :
     NonAssocSemiring (CStarMatrix n n A) :=
   inferInstanceAs <| NonAssocSemiring (Matrix n n A)
@@ -353,17 +352,14 @@ instance instNonUnitalRing [Fintype n] [NonUnitalRing A] :
     NonUnitalRing (CStarMatrix n n A) :=
   inferInstanceAs <| NonUnitalRing (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing A] :
     NonAssocRing (CStarMatrix n n A) :=
   inferInstanceAs <| NonAssocRing (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instSemiring [Fintype n] [DecidableEq n] [Semiring A] :
     Semiring (CStarMatrix n n A) :=
   inferInstanceAs <| Semiring (Matrix n n A)
 
-set_option backward.inferInstanceAs.wrap false in
 instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
   inferInstanceAs <| Ring (Matrix n n A)
 
