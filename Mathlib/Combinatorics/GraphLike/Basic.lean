@@ -161,6 +161,7 @@ and proves lemmas for `V × V`-valued darts.
 
 variable {d : V × V} {Gr : Type _ → Type*} {G : Gr V}
 
+/-- `SimpleGraphLike` is a simplified constructor for `GraphLike V (V × V) G`. -/
 class SimpleGraphLike {Gr : Type _ → Type*} (G : Gr V) where
   /-- The set of vertices of a graph-like structure. -/
   verts : Set V
