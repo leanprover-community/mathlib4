@@ -584,10 +584,10 @@ that respect the directed system structure (i.e. make some diagram commute) give
 to a unique map out of the direct limit.
 -/
 def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
-    DirectLimit G f →+* P := {
-    (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg) with
-    toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-    map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]}
+    DirectLimit G f →+* P where
+  __ := (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg)
+  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+  map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]
 
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
@@ -626,10 +626,10 @@ to a unique map out of the direct limit.
 -/
 noncomputable def lift
     (g : ∀ i, (G i) →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
-    DirectLimit G f →⋆ₙ+* P := {
-    (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg) with
-    toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
-    map_star' := DirectLimit.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]}
+    DirectLimit G f →⋆ₙ+* P where
+  __ := (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg)
+  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+  map_star' := DirectLimit.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]
 
 variable (g : ∀ i, G i →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
