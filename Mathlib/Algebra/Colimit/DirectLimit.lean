@@ -638,11 +638,10 @@ variable (g : ∀ i, G i →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) =
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
     (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
-  g₁ = g₂ := by
+    g₁ = g₂ := by
   ext x
   induction x using DirectLimit.induction with | _ i x
   exact congr($(h i) x)
-
 
 end StarRing
 
