@@ -12,36 +12,12 @@ public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 # Strong rank condition for commutative rings
 
-We prove that any nontrivial commutative ring satisfies `StrongRankCondition`, meaning that
-if there is an injective linear map `(Fin n → R) →ₗ[R] Fin m → R`, then `n ≤ m`. This implies that
-any commutative ring satisfies `InvariantBasisNumber`: the rank of a finitely generated free
-module is well defined.
-
-## Main result
-
-* `commRing_strongRankCondition R` : `R` has the `StrongRankCondition`.
-
-The `commRing_strongRankCondition` comes from `CommRing.orzechProperty`, proved in
-`Mathlib/RingTheory/FiniteType.lean`, which states that any commutative ring satisfies
-the `OrzechProperty`, that is, for any finitely generated
-`R`-module `M`, any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M`
-is injective.
-
-
-## References
-
-* [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
-* [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
-* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement
-  des isomorphismes*][ribenboim1971]
+We provide a shortcut instance for the fact that that any nontrivial commutative ring
+satisfies the strong rank condition.
 
 -/
 
-@[expose] public section
-
-
-variable (R : Type*) [CommRing R] [Nontrivial R]
-
-/-- Any nontrivial commutative ring satisfies the `StrongRankCondition`. -/
-instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R :=
-  inferInstance
+/-- Shortcut instance for the fact that any nontrivial commutative ring satisfies
+the strong rank condition. -/
+public instance (priority := 200) commRing_strongRankCondition
+    (R : Type*) [CommRing R] [Nontrivial R] : StrongRankCondition R := inferInstance
