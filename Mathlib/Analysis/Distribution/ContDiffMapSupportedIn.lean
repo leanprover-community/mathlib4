@@ -889,7 +889,7 @@ protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}_{K}(E, F)) :
     MemLp f ⊤ μ :=
   f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
 
-protected theorem integrable {μ : Measure E} [IsFiniteMeasure (μ.restrict K)]
+protected theorem integrable {μ : Measure E} [μ_finite : IsFiniteMeasure (μ.restrict K)]
     (f : 𝓓^{n}_{K}(E, F)) :
     Integrable f μ := by
   rw [← integrableOn_iff_integrable_of_support_subset f.support_subset]
@@ -909,8 +909,8 @@ variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ
 
 -- TODO: semilinearize
 /-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
-and a function `φ : E → F₂` which is integrable on `K`, this is the `𝕜`-linear map
-`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`.
+and a function `φ : E → F₂` which is `μ`-integrable on `K`, this is the `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. Otherwise, this is the zero map.
 
 You should probably use `integralAgainstBilinCLM`, which bundles the continuity. -/
 noncomputable def integralAgainstBilinLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
@@ -957,8 +957,7 @@ lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} 
       grw [ContinuousLinearMap.le_opNorm, ContinuousLinearMap.le_opNorm, norm_apply_le_seminorm 𝕜,
         mul_comm, mul_assoc]
     rw [integralAgainstBilinLM_eq_setIntegral hφ]
-    apply le_trans (norm_integral_le_of_norm_le
-      ((hφ.norm.mul_const _).mul_const _) h)
+    apply le_trans (norm_integral_le_of_norm_le ((hφ.norm.mul_const _).mul_const _) h)
     rw [integral_mul_const, integral_mul_const]
   · simp only [integralAgainstBilinLM, hφ, ↓reduceIte, LinearMap.coe_mk, AddHom.coe_mk, norm_zero]
     positivity
@@ -966,7 +965,7 @@ lemma norm_integralAgainstBilinLM_le {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} 
 -- TODO: semilinearize
 /-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
 and a function `φ : E → F₂` which is integrable on `K`, this is the *continuous* `𝕜`-linear map
-`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. -/
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}_{K}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}_{K}(E, F₁) →L[𝕜] F₃ where
   toLinearMap := integralAgainstBilinLM B μ φ

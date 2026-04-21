@@ -677,7 +677,7 @@ and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence
 a distribution on `Ω`) but the other two conditions are not satisfied.
 -/
 protected theorem integrable {μ : Measure E}
-    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ) -- TODO
+    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ)
     (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
   rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
   replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
@@ -690,7 +690,7 @@ variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃]
 -- TODO: semilinearize
 /-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
 and a function `φ : E → F₂` which is locally `μ`-integrable, this is the *continuous* `𝕜`-linear map
-`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. -/
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
 noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
     𝓓^{n}(Ω, F₁) →L[𝕜] F₃ := open scoped Classical in
   TestFunction.limitCLM 𝕜
