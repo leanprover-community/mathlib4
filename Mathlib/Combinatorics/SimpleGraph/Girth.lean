@@ -66,7 +66,7 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
-lemma Iso.egirth_le (f : G ≃g G') : G'.egirth ≤ G.egirth := by
+private lemma Iso.egirth_le (f : G ≃g G') : G'.egirth ≤ G.egirth := by
   by_cases h : G.IsAcyclic
   · simp [h.egirth_eq_top, (f.isAcyclic_iff.mp h).egirth_eq_top]
   have h' : ¬G'.IsAcyclic := f.isAcyclic_iff.not.mp h
