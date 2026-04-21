@@ -173,12 +173,11 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
 
 lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
     (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
-    (memJ : ∀ i : ι, coeff i ∈ J) (span_eq : (Ideal.span (Set.range f)).map
-      (reesAlgebraToAssociatedGraded I) = J.toAssociatedGraded I)
+    (span_eq : (Ideal.span (Set.range f)).map (reesAlgebraToAssociatedGraded I) =
+      J.toAssociatedGraded I)
     (r : R) (rmem_J : r ∈ J) (rmem_pow : r ∈ I ^ n) : ∃ (coeff' : ι → R),
     (∀ i : ι, coeff' i ∈ I ^ (n - deg i)) ∧ (∀ i : ι, deg i > n → coeff' i = 0) ∧
       r - ∑ x : ι, coeff' x * coeff x ∈ I ^ (n + 1) := by
-  #check Ideal.mem_span_range_iff_exists_fun
   have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, monomial_mem_reesAlgebra I n rmem_pow⟩ ∈
     J.toAssociatedGraded I := by
     apply Ideal.mem_map_of_mem
@@ -198,16 +197,62 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   have coeff_eq := this n
   simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finset_sum, MulMemClass.coe_mul, eq,
     coeff_sub, coeff_monomial_same, finset_sum_coeff] at coeff_eq
-
-  sorry
+  let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
+  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n =
+    ∑ i, (coeff' i) * (coeff i) := by
+    congr
+    ext i
+    rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
+    simp [coeff_mul_X_pow', coeff']
+  rw [this] at coeff_eq
+  refine ⟨coeff', fun i ↦ ?_, fun i hi ↦ ?_, coeff_eq⟩
+  · by_cases degle : deg i ≤ n
+    · simpa only [degle, coeff'] using (mem_reesAlgebra_iff I _).mp (c' i).2 (n - deg i)
+    · simp [degle, coeff']
+  · simp [coeff', hi]
 
 lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
     (complete : IsAdicComplete I R) : IsNoetherianRing R := by
   apply (isNoetherianRing_iff_ideal_fg R).mpr (fun J ↦ ?_)
   let J_rees := (J.map Polynomial.C).comap (reesAlgebra I).val
-  let J_assoc := J_rees.map (Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I))))
-
-  sorry
+  have := reesAlgebra_quotient_isNoetherian I fg
+  obtain ⟨ι, f, deg, coeff, fin, eq, memJ, map_eq⟩ :=
+    exists_monomial_span_of_fg I J (Ideal.fg_of_isNoetherianRing _)
+  have : Fintype ι := Fintype.ofFinite ι
+  let d := ∑ i, deg i
+  have led (i : ι) : deg i ≤ d :=
+    Finset.single_le_sum (fun i _ ↦ Nat.zero_le _) (Finset.mem_univ i)
+  have : Fintype (Set.range coeff) := Fintype.ofFinite _
+  use (Set.range coeff).toFinset
+  simp only [Set.coe_toFinset]
+  apply le_antisymm
+  · simp only [Ideal.span_le]
+    intro x ⟨i, hi⟩
+    simpa [← hi] using memJ i
+  · intro j hj
+    have exist (n : ℕ) := exists_coeffs_sub_mem I n J ι f deg coeff eq map_eq
+    have memJ' (g : ι → R) : j - ∑ x, g x * coeff x ∈ J :=
+      sub_mem hj (sum_mem (fun i _ ↦ (Ideal.mul_mem_left _ _ (memJ i))))
+    let coeffs' (n : ℕ) : {f : (ι → R) // j - ∑ x, f x * coeff x ∈ I ^ (n + 1)} := by
+      induction n with
+      | zero =>
+        exact ⟨Classical.choose (exist 0 j hj (by simp)),
+        (Classical.choose_spec (exist 0 j hj (by simp))).2.2⟩
+      | succ n coeffs'n =>
+        refine ⟨coeffs'n + Classical.choose (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2), ?_⟩
+        simp only [gt_iff_lt, Pi.add_apply, add_mul, Finset.sum_add_distrib, ← sub_sub]
+        exact (Classical.choose_spec (exist (n + 1) _ (memJ' coeffs'n.1) coeffs'n.2)).2.2
+    have coeffs'_spec_aux (n : ℕ) : (coeffs' (n + 1)).1 = (coeffs' n).1 +
+      Classical.choose (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2) := rfl
+    have coeffs'_spec (n : ℕ) :
+      ∀ i, (coeffs' (n + 1)).1 i - (coeffs' n).1 i ∈ I ^ (n + 1 - deg i) := by
+      simp only [coeffs'_spec_aux, Pi.add_apply, add_sub_cancel_left]
+      exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).1
+    have coeffs'_eq (n : ℕ) : ∀ i, deg i > n + 1 → (coeffs' n).1 i = (coeffs' (n + 1)).1 i := by
+      simp only [coeffs'_spec_aux, Pi.add_apply, left_eq_add]
+      intro i gt
+      exact (Classical.choose_spec (exist (n + 1) _ (memJ' (coeffs' n).1) (coeffs' n).2)).2.1 i gt
+    sorry
 
 lemma AdicCompletion.isNoetherianRing_of_fg [IsNoetherianRing (R ⧸ I)] (fg : I.FG) :
     IsNoetherianRing (AdicCompletion I R) := by
