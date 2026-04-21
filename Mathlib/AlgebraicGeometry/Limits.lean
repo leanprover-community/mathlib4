@@ -738,6 +738,7 @@ end IsAffine
 
 section Over
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an open cover `{ Uᵢ }` of `X`, and a diagram `F : J ⥤ Over X`. Then any cone over `F`
 is limiting if it is limiting when restricted onto `Uᵢ`. -/
 noncomputable
