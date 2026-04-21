@@ -612,7 +612,8 @@ end MonoidAlgebra
 section Orzech
 
 open Submodule Module Module.Finite in
-/-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
+/--
+Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`
 is injective.
 
@@ -631,7 +632,12 @@ then it's easy to see that `i` and `f` restrict to `N' →ₗ[A] M'`,
 and the restricted version of `f` is surjective, hence by Noetherian case,
 it is also injective, in particular, if `f n = 0`, then `n = 0`.
 
-See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971].
+
+This implies that nontrivial commutative rings satisfy the strong rank condition:
+see `strongRankCondition_of_orzechProperty` in `Mathlib.LinearAlgebra.InvariantBasisNumber`.
+A shortcut instance `commRing_strongRankCondition` is also provided.
+-/
 instance (priority := 100) CommRing.orzechProperty
     (R : Type*) [CommRing R] : OrzechProperty R := by
   refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
