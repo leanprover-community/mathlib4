@@ -78,9 +78,7 @@ section Star
 variable [∀ i, Star (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
 
 instance : Star (DirectLimit G f) where
-  star := DirectLimit.map f f (fun _ x => star x) (compat := by
-    intro i j h
-    exact StarHomClass.map_star (f i j h))
+  star := .map f f (fun _ x ↦ star x) (fun i j h x ↦ map_star (f i j h) x)
 
 lemma star_def (i : ι) (x : G i) :
     star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x ⟩⟧ : DirectLimit G f) := by
