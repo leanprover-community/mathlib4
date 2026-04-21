@@ -127,7 +127,6 @@ lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β →
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
     (_ : @AlexandrovDiscrete α t₂) :
     @AlexandrovDiscrete α (t₁ ⊔ t₂) :=

@@ -28,7 +28,7 @@ The most important examples for such topologies are:
   when `𝔖` is the set of `IsVonNBounded` subsets.
   This coincides with the operator norm topology in the case of `NormedSpace`s,
   and is declared as an instance on `E →L[𝕜] F`
-- the topology of pointwise convergence (also called "weak-* topology"
+- the topology of pointwise convergence (also called "weak-\* topology"
   or "strong-operator topology" depending on the context), when `𝔖` is the set of finite
   sets or the set of singletons. This is declared as an instance on `PointwiseConvergenceCLM`.
 - the topology of compact convergence, when `𝔖` is the set of compact
