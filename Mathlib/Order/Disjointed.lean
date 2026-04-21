@@ -36,7 +36,6 @@ It is actually unique, as `disjointed_unique` shows.
 
 We also provide set notation variants of some lemmas.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

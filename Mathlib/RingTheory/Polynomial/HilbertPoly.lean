@@ -39,7 +39,6 @@ if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer work
 
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

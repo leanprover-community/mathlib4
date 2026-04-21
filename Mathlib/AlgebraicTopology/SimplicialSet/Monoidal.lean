@@ -22,7 +22,6 @@ finite products. As a result, we obtain a monoidal
 category structure on `SSet`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

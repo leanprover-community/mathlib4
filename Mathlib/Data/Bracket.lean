@@ -23,7 +23,6 @@ subgroups, and for other similar operations.
 We introduce the notation `⁅x, y⁆` for the `bracket` of any `Bracket` structure. Note that
 these are the Unicode "square with quill" brackets rather than the usual square brackets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

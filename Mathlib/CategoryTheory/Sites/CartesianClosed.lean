@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 ...if the underlying presheaf category is Cartesian closed, the target category has
 (chosen) finite products, and there exists a sheafification functor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

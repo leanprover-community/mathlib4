@@ -34,7 +34,6 @@ The function `findPositiveVector` solves this problem.
   See the file `SimplexAlgorithm.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -21,7 +21,6 @@ public import Mathlib.Data.Fintype.Quotient
   bijection.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

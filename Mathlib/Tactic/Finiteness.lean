@@ -39,7 +39,6 @@ representation that things are finite, so we do so as well.
 Improve `finiteness` to also deal with other situations, such as balls in proper spaces with
 a locally finite measure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

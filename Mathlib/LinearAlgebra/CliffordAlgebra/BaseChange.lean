@@ -34,7 +34,6 @@ We show the additional results:
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]

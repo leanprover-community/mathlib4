@@ -12,7 +12,6 @@ public import Mathlib.Topology.Sets.Closeds
 
 In this file we define the type of clopen upper sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

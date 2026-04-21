@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 We restate some results about pullbacks/pushouts in the language of `IsPullback` and `IsPushout`,
 among which the pasting lemmas
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

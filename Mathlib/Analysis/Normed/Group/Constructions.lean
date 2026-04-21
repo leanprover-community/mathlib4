@@ -15,7 +15,6 @@ public import Mathlib.Analysis.Normed.Group.Basic
 This file constructs the infinity norm on finite products of normed groups and provides instances
 for type synonyms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

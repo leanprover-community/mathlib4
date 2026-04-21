@@ -15,7 +15,6 @@ public import Mathlib.Order.WithBot
 In this file we prove various lemmas about `Set.image`s and `Set.preimage`s of intervals under
 `some : α → WithTop α` and `some : α → WithBot α`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

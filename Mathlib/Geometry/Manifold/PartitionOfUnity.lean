@@ -58,7 +58,6 @@ smooth function from local functions.
 
 smooth bump function, partition of unity
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

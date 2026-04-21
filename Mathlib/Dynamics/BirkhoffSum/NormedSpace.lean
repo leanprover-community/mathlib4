@@ -18,7 +18,6 @@ At the time of writing, all lemmas in this file
 are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

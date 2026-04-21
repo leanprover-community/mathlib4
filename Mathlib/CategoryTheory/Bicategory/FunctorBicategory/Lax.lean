@@ -15,7 +15,6 @@ Given bicategories `B` and `C`, we give bicategory structures on `LaxFunctor B C
 * 1-morphisms are lax or oplax natural transformations, and
 * 2-morphisms are modifications.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

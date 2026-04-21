@@ -29,7 +29,6 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
   subgroup of `Mˣ` to its dual subgroup in `MulChar M R`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

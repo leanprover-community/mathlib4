@@ -20,7 +20,6 @@ public import Mathlib.GroupTheory.Perm.Cycle.Basic
     a prime cycle and a transposition
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

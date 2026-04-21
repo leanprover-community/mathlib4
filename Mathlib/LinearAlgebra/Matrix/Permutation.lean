@@ -26,7 +26,6 @@ This file defines the matrix associated with a permutation
 - `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

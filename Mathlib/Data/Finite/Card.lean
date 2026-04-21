@@ -26,7 +26,6 @@ types. If removing a finiteness constraint results in no loss in legibility, we 
 it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

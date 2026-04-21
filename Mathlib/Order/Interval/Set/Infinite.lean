@@ -15,7 +15,6 @@ Bounded intervals in dense orders are infinite, as are unbounded intervals
 in orders that are unbounded on the appropriate side. We also prove that an unbounded
 preorder is an infinite type.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

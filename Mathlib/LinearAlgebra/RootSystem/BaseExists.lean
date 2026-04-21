@@ -35,7 +35,6 @@ It is not really clear which is the better approach but here we opt for approach
 to yield slightly more general results.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

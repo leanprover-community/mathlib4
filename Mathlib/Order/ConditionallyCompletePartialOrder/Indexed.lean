@@ -19,7 +19,6 @@ partial order, as opposed to a conditionally complete lattice.
 + Use `@[to_dual]` in the `GaloisConnection` and `OrderIso` sections.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

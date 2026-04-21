@@ -19,7 +19,6 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 
 Equiv, MulEquiv, AddEquiv
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

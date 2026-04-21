@@ -31,7 +31,6 @@ on `Ω` allows us to do so.
 * `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

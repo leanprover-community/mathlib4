@@ -13,7 +13,6 @@ public import Mathlib.Logic.Embedding.Set
 This file shows some advanced equivalences on embeddings, useful for constructing larger
 embeddings from smaller ones.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

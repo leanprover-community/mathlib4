@@ -24,7 +24,6 @@ then when `X` is `n`-coskeletal, the unit of `coskAdj n` defines an isomorphism:
 
 TODO: Prove that `X` is `n`-coskeletal whenever a certain canonical cone is a limit cone.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

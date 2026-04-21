@@ -16,7 +16,6 @@ Adding `@[to_fun]` to a lemma named `foo` creates a new lemma named `fun_foo`, w
 running `pull fun _ ↦ _` on the type of `F`. This can be useful for generating the applied form
 of a continuity lemma from the unapplied form.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

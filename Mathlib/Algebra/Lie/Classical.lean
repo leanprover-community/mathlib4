@@ -63,7 +63,6 @@ definitions are equivalent. Similarly for the algebras of type `B`.
 
 classical lie algebra, special linear, symplectic, orthogonal
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

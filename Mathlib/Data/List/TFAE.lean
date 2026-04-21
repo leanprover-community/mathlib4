@@ -16,7 +16,6 @@ This file allows to state that all propositions in a list are equivalent. It is 
 `Mathlib/Tactic/Tfae.lean`.
 `TFAE l` means `∀ x ∈ l, ∀ y ∈ l, x ↔ y`. This is equivalent to `Pairwise (↔) l`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

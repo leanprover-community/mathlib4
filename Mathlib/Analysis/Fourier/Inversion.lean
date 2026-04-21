@@ -38,7 +38,6 @@ Since it also converges to `𝓕⁻ (𝓕 f) v`, this proves the result.
 To check the concentration property of the middle factor and the fact that it has integral one, we
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

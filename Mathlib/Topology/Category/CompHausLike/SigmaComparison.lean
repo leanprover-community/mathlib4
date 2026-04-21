@@ -19,7 +19,6 @@ The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S
 the inclusion maps `Sᵢ ⟶ S₁ ⊔ ... ⊔ Sₙ`, and it is an isomorphism when `X` preserves finite
 products.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

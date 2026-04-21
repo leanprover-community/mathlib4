@@ -51,7 +51,6 @@ reversed.
 
 product measure, Tonelli's theorem, Fubini-Tonelli theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

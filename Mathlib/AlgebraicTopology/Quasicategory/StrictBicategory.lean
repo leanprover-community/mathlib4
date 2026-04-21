@@ -37,7 +37,6 @@ This strict bicategory serves as a setting to develop the formal category theory
 * [Emily Riehl and Dominic Verity, The 2-category theory of quasi-categories][RiehlVerity2015]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

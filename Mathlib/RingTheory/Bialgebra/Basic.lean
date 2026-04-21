@@ -44,7 +44,6 @@ homomorphisms that satisfy the coalgebra axioms to define a bialgebra structure 
 
 bialgebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

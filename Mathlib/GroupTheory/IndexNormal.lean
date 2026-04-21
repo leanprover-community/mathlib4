@@ -18,7 +18,6 @@ public import Mathlib.GroupTheory.Index
   (This does not require `G` to be finite.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

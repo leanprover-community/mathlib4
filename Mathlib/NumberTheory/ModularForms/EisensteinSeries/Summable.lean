@@ -17,7 +17,6 @@ We gather results about the summability of Eisenstein series, particularly
 the summability of the Eisenstein series summands, which are used in the proof of the
 boundedness of Eisenstein series at infinity.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

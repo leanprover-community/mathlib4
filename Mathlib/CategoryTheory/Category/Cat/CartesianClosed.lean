@@ -23,7 +23,6 @@ monoidal closed categories and precomposition with left whiskering. These may no
 definitional equalities but may have to be phrased using `eqToIso`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

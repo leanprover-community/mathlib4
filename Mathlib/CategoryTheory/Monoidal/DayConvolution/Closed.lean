@@ -23,7 +23,6 @@ the Day convolution monoidal structure.
 * When `LawfulDayConvolutionMonoidalStruct` (https://github.com/leanprover-community/mathlib4/issues/26820) lands, transport the
   constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

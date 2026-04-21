@@ -26,7 +26,6 @@ information about these structures (which are not that standard in informal math
 
 `WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

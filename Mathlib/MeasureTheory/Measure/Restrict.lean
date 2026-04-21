@@ -21,7 +21,6 @@ pullback), and on sets (inclusion, union, Union).
 We also study the relationship between the restriction of a measure to a subtype (given by the
 pullback under `Subtype.val`) and the restriction to a set as above.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

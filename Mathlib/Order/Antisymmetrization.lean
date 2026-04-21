@@ -24,7 +24,6 @@ such that `a ≤ b` and `b ≤ a`.
 * `Antisymmetrization α r`: The quotient of `α` by `AntisymmRel r`. Even when `r` is just a
   preorder, `Antisymmetrization α` is a partial order.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

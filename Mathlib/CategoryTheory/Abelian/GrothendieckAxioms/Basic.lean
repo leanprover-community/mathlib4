@@ -48,7 +48,6 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

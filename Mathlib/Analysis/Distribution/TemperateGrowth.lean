@@ -11,7 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Tactic.MoveAdd
 
 /-! # Functions and measures of temperate growth -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

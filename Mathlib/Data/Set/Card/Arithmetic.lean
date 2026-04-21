@@ -22,7 +22,6 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
   disjoint sets `t` and `u` such that `t ∪ u = s` and `t.ncard = u.ncard`.
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

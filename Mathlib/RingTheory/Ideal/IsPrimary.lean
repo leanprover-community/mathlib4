@@ -23,7 +23,6 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

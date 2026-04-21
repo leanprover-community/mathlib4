@@ -30,7 +30,6 @@ values of `K`. The `|⬝|ᵥ` are normalized as follows:
 ## Tags
 number field, embeddings, places, infinite places, finite places, product formula
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

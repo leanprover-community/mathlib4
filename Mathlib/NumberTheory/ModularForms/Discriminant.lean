@@ -34,7 +34,6 @@ function, and proves its key properties including invariance under the generator
 
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Function Complex Topology Filter SlashInvariantForm CongruenceSubgroup MatrixGroups
 

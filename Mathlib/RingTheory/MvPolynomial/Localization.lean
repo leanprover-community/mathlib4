@@ -25,7 +25,6 @@ In this file we show some results connecting multivariate polynomial rings and l
   `MvPolynomial σ R`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ be satisfied by itself and all stricter types.
 * `BotHomClass`
 * `BoundedOrderHomClass`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

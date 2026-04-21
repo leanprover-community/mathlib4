@@ -19,7 +19,6 @@ This file contains results about smoothness of affine maps.
 * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 namespace ContinuousAffineMap

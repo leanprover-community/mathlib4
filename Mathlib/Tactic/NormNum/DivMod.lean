@@ -13,7 +13,6 @@ public import Mathlib.Tactic.NormNum.Ineq
 This file adds support for the `%`, `/`, and `∣` (divisibility) operators on `ℤ`
 to the `norm_num` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

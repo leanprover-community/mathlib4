@@ -22,7 +22,6 @@ provided a left adjoint.
 
 The duals are also shown.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

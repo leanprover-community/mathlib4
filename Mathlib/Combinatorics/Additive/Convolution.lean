@@ -15,7 +15,6 @@ that maps `x ∈ G` to the number of distinct representations of `x` in the form
 `a ∈ A`, `b ∈ B`. It is shown how convolution behaves under the change of order of `A` and `B`, as
 well as under the left and right actions on `A`, `B`, and the function argument.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 * `Ring.DirectLimit G f`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

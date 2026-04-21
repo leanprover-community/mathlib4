@@ -17,7 +17,6 @@ the formal power series `f x = f a + f (x - a)`. We also prove similar results f
 We deduce this fact from the stronger result that continuous linear maps are continuously
 polynomial, i.e., they admit a finite power series.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

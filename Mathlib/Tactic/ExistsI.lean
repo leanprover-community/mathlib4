@@ -11,7 +11,6 @@ public import Mathlib.Init
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
 Internally, it applies the `refine` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

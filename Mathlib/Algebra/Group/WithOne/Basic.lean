@@ -20,7 +20,6 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.lift`, `WithZero.lift`
 * `WithOne.map`, `WithZero.map`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

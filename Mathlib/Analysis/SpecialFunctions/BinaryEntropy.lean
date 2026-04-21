@@ -49,7 +49,6 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 
 entropy, Shannon, binary, nit, nepit
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

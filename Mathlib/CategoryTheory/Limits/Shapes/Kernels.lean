@@ -46,7 +46,6 @@ general limits can be used.
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

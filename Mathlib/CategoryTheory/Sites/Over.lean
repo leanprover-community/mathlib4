@@ -22,7 +22,6 @@ is covering for `J`. As a result, the forgetful functor
 `Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ This file proves lemmas about `iSup` and `iInf` for functions valued in a condit
 rather than complete, lattice. We add a prefix `c` to distinguish them from the versions for
 complete lattices, giving names `ciSup_xxx` or `ciInf_xxx`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

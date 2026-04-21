@@ -28,7 +28,6 @@ results.
 
 lie algebra, lie subalgebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

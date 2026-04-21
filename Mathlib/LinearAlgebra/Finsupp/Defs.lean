@@ -29,7 +29,6 @@ In this file we define `LinearMap` versions of various maps:
 
 function with finite support, module, linear algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

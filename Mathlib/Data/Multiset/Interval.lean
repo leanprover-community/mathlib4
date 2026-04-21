@@ -25,7 +25,6 @@ entries as it contains duplicates. We do not go via `Finsupp` as this would be n
 multisets are typically used computationally.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

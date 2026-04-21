@@ -14,7 +14,6 @@ The quotients are here defined using a surjective function and
 its right inverse. They are very similar to the `abs` and `repr`
 functions found in the definition of `MvQPF`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

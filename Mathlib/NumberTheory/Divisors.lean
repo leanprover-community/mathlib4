@@ -39,7 +39,6 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 divisors, perfect numbers
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

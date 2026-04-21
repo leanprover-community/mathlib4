@@ -14,7 +14,6 @@ The `rsuffices` tactic is an alternative version of `suffices`, that allows the 
 of any syntax that would be valid in an `obtain` block. This tactic just calls `obtain`
 on the expression, and then `rotate_left`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

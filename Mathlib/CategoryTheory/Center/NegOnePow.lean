@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.NegOnePow
 # Powers of `-1` in the center of a preadditive category
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

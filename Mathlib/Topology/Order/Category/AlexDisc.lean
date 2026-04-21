@@ -13,7 +13,6 @@ public import Mathlib.Topology.Specialization
 This defines `AlexDisc`, the category of Alexandrov-discrete topological spaces with continuous
 maps, and proves it's equivalent to the category of preorders.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

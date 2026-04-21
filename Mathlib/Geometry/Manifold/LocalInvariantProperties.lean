@@ -43,7 +43,6 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 `LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
 in the one for `LiftPropWithinAt`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ follows exactly the same path.
 
 absolute value, uniform spaces
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

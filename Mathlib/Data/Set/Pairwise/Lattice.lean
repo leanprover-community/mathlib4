@@ -13,7 +13,6 @@ public import Mathlib.Data.Set.Pairwise.Basic
 
 In this file we prove many facts about `Pairwise` and the set lattice.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

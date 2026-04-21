@@ -32,7 +32,6 @@ It would be nice to have a usable framework of enriched categories in which this
 a category enriched in `Module R`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

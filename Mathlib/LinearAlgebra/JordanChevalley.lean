@@ -33,7 +33,6 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
   then `n₁ = n₂` and `s₁ = s₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

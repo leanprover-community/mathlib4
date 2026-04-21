@@ -27,7 +27,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 inner product space, Hilbert space, norm
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

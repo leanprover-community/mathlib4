@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 
 This file defines the subgroup of squares / even elements in an abelian group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

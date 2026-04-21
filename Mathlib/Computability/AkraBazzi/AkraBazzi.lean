@@ -57,7 +57,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

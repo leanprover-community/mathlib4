@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Images
 Note that we don't need to register any of the constructions here as instances, because we get them
 from the fact that `AddCommGrpCat` is an abelian category.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

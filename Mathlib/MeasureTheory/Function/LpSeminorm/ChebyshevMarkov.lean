@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we formulate several versions of the Chebyshev-Markov inequality
 in terms of the `MeasureTheory.eLpNorm` seminorm.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 open scoped NNReal ENNReal

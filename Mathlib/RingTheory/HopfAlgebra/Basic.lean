@@ -41,7 +41,6 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

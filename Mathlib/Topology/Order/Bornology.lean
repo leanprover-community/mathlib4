@@ -18,7 +18,6 @@ of order-boundedness (sets that are bounded above and below).
 * `orderBornology`: The bornology of order-bounded sets of a nonempty lattice.
 * `IsOrderBornology`: Typeclass predicate for a preorder to be equipped with its order-bornology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

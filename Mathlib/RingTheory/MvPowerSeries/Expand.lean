@@ -22,7 +22,6 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 * `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
   so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

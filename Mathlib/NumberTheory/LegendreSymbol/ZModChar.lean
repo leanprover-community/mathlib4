@@ -20,7 +20,6 @@ We set them up to be of type `MulChar (ZMod n) ℤ`, where `n` is `4` or `8`.
 
 quadratic character, zmod
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ We show that adjunctions in the bicategory `Cat` correspond to
 adjunctions between functors in the usual categorical sense.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

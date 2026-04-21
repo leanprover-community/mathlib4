@@ -10,7 +10,6 @@ public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Sets.Opens
 
 /-! The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

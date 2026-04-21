@@ -22,7 +22,6 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

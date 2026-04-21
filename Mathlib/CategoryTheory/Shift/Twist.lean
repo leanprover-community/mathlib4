@@ -19,7 +19,6 @@ synonym category `t.Category` with identical shift functors as `C` but where
 the isomorphisms `shiftFunctorAdd` have been modified.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

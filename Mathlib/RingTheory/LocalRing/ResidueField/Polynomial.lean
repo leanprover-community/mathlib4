@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 - `Polynomial.fiberEquivQuotient`: `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

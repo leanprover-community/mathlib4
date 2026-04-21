@@ -22,7 +22,6 @@ This file sets up the theory of locally constant function from a topological spa
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

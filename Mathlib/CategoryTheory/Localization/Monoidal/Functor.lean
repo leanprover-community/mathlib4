@@ -18,7 +18,6 @@ This file proves that, given a monoidal localization functor `L : C ⥤ D`, and 
 `F : D ⥤ E` to a monoidal category, such that `F` lifts along `L` to a monoidal functor `G`,
 then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

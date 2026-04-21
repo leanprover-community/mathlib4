@@ -30,7 +30,6 @@ and `A` and `B` are filtered.
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

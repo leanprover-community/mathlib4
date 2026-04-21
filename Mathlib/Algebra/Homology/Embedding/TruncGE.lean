@@ -40,7 +40,6 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
   in homology in degrees in the image of `e.f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

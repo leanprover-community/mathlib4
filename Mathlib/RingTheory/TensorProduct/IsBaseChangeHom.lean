@@ -28,7 +28,6 @@ public import Mathlib.LinearAlgebra.Determinant
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

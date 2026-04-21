@@ -15,7 +15,6 @@ public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
 If `Mathlib/GroupTheory/Finiteness.lean` wasn't so heavy, this could move earlier.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

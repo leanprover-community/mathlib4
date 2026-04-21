@@ -18,7 +18,6 @@ is not available, it is still true that pairs of elements `(a, b)` satisfying `a
 `a + b = 1` form a Boolean algebra (such elements are automatically idempotents, and such a pair
 is uniquely determined by either `a` or `b`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

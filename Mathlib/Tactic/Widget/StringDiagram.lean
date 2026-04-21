@@ -62,7 +62,6 @@ categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/
 although the string diagram widget does not use it directly.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

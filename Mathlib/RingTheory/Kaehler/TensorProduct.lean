@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

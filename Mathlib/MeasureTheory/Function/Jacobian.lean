@@ -93,7 +93,6 @@ Change of variables in integrals
 ## References
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

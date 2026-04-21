@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 * `IsLocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
 * `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

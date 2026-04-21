@@ -33,7 +33,6 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 
 relation, Galois connection, induced bijection, fixed points
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

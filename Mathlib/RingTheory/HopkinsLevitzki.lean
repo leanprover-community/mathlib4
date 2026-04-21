@@ -31,7 +31,6 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

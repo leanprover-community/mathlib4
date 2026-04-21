@@ -28,7 +28,6 @@ This property is the direct generalization to modules of the property `IsLeftReg
 `Algebra/Regular`.  Lemma `isLeftRegular_iff` shows that indeed the two notions
 coincide.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

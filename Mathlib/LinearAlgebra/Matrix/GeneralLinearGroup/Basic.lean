@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 This file lists various basic lemmas about the general linear group $GL(n, R)$. For the definitions,
 see `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

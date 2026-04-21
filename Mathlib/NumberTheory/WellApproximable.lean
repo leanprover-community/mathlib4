@@ -58,7 +58,6 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 `addWellApproximable 𝕊 (fun n ↦ 1 / n^2) = { ξ | ¬ IsOfFinAddOrder ξ }`
 (which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

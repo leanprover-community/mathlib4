@@ -14,7 +14,6 @@ The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

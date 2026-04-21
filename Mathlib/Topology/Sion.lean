@@ -62,7 +62,6 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
   “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Set Filter
 

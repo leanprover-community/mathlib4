@@ -22,7 +22,6 @@ see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

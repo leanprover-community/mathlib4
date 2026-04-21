@@ -18,7 +18,6 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 `Iic x`, `Icc x y`) are equal to products of their projections to `α i`, while (semi-)open intervals
 usually include the corresponding products as proper subsets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

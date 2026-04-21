@@ -13,7 +13,6 @@ public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 Results relating `IntermediateField` and `RatFunc`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 variable {K : Type*} [Field K]
 

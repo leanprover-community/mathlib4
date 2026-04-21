@@ -56,7 +56,6 @@ in the context of the theorem, in which case we only include the ones that are n
 the other inside the proof. A few of the theorems, such as `ncard_union_le` do not require
 finiteness arguments; they are true by coincidence due to junk values.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 This, and the dual result, are used in the development of abelian categories.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

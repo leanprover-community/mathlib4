@@ -20,7 +20,6 @@ tangent bundle but rather as a purely algebraic theory that provides a purely al
 of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
 case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

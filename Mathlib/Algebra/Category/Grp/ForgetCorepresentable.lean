@@ -16,7 +16,6 @@ by `ULift ℤ`. Similar results are obtained for the variants `CommGrpCat`, `Add
 and `GrpCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

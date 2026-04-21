@@ -24,7 +24,6 @@ elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s 
 in this file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

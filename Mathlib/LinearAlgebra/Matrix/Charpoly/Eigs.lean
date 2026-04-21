@@ -49,7 +49,6 @@ dependencies are not general enough to unify them. We should refactor
 `Polynomial.nextCoeff_eq_neg_sum_roots_of_monic_of_splits` to assume splitting over an
 arbitrary map.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

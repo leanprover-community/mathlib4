@@ -18,7 +18,6 @@ an isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`
 under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

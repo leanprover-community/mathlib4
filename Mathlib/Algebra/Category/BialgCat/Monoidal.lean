@@ -22,7 +22,6 @@ fields proved by pulling back the `MonoidalCategory` instance on the category of
 using `Monoidal.induced`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

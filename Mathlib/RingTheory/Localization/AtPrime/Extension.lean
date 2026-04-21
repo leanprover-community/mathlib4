@@ -36,7 +36,6 @@ bijection and that the residual degree and ramification index are preserved by t
   `primesOverEquivPrimesOver` preserves the ramification index.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 * `LieAlgebra.ad_nilpotent_of_nilpotent`: the adjoint of a nilpotent element is nilpotent.
 * `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

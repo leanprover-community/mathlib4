@@ -26,7 +26,6 @@ This file defines notions of two points being on the same or opposite sides of a
   subspace `s`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

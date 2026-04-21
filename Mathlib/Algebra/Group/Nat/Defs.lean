@@ -14,7 +14,6 @@ This file contains the additive and multiplicative monoid instances on the natur
 
 See note [foundational algebra order theory].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

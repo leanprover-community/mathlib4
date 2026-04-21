@@ -32,7 +32,6 @@ to be able to be applied in noncommutative division rings.
 
 ultrametric, nonarchimedean
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 open Metric NNReal

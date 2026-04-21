@@ -13,7 +13,6 @@ public import Mathlib.Data.ZMod.Defs
 
 We equip `ZMod N` with the discrete topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ This file declares `ℚ` notation for the rationals and defines the nonnegative 
 
 This file is eligible to upstreaming to Batteries.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

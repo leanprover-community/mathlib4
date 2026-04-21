@@ -18,7 +18,6 @@ public import Mathlib.Data.Fintype.Pi
 * `DFinsupp.infinite_of_exists_right`: if one fiber of the codomain is infinite,
   then `DFinsupp` is infinite
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

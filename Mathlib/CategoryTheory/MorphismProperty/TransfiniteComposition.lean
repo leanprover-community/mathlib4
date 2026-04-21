@@ -28,7 +28,6 @@ which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
 holds for any well-ordered type `J` in a certain universe `w`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

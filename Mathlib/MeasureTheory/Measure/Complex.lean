@@ -30,7 +30,6 @@ a complex measure is always in the form `s + it` where `s` and `t` are signed me
 
 Complex measure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

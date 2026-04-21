@@ -19,7 +19,6 @@ In particular, `CostructuredArrow K B` has any connected limit which `C` has.
 
 From this we deduce the corresponding results for the over category.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

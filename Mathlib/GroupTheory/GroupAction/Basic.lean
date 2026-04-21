@@ -30,7 +30,6 @@ of `•` belong elsewhere.
 * `MulAction.stabilizer`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

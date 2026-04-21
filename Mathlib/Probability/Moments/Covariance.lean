@@ -30,7 +30,6 @@ We define the covariance of two real-valued random variables.
 * `cov[X, Y] = covariance X Y volume`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

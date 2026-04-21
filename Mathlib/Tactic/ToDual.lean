@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Translate.ToDual
 /-!
 ## `@[to_dual]` attributes for basic types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

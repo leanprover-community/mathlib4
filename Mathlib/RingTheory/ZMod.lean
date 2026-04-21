@@ -22,7 +22,6 @@ We collect a few facts about `ZMod n` that need some ring theory to be proved/st
 * `ZMod.ringHom_eq_of_ker_eq`: two ring homomorphisms into `ZMod n` with equal kernels are equal.
 * `isReduced_zmod`: `ZMod n` is reduced for all squarefree `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

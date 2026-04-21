@@ -16,7 +16,6 @@ This file contains two equivalences:
 * `commGroupAddCommGroupEquivalence` : the equivalence between `CommGrpCat` and `AddCommGrpCat`
   by sending `X : CommGrpCat` to `Additive X` and `Y : AddCommGrpCat` to `Multiplicative Y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

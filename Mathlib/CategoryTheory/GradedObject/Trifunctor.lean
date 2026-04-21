@@ -24,7 +24,6 @@ category structure on `GradedObject I C` induced by a monoidal structure on `C` 
 an additive monoid structure on `I` (TODO @joelriou).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

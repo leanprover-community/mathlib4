@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 We construct equalizers and coequalizers in the opposite categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ In this file, we show that the vertical composition of Guitart exact squares
 is Guitart exact.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

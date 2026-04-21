@@ -13,7 +13,6 @@ public import Mathlib.Analysis.InnerProductSpace.Adjoint
 We place this here because, for reasons related to the import hierarchy, it should not be placed
 in earlier files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

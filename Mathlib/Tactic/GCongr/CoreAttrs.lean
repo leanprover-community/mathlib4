@@ -13,7 +13,6 @@ public import Mathlib.Tactic.GCongr.Core
 In this file we add `gcongr` attribute to lemmas in `Lean.Init`.
 We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` later.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

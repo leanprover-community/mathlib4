@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 A preadditive structure on a category `D` transfers to a preadditive structure on `C` for a given
 fully faithful functor `F : C ⥤ D`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace CategoryTheory

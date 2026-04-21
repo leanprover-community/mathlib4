@@ -19,7 +19,6 @@ This is analogous to 'the quotient of a group by the normal closure of a subset'
 than 'the quotient of a group by a normal subgroup'. When taking the quotient by a congruence
 relation, `functor_map_eq_iff` says that no unnecessary identifications have been made.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

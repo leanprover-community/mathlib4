@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Defs
 # Theorems about additively and multiplicatively invertible elements in rings
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

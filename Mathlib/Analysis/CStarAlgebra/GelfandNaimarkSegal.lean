@@ -34,7 +34,6 @@ space.
   cases.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open scoped ComplexOrder InnerProductSpace

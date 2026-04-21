@@ -18,7 +18,6 @@ This order is compatible with the inclusion ordering, but is total.
 
 Under this ordering, `[(3, 3), (2, 2), (2, 3), (1, 1), (1, 2), (1, 3)]` is sorted.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

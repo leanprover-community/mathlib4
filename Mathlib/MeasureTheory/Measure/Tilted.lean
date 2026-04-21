@@ -24,7 +24,6 @@ can be used for example to establish variational expressions for the Kullback-Le
   `μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

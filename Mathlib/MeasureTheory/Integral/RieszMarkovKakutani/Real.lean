@@ -42,7 +42,6 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

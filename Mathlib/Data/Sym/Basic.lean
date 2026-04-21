@@ -28,7 +28,6 @@ needs a fleshed-out interface.
 symmetric powers
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

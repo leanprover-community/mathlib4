@@ -61,7 +61,6 @@ be used with the theory here.
 * [Rachel Greenfeld and Terence Tao, *A counterexample to the periodic tiling
   conjecture*][GreenfeldTao2024]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 
 @[expose] public section

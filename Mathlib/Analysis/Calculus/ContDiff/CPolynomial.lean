@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Calculus.ContDiff.Defs
 We prove that continuously polynomial functions are `C^∞`. In particular, this is the case
 of continuous multilinear maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

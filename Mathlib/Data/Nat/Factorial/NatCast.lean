@@ -17,7 +17,6 @@ This file contains lemmas providing sufficient conditions for the cast of `n!` t
 to be a unit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

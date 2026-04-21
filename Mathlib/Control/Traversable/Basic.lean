@@ -58,7 +58,6 @@ traversable iterator functor applicative
   in Mathematically-Structured Functional Programming, 2012,
   online at <http://arxiv.org/pdf/1202.2919>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

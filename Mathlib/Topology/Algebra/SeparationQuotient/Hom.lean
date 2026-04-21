@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 In this file we define the lift of a continuous monoid homomorphism `f` from `M` to `N` to
 `SeparationQuotient M`, assuming that `f` maps two inseparable elements to the same element.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

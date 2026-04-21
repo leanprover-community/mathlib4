@@ -25,7 +25,6 @@ In this file, we give the following definitions/theorems:
   - `FundamentalGroupoidFunctor.preservesProduct` A proof that the fundamental groupoid functor
     preserves all products.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

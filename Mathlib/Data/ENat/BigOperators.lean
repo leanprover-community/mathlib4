@@ -13,7 +13,6 @@ public import Mathlib.Data.ENat.Lattice
 /-!
 # Sum of suprema in `ENat`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

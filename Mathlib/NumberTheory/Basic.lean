@@ -21,7 +21,6 @@ lemma in the construction of the ring of Witt vectors.
 all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` divides
 `a ^ (p ^ k) - b ^ (p ^ k)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

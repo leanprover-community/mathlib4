@@ -25,7 +25,6 @@ equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then
 an enriched ordinary category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ The definition of `Sigma` takes values in `Type*`. This effectively forbids `Pro
 types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

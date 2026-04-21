@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Ring.Equiv
 This result is split out from `Mathlib/Algebra/Ring/Action/Basic.lean`
 to avoid needing the import of `Mathlib/Algebra/GroupWithZero/Action/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

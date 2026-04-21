@@ -17,7 +17,6 @@ We introduce the bundled category `AlgCat` of algebras over a fixed commutative 
 with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

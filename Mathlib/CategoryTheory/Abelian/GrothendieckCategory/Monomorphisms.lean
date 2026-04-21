@@ -16,7 +16,6 @@ In this file, we show that in a Grothendieck abelian category,
 monomorphisms are stable under transfinite composition.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

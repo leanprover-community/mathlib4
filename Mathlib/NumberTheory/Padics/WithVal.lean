@@ -26,7 +26,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

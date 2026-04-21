@@ -33,7 +33,6 @@ public import Mathlib.Topology.Instances.Rat
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

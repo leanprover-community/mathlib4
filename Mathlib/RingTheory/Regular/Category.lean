@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.QuotSMulTop
 /-!
 # Categorical constructions for `IsSMulRegular`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

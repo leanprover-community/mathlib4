@@ -29,7 +29,6 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

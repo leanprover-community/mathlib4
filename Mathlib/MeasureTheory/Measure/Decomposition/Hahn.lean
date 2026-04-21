@@ -29,7 +29,6 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 
 Hahn decomposition
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

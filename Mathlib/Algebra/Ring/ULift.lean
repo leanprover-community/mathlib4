@@ -19,7 +19,6 @@ This file defines instances for ring, semiring and related structures on `ULift`
 
 We also provide `ULift.ringEquiv : ULift R ≃+* R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

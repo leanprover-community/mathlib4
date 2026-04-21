@@ -65,7 +65,6 @@ Reid Barton in 2018 towards the model category structure on
 topological spaces.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

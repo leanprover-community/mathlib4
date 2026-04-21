@@ -22,7 +22,6 @@ at `h : ¬ P`.
 The new goal will be placed at the top of the goal stack.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

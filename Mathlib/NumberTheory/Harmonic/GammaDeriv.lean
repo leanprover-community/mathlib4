@@ -18,7 +18,6 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 /-!
 # modular equivalence for submodule
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,7 +29,6 @@ This file proves the Bourbaki-Witt Theorem.
 
 The proof used can be found in [serge_lang_algebra]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

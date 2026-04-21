@@ -19,7 +19,6 @@ to subtraction on a general semiring. For example, we can't rely on existing cas
 `↑(a.descFactorial 2) = ↑a * (↑a - 1)`. We must use the fact that, whenever `↑(a - 1)` is not equal
 to `↑a - 1`, the other factor is `0` anyway.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

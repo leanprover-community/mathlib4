@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Basic
 
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

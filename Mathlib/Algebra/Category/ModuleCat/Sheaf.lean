@@ -17,7 +17,6 @@ In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCa
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

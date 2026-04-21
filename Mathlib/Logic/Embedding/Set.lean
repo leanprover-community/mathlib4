@@ -15,7 +15,6 @@ public import Mathlib.Data.Set.Image
 # Interactions between embeddings and sets.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

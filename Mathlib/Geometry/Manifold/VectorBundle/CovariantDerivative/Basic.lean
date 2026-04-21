@@ -62,7 +62,6 @@ But the conditions on this map involve differentiability, see the definition of
 This file proves that `(∇_X σ) x` depends only on the germ of `σ` at `x`, but not the stronger
 statement that it depends only the 1-jet of `σ` at `x`. This will be proved in a later file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Bundle NormedSpace
 open scoped Manifold ContDiff Topology

@@ -16,7 +16,6 @@ element of `S`. This can be used to model nondeterministic functions,
 which return something in a range of values (represented by the
 predicate `S`) but are not completely determined.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

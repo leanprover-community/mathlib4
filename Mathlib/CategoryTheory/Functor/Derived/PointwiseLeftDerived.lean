@@ -23,7 +23,6 @@ Note: this file was obtained by dualizing the definitions in the file
 kept in sync.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

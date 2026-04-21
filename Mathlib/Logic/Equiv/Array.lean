@@ -10,7 +10,6 @@ public import Mathlib.Logic.Equiv.List
 /-!
 # Equivalences involving `Array`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ This file contains results about bases in normed affine spaces.
 * `IsOpen.exists_subset_affineIndependent_span_eq_top`
 * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

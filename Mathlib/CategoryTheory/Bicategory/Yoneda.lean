@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 In this file we define the bicategorical Yoneda embedding.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

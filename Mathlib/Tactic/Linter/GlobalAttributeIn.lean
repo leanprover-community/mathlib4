@@ -56,7 +56,6 @@ error: failed to synthesize
   Add Nat
 -/
 
-set_option backward.defeqAttrib.useBackward true
 #guard_msgs in
 attribute [-instance] instAddNat in
 #synth Add Nat

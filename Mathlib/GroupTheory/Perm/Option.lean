@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.Perm.Sign
 /-!
 # Permutations of `Option α`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

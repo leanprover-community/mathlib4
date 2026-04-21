@@ -15,7 +15,6 @@ In this file, we show that for any additive category `C`,
 the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is triangulated.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

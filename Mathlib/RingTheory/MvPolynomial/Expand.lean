@@ -15,7 +15,6 @@ public import Mathlib.Algebra.CharP.Frobenius
 In this file we prove results about `MvPolynomial.expand` that require more than the basic API
 available in `Mathlib.Algebra.*`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

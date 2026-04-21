@@ -16,7 +16,6 @@ In this file we prove that a linear ordered commutative group with order topolog
 is a topological group.
 We also prove continuity of `abs : G → G` and provide convenience lemmas like `ContinuousAt.abs`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

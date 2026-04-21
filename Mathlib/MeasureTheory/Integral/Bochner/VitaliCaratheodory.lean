@@ -70,7 +70,6 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 [Rudin, *Real and Complex Analysis* (Theorem 2.24)][rudin2006real]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

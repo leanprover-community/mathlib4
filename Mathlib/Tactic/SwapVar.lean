@@ -12,7 +12,6 @@ public import Mathlib.Init
 
 Swap the names of two hypotheses.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

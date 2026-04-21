@@ -17,7 +17,6 @@ import Mathlib.Algebra.Order.Ring.Interval
 In this file we define `Real.Angle` to be the quotient group `ℝ/2πℤ` and prove a few simple lemmas
 about trigonometric functions and angles.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

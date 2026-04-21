@@ -29,7 +29,6 @@ chosen finite products.
   abstractly using the material in `CategoryTheory.Monoidal.Braided.Reflection`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

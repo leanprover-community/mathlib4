@@ -18,7 +18,6 @@ public import Mathlib.Topology.Homotopy.Path
 Given a topological space `X` and a basepoint `x`, the fundamental group is the automorphism group
 of `x` i.e. the group with elements being loops based at `x` (quotiented by homotopy equivalence).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

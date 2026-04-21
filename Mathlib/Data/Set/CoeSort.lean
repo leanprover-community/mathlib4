@@ -18,7 +18,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 - `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

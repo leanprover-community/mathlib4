@@ -17,7 +17,6 @@ public import Mathlib.NumberTheory.LegendreSymbol.Basic
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

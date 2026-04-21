@@ -13,7 +13,6 @@ public import Mathlib.Topology.NoetherianSpace
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ and the structure sheaf of `Spec R`, for some commutative ring `R`.
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

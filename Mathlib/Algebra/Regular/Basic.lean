@@ -25,7 +25,6 @@ by adding one further `0`.
 
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

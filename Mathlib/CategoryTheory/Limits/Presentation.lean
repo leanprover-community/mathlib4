@@ -28,7 +28,6 @@ presentation of a colimit of objects that are equipped with presentations.)
 
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

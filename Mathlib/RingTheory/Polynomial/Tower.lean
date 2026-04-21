@@ -18,7 +18,6 @@ This structure itself is provided elsewhere as `Polynomial.isScalarTower`
 When you update this file, you can also try to make a corresponding update in
 `RingTheory.MvPolynomial.Tower`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

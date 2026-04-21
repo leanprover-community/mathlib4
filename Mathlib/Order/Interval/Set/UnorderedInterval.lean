@@ -37,7 +37,6 @@ We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the scope 
 make the notation available.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

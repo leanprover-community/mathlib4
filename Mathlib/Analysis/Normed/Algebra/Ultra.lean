@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 This file contains the proof that a normed division ring over an ultrametric field is ultrametric.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

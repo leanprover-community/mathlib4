@@ -27,7 +27,6 @@ Generalize this for `GenContFract` version:
 - https://en.wikipedia.org/wiki/Generalized_continued_fraction#The_determinant_formula
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

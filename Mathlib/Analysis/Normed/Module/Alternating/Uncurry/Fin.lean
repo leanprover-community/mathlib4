@@ -42,7 +42,6 @@ not only a field of characteristic zero.
 The latter theorem will be used
 to prove that the second exterior derivative of a differential form is zero.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

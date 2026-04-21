@@ -53,7 +53,6 @@ The rest of the results in the file are then about `A⁻¹`
 
 matrix inverse, cramer, cramer's rule, adjugate
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ through a point on that sphere.
   through a point on that sphere.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

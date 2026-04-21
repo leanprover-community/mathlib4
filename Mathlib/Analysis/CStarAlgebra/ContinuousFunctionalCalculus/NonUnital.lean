@@ -46,7 +46,6 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 + `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 local notation "σₙ" => quasispectrum

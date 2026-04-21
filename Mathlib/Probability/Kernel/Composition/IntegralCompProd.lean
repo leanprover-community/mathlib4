@@ -45,7 +45,6 @@ the proofs about the composition are only simplified versions of the ones for th
 composition-product. However it is necessary to do all the proofs once again because the
 composition-product requires s-finiteness while the composition does not.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 /-!
 # Pointwise actions of finsets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

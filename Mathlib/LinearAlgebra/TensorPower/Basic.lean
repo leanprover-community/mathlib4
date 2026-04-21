@@ -28,7 +28,6 @@ abbreviation for `⨂[R] i : Fin n, M`.
 In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplicative structure on
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

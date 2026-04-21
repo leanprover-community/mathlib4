@@ -46,7 +46,6 @@ performance-wise.
 These considerations more generally apply to `Finset.card` and `Finset.sum` and demonstrate that
 overengineering basic definitions is likely to hinder user experience.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

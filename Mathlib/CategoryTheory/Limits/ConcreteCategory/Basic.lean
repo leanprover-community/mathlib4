@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 /-!
 # Facts about (co)limits of functors into concrete categories
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ limsups of sums of indicators.
 ## Tags
 finite, indicator, limsup, tendsto
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

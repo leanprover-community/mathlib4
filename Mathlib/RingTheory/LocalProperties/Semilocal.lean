@@ -23,7 +23,6 @@ finitely many maximal ideals).
 * `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization_maximal`: A semilocal
   integral domain `A` is a PID if its localization at every maximal ideal is a PID.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

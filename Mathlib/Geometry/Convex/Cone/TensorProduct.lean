@@ -43,7 +43,6 @@ We define the minimal and maximal tensor products of pointed cones:
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

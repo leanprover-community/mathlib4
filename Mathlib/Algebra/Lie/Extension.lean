@@ -40,7 +40,6 @@ change of signs in the "action" part of the Lie bracket.
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

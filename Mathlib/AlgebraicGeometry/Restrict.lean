@@ -19,7 +19,6 @@ public import Mathlib.AlgebraicGeometry.Over
 - `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -69,7 +69,6 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
   http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -27,7 +27,6 @@ requires slightly less imports.
 
 * Prove convexity for negative powers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

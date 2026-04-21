@@ -45,7 +45,6 @@ a `MulAction` instance.
 
 graded action
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

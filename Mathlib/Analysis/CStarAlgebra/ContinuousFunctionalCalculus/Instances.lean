@@ -29,7 +29,6 @@ public import Mathlib.Analysis.RCLike.Lemmas
 
 continuous functional calculus, normal, selfadjoint
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

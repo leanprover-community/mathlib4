@@ -32,7 +32,6 @@ because `CategoryTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
 have already been traversed beforehand.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 open Lean Meta CategoryTheory

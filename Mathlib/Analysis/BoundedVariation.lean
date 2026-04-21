@@ -30,7 +30,6 @@ are also differentiable almost everywhere.
 We also give several variations around these results.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

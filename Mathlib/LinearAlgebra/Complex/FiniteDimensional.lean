@@ -17,7 +17,6 @@ public import Mathlib.Order.Interval.Set.Infinite
 This file contains the `FiniteDimensional ℝ ℂ` instance, as well as some results about the rank
 (`finrank` and `Module.rank`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

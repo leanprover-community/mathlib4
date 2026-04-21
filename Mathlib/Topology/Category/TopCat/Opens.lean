@@ -28,7 +28,6 @@ We don't attempt to set up the full theory here, but do provide the natural isom
 
 Beyond that, there's a collection of simp lemmas for working with these constructions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

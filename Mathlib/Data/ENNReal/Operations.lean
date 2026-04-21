@@ -19,7 +19,6 @@ definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.le
 Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

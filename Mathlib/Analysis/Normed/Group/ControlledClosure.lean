@@ -15,7 +15,6 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,7 +18,6 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a `C^n` vector bundle.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Order.Bounds.Basic
 
 In this file we prove various results about the behaviour of bounds under monotone/antitone maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -26,7 +26,6 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
   Euclidean domain structure on the ring of polynomials
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

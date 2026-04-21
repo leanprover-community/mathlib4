@@ -20,7 +20,6 @@ public import Mathlib.Order.RelIso.Set
 * `Prod.Lex.prodUnique` and `Prod.Lex.uniqueProd`: `α ×ₗ β` is order isomorphic to one side if the
   other side is `Unique`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

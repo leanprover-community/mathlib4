@@ -43,7 +43,6 @@ on a terminal object and `Functor.sectionsFunctor`.
   `instHasSheafifyOfHasFiniteLimits`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

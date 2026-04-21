@@ -27,7 +27,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

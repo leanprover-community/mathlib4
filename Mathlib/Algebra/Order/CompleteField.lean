@@ -40,7 +40,6 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 
 reals, conditionally complete, ordered field, uniqueness
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

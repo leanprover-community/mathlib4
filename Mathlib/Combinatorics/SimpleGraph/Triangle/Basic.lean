@@ -31,7 +31,6 @@ This module defines and proves properties about triangles in simple graphs.
 
 * Generalise `FarFromTriangleFree` to other graphs, to state and prove the Graph Removal Lemma.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

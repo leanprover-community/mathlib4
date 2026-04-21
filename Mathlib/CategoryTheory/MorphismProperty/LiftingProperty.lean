@@ -19,7 +19,6 @@ We show that the left lifting property is stable under retracts, cobase change, 
 and composition, with dual statements for the right lifting property.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

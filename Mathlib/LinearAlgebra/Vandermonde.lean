@@ -63,7 +63,6 @@ Characterize when `rectVandermonde v w n` has linearly independent rows.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}

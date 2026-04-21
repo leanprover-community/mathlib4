@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 We construct limits and colimits in the opposite categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ but would be somewhat unnatural since they are closely related.
 The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

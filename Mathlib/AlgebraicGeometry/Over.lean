@@ -19,7 +19,6 @@ We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 - `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is an `S`-morphism.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

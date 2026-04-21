@@ -17,7 +17,6 @@ which interprets a continuous alternating map in `n + 1` variables
 as a continuous linear map in the 0th variable
 taking values in the continuous alternating maps in `n` variables.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

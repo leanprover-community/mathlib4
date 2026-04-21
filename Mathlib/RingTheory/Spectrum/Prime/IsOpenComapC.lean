@@ -15,7 +15,6 @@ The main result is the first part of the statement of Lemma 00FB in the Stacks P
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

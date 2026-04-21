@@ -19,7 +19,6 @@ We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

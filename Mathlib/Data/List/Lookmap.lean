@@ -11,7 +11,6 @@ public import Mathlib.Init
 import all Init.Data.Array.Basic
 
 /-! ### lookmap -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

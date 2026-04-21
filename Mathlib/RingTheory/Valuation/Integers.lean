@@ -14,7 +14,6 @@ The elements with valuation less than or equal to 1.
 
 TODO: Define characteristic predicate.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

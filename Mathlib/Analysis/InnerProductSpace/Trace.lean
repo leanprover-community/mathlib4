@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 
 This file contains various results about traces of linear operators in inner product spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

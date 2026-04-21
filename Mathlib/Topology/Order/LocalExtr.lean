@@ -31,7 +31,6 @@ Here is the list of statements specific to these two types of filters:
 * `Is[Local]*On.isLocal*` : if we have `IsLocal*On f s a` and `s ∈ 𝓝 a`, then we have
   `IsLocal* f a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

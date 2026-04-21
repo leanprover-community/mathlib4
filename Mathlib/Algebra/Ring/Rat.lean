@@ -18,7 +18,6 @@ This file contains the commutative ring instance on the rational numbers.
 
 See note [foundational algebra order theory].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

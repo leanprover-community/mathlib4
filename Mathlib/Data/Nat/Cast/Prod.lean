@@ -11,7 +11,6 @@ public import Mathlib.Data.Nat.Cast.Defs
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

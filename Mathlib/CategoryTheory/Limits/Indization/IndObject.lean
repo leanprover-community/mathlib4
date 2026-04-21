@@ -41,7 +41,6 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

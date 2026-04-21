@@ -24,7 +24,6 @@ unfortunately evaluates the base cases eagerly.  That is,
 Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missing.
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

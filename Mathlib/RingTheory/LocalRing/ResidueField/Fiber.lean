@@ -21,7 +21,6 @@ public import Mathlib.Topology.Homeomorph.Lemmas
   fiber of the induced map `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal `p` and
   the prime spectrum of `p.Fiber S`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ For a commutative ring `R` and an `R`-module `M`, we obtain an isomorphism betwe
 `R[X] ⊗[R] M` and `PolynomialModule R M` as `R[X]`-modules; this isomorphism is called
 `polynomialTensorProductLEquivPolynomialModule`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

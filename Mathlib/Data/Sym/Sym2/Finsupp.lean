@@ -14,7 +14,6 @@ public import Mathlib.Data.Finsupp.Defs
 
 This file lifts functions `α →₀ M₀` to functions `Sym2 α →₀ M₀` by precomposing with multiplication.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

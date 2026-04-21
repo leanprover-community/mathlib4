@@ -48,7 +48,6 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 We follow [Wielandt-1964].
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

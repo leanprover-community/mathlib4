@@ -36,7 +36,6 @@ category `LightProfinite`. The proof uses an inductive extension argument along 
 * <https://www.youtube.com/watch?v=_4G582SIo28&t=3187s>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

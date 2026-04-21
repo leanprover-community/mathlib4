@@ -10,7 +10,6 @@ public import Mathlib.Init
 /-!
 # `ULift` and `PLift`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

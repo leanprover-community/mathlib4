@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.Zsqrtd.Basic
 This file defines `Zsqrtd.toReal` and related lemmas.
 It is in a separate file to avoid pulling in all of `Data.Real` into `Data.Zsqrtd`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

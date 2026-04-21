@@ -22,7 +22,6 @@ elements of `L` fixed by the stabilizer of `P` in `Gal(L/K)`, and the inertia fi
 in `L/K` is the subfield of elements of `L` fixed by the inertia group of `P` in `Gal(L/K)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

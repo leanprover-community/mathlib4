@@ -15,7 +15,6 @@ public import Lean.Message
 /-!
 This file contains functions that are used by multiple linters.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

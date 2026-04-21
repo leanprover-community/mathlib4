@@ -69,7 +69,6 @@ Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ differentiable in a punctured neighborhood of a point `c` and is bounded in a pu
 of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at `c` and the
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,7 +20,6 @@ in order to define homotopies (`SSet.Homotopy`) between morphisms in the
 category of simplicial sets.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

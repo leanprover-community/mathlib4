@@ -24,7 +24,6 @@ the derived series of a group.
     `general_commutator` starting with the top subgroup
 * `IsSolvable G` : the group `G` is solvable
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

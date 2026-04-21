@@ -14,7 +14,6 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 This file defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
 `ℕ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

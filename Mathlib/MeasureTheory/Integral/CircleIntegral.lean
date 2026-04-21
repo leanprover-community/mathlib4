@@ -64,7 +64,6 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 integral, circle, Cauchy integral
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

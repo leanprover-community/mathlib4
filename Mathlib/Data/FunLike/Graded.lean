@@ -15,7 +15,6 @@ assumes `FunLike A B` where `A` and `B` are the underlying types.
 We also define `GradedEquivLike E 𝒜 ℬ`, which is similar to `EquivLike`, where here `e : E` is
 required to satisfy `x ∈ 𝒜 i ↔ e x ∈ ℬ i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

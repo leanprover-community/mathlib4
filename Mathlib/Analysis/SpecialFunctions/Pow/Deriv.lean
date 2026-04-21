@@ -18,7 +18,6 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 We also prove differentiability and provide derivatives for the power functions `x ^ y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

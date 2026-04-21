@@ -21,7 +21,6 @@ on `ContinuousMultilinearMap 𝕜 E F`,
 where `E i` is a family of vector spaces over `𝕜` with topologies
 and `F` is a topological vector space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

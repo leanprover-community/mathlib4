@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 We prove that, for any positive `k : ℕ`, there are infinitely many primes `p` such that
 `p ≡ 1 [MOD k]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

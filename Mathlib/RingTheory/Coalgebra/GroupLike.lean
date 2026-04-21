@@ -19,7 +19,6 @@ This file defines group-like elements in a coalgebra, i.e. elements `a` such tha
 * `IsGroupLikeElem`: Predicate for an element in a coalgebra to be group-like.
 * `linearIndepOn_isGroupLikeElem`: Group-like elements over a domain are linearly independent.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

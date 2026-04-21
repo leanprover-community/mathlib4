@@ -28,7 +28,6 @@ the underlying space is metrizable and separable.
 continuously on the factors.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

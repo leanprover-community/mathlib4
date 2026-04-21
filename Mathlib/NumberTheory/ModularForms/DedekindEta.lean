@@ -26,7 +26,6 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

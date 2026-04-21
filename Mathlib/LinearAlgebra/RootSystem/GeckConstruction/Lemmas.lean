@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 /-!
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

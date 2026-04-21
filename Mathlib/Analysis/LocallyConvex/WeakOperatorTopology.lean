@@ -48,7 +48,6 @@ We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖`
 In most of the literature, the WOT is defined on maps between Banach spaces. Here, we only assume
 that the domain and codomains are topological vector spaces over a normed field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

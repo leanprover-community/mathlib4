@@ -28,7 +28,6 @@ and is closed under subobjects, quotients and extensions.
 * [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

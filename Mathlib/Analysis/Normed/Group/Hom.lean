@@ -26,7 +26,6 @@ Some easy other constructions are related to subgroups of normed groups.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

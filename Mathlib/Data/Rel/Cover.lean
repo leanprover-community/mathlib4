@@ -24,7 +24,6 @@ The concept of uniform covers is used to define two further notions of covering:
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

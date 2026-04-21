@@ -21,7 +21,6 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 (`CategoryTheory.Limits.preservesLimits_of_evaluation` and
 `CategoryTheory.Limits.preservesColimits_of_evaluation`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

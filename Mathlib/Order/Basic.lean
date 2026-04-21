@@ -52,7 +52,6 @@ provide many aliases to dot notation-less lemmas. For example, `le_trans` is ali
 
 preorder, order, partial order, poset, linear order, chain
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

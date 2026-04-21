@@ -23,7 +23,6 @@ the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

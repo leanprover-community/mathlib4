@@ -30,7 +30,6 @@ of a matrix are homogeneous polynomials in the matrix entries.
 * `Matrix.charpoly.univ_coeff_isHomogeneous`:
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

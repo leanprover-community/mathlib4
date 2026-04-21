@@ -48,7 +48,6 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

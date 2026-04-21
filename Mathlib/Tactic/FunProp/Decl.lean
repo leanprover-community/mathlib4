@@ -10,7 +10,6 @@ public import Mathlib.Init
 /-!
 ## `funProp` environment extension that stores all registered function properties
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

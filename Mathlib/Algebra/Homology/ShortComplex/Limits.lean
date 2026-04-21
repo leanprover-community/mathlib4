@@ -17,7 +17,6 @@ In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

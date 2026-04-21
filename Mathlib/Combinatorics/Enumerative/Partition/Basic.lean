@@ -43,7 +43,6 @@ Partition
 
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

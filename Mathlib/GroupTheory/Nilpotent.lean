@@ -75,7 +75,6 @@ are actually central series. Note that the fact that the upper and lower central
 are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

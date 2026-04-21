@@ -19,7 +19,6 @@ of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

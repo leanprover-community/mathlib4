@@ -20,7 +20,6 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 * `ConvexOn.monotoneOn_deriv`: if a function is convex and differentiable, then its derivative is
   monotone.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

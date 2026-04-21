@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 
 The ring of integers is integrally closed inside the original ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

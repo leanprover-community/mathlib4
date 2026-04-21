@@ -18,7 +18,6 @@ We show some meta properties of bijective ring homomorphisms.
 We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bijective f` as
 the ring hom property.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

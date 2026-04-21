@@ -33,7 +33,6 @@ The file also supports multiplicative groups via `MulArchimedean`.
 The result is also used in `Topology.Instances.Real` as an ingredient in the classification of
 subgroups of `ℝ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

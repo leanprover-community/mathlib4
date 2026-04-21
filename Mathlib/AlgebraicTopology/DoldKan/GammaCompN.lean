@@ -19,7 +19,6 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

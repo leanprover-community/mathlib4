@@ -25,7 +25,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
   In particular, the base change of a geometrically irreducible and universally open scheme to an
   irreducible scheme is irreducible (by infer_instance).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe u
 

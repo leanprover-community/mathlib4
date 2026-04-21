@@ -34,7 +34,6 @@ from the file `Mathlib/RingTheory/Extension/Cotangent/Basic.lean`.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 open Module
 

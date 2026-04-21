@@ -30,7 +30,6 @@ Let `p : R[X]`.
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

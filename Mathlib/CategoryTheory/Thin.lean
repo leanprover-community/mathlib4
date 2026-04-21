@@ -20,7 +20,6 @@ If `C` is thin, then the category of functors to `C` is also thin.
 Further, to show two objects are isomorphic in a thin category, it suffices only to give a morphism
 in each direction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

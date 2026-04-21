@@ -27,7 +27,6 @@ In `Homology.lean`, when `S` has two compatible left and right homology data
 `[S.HasHomology]` and `S.homology`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.AsymptoticCone
 In this file, we prove that the asymptotic cone of a set is non-trivial if and only if the set is
 unbounded.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,7 +20,6 @@ This file is a home for results about base change for matrices.
   values in subfield `K ⊆ L`, then so does its (left) inverse.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,7 +24,6 @@ public import Mathlib.Tactic.LinearCombination
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
   data / proofs is non-negligible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -175,7 +174,6 @@ def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ c₃ where
 
 end Basis
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A quaternionic basis on `A` is equivalent to a map from the quaternion algebra to `A`. -/
 @[simps]
 def lift : Basis A c₁ c₂ c₃ ≃ (ℍ[R,c₁,c₂,c₃] →ₐ[R] A) where

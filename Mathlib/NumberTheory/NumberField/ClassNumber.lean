@@ -39,7 +39,6 @@ We denote by `M K` the Minkowski bound of a number field `K`, defined as
   The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
   to deal with the finite number of primes `p` in the interval.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

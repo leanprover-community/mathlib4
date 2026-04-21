@@ -21,7 +21,6 @@ This file provides embedding of any archimedean groups into reals.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 - `rank_quotient_eq_of_le_torsion` : `rank M/N = rank M` if `N ≤ torsion M`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -25,7 +25,6 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ In this file we show that finite-type is local on the source and the target.
 - `Algebra.FiniteType.of_span_eq_top_target`: finite-type is local on the (algebraic) target
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

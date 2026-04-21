@@ -18,7 +18,6 @@ Those in the `Linarith` namespace should stay here.
 
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -27,7 +27,6 @@ positive linear functional (so that it induces an inner product structure), and 
 structure to be the _adjoint_ of the algebra structure.
 This comes up in non-commutative graph theory for example.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ This file provides a few `positivity` extensions that cannot be in either the fi
 they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because it doesn't want to
 know about finiteness).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

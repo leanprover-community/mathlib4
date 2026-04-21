@@ -43,7 +43,6 @@ In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` where the 
 generated condition is replaced by having the discrete topology. This is for example used
 for complex tori.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

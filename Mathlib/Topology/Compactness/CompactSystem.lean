@@ -25,7 +25,6 @@ This file defines compact systems of sets.
 * `isCompactSystem_isCompact_isClosed`: The set of closed and compact sets is a compact system.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

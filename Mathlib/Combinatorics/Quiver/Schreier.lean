@@ -44,7 +44,6 @@ edges between nodes and so are implemented here as quivers.
 
 * [Y. Vorobets, *Notes on the Schreier graphs of the Grigorchuk group*][Vorobets2012]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

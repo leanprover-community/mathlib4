@@ -11,7 +11,6 @@ public import Mathlib.Data.Multiset.ZeroCons
 # Basic results on multisets
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

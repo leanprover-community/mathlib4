@@ -50,7 +50,6 @@ namely Polish spaces.
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

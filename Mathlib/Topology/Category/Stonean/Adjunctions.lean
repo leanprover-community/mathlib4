@@ -16,7 +16,6 @@ This file constructs the left adjoint `typeToStonean` to the forgetful functor f
 to sets, using the Stone-Cech compactification. This allows to conclude that the monomorphisms in
 `Stonean` are precisely the injective maps (see `Stonean.mono_iff_injective`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

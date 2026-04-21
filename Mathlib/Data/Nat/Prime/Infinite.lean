@@ -17,7 +17,6 @@ public import Mathlib.Order.Bounds.Basic
   in `Data.Nat.PrimeFin`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

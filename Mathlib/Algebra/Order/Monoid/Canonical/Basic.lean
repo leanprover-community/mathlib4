@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 /-!
 # Extra lemmas about canonically ordered monoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

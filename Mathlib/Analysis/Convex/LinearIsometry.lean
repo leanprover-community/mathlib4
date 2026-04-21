@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 In this file we prove some basic lemmas about (strict) convexity and linear isometries.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

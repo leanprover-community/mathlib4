@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Finiteness.Basic
 # Finite suprema of finite modules
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

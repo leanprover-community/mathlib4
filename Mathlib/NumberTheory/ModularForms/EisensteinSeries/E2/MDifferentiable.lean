@@ -15,7 +15,6 @@ We show that the weight 2 Eisenstein series `E2` is MDifferentiable (i.e. holomo
 function `ℍ → ℂ`). The proof uses the relation between `E2` and the logarithmic derivative of
 the Dedekind eta function.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

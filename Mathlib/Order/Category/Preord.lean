@@ -16,7 +16,6 @@ public import Mathlib.Order.CompleteBooleanAlgebra
 
 This defines `Preord`, the category of preorders with monotone maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

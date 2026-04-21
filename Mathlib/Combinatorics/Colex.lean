@@ -58,7 +58,6 @@ Related files are:
 
 colex, colexicographic, binary
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ Given a category `C` and `P : ObjectProperty C`, we define type classes
 that `P` is closed under subobjects (resp. quotients).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ This file defines the deletion of edges and vertices from a graph.
 
 graphs, edge deletion, vertex deletion
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

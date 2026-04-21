@@ -20,7 +20,6 @@ is such a functor `F` which also sends distinguished triangles to
 distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

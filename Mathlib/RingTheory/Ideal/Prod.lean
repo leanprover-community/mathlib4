@@ -15,7 +15,6 @@ product `I × J`, viewed as an ideal of `R × S`. In `ideal_prod_eq` we show tha
 `R × S` is of this form.  Furthermore, we show that every prime ideal of `R × S` is of the form
 `p × S` or `R × p`, where `p` is a prime ideal.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

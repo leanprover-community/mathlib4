@@ -41,7 +41,6 @@ This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
   `MvPowerSeries.rename` in the `CommRing` case.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,7 +33,6 @@ This file defines the **Turán density** of a simple graph.
 * `SimpleGraph.isContained_of_card_edgeFinset`: simple graphs on `n` vertices with at least
   `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for all sufficiently large `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

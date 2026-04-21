@@ -16,7 +16,6 @@ Defines the basic class of parameters for a select and insert widget.
 
 This needs to be in a separate file in order to initialize the deriving handler.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

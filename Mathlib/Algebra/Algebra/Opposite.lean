@@ -25,7 +25,6 @@ public import Mathlib.Algebra.Ring.Opposite
   original algebra.
 * `AlgEquiv.opComm`: swap which side of an isomorphism lies in the opposite algebra.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

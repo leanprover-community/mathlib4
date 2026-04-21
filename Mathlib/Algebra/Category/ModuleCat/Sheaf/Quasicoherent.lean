@@ -21,7 +21,6 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 * https://stacks.math.columbia.edu/tag/01BD
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

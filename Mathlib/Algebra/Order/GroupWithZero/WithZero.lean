@@ -26,7 +26,6 @@ The type `ℤᵐ⁰ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's
 theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

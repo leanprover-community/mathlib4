@@ -19,7 +19,6 @@ We follow the algebraic proof from
 https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

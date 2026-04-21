@@ -41,7 +41,6 @@ respect to `m`.
   `∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

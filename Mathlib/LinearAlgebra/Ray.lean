@@ -27,7 +27,6 @@ This file defines rays in modules.
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
   common positive multiple.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

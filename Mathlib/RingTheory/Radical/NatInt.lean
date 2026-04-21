@@ -30,7 +30,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
   are the same as the prime factors of its absolute value.
 - `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

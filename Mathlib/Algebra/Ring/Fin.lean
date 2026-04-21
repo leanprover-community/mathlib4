@@ -18,7 +18,6 @@ This file collects some basic results involving rings and the `Fin` type
 * `RingEquiv.piFinTwo`: The product over `Fin 2` of some rings is the Cartesian product
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

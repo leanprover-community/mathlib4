@@ -17,7 +17,6 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 
 cyclic group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

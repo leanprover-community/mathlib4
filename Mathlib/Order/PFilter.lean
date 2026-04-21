@@ -31,7 +31,6 @@ Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 pfilter, filter, ideal, dual
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

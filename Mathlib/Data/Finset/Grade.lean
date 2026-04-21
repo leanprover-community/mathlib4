@@ -21,7 +21,6 @@ proves that they form a `ℕ`-graded order.
 * `Multiset.instGradeMinOrder_nat`: Multisets are `ℕ`-graded
 * `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

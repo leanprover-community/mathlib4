@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 Basic facts and derivatives for the complex trigonometric functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

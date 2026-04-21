@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 /-!
 # ℒp seminorms and indicator functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 noncomputable section

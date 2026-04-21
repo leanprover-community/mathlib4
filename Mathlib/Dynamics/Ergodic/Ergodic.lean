@@ -30,7 +30,6 @@ preserving condition is relaxed to quasi-measure-preserving.
   strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

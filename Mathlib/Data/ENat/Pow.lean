@@ -23,7 +23,6 @@ and `α` has cardinality `y`:
 The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is called `epow` in
 lemmas' names.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

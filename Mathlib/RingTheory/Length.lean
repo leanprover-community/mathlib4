@@ -22,7 +22,6 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

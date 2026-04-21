@@ -79,7 +79,6 @@ the namespace `Real` in the above statements.
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

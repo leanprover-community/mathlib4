@@ -23,7 +23,6 @@ operations on filters.
 This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Data/Finset/NAry.lean` and
 `Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

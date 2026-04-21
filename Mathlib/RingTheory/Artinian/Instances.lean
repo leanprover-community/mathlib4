@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Artinian.Module
 We show that every reduced Artinian ring and the polynomial ring over it
 are decomposition monoids, and every reduced Artinian ring is semisimple.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

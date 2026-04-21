@@ -44,7 +44,6 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

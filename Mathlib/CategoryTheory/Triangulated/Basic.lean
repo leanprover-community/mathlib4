@@ -19,7 +19,6 @@ It also defines morphisms between these triangles.
 
 TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

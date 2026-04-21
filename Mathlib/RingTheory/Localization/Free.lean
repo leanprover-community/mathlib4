@@ -24,7 +24,6 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 - Show that the flat locus of a finitely presented module is open.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

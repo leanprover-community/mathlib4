@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Complex.Harmonic.Analytic
 
 A bounded harmonic function on the complex plane is constant.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

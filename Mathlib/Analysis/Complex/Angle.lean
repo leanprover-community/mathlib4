@@ -25,7 +25,6 @@ Prove the corresponding results for oriented angles.
 
 arc-length, arc-distance
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

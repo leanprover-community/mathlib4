@@ -29,7 +29,6 @@ Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access th
 your own code.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

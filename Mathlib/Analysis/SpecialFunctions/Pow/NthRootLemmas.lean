@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Order.Ring.Pow
 
 In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

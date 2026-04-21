@@ -18,7 +18,6 @@ the local context and replaces `t` with `a` everywhere it can.
 `set a := t with ← h` will add `h : t = a` instead.
 `set! a := t with h` does not do any replacing.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

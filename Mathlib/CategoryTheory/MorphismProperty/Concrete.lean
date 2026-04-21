@@ -22,7 +22,6 @@ all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

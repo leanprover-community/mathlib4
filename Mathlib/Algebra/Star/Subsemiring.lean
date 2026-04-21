@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 A *-subring is a subring of a *-ring which is closed under *.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

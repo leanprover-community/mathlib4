@@ -50,7 +50,6 @@ Since we are only interested in the factorization of nonzero fractional ideals, 
 ## Tags
 dedekind domain, fractional ideal, ideal, factorization
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Lean.Meta.Tactic.Simp
 This file defines the `@[push]` attribute, so that it can be used without importing
 the tactic itself.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

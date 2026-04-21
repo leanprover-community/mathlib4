@@ -16,7 +16,6 @@ public import Mathlib.Analysis.Normed.Field.Basic
 In this file we prove that a set in the base field has the unique differentiability property at `x`
 iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

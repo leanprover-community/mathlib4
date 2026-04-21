@@ -30,7 +30,6 @@ essential image of the constant sheaf functor.
 * `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
   constant if and only if the sheaf given by postcomposition with `U` is constant.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

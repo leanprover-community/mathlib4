@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 # (Co)limits in subcategories of comma categories defined by morphism properties
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

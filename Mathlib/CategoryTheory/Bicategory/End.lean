@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

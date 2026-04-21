@@ -15,7 +15,6 @@ If `R` is a simple (non-assoc) ring and there exists surjective `f : R →+* S` 
 nontrivial, then `S` is also simple.
 If `R` is a simple (non-unital non-assoc) ring then any ring isomorphic to `R` is also simple.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

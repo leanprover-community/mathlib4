@@ -16,7 +16,6 @@ This file contains theorems about similarity of triangles, including conditions
 for similarity based on sides and angles.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,7 +20,6 @@ short exact sequences of cochain complexes, this follows from the homology
 sequence associated to a short exact sequence of homological complexes.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

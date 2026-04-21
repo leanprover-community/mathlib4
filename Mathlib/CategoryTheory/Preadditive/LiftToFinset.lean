@@ -17,7 +17,6 @@ coproduct of `f` and whose legs are given by the inclusions of the finite subcop
 is preadditive, then we can describe the legs of this cocone as finite sums of projections followed
 by inclusions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

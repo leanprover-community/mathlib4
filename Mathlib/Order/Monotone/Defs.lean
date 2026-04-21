@@ -42,7 +42,6 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

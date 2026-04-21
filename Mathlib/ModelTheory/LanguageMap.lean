@@ -32,7 +32,6 @@ For the Flypitch project:
   the continuum hypothesis*][flypitch_itp]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

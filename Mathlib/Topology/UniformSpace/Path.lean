@@ -21,7 +21,6 @@ and prove that various functions associated with `Path`s are uniformly continuou
 The uniform space structure is induced from the space of continuous maps `C(I, X)`,
 and corresponds to uniform convergence of paths on `I`, see `Path.hasBasis_uniformity`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

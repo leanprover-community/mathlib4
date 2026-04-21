@@ -45,7 +45,6 @@ We introduce some `local notation` to make formulas shorter:
 * by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
   `{x | f x = y}` is nonempty.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

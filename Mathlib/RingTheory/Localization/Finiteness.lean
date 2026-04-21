@@ -26,7 +26,6 @@ In this file we establish behaviour of `Module.Finite` under localizations.
   `Mᵣ` is a finite `Rᵣ`-module for each `r`, then `M` is a finite `R`-module.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

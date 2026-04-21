@@ -32,7 +32,6 @@ In a `LocallyFiniteOrderBot`,
 
 Do we really need this file at all? (March 2024)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

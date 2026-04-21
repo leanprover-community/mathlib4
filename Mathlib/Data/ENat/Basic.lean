@@ -35,7 +35,6 @@ of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for ad
 for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
 similarly for multiplication.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

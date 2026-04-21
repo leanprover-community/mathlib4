@@ -39,7 +39,6 @@ For the classical statement of Krasner's lemma, please see the
 ## Tags
 Krasner's lemma, normed field
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

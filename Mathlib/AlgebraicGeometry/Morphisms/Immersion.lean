@@ -26,7 +26,6 @@ if and only if it can be factored into a closed immersion followed by an open im
   an open immersion followed by a closed immersion.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

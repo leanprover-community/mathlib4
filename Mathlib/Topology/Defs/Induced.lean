@@ -46,7 +46,6 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

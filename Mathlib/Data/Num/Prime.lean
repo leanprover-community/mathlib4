@@ -25,7 +25,6 @@ to construct primality and non-primality proofs more efficiently than kernel com
 Nevertheless, sometimes proof by computational reflection requires natural number computations, and
 `Num` implements algorithms directly on binary natural numbers for this purpose.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

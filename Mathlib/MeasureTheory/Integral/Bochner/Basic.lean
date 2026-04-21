@@ -130,7 +130,6 @@ Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is mi
 Bochner integral, simple function, function space, Lebesgue dominated convergence theorem
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

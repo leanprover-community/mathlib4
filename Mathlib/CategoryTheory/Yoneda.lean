@@ -30,7 +30,6 @@ Yoneda lemma is also expressed as a natural isomorphism
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 

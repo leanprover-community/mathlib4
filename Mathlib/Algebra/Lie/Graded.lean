@@ -26,7 +26,6 @@ adding elements of `A (i + j)` to elements of `A (j + i)`.
   pieces by an additive map applied to degree.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

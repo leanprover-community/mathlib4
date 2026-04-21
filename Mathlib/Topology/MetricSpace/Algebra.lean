@@ -26,7 +26,6 @@ be an intermediate typeclass for uniform spaces, but the algebraic hierarchy the
 `IsUniformGroup`) is structured differently.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

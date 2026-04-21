@@ -56,7 +56,6 @@ for the empty set by convention.
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

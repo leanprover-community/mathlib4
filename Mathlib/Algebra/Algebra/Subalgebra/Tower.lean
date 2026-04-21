@@ -27,7 +27,6 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   given that `A/S/R` is a tower
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

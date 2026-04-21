@@ -21,7 +21,6 @@ The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classi
 ## References
 * [K. Jänich, *Topology*][Janich1984]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

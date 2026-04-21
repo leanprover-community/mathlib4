@@ -16,7 +16,6 @@ of the category `Presheaf J A` with respect to the class `J.W` of morphisms
 of presheaves which become isomorphisms after applying the sheafification functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe w
 

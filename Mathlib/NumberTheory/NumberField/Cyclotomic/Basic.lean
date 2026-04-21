@@ -24,7 +24,6 @@ integers of a cyclotomic extension of `ℚ`.
 * `IsCyclotomicExtension.Rat.discr` and related results: the absolute discriminant
   of cyclotomic fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

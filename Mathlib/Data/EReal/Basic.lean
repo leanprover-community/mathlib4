@@ -23,7 +23,6 @@ and their basic properties proved. The latter takes up most of the rest of this 
 
 real, ereal, complete lattice
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

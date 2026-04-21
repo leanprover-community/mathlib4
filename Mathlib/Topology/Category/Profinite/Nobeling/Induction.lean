@@ -25,7 +25,6 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 
 - [scholze2019condensed], Theorem 5.4.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

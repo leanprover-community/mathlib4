@@ -69,7 +69,6 @@ lattice.
 
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

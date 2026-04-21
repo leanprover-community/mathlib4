@@ -27,7 +27,6 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
 
 * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

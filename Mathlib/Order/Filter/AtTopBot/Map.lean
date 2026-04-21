@@ -13,7 +13,6 @@ public import Mathlib.Order.Interval.Set.OrderIso
 /-!
 # Map and comap of `Filter.atTop` and `Filter.atBot`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

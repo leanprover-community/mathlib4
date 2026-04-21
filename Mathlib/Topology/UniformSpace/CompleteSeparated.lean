@@ -12,7 +12,6 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 This file is for elementary lemmas that depend on both Cauchy filters and separation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

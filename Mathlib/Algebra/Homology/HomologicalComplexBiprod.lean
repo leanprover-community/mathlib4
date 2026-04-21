@@ -16,7 +16,6 @@ a preadditive category are such that for all `i : ι`, the binary biproduct
 `biprodXIso K L i : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open CategoryTheory Limits

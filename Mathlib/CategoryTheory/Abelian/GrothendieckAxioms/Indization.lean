@@ -18,7 +18,6 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits and deduce that
 `Ind C` is Grothendieck abelian if `C` is small and abelian.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

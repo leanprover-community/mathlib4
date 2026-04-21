@@ -21,7 +21,6 @@ cardinality as element of an `AddGroupWithOne`.
 * `Finset.cast_card_inter`, `Finset.cast_card_union`: inclusion/exclusion principle.
 * `Finset.cast_card_sdiff`: cardinality of `t \ s` is the difference of cardinalities if `s ⊆ t`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

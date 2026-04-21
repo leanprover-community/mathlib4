@@ -20,7 +20,6 @@ unnecessary. Otherwise the names here share the same names as their counterparts
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 -- Guard against import creep

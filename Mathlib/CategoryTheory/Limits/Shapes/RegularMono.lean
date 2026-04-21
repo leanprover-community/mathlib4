@@ -38,7 +38,6 @@ every monomorphism or epimorphism is regular, and deduce that these categories a
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

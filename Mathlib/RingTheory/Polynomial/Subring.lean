@@ -23,7 +23,6 @@ in `R` to `R[X]`. We provide several lemmas to deal with coefficients, degree, a
 * `Polynomial.toSubring` : given a polynomial `P` in `K[X]` whose coefficients all belong to a
   subring `R` of the ring `K`, `P.toSubring R` is the corresponding polynomial in `R[X]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

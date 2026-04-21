@@ -19,7 +19,6 @@ construct an isomorphism
 `(Φ.comap F hF).sheafFiber ≅ F.sheafPullback A J K ⋙ Φ.sheafFiber`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

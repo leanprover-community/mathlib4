@@ -33,7 +33,6 @@ which provides the element as a continuous linear map. (Even though `WeakDual ù
 character space, Gelfand transform, functional calculus
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

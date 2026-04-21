@@ -22,7 +22,6 @@ every finite Galois extension has a basis that is an orbit under the Galois grou
 The proof follows [ConradLinearChar] Keith Conrad, *Linear Independence of Characters*.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]
 

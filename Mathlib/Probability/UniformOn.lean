@@ -37,7 +37,6 @@ allows us to describe this by abusing the definitional equality of sets and pred
 writing `uniformOn s P`. We should avoid this however as none of the lemmas are written for
 predicates.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

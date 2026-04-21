@@ -18,7 +18,6 @@ which sends `X : C` to the category of sheaves on `Over X`
 with values in `A`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

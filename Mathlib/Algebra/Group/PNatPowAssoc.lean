@@ -35,7 +35,6 @@ powers are considered.
   power-associativity, but we have found that it is not hard to write.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

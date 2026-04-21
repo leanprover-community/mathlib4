@@ -16,7 +16,6 @@ functorial in `S`, inducing a functor `Dᵒᵖ ⥤ Cat`. This file constructs sa
 that, in the dual case, we can precompose it with another functor `L : E ⥤ D` to obtain a category
 equivalent to `Comma L T`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

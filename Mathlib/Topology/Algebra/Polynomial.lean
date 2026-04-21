@@ -35,7 +35,6 @@ In this file we prove the following lemmas.
 
 Polynomial, continuity
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

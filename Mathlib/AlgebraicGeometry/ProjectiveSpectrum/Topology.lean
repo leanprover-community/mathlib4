@@ -36,7 +36,6 @@ It is naturally endowed with a topology: the Zariski topology.
 * `ProjectiveSpectrum.Top`: the topological space of `ProjectiveSpectrum 𝒜` endowed with the
   Zariski topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

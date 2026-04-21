@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
 * `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

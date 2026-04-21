@@ -42,7 +42,6 @@ Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
 
 Cover, covering, quiver, path, lift
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -161,7 +160,6 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by

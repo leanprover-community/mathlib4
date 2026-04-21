@@ -20,7 +20,6 @@ or a hypothesis of the form `h : A`, where `[Fintype A]` is available,
 `fin_cases h` will repeatedly call `cases` to split the goal into
 separate cases for each possible value.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

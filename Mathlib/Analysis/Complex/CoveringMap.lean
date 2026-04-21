@@ -19,7 +19,6 @@ public import Mathlib.Topology.LocalAtTarget
 In this file, we show that `Complex.exp` and `(· ^ n)` (for `n ≠ 0`) are a covering map on `{0}ᶜ`.
 We also show that any complex polynomial is a covering map on the set of regular values.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -52,7 +52,6 @@ Pell's equation
 * Extend to `x ^ 2 - d * y ^ 2 = -1` and further generalizations.
 * Connect solutions to the continued fraction expansion of `√d`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

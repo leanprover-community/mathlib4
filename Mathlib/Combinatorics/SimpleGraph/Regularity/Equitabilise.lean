@@ -27,7 +27,6 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -48,7 +48,6 @@ Some notable properties of `H-spaces` are
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

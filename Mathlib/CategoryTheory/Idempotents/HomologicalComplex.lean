@@ -19,7 +19,6 @@ When the category `C` is idempotent complete, it is shown that
 `HomologicalComplex (Karoubi C) c` is also idempotent complete.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

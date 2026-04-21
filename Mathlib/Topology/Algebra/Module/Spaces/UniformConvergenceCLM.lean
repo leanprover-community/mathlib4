@@ -59,7 +59,6 @@ The most important examples for such topologies are:
 
 uniform convergence, bounded convergence
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

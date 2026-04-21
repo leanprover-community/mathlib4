@@ -20,7 +20,6 @@ The result requires `α` to be countable or `β` to be a countably generated mea
 * `compProd_eq_iff`: `μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

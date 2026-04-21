@@ -29,7 +29,6 @@ public import Mathlib.RingTheory.Valuation.LocalSubring
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

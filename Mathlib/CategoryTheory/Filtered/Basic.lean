@@ -58,7 +58,6 @@ functor from a finite category, there is `X : C` such that `Nonempty (limit (F.o
 This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

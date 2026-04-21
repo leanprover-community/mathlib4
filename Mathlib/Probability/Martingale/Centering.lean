@@ -30,7 +30,6 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

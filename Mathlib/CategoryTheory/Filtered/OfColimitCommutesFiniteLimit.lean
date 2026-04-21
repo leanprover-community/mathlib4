@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 /-!
 # If colimits of shape `K` commute with finite limits, then `K` is filtered.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

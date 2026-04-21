@@ -22,7 +22,6 @@ finitely supported `R`-valued functions on `G` on the space of `V`-valued functi
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 /-!
 # Meromorphicity of `Complex.tan` and `Complex.tanh`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

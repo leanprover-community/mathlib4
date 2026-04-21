@@ -41,7 +41,6 @@ The file also contains properties of `rnDeriv` that use the Radon-Nikodym theore
 
 Radon-Nikodym theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

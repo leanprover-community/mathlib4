@@ -9,7 +9,6 @@ public import Mathlib.Data.Complex.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.AlgClosed
 public import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Complex.Polynomial.Basic
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-01-19")
 

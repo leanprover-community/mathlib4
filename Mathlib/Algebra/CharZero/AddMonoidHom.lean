@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.Cast.Basic
 
 This file exists in order to avoid adding extra imports to other files in this subdirectory.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

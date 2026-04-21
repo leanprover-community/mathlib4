@@ -10,7 +10,6 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

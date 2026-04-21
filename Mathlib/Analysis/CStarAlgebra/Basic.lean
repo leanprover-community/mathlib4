@@ -33,7 +33,6 @@ Note that the type classes corresponding to C⋆-algebras are defined in
   definition of C*-algebras in some sources (e.g. Wikipedia).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

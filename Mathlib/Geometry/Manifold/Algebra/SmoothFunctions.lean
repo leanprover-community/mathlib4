@@ -12,7 +12,6 @@ public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 In this file, we define instances of algebraic structures over `C^n` functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

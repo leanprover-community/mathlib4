@@ -40,7 +40,6 @@ The strongest typeclass provided on each interval is:
 * prove versions of the lemmas in `Topology/UnitInterval` with `ℝ` generalized to
   some arbitrary ordered semiring
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

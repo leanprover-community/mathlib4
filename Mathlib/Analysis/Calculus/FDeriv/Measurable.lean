@@ -80,7 +80,6 @@ is exactly the set of points where `f` is differentiable with a derivative in `K
 
 derivative, measurable function, Borel σ-algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,7 +39,6 @@ in this file. See instead `PiNat.res`.
 scheme, cantor scheme, lusin scheme, approximation.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

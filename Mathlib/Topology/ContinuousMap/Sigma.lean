@@ -33,7 +33,6 @@ if `X` is empty, then any index `i` will work, so there is no 1-to-1 corresponde
 
 continuous map, sigma type, disjoint union
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

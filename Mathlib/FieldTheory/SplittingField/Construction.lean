@@ -30,7 +30,6 @@ definitional equalities. Then the actual `SplittingField` is defined to be a quo
 actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice instances on it.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

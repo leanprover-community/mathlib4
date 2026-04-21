@@ -35,7 +35,6 @@ is `MorphismProperty.comp_eq_top_iff`).
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 

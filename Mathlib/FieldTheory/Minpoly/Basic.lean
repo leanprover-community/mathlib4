@@ -15,7 +15,6 @@ under the assumption that x is integral over `A`, and derives some basic propert
 such as irreducibility under the assumption `B` is a domain.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ and provides the definition of the functor that takes an equivalence to its inve
   `Equivalence.congrLeft` on objects, and whiskers left by `conjugateEquiv` on maps.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

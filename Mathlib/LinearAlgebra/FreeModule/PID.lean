@@ -46,7 +46,6 @@ In this section, `M` is a free and finitely generated `R`-module, and
 free module, finitely generated module, rank, structure theorem
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

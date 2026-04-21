@@ -16,7 +16,6 @@ Many theorems in complex analysis assume that a function is complex differentiab
 is continuous on its closure. In this file we define a predicate `DiffContOnCl` that expresses
 this property and prove basic facts about this predicate.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -44,7 +44,6 @@ We need better support for reordering of universes for `to_dual` in category the
 for example to dualize `CategoryTheory.Comma` to itself.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

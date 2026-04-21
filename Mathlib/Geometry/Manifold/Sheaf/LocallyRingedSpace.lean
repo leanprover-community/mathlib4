@@ -30,7 +30,6 @@ This file equips a smooth manifold with the structure of a locally ringed space.
   by a smooth map via `ChartedSpace.locallyRingedSpaceMap`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

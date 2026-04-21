@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 # `FGModuleCat K` is an abelian category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

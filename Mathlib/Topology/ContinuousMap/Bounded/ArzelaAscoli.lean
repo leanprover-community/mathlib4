@@ -15,7 +15,6 @@ Arzelà–Ascoli asserts that, on a compact space, a set of functions sharing a 
 continuity and taking values in a compact set forms a compact subset for the topology of
 uniform convergence. This file proves the theorem and several useful variations around it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

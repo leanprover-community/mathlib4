@@ -50,7 +50,6 @@ Matiyasevic's theorem, Hilbert's tenth problem
 * Finish the solution of Hilbert's tenth problem.
 * Connect `Poly` to `MvPolynomial`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ some `r : R`, `m : M` implies that `r` is a zero-divisor.
 If furthermore the base ring is a domain, this is equivalent to the naïve
 `r • m = 0 ↔ r = 0 ∨ m = 0` definition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

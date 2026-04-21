@@ -26,7 +26,6 @@ a precoverage `K` on `C`.
   the induced topology from the forgetful functor `P.Over ⊤ X ⥤ Over X`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

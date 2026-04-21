@@ -18,7 +18,6 @@ This file concerns the symmetric difference operator `s Δ t` on finite sets.
 finite sets, finset
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

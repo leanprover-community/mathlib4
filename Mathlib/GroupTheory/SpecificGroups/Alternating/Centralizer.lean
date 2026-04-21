@@ -34,7 +34,6 @@ TODO :
 Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

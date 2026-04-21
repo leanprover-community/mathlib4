@@ -30,7 +30,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   of `closedBall`s of radius `δ` around `x : E`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

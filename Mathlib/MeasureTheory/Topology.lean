@@ -14,7 +14,6 @@ public import Mathlib.Topology.DiscreteSubset
 This file gathers theorems that combine measure theory and topology, and cannot easily be added to
 the existing files without introducing massive dependencies between the subjects.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 open Filter MeasureTheory

@@ -31,7 +31,6 @@ a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`)
   the twisted shift.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

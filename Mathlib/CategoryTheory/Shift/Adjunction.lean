@@ -45,7 +45,6 @@ Once we have established all this, the compatibility of the commutation isomorph
 statements for the commutation isomorphisms for `G`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

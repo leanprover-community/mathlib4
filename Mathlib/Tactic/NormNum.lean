@@ -9,6 +9,5 @@ public import Mathlib.Tactic.NormNum.Ineq
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.OfScientific
 public import Mathlib.Tactic.NormNum.Pow
-set_option backward.defeqAttrib.useBackward true
 
 set_option linter.style.header false

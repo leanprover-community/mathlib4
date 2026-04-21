@@ -22,7 +22,6 @@ The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

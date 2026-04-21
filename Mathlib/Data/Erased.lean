@@ -14,7 +14,6 @@ This file defines a type `Erased α` which is classically isomorphic to `α`,
 but erased in the VM. That is, at runtime every value of `Erased α` is
 represented as `0`, just like types and proofs.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

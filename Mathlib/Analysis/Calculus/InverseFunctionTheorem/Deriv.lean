@@ -15,7 +15,6 @@ In this file we prove a version of the inverse function theorem for maps `f : �
 We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f' a` and
 `f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

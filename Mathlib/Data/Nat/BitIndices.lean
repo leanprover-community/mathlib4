@@ -26,7 +26,6 @@ This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices 
 
 Relate the material in this file to `Nat.digits` and `Nat.bits`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

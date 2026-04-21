@@ -22,7 +22,6 @@ We introduce the bundled categories:
 
 along with the relevant forgetful functors between them.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

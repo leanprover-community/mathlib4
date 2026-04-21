@@ -18,7 +18,6 @@ public import Mathlib.Topology.Instances.RealVectorSpace
 
 This file contains lemmas about normed additive torsors over normed spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

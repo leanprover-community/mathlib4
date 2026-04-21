@@ -32,7 +32,6 @@ The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (E
 
 * [Barry Mitchell, *A quick proof of the Gabriel-Popesco theorem*][mitchell1981]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

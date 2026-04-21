@@ -30,7 +30,6 @@ of localizations.
 - `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
   the resulting ring only has a single prime ideal.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

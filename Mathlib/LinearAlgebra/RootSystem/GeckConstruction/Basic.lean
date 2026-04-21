@@ -49,7 +49,6 @@ There seems to be no known construction of a Lie algebra from a root system with
 a base: https://mathoverflow.net/questions/495434/
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

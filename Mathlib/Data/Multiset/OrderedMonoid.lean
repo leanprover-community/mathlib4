@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 The `IsOrderedCancelAddMonoid` and `CanonicallyOrderedAdd` instances on `Multiset α`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

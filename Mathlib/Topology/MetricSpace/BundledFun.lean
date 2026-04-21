@@ -26,7 +26,6 @@ In most cases, the codomain will be a linear ordered additive monoid like
 `ℝ`, `ℝ≥0`, `ℝ≥0∞`, in which all of the axioms below are satisfied.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

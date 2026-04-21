@@ -56,7 +56,6 @@ Please try to keep them in sync.
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
 * A unified approach to the lifting of adjoints (AJ Power, 1988)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

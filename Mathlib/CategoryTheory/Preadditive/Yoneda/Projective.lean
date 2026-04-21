@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 /-!
 An object is projective iff the preadditive coyoneda functor on it preserves epimorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

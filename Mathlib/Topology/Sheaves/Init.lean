@@ -15,7 +15,6 @@ This module defines the `Restrict` Aesop rule set. Aesop rule sets only become
 visible once the file in which they're declared is imported, so we must put this
 declaration into its own file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 /- to prove subset relations -/
 declare_aesop_rule_sets [Restrict]

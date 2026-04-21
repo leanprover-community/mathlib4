@@ -32,7 +32,6 @@ This file defines isomorphisms between objects of a category.
 
 category, category theory, isomorphism
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

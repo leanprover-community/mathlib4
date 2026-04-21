@@ -21,7 +21,6 @@ and a `Set.Finite` constructor.
 
 finite sets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

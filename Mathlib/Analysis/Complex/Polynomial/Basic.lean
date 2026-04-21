@@ -24,7 +24,6 @@ of non-real roots.
 
 We also show that an irreducible real polynomial has degree at most two.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

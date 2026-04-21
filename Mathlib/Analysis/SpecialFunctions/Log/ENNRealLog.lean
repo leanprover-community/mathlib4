@@ -29,7 +29,6 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 ## Tags
 ENNReal, EReal, logarithm
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace ENNReal

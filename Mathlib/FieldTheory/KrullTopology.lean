@@ -59,7 +59,6 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 - `krullTopology K L` is defined as an instance for type class inference.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

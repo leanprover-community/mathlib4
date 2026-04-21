@@ -74,7 +74,6 @@ respectively, since it requires a huge refactoring. We hope to add these simp le
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v u
 

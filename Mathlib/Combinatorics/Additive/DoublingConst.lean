@@ -13,7 +13,6 @@ public import Mathlib.Data.Finset.Density
 
 This file defines the doubling and difference constants of two finsets in a group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

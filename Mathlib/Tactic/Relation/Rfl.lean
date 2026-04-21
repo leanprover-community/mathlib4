@@ -15,7 +15,6 @@ Convert a goal of the form `x ~ y` into the form `x = y`, where `~` is a reflexi
 relation, that is, a relation which has a reflexive lemma tagged with the attribute `@[refl]`.
 If this can't be done, returns the original `MVarId`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

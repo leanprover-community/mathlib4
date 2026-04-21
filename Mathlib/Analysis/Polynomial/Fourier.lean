@@ -30,7 +30,6 @@ coefficients match Fourier coefficients and prove Parseval's identity for polyno
   of the norms of the coefficients of a polynomial equals the average over the circle of the norm
   square of the polynomial.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Complex MeasureTheory Set AddCircle
 open scoped Real

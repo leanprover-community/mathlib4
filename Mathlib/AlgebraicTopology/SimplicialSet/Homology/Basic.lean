@@ -20,7 +20,6 @@ set `X` is denoted `X.chainComplex R`, and its homology
 in degree `n : ℕ` is `X.homology R n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

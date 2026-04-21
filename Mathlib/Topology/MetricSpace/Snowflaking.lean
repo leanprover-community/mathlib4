@@ -47,7 +47,6 @@ then these sets become balls, and we can apply Vitali theorem.
 * [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
   [Moreira2001]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

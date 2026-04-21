@@ -11,7 +11,6 @@ public import Mathlib.Init
 
 This file defines a bunch of functions for the `String` datatype.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

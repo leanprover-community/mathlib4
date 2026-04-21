@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Group.Semiconj.Units
 # Lemmas about commuting pairs of elements involving units.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

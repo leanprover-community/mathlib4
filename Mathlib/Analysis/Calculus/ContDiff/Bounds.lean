@@ -17,7 +17,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
   of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
   derivative of `f` is bounded by `D ^ i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 
@@ -284,7 +283,6 @@ theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : ℕ∞ω} (h
 
 -- TODO: Add `norm_iteratedFDeriv[Within]_list_prod_le` for non-commutative `NormedRing A`.
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}
     {f : ι → E → A'} {N : ℕ∞ω} (hf : ∀ i ∈ u, ContDiffOn 𝕜 N (f i) s)

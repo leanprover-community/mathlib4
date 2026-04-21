@@ -32,7 +32,6 @@ as different users are expected to feel strongly about the relative merits of
 Our star rings are actually star non-unital, non-associative, semirings, but of course we can prove
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

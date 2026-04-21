@@ -41,7 +41,6 @@ the more verbose definition above.
 Mirroring the convention for deletion, we use the abbreviation `contractElem` in lemma names
 to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : Matroid α`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

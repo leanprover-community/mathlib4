@@ -25,7 +25,6 @@ the pushforward functor along `f`.
 - Any pullback of an exponentiable morphism is exponentiable.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

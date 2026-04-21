@@ -27,7 +27,6 @@ The file `Mathlib/Condensed/Discrete/Characterization.lean` defines a predicate 
 condensed and light condensed objects, and provides several conditions on a (light) condensed
 set or module that characterize it as discrete.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

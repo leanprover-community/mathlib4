@@ -21,7 +21,6 @@ We then state various results about `R⟦X⟧` with `R` an integral domain.
 If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

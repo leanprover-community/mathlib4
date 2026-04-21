@@ -17,7 +17,6 @@ value) with regard to a measure derived from a `PMF` is a sum weighted by the `P
 
 It also provides the expected value for specific probability mass functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

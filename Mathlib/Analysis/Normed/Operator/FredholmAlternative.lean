@@ -35,7 +35,6 @@ rather than just over `ℝ` or `ℂ`. The main technical hurdle is that we don't
 rescale vectors to have norm exactly `1`, so we have to work with vectors in a shell instead of on
 the unit sphere, and this makes some of the intermediate statements more complicated.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

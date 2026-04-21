@@ -18,7 +18,6 @@ is occasionally convenient in showing that a map is open, a quotient map, etc.
 This material was formerly linked to the main definition of fiber bundles, but after a series of
 refactors, there is no longer a direct connection.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

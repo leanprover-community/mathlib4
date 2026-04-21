@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 # Projective Dimension in ModuleCat
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

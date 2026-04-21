@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 We show that the category of types has all limits, by providing the usual concrete models.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

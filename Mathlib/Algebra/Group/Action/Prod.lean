@@ -35,7 +35,6 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

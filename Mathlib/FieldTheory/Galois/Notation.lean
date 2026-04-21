@@ -17,7 +17,6 @@ We provide such a notation in this file.
 Although this notation works for all automorphism groups of algebras, we should only use this
 notation when `L/K` is an extension of fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

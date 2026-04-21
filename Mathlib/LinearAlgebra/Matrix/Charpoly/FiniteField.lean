@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Matrix.CharP
 /-!
 # Results on characteristic polynomials and traces over finite fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

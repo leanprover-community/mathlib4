@@ -103,7 +103,6 @@ In the prime spectrum of a commutative semiring:
   correspond to idempotents in the ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

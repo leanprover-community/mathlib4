@@ -27,7 +27,6 @@ This file defines the type of totally real and totally complex number fields.
 
 number field, infinite places, totally real, totally complex
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

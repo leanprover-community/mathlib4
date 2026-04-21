@@ -17,7 +17,6 @@ public import Mathlib.Data.Vector.Basic
   Also, an alternative, reverse, induction principle is added, that breaks down a vector into
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

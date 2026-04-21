@@ -30,7 +30,6 @@ If you want this function, you can write `Matrix.vec Aᵀ` instead.
 
 * [Wikipedia](https://en.wikipedia.org/wiki/Vectorization_(mathematics))
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace Matrix

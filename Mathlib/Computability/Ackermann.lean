@@ -48,7 +48,6 @@ We then prove this by induction on `n`. Our proof crucially depends on `ack_pair
 applied twice, giving us a constant of `4 + 4`. The rest of the proof consists of simpler bounds
 which bump up our constant to `9`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

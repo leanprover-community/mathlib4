@@ -24,7 +24,6 @@ It closes the goal at non-structural parts with `rfl` and the goal at structural
 `pureCoherence`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -133,7 +133,6 @@ to save some time for anyone wondering why they are not here.
 We also import theory-free linters, commands, and utilities which are useful to have low in the
 import hierarchy.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

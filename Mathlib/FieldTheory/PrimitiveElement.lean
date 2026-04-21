@@ -38,7 +38,6 @@ primitive element, separable field extension, separable extension, intermediate 
 exists_adjoin_simple_eq_top
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

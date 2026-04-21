@@ -15,7 +15,6 @@ For a simplicial set `X` and `d : ℕ`, we introduce a typeclass
 i.e. all nondegenerate simplices of `X` are of dimension `< d`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

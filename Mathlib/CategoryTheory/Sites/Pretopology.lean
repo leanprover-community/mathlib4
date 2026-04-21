@@ -30,7 +30,6 @@ coverage, pretopology, site
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * [Stacks, *00VG*](https://stacks.math.columbia.edu/tag/00VG)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

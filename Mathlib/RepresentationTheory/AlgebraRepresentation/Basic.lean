@@ -16,7 +16,6 @@ to have general results so that when we prove a corresponding fact about group r
 (or Lie algebra representations etc), we can deduce them as special cases of facts from this file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ This file defines the probability mass function of the binomial distribution.
 
 * `binomial_one_eq_bernoulli`: For `n = 1`, it is equal to `PMF.bernoulli`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

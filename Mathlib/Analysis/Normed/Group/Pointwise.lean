@@ -15,7 +15,6 @@ public import Mathlib.Topology.MetricSpace.Thickening
 We explore the relationships between pointwise addition of sets in normed groups, and the norm.
 Notably, we show that the sum of bounded sets remain bounded.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

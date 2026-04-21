@@ -14,7 +14,6 @@ public import Mathlib.Order.Lattice
 This file provides `Sym2.sortEquiv`, the forward direction of which is somewhat analogous to
 `Multiset.sort`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

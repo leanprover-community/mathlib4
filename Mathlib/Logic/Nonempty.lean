@@ -17,7 +17,6 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 * `Classical.arbitrary`: Extracts a witness of nonemptiness using choice. Takes `Nonempty α` as an
   instance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

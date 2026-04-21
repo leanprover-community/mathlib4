@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dimension.Basic
 /-!
 # Dimension of trivial modules
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

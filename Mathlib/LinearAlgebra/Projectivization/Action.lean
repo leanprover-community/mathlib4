@@ -24,7 +24,6 @@ Prove that these actions are 2-transitive.
 Generalize to the special linear group over a division ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

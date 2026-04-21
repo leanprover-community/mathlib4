@@ -35,7 +35,6 @@ For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

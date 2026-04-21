@@ -44,7 +44,6 @@ by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` a
 
 multiplication of submodules, division of submodules, submodule semiring
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

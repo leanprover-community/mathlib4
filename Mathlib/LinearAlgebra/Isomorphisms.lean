@@ -16,7 +16,6 @@ public import Mathlib.LinearAlgebra.Quotient.Card
   `Submodule.quotientQuotientEquivQuotient`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ on compact sets.
 * `ContinuousOn.locallyIntegrableOn`: A function which is continuous on `s` is locally
   integrable on `s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

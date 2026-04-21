@@ -38,7 +38,6 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

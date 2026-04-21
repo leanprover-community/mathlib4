@@ -21,7 +21,6 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 * `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

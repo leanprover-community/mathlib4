@@ -12,7 +12,6 @@ public import Mathlib.Order.Hom.Basic
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

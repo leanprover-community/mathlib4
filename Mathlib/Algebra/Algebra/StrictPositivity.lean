@@ -28,7 +28,6 @@ Thus, it is best to avoid unfolding the definition and only use the API provided
 
 + Generalize the definition to non-unital algebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

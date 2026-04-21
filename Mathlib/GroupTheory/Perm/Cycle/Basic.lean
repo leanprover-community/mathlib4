@@ -33,7 +33,6 @@ In the following, `f : Equiv.Perm β`.
 * `IsCycle` forbids the identity while `IsCycleOn` allows it (if `s` is a subsingleton).
 * `IsCycleOn` forbids fixed points on `s` (if `s` is nontrivial), while `IsCycle` allows them.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

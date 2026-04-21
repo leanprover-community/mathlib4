@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Span.Basic
 In this file we prove basic lemmas about `tangentConeAt`, `UniqueDiffWithinAt`,
 and `UniqueDiffOn`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

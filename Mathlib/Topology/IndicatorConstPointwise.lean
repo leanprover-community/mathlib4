@@ -30,7 +30,6 @@ The results stating these in the case when the indicators take values in a Fréc
 * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

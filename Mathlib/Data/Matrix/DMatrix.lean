@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Pi.Basic
 /-!
 # Dependent-typed matrices
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

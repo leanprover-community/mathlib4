@@ -42,7 +42,6 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 (Later we'll introduce `CochainComplex` and `ChainComplex` as abbreviations for
 `HomologicalComplex` with one of these shapes baked in.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -197,7 +196,6 @@ namespace ComplexShape
 
 variable (α : Type*) [AddRightCancelSemigroup α] [DecidableEq α]
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual instDecidableRelRelDown']
 instance instDecidableRelRelUp' (a : α) : DecidableRel (ComplexShape.up' a).Rel :=
   fun _ _ => by dsimp; infer_instance

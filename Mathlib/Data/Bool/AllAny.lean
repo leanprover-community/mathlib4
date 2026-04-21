@@ -13,7 +13,6 @@ public import Mathlib.Init
 This proves a few properties about `List.all` and `List.any`, which are the `Bool` universal and
 existential quantifiers. Their definitions are in core Lean.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

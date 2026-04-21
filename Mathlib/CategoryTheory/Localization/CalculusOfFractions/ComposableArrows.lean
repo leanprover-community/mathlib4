@@ -16,7 +16,6 @@ that the functor `L.mapComposableArrows n : ComposableArrows C n ⥤ ComposableA
 is essentially surjective for any `n : ℕ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

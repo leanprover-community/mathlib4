@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-! # Bundled ordered monoid structures on `Multiplicative α` and `Additive α`. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

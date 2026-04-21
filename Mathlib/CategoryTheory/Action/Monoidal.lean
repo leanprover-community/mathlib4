@@ -22,7 +22,6 @@ We show:
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
 * When `V` is rigid and `G` is a group, `Action V G` is also rigid.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ We introduce the following typeclasses for measures:
 * `IsZeroOrProbabilityMeasure μ`: `μ univ = 0 ∨ μ univ = 1`;
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

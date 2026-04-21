@@ -34,7 +34,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 * Expand the list of definitions and important lemmas to the module docstring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

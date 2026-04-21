@@ -25,7 +25,6 @@ differentiable on all of `ℂ` converges to `f` on `ℂ`;
 see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire` and
 `Complex.taylorSeries_eq_of_entire'`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

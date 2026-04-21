@@ -23,7 +23,6 @@ Similarly, we define the right Kan extension functor
 right Kan extension along `L`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

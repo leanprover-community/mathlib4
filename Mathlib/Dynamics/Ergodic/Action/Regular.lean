@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Group.Prod
 
 In this file we prove that the left and right actions of a group on itself are ergodic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

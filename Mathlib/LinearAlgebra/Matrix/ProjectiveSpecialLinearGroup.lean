@@ -16,7 +16,6 @@ In the `MatrixGroups` locale:
 
 * `PSL(n, R)` is a shorthand for `Matrix.ProjectiveSpecialLinearGroup (Fin n) R`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

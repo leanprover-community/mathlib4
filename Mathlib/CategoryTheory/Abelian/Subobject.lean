@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 # Equivalence between subobjects and quotients in an abelian category
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

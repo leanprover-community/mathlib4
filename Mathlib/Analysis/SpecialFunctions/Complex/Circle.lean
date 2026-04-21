@@ -16,7 +16,6 @@ In this file we prove some basic lemmas about `Circle.exp` and the restriction o
 to the unit circle. These two maps define a partial equivalence between `Circle` and `ℝ`, see
 `Circle.argPartialEquiv` and `Circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

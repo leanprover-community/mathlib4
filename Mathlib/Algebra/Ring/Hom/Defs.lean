@@ -42,7 +42,6 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 
 `RingHom`, `SemiringHom`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

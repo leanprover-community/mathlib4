@@ -21,7 +21,6 @@ same as the indexing types.
 * `PSet.rank`: Ordinal rank of a pre-set.
 * `ZFSet.rank`: Ordinal rank of a ZFC set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

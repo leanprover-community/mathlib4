@@ -13,7 +13,6 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 
 Most of the former contents of this file have been moved to Batteries.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

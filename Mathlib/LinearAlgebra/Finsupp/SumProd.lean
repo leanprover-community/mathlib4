@@ -19,7 +19,6 @@ This file contains results about modules involving `Finsupp` and sum/product/sig
 
 function with finite support, module, linear algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

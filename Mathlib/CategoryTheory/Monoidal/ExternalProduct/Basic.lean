@@ -15,7 +15,6 @@ In a monoidal category `C`, given a pair of diagrams `K₁ : J₁ ⥤ C` and `K�
 introduce the external product `K₁ ⊠ K₂ : J₁ × J₂ ⥤ C` as the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`.
 The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

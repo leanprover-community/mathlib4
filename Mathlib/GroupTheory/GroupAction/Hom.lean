@@ -54,7 +54,6 @@ that it could lead to confusion — unless one needs types `M` and `X` with simu
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
   ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Ring.Defs
 
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

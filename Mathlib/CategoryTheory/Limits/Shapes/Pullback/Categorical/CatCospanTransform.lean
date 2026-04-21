@@ -30,7 +30,6 @@ transformations are used to encode 2-functoriality of categorical pullback squar
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory.Limits
 

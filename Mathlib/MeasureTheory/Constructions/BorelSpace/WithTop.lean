@@ -24,7 +24,6 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 * `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

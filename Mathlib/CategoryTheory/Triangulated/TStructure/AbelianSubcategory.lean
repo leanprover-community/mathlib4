@@ -25,7 +25,6 @@ is an abelian category if the following conditions are satisfied:
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

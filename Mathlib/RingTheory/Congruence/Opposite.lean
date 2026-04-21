@@ -15,7 +15,6 @@ This file defines the order isomorphism between the congruences on a ring `R` an
 the opposite ring `Rᵐᵒᵖ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ show that `Quotient r` is an `R`-linear category and that `functor r : C ⥤ Quo
 is an `R`-linear functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

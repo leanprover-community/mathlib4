@@ -25,7 +25,6 @@ of `X`.
   `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

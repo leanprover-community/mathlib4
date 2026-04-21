@@ -22,7 +22,6 @@ cofree functors, respectively from and to the original category.
 ## References
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

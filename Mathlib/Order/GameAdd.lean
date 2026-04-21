@@ -28,7 +28,6 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 - `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
   decreases at a time.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

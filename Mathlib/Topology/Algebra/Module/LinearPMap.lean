@@ -42,7 +42,6 @@ underlying spaces are normed.
 
 Unbounded operators, closed operators
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

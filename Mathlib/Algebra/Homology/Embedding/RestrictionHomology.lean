@@ -17,7 +17,6 @@ is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

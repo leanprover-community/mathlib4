@@ -15,7 +15,6 @@ If `α : Type v` is `u`-small, we transport various order related
 instances on `α` to `Shrink.{u} α`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public meta import Lean.Elab.SyntheticMVars
 
 Remove identity functions from a term.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

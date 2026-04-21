@@ -19,7 +19,6 @@ This file contains results about smoothness of standard maps associated to produ
   `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists mfderiv
 

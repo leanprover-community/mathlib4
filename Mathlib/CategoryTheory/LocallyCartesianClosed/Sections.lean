@@ -21,7 +21,6 @@ In particular, if `C` is cartesian closed, then for all objects `I` in `C`, `toO
 has a right adjoint.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

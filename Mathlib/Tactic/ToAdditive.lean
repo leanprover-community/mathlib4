@@ -10,7 +10,6 @@ public import Mathlib.Tactic.Translate.ToAdditive
 /-!
 ## `@[to_additive]` attributes for basic types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

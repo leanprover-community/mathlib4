@@ -15,7 +15,6 @@ This file provides a `LinearOrder` instance on `Char`. `Char` is the type of Uni
 Provides an additional definition to truncate a `Char` to `UInt8` and a theorem on conversion to
 `Nat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

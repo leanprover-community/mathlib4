@@ -30,7 +30,6 @@ We then have the following corollaries
   which implies that `f` itself is finite.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open CategoryTheory Limits
 

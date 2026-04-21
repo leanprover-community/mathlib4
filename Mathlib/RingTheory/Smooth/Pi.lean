@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Smooth.Basic
   if and only if each `A i` is `R`-formally-smooth.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

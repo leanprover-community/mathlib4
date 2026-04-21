@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 /-!
 # Lemmas about the interaction of power operations with order
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

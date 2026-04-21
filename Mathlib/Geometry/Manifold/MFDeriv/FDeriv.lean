@@ -15,7 +15,6 @@ The manifold derivative `mfderiv`, when considered on the model vector space wit
 manifold structure, coincides with the usual Fréchet derivative `fderiv`. In this section, we prove
 this and related statements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

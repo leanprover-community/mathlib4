@@ -48,7 +48,6 @@ We provide a few instances for concrete types:
 * `Bool.completeLinearOrder`
 * `Bool.completeBooleanAlgebra`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

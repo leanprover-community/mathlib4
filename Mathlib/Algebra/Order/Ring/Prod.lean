@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Prod
 /-!
 # Products of ordered rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ orders with monotone maps. This is the index category for simplicial objects.
 Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
 preserve `⊥` and `⊤`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

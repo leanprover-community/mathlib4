@@ -20,7 +20,6 @@ Anyone wanting to restore this material is welcome to do so, but will need to up
 `List.enum` and `List.enumFrom` to use `List.zipIdx` instead.
 However, note that this material will later be implemented in the Lean standard library.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

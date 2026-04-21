@@ -23,7 +23,6 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

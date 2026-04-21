@@ -17,7 +17,6 @@ public import Mathlib.Tactic.Explode.Pretty
 This file contains the main code behind the `#explode` command.
 If you have a theorem with a name `hi`, `#explode hi` will display a Fitch table.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

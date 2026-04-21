@@ -29,7 +29,6 @@ We also prove that a continuous monoid homomorphism `f : G →* G` is ergodic,
 if it is surjective and the preimages of `1` under iterations of `f` are dense in the group.
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

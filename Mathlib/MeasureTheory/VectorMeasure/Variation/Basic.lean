@@ -27,7 +27,6 @@ such vector-valued measures.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

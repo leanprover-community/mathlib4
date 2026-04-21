@@ -22,7 +22,6 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 * `AlgHom.prod`
 * `AlgEquiv.prodUnique` and `AlgEquiv.uniqueProd`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

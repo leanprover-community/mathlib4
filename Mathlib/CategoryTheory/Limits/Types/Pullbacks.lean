@@ -15,7 +15,6 @@ In `Type*`, the pullback of `f : X ⟶ Z` and `g : Y ⟶ Z` is the
 subtype `{ p : X × Y // f p.1 = g p.2 }` of the product.
 We show some additional lemmas for pullbacks in the category of types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

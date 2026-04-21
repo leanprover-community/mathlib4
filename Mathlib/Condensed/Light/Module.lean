@@ -27,7 +27,6 @@ This file defines light condensed modules over a ring `R`.
 * The forgetful functor from light condensed `R`-modules to light condensed sets has a left
   adjoint, sending a light condensed set to the corresponding *free* light condensed `R`-module.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

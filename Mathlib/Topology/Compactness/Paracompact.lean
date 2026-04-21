@@ -45,7 +45,6 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 
 compact space, paracompact space, locally finite covering
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

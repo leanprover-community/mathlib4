@@ -29,7 +29,6 @@ of three property and is stable under retracts. (Similarly, we define
 * show that a localized category with respect to `P.isoModSerre` is abelian.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

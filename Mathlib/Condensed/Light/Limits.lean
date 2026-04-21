@@ -12,7 +12,6 @@ public import Mathlib.Condensed.Light.Module
 
 This file adds some instances for limits in light condensed sets and modules.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Order.SetNotation
 
 This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

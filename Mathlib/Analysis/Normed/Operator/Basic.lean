@@ -32,7 +32,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
   spaces is surjective if and only if it contains a ball.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ use of ordinal numbers. This is done within this file.
 
 cardinal arithmetic (for infinite cardinals)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

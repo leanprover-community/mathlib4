@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.Over
 
 We show that if `J` is subcanonical, then also `J.over X` is subcanonical.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

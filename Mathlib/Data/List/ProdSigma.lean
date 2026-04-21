@@ -16,7 +16,6 @@ This file proves basic properties of `List.product` and `List.sigma`, which are 
 living in `Prod` and `Sigma` types respectively. Their definitions can be found in
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

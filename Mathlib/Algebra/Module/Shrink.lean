@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Module.TransferInstance
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

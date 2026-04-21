@@ -19,7 +19,6 @@ action, so we postpone the proofs of `ContinuousMul Mᵐᵒᵖ` etc. till we hav
 
 topological space, opposite monoid, units
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

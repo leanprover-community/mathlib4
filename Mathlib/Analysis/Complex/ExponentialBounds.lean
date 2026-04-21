@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 /-!
 # Bounds on specific values of the exponential
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

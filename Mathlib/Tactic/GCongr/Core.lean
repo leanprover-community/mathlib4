@@ -138,7 +138,6 @@ indicate where the original `?_` holes were. The LHS is then replaced with this 
 `gcongr` can tell based on the LHS how far to continue recursively. We also keep track of when
 then LHS and RHS swap around, so that we know where to look for the metadata annotation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

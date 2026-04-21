@@ -46,7 +46,6 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 - Rename `TopologicalSpace.Opens` to `Open`?
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

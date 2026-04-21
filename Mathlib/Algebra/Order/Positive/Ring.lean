@@ -16,7 +16,6 @@ In this file we define various instances (`AddSemigroup`, `OrderedCommMonoid` et
 type `{x : R // 0 < x}`. In each case we try to require the weakest possible typeclass
 assumptions on `R` but possibly, there is a room for improvements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ This is a relatively niche notion, but is useful for proving Zariski's main theo
 - https://stacks.math.columbia.edu/tag/00PZ
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

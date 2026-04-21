@@ -16,7 +16,6 @@ about limits and colimits indexed by a preordered type `J`:
 * a greatest element in `J` implies the existence of all colimits indexed by `J`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

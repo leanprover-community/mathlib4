@@ -20,7 +20,6 @@ case that `HasLimits C` iff `HasLimits (ThinSkeleton C)`, as the homs live in di
 If this is something we really want, we should consider changing the category instance of
 `ThinSkeleton C`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -36,7 +36,6 @@ proves Noether's first and second isomorphism theorems.
 
 isomorphism theorems, quotient groups
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

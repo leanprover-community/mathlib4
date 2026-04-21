@@ -19,7 +19,6 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 `hasDerivWithinAt_Iic_of_tendsto_deriv`.  These versions are formulated in terms of the
 one-dimensional derivative `deriv ℝ f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

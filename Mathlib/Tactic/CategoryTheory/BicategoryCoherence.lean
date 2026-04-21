@@ -21,7 +21,6 @@ This file mainly deals with the type class setup for the coherence tactic. The a
 tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

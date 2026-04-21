@@ -17,7 +17,6 @@ public import Mathlib.Topology.MetricSpace.Bounded
 In this file, we transfer a normed field structure across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

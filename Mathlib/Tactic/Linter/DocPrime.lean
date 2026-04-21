@@ -20,7 +20,6 @@ for the presence of a `'` in their name. This may consist of discussion of the d
 to an unprimed version of that declaration, or an explanation as to why no better naming scheme
 is possible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

@@ -35,7 +35,6 @@ theorem follows immediately from this fact.
 * [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
   proof of normalization for monoids][beylin1996]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

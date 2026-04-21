@@ -25,7 +25,6 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 
 module, regular element, commutative algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

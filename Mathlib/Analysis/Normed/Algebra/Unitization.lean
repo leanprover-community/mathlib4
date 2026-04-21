@@ -58,7 +58,6 @@ viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. 
 bornology.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

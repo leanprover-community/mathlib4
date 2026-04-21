@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Final
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8(i)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -31,7 +31,6 @@ on roots.
 ## TODO
 * faithfulness of `weylGroupToPerm` when multiplication by 2 is injective on the weight space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

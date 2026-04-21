@@ -25,7 +25,6 @@ The treatment here parallels that for unenriched categories in
 they construct equivalences between `Type`s and `Sort`s, respectively, while
 in this file we construct isomorphisms between objects in `V`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

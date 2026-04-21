@@ -36,7 +36,6 @@ is injective.
   des isomorphismes*][ribenboim1971]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

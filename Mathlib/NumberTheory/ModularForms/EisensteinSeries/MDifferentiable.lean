@@ -18,7 +18,6 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 `a : Fin 2 → ZMod N` are holomorphic on the upper half plane, which is stated as being
 MDifferentiable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

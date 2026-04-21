@@ -18,7 +18,6 @@ the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

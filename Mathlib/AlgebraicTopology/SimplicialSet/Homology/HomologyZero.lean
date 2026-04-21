@@ -17,7 +17,6 @@ an isomorphism `X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R)` for any simpli
 set `X`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

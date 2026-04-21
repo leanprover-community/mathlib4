@@ -17,7 +17,6 @@ that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

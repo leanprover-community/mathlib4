@@ -23,7 +23,6 @@ import Mathlib.RingTheory.Localization.InvSubmonoid
 - `Algebra.isOpen_unramifiedLocus` :
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,7 +28,6 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 
 finset, gcd
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

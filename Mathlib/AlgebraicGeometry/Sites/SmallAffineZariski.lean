@@ -28,7 +28,6 @@ Note that this differs from the definition on stacks project where the arrows in
 Zariski site are arbitrary inclusions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

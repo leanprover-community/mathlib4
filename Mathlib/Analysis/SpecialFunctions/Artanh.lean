@@ -33,7 +33,6 @@ In this file we define an inverse of tanh as a function from ℝ to (-1, 1).
 
 artanh, arctanh, argtanh, atanh
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

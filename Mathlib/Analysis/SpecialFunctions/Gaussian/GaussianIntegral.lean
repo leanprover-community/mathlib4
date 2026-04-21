@@ -20,7 +20,6 @@ We prove various versions of the formula for the Gaussian integral:
 * `integral_gaussian_Ioi` and `integral_gaussian_complex_Ioi`: variants for integrals over `Ioi 0`.
 * `Complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

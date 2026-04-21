@@ -28,7 +28,6 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
   `(N ⊗ M)⋆` given by `curry` and `uncurry`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

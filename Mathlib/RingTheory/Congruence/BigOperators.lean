@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Congruence.Defs
 # Interactions between `∑, ∏` and `RingCon`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

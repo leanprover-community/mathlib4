@@ -29,7 +29,6 @@ variation of `f.rightLim`. The extension we get is not exactly the desired vecto
 need to tweak things if there is a bot element `a`: the previous vector measure gives to `{a}` the
 mass `0` instead of the desired `f.rightLim a - f a`, so we add a Dirac mass to correct this defect.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

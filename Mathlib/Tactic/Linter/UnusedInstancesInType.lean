@@ -31,7 +31,6 @@ TODO: log on type signature instead of whole command
 TODO: add more linters!
 TODO: create Try This suggestions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

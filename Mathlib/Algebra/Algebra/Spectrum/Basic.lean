@@ -39,7 +39,6 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

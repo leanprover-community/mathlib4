@@ -26,7 +26,6 @@ through the inclusion from `Pith B` to `B` (see
 - [Kerodon, section 1.2.2](https://kerodon.net/tag/02GD).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

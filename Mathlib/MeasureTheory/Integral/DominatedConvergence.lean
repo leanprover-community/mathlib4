@@ -30,7 +30,6 @@ for the Bochner integral.
   measurable functions are continuous
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

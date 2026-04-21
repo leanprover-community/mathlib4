@@ -21,7 +21,6 @@ asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkM
 We show that this property is local, and are stable under compositions and base change.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

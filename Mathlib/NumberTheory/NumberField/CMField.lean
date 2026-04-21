@@ -53,7 +53,6 @@ results for the general case can be deduced for the CM case by using the isomorp
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

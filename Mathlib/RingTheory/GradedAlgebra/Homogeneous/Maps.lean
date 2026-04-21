@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
 In this file we define `HomogeneousIdeal.map` and `HomogeneousIdeal.comap`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

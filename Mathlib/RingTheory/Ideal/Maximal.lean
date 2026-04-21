@@ -24,7 +24,6 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

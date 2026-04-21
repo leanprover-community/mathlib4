@@ -28,7 +28,6 @@ Note that, rather than using the derived algebraic structures on these subobject
 (for example, when `β` is a group, the derived group structure on `continuousSubgroup α β`),
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

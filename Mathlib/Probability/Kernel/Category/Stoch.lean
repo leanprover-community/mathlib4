@@ -25,7 +25,6 @@ The category of measurable spaces with Markov kernels is a Markov category.
 * [A synthetic approach to
 Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

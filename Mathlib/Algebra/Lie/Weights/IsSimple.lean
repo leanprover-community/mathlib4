@@ -32,7 +32,6 @@ invariant submodule.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only
   if its root system is irreducible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

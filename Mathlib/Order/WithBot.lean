@@ -24,7 +24,6 @@ Adding a `bot` or a `top` to an order.
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

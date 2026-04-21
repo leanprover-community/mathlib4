@@ -24,7 +24,6 @@ This file was obtained by dualizing the definitions in
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

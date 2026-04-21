@@ -23,7 +23,6 @@ Typical examples of this are affine morphisms (where `Q` is trivial), finite mor
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

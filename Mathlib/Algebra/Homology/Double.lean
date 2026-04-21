@@ -18,7 +18,6 @@ It consists of the objects `X₀` and `X₁` in degrees `i₀` and `i₁`, respe
 with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

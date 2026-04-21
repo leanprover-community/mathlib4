@@ -22,7 +22,6 @@ For the special case of maximum and minimum of a finset, see Max.lean.
 See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
 lattice or set operations behave when indexed by a finset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

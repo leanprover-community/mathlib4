@@ -40,7 +40,6 @@ for his bachelor's thesis at ETH Zürich.
 
 Bojanic
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

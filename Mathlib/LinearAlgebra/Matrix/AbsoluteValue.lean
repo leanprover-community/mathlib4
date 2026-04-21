@@ -24,7 +24,6 @@ This file proves some bounds on matrices involving absolute values.
   a constant bounded by `y`, and the entries of each matrix are bounded by `x`,
   then the determinant of the linear combination is bounded by `n! (s * y * x)^n`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -16,7 +16,6 @@ We define the radical of a quadratic form. This is a standard construction if 2 
 in the coefficient ring, but is more fiddly otherwise. We follow the account in
 Chapter II, §7 of [elman-karpenko-merkurjev-2008].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Finset QuadraticMap
 

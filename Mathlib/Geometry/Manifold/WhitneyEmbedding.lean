@@ -27,7 +27,6 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 
 partition of unity, smooth bump function, whitney theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -58,7 +58,6 @@ gives an element `q` of `R[ℕ]`, and conversely `⟨q⟩` gives back `p`). The
 equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

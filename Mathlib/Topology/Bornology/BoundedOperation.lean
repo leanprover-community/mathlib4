@@ -24,7 +24,6 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

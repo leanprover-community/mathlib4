@@ -25,7 +25,6 @@ module.
 
 * `Module.Free R M` : the class of free `R`-modules.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

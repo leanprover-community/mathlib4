@@ -22,7 +22,6 @@ any closed subgroup of a profinite group is the intersection of the open subgrou
 
 This file is split out from the file `OpenSubgroup` because it needs more imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

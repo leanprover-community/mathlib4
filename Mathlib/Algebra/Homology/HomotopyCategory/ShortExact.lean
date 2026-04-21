@@ -21,7 +21,6 @@ sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

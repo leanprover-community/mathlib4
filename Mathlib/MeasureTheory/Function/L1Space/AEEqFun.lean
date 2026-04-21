@@ -26,7 +26,6 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 function space, l1
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

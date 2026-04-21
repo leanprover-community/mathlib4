@@ -50,7 +50,6 @@ Potentially also useful:
 * `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq_inner`: in this version,
   the codomain is assumed to be a Hilbert space, without restrictions on its dimension.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ We show that the inner product is continuous, `continuous_inner`.
 inner product space, Hilbert space, norm
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

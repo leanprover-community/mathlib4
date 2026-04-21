@@ -12,7 +12,6 @@ public import Mathlib.Init
 /-!
 # Name generation APIs for `to_additive`-like attributes
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Basis.MulOpposite
 This file defines the inner product space structure on `Hᵐᵒᵖ` where we define
 the inner product naturally. We also define `OrthonormalBasis.mulOpposite`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

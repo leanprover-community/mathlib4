@@ -19,7 +19,6 @@ and linear maps on such spaces.
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
 and results that require fewer imports are in `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

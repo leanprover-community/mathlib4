@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Comon_
 The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

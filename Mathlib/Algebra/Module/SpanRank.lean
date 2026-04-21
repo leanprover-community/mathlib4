@@ -47,7 +47,6 @@ Note that the corresponding API - `Module.rank` is only defined for a module rat
 submodule, so there is some asymmetry here. Further refactoring might be needed if this difference
 creates a friction later on.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

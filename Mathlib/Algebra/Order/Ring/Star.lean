@@ -20,7 +20,6 @@ ordered ring, then it is commutative.
 
 In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

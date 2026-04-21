@@ -15,7 +15,6 @@ This file defines a structure called `FiniteExhaustion` which represents an exha
 countable set by an increasing sequence of finite sets. Given a countable set `s`,
 `FiniteExhaustion.choice s` is a choice of a finite exhaustion.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

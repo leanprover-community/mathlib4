@@ -29,7 +29,6 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

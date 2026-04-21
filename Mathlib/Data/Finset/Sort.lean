@@ -14,7 +14,6 @@ public import Mathlib.Order.RelIso.Set
 /-!
 # Construct a sorted list from a finset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

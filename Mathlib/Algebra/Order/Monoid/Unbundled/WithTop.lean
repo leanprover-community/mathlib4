@@ -14,7 +14,6 @@ public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

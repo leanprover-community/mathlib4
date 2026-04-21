@@ -45,7 +45,6 @@ the roots of the minimal polynomial of `s` over `R`.
 * https://en.wikipedia.org/wiki/Field_trace
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

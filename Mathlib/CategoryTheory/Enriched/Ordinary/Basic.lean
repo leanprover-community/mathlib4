@@ -25,7 +25,6 @@ Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.B
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

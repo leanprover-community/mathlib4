@@ -29,7 +29,6 @@ if it is the smallest field extension of `K` such that `f` splits.
   another field such that `f` splits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

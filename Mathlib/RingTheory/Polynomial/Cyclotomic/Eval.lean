@@ -19,7 +19,6 @@ This file states some results about evaluating cyclotomic polynomials in various
 * `Polynomial.eval_one_cyclotomic_not_prime_pow`: Otherwise, `eval 1 (cyclotomic n R) = 1`.
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

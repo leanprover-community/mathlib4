@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 eigenvalue, minimal polynomial
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

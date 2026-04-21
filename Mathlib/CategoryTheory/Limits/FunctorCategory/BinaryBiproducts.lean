@@ -15,7 +15,6 @@ We show that if `C` has binary biproducts, then the functor category `D ⥤ C` a
 has binary biproducts
 (`CategoryTheory.Limits.BinaryBiproduct.functorCategoryHasBinaryBiproducts`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

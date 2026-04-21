@@ -48,7 +48,6 @@ When `a=0` they are just the family of monomials `X ^ n`.
 * Prove that the adjacency matrices of simply laced Dynkin diagrams are precisely the adjacency
   matrices of simple connected graphs which annihilate `dickson 2 1`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

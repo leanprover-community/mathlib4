@@ -20,7 +20,6 @@ as `s` tends to `l.smallSets`, i.e. for any `ε>0` there exists `t ∈ l` such t
 `‖∫ x in s, f x ∂μ - μ s • c‖ ≤ ε * μ s` whenever `s ⊆ t`. We also formulate a version of this
 theorem for a locally finite measure `μ` and a function `f` continuous at a point `a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 /-!
 # Center of a group with zero
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

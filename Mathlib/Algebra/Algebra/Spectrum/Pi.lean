@@ -29,7 +29,6 @@ union of the (quasi)spectra.
 + Apply these results to block matrices.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

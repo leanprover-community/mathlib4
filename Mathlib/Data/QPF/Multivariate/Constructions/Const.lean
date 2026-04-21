@@ -17,7 +17,6 @@ that are not actually functorial. For instance `Const n Nat` makes
 `Nat` into a functor that can be used in a functor-based data type
 specification.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

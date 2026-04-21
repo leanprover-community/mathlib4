@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Unramified.Field
 
 We prove that a domain finite and unramified over a Dedekind domain is a Dedekind domain.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

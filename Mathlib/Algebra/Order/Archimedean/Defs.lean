@@ -22,7 +22,6 @@ This file defines the archimedean property for ordered monoids.
 * `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-archimedean
   property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

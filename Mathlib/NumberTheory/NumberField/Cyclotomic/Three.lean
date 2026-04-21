@@ -27,7 +27,6 @@ and `λ = η - 1`.
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
 Theorem 5.36).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

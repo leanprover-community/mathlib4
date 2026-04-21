@@ -29,7 +29,6 @@ Prove that for affine schemes this subscheme structure is defined by the kernel 
 localization away from the union of the other minimal prime ideals.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

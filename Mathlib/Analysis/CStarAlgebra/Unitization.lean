@@ -17,7 +17,6 @@ In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for 
 involution is isometric, that multiplication on the right is also an isometry (i.e.,
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

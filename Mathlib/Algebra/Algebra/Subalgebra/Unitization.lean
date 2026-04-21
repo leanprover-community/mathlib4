@@ -44,7 +44,6 @@ this map to be injective it suffices that the range omits `1`. In this setting w
   `Unitization R s ≃⋆ₐ[R] StarAlgebra.adjoin R (s : Set A)`:
   a version of `NonUnitalSubalgebra.unitizationAlgEquiv` for star algebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

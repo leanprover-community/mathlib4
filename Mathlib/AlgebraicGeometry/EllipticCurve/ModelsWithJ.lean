@@ -33,7 +33,6 @@ It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
 
 elliptic curve, weierstrass equation, j invariant
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

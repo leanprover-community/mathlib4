@@ -21,7 +21,6 @@ This file compares the regular, extensive and coherent topologies.
 * `extensive_union_regular_generates_coherent`: the union of the regular and extensive coverages
   generates the coherent topology on `C` if `C` is precoherent, preextensive and preregular.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

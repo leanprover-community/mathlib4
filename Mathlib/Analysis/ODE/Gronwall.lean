@@ -28,7 +28,6 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   or more generally `liminf_{y→x+0} (f y - f x)/(y - x) ≤ K x * f x + ε` with any sign
   of `K x` and `f x`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ maximum recursion depth.
 `noncomm_ring` is just a `simp only [some lemmas]` followed by `abel`. It automatically uses `abel1`
 to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -23,7 +23,6 @@ when `k` is a perfect ring of characteristic `p`.
 * `isAdicCompleteIdealSpanP` : If `k` is a perfect ring of characteristic `p`,
   then the Witt vector `𝕎 k` is `p`-adically complete.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

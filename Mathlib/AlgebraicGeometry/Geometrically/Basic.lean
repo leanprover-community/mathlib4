@@ -32,7 +32,6 @@ morphism `Spec K ⟶ Y`, the base change `X ×[Y] Spec K` satisfies `P`.
 This contribution was created as part of the Formalising Algebraic Geometry workshop 2025 in
 Heidelberg.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

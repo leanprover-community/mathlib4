@@ -25,7 +25,6 @@ smooth algebras (TODO @chrisflav).
   If the `fᵢ` form a basis of `I/I²` and the restricted cotangent complex
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

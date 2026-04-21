@@ -32,7 +32,6 @@ the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J
 * consider dualizing the results to right adjoints
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

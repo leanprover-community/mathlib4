@@ -22,7 +22,6 @@ a typeclass `HasMapBifunctor K₁ K₂ F c` which allows to define
 bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

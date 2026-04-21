@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Ring.Pi
 
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

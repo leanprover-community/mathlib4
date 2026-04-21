@@ -24,7 +24,6 @@ under the following operations:
 - `Fin.succ`,
 - `Fin.rev`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

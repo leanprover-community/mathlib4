@@ -16,7 +16,6 @@ This is the unique function `g` such that `f a - f b = g a - g b` for all `a` an
 `∑ a, g a = 0`. This is particularly useful in Fourier analysis as `f` and `g` then have the same
 Fourier transform, except in the `0`-th frequency where the Fourier transform of `g` vanishes.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

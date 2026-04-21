@@ -36,7 +36,6 @@ We prove a multitude of elementary lemmas about these, and one more substantial 
 
 measurable equivalence, measurable embedding
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -376,7 +375,6 @@ def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ
 def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
@@ -576,7 +574,6 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
     (∀ i, π i) ≃ᵐ (∀ i : Subtype p, π i) × ∀ i : { i // ¬p i }, π i where
   toEquiv := .piEquivPiSubtypeProd p π
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :

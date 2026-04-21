@@ -32,7 +32,6 @@ Theorem: `comps` and `comps'` are equisatisfiable.
 We recursively eliminate all variables from the system. If we derive an empty clause `0 < 0`,
 we conclude that the original system was unsatisfiable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

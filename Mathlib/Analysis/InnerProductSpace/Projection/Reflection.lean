@@ -13,7 +13,6 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` in constructed, by choosing
 for each `u : E`, `K.reflection u = 2 • K.starProjection u - u`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

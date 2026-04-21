@@ -13,7 +13,6 @@ import Mathlib.Topology.Category.LightProfinite.Injective
 
 # The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open CategoryTheory Category Functor LightProfinite OnePoint LightCondensed
   MonoidalCategory CartesianMonoidalCategory CompHausLike

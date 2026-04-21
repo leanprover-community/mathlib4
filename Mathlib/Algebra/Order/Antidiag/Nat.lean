@@ -22,7 +22,6 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
   (`card_pair_lcm_eq`)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

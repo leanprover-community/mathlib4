@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Norm.Defs
   `-4` is not a 4th power.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 universe u

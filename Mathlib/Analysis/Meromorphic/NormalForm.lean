@@ -22,7 +22,6 @@ where `g` is analytic and does not vanish at `x`.
 The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
 form at a single point and along a set, respectively.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -90,7 +90,6 @@ Proofs of identities between polynomial functions will often follow the pattern
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

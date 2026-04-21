@@ -21,7 +21,6 @@ We introduce the bundled categories:
 
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

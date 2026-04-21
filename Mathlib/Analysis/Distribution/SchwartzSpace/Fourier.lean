@@ -25,7 +25,6 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 * `SchwartzMap.integral_inner_fourier_fourier`: Plancherel's theorem for Schwartz functions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ Furthermore, we have the following results:
   `strict_mono_nhdsSet`/`injective_nhdsSet`. These results are in
   `Mathlib/Topology/Separation/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

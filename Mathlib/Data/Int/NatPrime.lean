@@ -12,7 +12,6 @@ public import Mathlib.Data.Int.Basic
 /-!
 # Lemmas about `Nat.Prime` using `Int`s
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

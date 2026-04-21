@@ -12,7 +12,6 @@ public import Mathlib.Order.LatticeIntervals
 # Lattice structures on the type of nonnegative elements
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 assert_not_exists Ring

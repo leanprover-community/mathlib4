@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Ring
 
 This file contains some "named" commutative ring identities.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

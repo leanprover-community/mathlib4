@@ -44,7 +44,6 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
 symmetric square, unordered pairs, symmetric powers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ introduce the instance `HasExt.{v} (ModuleCat.{v} R)`. As a result, `Ext`-groups
 of modules are defined and belong to `Type v`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

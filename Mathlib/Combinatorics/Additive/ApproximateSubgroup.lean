@@ -35,7 +35,6 @@ combinatorics:
 It can be readily confirmed that approximate subgroups are a weakening of subgroups:
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

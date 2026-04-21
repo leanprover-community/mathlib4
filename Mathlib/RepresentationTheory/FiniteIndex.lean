@@ -26,7 +26,6 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 
 TODO : Fix the universe constraint
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

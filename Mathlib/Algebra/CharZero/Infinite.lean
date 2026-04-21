@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Data.Fintype.EquivFin
 
 /-! # A characteristic-zero semiring is infinite -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

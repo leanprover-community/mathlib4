@@ -36,7 +36,6 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
   `Polynomial.sumIDeriv`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

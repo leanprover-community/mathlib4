@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

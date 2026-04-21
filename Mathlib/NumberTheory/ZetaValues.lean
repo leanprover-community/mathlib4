@@ -28,7 +28,6 @@ zeta functions, in terms of Bernoulli polynomials.
 * `hasSum_one_div_nat_pow_mul_sin`: a formula for the sum `∑ (n : ℕ), sin (2 π i n x) / n ^ k` as
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

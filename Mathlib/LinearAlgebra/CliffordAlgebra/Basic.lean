@@ -43,7 +43,6 @@ The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, 
 
 This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ For now, we define the typeclass for non-dependent bundled functions only.
 Whenever we add a type of bundled dependent functions with a topology having this property,
 we may decide to generalize from `FunLike` to `DFunLike`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

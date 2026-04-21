@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
 exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,7 +42,6 @@ This file deals with the satisfiability of first-order theories, as well as equi
 - Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

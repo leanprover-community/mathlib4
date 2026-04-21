@@ -33,7 +33,6 @@ locally representable.
 * https://stacks.math.columbia.edu/tag/01JJ
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

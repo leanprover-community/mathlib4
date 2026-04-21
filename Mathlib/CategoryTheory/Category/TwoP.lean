@@ -18,7 +18,6 @@ This defines `TwoP`, the category of two-pointed types.
 * [nLab, *coalgebra of the real interval*]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,7 +38,6 @@ of pairs can be obtained from measurability of each `X t`.
   a process is a Kolmogorov process if each `X t` is measurable and the Kolmogorov condition holds.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

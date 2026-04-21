@@ -31,7 +31,6 @@ consistency of notation.
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Topology Filter Function

@@ -21,7 +21,6 @@ This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Po
 Where possible, try to keep them in sync.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

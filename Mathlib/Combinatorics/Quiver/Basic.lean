@@ -16,7 +16,6 @@ pair `a b : V` of vertices a type `a ⟶ b` of arrows from `a` to `b`. This
 is a generalization of `Digraph V`, which can be thought of as "a proposition `a ⟶ b` of arrows".
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

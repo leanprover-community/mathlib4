@@ -24,7 +24,6 @@ finite and calculates the cardinality of its finite intervals.
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ and in particular does not use `x[i]` (that is `GetElem` notation) as the prefer
 Any combination of reducing the use of `List.Vector` in Mathlib, or modernising its API,
 would be welcome.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ public import Mathlib.Order.Hom.Lattice
 
 Lattice, Congruence
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ This file computes the cardinal of the general linear group over finite rings.
   finite-dimensional vector space over a finite field.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ which are carried to one another by the action on morphisms of the functors in t
 ## Future work
 Can the indexing category live in a lower universe?
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

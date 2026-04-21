@@ -49,7 +49,6 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 3. The free algebra `FreeAlgebra R X` is the quotient of `FreeAlgebra.Pre R X` by
    the relation `FreeAlgebra.Rel R X`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

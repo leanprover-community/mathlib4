@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 We define the source local closure of a property `P` w.r.t. a morphism property `W` and show it
 inherits stability properties from `P`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

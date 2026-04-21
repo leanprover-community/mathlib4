@@ -100,7 +100,6 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ∞ω` with `∞` and `⊤ : ℕ∞ω` with `ω`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

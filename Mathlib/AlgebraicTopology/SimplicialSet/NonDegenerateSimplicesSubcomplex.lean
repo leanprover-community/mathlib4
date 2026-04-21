@@ -15,7 +15,6 @@ we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

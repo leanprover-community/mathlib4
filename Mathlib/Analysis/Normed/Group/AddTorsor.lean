@@ -18,7 +18,6 @@ This file defines torsors of additive normed group actions, with a
 metric space structure.  The motivating case is Euclidean affine
 spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

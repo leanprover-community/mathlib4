@@ -37,7 +37,6 @@ For more results about the category of cones, see `cone_category.lean`.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 -- morphism levels before object levels. See note [category theory universes].

@@ -14,7 +14,6 @@ public import Mathlib.Order.Restriction
 We prove that the map which restricts a function `f : (i : α) → X i` to elements `≤ a` is
 measurable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

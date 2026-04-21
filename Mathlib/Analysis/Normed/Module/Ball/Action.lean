@@ -17,7 +17,6 @@ multiplicative actions.
 - The closed unit ball in `𝕜` acts on open balls and closed balls centered at `0` in `E`.
 - The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

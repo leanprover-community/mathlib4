@@ -16,7 +16,6 @@ to be the intersection of all its sets.
 We also prove that `Filter.principal` and `Filter.ker` form a Galois coinsertion
 and prove other basic theorems about `Filter.ker`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

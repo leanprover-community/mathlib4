@@ -20,7 +20,6 @@ we construct a quasi-isomorphism `shortComplexTruncLEX₃ToTruncGE` between
 the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

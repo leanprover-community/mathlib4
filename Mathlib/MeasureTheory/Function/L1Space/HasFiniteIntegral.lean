@@ -27,7 +27,6 @@ predicate `Integrable` in the corresponding file.
 finite integral
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

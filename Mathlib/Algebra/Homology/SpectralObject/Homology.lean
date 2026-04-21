@@ -22,7 +22,6 @@ for this short complex where:
 * the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

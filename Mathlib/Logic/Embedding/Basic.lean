@@ -14,7 +14,6 @@ public import Mathlib.Logic.Equiv.Basic
 /-!
 # Injective functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

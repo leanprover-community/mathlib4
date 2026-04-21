@@ -22,7 +22,6 @@ a morphism of sheaves of rings, we construct the pushforward functor
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

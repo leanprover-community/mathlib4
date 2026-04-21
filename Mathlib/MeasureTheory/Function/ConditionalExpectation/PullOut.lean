@@ -33,7 +33,6 @@ We specialize this statement to the cases where `B` is scalar multiplication and
 
 conditional expectation, pull-out, bilinear map
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

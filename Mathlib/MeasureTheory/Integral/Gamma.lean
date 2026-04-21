@@ -15,7 +15,6 @@ In this file, we collect several integrals over `ℝ` or `ℂ` that evaluate in 
 `Real.Gamma` function.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -27,7 +27,6 @@ There are two kinds of casts:
 - Explicit casting functions, both for unfolding and refolding. This is for types, where we
   cannot express their equivalence with an equality. For example `DecidableLE`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

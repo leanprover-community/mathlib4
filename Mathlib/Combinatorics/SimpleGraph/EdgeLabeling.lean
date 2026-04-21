@@ -20,7 +20,6 @@ This module defines labelings of the edges of a graph.
 
 - `SimpleGraph.EdgeLabeling.labelGraph`: the graph consisting of all edges with a given label.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

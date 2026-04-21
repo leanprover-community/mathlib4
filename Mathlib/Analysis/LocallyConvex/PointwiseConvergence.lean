@@ -21,7 +21,6 @@ that it is locally convex in the topological sense
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

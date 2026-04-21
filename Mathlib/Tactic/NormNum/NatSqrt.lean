@@ -12,7 +12,6 @@ public import Mathlib.Tactic.NormNum
 
 This module defines a `norm_num` extension for `Nat.sqrt`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

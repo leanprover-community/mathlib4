@@ -45,7 +45,6 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 * https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

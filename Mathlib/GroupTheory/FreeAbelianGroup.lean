@@ -65,7 +65,6 @@ functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_app
 are about `FreeAbelianGroup.map`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

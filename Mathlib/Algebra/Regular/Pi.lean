@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Regular.SMul
 /-!
 # Results about `IsRegular` and pi types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

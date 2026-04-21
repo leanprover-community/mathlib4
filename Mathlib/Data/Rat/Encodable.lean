@@ -14,7 +14,6 @@ As a consequence we also get the instance `Countable ℚ`.
 
 This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

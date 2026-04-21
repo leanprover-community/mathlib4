@@ -12,7 +12,6 @@ public import Mathlib.SetTheory.Cardinal.Finite
 /-!
 # Cardinality of sets under pointwise group with zero operations
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

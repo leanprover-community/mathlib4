@@ -15,7 +15,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 This file contains lemmas about the exponential function on the upper half plane. Useful for
 q-expansions of modular forms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

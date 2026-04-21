@@ -44,7 +44,6 @@ For this to work, the definition of `ContMDiffWithinAt` and friends has to
 follow definitionally the setup of local invariant properties. Still, we recast the definition
 in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

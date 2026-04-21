@@ -18,7 +18,6 @@ as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

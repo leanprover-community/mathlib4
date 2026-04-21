@@ -18,7 +18,6 @@ This defines `Pointed`, the category of pointed types.
 * Monoidal structure
 * Upgrade `typeToPointed` to an equivalence
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

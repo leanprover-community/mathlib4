@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Ideal.Span
 
 Some results involving `Ideal` and `Basis`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

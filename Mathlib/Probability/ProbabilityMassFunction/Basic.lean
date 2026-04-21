@@ -31,7 +31,6 @@ to be the measure of the singleton set `{x}`.
 
 probability mass function, discrete probability measure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

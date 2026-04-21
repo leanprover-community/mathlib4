@@ -16,7 +16,6 @@ in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

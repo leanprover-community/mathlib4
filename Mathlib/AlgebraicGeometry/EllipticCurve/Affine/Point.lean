@@ -63,7 +63,6 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 
 elliptic curve, affine, point, group law, class group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

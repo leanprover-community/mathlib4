@@ -13,7 +13,6 @@ public import Mathlib.Topology.IndicatorConstPointwise
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

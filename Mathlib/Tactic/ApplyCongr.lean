@@ -16,7 +16,6 @@ It is particularly useful when the automatically generated congruence lemmas
 are not of the optimal shape. An example, described in the doc-string is
 rewriting inside the operand of a `Finset.sum`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

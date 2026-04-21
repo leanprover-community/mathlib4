@@ -19,7 +19,6 @@ Since their proof essentially depends on the fact that a non-trivial commutative
 satisfies the strong rank condition, we put them into a separate file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

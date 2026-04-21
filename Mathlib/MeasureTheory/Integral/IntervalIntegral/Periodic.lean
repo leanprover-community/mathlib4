@@ -25,7 +25,6 @@ Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related dec
 `∫ x in t..t + T, f x = ∫ x in s..s + T, f x` for any (not necessarily measurable) function with
 period `T`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

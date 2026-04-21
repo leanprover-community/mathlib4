@@ -28,7 +28,6 @@ of topological (semi)rings.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

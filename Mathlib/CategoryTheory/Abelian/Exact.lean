@@ -32,7 +32,6 @@ true in more general settings.
   finite limits and colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

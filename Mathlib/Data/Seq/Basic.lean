@@ -16,7 +16,6 @@ public import Mathlib.Tactic.ApplyFun
 This file provides some basic lemmas about possibly infinite lists represented by the
 type `Stream'.Seq`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

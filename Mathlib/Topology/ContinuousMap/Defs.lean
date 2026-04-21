@@ -18,7 +18,6 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass
 which is meant to be satisfied by itself and all stricter types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

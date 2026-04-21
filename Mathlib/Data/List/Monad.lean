@@ -10,7 +10,6 @@ public import Batteries.Control.AlternativeMonad
 /-!
 # Monad instances for `List`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

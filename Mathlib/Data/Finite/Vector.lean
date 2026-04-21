@@ -10,7 +10,6 @@ public import Mathlib.Data.Fintype.Vector
 /-!
 # Finiteness of vector types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

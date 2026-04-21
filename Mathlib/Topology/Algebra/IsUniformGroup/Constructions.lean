@@ -12,7 +12,6 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 /-!
 # Constructions of new uniform groups from old ones
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 variable (R M N : Type*)

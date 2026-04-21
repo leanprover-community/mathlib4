@@ -15,7 +15,6 @@ public import Mathlib.Analysis.Complex.Basic
 then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the real part of the
 complex derivative.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

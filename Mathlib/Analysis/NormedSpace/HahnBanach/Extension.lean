@@ -11,6 +11,5 @@ public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2025-11-06")

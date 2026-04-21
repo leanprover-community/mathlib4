@@ -34,7 +34,6 @@ We show that `ind P` inherits stability properties from `P`.
 - Dualise to obtain `pro P`.
 - Show `ind P` is stable under composition if `P` spreads out (Christian).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

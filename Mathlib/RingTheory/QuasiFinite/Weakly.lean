@@ -32,7 +32,6 @@ Hence we introduce `Algebra.WeaklyQuasiFiniteAt` where we mod out all the primes
 different fiber.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

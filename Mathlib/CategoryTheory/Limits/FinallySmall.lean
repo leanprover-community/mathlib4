@@ -26,7 +26,6 @@ We show that a finally small category admits a small weakly terminal set, i.e., 
 objects such that from every object there is a morphism to a member of `s`. We also show that the
 converse holds if `J` is filtered.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

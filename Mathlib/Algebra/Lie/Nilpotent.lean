@@ -30,7 +30,6 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 lie algebra, lower central series, nilpotent, max nilpotent ideal
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

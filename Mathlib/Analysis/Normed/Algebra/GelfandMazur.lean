@@ -110,7 +110,6 @@ which is bounded by `(M ^ n + c ^ n) / M ^ (n - 1) = M * (1 + (c / M) ^ n)`, whe
 `c = ‖(a' - a) • x - (b' - b) • 1‖ < M`. So, letting `n` tend to infinity, we obtain that
 `M ≤ ‖x ^ 2 - a' • x + b' • 1‖ ≤ M`, as desired.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

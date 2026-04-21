@@ -38,7 +38,6 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 uniform convergence, strong dual
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ Here we collect properties of C⋆-algebra homomorphisms.
 + `NonUnitalStarAlgHom.norm_map`: A non-unital star algebra monomorphism of complex C⋆-algebras
   is isometric.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

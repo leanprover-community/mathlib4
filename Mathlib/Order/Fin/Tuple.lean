@@ -14,7 +14,6 @@ public import Mathlib.Order.Interval.Set.Defs
 /-!
 # Order properties on tuples
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

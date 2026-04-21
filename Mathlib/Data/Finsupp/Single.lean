@@ -24,7 +24,6 @@ using one point of the domain.
 
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

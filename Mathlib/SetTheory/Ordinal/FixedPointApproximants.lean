@@ -38,7 +38,6 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 
 fixed point, complete lattice, monotone function, ordinals, approximation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,7 +39,6 @@ variable
   [IsContMDiffRiemannianBundle IB n F E]
 ```
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ In this file we prove that the neighborhoods kernel of a set
 (defined as the intersection of all of its neighborhoods)
 is a compact set if and only if the original set is a compact set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

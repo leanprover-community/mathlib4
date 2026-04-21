@@ -14,7 +14,6 @@ public import Mathlib.Data.Set.Finite.Basic
 We prove that in a dense order, there's always an element lying in between any two finite sets of
 elements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

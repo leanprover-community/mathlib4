@@ -27,7 +27,6 @@ This file contains several standard constructions on vector bundles:
 ## Tags
 Vector bundle, direct sum, pullback
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -138,7 +137,6 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, A
   [∀ x, Module 𝕜 (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The product of two vector bundles is a vector bundle. -/
 instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] :
     VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) where

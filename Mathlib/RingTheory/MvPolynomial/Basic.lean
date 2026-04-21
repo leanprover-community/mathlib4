@@ -36,7 +36,6 @@ that the monomials form a basis.
 
 Generalise to noncommutative (semi)rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

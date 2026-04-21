@@ -15,7 +15,6 @@ principal segments, and that any principal segment `f` is order
 isomorphic to `Set.Iio f.top`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

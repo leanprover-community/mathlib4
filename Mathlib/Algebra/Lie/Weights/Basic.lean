@@ -46,7 +46,6 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

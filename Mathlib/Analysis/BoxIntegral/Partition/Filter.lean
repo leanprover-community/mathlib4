@@ -164,7 +164,6 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 
 integral, rectangular box, partition, filter
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

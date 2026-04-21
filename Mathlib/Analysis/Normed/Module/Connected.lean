@@ -25,7 +25,6 @@ We show several results related to the (path)-connectedness of subsets of real v
 
 Statements with connectedness instead of path-connectedness are also given.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

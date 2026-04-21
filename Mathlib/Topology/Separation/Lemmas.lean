@@ -12,7 +12,6 @@ public import Mathlib.Topology.Separation.Profinite
 /-!
 # Further separation lemmas
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

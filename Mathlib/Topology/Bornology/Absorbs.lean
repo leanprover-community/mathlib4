@@ -38,7 +38,6 @@ They can be added later when someone needs them.
 
 absorbs, absorbent
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

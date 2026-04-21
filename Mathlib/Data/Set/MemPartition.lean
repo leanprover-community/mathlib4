@@ -31,7 +31,6 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 * `finite_memPartition`: `memPartition f n` is finite
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

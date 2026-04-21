@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

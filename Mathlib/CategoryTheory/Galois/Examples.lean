@@ -18,7 +18,6 @@ forgetful functor to `FintypeCat` is a `FiberFunctor`.
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

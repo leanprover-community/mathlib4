@@ -39,7 +39,6 @@ This file develops the following aspects of the theory of gradients:
 * the gradient of constant functions.
 * the continuity of a function admitting a gradient.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

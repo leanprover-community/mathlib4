@@ -14,7 +14,6 @@ public import Mathlib.Init
 This file provides a simple function for formatting a two-dimensional array of `String`s
 into a markdown-compliant table.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

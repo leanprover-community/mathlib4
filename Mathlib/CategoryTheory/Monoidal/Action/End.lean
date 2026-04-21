@@ -24,7 +24,6 @@ monoidal, and conversely one can define a left action of `C` on `D` from a monoi
 functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

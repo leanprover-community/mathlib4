@@ -44,7 +44,6 @@ For modules over rings with invariant basis number
   free `R`-algebra of rank `2`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ TODO (Artie Khovanov) : real numbers, real algebraic numbers, hyperreals form a 
 real closed, rcf
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

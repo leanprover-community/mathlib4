@@ -43,7 +43,6 @@ fraction fields of discrete valuation rings.
 
 elliptic curve, weierstrass equation, minimal weierstrass equation, reduction
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

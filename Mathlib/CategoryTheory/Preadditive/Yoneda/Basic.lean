@@ -24,7 +24,6 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 * The Yoneda embedding is additive itself
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

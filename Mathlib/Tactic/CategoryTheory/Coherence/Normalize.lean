@@ -60,7 +60,6 @@ I would be happy to discuss.
   `e` and `pf` is a proof that `e = e'`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

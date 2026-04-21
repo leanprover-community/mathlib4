@@ -38,7 +38,6 @@ To recover the ring case, it would remain to show that the isomorphism between
 (And likewise in the multivariate case.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

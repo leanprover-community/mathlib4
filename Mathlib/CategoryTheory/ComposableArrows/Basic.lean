@@ -42,7 +42,6 @@ TODO (@joelriou):
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 set_option backward.privateInPublic true
 

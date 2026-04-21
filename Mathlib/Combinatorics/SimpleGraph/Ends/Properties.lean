@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.CofilteredSystem
 This file is meant to contain results about the ends of (locally finite connected) graphs.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -48,7 +48,6 @@ Appropriate definitions and results are also transported to the additive theory 
 set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

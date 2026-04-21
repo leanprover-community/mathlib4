@@ -21,7 +21,6 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

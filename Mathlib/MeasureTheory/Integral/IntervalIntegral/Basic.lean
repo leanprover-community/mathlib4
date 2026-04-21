@@ -47,7 +47,6 @@ three possible intervals with the same endpoints for two reasons:
 
 integral
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

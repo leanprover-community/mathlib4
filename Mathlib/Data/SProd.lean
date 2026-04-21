@@ -21,7 +21,6 @@ We introduce the notation `x ×ˢ y` for the `sprod` of any `SProd` structure. I
 notation is desirable but this notation is defined in core for `Prod` so replacing `x ×ˢ y` with
 `x × y` seems difficult.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

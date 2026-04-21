@@ -18,7 +18,6 @@ in the same way that `{a, b}` desugars to `insert` and `singleton`.
 Note that this syntax is for `Finsupp` by default, but works for `DFinsupp` if the expected type
 is correct.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

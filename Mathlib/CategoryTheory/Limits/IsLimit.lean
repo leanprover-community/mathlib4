@@ -32,7 +32,6 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

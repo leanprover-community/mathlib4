@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.RingHom.Flat
 A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. This is
 the same as being flat and a surjection on prime spectra.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

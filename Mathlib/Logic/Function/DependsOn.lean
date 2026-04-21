@@ -48,7 +48,6 @@ with `DependsOn` because writing mathematically "independent of variables in `s`
 
 depends on
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

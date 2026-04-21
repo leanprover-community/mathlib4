@@ -19,7 +19,6 @@ the sheafification functor from presheaves of modules to sheaves of modules
 is a localization functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

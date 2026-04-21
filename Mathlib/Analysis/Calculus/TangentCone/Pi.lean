@@ -15,7 +15,6 @@ In this file we prove that the indexed product
 of a family sets with unique differentiability property
 has the same property, see `UniqueDiffOn.pi` and  `UniqueDiffOn.univ_pi`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

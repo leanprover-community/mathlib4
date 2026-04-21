@@ -16,7 +16,6 @@ is essentially small, by providing an explicit small model. However, for applica
 recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` instead.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

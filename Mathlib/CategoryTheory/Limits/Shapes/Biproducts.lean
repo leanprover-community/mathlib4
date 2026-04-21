@@ -38,7 +38,6 @@ and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

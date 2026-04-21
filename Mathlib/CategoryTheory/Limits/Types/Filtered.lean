@@ -16,7 +16,6 @@ lemma `CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff`:
 `colimit.ι F i xi = colimit.ι F j xj ↔ ∃ k (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

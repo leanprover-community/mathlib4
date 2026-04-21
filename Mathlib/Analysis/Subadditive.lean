@@ -22,7 +22,6 @@ convenience). This result is known as Fekete's lemma in the literature.
 
 Define a bundled `SubadditiveHom`, use it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

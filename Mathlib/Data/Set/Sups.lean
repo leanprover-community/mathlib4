@@ -29,7 +29,6 @@ We define the following notation in scope `SetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

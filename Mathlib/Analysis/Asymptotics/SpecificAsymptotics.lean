@@ -15,7 +15,6 @@ This file contains specific lemmas about asymptotics which don't have their plac
 theory developed in `Mathlib/Analysis/Asymptotics/Defs.lean` and
 `Mathlib/Analysis/Asymptotics/Lemmas.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

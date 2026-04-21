@@ -20,7 +20,6 @@ structures, but those cardinalities can usually be obtained by other means, usin
 explicit universal objects.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

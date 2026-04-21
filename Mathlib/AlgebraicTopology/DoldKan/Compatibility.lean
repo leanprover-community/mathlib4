@@ -40,7 +40,6 @@ unit and counit isomorphisms of `equivalence`.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

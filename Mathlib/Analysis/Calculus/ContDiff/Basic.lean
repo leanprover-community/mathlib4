@@ -18,7 +18,6 @@ constants, products, composition with linear maps, etc.
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

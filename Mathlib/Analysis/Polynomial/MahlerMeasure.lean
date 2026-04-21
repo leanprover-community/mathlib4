@@ -40,7 +40,6 @@ properties.
 - `norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure`: **Mignotte's coefficient
   bound** — if `f = g * h` with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ and the evaluation functors `eval C c i : HomologicalComplex C c ⥤ C`
 commute to these.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

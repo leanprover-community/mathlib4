@@ -11,7 +11,6 @@ public import Mathlib.Topology.Compactness.Compact
 /-!
 # Compact sets and compact spaces and locally finite functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   `A`, defined using the corestriction and coinflation map in degree 1.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

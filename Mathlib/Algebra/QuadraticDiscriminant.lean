@@ -33,7 +33,6 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 
 polynomial, quadratic, discriminant, root
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

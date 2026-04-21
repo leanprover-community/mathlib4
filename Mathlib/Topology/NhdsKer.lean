@@ -17,7 +17,6 @@ Note that this construction has no standard name in the literature.
 
 In this file we prove basic properties of this operation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

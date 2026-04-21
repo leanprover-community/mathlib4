@@ -20,7 +20,6 @@ we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

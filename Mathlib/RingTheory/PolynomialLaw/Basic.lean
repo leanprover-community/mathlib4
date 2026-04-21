@@ -58,7 +58,6 @@ only assumes `R` is a commutative semiring.
   Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

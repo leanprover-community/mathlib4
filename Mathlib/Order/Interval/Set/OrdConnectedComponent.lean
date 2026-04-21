@@ -16,7 +16,6 @@ In this file we define `Set.ordConnectedComponent s x` to be the set of `y` such
 this construction is used only to prove that any linear order with order topology is a T₅ space,
 so we only add API needed for this lemma.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -40,7 +40,6 @@ https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

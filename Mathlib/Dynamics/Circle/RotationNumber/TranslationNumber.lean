@@ -116,7 +116,6 @@ Here are some short-term goals.
 
 circle homeomorphism, rotation number
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

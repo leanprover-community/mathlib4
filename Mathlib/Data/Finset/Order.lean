@@ -12,7 +12,6 @@ public import Mathlib.Order.Directed
 /-!
 # Finsets of ordered types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

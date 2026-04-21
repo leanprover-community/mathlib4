@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Module.NatInt
 In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid homomorphism.
 We use this to prove some results on scalar multiplication by integers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

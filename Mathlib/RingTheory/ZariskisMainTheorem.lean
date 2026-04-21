@@ -58,7 +58,6 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
   then there exists a subalgebra `S'` of `R` that is finitely generated as an `R`-module,
   and some `r ∈ S'` such that `r ∉ p` and `S'[1/r] = S[1/r]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

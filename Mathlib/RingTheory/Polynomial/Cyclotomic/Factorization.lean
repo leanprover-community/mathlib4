@@ -23,7 +23,6 @@ field of characteristic `p`, where `p` and `n` are coprime.
   `p` and `n` are coprime. Then the degree of `P` is the multiplicative order of `p ^ f` modulo `n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

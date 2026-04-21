@@ -19,7 +19,6 @@ Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further s
 `forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
 `Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

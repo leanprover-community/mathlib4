@@ -14,7 +14,6 @@ public import Mathlib.MeasureTheory.SpecificCodomains.Pi
 We prove that `f : X → PiLp q E` is in `Lᵖ` if and only if for all `i`, `f · i` is in `Lᵖ`.
 We do the same for `f : X → WithLp q (E × F)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Prod.Lex
 
 /-! # Products of ordered monoids -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

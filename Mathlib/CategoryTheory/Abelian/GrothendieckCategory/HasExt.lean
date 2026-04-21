@@ -26,7 +26,6 @@ As a result, when `X` and `Y` are objects in `C` and `n : ℕ`,
 we have `Ext X Y n : Type w`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

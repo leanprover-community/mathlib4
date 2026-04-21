@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 We prove the isomorphism `(pullback f g).obj d ≅ pullback (f.app d) (g.app d)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

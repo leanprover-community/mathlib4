@@ -13,7 +13,6 @@ public import Mathlib.Order.Hom.CompleteLattice
 
 This defines `BoolAlg`, the category of Boolean algebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.Pi
 /-!
 # Fin-indexed tuples of finsets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

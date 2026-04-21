@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Pi.Basic
 
 This file defines monoid with zero, group with zero, and related structure instances for pi types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

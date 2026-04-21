@@ -17,7 +17,6 @@ This file puts algebraic structure (`Group`, `AddGroup`, etc)
 on the type of locally constant functions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

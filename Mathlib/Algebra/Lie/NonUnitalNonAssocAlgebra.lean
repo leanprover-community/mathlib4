@@ -33,7 +33,6 @@ algebra and we provide some basic definitions for doing so here.
 
 lie algebra, non-unital, non-associative
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

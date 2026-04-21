@@ -16,7 +16,6 @@ In this file we define the filters
 * `Filter.atTop`: corresponds to `n → +∞`;
 * `Filter.atBot`: corresponds to `n → -∞`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

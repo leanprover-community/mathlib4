@@ -12,7 +12,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 # Product and sums indexed by finite sets in sigma types.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,7 +14,6 @@ We say that sets `s` and `t` are `μ`-a.e. disjoint (see `MeasureTheory.AEDisjoi
 intersection has measure zero. This assumption can be used instead of `Disjoint` in most theorems in
 measure theory.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

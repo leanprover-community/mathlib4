@@ -20,7 +20,6 @@ and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `IsChain r [a₁,
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

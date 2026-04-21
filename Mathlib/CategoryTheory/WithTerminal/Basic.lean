@@ -39,7 +39,6 @@ We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithIni
 from `Cat` to `Cat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

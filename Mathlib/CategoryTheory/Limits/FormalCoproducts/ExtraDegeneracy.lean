@@ -21,7 +21,6 @@ the Cech object `U.cech` has an extra degeneracy when there is a
 morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

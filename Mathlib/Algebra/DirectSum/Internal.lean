@@ -50,7 +50,6 @@ This file also provides some extra structure on `A 0`, namely:
 
 internally graded ring
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

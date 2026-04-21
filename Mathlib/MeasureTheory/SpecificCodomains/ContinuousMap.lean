@@ -49,7 +49,6 @@ to approach integration valued in a functional space `ℱ`. More precisely:
   and also avoids entering dependent-types hell.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

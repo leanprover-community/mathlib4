@@ -24,7 +24,6 @@ the nerve of its homotopy category.
 in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

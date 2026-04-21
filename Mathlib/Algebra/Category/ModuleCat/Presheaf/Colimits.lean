@@ -14,7 +14,6 @@ In this file, it is shown that under suitable assumptions,
 colimits exist in the category `PresheafOfModules R`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

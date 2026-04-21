@@ -18,7 +18,6 @@ numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise version
 See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/Wallis.lean` for
 infinite formulas for `π`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

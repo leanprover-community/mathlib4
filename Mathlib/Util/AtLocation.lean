@@ -20,7 +20,6 @@ This file provides convenience functions to turn such a metaprogram into a varie
 using the metaprogram to modify the goal, a specified hypothesis, or (via `Tactic.Location`) a
 combination of these.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

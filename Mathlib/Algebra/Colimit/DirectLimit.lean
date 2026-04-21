@@ -42,7 +42,6 @@ but for the other algebraic structures the constructions and proofs will be easy
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

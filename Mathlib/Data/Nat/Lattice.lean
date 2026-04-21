@@ -16,7 +16,6 @@ In this file we
 * define a `ConditionallyCompleteLinearOrderBot` structure on `ℕ`;
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

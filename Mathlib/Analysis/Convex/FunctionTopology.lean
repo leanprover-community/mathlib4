@@ -17,7 +17,6 @@ We prove the following facts:
 * `isClosed_setOf_convexOn` : the set of convex functions on a set is closed
 * `isClosed_setOf_concaveOn` : the set of concave functions on a set is closed
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open scoped Topology
 open Set

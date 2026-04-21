@@ -35,7 +35,6 @@ maps (`arrowArrowEquivalence'`).
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v v' u u'
 

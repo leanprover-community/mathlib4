@@ -19,7 +19,6 @@ It then follows that `LocallyRingedSpace` has all colimits, and
 `forgetToSheafedSpace` preserves them.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

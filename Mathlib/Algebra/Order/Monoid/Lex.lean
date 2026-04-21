@@ -24,7 +24,6 @@ and projections, making it the coproduct as well.
 Create the "OrdCommMon" category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

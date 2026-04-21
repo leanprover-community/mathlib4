@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Bits
 
 /-! Lemmas about `size`. -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,7 +19,6 @@ In this file, we proved that projective dimension equal to supremum over localiz
 # Main definition and results
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

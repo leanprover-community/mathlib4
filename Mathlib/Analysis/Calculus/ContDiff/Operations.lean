@@ -26,7 +26,6 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

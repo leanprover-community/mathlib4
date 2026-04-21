@@ -21,7 +21,6 @@ Note that it should be enough to assume that the space is a conditionally comple
 but the proof would be more painful. Since our only use for now is for `ℝ≥0∞`, we keep it as simple
 as possible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -29,7 +29,6 @@ other categories like `ModuleCat`.
   is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

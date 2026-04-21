@@ -15,7 +15,6 @@ to instead define a condition on all pre-`0`-hypercovers. Such a condition
 for every object is a pre-`0`-hypercover family if these conditions are
 invariant under deduplication.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

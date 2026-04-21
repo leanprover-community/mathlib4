@@ -32,7 +32,6 @@ This is a concrete implementation that is useful for simplicity and computabilit
 
 sequence, cauchy, abs val, absolute value
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

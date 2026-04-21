@@ -22,7 +22,6 @@ public import Mathlib.Topology.Algebra.Ring.Basic
   to assign and infer instances on a semiring that depend on absolute values.
 - `WithAbs.equiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

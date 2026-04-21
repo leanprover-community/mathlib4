@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 This file shows that the algebra of endomorphisms on a free module is central.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Module
 

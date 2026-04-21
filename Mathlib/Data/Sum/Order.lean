@@ -28,7 +28,6 @@ type synonym.
 
 * `α ⊕ₗ β`:  The linear sum of `α` and `β`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

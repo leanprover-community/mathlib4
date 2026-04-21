@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 We prove basic properties of local rings homomorphisms.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

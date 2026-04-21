@@ -28,7 +28,6 @@ The theory of the free ring over a type.
 free ring
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

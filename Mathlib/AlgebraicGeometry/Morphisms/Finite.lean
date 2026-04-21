@@ -23,7 +23,6 @@ Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
 `Mathlib/AlgebraicGeometry/Fiber.lean` for the fact that finite morphisms have finite fibers.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

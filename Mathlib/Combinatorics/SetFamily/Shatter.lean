@@ -26,7 +26,6 @@ This file defines the shattering property and VC-dimension of set families.
 * Order-shattering
 * Strong shattering
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

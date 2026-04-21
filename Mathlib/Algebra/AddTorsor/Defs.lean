@@ -38,7 +38,6 @@ multiplicative group actions).
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Tactic.Linter.Header  --shake: keep
 /-!
 # Support for `lemma` as a synonym for `theorem`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

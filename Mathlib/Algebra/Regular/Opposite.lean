@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Opposites
 /-!
 # Results about `IsRegular` and `MulOpposite`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

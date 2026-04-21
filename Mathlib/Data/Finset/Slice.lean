@@ -28,7 +28,6 @@ the set family made of its `r`-sets.
 
 `A # r` is notation for `A.slice r` in scope `finset_family`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

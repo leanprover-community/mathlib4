@@ -22,7 +22,6 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `PrimeMultiset`: Type of multisets of prime numbers.
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

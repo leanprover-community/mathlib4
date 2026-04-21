@@ -15,7 +15,6 @@ public import Mathlib.Order.Directed
 This file shows many variants of the fact that a monotone function `f` sends an interval with
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

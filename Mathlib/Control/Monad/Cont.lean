@@ -20,7 +20,6 @@ Haskell's `Cont`, `ContT` and `MonadCont`:
 <https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
 <https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

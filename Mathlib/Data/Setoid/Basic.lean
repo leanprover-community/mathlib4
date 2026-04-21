@@ -31,7 +31,6 @@ reason about them using the existing `Setoid` and its infrastructure.
 
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

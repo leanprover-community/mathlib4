@@ -16,7 +16,6 @@ public import Mathlib.Logic.Equiv.Set
 It is likely that there are better homes for many of these statement,
 in files further down the import graph.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

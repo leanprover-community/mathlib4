@@ -30,7 +30,6 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

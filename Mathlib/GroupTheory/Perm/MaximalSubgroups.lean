@@ -34,7 +34,6 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

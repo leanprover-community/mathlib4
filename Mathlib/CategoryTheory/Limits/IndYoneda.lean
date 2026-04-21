@@ -25,7 +25,6 @@ Notation: categories `C`, `I` and functors `D : Iᵒᵖ ⥤ C`, `F : C ⥤ Type`
   diagram.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,7 +29,6 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 

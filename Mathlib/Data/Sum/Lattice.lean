@@ -14,7 +14,6 @@ public import Mathlib.Order.Hom.Lattice
 This file proves that we can combine two lattices `α` and `β` into a lattice `α ⊕ₗ β` where
 everything in `α` is declared smaller than everything in `β`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

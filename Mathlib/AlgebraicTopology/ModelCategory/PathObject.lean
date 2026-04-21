@@ -38,7 +38,6 @@ in the lemma `PathObject.exists_very_good`.
 * https://ncatlab.org/nlab/show/path+space+object
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

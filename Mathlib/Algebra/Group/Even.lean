@@ -38,7 +38,6 @@ This file defines square and even elements in a monoid.
 `Mathlib/Algebra/Ring/Parity.lean` for the definition of odd elements as well as facts about
 `Even` / `IsSquare` in rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

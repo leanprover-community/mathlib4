@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.TensorProduct.Free
 /-!
 # Formally smooth local algebras
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -21,7 +21,6 @@ In the meantime, the `grobner` tactic (which calls into the Grobner basis module
 can close goals requiring polynomial reasoning,
 but is not able to give a "Try this:" suggestion based on `linear_combination`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

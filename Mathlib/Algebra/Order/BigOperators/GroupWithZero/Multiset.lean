@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups with zeros.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

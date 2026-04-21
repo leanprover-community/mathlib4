@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Ring.Units
 /-!
 # Associated elements in rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

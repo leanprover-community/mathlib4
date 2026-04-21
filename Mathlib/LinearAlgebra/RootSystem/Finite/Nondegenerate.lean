@@ -46,7 +46,6 @@ Weyl group.
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

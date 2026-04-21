@@ -22,7 +22,6 @@ we show that `LocalizerMorphism.ofEq hW : LocalizerMorphism W W'`
 induces an equivalence on localized categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

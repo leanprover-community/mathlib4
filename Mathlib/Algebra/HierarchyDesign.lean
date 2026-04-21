@@ -18,7 +18,6 @@ refer to files/types that currently only exist in mathlib3.
 TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

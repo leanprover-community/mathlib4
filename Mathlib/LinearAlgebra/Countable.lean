@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Finiteness.Defs
 /-!
 # Countable modules
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

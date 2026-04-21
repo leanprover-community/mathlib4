@@ -14,7 +14,6 @@ Cassini's identity states that for `n : ℤ`, `fib (n + 1) * fib (n - 1) - fib n
 to `(-1) ^ |n|`. And Catalan's identity states that for any integers `x` and `a`, we get
 `fib (x + a) ^ 2 - fib x * fib (x + 2 * a) = (-1) ^ |x| * fib a ^ 2`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 namespace Int
 

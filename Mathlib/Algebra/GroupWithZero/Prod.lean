@@ -20,7 +20,6 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 * `mulMonoidWithZeroHom`: Multiplication bundled as a monoid with zero homomorphism.
 * `divMonoidWithZeroHom`: Division bundled as a monoid with zero homomorphism.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

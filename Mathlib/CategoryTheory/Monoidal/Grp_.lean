@@ -20,7 +20,6 @@ morphisms of group objects commute with taking inverses.
 
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

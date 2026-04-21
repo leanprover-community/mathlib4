@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 /-!
 # `L^p`-seminorms on `count` and `dirac`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

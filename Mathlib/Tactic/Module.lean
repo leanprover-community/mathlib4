@@ -26,7 +26,6 @@ encountered.  However, to permit this, it is assumed that there is a "linear ord
 semirings which appear in the expression: for any two semirings `R` and `S` which occur, we have
 either `Algebra R S` or `Algebra S R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

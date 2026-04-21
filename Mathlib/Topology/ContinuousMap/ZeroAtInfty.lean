@@ -22,7 +22,6 @@ compact space, this type has nice properties.
   type classes (e.g., `IsTopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

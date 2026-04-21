@@ -22,7 +22,6 @@ This is the continuous version of the intrinsic star on linear maps (see
 Because there is a global `star` instance on `H →L[𝕜] H` (defined as the linear map adjoint on
 Hilbert spaces), which is mathematically distinct from this `star`, we provide
 this instance on `WithConv (E →L[R] F)`. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

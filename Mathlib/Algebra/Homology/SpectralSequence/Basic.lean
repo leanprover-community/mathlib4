@@ -21,7 +21,6 @@ A spectral sequence is defined as the data of a sequence of homological complexe
 next page.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

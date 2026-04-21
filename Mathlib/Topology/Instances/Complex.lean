@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.UniformRing
 /-!
 # Some results about the topology of ℂ
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

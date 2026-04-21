@@ -22,7 +22,6 @@ finiteness of the class group for number fields and function fields.
 - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
   its integral closure has a finite class group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

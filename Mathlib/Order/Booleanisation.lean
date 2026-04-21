@@ -29,7 +29,6 @@ complements.
 If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

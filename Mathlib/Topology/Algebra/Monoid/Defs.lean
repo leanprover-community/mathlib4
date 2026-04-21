@@ -27,7 +27,6 @@ instead of extending typeclasses with these fields.
 
 We also provide convenience dot notation lemmas like `Filter.Tendsto.mul` and `ContinuousAt.add`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ We define `IsOpenCover` as a predicate on indexed families of open sets in a top
 asserting that their union is `X`. This is an example of a declaration whose name is actually
 longer than its content; but giving it a name serves as a way of standardizing API.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

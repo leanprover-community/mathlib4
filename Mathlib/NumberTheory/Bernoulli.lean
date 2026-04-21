@@ -50,7 +50,6 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

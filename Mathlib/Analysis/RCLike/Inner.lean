@@ -22,7 +22,6 @@ from `RCLike.innerProductSpace`.
   `⟪f, g⟫_[𝕝, cWeight]` is called `wInner_cWeight`. Maybe we should introduce some naming
   convention, similarly to `MeasureTheory.average`?
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ satisfying compatibilities involving the faces and degeneracies.
 
 * [nLab, *Simplicial Homotopy*](https://ncatlab.org/nlab/show/simplicial+homotopy)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

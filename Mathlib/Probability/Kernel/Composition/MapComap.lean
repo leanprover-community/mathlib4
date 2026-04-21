@@ -27,7 +27,6 @@ Kernels built from other kernels:
   a kernel.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

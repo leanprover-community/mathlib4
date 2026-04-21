@@ -6,6 +6,5 @@ Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis
 module -- shake: keep-all
 
 public import Mathlib.Lean.Expr.Basic
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-01-27")

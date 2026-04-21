@@ -16,7 +16,6 @@ of subcomplexes of `X` as an abbreviation for `Subfunctor X`.
 It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

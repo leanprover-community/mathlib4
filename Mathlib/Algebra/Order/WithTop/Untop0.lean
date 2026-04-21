@@ -17,7 +17,6 @@ maps elements `a : WithTop α` to `α`, by mapping `⊤` to zero.
 For settings where `α` has additional structure, we provide a large number of simplifier lemmas,
 akin to those that already exists for `ENat.toNat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

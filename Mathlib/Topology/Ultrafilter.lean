@@ -9,7 +9,6 @@ public import Mathlib.Order.Filter.Ultrafilter.Basic
 public import Mathlib.Topology.Continuous
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

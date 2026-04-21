@@ -21,7 +21,6 @@ This file proves asymptotic theorems for binomial coefficients and factorial var
 * `isEquivalent_choose` is the proof that `n.choose k ~ n^k / k!` as `n → ∞`.
 * `isTheta_choose` is the proof that `n.choose k = Θ(n^k)` as `n → ∞`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

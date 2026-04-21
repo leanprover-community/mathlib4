@@ -23,7 +23,6 @@ isometry.
   linear isometry equivalence.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

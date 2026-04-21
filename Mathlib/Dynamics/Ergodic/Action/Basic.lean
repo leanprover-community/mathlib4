@@ -16,7 +16,6 @@ if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

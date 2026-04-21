@@ -21,7 +21,6 @@ but this would be unnecessarily confusing given the existing notion of a simplic
 homotopy type theory.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

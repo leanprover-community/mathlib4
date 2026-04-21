@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 
 In this file, we proved some results about the Krull dimension of a local ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -26,7 +26,6 @@ For noetherian rings:
 * `MvPolynomial.ringKrullDim_of_isNoetherianRing`: the Krull dimension of `R[X₁, ..., Xₙ]` is
   `dim R + n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

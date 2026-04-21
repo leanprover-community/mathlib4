@@ -15,7 +15,6 @@ public import Mathlib.Data.Vector.Basic
 # Topology on lists and vectors
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

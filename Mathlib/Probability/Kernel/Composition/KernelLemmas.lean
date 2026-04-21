@@ -23,7 +23,6 @@ compositions/products.
   a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy X = copy Y ∘ₖ κ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

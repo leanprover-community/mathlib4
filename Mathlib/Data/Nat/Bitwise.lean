@@ -41,7 +41,6 @@ should be connected.
 
 bitwise, and, or, xor
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

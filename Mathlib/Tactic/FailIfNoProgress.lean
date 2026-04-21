@@ -29,7 +29,6 @@ This tactic is useful in situations where we want to stop iterating some tactics
 having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

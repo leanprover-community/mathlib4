@@ -17,7 +17,6 @@ In this file we prove several properties of infinite Hausdorff topological space
 - `exists_topology_isEmbedding_nat`: there exists a topological embedding of `ℕ` into the space;
 - `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

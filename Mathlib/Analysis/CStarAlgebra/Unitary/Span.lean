@@ -17,7 +17,6 @@ public import Mathlib.Analysis.Normed.Module.Normalize
   combination of four unitary elements, and the norm of each coefficient does not exceed `‖x‖ / 2`.
 + `CStarAlgebra.span_unitary`: a unital C⋆-algebra is spanned by its unitary elements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

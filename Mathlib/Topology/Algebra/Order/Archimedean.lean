@@ -24,7 +24,6 @@ In this file we prove the following theorems:
 - `AddSubgroup.dense_or_cyclic`: an additive subgroup of an archimedean linear ordered additive
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -33,7 +33,6 @@ We define the trace / Killing form in this file and prove some basic properties.
 * `killingForm`: the adjoint representation of a (finite, free) Lie algebra `L` induces a bilinear
   form on `L` via the trace form construction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

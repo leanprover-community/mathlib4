@@ -22,7 +22,6 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 <https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

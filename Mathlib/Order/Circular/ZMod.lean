@@ -14,7 +14,6 @@ public import Mathlib.Data.ZMod.Defs
 
 This file defines the circular order on `ZMod n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

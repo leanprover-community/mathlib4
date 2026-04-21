@@ -23,7 +23,6 @@ under `∈`.
 - `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
   two notions are order-isomorphic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

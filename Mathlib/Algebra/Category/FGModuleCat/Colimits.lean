@@ -18,7 +18,6 @@ public import Mathlib.LinearAlgebra.DirectSum.Finite
 And hence `FGModuleCat K` has all finite colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

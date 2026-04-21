@@ -20,7 +20,6 @@ In this file we show that being a finitely presented algebra is local.
   (algebraic) target
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

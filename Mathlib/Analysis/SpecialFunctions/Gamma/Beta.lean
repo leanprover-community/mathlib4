@@ -38,7 +38,6 @@ refined properties of the Gamma function using these relations.
 * `Real.Gamma_ne_zero`, `Real.GammaSeq_tendsto_Gamma`,
   `Real.Gamma_mul_Gamma_one_sub`, `Real.Gamma_mul_Gamma_add_half`: real versions of the above.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

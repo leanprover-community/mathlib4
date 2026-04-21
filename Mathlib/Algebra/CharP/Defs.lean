@@ -21,7 +21,6 @@ public import Mathlib.Order.Lattice
   exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
   prime characteristic `p`)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

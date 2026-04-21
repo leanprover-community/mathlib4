@@ -25,7 +25,6 @@ However, note that Unicode has a rather restricted character set for superscript
 (see `Mapping.superscript` and `Mapping.subscript` in this file), so you should not use this
 parser for complex expressions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

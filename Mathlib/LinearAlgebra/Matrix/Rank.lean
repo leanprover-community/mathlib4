@@ -26,7 +26,6 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

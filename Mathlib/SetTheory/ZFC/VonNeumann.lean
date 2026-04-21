@@ -19,7 +19,6 @@ that `⋃ o, V_ o = univ`.
 
 - `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

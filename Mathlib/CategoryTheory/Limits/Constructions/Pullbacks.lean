@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 If a category has binary products and equalizers, then it has pullbacks.
 Also, if a category has binary coproducts and coequalizers, then it has pushouts.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

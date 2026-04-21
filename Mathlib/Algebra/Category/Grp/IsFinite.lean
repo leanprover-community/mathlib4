@@ -19,7 +19,6 @@ In this file, we define `isFinite : ObjectProperty AddCommGrpCat` and show
 that it is a Serre class.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

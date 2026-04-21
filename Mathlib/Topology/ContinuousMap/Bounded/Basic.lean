@@ -14,7 +14,6 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 
 The type of bounded continuous functions taking values in a metric space, with the uniform distance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

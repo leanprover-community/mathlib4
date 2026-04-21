@@ -59,7 +59,6 @@ We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheor
 ## Tags
 Jacobi symbol, quadratic reciprocity
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

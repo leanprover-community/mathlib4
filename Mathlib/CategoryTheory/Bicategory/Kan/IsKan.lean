@@ -37,7 +37,6 @@ in the namespace `StructuredArrow.IsUniversal`.
 https://ncatlab.org/nlab/show/Kan+extension
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

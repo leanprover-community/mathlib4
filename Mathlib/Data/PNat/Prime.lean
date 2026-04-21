@@ -14,7 +14,6 @@ public import Mathlib.Data.PNat.Basic
 This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

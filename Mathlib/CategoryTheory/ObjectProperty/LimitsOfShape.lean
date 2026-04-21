@@ -38,7 +38,6 @@ By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
   that is bounded by a certain regular cardinal (@joelriou)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

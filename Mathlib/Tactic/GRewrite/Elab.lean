@@ -20,7 +20,6 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 - `nth_grw`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

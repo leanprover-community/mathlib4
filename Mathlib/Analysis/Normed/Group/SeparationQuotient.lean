@@ -34,7 +34,6 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

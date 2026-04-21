@@ -57,7 +57,6 @@ It may be more efficient (not necessarily in terms of speed, but of simplicity o
 to inspect the `InfoTrees` for each command and retrieve information from there.
 I have not looked into this yet.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -43,7 +43,6 @@ TODO: show the scaling factor equals to the ratio between the volume of `d`-dime
 
 Hausdorff measure, measure, metric measure, volume, area
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open MeasureTheory Measure Module
 

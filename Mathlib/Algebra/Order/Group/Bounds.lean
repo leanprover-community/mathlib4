@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 /-!
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

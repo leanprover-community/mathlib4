@@ -17,7 +17,6 @@ Note that it is often preferable to use `(Fin n → α) → β` in place of `OfA
 * `Function.OfArity α β n`: `n`-ary function `α → α → ... → β`. Defined inductively.
 * `Function.OfArity.const α b n`: `n`-ary constant function equal to `b`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

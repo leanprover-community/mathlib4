@@ -17,7 +17,6 @@ Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

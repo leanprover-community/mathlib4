@@ -20,7 +20,6 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 ## Tags
 
 spectral theorem, diagonalization theorem -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

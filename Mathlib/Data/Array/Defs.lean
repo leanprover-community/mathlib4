@@ -13,7 +13,6 @@ public import Mathlib.Init
 This file contains various definitions on `Array`. It does not contain
 proofs about these definitions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-03-05")
 

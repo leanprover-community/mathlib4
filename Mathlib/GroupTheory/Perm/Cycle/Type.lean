@@ -33,7 +33,6 @@ In this file we define the cycle type of a permutation.
 - `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

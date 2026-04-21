@@ -34,7 +34,6 @@ over `S` and equip it with the induced topology.
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ of fiddling with simple tensors.
 
 module, commutative algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

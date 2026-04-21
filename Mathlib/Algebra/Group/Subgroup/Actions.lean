@@ -17,7 +17,6 @@ These are just copies of the definitions about `Submonoid` starting from `Submon
 subgroup, subgroups
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

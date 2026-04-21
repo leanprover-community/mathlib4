@@ -12,7 +12,6 @@ public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
 This file defines harmonic functions on real, finite-dimensional, inner product spaces `E`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

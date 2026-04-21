@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Algebraic.Defs
 * `Transcendental.linearIndependent_sub_inv`: let `x : E` transcendental over `F`,
   then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

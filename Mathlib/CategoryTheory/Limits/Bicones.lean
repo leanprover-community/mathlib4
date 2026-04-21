@@ -22,7 +22,6 @@ Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram
 
 This is used in `CategoryTheory.Functor.Flat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

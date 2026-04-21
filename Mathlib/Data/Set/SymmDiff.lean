@@ -9,7 +9,6 @@ public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.SymmDiff
 
 /-! # Symmetric differences of sets -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

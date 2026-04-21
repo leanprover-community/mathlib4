@@ -23,7 +23,6 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but 
 
 ring aut
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

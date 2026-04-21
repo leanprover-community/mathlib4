@@ -25,7 +25,6 @@ this is another small category at that level.
 However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -120,12 +119,10 @@ to_dual_insert_cast hcomp := by ext x; exact β.naturality' (α.app x)
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual self]
 theorem id_hcomp_app {H : E ⥤ C} (α : F ⟶ G) (X : E) : (𝟙 H ◫ α).app X = α.app _ := by simp
 

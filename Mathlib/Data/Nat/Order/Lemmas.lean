@@ -16,7 +16,6 @@ The distinction between this file and `Mathlib/Algebra/Order/Ring/Nat.lean` is n
 clear. They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

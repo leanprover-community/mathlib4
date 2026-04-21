@@ -16,7 +16,6 @@ public import Mathlib.Tactic.FastInstance
 We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

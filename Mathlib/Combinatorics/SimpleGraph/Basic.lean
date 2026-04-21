@@ -39,7 +39,6 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   We begin with simple graphs in order to start learning what the combinatorics hierarchy should
   look like.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ The complex numbers are modelled as ℝ^2 in the obvious way and it is shown tha
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
 `Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

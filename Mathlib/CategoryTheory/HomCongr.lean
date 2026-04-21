@@ -22,7 +22,6 @@ As corollaries, an isomorphism `α : X ≅ Y` defines
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
   which can be found in  `CategoryTheory.Conj`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

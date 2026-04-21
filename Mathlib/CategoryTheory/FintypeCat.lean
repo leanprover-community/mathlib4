@@ -22,7 +22,6 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 `FintypeCat.Skeleton.equivalence`.
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,7 +35,6 @@ but at present we are a long way off.
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

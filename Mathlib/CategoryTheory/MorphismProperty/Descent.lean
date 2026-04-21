@@ -15,7 +15,6 @@ Given morphism properties `P` and `Q` we say that `P` descends along `Q` (`P.Des
 if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P` holds for `Y ⟶ Z`.
 Dually, we define `P.CodescendsAlong Q`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

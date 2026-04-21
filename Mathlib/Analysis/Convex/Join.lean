@@ -14,7 +14,6 @@ This file defines the convex join of two sets. The convex join of `s` and `t` is
 segments with one end in `s` and the other in `t`. This is notably a useful gadget to deal with
 convex hulls of finite sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

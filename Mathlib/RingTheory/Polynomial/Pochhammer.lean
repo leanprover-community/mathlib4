@@ -33,7 +33,6 @@ In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
 There is lots more in this direction:
 * q-factorials, q-binomials, q-Pochhammer.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

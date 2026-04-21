@@ -48,7 +48,6 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
   * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

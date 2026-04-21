@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.NatIso
 
 We define the category structure on a sigma-type (disjoint union) of categories.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -134,7 +133,6 @@ def desc : (Σ i, C i) ⥤ D where
 lemma desc_map_mk {i : I} (X Y : C i) (f : X ⟶ Y) : (desc F).map (SigmaHom.mk f) = (F i).map f :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 -- We hand-generate the simp lemmas about this since they come out cleaner.
 /-- This shows that when `desc F` is restricted to just the subcategory `C i`, `desc F` agrees with
 `F i`.

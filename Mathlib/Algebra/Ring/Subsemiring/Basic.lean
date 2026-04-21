@@ -20,7 +20,6 @@ public import Mathlib.Algebra.Module.Defs
 We define some standard constructions on bundled subsemirings: `CompleteLattice` structure,
 subsemiring `map`, `comap` and range (`rangeS`) of a `RingHom` etc.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

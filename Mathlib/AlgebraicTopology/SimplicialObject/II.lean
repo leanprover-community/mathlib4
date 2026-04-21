@@ -28,7 +28,6 @@ by Gabriel and Zisman.
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

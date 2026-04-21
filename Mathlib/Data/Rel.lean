@@ -69,7 +69,6 @@ This extra level of indirection guides automation correctly and prevents (some k
 Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of
 `Set (α × α)`, and the new definition of `SetRel` fulfills this role quite well.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

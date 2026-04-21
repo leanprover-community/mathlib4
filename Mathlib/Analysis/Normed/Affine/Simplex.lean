@@ -20,7 +20,6 @@ This file defines properties of simplices in a `NormedAddTorsor`.
 * `Affine.Simplex.Regular`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

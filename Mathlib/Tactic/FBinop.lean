@@ -28,7 +28,6 @@ with `S _`, which can help certain elaboration problems proceed (like for `{a,b,
 
 The main goal is to support generic set product notation and have it elaborate in a convenient way.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

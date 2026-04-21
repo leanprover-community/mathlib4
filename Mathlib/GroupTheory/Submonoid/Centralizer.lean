@@ -18,7 +18,6 @@ public import Mathlib.GroupTheory.Submonoid.Center
 
 We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

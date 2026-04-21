@@ -12,7 +12,6 @@ public import Mathlib.Init
 # Fixpoint function with memoisation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 variable {α β : Type}
 

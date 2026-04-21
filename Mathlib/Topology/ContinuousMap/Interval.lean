@@ -13,7 +13,6 @@ public import Mathlib.Topology.Order.ProjIcc
 
 In this file we prove a few results about `ContinuousMap` when the domain is an interval.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

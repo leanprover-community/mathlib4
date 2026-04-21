@@ -13,7 +13,6 @@ public import Mathlib.Topology.ContinuousMap.Basic
 The type of *cocompact continuous maps* are those which tend to the cocompact filter on the
 codomain along the cocompact filter on the domain. When the domain and codomain are Hausdorff, this
 is equivalent to many other conditions, including that preimages of compact sets are compact. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

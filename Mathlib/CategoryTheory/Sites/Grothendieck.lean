@@ -50,7 +50,6 @@ This is so that we can produce a bijective correspondence between Grothendieck t
 small category and Lawvere-Tierney topologies on its presheaf topos, as well as the equivalence
 between Grothendieck topoi and left exact reflective subcategories of presheaf toposes.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

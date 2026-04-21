@@ -21,7 +21,6 @@ functions for `p < ∞`.
 
 This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

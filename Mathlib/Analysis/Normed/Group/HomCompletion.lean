@@ -47,7 +47,6 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 * `NormedAddGroupHom.extension` : if `H` is complete, the extension of
   `f : NormedAddGroupHom G H` to a `NormedAddGroupHom (completion G) H`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

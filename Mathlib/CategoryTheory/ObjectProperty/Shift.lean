@@ -18,7 +18,6 @@ We also introduce a typeclass `P.IsStableUnderShift A` to say that `P X`
 implies `P (X⟦a⟧)` for all `a : A`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

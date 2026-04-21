@@ -77,7 +77,6 @@ the subtype `↑(Iic M.E)` via `Matroid.SubtypeClosure`, albeit less elegantly.
 In lemma names, the words `spanning` and `isFlat` are used as suffixes,
 for instance we have `ground_spanning` rather than `spanning_ground`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

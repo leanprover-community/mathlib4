@@ -15,7 +15,6 @@ If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C
 is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

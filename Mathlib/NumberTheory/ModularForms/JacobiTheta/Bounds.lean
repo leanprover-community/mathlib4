@@ -34,7 +34,6 @@ hence Dirichlet L-functions, etc).
 * `HurwitzKernelBounds.isBigO_atTop_F_int_one`: the function `F_int 1 a` decays exponentially at
   `∞`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

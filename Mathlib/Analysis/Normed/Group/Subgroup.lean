@@ -17,7 +17,6 @@ In this file, we prove that subgroups of a normed (semi)group are also normed (s
 
 normed group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

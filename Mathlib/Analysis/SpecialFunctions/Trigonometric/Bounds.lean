@@ -30,7 +30,6 @@ Here we prove the following:
 
 sin, cos, tan, angle
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

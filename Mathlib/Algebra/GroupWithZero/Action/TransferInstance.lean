@@ -13,7 +13,6 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

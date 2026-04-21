@@ -20,7 +20,6 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
   quotient map, and `φ.range = ψ.ker`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

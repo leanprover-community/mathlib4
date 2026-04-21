@@ -61,7 +61,6 @@ We build theory about these definitions here, so we remind the definitions.
 
 sequentially closed, sequentially compact, sequential space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

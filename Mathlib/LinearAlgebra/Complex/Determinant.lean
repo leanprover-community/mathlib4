@@ -15,7 +15,6 @@ This file provides results about the determinants of maps in the complex numbers
 space over `ℝ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

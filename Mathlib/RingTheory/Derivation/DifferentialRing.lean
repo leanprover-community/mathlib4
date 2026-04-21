@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Derivation.Basic
 This file defines derivations from a commutative ring to itself as a typeclass, which lets us
 use the x′ notation for the derivative of x.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

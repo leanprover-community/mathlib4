@@ -15,7 +15,6 @@ In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

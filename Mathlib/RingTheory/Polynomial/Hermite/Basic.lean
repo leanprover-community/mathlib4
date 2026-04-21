@@ -35,7 +35,6 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

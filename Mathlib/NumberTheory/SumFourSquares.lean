@@ -17,7 +17,6 @@ a proof that every natural number is the sum of four square numbers.
 
 The proof used is close to Lagrange's original proof.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

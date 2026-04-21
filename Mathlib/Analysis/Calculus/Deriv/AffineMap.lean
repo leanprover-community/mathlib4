@@ -24,7 +24,6 @@ Mathlib 4.
 
 affine map, derivative, differentiability
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -35,7 +35,6 @@ being integral and the fields of fractions `Frac(B)/Frac(A)` being Galois with G
 But in the absence of a more suitable name, the utility of the predicate `IsGaloisGroup G A B` for
 extensions of rings `B/A` seems to outweigh these terminological issues.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

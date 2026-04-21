@@ -42,7 +42,6 @@ Note that the theory of Stieltjes measures is not completely satisfactory when t
 element `x`: any Stieltjes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
 is not representable as a Stieltjes measure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

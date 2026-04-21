@@ -14,7 +14,6 @@ public import Mathlib.Data.QPF.Multivariate.Basic
 We define composition between one `n`-ary functor and `n` `m`-ary functors
 and show that it preserves the QPF structure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

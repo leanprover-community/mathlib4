@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Ideal.Defs
 
 This contains some results on the big operators `∑` and `∏` interacting with the `Ideal` type.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

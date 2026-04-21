@@ -32,7 +32,6 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidtOrthonormalBasis`: orthonormal basis constructed by the Gram-Schmidt process from
   an indexed set of vectors of the right size
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

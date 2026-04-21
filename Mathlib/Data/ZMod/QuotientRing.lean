@@ -25,7 +25,6 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 zmod, quotient ring, ideal quotient
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ This file provides the implementation of the normalization given in
 `Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

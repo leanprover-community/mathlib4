@@ -15,7 +15,6 @@ In this file we define the canonical equivalence of `Over X` with `Discrete PUni
 `C` has strict initial objects. We also provide the variants for `P.Over Q X`
 and the dual versions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

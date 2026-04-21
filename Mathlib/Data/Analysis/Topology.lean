@@ -21,7 +21,6 @@ This file provides infrastructure to compute with topological spaces.
 * `LocallyFinite.Realizer`: Realization of the local finiteness of an indexed family of sets.
 * `Compact.Realizer`: Realization of the compactness of a set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
   `P.fullsubcategory` is a stack if the original pseudofunctor was.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

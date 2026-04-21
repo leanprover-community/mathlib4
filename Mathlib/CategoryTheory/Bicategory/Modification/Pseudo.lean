@@ -26,7 +26,6 @@ Given two pseudofunctors `F` and `G`, we define:
   namespace, so you need to run `open scoped Pseudofunctor.StrongTrans` to access it.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

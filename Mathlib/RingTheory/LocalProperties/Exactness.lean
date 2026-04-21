@@ -19,7 +19,6 @@ In this file, we show that
 injectivity, surjectivity, bijectivity and exactness of linear maps are local properties.
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

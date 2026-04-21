@@ -17,7 +17,6 @@ This file shows `Finset.biUnion` could alternatively be defined in terms of `Fin
 
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

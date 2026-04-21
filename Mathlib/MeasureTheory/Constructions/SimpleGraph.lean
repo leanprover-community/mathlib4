@@ -14,7 +14,6 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 In this file, we pull back the sigma-algebra on `V → V → Prop` to a sigma-algebra on
 `SimpleGraph V` and prove that common operations are measurable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

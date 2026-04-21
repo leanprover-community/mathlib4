@@ -14,7 +14,6 @@ In this file we define `Cardinal.toNat` to be the natural projection `Cardinal â
 sending all infinite cardinals to zero.
 We also prove basic lemmas about this definition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

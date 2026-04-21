@@ -15,7 +15,6 @@ and shows it is a probability measure with no atoms.
 
 It also contains some basic results on the volume of various interval sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

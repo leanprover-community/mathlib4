@@ -20,7 +20,6 @@ This file characterises sheaves for the extensive topology.
 * `isSheaf_iff_preservesFiniteProducts`: In a finitary extensive category, the sheaves for the
   extensive topology are precisely those preserving finite products.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

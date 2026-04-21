@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Ring.Defs
 /-!
 # Lemmas about filters and ordered rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace Filter

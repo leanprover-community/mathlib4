@@ -16,7 +16,6 @@ In this file, we show that the class of monomorphisms in `SSet` is stable
 under coproducts, pushouts, filtered colimits and transfinite compositions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

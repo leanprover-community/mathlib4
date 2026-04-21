@@ -50,7 +50,6 @@ does use ℝ).
 
 real numbers, completion, uniform spaces
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

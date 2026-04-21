@@ -18,7 +18,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

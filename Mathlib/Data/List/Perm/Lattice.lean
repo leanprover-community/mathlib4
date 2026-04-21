@@ -15,7 +15,6 @@ public import Mathlib.Data.List.Nodup
 
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

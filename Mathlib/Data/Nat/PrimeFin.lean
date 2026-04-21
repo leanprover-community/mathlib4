@@ -15,7 +15,6 @@ public import Mathlib.Data.Set.Finite.Lattice
 
 This file contains some results about prime numbers which depend on finiteness of sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

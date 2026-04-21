@@ -21,7 +21,6 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 - `FundamentalGroupoidFunctor.equivOfHomotopyEquiv hequiv` The equivalence of the categories
   `π(X)` and `π(Y)` given a homotopy equivalence `hequiv : X ≃ₕ Y` between them.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

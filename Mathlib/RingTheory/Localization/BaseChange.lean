@@ -20,7 +20,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 * `isLocalizedModule_iff_isBaseChange` : A localization of modules corresponds to a base change.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

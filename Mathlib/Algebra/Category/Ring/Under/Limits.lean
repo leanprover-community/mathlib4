@@ -19,7 +19,6 @@ We show that `Under.pushout f` is left-exact, i.e. preserves finite limits, if `
 flat.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

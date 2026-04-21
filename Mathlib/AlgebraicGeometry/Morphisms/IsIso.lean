@@ -12,7 +12,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 # Being an isomorphism is local at the target
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe u
 

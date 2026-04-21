@@ -16,7 +16,6 @@ In this file we turn the statement `yonedaYonedaColimit` from
 `CategoryTheory.Limits.Preserves.Yoneda` from a functor `F : J ⥤ Cᵒᵖ ⥤ Type v` into a statement
 about families of presheaves over `A`, i.e., functors `F : J ⥤ Over A`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

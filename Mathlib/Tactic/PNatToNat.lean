@@ -21,7 +21,6 @@ The implementation follows these steps:
 2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe` simp set.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

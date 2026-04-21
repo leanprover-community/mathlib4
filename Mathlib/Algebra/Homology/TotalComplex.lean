@@ -26,7 +26,6 @@ differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the verti
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

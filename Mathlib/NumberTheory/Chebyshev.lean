@@ -50,7 +50,6 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 - Prove Chebyshev's lower bound.
 -/
 
-set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 open Nat hiding log

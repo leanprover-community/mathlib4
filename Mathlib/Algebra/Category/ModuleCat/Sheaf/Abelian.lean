@@ -23,7 +23,6 @@ found automatically if this file and `Algebra.Category.Grp.FilteredColimits`
 are imported.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

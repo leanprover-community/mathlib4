@@ -17,7 +17,6 @@ The limit cone for `S : LightProfinite` is `S.asLimitCone`, the fact that it's a
 We also prove that the projection and transition maps in this limit are surjective.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

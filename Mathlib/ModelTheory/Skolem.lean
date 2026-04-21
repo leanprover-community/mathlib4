@@ -25,7 +25,6 @@ public import Mathlib.ModelTheory.ElementarySubstructures
 
 - Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

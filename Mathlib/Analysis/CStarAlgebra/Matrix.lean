@@ -33,7 +33,6 @@ We take care to ensure the topology and uniformity induced by `Matrix.instMetric
 coincide with the existing topology and uniformity on matrices.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ Isabelle formalization.
 
 measure-preserving map, measure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

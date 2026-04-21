@@ -54,7 +54,6 @@ due to the fact that `fderiv` and `deriv` are defined to be zero for non-differe
 
 local extremum, tangent cone, Fermat's Theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

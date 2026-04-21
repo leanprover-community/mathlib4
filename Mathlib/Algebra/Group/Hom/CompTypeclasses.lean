@@ -33,7 +33,6 @@ TODO :
 * does one need AddHom.CompTriple ?
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ public import Mathlib.Topology.UniformSpace.Ultra.Constructions
   iff the underlying space has a nonarchimedean uniformity.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

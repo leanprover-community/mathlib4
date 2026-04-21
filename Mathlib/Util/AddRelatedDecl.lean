@@ -12,7 +12,6 @@ public meta import Lean.Elab.DeclarationRange
 # `addRelatedDecl`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

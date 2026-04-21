@@ -27,7 +27,6 @@ This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
 See also `RingTheory.Coprime.Lemmas` for further development of coprime elements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

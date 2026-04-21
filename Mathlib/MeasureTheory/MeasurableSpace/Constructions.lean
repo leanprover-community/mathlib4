@@ -19,7 +19,6 @@ public import Mathlib.Order.Disjointed
 This file provides several ways to construct new measurable spaces and functions from old ones:
 `Quotient`, `Subtype`, `Prod`, `Pi`, etc.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

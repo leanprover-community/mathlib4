@@ -26,7 +26,6 @@ length, `p + q` is at most 3.
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

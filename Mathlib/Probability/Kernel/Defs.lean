@@ -37,7 +37,6 @@ Classes of kernels:
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

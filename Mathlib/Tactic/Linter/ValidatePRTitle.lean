@@ -16,7 +16,6 @@ This script checks if a PR title matches
 Not all checks from the commit conventions are implemented: for instance, no effort is made to
 verify whether the title or body are written in present imperative tense.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Std.Internal.Parsec String
 

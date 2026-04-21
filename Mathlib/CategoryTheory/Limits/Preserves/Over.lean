@@ -15,7 +15,6 @@ Note that `Over.forget X : Over X ⥤ C` already preserves all colimits because 
 See `Mathlib/CategoryTheory/Comma/Over/Pullback.lean`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

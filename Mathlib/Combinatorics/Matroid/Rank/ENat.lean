@@ -58,7 +58,6 @@ Although this file transitively imports `Cardinal` via `Set.encard`,
 there are plans to refactor the latter to be independent of the former,
 which would carry over to the current version of this file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

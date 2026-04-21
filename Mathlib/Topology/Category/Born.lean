@@ -13,7 +13,6 @@ public import Mathlib.Topology.Bornology.Hom
 
 This defines `Born`, the category of bornologies.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

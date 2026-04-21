@@ -23,7 +23,6 @@ Equivalent characterizations in terms of indices and modular arithmetic are also
 periodicity lemma, Fine-Wilf theorem, period, periodicity
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

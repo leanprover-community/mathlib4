@@ -41,7 +41,6 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

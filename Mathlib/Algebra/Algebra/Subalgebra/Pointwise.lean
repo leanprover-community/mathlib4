@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Ring.Subring.Pointwise
 If `R'` acts on an `R`-algebra `A` (so that `R'` and `R` actions commute)
 then we get an `R'` action on the collection of `R`-subalgebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

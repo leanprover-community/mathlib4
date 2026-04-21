@@ -31,7 +31,6 @@ structure, such as a bottom element, a top element, or a join-semilattice struct
 ideal, prime
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

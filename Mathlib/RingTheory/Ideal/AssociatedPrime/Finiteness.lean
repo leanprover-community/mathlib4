@@ -39,7 +39,6 @@ associated primes.
   finitely generated module over a Noetherian ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

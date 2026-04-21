@@ -72,7 +72,6 @@ See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notatio
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 ## TODO
 An attribute should be developed to automatically generate lemmas of this form.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ and is almost everywhere strongly measurable.
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

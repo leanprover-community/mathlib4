@@ -29,7 +29,6 @@ The pointwise section of this file is almost identical to
 the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 Where possible, try to keep them in sync.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

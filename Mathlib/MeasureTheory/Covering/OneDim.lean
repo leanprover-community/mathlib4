@@ -15,7 +15,6 @@ We have a general theory of covering theorems for doubling measures, developed n
 in `DensityTheorem.lean`. In this file, we expand the API for this theory in one dimension,
 by showing that intervals belong to the relevant Vitali family.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

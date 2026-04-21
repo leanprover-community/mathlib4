@@ -18,7 +18,6 @@ used ways to represent `ℝ²` in `mathlib`: `ℝ × ℝ` and `Fin 2 → ℝ`, d
 (`MeasurableEquiv`) to both types and prove that both of them are volume preserving (in the sense
 of `MeasureTheory.measurePreserving`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

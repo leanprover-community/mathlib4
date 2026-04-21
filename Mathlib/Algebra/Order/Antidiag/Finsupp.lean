@@ -27,7 +27,6 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `Î
   contained in `s` and such that the sum of its values equals `n : Î¼`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

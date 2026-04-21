@@ -36,7 +36,6 @@ the linear order `Fin (n + 1)` to `C`, in other words
 ## References
 * [Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

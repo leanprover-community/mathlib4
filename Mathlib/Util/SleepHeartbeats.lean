@@ -14,7 +14,6 @@ public meta import Lean.Elab.Tactic.Basic
 This is useful for testing / debugging long running commands or elaboration in a somewhat precise
 manner.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 open Lean Elab

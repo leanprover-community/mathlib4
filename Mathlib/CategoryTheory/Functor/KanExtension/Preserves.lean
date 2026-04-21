@@ -21,7 +21,6 @@ diagrams.
 We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

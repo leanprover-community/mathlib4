@@ -65,7 +65,6 @@ naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model sp
 
 Relate the stereographic projection to the inversion of the space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

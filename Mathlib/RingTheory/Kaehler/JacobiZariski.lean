@@ -32,7 +32,6 @@ and the exactness lemmas are
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 open KaehlerDifferential Module MvPolynomial TensorProduct
 

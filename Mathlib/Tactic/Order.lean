@@ -145,7 +145,6 @@ One can show that this algorithm also serves as a decision procedure for the the
 For `⊤` and `⊥`, we add the edges `(x, ⊤)` and `(⊥, x)` for all vertices `x`, using `le_top`
 and `bot_le`, respectively.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

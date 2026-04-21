@@ -22,7 +22,6 @@ In particular, this implies that `forget GrpCat` preserves filtered colimits.
 Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

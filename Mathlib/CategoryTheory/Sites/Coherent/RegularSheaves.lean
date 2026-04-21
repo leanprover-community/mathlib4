@@ -26,7 +26,6 @@ This file characterises sheaves for the regular topology.
 * `isSheaf_of_projective`: In a preregular category in which every object is projective, every
   presheaf is a sheaf for the regular topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

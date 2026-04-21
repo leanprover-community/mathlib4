@@ -14,7 +14,6 @@ public import Batteries.Data.Fin.Lemmas
 /-!
 # Equivalences for `Fin n`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

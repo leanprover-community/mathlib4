@@ -31,7 +31,6 @@ some of the functors are fully faithful. We opt to include only those typeclass 
 needed for the theorem statements, so some lemmas require only e.g. `F` to be fully faithful when
 really this means `F` and `R` both must be.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

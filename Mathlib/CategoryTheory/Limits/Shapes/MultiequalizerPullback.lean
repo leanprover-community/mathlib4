@@ -16,7 +16,6 @@ In this file, we show that a multicoequalizer for
 a pushout when `ι` has exactly two elements.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

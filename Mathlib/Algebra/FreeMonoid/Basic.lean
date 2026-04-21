@@ -25,7 +25,6 @@ public import Mathlib.Tactic.ToDual
 * `FreeMonoid.lift`: natural equivalence between `α → M` and `FreeMonoid α →* M`
 * `FreeMonoid.map`: embedding of `α → β` into `FreeMonoid α →* FreeMonoid β` given by `List.map`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

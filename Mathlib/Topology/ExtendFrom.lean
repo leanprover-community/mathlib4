@@ -23,7 +23,6 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ Let `c : ComplexShape ι`. We define a type class `c.HasNoLoop`
 which expresses that `¬ c.Rel i i` for all `i : ι`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

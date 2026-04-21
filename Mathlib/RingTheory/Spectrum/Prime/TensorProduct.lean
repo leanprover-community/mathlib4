@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.SurjectiveOnStalks
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the Cartesian product with the product topology).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -108,7 +108,6 @@ the module topology.
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,7 +39,6 @@ instances since they do not compute anything.
 
 finite sets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

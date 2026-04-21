@@ -17,7 +17,6 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 * `Subalgebra.prod`: the product of two subalgebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

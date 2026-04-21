@@ -33,7 +33,6 @@ defined in `Mathlib/Algebra/Ring/Action/Invariant.lean`.
 group action
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

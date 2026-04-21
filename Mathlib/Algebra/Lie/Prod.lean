@@ -29,7 +29,6 @@ This file defines the Lie algebra structure the Product of two Lie algebras
  - Lie Submodule statements
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

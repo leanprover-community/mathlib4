@@ -22,7 +22,6 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
   that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

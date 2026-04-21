@@ -24,7 +24,6 @@ Criteria for a convolution of functions to be differentiable.
   is `𝒞ⁿ` with compact support and the other function in locally integrable.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace

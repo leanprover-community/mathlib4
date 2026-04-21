@@ -28,7 +28,6 @@ result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

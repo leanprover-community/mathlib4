@@ -23,7 +23,6 @@ than the dimension.
 * `integrable_jap` the Japanese bracket is integrable
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

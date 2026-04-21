@@ -21,7 +21,6 @@ public import Mathlib.Order.OmegaCompletePartialOrder
   `⨆ y ∈ Y, f a y = ⨅ x ∈ X, f x b = f a b`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

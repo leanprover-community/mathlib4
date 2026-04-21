@@ -10,7 +10,6 @@ public import Mathlib.Data.NNReal.Star
 public import Mathlib.Data.Real.Sqrt
 
 /-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

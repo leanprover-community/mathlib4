@@ -46,7 +46,6 @@ Then we get the general result using that a torsion free module is free (which h
 
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

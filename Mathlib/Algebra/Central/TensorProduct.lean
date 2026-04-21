@@ -28,7 +28,6 @@ algebra and `B, C` nontrivial, then both `B` and `C` are central algebras.
 ## Tags
 Central Algebras, Central Simple Algebras, Noncommutative Algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

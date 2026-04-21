@@ -16,7 +16,6 @@ for an object property `P` along a morphism property `Q`.
 `P` is inherited from the source (resp. target) along `Q` if for every morphism
 `f : X ⟶ Y` with `Q f`, `P X` implies `P Y` (resp. `P Y` implies `P X`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

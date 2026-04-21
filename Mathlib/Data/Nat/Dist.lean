@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 
 This file defines a simple distance function on naturals from truncated subtraction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

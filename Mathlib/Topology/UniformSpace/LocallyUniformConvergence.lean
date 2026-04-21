@@ -34,7 +34,6 @@ We also define variants for locally uniform convergence on a subset, called
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

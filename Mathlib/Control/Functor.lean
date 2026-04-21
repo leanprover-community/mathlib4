@@ -26,7 +26,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 
 functor, applicative
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

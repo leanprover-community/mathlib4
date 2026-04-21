@@ -16,7 +16,6 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions) for the derivative of
 composition of functions (the chain rule).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

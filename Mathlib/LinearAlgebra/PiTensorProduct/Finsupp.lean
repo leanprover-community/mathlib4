@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.PiTensorProduct
 * `ofFinsuppEquiv`, the tensor product of the family `κ i →₀ M i` indexed by `ι` is linearly
   equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.SuccPred
 
 This file proves that the growth of a set generating an infinite group is at least linear.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

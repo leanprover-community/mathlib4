@@ -51,7 +51,6 @@ If `N` is abelian,
 - there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
   (which is also stated as a TODO in `Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

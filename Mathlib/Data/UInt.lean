@@ -25,7 +25,6 @@ The UInt
 version also interferes more with software-verification use-cases, which is reason to be more
 cautious here.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

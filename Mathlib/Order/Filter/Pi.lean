@@ -22,7 +22,6 @@ In this file we prove some basic properties of two filters on `Π i, α i`.
 * `Filter.coprodᵢ (f : Π i, Filter (α i))`: a generalization of `Filter.coprod`; it is the supremum
   of `comap (eval i) (f i)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

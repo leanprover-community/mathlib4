@@ -21,7 +21,6 @@ the `Finset.sum` operation which computes the additive sum.
 * `Finset.toLeft`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `α`.
 * `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

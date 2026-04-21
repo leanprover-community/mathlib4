@@ -27,7 +27,6 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
   the Fourier transform on `𝓢'(E, F)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

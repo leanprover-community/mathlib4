@@ -6,6 +6,5 @@ import Mathlib.Tactic.Common
 import Mathlib.Tactic.Finiteness.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Util.CompileInductive
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-01-14")

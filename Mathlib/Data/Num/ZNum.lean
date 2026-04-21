@@ -14,7 +14,6 @@ public import Mathlib.Data.Num.Lemmas
 
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

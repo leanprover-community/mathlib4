@@ -32,7 +32,6 @@ More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
   corresponding presieve of arrows.
   See `isSheafFor_of_preservesProduct`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

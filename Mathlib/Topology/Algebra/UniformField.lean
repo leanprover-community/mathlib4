@@ -32,7 +32,6 @@ The main definition is `CompletableTopField` which packages the assumptions as a
 type class and the main results are the instances `UniformSpace.Completion.Field` and
 `UniformSpace.Completion.IsTopologicalDivisionRing`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

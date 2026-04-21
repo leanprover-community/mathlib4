@@ -26,7 +26,6 @@ Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to
 `ConvexCone.dual`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

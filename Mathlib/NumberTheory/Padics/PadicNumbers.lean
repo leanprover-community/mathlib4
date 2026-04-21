@@ -59,7 +59,6 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

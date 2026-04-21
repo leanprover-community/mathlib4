@@ -16,7 +16,6 @@ base category.
 ## TODO
 - The dual result for `Under B`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Init
 
 Allows setting undeclared options.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -28,7 +28,6 @@ non-archimedean fields. In particular:
 Use Łoś's Theorem `FirstOrder.Language.Ultraproduct.sentence_realize` to formalize the transfer
 principle on `Hyperreal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

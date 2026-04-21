@@ -164,7 +164,6 @@ for the initial bundle.
 ## Tags
 Fiber bundle, topological bundle, structure group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

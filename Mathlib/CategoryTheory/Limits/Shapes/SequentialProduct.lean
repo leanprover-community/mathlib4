@@ -25,7 +25,6 @@ exhibits `∏ M` as the limit of the tower
 Further, we prove that the transition maps in this tower are epimorphisms, in the case when each
 `f n` is an epimorphism and `C` has finite biproducts.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

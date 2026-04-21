@@ -26,7 +26,6 @@ This file defines condensed modules over a ring `R`.
 * The forgetful functor from condensed `R`-modules to condensed sets has a left adjoint, sending a
   condensed set to the corresponding *free* condensed `R`-module.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Category.Quiv
 The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
 `Cat` and `ReflQuiv`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

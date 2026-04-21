@@ -19,7 +19,6 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
   positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

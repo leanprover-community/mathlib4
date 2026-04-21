@@ -43,7 +43,6 @@ measurable function, arithmetic operator
 * This might require changing the definition (swapping the arguments in the function that is
   in the conclusion of `MeasurableSMul`.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

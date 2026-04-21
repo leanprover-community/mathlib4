@@ -22,7 +22,6 @@ Note: Currently Category does not extend ReflQuiver, although it could. (TODO: d
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 

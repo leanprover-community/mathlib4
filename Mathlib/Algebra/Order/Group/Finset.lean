@@ -15,7 +15,6 @@ public import Mathlib.Data.Finset.Lattice.Prod
 /-!
 # `Finset.sup` in a group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

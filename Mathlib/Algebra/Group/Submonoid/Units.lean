@@ -36,7 +36,6 @@ which have a different type.
 All of these are distinct from `S.leftInv`, which is the submonoid of `M` which contains
 every member of `M` with a right inverse in `S`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

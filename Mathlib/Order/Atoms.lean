@@ -54,7 +54,6 @@ which are lattices with only two elements, and related ideas.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

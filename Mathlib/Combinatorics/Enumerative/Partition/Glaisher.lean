@@ -31,7 +31,6 @@ $$\prod_{i=1,i\nmid m}^\infty\frac{1}{1-X^i}=\prod_{i=0}^\infty (1+X^{i+1}+\cdot
 ## References
 https://en.wikipedia.org/wiki/Glaisher%27s_theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

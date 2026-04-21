@@ -33,7 +33,6 @@ part function on `Hyperreal`.
 
 * https://en.wikipedia.org/wiki/Standard_part_function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

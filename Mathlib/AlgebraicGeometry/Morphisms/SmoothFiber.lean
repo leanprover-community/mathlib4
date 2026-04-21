@@ -17,7 +17,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
   finite presentation and smooth fibers is smooth.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

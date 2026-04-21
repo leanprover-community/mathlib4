@@ -106,7 +106,6 @@ Generalize more results to topological vector spaces.
 derivative, differentiable, Fréchet, calculus
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

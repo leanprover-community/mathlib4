@@ -51,7 +51,6 @@ To ensure that composition works smoothly for semilinear maps, we use the typecl
 
 linear map
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

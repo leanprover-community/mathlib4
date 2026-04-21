@@ -50,7 +50,6 @@ we show that a strong anodyne extension is an anodyne extension.
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -40,7 +40,6 @@ in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

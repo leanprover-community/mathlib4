@@ -21,7 +21,6 @@ A morphism of schemes is of finite type if it is both locally of finite type and
 We show that these properties are local, and are stable under compositions and base change.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

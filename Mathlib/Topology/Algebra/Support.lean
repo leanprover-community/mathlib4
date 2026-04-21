@@ -31,7 +31,6 @@ The definitions have been put in the root namespace following many other topolog
 like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
 worth reconsidering namespacing the definitions here.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

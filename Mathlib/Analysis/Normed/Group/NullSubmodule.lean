@@ -27,7 +27,6 @@ subspace as a submodule of `E`.
 * `nullSubmodule` : the subspace of elements `x` with `‖x‖ = 0`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

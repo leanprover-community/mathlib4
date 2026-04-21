@@ -50,7 +50,6 @@ and `IsSuccArchimedean α`.
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

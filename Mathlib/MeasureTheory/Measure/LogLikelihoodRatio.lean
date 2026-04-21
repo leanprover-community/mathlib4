@@ -22,7 +22,6 @@ This file contains a definition of the log-likelihood ratio (llr) and its proper
   `x ↦ log (μ.rnDeriv ν x).toReal`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

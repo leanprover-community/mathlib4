@@ -19,7 +19,6 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
 `Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

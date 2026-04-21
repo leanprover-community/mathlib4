@@ -43,7 +43,6 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 `γ.extend : ℝ → X` whose restriction to `I` is the original `γ`, and is equal to `x`
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

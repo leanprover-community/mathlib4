@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
 /-! # Almost integral elements -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

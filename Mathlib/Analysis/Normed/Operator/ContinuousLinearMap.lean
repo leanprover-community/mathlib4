@@ -29,7 +29,6 @@ constructions of continuous linear maps between normed spaces.
 This file is meant to be lightweight (it is imported by much of the analysis library); think twice
 before adding imports!
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

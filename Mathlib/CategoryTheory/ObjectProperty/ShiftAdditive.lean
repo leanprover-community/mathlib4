@@ -20,7 +20,6 @@ to `P` are additive if the shift functors on `C` are.
 This instance is put in a separate file in order to reduce imports.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

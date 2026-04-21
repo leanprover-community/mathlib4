@@ -18,7 +18,6 @@ We prove that
   A multivariate polynomial is invertible iff its constant term is invertible
   and its other coefficients are nilpotent.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

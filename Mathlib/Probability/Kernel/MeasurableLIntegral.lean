@@ -20,7 +20,6 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
   is measurable.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

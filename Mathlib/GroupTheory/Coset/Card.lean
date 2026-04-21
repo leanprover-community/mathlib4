@@ -15,7 +15,6 @@ public import Mathlib.SetTheory.Cardinal.Finite
   there is an analogous version for additive groups
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

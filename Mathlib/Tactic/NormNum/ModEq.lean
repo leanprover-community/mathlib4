@@ -13,7 +13,6 @@ public import Mathlib.Tactic.NormNum.DivMod
 
 In this file we define `norm_num` extensions for `a ≡ b [MOD n]` and `a ≡ b [ZMOD n]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

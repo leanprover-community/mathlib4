@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 /-!
 # Analyticity of local inverses
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

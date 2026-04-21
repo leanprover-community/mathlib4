@@ -33,7 +33,6 @@ of digraphs on `V`.
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

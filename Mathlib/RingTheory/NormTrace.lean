@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Trace.Defs
 /-!
 # Relation between norms and traces
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

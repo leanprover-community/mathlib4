@@ -30,7 +30,6 @@ In this file we define these concepts and provide some related definitions and r
 
 lie algebra, abelian, commutative, center
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

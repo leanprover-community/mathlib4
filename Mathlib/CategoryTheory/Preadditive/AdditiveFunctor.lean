@@ -29,7 +29,6 @@ We also define the category of bundled additive functors.
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

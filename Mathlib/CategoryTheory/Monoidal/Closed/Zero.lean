@@ -20,7 +20,6 @@ object and one morphism.
 * https://mathoverflow.net/a/136480
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

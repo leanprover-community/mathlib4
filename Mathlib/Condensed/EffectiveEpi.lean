@@ -14,7 +14,6 @@ public import Mathlib.Condensed.Limits
 
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

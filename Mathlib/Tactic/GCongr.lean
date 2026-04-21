@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Hint
 
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
 `Tactic.GCongr.Core`. -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

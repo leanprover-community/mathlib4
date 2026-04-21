@@ -20,7 +20,6 @@ with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

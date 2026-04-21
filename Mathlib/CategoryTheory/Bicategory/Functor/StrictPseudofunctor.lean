@@ -22,7 +22,6 @@ Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is r
 rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

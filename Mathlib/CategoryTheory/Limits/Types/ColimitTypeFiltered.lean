@@ -21,7 +21,6 @@ a concrete condition under which the map
 important step when proving `c.IsColimit`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

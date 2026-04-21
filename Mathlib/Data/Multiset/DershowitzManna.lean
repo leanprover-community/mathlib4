@@ -33,7 +33,6 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
   [MultisetList.v](https://github.com/fblanqui/color/blob/1.8.5/Util/Multiset/MultisetOrder.v).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

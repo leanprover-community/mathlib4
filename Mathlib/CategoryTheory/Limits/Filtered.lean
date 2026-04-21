@@ -17,7 +17,6 @@ finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

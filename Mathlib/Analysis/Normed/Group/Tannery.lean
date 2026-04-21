@@ -18,7 +18,6 @@ theorem (with the measure chosen to be the counting measure); but we give here a
 order to avoid some unnecessary hypotheses that appear when specialising the general
 measure-theoretic result.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

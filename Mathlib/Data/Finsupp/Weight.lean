@@ -65,7 +65,6 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
   both `AddMonoidHom` or both functions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

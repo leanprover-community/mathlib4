@@ -10,7 +10,6 @@ public import Mathlib.Init
 # Monadic instances for `ULift` and `PLift`
 
 In this file we define `Monad` and `IsLawfulMonad` instances on `PLift` and `ULift`. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

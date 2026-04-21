@@ -94,7 +94,6 @@ By looking at the `mvar`s that are either only "before" or only "after", we focu
 We then propagate all the `FVarId`s that were present in the "before" goals to the "after" goals,
 while leaving untouched the ones in the "inert" goals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

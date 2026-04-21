@@ -44,7 +44,6 @@ call a completion.
 
 uniform spaces, completion, universal property
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

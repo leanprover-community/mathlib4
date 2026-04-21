@@ -15,7 +15,6 @@ In this file we show:
 
 * `AlgCat.instSymmetricCategory : SymmetricCategory (AlgCat.{u} R)`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open CategoryTheory

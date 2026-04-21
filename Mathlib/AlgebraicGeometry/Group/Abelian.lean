@@ -18,7 +18,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
   A proper geometrically integral group scheme over a field is commutative.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

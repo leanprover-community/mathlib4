@@ -18,7 +18,6 @@ whether it is possible to extend it to a (countably additive) vector measure on 
 sigma-algebra. We show that this is possible when the content is dominated by a finite
 measure, see `exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

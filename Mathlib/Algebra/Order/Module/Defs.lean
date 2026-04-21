@@ -121,7 +121,6 @@ because:
 In the future, it would be good to make the corresponding typeclasses in
 `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` custom typeclasses too.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

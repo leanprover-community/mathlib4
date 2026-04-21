@@ -35,7 +35,6 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 filtration, stochastic process
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

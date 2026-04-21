@@ -17,7 +17,6 @@ In this file, we show that any `X : C` defines a point for this site, and that
 these points form a conservative family of points.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

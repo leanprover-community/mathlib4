@@ -31,7 +31,6 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   for a probability measure `μ` on a standard Borel space `Y`,
   there exists a measurable function `f : I → Y` such that `volume.map f = μ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

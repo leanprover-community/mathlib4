@@ -16,7 +16,6 @@ public import Mathlib.Topology.MetricSpace.Isometry
 We define a subgroup of `GL (Fin 2) ℝ` to be *arithmetic* if it is commensurable with the image
 of `SL(2, ℤ)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

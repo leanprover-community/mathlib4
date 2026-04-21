@@ -10,7 +10,6 @@ public import Mathlib.Data.Set.Basic
 /-!
 # Order structures and monotonicity lemmas for `Set`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

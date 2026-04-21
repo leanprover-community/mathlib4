@@ -28,7 +28,6 @@ characteristic functions and convergence in distribution in finite dimensional i
   equivalent to the pointwise convergence of their characteristic functions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

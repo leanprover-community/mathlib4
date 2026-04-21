@@ -27,7 +27,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   residue fields.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

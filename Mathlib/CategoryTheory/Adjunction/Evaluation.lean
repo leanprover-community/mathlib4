@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Functor.EpiMono
 We show that evaluation of functors has adjoints, given the existence of (co)products.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

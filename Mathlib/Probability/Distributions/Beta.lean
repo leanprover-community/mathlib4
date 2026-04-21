@@ -18,7 +18,6 @@ Define the beta distribution over the reals.
 * `betaPDF`: `ℝ≥0∞`-valued pdf,
   `betaPDF α β = ENNReal.ofReal (betaPDFReal α β)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

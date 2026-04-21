@@ -33,7 +33,6 @@ where the indexes `(i, j)` in our sum correspond to `(i, j + 1)`
 (formally, `(Fin.castSucc i, Fin.succ j)`) in the formula above.
 For this reason, we have `-` before the sum in our formal statement.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

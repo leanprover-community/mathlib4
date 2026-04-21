@@ -38,7 +38,6 @@ Theorem names refer to `↓∩` as `preimage_val`.
 
 subsets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

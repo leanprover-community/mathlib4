@@ -15,7 +15,6 @@ This file contains characterizations of separating sets and objects that are val
 preadditive categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

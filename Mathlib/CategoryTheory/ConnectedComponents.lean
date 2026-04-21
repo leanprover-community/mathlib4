@@ -24,7 +24,6 @@ components of `J`, and it is shown that this is equivalent to `J`.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v₁ v₂ v₃ u₁ u₂
 

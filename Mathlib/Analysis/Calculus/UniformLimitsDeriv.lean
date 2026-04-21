@@ -93,7 +93,6 @@ continuous, then you can avoid the mean value theorem and much of the work aroun
 
 uniform convergence, limits of derivatives
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

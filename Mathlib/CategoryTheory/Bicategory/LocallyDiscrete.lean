@@ -18,7 +18,6 @@ in `C`, and the 2-morphisms in `LocallyDiscrete C` are the equalities between 1-
 other words, the category consisting of the 1-morphisms between each pair of objects `X` and `Y`
 in `LocallyDiscrete C` is defined as the discrete category associated with the type `X ⟶ Y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

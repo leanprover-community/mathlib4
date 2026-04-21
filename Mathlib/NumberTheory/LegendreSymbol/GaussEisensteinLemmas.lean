@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.LegendreSymbol.Basic
 This file contains the Lemmas of Gauss and Eisenstein on the Legendre symbol.
 The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

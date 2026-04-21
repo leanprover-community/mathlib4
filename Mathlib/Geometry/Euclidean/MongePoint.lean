@@ -44,7 +44,6 @@ generalization, the Monge point of a simplex.
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,7 +37,6 @@ kernels.
 ## Main statements
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

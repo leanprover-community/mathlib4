@@ -13,7 +13,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 # Products over `univ.pi`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

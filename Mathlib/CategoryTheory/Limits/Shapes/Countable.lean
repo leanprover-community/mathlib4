@@ -25,7 +25,6 @@ limits, see `sequentialFunctor_initial`.
 * Prove the dual result for filtered colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,7 +31,6 @@ This file gathers some results about non-local rings.
   a non-local commutative ring onto a product of two fields.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

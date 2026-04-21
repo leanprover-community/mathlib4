@@ -15,7 +15,6 @@ This file shows that the forgetful functor from topological spaces to types has 
 adjoint, given by `TopCat.discrete`, resp. `TopCat.trivial`, the functors which equip a type with
 the discrete, resp. trivial, topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -48,7 +48,6 @@ an ordered field.
 * Pi instances
 * WithTop (in a different file?)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

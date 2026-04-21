@@ -19,7 +19,6 @@ with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
 TODO: `linearYoneda R C` is `R`-linear.
 TODO: In fact, `linearYoneda` itself is additive and `R`-linear.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

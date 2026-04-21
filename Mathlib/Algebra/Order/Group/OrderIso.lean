@@ -13,7 +13,6 @@ public import Mathlib.Order.Hom.Basic
 # Inverse and multiplication as order isomorphisms in ordered groups
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

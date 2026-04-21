@@ -20,7 +20,6 @@ pulled back across the canonical injection (`UpperSet.carrier`, `LowerSet.carrie
 Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
 makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive
 
 /-! ### Induction principles for lists -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

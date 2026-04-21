@@ -37,7 +37,6 @@ basic lemmas about construction and elementary calculations are found there.
 
 Sesquilinear form, Sesquilinear map
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

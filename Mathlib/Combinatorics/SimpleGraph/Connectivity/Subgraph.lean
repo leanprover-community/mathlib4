@@ -17,7 +17,6 @@ public import Mathlib.Data.Set.Card
   connectivity predicates via `SimpleGraph.Subgraph.coe`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

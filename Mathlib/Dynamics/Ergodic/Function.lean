@@ -17,7 +17,6 @@ We prove several versions of this statement with slightly different measurabilit
 We also formulate a version for `MeasureTheory.AEEqFun` functions
 with all a.e. equalities replaced with equalities in the quotient space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

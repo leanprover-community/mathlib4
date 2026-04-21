@@ -21,7 +21,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

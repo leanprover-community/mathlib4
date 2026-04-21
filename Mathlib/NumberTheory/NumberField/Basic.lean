@@ -33,7 +33,6 @@ but are independent of that choice.
 ## Tags
 number field, ring of integers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

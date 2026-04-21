@@ -16,7 +16,6 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -31,7 +31,6 @@ field `K` and its torsion subgroup.
 ## Tags
 number field, units
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ For vector spaces (i.e. modules over a field), we have
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

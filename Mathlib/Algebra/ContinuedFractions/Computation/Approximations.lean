@@ -47,7 +47,6 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

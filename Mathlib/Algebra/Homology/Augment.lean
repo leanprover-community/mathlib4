@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Homology.Single
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

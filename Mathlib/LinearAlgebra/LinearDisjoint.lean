@@ -128,7 +128,6 @@ assuming `S` is commutative.
 linearly disjoint, linearly independent, tensor product
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

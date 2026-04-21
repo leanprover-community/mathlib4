@@ -14,7 +14,6 @@ public import Mathlib.Topology.Order.Basic
 This file gives `SignType` the discrete topology, and proves continuity results for `SignType.sign`
 in an `OrderTopology`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

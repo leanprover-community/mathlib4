@@ -20,7 +20,6 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 * `Mathlib/Algebra/Group/Action/Prod.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

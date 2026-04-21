@@ -19,7 +19,6 @@ In this file we define `AlternatingMap.domCoprod`
 to be the exterior product of two alternating maps,
 taking values in the tensor product of the codomains of the original maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -43,7 +42,6 @@ open Equiv
 
 variable [DecidableEq ιa] [DecidableEq ιb]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- summand used in `AlternatingMap.domCoprod` -/
 def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)

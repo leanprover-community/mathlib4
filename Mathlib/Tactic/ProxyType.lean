@@ -40,7 +40,6 @@ for each `C i`. One seems to need to add, for example, an explicit `[∀ i, Fint
 instance given `∀ i, Fintype (C i)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

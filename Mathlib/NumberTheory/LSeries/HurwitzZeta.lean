@@ -35,7 +35,6 @@ This file gives the definition and properties of the following two functions:
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

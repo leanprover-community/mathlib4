@@ -41,7 +41,6 @@ refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R
 * `Submodule.restrictScalars`
 * `Subalgebra.restrictScalars`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

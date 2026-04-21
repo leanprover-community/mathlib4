@@ -53,7 +53,6 @@ For `M` : Matroid `α`:
 * `M.Loopless` is a typeclass meaning `M` has no loops.
 * `M.removeLoops` is the matroid obtained from `M` by restricting to its set of nonloop elements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

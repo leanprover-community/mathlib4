@@ -9,7 +9,6 @@ public import Mathlib.Init
 public meta import Lean.LabelAttribute
 
 /-! # The @[mono] attribute -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

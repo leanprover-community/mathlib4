@@ -28,7 +28,6 @@ Develop a more unified definition of finite generation using the theory of closu
 this definition of finite generation to define the others.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

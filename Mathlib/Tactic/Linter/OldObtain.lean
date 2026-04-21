@@ -51,7 +51,6 @@ from mathlib: in summary,
   In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
   could also be used, as was in fact clearer.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

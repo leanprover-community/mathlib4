@@ -32,7 +32,6 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
   set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarily for `g`), then
   the Gauss norm has the non-archimedean property.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

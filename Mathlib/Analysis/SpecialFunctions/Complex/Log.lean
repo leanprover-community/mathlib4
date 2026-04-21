@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 Basic properties, relationship with `exp`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

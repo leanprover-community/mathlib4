@@ -16,7 +16,6 @@ multiplicative integers with zero adjoined. These are useful for cases where the
 is a `Valued R ℤₘ₀` instance but no canonical base with which to embed this into
 `NNReal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

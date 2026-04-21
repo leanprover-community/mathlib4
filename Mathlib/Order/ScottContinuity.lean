@@ -32,7 +32,6 @@ in this file, and ωScott Continuity on chains later in
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 # Faithful actions involving groups with zero
 -/
 
-set_option backward.defeqAttrib.useBackward true
 deprecated_module (since := "2026-02-03")
 
 @[expose] public section

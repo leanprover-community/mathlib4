@@ -26,7 +26,6 @@ The proof follows the same idea as the non-continuous version.
   see `Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective` for the non-continuous
   version of this.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open ContinuousLinearMap ContinuousLinearEquiv
 

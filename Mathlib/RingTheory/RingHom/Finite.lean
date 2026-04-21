@@ -23,7 +23,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

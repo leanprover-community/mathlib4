@@ -27,7 +27,6 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 * `IsSRGWith.matrix_eq`: let `A` and `C` be `G`'s and `Gᶜ`'s adjacency matrices respectively and
   `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

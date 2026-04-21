@@ -16,7 +16,6 @@ instead of a `List`.
 
 The `::` notation is also overloaded by this file to mean `Vector3.cons`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

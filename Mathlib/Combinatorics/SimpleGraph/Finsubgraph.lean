@@ -31,7 +31,6 @@ The proof here uses compactness as formulated in `nonempty_sections_of_finite_in
 finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restricts homomorphisms
 `G' →fg F` to domain `G''`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ We show:
 * The forgetful functor `Action V G ⥤ V` preserves any (co)limit whose image in `V` exists,
   and reflects all (co)limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

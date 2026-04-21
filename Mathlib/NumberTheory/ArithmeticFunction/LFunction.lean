@@ -44,7 +44,6 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

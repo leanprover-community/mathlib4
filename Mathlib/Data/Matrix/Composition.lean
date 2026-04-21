@@ -24,7 +24,6 @@ and also different levels of equivalence when `R` is an `AddCommMonoid`,
 * `Matrix.compLinearEquiv`: `Matrix.comp` as a `LinearEquiv`
 * `Matrix.compAlgEquiv`: `Matrix.comp` as an `AlgEquiv`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -48,7 +47,6 @@ theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_single_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (i j k l r) :
@@ -78,7 +76,6 @@ theorem comp_symm_single
       (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
     comp I I J J R (diagonal fun i => diagonal fun j => d i j)

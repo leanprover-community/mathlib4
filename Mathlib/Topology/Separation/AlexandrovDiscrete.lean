@@ -11,7 +11,6 @@ public import Mathlib.Topology.AlexandrovDiscrete
 /-!
 # T1 Alexandrov-discrete topology is discrete
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

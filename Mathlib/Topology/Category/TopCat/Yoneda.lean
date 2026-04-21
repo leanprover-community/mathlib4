@@ -18,7 +18,6 @@ public import Mathlib.Topology.Category.TopCat.Limits.Products
 This file develops some API for "topologically concrete" categories, defining universe polymorphic
 "Yoneda presheaves" on such categories.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

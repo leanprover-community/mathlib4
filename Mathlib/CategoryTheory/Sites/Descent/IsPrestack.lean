@@ -38,7 +38,6 @@ we do not require that target categories are groupoids.
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

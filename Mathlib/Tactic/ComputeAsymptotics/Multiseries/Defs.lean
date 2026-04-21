@@ -35,7 +35,6 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
   we need to port some `Seq` API to `Multiseries`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

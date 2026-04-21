@@ -20,7 +20,6 @@ We show that the following are analytic:
 2. Arithmetic on analytic functions: `mul`, `smul`, `inv`, `div`
 3. Finite sums and products: `Finset.sum`, `Finset.prod`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

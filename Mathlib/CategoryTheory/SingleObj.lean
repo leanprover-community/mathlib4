@@ -38,7 +38,6 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
 - By default, Lean puts instances into `CategoryTheory` namespace instead of
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

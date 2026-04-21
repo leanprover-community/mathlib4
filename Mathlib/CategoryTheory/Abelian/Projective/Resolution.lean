@@ -28,7 +28,6 @@ When the underlying category is abelian:
 * `CategoryTheory.ProjectiveResolution.of`: Hence, starting from an epimorphism `P ⟶ X`, where `P`
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

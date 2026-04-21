@@ -33,7 +33,6 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 * https://stacks.math.columbia.edu/tag/00Z9
 * https://math.stackexchange.com/a/358709/
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

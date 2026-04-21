@@ -27,7 +27,6 @@ Lean does not immediately recognise these terms as equations, so for rewriting w
 This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` etc). Other
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

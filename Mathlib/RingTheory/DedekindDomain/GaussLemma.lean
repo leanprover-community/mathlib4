@@ -16,7 +16,6 @@ This file contains Gauss's Lemma for Dedekind Domains, which states that the con
 polynomial is the whole ring if and only if the `v`-adic Gauss norms of the polynomial are equal to
 1 for all `v`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 namespace Polynomial

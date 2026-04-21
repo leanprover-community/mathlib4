@@ -14,7 +14,6 @@ public import Mathlib.Data.DFinsupp.Order
 This defines `DFinsupp.toMultiset` the equivalence between `Π₀ a : α, ℕ` and `Multiset α`, along
 with `Multiset.toDFinsupp` the reverse equivalence.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

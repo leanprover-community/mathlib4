@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 In this file we show that the separation quotient of a finite module is a finite module.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

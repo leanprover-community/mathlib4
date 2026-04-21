@@ -15,7 +15,6 @@ public import Lean.Exception
 This file defines the environment extension to keep track of which tactics are allowed to leave
 the tactic state unchanged and not trigger the unused tactic linter.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

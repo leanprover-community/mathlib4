@@ -15,7 +15,6 @@ This file proves that precomposition with a cocontinuous functor preserves local
 surjectivity of morphisms of presheaves, and that precomposition with a cover-preserving and
 cover-dense functor reflects the same properties.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

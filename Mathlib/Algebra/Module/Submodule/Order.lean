@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 /-!
 # Ordered instances on submodules
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

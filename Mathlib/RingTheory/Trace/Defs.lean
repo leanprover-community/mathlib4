@@ -42,7 +42,6 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 * https://en.wikipedia.org/wiki/Field_trace
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

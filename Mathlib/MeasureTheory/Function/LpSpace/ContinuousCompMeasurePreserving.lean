@@ -22,7 +22,6 @@ defined on `MeasureTheory.Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν
 
 Finally, we provide dot notation convenience lemmas.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

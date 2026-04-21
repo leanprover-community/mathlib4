@@ -23,7 +23,6 @@ Swap matrices are a special case of *elementary matrices*. For transvections see
 
 This is a thin wrapper around `(Equiv.swap i j).permMatrix`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

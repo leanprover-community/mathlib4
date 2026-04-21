@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 /-!
 # Lemmas about `Multiplicative ℕ`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

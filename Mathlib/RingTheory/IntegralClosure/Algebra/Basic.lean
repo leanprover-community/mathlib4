@@ -20,7 +20,6 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 * `integralClosure R A` : the integral closure of `R` in an `R`-algebra `A`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 /-!
 # Interactions between the Lebesgue integral and norms
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

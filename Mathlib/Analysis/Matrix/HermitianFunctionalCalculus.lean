@@ -30,7 +30,6 @@ This file defines an instance of the continuous functional calculus for Hermitia
 
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

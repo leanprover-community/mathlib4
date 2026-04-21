@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 Declare instances for limits in the over category: If `C` has finite wide pullbacks, `Over B` has
 finite limits, and if `C` has arbitrary wide pullbacks then `Over B` has limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

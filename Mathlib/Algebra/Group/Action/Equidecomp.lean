@@ -51,7 +51,6 @@ We take this as our definition as it is easier to work with. It is implemented a
   using partitions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

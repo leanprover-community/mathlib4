@@ -32,7 +32,6 @@ the action defined in this file.
 
 lie algebra, ideal operation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

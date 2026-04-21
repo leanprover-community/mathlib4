@@ -20,7 +20,6 @@ An example usage is that if `f : ι → E → ℝ` is a family of nonnegative fu
 then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists Set.Finite
 

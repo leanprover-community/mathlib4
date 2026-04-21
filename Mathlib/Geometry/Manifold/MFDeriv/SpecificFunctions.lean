@@ -20,7 +20,6 @@ In this file, we establish differentiability results for
 - arithmetic operations (such as addition and scalar multiplication).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

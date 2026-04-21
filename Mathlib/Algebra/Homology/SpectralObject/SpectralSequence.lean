@@ -74,7 +74,6 @@ sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
 of `ℤ × ℤ`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

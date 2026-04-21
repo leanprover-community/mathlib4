@@ -23,7 +23,6 @@ is a *-closed subalgebra of bounded operators on `H` which is equal to its doubl
 We'll also need to prove the von Neumann double commutant theorem,
 that the concrete definition is equivalent to a *-closed subalgebra which is weakly closed.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

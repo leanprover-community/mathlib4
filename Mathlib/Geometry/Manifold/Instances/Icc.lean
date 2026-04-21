@@ -32,7 +32,6 @@ embeddings. Once this is done,
 - use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
   with the projection `ℝ → Icc x y` is
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

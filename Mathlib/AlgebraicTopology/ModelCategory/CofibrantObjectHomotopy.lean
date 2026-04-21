@@ -21,7 +21,6 @@ in `C`, and we define a cofibrant resolution functor
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

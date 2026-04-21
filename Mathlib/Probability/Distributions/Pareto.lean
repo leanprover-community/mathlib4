@@ -21,7 +21,6 @@ Define the Pareto measure over the reals.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

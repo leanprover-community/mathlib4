@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-! # Functors equifibered over a fixed functor is closed under limits -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

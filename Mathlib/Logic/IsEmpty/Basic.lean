@@ -12,7 +12,6 @@ public import Mathlib.Logic.Relator
 /-!
 In this file we prove some basic properties about the typeclass `IsEmpty`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -67,7 +67,6 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - Show existence of Fraïssé limits
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

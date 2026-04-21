@@ -20,7 +20,6 @@ If a functor preserves binary products and the terminal object then it preserves
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

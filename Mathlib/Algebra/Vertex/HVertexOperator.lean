@@ -27,7 +27,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

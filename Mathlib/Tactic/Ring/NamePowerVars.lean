@@ -22,7 +22,6 @@ name_power_vars X, Y, Z over R
 #check Y -- Y : MvPowerSeries (Fin 3) R
 ```
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

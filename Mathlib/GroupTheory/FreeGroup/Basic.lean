@@ -51,7 +51,6 @@ distinguish the quotient types more easily.
 
 free group, Newman's diamond lemma, Church-Rosser theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ This file contains results about the limiting behaviour of power functions at `+
 some results on asymptotics as `x → 0` (those which are not just continuity statements) are also
 located here.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

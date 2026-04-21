@@ -35,7 +35,6 @@ It's possibly interesting to have
 `(s ×ˢ s) ×ˢ t ×ˢ t).filter (fun x : (α × α) × α × α ↦ x.1.1 * x.2.1 = x.1.2 * x.2.2)`
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

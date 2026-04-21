@@ -26,7 +26,6 @@ to maps between topological vector spaces without norms.
 Currently, we can't reuse results about `egauge` for `gauge`,
 because we lack a theory of normed semifields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

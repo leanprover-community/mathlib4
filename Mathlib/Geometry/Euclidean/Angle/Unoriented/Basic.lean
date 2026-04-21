@@ -18,7 +18,6 @@ This file defines unoriented angles in real inner product spaces.
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

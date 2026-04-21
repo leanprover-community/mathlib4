@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 In this file we define various properties of the order of vanishing in Noetherian rings, including
  some API for computing the order of vanishing in discrete valuation rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

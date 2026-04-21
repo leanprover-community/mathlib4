@@ -19,7 +19,6 @@ and the forgetful functor preserves these limits.
 (This could potentially replace many individual constructions for concrete categories,
 in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

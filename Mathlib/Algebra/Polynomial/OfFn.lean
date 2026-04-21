@@ -21,7 +21,6 @@ of its coefficients and vice versa. We prove some basic APIs for these functions
 - `Polynomial.ofFn n` associates to a vector of length `n` the polynomial that has the entries of
   the vector as coefficients.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

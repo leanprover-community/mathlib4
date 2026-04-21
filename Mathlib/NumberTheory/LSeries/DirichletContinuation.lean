@@ -39,7 +39,6 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   showing that if `χ` is primitive modulo `N`, then
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

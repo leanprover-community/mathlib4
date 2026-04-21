@@ -14,7 +14,6 @@ public import Mathlib.Logic.Function.Iterate
 
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -31,7 +31,6 @@ for which `WithHolder C r f` is true.
 Hölder norm, Hoelder norm, Holder norm
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

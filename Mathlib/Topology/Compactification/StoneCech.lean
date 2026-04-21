@@ -34,7 +34,6 @@ on all compact Hausdorff spaces. We replace it by a two steps construction.
 The first step called `PreStoneCech` guarantees the expected universal property but
 not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreStoneCech α)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Order.Category.Lat
 
 This defines `LinOrd`, the category of linear orders with monotone maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

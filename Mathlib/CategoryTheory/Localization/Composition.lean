@@ -21,7 +21,6 @@ The two implications are the lemmas `Functor.IsLocalization.comp` and
 `Functor.IsLocalization.of_comp`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

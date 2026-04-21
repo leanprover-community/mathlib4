@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 /-!
 # Valuations on an algebra over a finite field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

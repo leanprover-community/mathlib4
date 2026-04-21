@@ -11,7 +11,6 @@ public import Mathlib.Data.Rat.Cast.Defs
 /-!
 # Facts about `algebraMap` when the coefficient ring is a field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

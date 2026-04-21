@@ -17,7 +17,6 @@ In this file we show that monoid algebras are stable under pushout.
 
 Additivise
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

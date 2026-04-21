@@ -51,7 +51,6 @@ space.
 
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

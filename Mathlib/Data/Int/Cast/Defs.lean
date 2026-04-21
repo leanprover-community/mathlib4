@@ -22,7 +22,6 @@ Preferentially, the homomorphism is written as a coercion.
 * `Int.cast`: Canonical homomorphism `ℤ → R`.
 * `AddGroupWithOne`: Type class for `Int.cast`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

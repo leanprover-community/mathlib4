@@ -18,7 +18,6 @@ category satisfies the strict Segal condition.
 In this file, we prove as a direct consequence that the nerve of a category is
 a quasicategory.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

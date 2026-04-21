@@ -27,7 +27,6 @@ additional assumption that for any map `f : j ⟶ j'` in `J`,
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

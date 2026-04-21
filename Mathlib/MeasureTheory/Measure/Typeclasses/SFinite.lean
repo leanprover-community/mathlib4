@@ -19,7 +19,6 @@ We introduce the following typeclasses for measures:
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 namespace MeasureTheory
 

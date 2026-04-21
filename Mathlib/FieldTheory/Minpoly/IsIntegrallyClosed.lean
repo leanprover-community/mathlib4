@@ -27,7 +27,6 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

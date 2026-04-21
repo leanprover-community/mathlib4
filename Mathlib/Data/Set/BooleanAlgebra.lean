@@ -20,7 +20,6 @@ Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas ar
   `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
   See `Set.instBooleanAlgebra`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a f
 equivalence if and only if it is fully faithful and essentially surjective.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ We gather several results about minimal polynomial of root of unity.
   primitive root of unity is at least `totient n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

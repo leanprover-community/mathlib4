@@ -30,7 +30,6 @@ After obtaining bounds on `w`, we invert the transformation to recover bounds on
 
 complex analysis, Borel, Carathéodory, analytic function, growth bound
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Metric
 

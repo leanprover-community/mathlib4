@@ -17,7 +17,6 @@ all the candidates for `syntax` terms that contain the string `str`.
 It also makes a very crude effort at regenerating what the syntax looks like, by inspecting the
 `ParserDescr`iptor of the corresponding parser.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

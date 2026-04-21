@@ -19,7 +19,6 @@ convenient to be able to use the `tauto` or `split_ifs` tactics.
 We spell those lemmas out with `dite` and `ite` rather than the `if then else` notation because this
 would result in less delta-reduced statements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

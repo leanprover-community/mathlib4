@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Module.LinearMap
 /-!
 # Continuous linear maps on products and Pi types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

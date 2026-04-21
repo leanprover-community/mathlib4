@@ -55,7 +55,6 @@ with a formula).
 
 kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

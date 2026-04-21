@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 We provide typeclasses that state that a functor preserves or reflects monomorphisms or
 epimorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

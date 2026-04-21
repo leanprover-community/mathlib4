@@ -23,7 +23,6 @@ We begin by defining modular forms and cusp forms as extension of `SlashInvarian
 define the space of modular forms, cusp forms and prove that the product of two modular forms is a
 modular form.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

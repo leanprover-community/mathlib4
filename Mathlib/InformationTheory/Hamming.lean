@@ -26,7 +26,6 @@ code.
   `Π i, β i`.
 * the Hamming norm forms a normed group on `Hamming β`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

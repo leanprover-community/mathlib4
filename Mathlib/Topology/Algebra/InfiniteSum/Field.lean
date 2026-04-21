@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 Lemmas on topological sums in rings with a strictly multiplicative norm, of which normed fields are
 the most familiar examples.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -6,6 +6,5 @@ Authors: Joël Riou, Dagur Asgeirsson
 module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2025-10-20")

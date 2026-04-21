@@ -37,7 +37,6 @@ In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we sh
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

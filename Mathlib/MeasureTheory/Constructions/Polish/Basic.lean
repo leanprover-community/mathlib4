@@ -60,7 +60,6 @@ We use this to prove several versions of the Borel isomorphism theorem.
 * `PolishSpace.Equiv.measurableEquiv` : Any two standard Borel spaces of the same cardinality
   are Borel isomorphic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

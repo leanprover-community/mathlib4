@@ -31,7 +31,6 @@ the lexicographic order.
 
 fibonacci, zeckendorf, digit
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

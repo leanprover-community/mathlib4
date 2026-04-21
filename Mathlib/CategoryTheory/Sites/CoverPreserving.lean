@@ -34,7 +34,6 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 * https://stacks.math.columbia.edu/tag/00WU
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

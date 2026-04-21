@@ -15,7 +15,6 @@ This file defines the `n`-sphere `𝕊 n`, the `n`-disk `𝔻 n`, its boundary `
 `𝔹 n` as objects in `TopCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

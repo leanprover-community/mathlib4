@@ -20,7 +20,6 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

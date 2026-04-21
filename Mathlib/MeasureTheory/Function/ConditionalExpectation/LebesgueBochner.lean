@@ -21,7 +21,6 @@ In this file, we gather results that involve both versions.
 * `MeasureTheory.toReal_condLExp`: the two definitions of the conditional expectation agree
   almost everywhere. That is, `(fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

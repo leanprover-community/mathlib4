@@ -14,7 +14,6 @@ public import Mathlib.Logic.Embedding.Basic
 /-!
 # Characteristic zero rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

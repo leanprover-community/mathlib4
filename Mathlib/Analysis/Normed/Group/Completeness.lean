@@ -29,7 +29,6 @@ series.
 
 CompleteSpace, CauchySeq
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

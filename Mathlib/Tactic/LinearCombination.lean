@@ -35,7 +35,6 @@ Lastly, calls a normalization tactic on this target.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

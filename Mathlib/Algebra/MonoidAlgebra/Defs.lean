@@ -50,7 +50,6 @@ Use `coeff`/`ofCoeff` more widely. See
 https://github.com/leanprover-community/mathlib4/pull/36746
 https://github.com/leanprover-community/mathlib4/pull/25273
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

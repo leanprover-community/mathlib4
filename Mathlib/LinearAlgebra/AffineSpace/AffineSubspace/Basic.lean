@@ -22,7 +22,6 @@ and the affine span of a set of points.
   parallel (one being a translate of the other).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

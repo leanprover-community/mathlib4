@@ -18,7 +18,6 @@ then there is an `R`-module structure on the groups `Ext X Y n`
 for `X` and `Y` in `C` and `n : ℕ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

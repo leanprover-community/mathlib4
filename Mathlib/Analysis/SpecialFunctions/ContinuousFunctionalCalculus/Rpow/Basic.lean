@@ -49,7 +49,6 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 + Lemmas about how these functions interact with commuting `a` and `b`.
 + Prove the order properties (operator monotonicity and concavity/convexity)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

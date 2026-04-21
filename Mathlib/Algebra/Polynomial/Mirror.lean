@@ -25,7 +25,6 @@ divisible by `X`.
 - `Polynomial.irreducible_of_mirror`: an irreducibility criterion involving `mirror`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

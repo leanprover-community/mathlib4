@@ -36,7 +36,6 @@ Given two lax functors `F` and `G`, we define:
   scoped instance in the `Lax.OplaxTrans` namespace, so you need to run
   `open scoped Lax.OplaxTrans` to access it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 The main result is `RingHom.finitePresentation_isLocal`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

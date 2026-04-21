@@ -29,7 +29,6 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

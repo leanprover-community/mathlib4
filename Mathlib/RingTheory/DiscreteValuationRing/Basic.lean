@@ -45,7 +45,6 @@ We do not hence define `Uniformizer` at all, because we can use `Irreducible` in
 
 discrete valuation ring
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,7 +29,6 @@ an s-finite kernel.
   `∫⁻ b, g b ∂(withDensity κ f a) = ∫⁻ b, f a b * g b ∂(κ a)`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

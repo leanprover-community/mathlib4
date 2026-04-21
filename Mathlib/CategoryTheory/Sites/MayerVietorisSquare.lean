@@ -51,7 +51,6 @@ that it is indeed satisfied by sheaves.
 * https://stacks.math.columbia.edu/tag/08GL
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe v v' u u'

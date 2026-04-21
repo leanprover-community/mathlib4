@@ -24,7 +24,6 @@ count these as separate steps, throwing off the count in the desired configurati
 local hypotheses and `rfl` are all applied repeatedly until nothing more is applicable.  The syntax
 for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior for now.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

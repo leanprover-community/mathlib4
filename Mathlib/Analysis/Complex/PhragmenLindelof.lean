@@ -43,7 +43,6 @@ In the case of the right half-plane, we prove a version of the Phragmen-Lindelö
 useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial vector field on the
 real plane has only finitely many limit cycles).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -29,7 +29,6 @@ where `μ ≤ ν` and `ν ≤ μ`, and the measure difference behaves like a sig
   The signed measure `μ.toSignedMeasure - ν.toSignedMeasure` equals
   `(μ - ν).toSignedMeasure - (ν - μ).toSignedMeasure`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

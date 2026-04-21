@@ -19,7 +19,6 @@ For monotone functions `ℝ → ℝ` these notions correspond to the usual left 
 We prove some basic lemmas (`map_sup`, `map_sSup` etc) and prove that a `RelIso` is both left
 and right order continuous.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

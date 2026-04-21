@@ -16,7 +16,6 @@ We consider Dirichlet characters `χ` with values in a normed field `F`.
 
 We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

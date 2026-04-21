@@ -24,7 +24,6 @@ cell complex with basic cells given by horn inclusions.
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

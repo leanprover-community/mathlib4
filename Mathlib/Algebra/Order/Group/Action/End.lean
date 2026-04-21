@@ -12,7 +12,6 @@ public import Mathlib.Order.RelIso.Basic
 /-!
 # Tautological action by relation automorphisms
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

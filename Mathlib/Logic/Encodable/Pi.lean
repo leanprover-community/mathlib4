@@ -18,7 +18,6 @@ This file provides instances of `Encodable` for types of vectors and (dependent)
 * `Encodable.fintypeArrow`, `Encodable.fintypePi`: (dependent) functions with
   finite domain and countable codomain are encodable
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

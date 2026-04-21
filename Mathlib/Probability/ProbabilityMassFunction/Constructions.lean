@@ -25,7 +25,6 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 `bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

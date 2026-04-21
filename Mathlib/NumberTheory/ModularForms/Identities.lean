@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 
 Collection of useful identities of modular forms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -62,7 +62,6 @@ respect to a kernel and a measure, as defined in the file
 The kernel used is `ProbabilityTheory.condExpKernel`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

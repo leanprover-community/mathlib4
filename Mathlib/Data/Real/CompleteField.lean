@@ -6,6 +6,5 @@ Authors: Alex J. Best
 module
 
 public import Mathlib.Data.Real.Hom
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-03-05")

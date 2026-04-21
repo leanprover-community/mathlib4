@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Order
 In this file we prove lemmas relating `f = O(g)` etc
 for composition of functions with coercion of a seminormed group to its completion.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

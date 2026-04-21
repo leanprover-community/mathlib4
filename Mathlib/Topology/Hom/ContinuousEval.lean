@@ -15,7 +15,6 @@ In this file we define a class `ContinuousEval F X Y`
 saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

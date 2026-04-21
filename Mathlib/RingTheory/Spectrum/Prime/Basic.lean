@@ -40,7 +40,6 @@ and Chris Hughes (on an earlier repository).
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

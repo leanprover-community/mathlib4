@@ -25,7 +25,6 @@ This file is very similar to the n-ary section of `Mathlib/Data/Set/Basic.lean`,
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ We provide several constructors for pseudofunctors:
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

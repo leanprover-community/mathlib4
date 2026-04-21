@@ -19,7 +19,6 @@ For some applications, it is desirable to exclude minimal elements from being su
 maximal elements from being predecessor limits. As such, we also provide `Order.IsSuccLimit` and
 `Order.IsPredLimit`, which exclude these cases.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

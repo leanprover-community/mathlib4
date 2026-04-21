@@ -74,7 +74,6 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` |
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -61,7 +61,6 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
   `(s.map f).prod = (t.map f).prod` directly by induction instead of going through `f s.prod`.
 * Affine maps are Freiman homomorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ This file contains several standard constructions on fiber bundles:
 fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -65,7 +64,6 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,

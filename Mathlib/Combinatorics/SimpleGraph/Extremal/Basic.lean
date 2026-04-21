@@ -23,7 +23,6 @@ This file introduces basic definitions for extremal graph theory, including extr
 
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

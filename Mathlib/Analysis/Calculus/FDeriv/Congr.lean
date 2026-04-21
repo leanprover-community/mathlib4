@@ -17,7 +17,6 @@ Lemmas about congruence properties of the Fréchet derivative under change of fu
 derivative, differentiable, Fréchet, calculus
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

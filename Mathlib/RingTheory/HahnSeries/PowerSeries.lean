@@ -33,7 +33,6 @@ we get the more familiar semiring of formal power series with coefficients in `R
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

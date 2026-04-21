@@ -11,7 +11,6 @@ public import Mathlib.Dynamics.FixedPoints.Basic
 /-!
 # Results about pointwise operations on sets with iteration.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

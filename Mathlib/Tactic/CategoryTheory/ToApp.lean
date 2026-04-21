@@ -28,7 +28,6 @@ in `Cat` which contain components of 2-morphisms.
 
 There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

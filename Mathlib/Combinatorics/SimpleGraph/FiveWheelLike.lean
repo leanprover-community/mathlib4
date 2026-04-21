@@ -80,7 +80,6 @@ We will need to refer to this consistently and choose the following formulation:
 * [S. Brandt **On the structure of graphs with bounded clique number**
   https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

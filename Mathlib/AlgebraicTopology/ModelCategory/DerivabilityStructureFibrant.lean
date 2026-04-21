@@ -20,7 +20,6 @@ Corollaire 10.10 in [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe v u
 

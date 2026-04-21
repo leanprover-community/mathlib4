@@ -15,7 +15,6 @@ public import Mathlib.Order.SuccPred.LinearLocallyFinite
 Basic results concerning `PartialSups` which follow with minimal assumptions beyond the fact that
 the `PartialSup` is defined over a `SuccAddOrder`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

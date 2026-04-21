@@ -22,7 +22,6 @@ We also prove that for a finite family of morphisms in `Profinite` with fixed
 target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
 equivalent.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

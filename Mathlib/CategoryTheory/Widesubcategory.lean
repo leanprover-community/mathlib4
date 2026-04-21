@@ -25,7 +25,6 @@ The instance `WideSubcategory.category` provides a category structure on `WideSu
 whose objects are the objects of `C` and morphisms are the morphisms in `C` which have the
 property `P`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

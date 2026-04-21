@@ -14,7 +14,6 @@ public import Mathlib.Order.Filter.Ultrafilter.Defs
 We say that a filter `l` is a *subsingleton* if there exists a subsingleton set `s ∈ l`.
 Equivalently, `l` is either `⊥` or `pure a` for some `a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

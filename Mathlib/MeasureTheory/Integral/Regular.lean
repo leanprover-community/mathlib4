@@ -15,7 +15,6 @@ When a measure is regular, one may express the measure of compact sets and of op
 in terms of the integral of continuous functions equal to 1 on the compact set, or to 0 outside
 of the open set respectively.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

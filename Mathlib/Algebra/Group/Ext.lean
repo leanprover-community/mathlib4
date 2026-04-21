@@ -26,7 +26,6 @@ former uses `HMul.hMul` which is the canonical spelling.
 ## Tags
 monoid, group, extensionality
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

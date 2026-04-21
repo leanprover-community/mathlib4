@@ -28,7 +28,6 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

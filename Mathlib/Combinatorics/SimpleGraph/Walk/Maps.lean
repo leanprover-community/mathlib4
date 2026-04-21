@@ -28,7 +28,6 @@ Functions that map walks between different graphs.
 ## Tags
 walks
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -90,7 +90,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 * [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open scoped Topology ContDiff
 open Function Set

@@ -15,7 +15,6 @@ The decomposition subgroup and inertia subgroups.
 
 TODO: Define higher ramification groups in lower numbering
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

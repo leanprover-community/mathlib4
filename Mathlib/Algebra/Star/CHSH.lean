@@ -73,7 +73,6 @@ There is a CHSH tuple in 4-by-4 matrices such that
 * [Tsirelson, *Quantum generalizations of Bell's inequality*][MR577178]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

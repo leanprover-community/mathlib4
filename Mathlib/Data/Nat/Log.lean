@@ -46,7 +46,6 @@ but performs worse for large numbers than `Nat.log`:
 #eval Nat.log 2 (2 ^ 1000000)
 ```
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

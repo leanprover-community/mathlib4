@@ -22,7 +22,6 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 TODO: should this be extended further?
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

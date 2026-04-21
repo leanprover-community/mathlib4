@@ -23,7 +23,6 @@ This file contains some theorems about cofiltered limits of profinite sets.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

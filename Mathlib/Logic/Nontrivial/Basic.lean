@@ -18,7 +18,6 @@ import Mathlib.Tactic.Attr.Register
 
 Results about `Nontrivial`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

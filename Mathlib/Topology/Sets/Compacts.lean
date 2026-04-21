@@ -22,7 +22,6 @@ For a topological space `α`,
 * `TopologicalSpace.CompactOpens α`: The type of compact open sets. This is a central object in the
   study of spectral spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Logic.Function.Defs
 /-!
 # Relator for functions, pairs, sums, and lists.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

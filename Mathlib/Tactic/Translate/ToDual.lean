@@ -20,7 +20,6 @@ Known limitations:
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

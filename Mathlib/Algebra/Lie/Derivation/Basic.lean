@@ -37,7 +37,6 @@ This file defines *Lie derivations* and establishes some basic properties.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
   as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

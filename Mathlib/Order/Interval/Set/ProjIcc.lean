@@ -28,7 +28,6 @@ Given a linearly ordered type `α`, in this file we define
 
 We also prove some trivial properties of these maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

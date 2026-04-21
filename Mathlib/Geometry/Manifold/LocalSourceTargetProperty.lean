@@ -37,7 +37,6 @@ local property of this form.
   holds is open
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

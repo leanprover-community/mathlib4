@@ -21,7 +21,6 @@ ignoring computation time (`none` elements). Equivalence is then defined in the 
   elements are `R`-related.
 * `Stream'.WSeq.Equiv`: Two sequences are equivalent if they are `LiftRel (· = ·)`-related.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

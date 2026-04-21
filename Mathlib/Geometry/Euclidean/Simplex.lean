@@ -19,7 +19,6 @@ This file defines properties of simplices in a Euclidean space.
 * `Affine.Simplex.AcuteAngled`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
   Noetherian local ring `R`, `r₁, …, rₙ` is an `M`-sequence, then
   `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,7 +22,6 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 This file proves that finitely generated cancellative torsion-free commutative monoids embed into
 `ℤⁿ` for some `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,7 +18,6 @@ an inner product space and for a real number `p > 1`.
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

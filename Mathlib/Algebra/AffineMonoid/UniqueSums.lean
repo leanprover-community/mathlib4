@@ -17,7 +17,6 @@ import Mathlib.Algebra.FreeAbelianGroup.UniqueSums
 In this file we show that finitely generated cancellative torsion-free commutative monoids have
 unique sums. This is a direct corollary of them embedding into `ℤⁿ` for some `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

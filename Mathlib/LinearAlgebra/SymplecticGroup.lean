@@ -21,7 +21,6 @@ This file defines the symplectic group and proves elementary properties.
 * Every symplectic matrix has determinant 1.
 * For `n = 1` the symplectic group coincides with the special linear group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `AddMonoidWithOne`: Type class for which `Nat.cast` is a canonical monoid homomorphism from `ℕ`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

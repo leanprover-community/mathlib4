@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Action.Pi
 
 This file defines instances for NoZeroSMulDivisors on Pi types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

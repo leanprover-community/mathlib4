@@ -17,7 +17,6 @@ public import Mathlib.Analysis.Complex.Basic
   star-normal and its spectrum lies on the unit circle.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

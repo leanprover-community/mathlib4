@@ -13,7 +13,6 @@ public import Mathlib.Order.WithBot
 This files defines an abbreviation `WithBotTop ι` for `WithBot (WithTop ι)`.
 We also introduce an abbreviation `EInt` for `WithBotTop ℤ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

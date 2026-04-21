@@ -17,7 +17,6 @@ with the line derivative given by the polar bilinear form.
 Note that this statement does not need topology on the domain.
 In particular, it applies to discontinuous quadratic forms on infinite-dimensional spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

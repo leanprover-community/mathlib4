@@ -17,7 +17,6 @@ we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as def
 `Mathlib.Algebra.GroupWithZero.Range`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

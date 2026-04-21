@@ -41,7 +41,6 @@ The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

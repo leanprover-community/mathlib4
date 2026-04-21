@@ -37,7 +37,6 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

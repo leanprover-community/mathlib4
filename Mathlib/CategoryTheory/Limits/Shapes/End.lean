@@ -21,7 +21,6 @@ We also introduce `coend F` as multicoequalizers of
 * https://ncatlab.org/nlab/show/end
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v u
 

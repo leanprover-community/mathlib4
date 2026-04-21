@@ -16,7 +16,6 @@ We show that group objects are exactly those whose yoneda presheaf is a presheaf
 by constructing the yoneda embedding `Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

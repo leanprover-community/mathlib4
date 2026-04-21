@@ -39,7 +39,6 @@ Note that the set notations are defined in the file
 `Mathlib/MeasureTheory/Integral/Bochner/Basic.lean`,
 but we reference them here because all theorems about set integrals are in this file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

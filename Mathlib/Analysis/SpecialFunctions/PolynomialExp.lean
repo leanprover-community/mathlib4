@@ -20,7 +20,6 @@ Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 
 polynomial, limit, exponential
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

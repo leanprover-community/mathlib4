@@ -46,7 +46,6 @@ Let `v` be such a Vitali family.
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.8][Federer1996]
   (Vitali families are called Vitali relations there)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

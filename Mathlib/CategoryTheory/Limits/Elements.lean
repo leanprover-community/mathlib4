@@ -27,7 +27,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 - Show that `A` is (co)representable if `A.Elements` has an initial object.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ A variant of the formula with measures of sets of the form `{ω | f(ω) > t}` in
 
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

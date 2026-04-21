@@ -26,7 +26,6 @@ requires the assumption only for `g` that are permutations of `f`.
 The latter is proved by well-founded induction via `WellFounded.induction_bot'`
 with respect to the lexicographic ordering on the finite set of all permutations of `f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

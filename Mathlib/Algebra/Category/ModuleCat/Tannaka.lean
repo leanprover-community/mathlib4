@@ -15,7 +15,6 @@ A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

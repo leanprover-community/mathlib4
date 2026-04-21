@@ -15,7 +15,6 @@ public import Batteries.Data.List.Basic
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -342,7 +341,6 @@ theorem mapPath_comp {a b : V} (p : Path a b) :
 theorem mapPath_toPath {a b : V} (f : a ⟶ b) : F.mapPath f.toPath = (F.map f).toPath :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem mapPath_id {a b : V} : (p : Path a b) → (𝟭q V).mapPath p = p
   | Path.nil => rfl
@@ -350,7 +348,6 @@ theorem mapPath_id {a b : V} : (p : Path a b) → (𝟭q V).mapPath p = p
 
 variable {U : Type u₃} [Quiver.{v₃} U] (G : W ⥤q U)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem mapPath_comp_apply {a b : V} (p : Path a b) :
     (F ⋙q G).mapPath p = G.mapPath (F.mapPath p) := by

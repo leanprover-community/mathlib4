@@ -19,7 +19,6 @@ public import Mathlib.Data.Int.Cast.Lemmas
 We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

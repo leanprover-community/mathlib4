@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 /-!
 # Injective objects in the category of $R$-modules
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

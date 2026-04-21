@@ -60,7 +60,6 @@ We could generalize the notion of Krull dimension to an arbitrary binary relatio
 in this file would generalize as well. But we don't think it would be useful, so we only define
 Krull dimension of a preorder.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

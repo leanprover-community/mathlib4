@@ -37,7 +37,6 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

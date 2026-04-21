@@ -30,7 +30,6 @@ which restricts to `val₀`.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v u
 

@@ -39,7 +39,6 @@ Henstock-Kurzweil integral.
 
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

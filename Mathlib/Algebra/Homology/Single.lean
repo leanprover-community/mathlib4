@@ -20,7 +20,6 @@ In `ChainComplex.toSingle₀Equiv` we characterize chain maps to an
 an augmented exact complex of projectives.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

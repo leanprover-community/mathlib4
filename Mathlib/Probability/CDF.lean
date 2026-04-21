@@ -39,7 +39,6 @@ to have more structure on Stieltjes functions first. Right now, if `f` is a Stie
 The definition could be extended to `ℝⁿ`, either by extending the definition of `condCDF`, or by
 using another construction here.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

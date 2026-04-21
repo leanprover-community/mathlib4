@@ -15,7 +15,6 @@ a predicate on subrings asserting that the subring is fixed elementwise by the
 action.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
   Given a local ring `R` and scheme `X`, morphisms `Spec R ⟶ X` corresponds to pairs
   `(x, f)` where `x : X` and `f : 𝒪_{X, x} ⟶ R` is a local ring homomorphism.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ See `Algebra.RingQuot` for quotients of semirings.
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

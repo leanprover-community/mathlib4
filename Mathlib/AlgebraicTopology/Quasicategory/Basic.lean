@@ -24,7 +24,6 @@ we show that the nerve of a category is a quasicategory.
   `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

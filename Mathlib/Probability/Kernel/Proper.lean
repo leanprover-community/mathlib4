@@ -26,7 +26,6 @@ event.
 
 Prove the `integral` versions of the `lintegral` lemmas below
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

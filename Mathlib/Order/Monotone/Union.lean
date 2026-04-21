@@ -16,7 +16,6 @@ provided that it is (strictly) monotone on `(-∞, a]` and on `[a, +∞)`. This 
 of a more general statement where one deduces monotonicity on a union from monotonicity on each
 set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

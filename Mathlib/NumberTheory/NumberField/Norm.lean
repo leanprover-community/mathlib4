@@ -21,7 +21,6 @@ rings of integers.
   `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

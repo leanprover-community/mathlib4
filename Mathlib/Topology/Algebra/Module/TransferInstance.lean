@@ -22,7 +22,6 @@ We also specialize this construction to `Shrink α`.
 
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

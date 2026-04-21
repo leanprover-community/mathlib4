@@ -15,7 +15,6 @@ In this file, we define the type `TopCat.Homotopy` of homotopies
 between two morphisms in the category `TopCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

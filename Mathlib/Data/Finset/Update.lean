@@ -18,7 +18,6 @@ This file defines `Function.updateFinset`, the operation that updates a function
 This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
 for other purposes.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]

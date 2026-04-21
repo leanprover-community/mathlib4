@@ -21,7 +21,6 @@ When the real quadratic form is nondegenerate we can take the weights to be ±1,
 as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

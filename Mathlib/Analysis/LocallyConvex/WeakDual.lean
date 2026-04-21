@@ -45,7 +45,6 @@ convex and we explicitly give a neighborhood basis in terms of the family of sem
 
 weak dual, seminorm
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Init
 
 A tactic for applying functions at hypotheses.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

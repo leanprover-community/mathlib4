@@ -19,7 +19,6 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

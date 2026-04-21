@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 We define the profinite completion of a group as the limit of its finite quotients,
 and prove its universal property.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

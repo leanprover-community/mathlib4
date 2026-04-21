@@ -11,7 +11,6 @@ public import Mathlib.Topology.Compactness.Compact
 
 This file contains basic results about locally compact spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

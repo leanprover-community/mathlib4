@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 This file provides `EffectiveEpi` instances for certain compositions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

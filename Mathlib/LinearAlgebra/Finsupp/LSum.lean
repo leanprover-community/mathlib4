@@ -25,7 +25,6 @@ Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
 
 function with finite support, module, linear algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -153,7 +152,6 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
 theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
 `X → M` is `S`-linearly equivalent to the `R`-linear maps from the free `R`-module
 on `X` to `M`. -/

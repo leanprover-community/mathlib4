@@ -35,7 +35,6 @@ approximated by a *separable* polynomial.
 ## Tags
 Normed field, algebraically closedness
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

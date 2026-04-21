@@ -21,7 +21,6 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 - `FreeAbelianGroup.coeff`: the multiplicity of `x : X` in `a : FreeAbelianGroup X`
 - `FreeAbelianGroup.support`: the finset of `x : X` that occur in `a : FreeAbelianGroup X`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

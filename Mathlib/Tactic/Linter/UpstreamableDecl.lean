@@ -13,7 +13,6 @@ public import ImportGraph.Tools.FindHome
 The `upstreamableDecl` linter detects declarations that could be moved to a file higher up in the
 import hierarchy. This is intended to assist with splitting files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

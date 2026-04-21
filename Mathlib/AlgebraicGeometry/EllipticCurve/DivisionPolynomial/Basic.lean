@@ -90,7 +90,6 @@ TODO: implementation notes for the definition of `ωₙ`.
 
 elliptic curve, division polynomial, torsion point
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

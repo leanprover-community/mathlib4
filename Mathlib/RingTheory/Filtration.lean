@@ -37,7 +37,6 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -181,7 +180,6 @@ def _root_.Ideal.stableFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrati
   mono i := by rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
   smul_le i := by rw [add_comm, pow_add, mul_smul, pow_one]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
     (I.stableFiltration N).Stable := by
   use 0

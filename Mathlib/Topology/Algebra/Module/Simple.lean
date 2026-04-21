@@ -15,7 +15,6 @@ In this file we prove (`LinearMap.isClosed_or_dense_ker`) that the kernel of a l
 `f : M →ₗ[R] N` is either closed or dense in `M` provided that `N` is a simple module over `R`. This
 applies, e.g., to the case when `R = N` is a division ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

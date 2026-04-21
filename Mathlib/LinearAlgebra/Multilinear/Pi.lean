@@ -21,7 +21,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
   - `MultilinearMap.piFamily f` is a `MultilinearMap` operating on functions `x`.
   - `MultilinearMap.piFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

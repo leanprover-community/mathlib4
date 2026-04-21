@@ -64,7 +64,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 set, image, preimage
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

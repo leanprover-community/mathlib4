@@ -18,7 +18,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

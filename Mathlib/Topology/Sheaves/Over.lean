@@ -22,7 +22,6 @@ to the category `Opens U`.
   and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

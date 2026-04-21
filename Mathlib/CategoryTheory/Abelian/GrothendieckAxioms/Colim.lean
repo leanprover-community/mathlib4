@@ -23,7 +23,6 @@ into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

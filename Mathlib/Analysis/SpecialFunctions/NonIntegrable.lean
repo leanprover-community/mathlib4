@@ -37,7 +37,6 @@ latter lemma to prove that the function `fun x => x⁻¹` is integrable on `a..b
 
 integrable function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

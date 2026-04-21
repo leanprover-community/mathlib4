@@ -51,7 +51,6 @@ See <https://en.wikipedia.org/wiki/Hypergeometric_function>.
 
 hypergeometric, gaussian, ordinary
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -97,7 +97,6 @@ only meaningful on the set on which they are a local frame.
 vector bundle, local frame, smoothness
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Bundle Filter Function Topology Module

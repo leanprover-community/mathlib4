@@ -18,7 +18,6 @@ so that `HasLaw X 0 P` would be true. The measurability hypothesis ensures nice 
 operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

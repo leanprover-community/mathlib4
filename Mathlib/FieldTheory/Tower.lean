@@ -23,7 +23,6 @@ The formulas for the dimensions are given elsewhere by `Module.finrank_mul_finra
 tower law
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

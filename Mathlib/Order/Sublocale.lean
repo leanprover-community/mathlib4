@@ -25,7 +25,6 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 * https://ncatlab.org/nlab/show/sublocale
 * https://ncatlab.org/nlab/show/nucleus
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

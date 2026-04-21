@@ -28,7 +28,6 @@ the strictly positive elements of a unital C⋆-algebra.
 * Show that the log is operator concave
 * Show that `x => x * log x` is operator convex
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

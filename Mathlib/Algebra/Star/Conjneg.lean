@@ -17,7 +17,6 @@ This file defines the conjugation-negation operator, useful in Fourier analysis.
 The way this operator enters the picture is that the adjoint of convolution with a function `f` is
 convolution with `conjneg f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 When `M : Comon C` and `N : Mon C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

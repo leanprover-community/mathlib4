@@ -16,7 +16,6 @@ namely that there is some `c` such that `b = a + c` if `a ≤ b`. This is partic
 generalising statements from groups/rings/fields that don't mention negation or subtraction to
 monoids/semirings/semifields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

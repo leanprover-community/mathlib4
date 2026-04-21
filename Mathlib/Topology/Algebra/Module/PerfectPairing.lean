@@ -26,7 +26,6 @@ not in general a homeomorphism.
 
 Adapt `PerfectPairing` to this Prop-valued typeclass paradigm
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

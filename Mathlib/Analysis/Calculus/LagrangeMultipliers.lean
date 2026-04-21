@@ -28,7 +28,6 @@ Formalize Karush-Kuhn-Tucker theorem
 lagrange multiplier, local extremum
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

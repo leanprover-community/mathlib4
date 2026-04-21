@@ -32,7 +32,6 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ such that `L` is `R`-linear and the shift functors on `C` are `R`-linear,
 then the shift functors on `D` are `R`-linear.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

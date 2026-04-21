@@ -21,7 +21,6 @@ These instances use a primed name.
 
 The results are repeated for `AddUnits` and `VAdd` where relevant.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

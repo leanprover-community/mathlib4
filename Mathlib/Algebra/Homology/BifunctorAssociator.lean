@@ -35,7 +35,6 @@ The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

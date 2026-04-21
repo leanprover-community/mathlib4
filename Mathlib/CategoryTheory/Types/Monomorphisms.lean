@@ -24,7 +24,6 @@ will also be inferred automatically.
 in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

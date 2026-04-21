@@ -34,7 +34,6 @@ Hermann Minkowski.
 
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

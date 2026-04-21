@@ -23,7 +23,6 @@ A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap whi
 * `Bifunctor`: A typeclass for the bare bimap of a bifunctor.
 * `LawfulBifunctor`: A typeclass asserting this bimap respects the bifunctor laws.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

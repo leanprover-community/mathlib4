@@ -26,7 +26,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

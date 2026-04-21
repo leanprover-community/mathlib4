@@ -28,7 +28,6 @@ Some instances are in `Mathlib/AlgebraicGeometry/Morphisms/ClosedImmersion` and
 `Mathlib/AlgebraicGeometry/Morphisms/Separated` because they need more API to prove.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ This file contains some supplements to the results in
 `Mathlib/Topology/Algebra/Order/Archimedean.lean`, involving discreteness of subgroups, which
 require heavier imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

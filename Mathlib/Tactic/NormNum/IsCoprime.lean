@@ -15,7 +15,6 @@ This module defines a `norm_num` extension for `IsCoprime` over `ℤ`.
 (While `IsCoprime` is defined over `ℕ`, since it uses Bezout's identity with `ℕ` coefficients
 it does not correspond to the usual notion of coprime.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

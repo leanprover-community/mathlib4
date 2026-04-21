@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.Submonoid.Centralizer
 /-!
 # Centralizers of subgroups
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

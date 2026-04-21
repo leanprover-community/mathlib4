@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 /-!
 # Algebras which are commutative ring epimorphisms
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

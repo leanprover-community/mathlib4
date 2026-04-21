@@ -31,7 +31,6 @@ After the category `ShortComplex C` was introduced by J. Riou, A. Topaz suggeste
 such a structure could be used as a basis for the *definition* of homology.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

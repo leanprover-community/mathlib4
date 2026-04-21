@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 # Pullbacks commute with connected limits
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

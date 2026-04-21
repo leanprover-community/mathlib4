@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 /-!
 # The Gamma function is meromorphic
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

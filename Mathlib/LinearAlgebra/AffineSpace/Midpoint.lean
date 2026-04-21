@@ -32,7 +32,6 @@ We do not mark most lemmas as `@[simp]` because it is hard to tell which side is
 
 midpoint, AddMonoidHom
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

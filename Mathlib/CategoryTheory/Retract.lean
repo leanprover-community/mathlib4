@@ -17,7 +17,6 @@ Defines retracts of objects and morphisms.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v v' u u'
 

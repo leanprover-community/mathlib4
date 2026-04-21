@@ -37,7 +37,6 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 
 bilinear
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

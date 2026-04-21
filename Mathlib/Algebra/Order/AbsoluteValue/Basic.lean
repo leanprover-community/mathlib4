@@ -25,7 +25,6 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
   value
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

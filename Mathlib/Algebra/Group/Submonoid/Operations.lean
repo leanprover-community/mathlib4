@@ -65,7 +65,6 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 
 submonoid, range, product, map, comap
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

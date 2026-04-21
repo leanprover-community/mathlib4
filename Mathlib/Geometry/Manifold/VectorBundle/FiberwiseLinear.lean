@@ -12,7 +12,6 @@ public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 This file contains preliminaries for the definition of a `C^n` vector bundle: an associated
 `StructureGroupoid`, the groupoid of `contMDiffFiberwiseLinear` functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

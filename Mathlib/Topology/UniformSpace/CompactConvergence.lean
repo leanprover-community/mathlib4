@@ -85,7 +85,6 @@ so that the resulting instance uses the compact-open topology.
 * Results about uniformly continuous functions `γ → C(α, β)`
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

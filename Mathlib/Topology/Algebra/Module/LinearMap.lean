@@ -21,7 +21,6 @@ modules which are continuous. The set of continuous semilinear maps between the 
 `R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

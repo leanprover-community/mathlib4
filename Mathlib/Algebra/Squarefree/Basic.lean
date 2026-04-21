@@ -30,7 +30,6 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 squarefree, multiplicity
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

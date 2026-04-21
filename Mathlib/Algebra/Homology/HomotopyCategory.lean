@@ -17,7 +17,6 @@ public import Mathlib.CategoryTheory.Quotient.Preadditive
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

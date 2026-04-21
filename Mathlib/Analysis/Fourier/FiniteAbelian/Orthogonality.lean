@@ -15,7 +15,6 @@ public import Mathlib.Analysis.RCLike.Inner
 This file proves that characters of a finite abelian group are orthogonal, and in particular that
 there are at most as many characters as there are elements of the group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

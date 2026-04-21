@@ -44,7 +44,6 @@ There has been some discussion on the subject of whether both of `nth` and
 Future work should address how lemmas that use these should be written.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

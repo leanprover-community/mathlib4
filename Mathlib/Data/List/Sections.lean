@@ -12,7 +12,6 @@ public import Mathlib.Data.List.Forall2
 This file proves some stuff about `List.sections` (definition in `Data.List.Defs`). A section of a
 list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the `i`-th list.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,7 +24,6 @@ Then, we must be very selective regarding `HasExt` instances.
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

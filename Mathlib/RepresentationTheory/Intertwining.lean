@@ -13,7 +13,6 @@ public import Mathlib.RepresentationTheory.Subrepresentation
 This file gives defines intertwining maps of representations (aka equivariant linear maps).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

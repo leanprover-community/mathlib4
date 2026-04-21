@@ -43,7 +43,6 @@ on intervals.
 
 intermediate value theorem, connected space, connected set
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

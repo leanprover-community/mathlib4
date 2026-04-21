@@ -14,7 +14,6 @@ public import Mathlib.Order.PartialSups
 In this file we prove that `partialSups` of a sequence of continuous functions is continuous
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

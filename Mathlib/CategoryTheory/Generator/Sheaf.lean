@@ -16,7 +16,6 @@ In this file, we show that if `J : GrothendieckTopology C` and `A` is a preaddit
 category which has a separator (and suitable coproducts), then `Sheaf J A` has a separator.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

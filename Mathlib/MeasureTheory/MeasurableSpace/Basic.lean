@@ -42,7 +42,6 @@ Galois connection induced by `f`.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

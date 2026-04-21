@@ -19,7 +19,6 @@ public import Mathlib.LinearAlgebra.Quotient.Pi
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

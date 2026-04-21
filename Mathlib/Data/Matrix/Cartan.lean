@@ -41,7 +41,6 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 
 cartan matrix, lie algebra, dynkin diagram
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

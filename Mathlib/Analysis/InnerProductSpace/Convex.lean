@@ -20,7 +20,6 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 inner product space, Hilbert space, norm
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

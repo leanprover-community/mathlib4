@@ -12,7 +12,6 @@ public import Mathlib.Data.Set.Finite.Basic
 /-!
 # Finiteness of support
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

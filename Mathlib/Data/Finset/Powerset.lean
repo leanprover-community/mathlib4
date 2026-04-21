@@ -13,7 +13,6 @@ public import Mathlib.Data.Set.Pairwise.Lattice
 /-!
 # The powerset of a finset
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

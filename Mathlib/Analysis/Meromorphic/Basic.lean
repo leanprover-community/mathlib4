@@ -20,7 +20,6 @@ Main statements:
   `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
   and `g` analytic at `z₀`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

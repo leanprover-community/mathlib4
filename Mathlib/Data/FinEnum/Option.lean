@@ -17,7 +17,6 @@ non-truncated data.
 ## TODO
 * recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ limits of `Real.exp` at infinity.
 
 exp
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

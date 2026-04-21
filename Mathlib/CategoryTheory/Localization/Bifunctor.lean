@@ -28,7 +28,6 @@ we introduce `Localization.lift₂ F hF L₁ L₂ : D₁ ⥤ D₂ ⥤ E` which i
 which lifts `F`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

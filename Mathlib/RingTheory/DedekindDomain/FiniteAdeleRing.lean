@@ -27,7 +27,6 @@ field, its finite adèle ring is just defined to be the trivial ring.
 ## Tags
 finite adèle ring, dedekind domain
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

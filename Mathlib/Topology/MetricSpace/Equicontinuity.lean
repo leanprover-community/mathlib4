@@ -32,7 +32,6 @@ and we prove that functions sharing a common (local or global) continuity modulu
 
 equicontinuity, continuity modulus
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

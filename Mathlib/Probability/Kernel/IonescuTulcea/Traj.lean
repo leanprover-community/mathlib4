@@ -80,7 +80,6 @@ see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure].
 
 Ionescu-Tulcea theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

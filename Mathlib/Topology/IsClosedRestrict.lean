@@ -21,7 +21,6 @@ a homeomorphism `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict 
 with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

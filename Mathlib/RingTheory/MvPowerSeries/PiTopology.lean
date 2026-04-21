@@ -77,7 +77,6 @@ as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this
 But future contributors wishing to clean this up should feel free to give it a try!
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

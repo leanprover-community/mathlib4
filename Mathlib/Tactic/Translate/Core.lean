@@ -27,7 +27,6 @@ public import Mathlib.Tactic.Translate.UnfoldBoundary
 Implementation of the translation attribute. This is used for `@[to_additive]` and `@[to_dual]`.
 See the docstring of `to_additive` for more information
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

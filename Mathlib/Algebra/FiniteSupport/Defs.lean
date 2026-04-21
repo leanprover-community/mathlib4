@@ -16,7 +16,6 @@ and provide the infrastructure so that `fun_prop` can prove it for functions tha
 built from other functions with finite multiplicative support. The relevant API lemmas
 are provided in [Mathlib.Algebra.FiniteSupport.Basic}(Mathlib/Algebra/FiniteSupport/Basic.lean).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

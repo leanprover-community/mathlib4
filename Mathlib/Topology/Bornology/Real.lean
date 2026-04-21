@@ -14,7 +14,6 @@ public import Mathlib.Topology.Order.Bornology
 This file contains results related to the order bornology on (non-negative) real numbers.
 We prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

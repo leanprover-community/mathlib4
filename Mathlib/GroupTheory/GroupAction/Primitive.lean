@@ -68,7 +68,6 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
   which contains a given point and avoids another one.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

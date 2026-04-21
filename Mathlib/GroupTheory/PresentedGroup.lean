@@ -27,7 +27,6 @@ given by generators `x : α` and relations `r ∈ rels`.
 
 generators, relations, group presentations
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

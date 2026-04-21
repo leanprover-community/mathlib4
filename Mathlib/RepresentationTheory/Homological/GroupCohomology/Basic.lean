@@ -64,7 +64,6 @@ Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
   spectral sequences in general).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan fu
 
 Basic inequalities on trigonometric functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

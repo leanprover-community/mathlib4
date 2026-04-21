@@ -15,7 +15,6 @@ If `C` and `D` are categories and `D` is preadditive,
 then `C ⥤ D` is also preadditive.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

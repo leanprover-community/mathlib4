@@ -14,7 +14,6 @@ Many theorems in harmonic analysis assume that a function is harmonic on a domai
 on its closure. In this file we define a predicate `HarmonicContOnCl` that expresses this property
 and prove basic facts about this predicate.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

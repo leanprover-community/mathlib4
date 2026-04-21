@@ -11,7 +11,6 @@ public import Mathlib.SetTheory.Ordinal.Univ
 /-!
 # UnivLE and cardinals
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

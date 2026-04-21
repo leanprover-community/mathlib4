@@ -34,7 +34,6 @@ is thin.
   proof of normalization for monoids][beylin1996]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

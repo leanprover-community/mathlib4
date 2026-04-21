@@ -39,7 +39,6 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

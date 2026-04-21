@@ -51,7 +51,6 @@ The file also contains an identification between the definitions in
 * Nonabelian group cohomology
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

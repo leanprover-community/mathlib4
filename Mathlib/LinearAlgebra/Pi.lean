@@ -33,7 +33,6 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.diag`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

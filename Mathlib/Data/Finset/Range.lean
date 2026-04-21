@@ -25,7 +25,6 @@ public import Mathlib.Order.Interval.Set.Defs
 finite sets, finset
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

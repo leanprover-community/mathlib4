@@ -58,7 +58,6 @@ order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous f
 See the Vitali-Carathéodory theorem,
 in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -51,7 +51,6 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

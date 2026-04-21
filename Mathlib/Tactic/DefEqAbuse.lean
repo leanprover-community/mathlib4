@@ -49,7 +49,6 @@ instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
 
 will report the synthesis failures grouped by instance application.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

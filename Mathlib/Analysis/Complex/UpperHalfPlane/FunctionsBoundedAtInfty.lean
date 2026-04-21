@@ -16,7 +16,6 @@ For complex-valued functions on the upper half plane, this file defines the filt
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -81,7 +81,6 @@ You should always use the first approach when working with associative unital al
 the second approach only when you need to weaken a condition on either `R` or `A`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

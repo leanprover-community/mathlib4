@@ -24,7 +24,6 @@ The standard example is the set of diagonal matrices in the Lie algebra of matri
 
 lie subalgebra, normalizer, idealizer, cartan subalgebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

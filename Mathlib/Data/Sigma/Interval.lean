@@ -18,7 +18,6 @@ calculates the cardinality of its finite intervals.
 
 Do the same for the lexicographical order
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

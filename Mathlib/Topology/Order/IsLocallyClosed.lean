@@ -13,7 +13,6 @@ public import Mathlib.Topology.LocallyClosed
 
 We prove that the intervals on a topological ordered space are locally closed.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

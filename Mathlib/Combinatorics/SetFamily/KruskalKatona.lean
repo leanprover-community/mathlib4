@@ -43,7 +43,6 @@ The key results proved here are:
 
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

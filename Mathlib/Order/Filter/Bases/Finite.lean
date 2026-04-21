@@ -15,7 +15,6 @@ A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of s
 such that the intersection of two elements of this collection contains some element of
 the collection.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

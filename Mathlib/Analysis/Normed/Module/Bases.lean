@@ -70,7 +70,6 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969].
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

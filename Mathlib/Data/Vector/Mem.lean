@@ -16,7 +16,6 @@ Having the length available in the type allows some of the lemmas to be
 In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

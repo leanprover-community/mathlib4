@@ -41,7 +41,6 @@ combinatorial contexts.
 
 Schroeder, Schroder
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

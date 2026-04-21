@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Ring.Pi
 /-!
 # Characteristic of semirings of functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

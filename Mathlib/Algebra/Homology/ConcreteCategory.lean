@@ -19,7 +19,6 @@ we give a computation of the connecting homomorphism of
 the homology sequence in terms of (co)cycles.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Data.NNRat.Defs
 
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

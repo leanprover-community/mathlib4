@@ -44,7 +44,6 @@ where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeri
   for `0`-forms (`constOfIsEmpty`) and `1`-forms (`ofSubsingleton`),
   sync with the API for `ContinuousMultilinearMap`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

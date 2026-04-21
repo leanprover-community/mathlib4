@@ -20,7 +20,6 @@ public import Mathlib.GroupTheory.Subsemigroup.Center
 We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`, and
 `AddSubgroup.centralizer` in other files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

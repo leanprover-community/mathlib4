@@ -19,7 +19,6 @@ order to define morphisms of cochain complexes which satisfy this property
 degreewise.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

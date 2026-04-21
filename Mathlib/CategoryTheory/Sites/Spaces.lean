@@ -32,7 +32,6 @@ site, Grothendieck topology, space
 We define the two separately, rather than defining the Grothendieck topology as that generated
 by the pretopology for the purpose of having nice definitional properties for the sieves.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

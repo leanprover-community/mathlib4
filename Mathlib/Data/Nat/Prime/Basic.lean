@@ -16,7 +16,6 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 `p` and `1`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

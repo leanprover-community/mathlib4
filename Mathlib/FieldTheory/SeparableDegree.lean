@@ -120,7 +120,6 @@ This file contains basics about the separable degree of a field extension.
 separable degree, degree, polynomial
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

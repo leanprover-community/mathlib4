@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Preservation of (co)limits by the sheaf Yoneda functor
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

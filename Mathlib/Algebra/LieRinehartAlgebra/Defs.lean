@@ -22,7 +22,6 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
   Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalCo
 This construction first appeared in the Liquid Tensor Experiment.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

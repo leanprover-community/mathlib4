@@ -11,7 +11,6 @@ public import Mathlib.Tactic.FunProp.Theorems
 /-!
 ## `funProp` attribute
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

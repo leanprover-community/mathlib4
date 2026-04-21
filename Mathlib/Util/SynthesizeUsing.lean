@@ -15,7 +15,6 @@ public import Qq.Typ
 
 This is a slight simplification of the `solve_aux` tactic in Lean3.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

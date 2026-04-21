@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 
 /-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

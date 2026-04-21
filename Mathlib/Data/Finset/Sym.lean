@@ -28,7 +28,6 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym` forms a Galois connection between `Finset α` and `Finset (Sym α n)`. Similar for
 `Finset.sym2`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

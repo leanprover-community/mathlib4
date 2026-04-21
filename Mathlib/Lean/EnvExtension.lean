@@ -11,7 +11,6 @@ public import Lean.ScopedEnvExtension
 /-!
 # Helper function for environment extensions and attributes.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

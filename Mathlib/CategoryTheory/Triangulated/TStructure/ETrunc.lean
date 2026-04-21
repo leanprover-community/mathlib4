@@ -17,7 +17,6 @@ In this file, we extend the definition of the truncation functors
 as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

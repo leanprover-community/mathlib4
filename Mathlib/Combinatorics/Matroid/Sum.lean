@@ -41,7 +41,6 @@ To this end, we define five separate versions of the sum construction.
 We only directly define a matroid for `Matroid.sigma`. All other versions of sum are
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

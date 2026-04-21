@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Ring.Opposite
 This file contains definitions that build on top of the group action definitions in
 `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

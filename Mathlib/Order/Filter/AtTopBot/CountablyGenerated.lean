@@ -20,7 +20,6 @@ In this file we prove that
 - `Filter.tendsto_iff_seq_tendsto`: convergence along a countably generated filter
   is equivalent to convergence along all sequences that converge to this filter.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

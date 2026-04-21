@@ -32,7 +32,6 @@ polynomials, in particular Northcott's Theorem for the Mahler measure.
   Mahler measure equal to 1 and is not a multiple of X, then it is divisible by a cyclotomic
   polynomial.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

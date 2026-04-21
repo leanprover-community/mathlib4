@@ -17,7 +17,6 @@ In this file we prove various lemmas about upper/lower bounds of a set:
 monotonicity, behaviour under `∪`, `∩`, `insert`,
 and provide formulas for `∅`, `univ`, and intervals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

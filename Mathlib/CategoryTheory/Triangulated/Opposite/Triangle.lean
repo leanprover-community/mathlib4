@@ -24,7 +24,6 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

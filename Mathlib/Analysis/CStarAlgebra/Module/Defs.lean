@@ -61,7 +61,6 @@ then an `InnerProductSpace` over `ℂ`.
 + Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
   December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

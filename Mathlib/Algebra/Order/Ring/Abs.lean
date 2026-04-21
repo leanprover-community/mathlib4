@@ -15,7 +15,6 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 /-!
 # Absolute values in linear ordered rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

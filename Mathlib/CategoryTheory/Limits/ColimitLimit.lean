@@ -24,7 +24,6 @@ is that when `C = Type`, filtered colimits commute with finite limits.
 * Borceux, Handbook of categorical algebra 1, Section 2.13
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ multiplication by `c : G` is a measure-preserving map for all `c`. In this file 
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

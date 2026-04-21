@@ -28,7 +28,6 @@ We also define a notion `IsWeaklyEisensteinAt` requiring only that
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

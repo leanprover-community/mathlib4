@@ -22,7 +22,6 @@ This file contains some more involved results about `ProperSpace`s.
 * `exists_lt_subset_ball`
 * `Metric.exists_isLocalMin_mem_ball`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

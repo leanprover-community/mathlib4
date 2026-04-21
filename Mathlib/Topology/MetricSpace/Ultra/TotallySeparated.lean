@@ -18,7 +18,6 @@ In a metric space with an ultrametric, the space is totally separated, hence tot
 
 ultrametric, nonarchimedean, totally separated, totally disconnected
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Metric IsUltrametricDist

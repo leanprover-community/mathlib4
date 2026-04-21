@@ -38,7 +38,6 @@ of `mulExpNegMulSq ε ∘ g` with respect to `P, P'` is bounded by `6 * √ε`.
 This is a key ingredient in the proof of theorem `ext_of_forall_mem_subalgebra_integral_eq`, where
 it is shown that a subalgebra of functions that separates points separates finite measures.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

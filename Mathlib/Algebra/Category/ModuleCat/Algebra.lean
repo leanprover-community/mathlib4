@@ -30,7 +30,6 @@ that carries these typeclasses, this seems hard to achieve.
 (An alternative would be to always require these typeclasses, and remove the original `ModuleCat`,
 requiring users to write `ModuleCat' ℤ A` when `A` is merely a ring.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

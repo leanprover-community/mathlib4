@@ -56,7 +56,6 @@ alternating group permutation simple characteristic index
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

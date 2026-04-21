@@ -29,7 +29,6 @@ where `OnePoint ℝ` gets the topology of one-point compactification.
 
 one-point extension, projectivization
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

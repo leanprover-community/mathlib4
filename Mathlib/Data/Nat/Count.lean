@@ -17,7 +17,6 @@ We then prove several expected lemmas about `count`, relating it to the cardinal
 objects, and helping to evaluate it for specific `k`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ finitely presented as a module.
 
 - [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ The definition `isLimitConeFunctorEnrichedHom` shows that
 `enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.NumberTheory.Divisors
 /-!
 # Results about divisors and factorizations
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

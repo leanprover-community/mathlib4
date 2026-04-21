@@ -21,7 +21,6 @@ These results are separate from the definition of `QuadraticForm.tmul` as that f
 * `QuadraticForm.tensorRId`: `TensorProduct.rid` as a `QuadraticForm.IsometryEquiv`
 * `QuadraticForm.tensorLId`: `TensorProduct.lid` as a `QuadraticForm.IsometryEquiv`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

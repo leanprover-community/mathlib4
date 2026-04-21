@@ -33,7 +33,6 @@ and only includes the order property; linearity is not mentioned at all. It is t
 to be used in conjunction with `LinearMapClass`. This is meant to avoid mixing order and algebra
 as much as possible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

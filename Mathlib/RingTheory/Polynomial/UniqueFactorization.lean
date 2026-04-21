@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
   If an integral domain is a `UniqueFactorizationMonoid`, then so is its polynomial ring (of any
   number of variables).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

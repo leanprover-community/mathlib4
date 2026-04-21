@@ -19,7 +19,6 @@ public import Mathlib.Topology.UniformSpace.Real
 We prove that `EReal`, `ℝ≥0` and `ℝ≥0∞` are second countable.
 In the process, we also provide the instance `ProperSpace ℝ≥0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ This file is still being developed.
 
 integrate, integration, integrable
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -62,7 +62,6 @@ docstrings instead of the names.
 
 pigeonhole principle
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

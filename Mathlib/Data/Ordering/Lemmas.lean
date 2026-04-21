@@ -11,7 +11,6 @@ public import Mathlib.Order.Defs.Unbundled
 /-!
 # Some `Ordering` lemmas
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -37,7 +37,6 @@ This file contains basic facts about resultant of two polynomials over commutati
   are implemented.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

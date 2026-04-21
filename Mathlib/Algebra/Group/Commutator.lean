@@ -16,7 +16,6 @@ public import Mathlib.Data.Bracket
 After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

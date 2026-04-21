@@ -48,7 +48,6 @@ automatic instances for these cases). One can require whatever regularity one wa
 `[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
 the latter from the former as it cannot guess `n`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

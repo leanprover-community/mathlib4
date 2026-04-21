@@ -54,7 +54,6 @@ See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGr
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
 `completeMultipartiteGraph`, `turanGraph`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

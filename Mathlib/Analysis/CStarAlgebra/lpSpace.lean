@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Lp.lpSpace
 We place these here because, for reasons related to the import hierarchy, they should not be placed
 in earlier files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open scoped ENNReal

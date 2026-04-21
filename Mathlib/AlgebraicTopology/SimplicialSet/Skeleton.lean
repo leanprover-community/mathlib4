@@ -26,7 +26,6 @@ If `i : X ⟶ Y` is a monomorphism, we define
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

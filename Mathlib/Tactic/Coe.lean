@@ -18,7 +18,6 @@ Defines notation for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

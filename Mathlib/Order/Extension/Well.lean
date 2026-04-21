@@ -34,7 +34,6 @@ to the `mathlib` 3 version but avoids non-standard instances.
 
 well-founded relation, well order, extension
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

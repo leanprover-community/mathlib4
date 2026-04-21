@@ -15,7 +15,6 @@ of short complexes (which have homology): the condition is that the induced
 morphism `homologyMap φ` in homology is an isomorphism.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

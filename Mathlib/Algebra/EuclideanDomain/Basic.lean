@@ -18,7 +18,6 @@ public import Mathlib.Algebra.Ring.Basic
 * `gcd_eq_gcd_ab`: states Bézout's lemma for Euclidean domains.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

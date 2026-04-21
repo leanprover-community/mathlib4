@@ -17,7 +17,6 @@ We show that if `C` is a small abelian category, then `Ind C` is an abelian cate
 In the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Indization.lean`, we show that in
 this situation `Ind C` is in fact Grothendieck abelian.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

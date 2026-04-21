@@ -15,7 +15,6 @@ The "emptyLine" linter emits a warning on empty lines inside a command, but outs
 doc-string/module-doc.
 -/
 
-set_option backward.defeqAttrib.useBackward true
 public meta section
 
 open Lean Elab Linter

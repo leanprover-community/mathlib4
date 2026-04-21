@@ -35,7 +35,6 @@ computes group cohomology.
   and the homology of `A --N--> A --(ρ(g) - Id)--> A` for all positive even `i`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

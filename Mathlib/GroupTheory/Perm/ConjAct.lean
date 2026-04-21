@@ -22,7 +22,6 @@ Let `α` be a decidable fintype.
   with that for `k • g`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

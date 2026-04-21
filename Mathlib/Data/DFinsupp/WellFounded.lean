@@ -46,7 +46,6 @@ can happen arbitrarily. This explains the appearance of `rᶜ ⊓ (≠)` in
 of a linear order), `¬ r j i ∧ j ≠ i` implies `r i j`, so it suffices to require `r.swap`
 to be well-founded.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

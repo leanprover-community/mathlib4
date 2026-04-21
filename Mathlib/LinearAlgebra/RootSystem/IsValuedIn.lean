@@ -31,7 +31,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

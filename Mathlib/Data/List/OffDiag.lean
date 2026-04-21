@@ -18,7 +18,6 @@ In this file we define `List.offDiag l` to be the product `l.product l`
 with the diagonal removed.
 The actual definition is more complicated to avoid assuming that equality on `α` is decidable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

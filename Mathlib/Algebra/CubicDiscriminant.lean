@@ -32,7 +32,6 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 cubic, discriminant, polynomial, root
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

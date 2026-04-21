@@ -14,7 +14,6 @@ public import Lean.Meta.DiscrTree
 
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

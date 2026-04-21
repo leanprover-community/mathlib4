@@ -27,7 +27,6 @@ that for every `b : V` there is a unique path from `root` to `b`.
   subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
   spanning tree'. This proof avoids the use of Zorn's lemma.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

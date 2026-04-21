@@ -27,7 +27,6 @@ by `s ↦ s ⊗ₜ 1 - 1 ⊗ₜ s`.
 * `IsEffective.of_faithfullyFlat`: `IsEffective R S` is true for any faithfully flat `R`-algebra `S`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

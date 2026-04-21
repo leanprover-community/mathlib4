@@ -15,7 +15,6 @@ This file provides theorems for working with the `getD` and `getI` functions. Th
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

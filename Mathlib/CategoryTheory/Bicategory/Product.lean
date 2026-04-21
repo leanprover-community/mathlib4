@@ -20,7 +20,6 @@ We define:
 * `swap`      : the strict pseudofunctor `B × C ⥤ C × B` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ This file contains properties of derivatives which need the manifold structure o
 bundle. Notably, it includes formulas for the tangent maps to charts, and unique differentiability
 statements for subsets of the tangent bundle.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

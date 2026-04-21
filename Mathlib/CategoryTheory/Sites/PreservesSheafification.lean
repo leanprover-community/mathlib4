@@ -40,7 +40,6 @@ suitable limits and colimits.
 * construct an isomorphism `Sheaf.composeAndSheafify J F ≅ sheafCompose J F`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

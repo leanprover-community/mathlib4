@@ -13,7 +13,6 @@ public import Mathlib.Order.Hom.Basic
 
 This file develops some additional material on ordered monoids.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

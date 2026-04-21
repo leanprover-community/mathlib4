@@ -24,7 +24,6 @@ This file defines restrictions of affine maps.
 * The restriction is injective if the original map is injective.
 * The restriction in surjective if the codomain is the image of the domain.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

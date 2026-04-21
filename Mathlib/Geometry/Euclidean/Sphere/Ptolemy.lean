@@ -39,7 +39,6 @@ An API needs to be built around that concept, which would include:
 
 and so on.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

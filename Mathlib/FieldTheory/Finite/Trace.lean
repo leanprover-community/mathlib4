@@ -25,7 +25,6 @@ We state several lemmas about the trace and norm maps for finite fields.
 ## Tags
 finite field, trace, norm
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

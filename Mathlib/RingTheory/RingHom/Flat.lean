@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Ideal.GoingDown
 In this file we define flat ring homomorphisms and show their meta properties.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

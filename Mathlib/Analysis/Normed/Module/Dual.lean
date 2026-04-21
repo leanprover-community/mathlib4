@@ -32,7 +32,6 @@ In this file we study polar sets in the strong dual `StrongDual` of a normed spa
 
 strong dual, polar
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

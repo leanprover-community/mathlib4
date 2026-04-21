@@ -11,7 +11,6 @@ public import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 /-!
 # Subgroups in a group with zero
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

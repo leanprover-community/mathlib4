@@ -34,7 +34,6 @@ prove that it is solvable when the Lie algebra is Noetherian.
 
 lie algebra, derived series, derived length, solvable, radical
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

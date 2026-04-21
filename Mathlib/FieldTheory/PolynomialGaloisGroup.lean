@@ -36,7 +36,6 @@ some results about some extension `E` above `p.SplittingField`.
   (i.e. with some imaginary component).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

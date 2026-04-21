@@ -42,7 +42,6 @@ In this file we define an inverse of cosh as a function from $[0, ∞)$ to $[1, 
 
 arcosh, arccosh, argcosh, acosh
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

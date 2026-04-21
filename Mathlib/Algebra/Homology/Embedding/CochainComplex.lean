@@ -19,7 +19,6 @@ complexes indexed by `ℤ`, as well as the conditions
 `CochainComplex.IsLE`, and `CochainComplex.IsGE`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

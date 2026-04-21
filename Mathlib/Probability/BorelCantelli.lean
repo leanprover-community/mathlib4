@@ -25,7 +25,6 @@ filtration.
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
 in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

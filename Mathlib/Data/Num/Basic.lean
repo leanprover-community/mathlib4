@@ -18,7 +18,6 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

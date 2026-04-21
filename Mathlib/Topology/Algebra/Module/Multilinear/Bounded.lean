@@ -26,7 +26,6 @@ the family `∀ i, E i` has to be essentially finite
 (more precisely, all but finitely many `E i` has to be trivial),
 proving theorems without a `[Finite ι]` assumption saves us some typeclass searches here and there.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.OreLocalization.Basic
 /-!
 # Ore Localization over nonZeroDivisors in monoids with zeros.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

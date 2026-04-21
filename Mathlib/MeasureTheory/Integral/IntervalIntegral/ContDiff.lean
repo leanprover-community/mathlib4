@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 We give versions of the second fundamental theorem of calculus under the strong assumption
 that the function is `C^1` on the interval. This is restrictive, but satisfied in many situations.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

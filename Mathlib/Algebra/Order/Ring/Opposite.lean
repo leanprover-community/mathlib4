@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Ring.Opposite
 
 This file transfers ordered (semi)ring instances from `R` to `Rᵐᵒᵖ` and `Rᵃᵒᵖ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

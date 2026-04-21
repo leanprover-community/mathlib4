@@ -36,7 +36,6 @@ inequality.
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

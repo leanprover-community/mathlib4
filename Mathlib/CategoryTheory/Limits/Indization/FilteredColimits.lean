@@ -23,7 +23,6 @@ Our proof is a slight variant of the proof given in Kashiwara-Schapira.
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

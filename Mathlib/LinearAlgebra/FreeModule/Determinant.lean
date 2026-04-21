@@ -19,7 +19,6 @@ free (finite) modules over any commutative ring.
 * `LinearMap.det_zero''`: The determinant of the constant zero map is zero, in a finite free
   nontrivial module.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

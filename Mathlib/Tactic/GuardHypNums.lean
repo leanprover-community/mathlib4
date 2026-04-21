@@ -11,7 +11,6 @@ public meta import Lean.Elab.Tactic.Basic
 /-!
 A tactic stub file for the `guard_hyp_nums` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

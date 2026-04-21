@@ -10,7 +10,6 @@ public import Mathlib.Init
 /-!
 ## `funProp` missing function from standard library
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

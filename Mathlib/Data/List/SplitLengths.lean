@@ -13,7 +13,6 @@ public import Mathlib.Order.MinMax
 
 This file defines splitting a list to chunks of given lengths, and some proofs about that.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

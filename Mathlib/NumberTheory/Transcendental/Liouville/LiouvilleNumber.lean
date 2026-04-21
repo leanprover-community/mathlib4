@@ -31,7 +31,6 @@ is a transcendental number. Classically, the Liouville number for $m = 2$ is the
 The indexing $m$ is eventually a natural number satisfying $2 ≤ m$. However, we prove the first few
 lemmas for $m \in \mathbb{R}$.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ to be the type of equivalences such that `∀ x, f (x + a) = f x + b`.
 
 We also define the corresponding typeclass and prove some basic properties.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

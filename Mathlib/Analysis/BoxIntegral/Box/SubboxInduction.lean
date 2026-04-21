@@ -27,7 +27,6 @@ Then `p I` is true.
 
 rectangular box, induction
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

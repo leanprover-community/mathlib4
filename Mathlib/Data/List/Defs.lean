@@ -19,7 +19,6 @@ public import Batteries.Logic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

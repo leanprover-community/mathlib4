@@ -26,7 +26,6 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

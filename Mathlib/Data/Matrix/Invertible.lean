@@ -22,7 +22,6 @@ in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`.
 * `Matrix.isUnit_conjTranspose`
 * `Matrix.isUnit_transpose`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

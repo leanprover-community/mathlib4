@@ -21,7 +21,6 @@ when `D` is idempotent complete, we get equivalences
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

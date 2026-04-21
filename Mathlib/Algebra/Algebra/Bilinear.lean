@@ -15,7 +15,6 @@ We move a few basic statements about algebras out of `Algebra.Algebra.Basic`,
 in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

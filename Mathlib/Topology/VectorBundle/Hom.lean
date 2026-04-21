@@ -28,7 +28,6 @@ Similar constructions should be possible (but are yet to be formalized) for tens
 topological vector bundles, exterior algebras, and so on, where again the topology can be defined
 using a norm on the fiber model if this helps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -68,7 +67,6 @@ variable {σ e₁ e₁' e₂ e₂'}
 variable [∀ x, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁]
 variable [∀ x, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem continuousOn_continuousLinearMapCoordChange [RingHomIsometric σ]
     [VectorBundle 𝕜₁ F₁ E₁] [VectorBundle 𝕜₂ F₂ E₂]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂]
@@ -171,7 +169,6 @@ variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorB
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 variable [RingHomIsometric σ]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a
 `VectorPrebundle` (this is an auxiliary construction for the
 `VectorBundle` instance, in which the pretrivializations are collated but no topology

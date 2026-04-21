@@ -26,7 +26,6 @@ the pairwiseness of the list we have so far. It thus yields `l'` a maximal subli
 
 sorted, nodup
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

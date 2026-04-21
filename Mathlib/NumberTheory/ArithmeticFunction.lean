@@ -5,6 +5,5 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2025-12-01")

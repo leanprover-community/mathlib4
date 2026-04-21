@@ -31,7 +31,6 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

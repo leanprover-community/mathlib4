@@ -31,7 +31,6 @@ not as `ω : E → E [⋀^Fin 1]→L[𝕜] F`.
 A 1-form represented this way is closed
 iff its Fréchet derivative `dω : E → E →L[𝕜] E →L[𝕜] F` is symmetric, `dω a x y = dω a y x`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

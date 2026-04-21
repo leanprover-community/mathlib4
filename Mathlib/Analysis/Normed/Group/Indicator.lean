@@ -16,7 +16,6 @@ This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`
 ## Tags
 indicator, norm
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

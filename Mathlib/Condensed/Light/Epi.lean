@@ -19,7 +19,6 @@ of light profinite sets.
 
 Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` preserves epimorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ if `{bi | i ∈ I}` is an `R`-basis of `S` and `{cj | j ∈ J}` is an `S`-basis
 of `A`, then `{bi cj | i ∈ I, j ∈ J}` is an `R`-basis of `A`. This statement does not require the
 base rings to be a field, so we also generalize the lemma to rings in this file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

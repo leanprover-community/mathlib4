@@ -25,7 +25,6 @@ direct product of the infinite adele ring and the finite adele ring.
 ## Tags
 adele ring, number field
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

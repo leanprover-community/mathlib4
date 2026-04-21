@@ -25,7 +25,6 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 * [A. H. Clifford, *Note on Hahn’s theorem on ordered Abelian groups.*][clifford1954]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ This file contains the ordered monoid instance on multisets, and lemmas related 
 
 See note [foundational algebra order theory].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

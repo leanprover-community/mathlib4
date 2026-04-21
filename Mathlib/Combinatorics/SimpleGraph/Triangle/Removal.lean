@@ -20,7 +20,6 @@ In this file, we prove the triangle removal lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

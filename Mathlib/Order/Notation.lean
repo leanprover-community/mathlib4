@@ -36,7 +36,6 @@ as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

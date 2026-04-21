@@ -18,7 +18,6 @@ This file contains further lemmas about normed groups, requiring heavier imports
 - Move lemmas from `Basic` to other places, including this file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

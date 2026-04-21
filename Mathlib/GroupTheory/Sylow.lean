@@ -39,7 +39,6 @@ The Sylow theorems are the following results for every finite group `G` and ever
 * `card_sylow_modEq_one`: a generalization of Sylow's third theorem:
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

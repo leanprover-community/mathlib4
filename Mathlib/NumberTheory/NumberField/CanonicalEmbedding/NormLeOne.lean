@@ -121,7 +121,6 @@ identify `realSpace K` with its image in `mixedSpace K`).
   by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

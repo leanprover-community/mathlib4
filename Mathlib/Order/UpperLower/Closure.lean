@@ -21,7 +21,6 @@ they are equivalent to a union over principal upper (lower) sets, as shown in `c
 * `upperClosure`: The greatest upper set containing a set.
 * `lowerClosure`: The least lower set containing a set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

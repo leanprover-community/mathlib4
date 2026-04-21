@@ -38,7 +38,6 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]

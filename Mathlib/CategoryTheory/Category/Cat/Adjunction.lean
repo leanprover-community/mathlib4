@@ -22,7 +22,6 @@ components and functors to functions between those sets.
 All this could be made with 2-functors
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

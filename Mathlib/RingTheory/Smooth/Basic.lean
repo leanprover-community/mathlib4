@@ -48,7 +48,6 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 open scoped TensorProduct
 open Algebra.Extension KaehlerDifferential MvPolynomial

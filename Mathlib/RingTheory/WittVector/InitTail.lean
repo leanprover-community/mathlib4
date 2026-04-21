@@ -34,7 +34,6 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

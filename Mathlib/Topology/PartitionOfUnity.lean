@@ -74,7 +74,6 @@ We use `WellOrderingRel j i` instead of `j < i` in the definition of
 
 partition of unity, bump function, Urysohn's lemma, normal space, paracompact space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

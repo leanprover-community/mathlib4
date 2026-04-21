@@ -16,7 +16,6 @@ If `C` is a preadditive category and `T` is an additive monad on `C` then `Algeb
 preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is preadditive as well.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

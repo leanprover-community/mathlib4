@@ -17,7 +17,6 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 * `Algebra.IsIntegral R A` : An algebra is integral if every element of the extension is integral
   over the base ring.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Tactic.Continuity.Init
 # Continuity
 
 We define the `continuity` tactic using `aesop`. -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

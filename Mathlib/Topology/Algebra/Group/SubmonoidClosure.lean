@@ -19,7 +19,6 @@ then the topological closures of `Submonoid.closure s` and `Subgroup.closure s` 
 The proof is based on the following observation, see `mapClusterPt_self_zpow_atTop_pow`:
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

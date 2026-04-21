@@ -21,7 +21,6 @@ supremum of the subobjects corresponding to the objects
 in the image of `F`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

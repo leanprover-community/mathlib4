@@ -16,7 +16,6 @@ of categories `Subfunctor.equivalenceMonoOver F : Subfunctor F ≌ MonoOver F`
 and an order isomorphism `Subfunctor.orderIsoSubject F : Subfunctor F ≃o Subobject F`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

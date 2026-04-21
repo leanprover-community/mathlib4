@@ -34,7 +34,6 @@ to the other, use `not_symmGen_iff` and `not_incompRel_iff_symmGen`.
 
 These definitions should be linked to `IsChain` and `IsAntichain`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

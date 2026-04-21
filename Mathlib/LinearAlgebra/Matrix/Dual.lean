@@ -18,7 +18,6 @@ This file contains some results about matrices and dual spaces.
 
 matrix, linear map, transpose, dual
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

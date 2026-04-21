@@ -35,7 +35,6 @@ which may be useful due to their definitional properties.
 * Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

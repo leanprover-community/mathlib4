@@ -39,7 +39,6 @@ Weyl group.
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

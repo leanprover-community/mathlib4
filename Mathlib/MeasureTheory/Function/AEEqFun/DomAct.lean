@@ -24,7 +24,6 @@ typeclass for quasi-measure-preserving actions yet.
 ## Keywords
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

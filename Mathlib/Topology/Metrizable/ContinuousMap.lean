@@ -16,7 +16,6 @@ public import Mathlib.Topology.Metrizable.Basic
 If `X` is a weakly locally compact σ-compact space and `Y` is a (pseudo)metrizable space,
 then `C(X, Y)` is a (pseudo)metrizable space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

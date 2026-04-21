@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Determinant
 We prove that the expression for the norm of an element in a quadratic algebra comes from looking at
 the endomorphism defined by left multiplication by that element and taking its determinant.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

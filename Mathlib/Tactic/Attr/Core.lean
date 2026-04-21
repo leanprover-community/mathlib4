@@ -14,7 +14,6 @@ In Lean 4, an attribute declared with `register_simp_attr` cannot be used in the
 declare all `simp` attributes used in `Mathlib` in `Mathlib/Tactic/Attr/Register` and tag lemmas
 from the core library and the `Batteries` library with these attributes in this file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

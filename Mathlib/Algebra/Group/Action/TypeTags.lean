@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 
 group action
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

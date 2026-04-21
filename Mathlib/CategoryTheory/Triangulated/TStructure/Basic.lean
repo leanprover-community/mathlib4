@@ -35,7 +35,6 @@ use depending on the context.
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

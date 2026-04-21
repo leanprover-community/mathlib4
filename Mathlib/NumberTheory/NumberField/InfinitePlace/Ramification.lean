@@ -32,7 +32,6 @@ This file studies the ramification of infinite places of a number field.
 
 number field, infinite places, ramification
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

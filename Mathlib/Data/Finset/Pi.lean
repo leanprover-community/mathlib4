@@ -17,7 +17,6 @@ public import Mathlib.Logic.Function.DependsOn
 
 * `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

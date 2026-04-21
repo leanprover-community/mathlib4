@@ -22,7 +22,6 @@ We also provide 4 instances:
 - for the action on `X × Y`;
 - for the action on `∀ i, X i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

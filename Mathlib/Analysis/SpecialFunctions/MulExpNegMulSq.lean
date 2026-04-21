@@ -28,7 +28,6 @@ boundedness and convergence properties.
 - `abs_mulExpNegMulSq_comp_le_norm`: For a fixed bounded continuous function `g`, the mapping
   `mulExpNegMulSq ε ∘ g` is bounded by `norm g`, uniformly in `ε ≥ 0`;
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

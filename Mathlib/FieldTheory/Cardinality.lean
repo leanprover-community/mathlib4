@@ -27,7 +27,6 @@ a field structure, and so can all types with prime power cardinalities, and this
 * `Field.nonempty_iff` : There is a field structure on type iff its cardinality is a prime power.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

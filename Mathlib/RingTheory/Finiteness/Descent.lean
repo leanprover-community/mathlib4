@@ -21,7 +21,6 @@ In this file we show that
 
 descend along faithfully flat base change.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

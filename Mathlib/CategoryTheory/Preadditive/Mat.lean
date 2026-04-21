@@ -49,7 +49,6 @@ and whose morphisms are matrices with components in `R`.
 Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

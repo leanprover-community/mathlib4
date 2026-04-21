@@ -18,7 +18,6 @@ the homology is obviously zero. When `e.f j = j`, we construct an isomorphism
 `(K.extend e).homology j' ≅ K.homology j`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

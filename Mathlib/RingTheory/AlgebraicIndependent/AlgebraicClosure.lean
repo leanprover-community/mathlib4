@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 * `AlgebraicIndependent.algebraicClosure`: an algebraically independent family remains
   algebraically independent over the algebraic closure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

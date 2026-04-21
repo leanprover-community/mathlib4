@@ -24,7 +24,6 @@ We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Pro
 analogues to their unprimed versions in `Mathlib/Topology/Category/Profinite/AsLimit.lean`, in which
 the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

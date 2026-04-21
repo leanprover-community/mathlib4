@@ -15,7 +15,6 @@ This file provides basic definitions for `List.prod`, `List.sum`,
 which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

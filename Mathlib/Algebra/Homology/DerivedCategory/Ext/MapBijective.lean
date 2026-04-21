@@ -23,7 +23,6 @@ by a fully faithful exact functor `F : C ⥤ D` are bijective when either
 2. `F` preserves injective objects and `C` has enough injectives.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

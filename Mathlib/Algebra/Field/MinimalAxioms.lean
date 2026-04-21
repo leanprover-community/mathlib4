@@ -19,7 +19,6 @@ a minimum number of equalities.
 * `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimal set of axioms
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

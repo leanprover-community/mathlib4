@@ -18,7 +18,6 @@ public import Mathlib.Data.Finite.Vector
 
 finite sets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -13,7 +13,6 @@ public meta import Mathlib.Data.Multiset.Defs
 /-!
 # Construct a sorted list from a multiset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Module.Rat
 In this file we prove that a continuous map `f : E →+ F` between two topological vector spaces
 over `ℝ` is `ℝ`-linear
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -46,7 +45,6 @@ theorem coe_toRealLinearMap (f : E →+ F) (hf : Continuous f) : ⇑(f.toRealLin
 
 end AddMonoidHom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Reinterpret a continuous additive equivalence between two real vector spaces
 as a continuous real-linear map. -/
 def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Continuous e.symm) :

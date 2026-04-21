@@ -88,7 +88,6 @@ This is somewhat like `congr`.
 
 See `Congr!.Config` for all options.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

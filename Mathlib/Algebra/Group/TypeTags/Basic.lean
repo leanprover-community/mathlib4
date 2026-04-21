@@ -28,7 +28,6 @@ We also define instances `Additive.*` and `Multiplicative.*` that actually trans
 This file is similar to `Mathlib/Order/Synonym.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ In this file, we provide the instance that any integral extension of `R ⊆ S` s
 if `R` is integrally closed.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

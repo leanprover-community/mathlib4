@@ -23,7 +23,6 @@ See also `Mathlib/MeasureTheory/Integral/IntervalIntegral/IntegrationByParts.lea
 the change of variables formula in dimension 1 for non-monotone functions, formulated with
 the interval integral and with stronger requirements on the integrand.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

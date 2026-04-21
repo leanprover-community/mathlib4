@@ -52,7 +52,6 @@ This file largely just copies the API of `Mathlib/Data/Finsupp/ToDFinsupp.lean`,
 proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i : ι, M` is defeq to
 `Π₀ i : ι, M`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

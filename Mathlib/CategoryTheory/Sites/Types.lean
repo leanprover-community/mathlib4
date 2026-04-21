@@ -16,7 +16,6 @@ the category of types, and make this an equivalence of categories.
 
 Then we prove that the topology defined is the canonical topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

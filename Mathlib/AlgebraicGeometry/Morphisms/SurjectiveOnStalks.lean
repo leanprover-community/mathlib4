@@ -20,7 +20,6 @@ We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
 if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ exponent of the largest power of `q` dividing `n` is even; see `Nat.eq_sq_add_sq
 There is an alternative characterization as the numbers of the form `a^2 * b`, where `b` is a
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,7 +29,6 @@ between fibrant objects.)
 * [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

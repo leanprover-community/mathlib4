@@ -13,7 +13,6 @@ public import Mathlib.Order.Basic
 Once these basic instances are setup, the instances of more complex typeclasses should live next to
 the corresponding `Prod` instances.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

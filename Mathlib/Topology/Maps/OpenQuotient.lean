@@ -24,7 +24,6 @@ Many important quotient maps are open quotient maps, including
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

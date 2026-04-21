@@ -40,7 +40,6 @@ a spectral object indexed by `EInt` (see `coreE₂CohomologicalNat`
 and the typeclass `IsFirstQuadrant`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

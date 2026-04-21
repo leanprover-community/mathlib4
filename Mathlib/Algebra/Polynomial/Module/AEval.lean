@@ -22,7 +22,6 @@ In particular `X • m = a • m`.
 In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the module `Module.AEval R M a` is
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

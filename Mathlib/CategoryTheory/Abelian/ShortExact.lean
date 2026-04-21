@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Abelian.Exact
 This file contains lemmas about short exact sequences in abelian categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

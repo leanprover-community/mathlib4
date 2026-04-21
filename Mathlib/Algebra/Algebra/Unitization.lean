@@ -59,7 +59,6 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 * prove the unitization operation is a functor between the appropriate categories
 * prove the image of the coercion is an essential ideal, maximal if scalars are a field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ This file is concerned with how big lattice or set operations behave when indexe
 See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

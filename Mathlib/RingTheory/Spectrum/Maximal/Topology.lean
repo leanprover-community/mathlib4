@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 The Zariski topology on the maximal spectrum is defined as the subspace topology induced by the
 natural inclusion into the prime spectrum to avoid API duplication for zero loci.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

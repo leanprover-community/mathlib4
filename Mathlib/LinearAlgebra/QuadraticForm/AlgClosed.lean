@@ -16,7 +16,6 @@ characteristic not equal to 2 is equivalent to a sum of squares.
 
 TODO: generalize `QuadraticForm.isometryEquivSumSquares` to quadratically closed field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

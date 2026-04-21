@@ -21,7 +21,6 @@ We also prove upper and lower bounds for the height of `fun i ↦ eval P i x`, w
 of homogeneous polynomials over the field `K` of the same degree `N` and `x : ι → K`
 with `ι` finite.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

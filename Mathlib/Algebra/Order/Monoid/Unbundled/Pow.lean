@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ For instance, `Ioc a b` denotes the interval `(a, b]`.
 We also define a typeclass `Set.OrdConnected`
 saying that a set includes `Set.Icc a b` whenever it contains both `a` and `b`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

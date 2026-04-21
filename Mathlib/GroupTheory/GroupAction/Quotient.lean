@@ -25,7 +25,6 @@ This file proves properties of group actions which use the quotient group constr
 
 as well as their analogues for additive groups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

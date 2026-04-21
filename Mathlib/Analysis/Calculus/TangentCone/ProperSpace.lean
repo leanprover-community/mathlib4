@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Calculus.TangentCone.Defs
 In this file we prove that the tangent cone of a set in a proper normed space
 at an accumulation point of this set is nontrivial.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

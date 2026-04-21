@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

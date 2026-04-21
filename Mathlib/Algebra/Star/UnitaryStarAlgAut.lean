@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Star.Unitary
 This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
 which is `Unitary.conjStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -24,7 +23,6 @@ namespace Unitary
 variable {S R : Type*} [Semiring R] [StarMul R]
   [SMul S R] [IsScalarTower S R R] [SMulCommClass S R R]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (S R) in
 /-- Each unitary element `u` defines a ⋆-algebra automorphism such that
 `x ↦ u * x * star u`.

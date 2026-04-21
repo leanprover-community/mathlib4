@@ -22,7 +22,6 @@ In this file we collect some results involving the multiplication-by-`n` map
 `nsmulAddMonoidHom n` (for a natural number `n`) on a commutative additive group
 and the (relative) index of subgroups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

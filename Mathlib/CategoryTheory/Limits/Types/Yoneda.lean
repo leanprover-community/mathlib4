@@ -15,7 +15,6 @@ In this file, we give the natural isomorphism between cones on `F` with cone poi
 and the type `lim Hom(F·, X)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

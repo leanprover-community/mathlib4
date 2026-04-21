@@ -22,7 +22,6 @@ We then consider the case `R = ℂ` and show that `L (f ⍟ g) = L f * L g` on t
 of convergence of the L-series `L f`  and `L g` of `f` and `g`; see `LSeries_convolution`
 and `LSeries_convolution'`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

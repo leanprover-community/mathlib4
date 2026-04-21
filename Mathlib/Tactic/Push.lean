@@ -20,7 +20,6 @@ as local hypotheses and also works as a `conv` tactic.
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

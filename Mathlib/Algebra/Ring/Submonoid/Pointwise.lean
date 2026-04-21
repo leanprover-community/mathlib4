@@ -36,7 +36,6 @@ Many results about multiplication are derived from the corresponding results abo
 multiplication, but results requiring right distributivity do not have SMul versions,
 due to the lack of a suitable typeclass (unless one goes all the way to `Module`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

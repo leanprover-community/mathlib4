@@ -29,7 +29,6 @@ interval.
   subtracted from `b`, is in `Ioc a (a + p)`.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

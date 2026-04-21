@@ -22,7 +22,6 @@ space structure.
 
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

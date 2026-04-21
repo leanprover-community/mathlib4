@@ -23,7 +23,6 @@ cannot have:
 * `Real.smoothTransition` is equal to zero for `x ≤ 0` and is equal to one for `x ≥ 1`; it is given
   by `expNegInvGlue x / (expNegInvGlue x + expNegInvGlue (1 - x))`;
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

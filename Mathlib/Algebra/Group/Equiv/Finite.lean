@@ -18,7 +18,6 @@ addition/multiplication operator.
 
 * `Fintype.decidableEqMulEquivFintype`: `MulEquiv`s on finite types have decidable equality
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

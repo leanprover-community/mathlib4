@@ -31,7 +31,6 @@ In this file we use the following type variables:
 bilinear form, bilin form, BilinearForm, matrix, basis
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

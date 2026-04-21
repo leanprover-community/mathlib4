@@ -24,7 +24,6 @@ that `map_comp` and `map_id` might not be definitional equalities (which they sh
 practice). Hence one needs to carefully carry these around, or specify `F` in a way that ensures
 they are def-eqs, perhaps constructing it from specified `MorphismProperty`s.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

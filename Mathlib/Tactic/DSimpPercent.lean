@@ -19,7 +19,6 @@ rw [foo]
 ```
 one can do `rw [dsimp% foo]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

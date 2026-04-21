@@ -40,7 +40,6 @@ from the coproduct to the target.
 - [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

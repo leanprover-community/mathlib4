@@ -26,7 +26,6 @@ Measurable spaces and measurable functions form a (concrete) category `MeasCat`.
 
 measurable space, giry monad, borel
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

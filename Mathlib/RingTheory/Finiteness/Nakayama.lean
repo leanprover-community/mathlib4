@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Ideal.Operations
   such that N ⊆ IN, then there exists r ∈ 1 + I such that rN = 0.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

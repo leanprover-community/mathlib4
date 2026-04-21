@@ -33,7 +33,6 @@ preserves finite products. We achieve this characterization in this file.
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

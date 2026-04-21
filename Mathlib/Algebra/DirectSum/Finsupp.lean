@@ -14,7 +14,6 @@ public import Mathlib.Data.Finsupp.ToDFinsupp
 1. The linear equivalence between finitely supported functions `ι →₀ M` and
    the direct sum of copies of `M` indexed by `ι`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

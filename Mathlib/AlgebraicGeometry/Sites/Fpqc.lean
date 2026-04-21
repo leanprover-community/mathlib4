@@ -25,7 +25,6 @@ topology for flat morphisms.
 - The fpqc topology is subcanonical. This is available by `inferInstance`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

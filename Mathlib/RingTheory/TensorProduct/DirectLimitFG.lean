@@ -43,7 +43,6 @@ tensor products of finitely-generated modules.
   of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
   as a linear equivalence.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

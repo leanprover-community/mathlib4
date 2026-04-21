@@ -21,7 +21,6 @@ This is helpful when the user does not know the default value of the option or i
 is cleaner not to write it explicitly, or for some options where the default
 behaviour is different from any user set value.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

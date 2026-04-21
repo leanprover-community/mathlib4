@@ -40,7 +40,6 @@ instance : FunLike (MyHom A B) A B where
 /-- Copy of a `MyHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 
-set_option backward.defeqAttrib.useBackward true
 protected def copy (f : MyHom A B) (f' : A → B) (h : f' = ⇑f) : MyHom A B where
   toFun := f'
   map_op' := h.symm ▸ f.map_op'

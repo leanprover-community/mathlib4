@@ -25,7 +25,6 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

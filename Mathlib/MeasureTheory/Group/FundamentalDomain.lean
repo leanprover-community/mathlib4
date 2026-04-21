@@ -46,7 +46,6 @@ We also generate additive versions of all theorems in this file using the `to_ad
 * `MeasureTheory.fundamentalInterior`: Fundamental interior of a set under the action of a group.
   Elements of `s` that do not belong to any other translate of `s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

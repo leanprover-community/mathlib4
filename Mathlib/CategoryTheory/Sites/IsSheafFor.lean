@@ -65,7 +65,6 @@ which can be convenient.
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

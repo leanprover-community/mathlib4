@@ -21,7 +21,6 @@ the composition `g ∘ f` is continuous.
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
 universe v v' t u
 
 @[expose] public section

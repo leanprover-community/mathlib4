@@ -19,7 +19,6 @@ prove that it satisfies the forward and reverse hexagon identities.
 Furthermore, we show that when both `C` and `V` are symmetric monoidal
 categories, then the Day convolution monoidal structure is symmetric as well.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ public import Mathlib.Topology.Order.IsLUB
 * `pi_properSpace`: finite products of proper spaces are proper.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

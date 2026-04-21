@@ -36,7 +36,6 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * The functoriality.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

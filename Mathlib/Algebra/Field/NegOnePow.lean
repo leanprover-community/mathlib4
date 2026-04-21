@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.NormNum
 
 /-! # Integer powers of `-1` in a field -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

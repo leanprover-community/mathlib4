@@ -46,7 +46,6 @@ is too strong.
   the concept here for finite systems.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

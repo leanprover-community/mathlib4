@@ -20,7 +20,6 @@ This file defines k-edge-connectivity for simple graphs.
 * `SimpleGraph.IsEdgeConnected`: A graph is `k`-edge-connected if any two vertices are
   `k`-edge-reachable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

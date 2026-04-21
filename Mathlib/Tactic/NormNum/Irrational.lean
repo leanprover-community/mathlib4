@@ -27,7 +27,6 @@ such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 Disprove `Irrational x` for rational `x`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -21,7 +21,6 @@ which concern the *behaviour* of the linted code, and not issues of code style o
 
 Perhaps these should be moved to Batteries in the future.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

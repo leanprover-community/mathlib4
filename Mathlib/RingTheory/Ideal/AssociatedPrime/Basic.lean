@@ -47,7 +47,6 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

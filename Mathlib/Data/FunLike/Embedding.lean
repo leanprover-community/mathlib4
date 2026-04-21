@@ -38,7 +38,6 @@ instance : EmbeddingLike (MyEmbedding A B) A B where
 /-- Copy of a `MyEmbedding` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 
-set_option backward.defeqAttrib.useBackward true
 protected def copy (f : MyEmbedding A B) (f' : A → B) (h : f' = ⇑f) : MyEmbedding A B :=
   { toFun := f'
     injective' := h.symm ▸ f.injective'

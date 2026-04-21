@@ -15,7 +15,6 @@ Function that returns unit length vector that points in the same direction
 (if the given vector is nonzero vector) or returns zero vector
 (if the given vector is zero vector).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

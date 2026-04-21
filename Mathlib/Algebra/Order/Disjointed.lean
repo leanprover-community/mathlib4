@@ -19,7 +19,6 @@ dependencies from `Mathlib.Algebra.Order` into `Mathlib.Order`.
 
 Find a useful statement of `disjointedRec_succ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

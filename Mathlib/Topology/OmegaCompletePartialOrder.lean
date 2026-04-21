@@ -19,7 +19,6 @@ of continuity is equivalent to continuity in ωCPOs.
 * https://ncatlab.org/nlab/show/Scott+topology
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` onl
 This is in a separate file as it is not needed until much later,
 and avoids importing the theory of star operations unnecessarily early.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

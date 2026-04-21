@@ -13,7 +13,6 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 # Some lemmas on the spectrum and quasispectrum of elements and positivity
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

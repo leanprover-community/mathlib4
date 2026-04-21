@@ -54,7 +54,6 @@ and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 
 category theory, groupoid, subgroupoid
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

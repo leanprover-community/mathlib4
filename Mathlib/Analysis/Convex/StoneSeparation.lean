@@ -18,7 +18,6 @@ In locally convex real topological vector spaces, the Hahn-Banach separation the
 stronger statements: one may find a separating hyperplane, instead of merely a convex set whose
 complement is convex.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

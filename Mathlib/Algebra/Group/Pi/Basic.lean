@@ -24,7 +24,6 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 `pi_instance`. See this Zulip discussion:
 [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

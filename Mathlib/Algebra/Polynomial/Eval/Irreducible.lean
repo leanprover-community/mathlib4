@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Prime.Defs
 * `Monic.irreducible_of_irreducible_map`: we can prove a monic polynomial is irreducible
   by mapping it to another integral domain and checking for irreducibility there.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

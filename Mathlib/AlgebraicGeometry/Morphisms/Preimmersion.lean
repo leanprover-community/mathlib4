@@ -18,7 +18,6 @@ in the literature but it is useful for generalizing results on immersions to oth
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

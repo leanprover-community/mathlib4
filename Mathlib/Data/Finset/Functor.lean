@@ -21,7 +21,6 @@ Currently, all instances are classical because the functor classes want to run o
 instead we could state that a functor is lawful/applicative/traversable... between two given types,
 then we could provide the instances for types with decidable equality.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

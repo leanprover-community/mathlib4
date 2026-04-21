@@ -25,7 +25,6 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 lie algebra, lie character
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

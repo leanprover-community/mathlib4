@@ -78,7 +78,6 @@ The leaves of the process are
 * numerals, `C a`, `X` and `monomial a n`, to which we assign degree `0`, `1` and `a` respectively;
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

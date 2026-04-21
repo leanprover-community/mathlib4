@@ -28,7 +28,6 @@ example : frobnicate a 0 = a := by
 ```
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

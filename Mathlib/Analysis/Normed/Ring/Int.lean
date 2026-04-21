@@ -17,7 +17,6 @@ This norm is always nonnegative, so we can bundle the norm together with this fa
 to obtain a term of type `NNReal` (the nonnegative real numbers).
 The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

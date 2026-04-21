@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 Todo: we should also do `Cᵐᵒᵖ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

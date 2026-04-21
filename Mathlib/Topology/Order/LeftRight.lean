@@ -25,7 +25,6 @@ In this file we prove a few lemmas about left and right continuous functions:
 
 left continuous, right continuous
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

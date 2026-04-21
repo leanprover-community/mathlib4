@@ -18,7 +18,6 @@ public meta import Plausible.Sampleable
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

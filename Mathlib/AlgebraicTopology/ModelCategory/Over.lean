@@ -26,7 +26,6 @@ of the axioms is straightforward.)
 * Proceed to the dual construction for `Under S`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ This file develops theory about the `List.Subperm` relation.
 
 The notation `<+~` is used for sub-permutations.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

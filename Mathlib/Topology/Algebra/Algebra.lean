@@ -30,7 +30,6 @@ See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of i
 the topological `R`-algebras `A` and `B`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

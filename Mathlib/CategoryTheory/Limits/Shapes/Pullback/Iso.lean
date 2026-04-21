@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 This file provides some basic results about the pullback (and pushout) of an isomorphism.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

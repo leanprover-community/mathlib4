@@ -31,7 +31,6 @@ TODO: Implement the latter.
   `eventuallyMeasurableSpace` on the domain.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

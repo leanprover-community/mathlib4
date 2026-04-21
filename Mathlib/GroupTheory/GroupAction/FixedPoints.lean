@@ -46,7 +46,6 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,7 +20,6 @@ Any function `f : α → β` induces `coinduced f : TopologicalSpace α → Grou
 
 The additive version `AddGroupTopology α` and corresponding results are provided as well.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

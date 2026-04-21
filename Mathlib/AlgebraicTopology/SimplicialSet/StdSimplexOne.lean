@@ -15,7 +15,6 @@ We define a bijection `SSet.stdSimplex.objMk₁` between `Fin (n + 2)` and `Δ[1
 for any `n : ℕ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

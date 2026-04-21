@@ -27,7 +27,6 @@ This file contains basic results for root systems and root data.
   since this follows from the corresponding property for the roots.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

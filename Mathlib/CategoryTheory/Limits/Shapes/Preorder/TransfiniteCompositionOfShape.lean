@@ -28,7 +28,6 @@ See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

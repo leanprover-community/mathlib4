@@ -10,7 +10,6 @@ public import Mathlib.Algebra.CharP.Frobenius
 /-!
 # Results about characteristic p reduced rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

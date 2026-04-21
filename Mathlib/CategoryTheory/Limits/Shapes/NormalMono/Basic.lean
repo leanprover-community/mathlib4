@@ -24,7 +24,6 @@ every monomorphism or epimorphism is normal, and deduce that these categories ar
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

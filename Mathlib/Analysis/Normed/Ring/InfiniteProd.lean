@@ -21,7 +21,6 @@ This file proves a dominated convergence theorem for infinite products of terms 
   `‖f n k‖ ≤ bound k` eventually with `bound` summable, then
   `∏' k, (1 + f n k) → ∏' k, (1 + g k)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Topology Filter
 

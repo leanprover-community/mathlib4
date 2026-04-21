@@ -27,7 +27,6 @@ between short complexes or homological complexes in `C`.
 `Mathlib/Algebra/Homology/ShortComplex/PreservesHomology.lean`.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

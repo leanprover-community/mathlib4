@@ -12,7 +12,6 @@ public import Mathlib.Util.WithWeakNamespace
 This is a replacement for the `localized` command in mathlib. It is similar to `scoped`,
 but it scopes the syntax in the specified namespace instead of the current namespace.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

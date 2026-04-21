@@ -26,7 +26,6 @@ There is also a term elaborator `reassoc_of% t` for use within proofs.
 The `Mathlib.Tactic.CategoryTheory.IsoReassoc` extends `@[reassoc]` and `reassoc_of%`
 to support creating isomorphism reassociation lemmas.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

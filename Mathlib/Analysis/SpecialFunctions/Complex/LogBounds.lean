@@ -24,7 +24,6 @@ over the unit interval (`Complex.log_eq_integral`) and introduce notation
 
 Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

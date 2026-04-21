@@ -16,7 +16,6 @@ In this file, we provide analogues to some of the API in the
 `CategoryTheory.Limits.Types.FilteredColimit` namespace, for concrete categories for which the
 forgetful functor preserves filtered colimits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

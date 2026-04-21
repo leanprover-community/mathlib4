@@ -44,7 +44,6 @@ Note that a version of Statement (1) in
 ## Tags
 Nakayama, Jacobson
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

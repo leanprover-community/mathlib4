@@ -40,7 +40,6 @@ produces the third one.
 ## Tags
 non-cyclic abelian group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

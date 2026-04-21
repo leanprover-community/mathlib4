@@ -22,7 +22,6 @@ For example, `#check` allows metavariables.
 This module also defines the `#check'` tactic and command, which behaves like `#check` but only
 shows explicit arguments in the signature.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

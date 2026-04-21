@@ -17,7 +17,6 @@ intermediate fields. Some char zero instances are not provided, since they are a
 covered by `SubsemiringClass.instCharZero`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

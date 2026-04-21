@@ -17,7 +17,6 @@ If `F` preserves (resp. reflects) pullbacks, then it preserves (resp. reflects) 
 We also provide the dual version for epimorphisms.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ as `k[G]`) corresponding to a representation. If `ρ : Representation k G V`, th
 module can be accessed via `ρ.asModule`. Conversely, given a `k[G]`-module `M`,
 `M.ofModule` is the associated representation seen as a homomorphism.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

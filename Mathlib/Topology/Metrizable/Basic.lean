@@ -16,7 +16,6 @@ We define it without any reference to metric spaces in order to avoid importing 
 For the proof that metrizable spaces admit a compatible metric,
 see `Mathlib/Topology/Metrizable/Uniformity.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 -- don't import the real numbers
 assert_not_exists AddMonoidWithOne

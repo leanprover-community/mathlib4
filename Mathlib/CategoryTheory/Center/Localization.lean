@@ -18,7 +18,6 @@ of these categories. In case `L` is an additive functor between preadditive
 categories, we promote this to a ring morphism `CatCenter C →+* CatCenter D`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

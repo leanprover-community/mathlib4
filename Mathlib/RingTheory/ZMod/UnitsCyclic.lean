@@ -48,7 +48,6 @@ The proofs mostly follow [Ireland and Rosen,
   [IrelandRosen1990].
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

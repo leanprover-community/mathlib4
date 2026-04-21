@@ -27,7 +27,6 @@ We show that the following properties of continuous maps are local at the source
 - `GeneralizingMap`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

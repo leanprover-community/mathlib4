@@ -46,7 +46,6 @@ path-connected, and that every path-connected set/space is also connected. (See
 `Counterexamples.TopologistsSineCurve` for an example of a set in `ℝ × ℝ` that is connected but not
 path-connected.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
 categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

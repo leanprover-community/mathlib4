@@ -31,7 +31,6 @@ in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ 
 
 We follow the short and excellent paper [dieudonne1953].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

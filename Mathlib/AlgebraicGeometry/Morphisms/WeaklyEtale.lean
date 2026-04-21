@@ -26,7 +26,6 @@ morphism of finite presentation is étale.
 - Deduce from this that weakly étale morphisms of finite presentation are étale (@chrisflav).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

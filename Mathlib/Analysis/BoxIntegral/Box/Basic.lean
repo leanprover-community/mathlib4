@@ -53,7 +53,6 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 
 rectangular box
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

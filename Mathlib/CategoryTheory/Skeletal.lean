@@ -24,7 +24,6 @@ separately is that lemmas and definitions about orderings can be used directly, 
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

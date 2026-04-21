@@ -23,7 +23,6 @@ A subtype has a natural coercion to the parent type, by coercing `⟨val, proper
 such, subtypes can be thought of as bundled sets, the difference being that elements of a set are
 still of type `α` while elements of a subtype aren't.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

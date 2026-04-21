@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 /-!
 # One-dimensional derivatives on pi-types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

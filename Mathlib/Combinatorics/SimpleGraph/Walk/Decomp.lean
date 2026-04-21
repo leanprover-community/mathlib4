@@ -15,7 +15,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

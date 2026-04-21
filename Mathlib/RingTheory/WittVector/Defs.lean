@@ -36,7 +36,6 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

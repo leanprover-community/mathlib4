@@ -40,7 +40,6 @@ In the definitions below, we use the following notation:
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

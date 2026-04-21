@@ -57,7 +57,6 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
 
 elliptic curve, Jacobian, negation, doubling, addition, group law
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

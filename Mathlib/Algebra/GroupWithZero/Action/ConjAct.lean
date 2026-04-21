@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.GroupAction.ConjAct
 /-!
 # Conjugation action of a group with zero on itself
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ This file proves convex and concave theorems for piecewise functions.
   See concave version(s) `concaveOn_univ_piecewise_Iic_of_monotoneOn_Iic_antitoneOn_Ici`
   and `concaveOn_univ_piecewise_Ici_of_antitoneOn_Ici_monotoneOn_Iic`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

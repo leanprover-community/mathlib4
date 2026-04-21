@@ -14,7 +14,6 @@ In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

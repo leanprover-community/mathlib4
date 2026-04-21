@@ -52,7 +52,6 @@ analogously to the standard fibers.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v₃ u₃ v₂ u₂ v₁ u₁
 

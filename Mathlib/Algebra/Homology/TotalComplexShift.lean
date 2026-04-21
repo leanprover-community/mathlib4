@@ -35,7 +35,6 @@ and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShif
 these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

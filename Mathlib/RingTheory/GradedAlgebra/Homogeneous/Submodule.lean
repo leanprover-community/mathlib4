@@ -34,7 +34,6 @@ synthesization order.
 
 graded algebra, homogeneous
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

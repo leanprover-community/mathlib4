@@ -39,7 +39,6 @@ on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` 
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

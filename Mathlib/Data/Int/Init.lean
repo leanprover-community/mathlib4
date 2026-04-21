@@ -19,7 +19,6 @@ See note [foundational algebra order theory].
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries easily.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

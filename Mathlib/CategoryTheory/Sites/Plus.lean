@@ -17,7 +17,6 @@ where `C` is endowed with a Grothendieck topology `J`.
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

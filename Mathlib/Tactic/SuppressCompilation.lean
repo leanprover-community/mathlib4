@@ -23,7 +23,6 @@ sure that they work properly.
 Note that `suppress_compilation` does not work with `notation3`. You need to prefix such a notation
 declaration with `unsuppress_compilation` if `suppress_compilation` is active.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

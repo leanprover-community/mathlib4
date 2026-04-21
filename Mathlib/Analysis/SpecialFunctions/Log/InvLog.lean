@@ -18,7 +18,6 @@ We prove properties of the function `x ↦ (log x)⁻¹`.
 
 - `deriv_inv_log` gives a formula for the derivative which holds for all values.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

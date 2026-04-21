@@ -18,7 +18,6 @@ This module gives deriving handlers for `Functor`, `LawfulFunctor`, `Traversable
 `LawfulTraversable`. These deriving handlers automatically derive their dependencies, for
 example `deriving LawfulTraversable` all by itself gives all four.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

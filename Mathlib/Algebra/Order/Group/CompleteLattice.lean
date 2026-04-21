@@ -11,7 +11,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 /-!
 # Distributivity of group operations over supremum/infimum
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,7 +18,6 @@ This file defines the Hausdorff uniformity on the types of closed subsets, compa
 and nonempty compact subsets of a uniform space. This is the generalization of the uniformity
 induced by the Hausdorff metric to hyperspaces of uniform spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

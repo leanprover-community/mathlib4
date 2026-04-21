@@ -27,7 +27,6 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `M�
 See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -123,7 +122,6 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι

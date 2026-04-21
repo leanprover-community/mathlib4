@@ -15,7 +15,6 @@ public import Mathlib.Condensed.TopComparison
 We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

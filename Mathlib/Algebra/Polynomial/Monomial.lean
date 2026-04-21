@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Polynomial.Basic
 /-!
 # Univariate monomials
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

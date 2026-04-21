@@ -44,7 +44,6 @@ Spec 𝒪_{Y, y} ⟶ Y
 Show that certain morphism properties can also be spread out.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

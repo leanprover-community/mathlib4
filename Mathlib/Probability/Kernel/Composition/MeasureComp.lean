@@ -15,7 +15,6 @@ public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 Basic lemmas about the composition `κ ∘ₘ μ` of a kernel `κ` and a measure `μ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 finite measure, probability measure, weak convergence, convergence in distribution, metrizability
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

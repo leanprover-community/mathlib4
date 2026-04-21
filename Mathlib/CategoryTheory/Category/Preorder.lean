@@ -27,7 +27,6 @@ categories.
 * `Monotone.functor` is the functor associated to a monotone function.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-! # Results on bounded continuous functions with `RCLike` values -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

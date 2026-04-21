@@ -79,7 +79,6 @@ are continuous on its closure. We prove the following theorems.
 
 maximum modulus principle, complex analysis
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

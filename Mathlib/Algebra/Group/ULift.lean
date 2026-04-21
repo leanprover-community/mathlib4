@@ -17,7 +17,6 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

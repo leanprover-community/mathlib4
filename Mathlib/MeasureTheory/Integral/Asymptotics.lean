@@ -26,7 +26,6 @@ We establish integrability of `f` from `f = O(g)`.
   If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g` for some
   `g` integrable `atTop`, then `f` is integrable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

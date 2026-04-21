@@ -27,7 +27,6 @@ abstracted by `DomAddAct` in such a way that `τ a f = DomAddAct.mk (-a) +ᵥ f`
 negation appearing inside `DomAddAct.mk`. Although mathematically equivalent, the pen and paper
 convention is that translating is an action by subtraction, not by addition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

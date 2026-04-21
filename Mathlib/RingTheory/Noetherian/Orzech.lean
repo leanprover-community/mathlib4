@@ -20,7 +20,6 @@ public import Mathlib.RingTheory.OrzechProperty
   `f : N →ₗ[R] M` is surjective, then `f` is also injective.
 * `IsNoetherianRing.orzechProperty`: Any Noetherian ring satisfies the Orzech property.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ of a geometrically connected scheme over a field.
   over `S` iff the fibers of all `s : S` are geometrically connected.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

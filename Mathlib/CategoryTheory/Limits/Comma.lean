@@ -21,7 +21,6 @@ category, and show that the appropriate forgetful functors create limits.
 
 The duals of all the above are also given.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Defs
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

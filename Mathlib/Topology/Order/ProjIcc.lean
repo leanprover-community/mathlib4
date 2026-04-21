@@ -14,7 +14,6 @@ public import Mathlib.Topology.Order.Basic
 In this file we prove that the projection `Set.projIcc f a b h` is a quotient map, and use it
 to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

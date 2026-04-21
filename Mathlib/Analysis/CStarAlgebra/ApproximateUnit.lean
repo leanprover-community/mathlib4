@@ -38,7 +38,6 @@ moreover, this filter is an increasing approximate unit.
   increasing approximate unit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

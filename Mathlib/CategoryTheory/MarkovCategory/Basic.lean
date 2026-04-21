@@ -40,7 +40,6 @@ morphism, a distinguishing feature of Markov categories in categorical probabili
 
 Markov category, probability, categorical probability
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ In a proper metric space, sets admitting a finite cover are precisely the relati
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

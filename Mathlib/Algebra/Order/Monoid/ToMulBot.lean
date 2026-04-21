@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 Making an additive monoid multiplicative then adding a zero is the same as adding a bottom
 element then making it multiplicative.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

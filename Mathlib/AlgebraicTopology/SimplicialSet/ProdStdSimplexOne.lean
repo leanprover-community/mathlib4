@@ -16,7 +16,6 @@ between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
 of `Δ[p] ⊗ Δ[1]`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ dividing out the largest power of X that divides `f`, that is its order. This is
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

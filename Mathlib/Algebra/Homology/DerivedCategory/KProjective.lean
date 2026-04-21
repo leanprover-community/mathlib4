@@ -18,7 +18,6 @@ induces a bijection from the type of morphisms `(HomotopyCategory.quotient _ _).
 morphisms in the derived category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

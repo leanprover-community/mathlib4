@@ -25,7 +25,6 @@ In this file we define a notion of finiteness that is common in commutative alge
   all of these express that some object is finitely generated *as module* over some base ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

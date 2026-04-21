@@ -23,7 +23,6 @@ convention.
 
 `isLocalStructomorphOn` is another made-up name.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists mfderiv
 

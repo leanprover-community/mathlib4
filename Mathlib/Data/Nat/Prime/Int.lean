@@ -15,7 +15,6 @@ public import Mathlib.Data.Int.Basic
 
 TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

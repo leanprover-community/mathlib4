@@ -16,7 +16,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 This file combines the analysis and algebra libraries and shows that evaluation of a polynomial
 is an analytic function.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

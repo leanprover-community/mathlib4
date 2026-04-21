@@ -39,7 +39,6 @@ properties to computational properties of the matrix.
   pair of vertices.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ that shows that this distance instance is propositionally equal to the one that 
 hom-based `AddGroupSeminormClass.toSeminormedAddGroup f` construction. To help at use site,
 the argument is an autoparam that resolves by definitional equality when using these constructions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

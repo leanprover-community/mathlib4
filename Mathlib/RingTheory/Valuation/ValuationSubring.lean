@@ -26,7 +26,6 @@ The order structure on `ValuationSubring K`.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 universe u

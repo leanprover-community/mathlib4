@@ -27,7 +27,6 @@ original set.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
   `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,7 +28,6 @@ In particular, (extended) charts have bijective differential.
 ## Tags
 charts, differentiable, bijective
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

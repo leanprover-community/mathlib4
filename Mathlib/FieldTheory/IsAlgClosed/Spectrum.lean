@@ -34,7 +34,6 @@ eigenvalue.
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

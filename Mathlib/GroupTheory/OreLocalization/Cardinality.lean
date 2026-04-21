@@ -21,7 +21,6 @@ This file contains some results on cardinality of Ore localizations.
   with `Commute` assumption removed.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

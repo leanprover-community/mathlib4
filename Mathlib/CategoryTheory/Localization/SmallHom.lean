@@ -21,7 +21,6 @@ functor `L : C ⥤ D` for `W`, we provide a bijection
 with the composition of morphisms.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

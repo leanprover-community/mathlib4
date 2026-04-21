@@ -30,7 +30,6 @@ The divisibility relation is defined for all monoids, and as such, depends on th
 
 divisibility, divides
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

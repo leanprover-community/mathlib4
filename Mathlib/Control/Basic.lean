@@ -16,7 +16,6 @@ import Mathlib.Tactic.Attr.Register
 
 Extends the theory on functors, applicatives and monads.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

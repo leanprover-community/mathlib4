@@ -36,7 +36,6 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
 open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff

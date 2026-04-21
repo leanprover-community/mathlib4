@@ -18,7 +18,6 @@ public import Mathlib.Topology.Sets.Opens
 * `Topology.IsOpenEmbedding.toOpenPartialHomeomorph`: construct a partial homeomorphism from an
   open embedding
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

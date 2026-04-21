@@ -25,7 +25,6 @@ In particular, we give results about the polynomial given by
 
 matrix determinant, polynomial
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

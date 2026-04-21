@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 
 These results are kept separate from `Algebra.Star.Basic` to avoid it needing to import `Finset`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

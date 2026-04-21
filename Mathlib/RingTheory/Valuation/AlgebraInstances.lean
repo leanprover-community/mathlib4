@@ -23,7 +23,6 @@ of a field with a valuation, as well as their unit balls.
 * `integralClosure_algebraMap_injective` : the unit ball of a field `K` with respect to a
   valuation injects into its integral closure in a field extension `L` of `K`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

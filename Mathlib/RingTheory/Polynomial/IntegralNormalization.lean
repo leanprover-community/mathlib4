@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 We define `integralNormalization`, which relate arbitrary polynomials to monic ones.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

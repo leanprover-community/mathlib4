@@ -12,7 +12,6 @@ public import Mathlib.Order.Bounds.Image
 /-!
 # Lemmas about `BddAbove`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

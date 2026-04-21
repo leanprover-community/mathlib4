@@ -32,7 +32,6 @@ fractions of a Dedekind domain with respect to a height-one prime ideal of the d
 - `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -41,7 +41,6 @@ This file defines the infinite places of a number field.
 
 number field, infinite places
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

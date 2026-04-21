@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 In this file we specialize the inverse function theorem to `C^r`-smooth functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

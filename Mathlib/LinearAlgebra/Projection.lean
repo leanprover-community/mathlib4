@@ -27,7 +27,6 @@ We also provide some lemmas justifying correctness of our definitions.
 
 projection, complement subspace
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

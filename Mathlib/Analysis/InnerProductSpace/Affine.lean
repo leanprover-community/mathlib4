@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 /-!
 # Normed affine spaces over an inner product space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

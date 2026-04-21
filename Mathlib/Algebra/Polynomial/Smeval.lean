@@ -38,7 +38,6 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

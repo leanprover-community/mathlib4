@@ -50,7 +50,6 @@ net, entropy
 ## TODO
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

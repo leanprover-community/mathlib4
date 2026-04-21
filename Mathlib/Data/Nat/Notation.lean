@@ -10,7 +10,6 @@ public import Mathlib.Init
 /-!
 # Notation `ℕ` for the natural numbers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

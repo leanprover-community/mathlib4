@@ -39,7 +39,6 @@ integers.
 
 p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

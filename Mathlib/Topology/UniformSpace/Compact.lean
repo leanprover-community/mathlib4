@@ -15,7 +15,6 @@ public import Mathlib.Topology.Compactness.Compact
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

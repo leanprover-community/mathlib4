@@ -24,7 +24,6 @@ Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

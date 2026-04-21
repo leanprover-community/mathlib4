@@ -35,7 +35,6 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 field norm, algebra norm, localization
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

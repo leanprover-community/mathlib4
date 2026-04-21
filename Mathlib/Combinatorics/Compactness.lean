@@ -49,7 +49,6 @@ have the finite intersection property, so their intersection is nonempty.
 * Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

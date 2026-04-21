@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.Support
 - If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,7 +22,6 @@ We then define `List.SortedLE`, `List.SortedGE`, `List.SortedLT` and `List.Sorte
 predicates which are equivalent to `List.Pairwise` when the relation derives from a
 preorder (but which are defined in terms of the monotonicity predicates).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

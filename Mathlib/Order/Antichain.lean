@@ -22,7 +22,6 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
   to a common element.
 * `IsMaxAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

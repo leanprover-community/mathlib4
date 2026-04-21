@@ -14,7 +14,6 @@ Given two subgroups `𝒢, ℋ` of `GL(2, ℝ)` with `𝒢.relindex ℋ ≠ 0` (
 in `ℋ`), we define a trace map from `ModularForm (𝒢 ⊓ ℋ) k` to `ModularForm ℋ k`.
 -/
 
-set_option backward.defeqAttrib.useBackward true
 @[expose] public noncomputable section
 
 open UpperHalfPlane

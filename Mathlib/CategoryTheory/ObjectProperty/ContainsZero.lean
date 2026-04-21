@@ -19,7 +19,6 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 `P` may not necessarily be closed under isomorphisms.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

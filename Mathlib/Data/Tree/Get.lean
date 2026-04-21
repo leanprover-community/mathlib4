@@ -19,7 +19,6 @@ These definitions were moved from the main file to avoid a dependency on `Num`.
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

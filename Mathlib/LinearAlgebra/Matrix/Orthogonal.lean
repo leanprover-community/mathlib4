@@ -23,7 +23,6 @@ This file contains definitions and properties concerning orthogonality of rows a
 
 orthogonal
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

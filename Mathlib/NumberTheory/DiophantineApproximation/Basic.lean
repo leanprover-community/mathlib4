@@ -69,7 +69,6 @@ fractions is much more extensive than the English one.)
 
 Diophantine approximation, Dirichlet's approximation theorem, continued fraction
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ This file contains some results about vector spaces over the field of fractions 
 * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
   linear independent over `Frac(R)`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

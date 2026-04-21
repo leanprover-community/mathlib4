@@ -15,7 +15,6 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

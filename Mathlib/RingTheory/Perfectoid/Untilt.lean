@@ -30,7 +30,6 @@ is not the untilt *functor*.
 ## Tags
 Perfectoid, Tilting equivalence, Untilt
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

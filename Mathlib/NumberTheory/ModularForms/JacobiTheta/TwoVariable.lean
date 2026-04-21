@@ -27,7 +27,6 @@ $$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

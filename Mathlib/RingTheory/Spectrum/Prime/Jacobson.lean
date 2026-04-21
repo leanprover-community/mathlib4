@@ -22,7 +22,6 @@ public import Mathlib.Topology.JacobsonSpace
   3. `{x}` is both closed and stable under generalization
     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

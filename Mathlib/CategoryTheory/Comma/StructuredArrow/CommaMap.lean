@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 We characterize structured arrow categories on arbitrary instances of `Comma.map` as a
 comma category itself.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

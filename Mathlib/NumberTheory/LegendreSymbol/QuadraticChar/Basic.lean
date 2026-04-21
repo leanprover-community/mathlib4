@@ -19,7 +19,6 @@ some basic statements about it.
 
 quadratic character
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

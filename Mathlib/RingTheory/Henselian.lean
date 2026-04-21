@@ -53,7 +53,6 @@ The following gist contains some code sketches in that direction.
 https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

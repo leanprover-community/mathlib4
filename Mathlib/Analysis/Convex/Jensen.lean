@@ -31,7 +31,6 @@ As corollaries, we get:
 * `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

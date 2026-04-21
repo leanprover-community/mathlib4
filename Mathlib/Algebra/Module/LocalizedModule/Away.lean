@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 /-!
 # Localizations of modules away from an element
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

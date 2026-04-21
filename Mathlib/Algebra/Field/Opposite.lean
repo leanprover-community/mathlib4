@@ -12,7 +12,6 @@ public import Mathlib.Data.Int.Cast.Lemmas
 /-!
 # Field structure on the multiplicative/additive opposite
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

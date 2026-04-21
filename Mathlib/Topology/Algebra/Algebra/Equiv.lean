@@ -31,7 +31,6 @@ are also topological spaces.
 
 * continuous, isomorphism, algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

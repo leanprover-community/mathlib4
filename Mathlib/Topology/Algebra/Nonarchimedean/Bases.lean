@@ -26,7 +26,6 @@ A special case of this construction is given by `SubmodulesBasis` where the subg
 sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

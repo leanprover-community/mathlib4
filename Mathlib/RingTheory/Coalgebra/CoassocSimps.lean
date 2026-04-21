@@ -37,7 +37,6 @@ The simp set makes the following choice of normal form
 - Some lemmas (e.g. `lid_comp_map : λ ∘ₗ (f ⊗ₘ g) = g ∘ₗ λ ∘ₗ (f ⊗ₘ id)`) loops when tagged as simp,
   so we wrap it inside a rudimentary simproc that only fires when `g ≠ id`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

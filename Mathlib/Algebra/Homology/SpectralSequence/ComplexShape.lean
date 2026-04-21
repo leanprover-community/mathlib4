@@ -24,7 +24,6 @@ but for `ℤ × Fin l` (identified as a subset of `ℤ × ℤ`). (This could
 be used for spectral sequences associated to a *finite* filtration.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

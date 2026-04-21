@@ -38,7 +38,6 @@ can be interpreted as assuming $f(i, 0) = 1$ and $f(0, c) = 0$ for $c \ne 0$. In
 respect the actual value of $f(0, c)$ and $f(i, 0)$, but it makes the otherwise finite sum and
 product potentially infinite.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

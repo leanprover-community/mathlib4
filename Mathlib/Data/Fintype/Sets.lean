@@ -20,7 +20,6 @@ In a `Fintype`, all `Set`s are automatically `Finset`s, and there are only finit
 * `Finset.fintypeCoeSort`: `((s : Finset α) : Type*)` is a finite type
 * `Fintype.finsetEquivSet`: `Finset α` and `Set α` are equivalent if `α` is a `Fintype`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

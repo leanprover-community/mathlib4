@@ -19,7 +19,6 @@ This file proves results relating lengths along extensions of local rings.
 - `IsLocalRing.length_baseChange`: If `B/A` is a flat extension of local rings, and if `M` is an
   `A`-module, then `ℓ_B(B ⊗[A] M) = ℓ_A(M) * ℓ_B(B ⧸ m_A)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

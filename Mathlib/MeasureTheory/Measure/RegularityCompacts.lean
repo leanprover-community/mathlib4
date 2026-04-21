@@ -24,7 +24,6 @@ Finite measures on Polish spaces are an important special case, which makes the 
 `MeasureTheory.PolishSpace.innerRegular_isCompact_isClosed_measurableSet` an important result in
 probability.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

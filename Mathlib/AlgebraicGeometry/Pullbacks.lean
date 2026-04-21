@@ -25,7 +25,6 @@ construction to reduce to the case where `X, Y, Z` are all affine, where fibred 
 constructed via tensor products.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

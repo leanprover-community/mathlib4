@@ -21,7 +21,6 @@ Given an object property `P`, we also introduce two predicates
 (co)kernels of morphisms between objects in `P` remain in `P`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

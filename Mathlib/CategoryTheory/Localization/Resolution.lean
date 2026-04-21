@@ -34,7 +34,6 @@ Similar definitions are done for left resolutions.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

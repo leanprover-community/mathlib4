@@ -17,7 +17,6 @@ public import Mathlib.Data.Seq.Basic
 Some simple translation lemmas between the different definitions of functions defined in
 `Algebra.ContinuedFractions.Basic`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

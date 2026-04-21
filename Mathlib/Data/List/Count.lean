@@ -15,7 +15,6 @@ public import Batteries.Data.List.Lemmas
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

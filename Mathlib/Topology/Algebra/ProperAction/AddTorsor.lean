@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.ProperAction.Basic
 /-!
 # The action underlying a topological additive torsor is proper.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

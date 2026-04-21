@@ -26,7 +26,6 @@ given in SGA III Exp. 21 Section 6.
 This is mostly copied from `ModuleCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

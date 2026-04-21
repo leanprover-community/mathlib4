@@ -18,7 +18,6 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

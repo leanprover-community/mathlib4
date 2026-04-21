@@ -38,7 +38,6 @@ Moreover, we show the convergence of the continued fractions computations, that 
 
 convergence, fractions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

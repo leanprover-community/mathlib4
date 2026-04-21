@@ -29,7 +29,6 @@ simp? [X] says simp only [X, Y, Z]
 If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
 runs `X` and verifies that it still prints "Try this: Y".
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

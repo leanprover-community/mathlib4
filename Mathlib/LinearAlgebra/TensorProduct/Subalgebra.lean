@@ -33,7 +33,6 @@ mainly used in the definition of linearly disjointness.
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

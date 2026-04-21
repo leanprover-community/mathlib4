@@ -16,7 +16,6 @@ is equivalent to the category of "native" bundled commutative groups.
 
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

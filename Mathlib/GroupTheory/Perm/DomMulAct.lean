@@ -33,7 +33,6 @@ Let `α` and `ι` by types and let `f : α → ι`
 * Without `Fintype ι`, `DomMulAct.stabilizer_card' p` gives an equivalent
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ import Mathlib.Tactic.Linter.Header  -- shake: keep
 /-!
 # Additional utilities and boilerplate for the `Linter` API
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

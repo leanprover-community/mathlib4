@@ -15,7 +15,6 @@ change hypotheses and the goal to things that are definitionally equal.
 
 It then provides a number of tactics that transform local hypotheses and/or the target.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

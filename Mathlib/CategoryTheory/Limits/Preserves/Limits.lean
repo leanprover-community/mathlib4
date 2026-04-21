@@ -18,7 +18,6 @@ We also show that we can commute `IsLimit.lift` of a preserved limit with `Funct
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
 the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

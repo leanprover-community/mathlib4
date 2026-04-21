@@ -27,7 +27,6 @@ In this file we define box-additive functions and prove that a function such tha
 
 rectangular box, additive function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

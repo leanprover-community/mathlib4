@@ -25,7 +25,6 @@ sides of the equivalence are `Fintype`s.
 - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

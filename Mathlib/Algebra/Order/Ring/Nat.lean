@@ -18,7 +18,6 @@ This file contains the commutative linear ordered semiring instance on the natur
 
 See note [foundational algebra order theory].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

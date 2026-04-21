@@ -31,7 +31,6 @@ Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

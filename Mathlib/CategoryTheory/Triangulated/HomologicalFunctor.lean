@@ -45,7 +45,6 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

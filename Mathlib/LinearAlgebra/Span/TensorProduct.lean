@@ -21,7 +21,6 @@ public import Mathlib.Tactic.Positivity
 /-!
 # The interaction of linear span and tensor product for mixed scalars.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

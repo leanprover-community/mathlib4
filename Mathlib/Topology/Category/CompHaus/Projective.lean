@@ -28,7 +28,6 @@ Let `X` be a compact Hausdorff space.
 See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough projectives.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

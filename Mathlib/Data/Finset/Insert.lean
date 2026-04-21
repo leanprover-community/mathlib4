@@ -32,7 +32,6 @@ all ways to construct a `Finset` by adding one element.
 finite sets, finset
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

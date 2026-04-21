@@ -30,7 +30,6 @@ More exciting, however, would be to make possible one of the following options:
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

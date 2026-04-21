@@ -37,7 +37,6 @@ import Mathlib.Probability.Independence.Integration
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

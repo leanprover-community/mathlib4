@@ -32,7 +32,6 @@ We will try to relax the above hypotheses as much as possible.
 In this file, `e` stands for the ramification index of `P` over `p`, leaving `p` and `P` implicit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

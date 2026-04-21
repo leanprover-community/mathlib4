@@ -30,7 +30,6 @@ References:
 - [N. Jacobson, *Basic Algebra II: Second Edition*][jacobson1989], Theorem 8.38
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 variable {K : Type*} [Field K]
 

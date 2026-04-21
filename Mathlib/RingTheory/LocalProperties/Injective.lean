@@ -24,7 +24,6 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
   being injective can be checked at localization at maximal ideals.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe u v
 

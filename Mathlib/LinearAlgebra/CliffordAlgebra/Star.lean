@@ -23,7 +23,6 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 * `CliffordAlgebra.instStarRing`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

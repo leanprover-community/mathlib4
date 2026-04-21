@@ -43,7 +43,6 @@ It's proved in the above papers that
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

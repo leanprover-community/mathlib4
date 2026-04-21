@@ -16,7 +16,6 @@ Note that [`DistLat`](https://ncatlab.org/nlab/show/DistLat) in the literature d
 correspond to `DistLat` as we don't require bottom or top elements. Instead, this `DistLat`
 corresponds to `BddDistLat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

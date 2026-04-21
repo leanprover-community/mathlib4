@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.TensorPower.Basic
 In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of tensor powers, as
 `TensorAlgebra.equivDirectSum`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

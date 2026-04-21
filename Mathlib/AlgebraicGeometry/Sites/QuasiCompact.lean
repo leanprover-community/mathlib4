@@ -18,7 +18,6 @@ by a finite union of images of quasi-compact opens of the components.
 
 The fpqc precoverage is the precoverage by flat covers that are quasi-compact in this sense.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

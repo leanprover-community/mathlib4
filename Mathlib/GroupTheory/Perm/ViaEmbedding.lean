@@ -12,7 +12,6 @@ public import Mathlib.Logic.Equiv.Set
 /-!
 # `Equiv.Perm.viaEmbedding`, a noncomputable analogue of `Equiv.Perm.viaFintypeEmbedding`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

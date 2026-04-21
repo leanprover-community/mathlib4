@@ -13,7 +13,6 @@ public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that `f.coeff a ≠ 0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

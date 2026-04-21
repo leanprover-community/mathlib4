@@ -19,7 +19,6 @@ In this file, we prove the triangle counting lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

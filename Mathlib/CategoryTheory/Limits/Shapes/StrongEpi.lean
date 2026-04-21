@@ -34,7 +34,6 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

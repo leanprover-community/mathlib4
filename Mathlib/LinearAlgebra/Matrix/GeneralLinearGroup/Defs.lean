@@ -26,7 +26,6 @@ consisting of all invertible `n` by `n` `R`-matrices.
 
 matrix group, group, matrix inverse
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

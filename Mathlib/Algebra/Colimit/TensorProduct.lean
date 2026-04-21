@@ -18,7 +18,6 @@ This is the theorem `Submodule.FG.exists_rTensor_fg_inclusion_eq`. The key facts
 that every module is the direct limit of its finitely generated submodules and that tensor
 product preserves colimits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -39,7 +39,6 @@ public import Mathlib.Tactic.IntervalCases
 
 cyclic group, exponent, totient
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

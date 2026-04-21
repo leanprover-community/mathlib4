@@ -21,7 +21,6 @@ is always a complemented subspace.
 
 complemented subspace, normed vector space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

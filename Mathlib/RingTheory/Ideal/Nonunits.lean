@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Ideal.Maximal
 
 * `exists_max_ideal_of_mem_nonunits`: every element of `nonunits` is contained in a maximal ideal
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

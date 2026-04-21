@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 This file proves some theorems on `radical` and `divRadical` of polynomials.
 See `Mathlib.RingTheory.Radical.Basic` for the definition of `radical` and `divRadical`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

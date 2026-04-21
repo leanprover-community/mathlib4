@@ -23,7 +23,6 @@ then `F.colimitTypePrecomp : (F ⋙ P).ColimitType → P.ColimitType`
 is a bijection.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

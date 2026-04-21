@@ -22,7 +22,6 @@ realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
 the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

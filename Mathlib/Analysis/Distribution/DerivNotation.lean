@@ -24,7 +24,6 @@ Currently, this type class is only used by Schwartz functions. Future uses inclu
 test functions, distributions, tempered distributions, and Sobolev spaces (and other generalized
 function spaces).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

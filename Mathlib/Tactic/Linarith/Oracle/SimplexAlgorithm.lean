@@ -16,7 +16,6 @@ This file contains hooks to enable the use of the Simplex Algorithm in `linarith
 The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPositiveVector`.
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -39,7 +39,6 @@ Finally we compute integrals over countable and finite spaces or sets.
 
 sum of measures, integral, Dirac mass
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

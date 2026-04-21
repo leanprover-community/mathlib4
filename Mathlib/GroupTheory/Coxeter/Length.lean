@@ -48,7 +48,6 @@ prove analogous results.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

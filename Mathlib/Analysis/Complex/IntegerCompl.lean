@@ -14,7 +14,6 @@ We define the complement of the integers in the complex plane and give some basi
 We also show that the upper half plane embeds into the integer complement.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Dialectica.Basic
 
 We show that the category `Dial` has a symmetric monoidal category structure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,7 +33,6 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 `L = l.length`, the function would do the right thing.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

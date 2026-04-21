@@ -18,7 +18,6 @@ parametrize type (II) and (I) simplices in such a way that, *definitionally*,
 their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

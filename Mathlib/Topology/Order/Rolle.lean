@@ -24,7 +24,6 @@ to prove several versions of Rolle's Theorem from calculus.
 ## Keywords
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

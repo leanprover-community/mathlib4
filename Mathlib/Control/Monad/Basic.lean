@@ -38,7 +38,6 @@ and use regular `functor_norm` rules as well.
 functor, applicative, monad, simp
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

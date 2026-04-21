@@ -21,7 +21,6 @@ This property is important in the setting of light condensed abelian groups, whe
 the solid theory (see the lecture series on analytic stacks:
 https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

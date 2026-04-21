@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 ## References
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

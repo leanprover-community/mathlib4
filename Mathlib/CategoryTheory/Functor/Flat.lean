@@ -45,7 +45,6 @@ This definition is equivalent to left exact functors (functors that preserves fi
   does.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

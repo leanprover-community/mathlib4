@@ -20,7 +20,6 @@ As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
 * `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

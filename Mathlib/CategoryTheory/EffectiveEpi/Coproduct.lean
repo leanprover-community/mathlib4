@@ -16,7 +16,6 @@ This file proves that an effective epimorphic family induces an effective epi fr
 the coproduct exists, and the converse under some more conditions on the coproduct (that it
 interacts well with pullbacks).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ IsStableUnderComonoid c` saying that `c` inherits a comonoid object structure in
 that this condition `P. IsStableUnderComonoid` holds for all objects `c : C`, we show that
 `WideSubcategory P` is also a copy-discard category.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

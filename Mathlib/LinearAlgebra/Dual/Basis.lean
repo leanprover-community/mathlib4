@@ -31,7 +31,6 @@ This file concerns bases on dual vector spaces.
   * `Module.DualBases.coe_dualBasis`: if `e` and `ε` form a dual pair,
     then `ε` is a basis.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

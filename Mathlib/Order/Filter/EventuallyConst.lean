@@ -22,7 +22,6 @@ However, this proposition is false for empty `α`, `β`.
 Instead, we say that `Filter.map f l` is supported on a subsingleton.
 This allows us to drop `[Nonempty _]` assumptions here and there.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

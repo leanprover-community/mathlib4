@@ -15,7 +15,6 @@ In this file we define the Fourier series of an L² function on the `d`-dimensio
 show that it converges to the function in the L² norm. We also prove uniform convergence of the
 Fourier series if `f` is continuous and the sequence of its Fourier coefficients is summable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

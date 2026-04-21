@@ -24,7 +24,6 @@ cotangent space of the extended ideal `I · (T ⊗[R] S)`.
 -/
 
 
-set_option backward.defeqAttrib.useBackward true
 @[expose] public noncomputable section
 
 universe u

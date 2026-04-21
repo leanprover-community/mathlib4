@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Push
 
 The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of contradiction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

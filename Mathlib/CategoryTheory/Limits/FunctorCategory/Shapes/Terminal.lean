@@ -15,7 +15,6 @@ We show that if a functor `F : C ⥤ D` is such that `F.obj X`
 is terminal for all `X`, then `F` is a terminal object.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

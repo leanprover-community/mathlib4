@@ -68,7 +68,6 @@ We take the last approach for the following reasons:
 
 singular values
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

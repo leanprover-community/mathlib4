@@ -42,7 +42,6 @@ equivalence to an inner-product space.
 - `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

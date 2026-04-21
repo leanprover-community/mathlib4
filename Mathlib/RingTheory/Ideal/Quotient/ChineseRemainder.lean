@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # Module version of Chinese remainder theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

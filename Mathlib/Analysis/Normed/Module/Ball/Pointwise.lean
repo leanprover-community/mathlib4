@@ -15,7 +15,6 @@ We explore the relationships between scalar multiplication of sets in vector spa
 Notably, we express arbitrary balls as rescaling of other balls, and we show that the
 multiplication of bounded sets remain bounded.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

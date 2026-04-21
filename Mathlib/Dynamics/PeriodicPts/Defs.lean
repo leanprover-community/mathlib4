@@ -42,7 +42,6 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -53,7 +53,6 @@ matrices over a ring, in particular the Schur complement (see
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

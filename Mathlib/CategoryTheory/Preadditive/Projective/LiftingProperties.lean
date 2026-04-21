@@ -16,7 +16,6 @@ left lifting property with respect to epimorphisms,
 `projective_iff_llp_epimorphisms_zero`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

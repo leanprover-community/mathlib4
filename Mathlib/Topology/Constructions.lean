@@ -37,7 +37,6 @@ neighborhood filters and so on.
 product, subspace, quotient space
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,7 +28,6 @@ A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users 
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

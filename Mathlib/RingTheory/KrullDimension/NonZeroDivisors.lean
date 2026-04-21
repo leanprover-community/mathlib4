@@ -22,7 +22,6 @@ public import Mathlib.Algebra.MvPolynomial.CommRing
 - `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

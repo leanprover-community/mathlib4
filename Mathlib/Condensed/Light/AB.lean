@@ -15,7 +15,6 @@ public import Mathlib.Condensed.Light.Epi
 The category of light condensed `R`-modules over a ring satisfies the countable version of
 Grothendieck's AB4* axiom
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Local
 
 In this file we provide API related to covers in subcanonical topologies.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

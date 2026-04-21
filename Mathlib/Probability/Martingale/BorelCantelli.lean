@@ -33,7 +33,6 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
   `limsup atTop s` is almost everywhere equal to the set for which `∑ ℙ[s (n + 1)∣ℱ n] = ∞`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

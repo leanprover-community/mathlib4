@@ -20,7 +20,6 @@ The structure of this file is largely similar to that of
 module docstring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

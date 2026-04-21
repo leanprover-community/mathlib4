@@ -27,7 +27,6 @@ This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to th
 `S` is affine.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

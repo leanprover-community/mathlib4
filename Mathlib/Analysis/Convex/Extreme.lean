@@ -39,7 +39,6 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

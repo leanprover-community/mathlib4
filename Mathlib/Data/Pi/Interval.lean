@@ -14,7 +14,6 @@ public import Mathlib.Data.Fintype.BigOperators
 This file shows that (dependent) functions to locally finite orders equipped with the pointwise
 order are locally finite and calculates the cardinality of their intervals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

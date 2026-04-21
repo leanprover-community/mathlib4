@@ -45,7 +45,6 @@ it possible to use the complete linear order structure of `ℝ≥0∞`. The proo
 more tedious with an `ℝ`-valued or `ℝ≥0`-valued variation, since one would always need to check
 that the sets one uses are nonempty and bounded above as these are only conditionally complete.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ This file defines the positive and negative parts of a selfadjoint element in a 
 the continuous functional calculus and develops the basic API, including the uniqueness of the
 positive and negative parts.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

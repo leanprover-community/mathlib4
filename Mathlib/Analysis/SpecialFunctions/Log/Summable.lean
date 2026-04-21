@@ -15,7 +15,6 @@ We give conditions under which the logarithms of a summable sequence are summabl
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

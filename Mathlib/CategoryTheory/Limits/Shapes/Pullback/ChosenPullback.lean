@@ -19,7 +19,6 @@ pullback of `f₁` and `f₂`.
 `LocallyCartesianClosed.ChosenPullbacksAlong`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

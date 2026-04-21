@@ -27,7 +27,6 @@ There are no lemmas on infinite sums, as summability issues are really
 more painful with reals than nonnegative extended reals. They should probably be added in the long
 run.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

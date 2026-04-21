@@ -16,7 +16,6 @@ that is locally small, there exists a final functor `D ⥤ C` from
 a small filtered category. The dual result is also obtained.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

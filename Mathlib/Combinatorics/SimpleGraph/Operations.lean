@@ -23,7 +23,6 @@ we also prove theorems about the number of edges in the modified graphs.
 * `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
   `G ⊔ edge s t`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

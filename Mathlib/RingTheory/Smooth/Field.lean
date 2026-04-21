@@ -16,7 +16,6 @@ We show that separably generated extensions of fields are smooth.
 In particular finitely generated field extensions over perfect fields are smooth.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

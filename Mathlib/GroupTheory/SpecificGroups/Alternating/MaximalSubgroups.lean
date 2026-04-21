@@ -35,7 +35,6 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

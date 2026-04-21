@@ -15,7 +15,6 @@ We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
 (i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

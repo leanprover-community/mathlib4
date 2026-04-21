@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Coeff
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.degree`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ arbitrary target category `C`).
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

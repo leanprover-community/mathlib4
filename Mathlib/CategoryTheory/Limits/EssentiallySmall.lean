@@ -16,7 +16,6 @@ If `C` has limits of size `w` and `J` is `w`-essentially small, then `C` has lim
 See also the file `FinallySmall.lean` for more general results.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

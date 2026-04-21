@@ -16,7 +16,6 @@ The preorder category of a meet-semilattice `C` with a greatest element is Carte
 A symmetric monoidal structure on the preorder category is automatically provided by the
 instance and `CartesianMonoidalCategory.toSymmetricCategory`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

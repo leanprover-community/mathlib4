@@ -16,7 +16,6 @@ This file uses a "pre-automated" approach, just as for
 It is a very uniform approach, that conceivably could be synthesised directly
 by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

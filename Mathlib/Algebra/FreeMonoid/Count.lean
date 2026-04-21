@@ -17,7 +17,6 @@ additive homomorphisms from `FreeMonoid` and `FreeAddMonoid`.
 
 We do not use `to_additive` too much because it can't map `Multiplicative ℕ` to `ℕ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

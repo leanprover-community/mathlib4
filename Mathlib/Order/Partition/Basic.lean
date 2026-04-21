@@ -59,7 +59,6 @@ proved separately.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 variable {α : Type*} {s t x y z : α} {S : Set α}

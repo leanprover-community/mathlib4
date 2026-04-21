@@ -11,7 +11,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 /-!
 # Measurability of scalar products
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

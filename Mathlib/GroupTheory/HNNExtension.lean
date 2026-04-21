@@ -32,7 +32,6 @@ and Hanna Neumann.
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -419,7 +418,6 @@ theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
   · simp only [unitsSMul, dif_neg h]
     simpa [Cancels] using h
 
-set_option backward.defeqAttrib.useBackward true in
 theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unitsSMul φ (-u) (unitsSMul φ u w) = w := by
   rw [unitsSMul]

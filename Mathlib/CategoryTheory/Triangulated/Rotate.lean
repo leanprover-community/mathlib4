@@ -15,7 +15,6 @@ This file adds the ability to rotate triangles and triangle morphisms.
 It also shows that rotation gives an equivalence on the category of triangles.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

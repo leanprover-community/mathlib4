@@ -12,7 +12,6 @@ public import Mathlib.Data.Finset.Image
 /-!
 # `Finset.range` and addition of natural numbers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid

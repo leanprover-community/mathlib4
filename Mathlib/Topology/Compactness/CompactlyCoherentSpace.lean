@@ -28,7 +28,6 @@ are both referred to as compactly generated spaces in the literature.
 * [J. Munkres, *Topology*][Munkres2000]
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

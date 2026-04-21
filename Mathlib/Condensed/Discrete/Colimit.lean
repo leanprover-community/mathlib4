@@ -17,7 +17,6 @@ This file provides the necessary API to prove that a condensed set `X` is discre
 for every profinite set `S = limᵢSᵢ`, `X(S) ≅ colimᵢX(Sᵢ)`, and the analogous result for light
 condensed sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

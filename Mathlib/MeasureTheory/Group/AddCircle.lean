@@ -22,7 +22,6 @@ The file is a place to collect measure-theoretic results about the additive circ
   angle rotation in the additive circle
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

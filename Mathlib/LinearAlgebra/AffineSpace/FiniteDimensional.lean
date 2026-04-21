@@ -27,7 +27,6 @@ subspaces of affine spaces.
   subspace of dimension at most 1.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

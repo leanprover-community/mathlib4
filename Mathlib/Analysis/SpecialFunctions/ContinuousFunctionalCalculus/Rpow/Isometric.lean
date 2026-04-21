@@ -22,7 +22,6 @@ rely on an isometric continuous functional calculus.
 
 continuous functional calculus, rpow, sqrt
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

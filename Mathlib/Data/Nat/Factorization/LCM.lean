@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.GCD.BigOperators
 This file contains some lemmas about `factorizationLCMLeft`.
 These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitive imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

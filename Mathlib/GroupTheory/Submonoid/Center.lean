@@ -19,7 +19,6 @@ public import Mathlib.GroupTheory.Subsemigroup.Center
 We provide `Subgroup.center`, `AddSubgroup.center`, `Subsemiring.center`, and `Subring.center` in
 other files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ We also provide a constructor `Polynomial.mkDerivation` that
 builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

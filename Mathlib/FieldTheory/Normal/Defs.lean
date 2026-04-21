@@ -22,7 +22,6 @@ In this file we define normal field extensions.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 noncomputable section
 

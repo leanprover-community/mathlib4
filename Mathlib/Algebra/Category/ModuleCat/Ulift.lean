@@ -20,7 +20,6 @@ In this file, we define the obvious functor `ModuleCat.{v} R ⥤ ModuleCat.{max 
 it is exact, fully faithful and preserves projective and injective objects.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

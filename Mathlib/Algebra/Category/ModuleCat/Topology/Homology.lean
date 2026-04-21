@@ -19,7 +19,6 @@ But since the topology on subquotients is well-defined, we can still talk about 
 category. See the `CategoryWithHomology (TopModuleCat R)` instance in this file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

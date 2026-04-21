@@ -14,7 +14,6 @@ This file defines the property of a weak sequence being productive as never stal
 output always comes after a finite time. Given a productive weak sequence, a regular sequence
 (`Seq`) can be derived from it using `toSeq`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

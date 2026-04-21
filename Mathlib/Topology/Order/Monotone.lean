@@ -16,7 +16,6 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

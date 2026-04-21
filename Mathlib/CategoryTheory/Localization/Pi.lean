@@ -21,7 +21,6 @@ The proof proceeds by induction on the cardinal of `J` using the
 main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

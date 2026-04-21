@@ -29,7 +29,6 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ See `MeasureTheory.ae_mem_of_ae_add_linearMap_mem`.
 TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

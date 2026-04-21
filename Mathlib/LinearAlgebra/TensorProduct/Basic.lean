@@ -19,7 +19,6 @@ bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is sh
 
 bilinear, tensor, tensor product
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -93,7 +92,6 @@ variable {M N}
 variable (f : M →ₗ[R] N →ₗ[R] P)
 variable (f' : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary function to constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P`
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/

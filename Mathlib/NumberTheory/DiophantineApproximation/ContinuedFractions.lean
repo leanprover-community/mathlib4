@@ -19,7 +19,6 @@ defined in `Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`, uses `Rea
 a simple recursive definition of the convergents that is also defined in that file.
 This file provides `Real.exists_convs_eq_rat`, using `GenContFract.convs` of `GenContFract.of ξ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -27,7 +27,6 @@ is a pullback square.
 
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

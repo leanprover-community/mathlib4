@@ -20,7 +20,6 @@ This file provides `Applicative` instances for concrete functors:
 * `Functor.const`
 * `Functor.add_const`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -69,7 +69,6 @@ fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -225,7 +224,6 @@ variable {A : Type*} [CommSemiring A]
 
 include H
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/

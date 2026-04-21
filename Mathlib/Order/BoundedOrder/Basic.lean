@@ -24,7 +24,6 @@ instances for `Prop` and `fun`.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

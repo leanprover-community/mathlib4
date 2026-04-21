@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
 # Compact submodules
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

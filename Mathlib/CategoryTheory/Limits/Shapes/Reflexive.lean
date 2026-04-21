@@ -51,7 +51,6 @@ reflexive.
 * Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
   reflexive pair.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

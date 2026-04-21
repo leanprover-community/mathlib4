@@ -17,7 +17,6 @@ public import Mathlib.Data.Fintype.Option
 
 A typeclass for categories with all finite (co)limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

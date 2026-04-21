@@ -43,7 +43,6 @@ graph colorings and back is the identity.
   `n`-colorability are equivalent.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

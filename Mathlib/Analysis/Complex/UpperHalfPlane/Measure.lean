@@ -22,7 +22,6 @@ We equip the upper half-plane with a measure, defined as the restriction of the 
 on `ℂ` weighted by the function `1 / (im z) ^ 2`. We show that this measure is invariant under
 the action of `GL(2, ℝ)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open MeasureTheory
 open scoped NNReal

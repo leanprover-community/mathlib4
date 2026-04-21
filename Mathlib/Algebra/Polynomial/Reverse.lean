@@ -17,7 +17,6 @@ the polynomial with a reversed list of coefficients, equivalent to `X^f.natDegre
 The main result is that `reverse (f * g) = reverse f * reverse g`, provided the leading
 coefficients of `f` and `g` do not multiply to zero.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -71,7 +71,6 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 `Pseudoelements X` agrees with `Subobject X`, but we haven't developed this in mathlib yet.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

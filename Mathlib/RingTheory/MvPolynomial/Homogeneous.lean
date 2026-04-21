@@ -34,7 +34,6 @@ if all monomials occurring in `φ` have degree `n`.
 * The special case with `w = 1` of the above yields the algebra isomorphism
   `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -363,7 +362,6 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)
     add_right_inj] at h' ⊢
   exact h'
 
-set_option backward.defeqAttrib.useBackward true in
 -- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
 lemma coeff_isHomogeneous_of_optionEquivLeft_symm
     [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}

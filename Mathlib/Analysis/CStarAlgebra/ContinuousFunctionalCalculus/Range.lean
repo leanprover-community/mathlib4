@@ -28,7 +28,6 @@ consequences thereof.
   closed star subalgebra containing the element.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -51,7 +51,6 @@ finite-dimensional vector space `E` with a norm, and a copy `E'` of this type wi
 then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

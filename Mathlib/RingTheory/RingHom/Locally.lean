@@ -41,7 +41,6 @@ composition, base change, etc., so is `Locally P`.
   `Locally P`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Tactic.FunProp.Core
 /-!
 ## `funProp` tactic syntax
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

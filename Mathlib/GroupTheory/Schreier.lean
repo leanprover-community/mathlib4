@@ -25,7 +25,6 @@ In this file we prove Schreier's lemma.
 - `card_commutator_le_of_finite_commutatorSet`: A theorem of Schur: The size of the commutator
   subgroup is bounded in terms of the number of commutators.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

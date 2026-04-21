@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 This file provides the co-Cartesian-monoidal category structure on `CommAlgCat R` constructed
 explicitly using the tensor product.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

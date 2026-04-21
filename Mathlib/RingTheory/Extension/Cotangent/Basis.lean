@@ -23,7 +23,6 @@ free on the images of the relations of `P'`.
 
 - https://stacks.math.columbia.edu/tag/07CF
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open Pointwise MvPolynomial TensorProduct
 namespace Algebra.Generators

@@ -31,7 +31,6 @@ When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

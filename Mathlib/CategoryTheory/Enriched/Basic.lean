@@ -34,7 +34,6 @@ We verify that when `V = Type v`, all these notions reduce to the usual ones.
 * [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
   [morrison-penney-enriched]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

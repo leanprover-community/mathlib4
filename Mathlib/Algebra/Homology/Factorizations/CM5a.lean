@@ -48,7 +48,6 @@ to take its limit, which shall be the intermediate object in the
 lemma `cm5a_cof`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
 

@@ -20,7 +20,6 @@ In this file we define the induced map on prime spectra induced by a ring homomo
   it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

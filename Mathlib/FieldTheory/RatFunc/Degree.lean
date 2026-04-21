@@ -19,7 +19,6 @@ We define the degree of a rational function, with values in `ℤ`:
   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
   `intDegree 0 = 0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

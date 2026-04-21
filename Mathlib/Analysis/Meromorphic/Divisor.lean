@@ -17,7 +17,6 @@ This file defines the divisor of a meromorphic function and proves the most basi
 divisors. The lemma `MeromorphicOn.divisor_restrict` guarantees compatibility between restrictions
 of divisors and of meromorphic functions to subsets of their domain of definition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

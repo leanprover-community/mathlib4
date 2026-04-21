@@ -18,7 +18,6 @@ public import Mathlib.Control.Basic
 This allows us to use these monads in category theory.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ In this file we prove the Schur-Zassenhaus theorem.
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

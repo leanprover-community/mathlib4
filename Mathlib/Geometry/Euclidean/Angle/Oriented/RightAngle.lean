@@ -15,7 +15,6 @@ This file proves basic geometric results about distances and oriented angles in 
 degenerate) right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

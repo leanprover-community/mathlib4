@@ -25,7 +25,6 @@ the subexpression using `kabstract` (which is what `rw` uses to find the positio
 whether this is the case.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

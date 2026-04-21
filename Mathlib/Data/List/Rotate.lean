@@ -23,7 +23,6 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 rotated, rotation, permutation, cycle
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

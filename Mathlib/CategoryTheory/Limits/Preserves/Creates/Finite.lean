@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.FinCategory.AsType
 This file defines the classes `CreatesFiniteLimits`, `CreatesFiniteColimits`,
 `CreatesFiniteProducts` and `CreatesFiniteCoproducts`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

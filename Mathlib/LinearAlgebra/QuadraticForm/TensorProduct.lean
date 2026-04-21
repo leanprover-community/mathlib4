@@ -21,7 +21,6 @@ public import Mathlib.Tactic.LinearCombination
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe uR uA uM₁ uM₂ uN₁ uN₂
 

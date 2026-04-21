@@ -56,7 +56,6 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.Λ_residue_k`: computation of the residue at `k`
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

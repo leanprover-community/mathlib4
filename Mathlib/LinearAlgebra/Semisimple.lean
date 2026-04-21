@@ -41,7 +41,6 @@ In finite dimensions over a field:
 * Triangularizable iff diagonalisable for semisimple endomorphisms
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,7 +37,6 @@ Please try to keep them in sync.
 Beck, monadicity, descent
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

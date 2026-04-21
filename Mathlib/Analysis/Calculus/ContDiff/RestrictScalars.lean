@@ -16,7 +16,6 @@ comparing iterated derivatives with respect to a field `𝕜'` to iterated deriv
 a subfield `𝕜 ⊆ 𝕜'`. The results are analogous to those found in
 `Mathlib.Analysis.Calculus.FDeriv.RestrictScalars`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

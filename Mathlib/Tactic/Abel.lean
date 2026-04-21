@@ -24,7 +24,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
   It is undecided whether these features should be restored eventually.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

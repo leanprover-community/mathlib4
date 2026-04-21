@@ -48,7 +48,6 @@ The definition is chosen so that the junk values satisfy
 `M.fundCircuit e I = insert e I` if `e ∈ M.E \ M.closure I`.
 These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true unconditionally.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

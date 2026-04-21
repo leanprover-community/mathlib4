@@ -13,7 +13,6 @@ public import Mathlib.Data.Set.Card
 
 This file provides lemmas about the relation of `Nat.count` with cardinality functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

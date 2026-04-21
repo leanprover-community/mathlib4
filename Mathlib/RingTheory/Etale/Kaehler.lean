@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Flat.Localization
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe u
 

@@ -15,7 +15,6 @@ A wide subquiver `H` of a quiver `H` consists of a subset of the edge set `a ⟶
 every pair of vertices `a b : V`. We include 'wide' in the name to emphasize that these
 subquivers by definition contain all vertices.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

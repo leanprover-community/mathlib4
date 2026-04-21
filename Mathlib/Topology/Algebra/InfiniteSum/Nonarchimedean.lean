@@ -24,7 +24,6 @@ and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × 
 sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

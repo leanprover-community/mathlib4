@@ -26,7 +26,6 @@ Finally we define inclusion functors into `Action V G` and `TopCat` in terms
 of `HasForget₂` instances.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ and deduce that `Module.Free` is stable under base change.
 - `Algebra.TensorProduct.instFree`: if `M` is free, then so is `A ⊗[R] M`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

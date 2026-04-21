@@ -41,7 +41,6 @@ monoidal distributive.
 - [J.R.B.Cockett, Introduction to distributive categories, 1993][cockett1993]
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

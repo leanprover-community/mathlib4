@@ -37,7 +37,6 @@ Gaussian distributions over `EuclideanSpace ℝ ι`.
 multivariate Gaussian distribution
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

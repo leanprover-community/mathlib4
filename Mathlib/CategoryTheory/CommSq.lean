@@ -24,7 +24,6 @@ as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -63,7 +63,6 @@ is paths in digraphs.
 
 matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, perron-frobenius
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace Matrix

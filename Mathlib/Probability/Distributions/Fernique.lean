@@ -73,7 +73,6 @@ we can deduce bounds on all the moments of the measure `μ` as function of power
 the first moment.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

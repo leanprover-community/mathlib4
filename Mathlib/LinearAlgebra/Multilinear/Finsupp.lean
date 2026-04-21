@@ -16,7 +16,6 @@ public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
   supported maps.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

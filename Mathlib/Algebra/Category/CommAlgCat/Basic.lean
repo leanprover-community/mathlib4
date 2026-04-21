@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.WithTerminal.Cone
 This file defines the bundled category `CommAlgCat` of commutative algebras over a fixed commutative
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

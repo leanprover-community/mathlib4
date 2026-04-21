@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Notation.Support
 
 We show that the support of `x ↦ f (c⁻¹ • x)` is equal to `c • support f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

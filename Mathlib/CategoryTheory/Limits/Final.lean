@@ -68,7 +68,6 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 * Borceux, Handbook of Categorical Algebra I, Section 2.11.
   (Note he reverses the roles of definition and main result relative to here!)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

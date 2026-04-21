@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-! # Unbundled ordered monoid structures on the order dual. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,7 +33,6 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -145,7 +144,6 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
         r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- The solutions in a module `N` to the linear equations

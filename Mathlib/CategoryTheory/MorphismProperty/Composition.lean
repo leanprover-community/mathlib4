@@ -15,7 +15,6 @@ which means that `P f → P g → P (f ≫ g)`. We also introduce the type class
 `W.ContainsIdentities`, `W.IsMultiplicative`, and `W.HasTwoOutOfThreeProperty`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

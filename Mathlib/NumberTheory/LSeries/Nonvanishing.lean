@@ -39,7 +39,6 @@ The second case is dealt with using the product
 we show has absolute value `≥ 1` for all positive `x` and real `y`; if `L(χ, 1 + I * y) = 0` then
 this product would have to tend to 0 as `x → 0`, which is a contradiction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

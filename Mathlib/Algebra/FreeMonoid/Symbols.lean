@@ -13,7 +13,6 @@ public import Mathlib.Data.Finset.Lattice.Lemmas
 
 This is separated from the main FreeMonoid file, as it imports the finiteness hierarchy
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

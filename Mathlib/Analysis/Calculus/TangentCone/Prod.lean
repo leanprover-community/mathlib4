@@ -16,7 +16,6 @@ import Mathlib.Analysis.Calculus.TangentCone.Basic
 In this file we prove that the product of two sets with unique differentiability property
 has the same property, see `UniqueDiffOn.prod`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

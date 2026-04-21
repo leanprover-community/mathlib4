@@ -12,7 +12,6 @@ public import Mathlib.Probability.Kernel.Basic
 # Bochner integrals of kernels
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

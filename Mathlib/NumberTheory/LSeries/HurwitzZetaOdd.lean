@@ -41,7 +41,6 @@ various versions of the Jacobi theta function.
 * `hasSum_int_hurwitzZetaOdd` and `hasSum_nat_sinZeta`: relation between
   the zeta functions and corresponding Dirichlet series for `1 < re s`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

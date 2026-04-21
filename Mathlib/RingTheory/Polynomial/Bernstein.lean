@@ -34,7 +34,6 @@ See also `Mathlib/Analysis/SpecialFunctions/Bernstein.lean`, which defines the B
 approximations of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly
 to `f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

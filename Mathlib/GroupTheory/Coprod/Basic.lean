@@ -118,7 +118,6 @@ There are several reasons to build an API from scratch.
 
 group, monoid, coproduct, free product
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

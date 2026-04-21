@@ -11,7 +11,6 @@ public import Mathlib.Init
 /-!
 # The `without_cdot()` elaborator
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

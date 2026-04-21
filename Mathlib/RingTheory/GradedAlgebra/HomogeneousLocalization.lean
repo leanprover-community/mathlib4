@@ -71,7 +71,6 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

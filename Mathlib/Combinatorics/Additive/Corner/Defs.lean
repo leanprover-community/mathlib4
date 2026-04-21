@@ -18,7 +18,6 @@ property of being corner-free.
 * [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

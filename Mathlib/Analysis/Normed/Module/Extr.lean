@@ -22,7 +22,6 @@ Then we specialize it to the case `y = f c` and to different special cases of `I
 
 local maximum, normed space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

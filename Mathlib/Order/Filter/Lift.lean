@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Bases.Basic
 /-!
 # Lift filters along filter and set functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists Set.Finite
 

@@ -19,7 +19,6 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 `ι = ι' = ℕ` to prove the Cauchy product formula
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

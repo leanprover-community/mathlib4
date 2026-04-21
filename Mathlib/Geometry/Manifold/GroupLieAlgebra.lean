@@ -33,7 +33,6 @@ should be favored when possible.
 The standing assumption in this file is that the group is `C^n` for `n = minSmoothness 𝕜 3`, i.e.,
 it is `C^3` over `ℝ` or `ℂ`, and analytic otherwise.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

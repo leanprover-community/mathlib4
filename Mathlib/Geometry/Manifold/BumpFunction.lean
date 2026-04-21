@@ -30,7 +30,6 @@ The actual statements involve (pre)images under `extChartAt I f` and are given a
 
 manifold, smooth bump function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

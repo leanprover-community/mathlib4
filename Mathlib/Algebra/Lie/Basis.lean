@@ -39,7 +39,6 @@ See e.g., [serre1965](Ch. V, §4, §6).
 * Define Weyl, Chevalley bases.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

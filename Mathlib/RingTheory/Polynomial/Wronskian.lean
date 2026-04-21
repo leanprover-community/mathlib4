@@ -28,7 +28,6 @@ We also prove basic properties of it.
 
 - Define Wronskian for n-tuple of polynomials, not necessarily two.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

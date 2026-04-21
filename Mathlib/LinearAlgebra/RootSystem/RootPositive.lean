@@ -33,7 +33,6 @@ positive semi-definite on weight space and positive-definite on the span of root
   orthogonal.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

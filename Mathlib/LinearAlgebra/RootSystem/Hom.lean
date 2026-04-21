@@ -46,7 +46,6 @@ given in SGA III Exp. 21 Section 6.
 * Weyl group reimplementation?
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

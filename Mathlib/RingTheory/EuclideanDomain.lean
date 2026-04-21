@@ -21,7 +21,6 @@ probably be reproved in more generality and this file perhaps removed?
 
 euclidean domain
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

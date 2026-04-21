@@ -18,7 +18,6 @@ limits exist in the category `SheafOfModules R`.
 * do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

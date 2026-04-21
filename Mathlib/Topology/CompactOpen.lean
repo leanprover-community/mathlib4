@@ -33,7 +33,6 @@ topological spaces.
 
 compact-open, curry, function space
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -455,7 +454,6 @@ function spaces, see `Homeomorph.curry`. -/
 def uncurry [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) : C(X × Y, Z) :=
   ⟨_, continuous_uncurry_of_continuous f⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The uncurrying process is a continuous map between function spaces. -/
 theorem continuous_uncurry [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     Continuous (uncurry : C(X, C(Y, Z)) → C(X × Y, Z)) := by

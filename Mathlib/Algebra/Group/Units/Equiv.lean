@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Units.Hom
 /-!
 # Multiplicative and additive equivalence acting on units.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

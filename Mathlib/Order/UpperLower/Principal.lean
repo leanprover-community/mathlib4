@@ -20,7 +20,6 @@ The results in this file all assume that the underlying type is equipped with at
 * `LowerSet.Iic`: Principal lower set. `Set.Iic` as a lower set.
 * `LowerSet.Iio`: Strict principal lower set. `Set.Iio` as a lower set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

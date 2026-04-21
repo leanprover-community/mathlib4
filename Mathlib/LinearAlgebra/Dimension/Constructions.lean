@@ -30,7 +30,6 @@ Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

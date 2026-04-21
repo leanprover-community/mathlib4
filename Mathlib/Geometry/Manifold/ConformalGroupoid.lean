@@ -21,7 +21,6 @@ In this file we define the groupoid of conformal maps on normed spaces.
 
 conformal, groupoid
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

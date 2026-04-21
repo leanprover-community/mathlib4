@@ -25,7 +25,6 @@ Please keep in sync with:
 
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

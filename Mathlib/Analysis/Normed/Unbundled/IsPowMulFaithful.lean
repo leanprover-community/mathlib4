@@ -25,7 +25,6 @@ commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra 
 
 norm, equivalent, power-multiplicative
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

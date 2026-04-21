@@ -20,7 +20,6 @@ public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
   if and only if each `A i` is `R`-formally-étale.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

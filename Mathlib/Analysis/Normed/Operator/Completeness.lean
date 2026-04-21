@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Normed.Operator.NNNorm
 This file contains statements about norms of operators on complete normed spaces, such as a
 version of the Banach-Alaoglu theorem (`ContinuousLinearMap.isCompact_image_coe_closedBall`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

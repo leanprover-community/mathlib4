@@ -35,7 +35,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 subgroup, subgroups
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

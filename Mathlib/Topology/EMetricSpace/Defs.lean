@@ -26,7 +26,6 @@ Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we star
 theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y` and we specialize
 to `EMetricSpace` at the end.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

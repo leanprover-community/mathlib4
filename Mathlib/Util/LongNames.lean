@@ -15,7 +15,6 @@ public import Mathlib.Init
 
 For finding declarations with excessively long names.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

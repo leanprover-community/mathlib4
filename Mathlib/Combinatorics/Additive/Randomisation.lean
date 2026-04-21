@@ -18,7 +18,6 @@ Precisely, for `G` a finite abelian group and two functions `c : AddChar G ℂ �
 `d : AddChar G ℂ → ℝ` such that `{ψ | d ψ ≠ 0}` is dissociated, the product of the `c ψ` over `ψ` is
 the same as the average over `a` of the product of the `c ψ + Re (d ψ * ψ a)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

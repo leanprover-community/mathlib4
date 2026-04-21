@@ -24,7 +24,6 @@ This file defines covering maps.
   not connected, then the fibers `f ⁻¹' {x}` are not necessarily isomorphic. Also, `f` is not
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

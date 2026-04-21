@@ -19,7 +19,6 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.product`: Cartesian product of two multisets.
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

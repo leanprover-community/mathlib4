@@ -14,7 +14,6 @@ public import Mathlib.Order.Preorder.Chain
 
 Order isomorphisms act on flags.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

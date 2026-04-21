@@ -46,7 +46,6 @@ algebraic closure, algebraically closed
   Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

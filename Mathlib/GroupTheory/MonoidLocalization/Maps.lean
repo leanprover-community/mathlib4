@@ -21,7 +21,6 @@ induces a homomorphism of localizations, `LocalizationMap.map`, from `N` to `Q`.
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

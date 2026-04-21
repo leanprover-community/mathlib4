@@ -81,7 +81,6 @@ convention:
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

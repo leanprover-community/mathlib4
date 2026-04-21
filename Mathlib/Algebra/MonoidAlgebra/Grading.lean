@@ -32,7 +32,6 @@ In this file, we show that an `AddMonoidAlgebra` has an internal direct sum stru
   `AddMonoidAlgebra.grade` defines an internal graded structure when the degree function
   is the identity.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

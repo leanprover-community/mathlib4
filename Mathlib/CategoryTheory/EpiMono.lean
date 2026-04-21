@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Groupoid
 The definitions of `Epi` and `Mono` are in `CategoryTheory.Category`,
 since they are used by some lemmas for `Iso`, which is used everywhere.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ Notable examples include principal ideal rings, valuation rings, and the ring of
 - `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

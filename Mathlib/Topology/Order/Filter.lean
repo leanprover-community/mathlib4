@@ -14,7 +14,6 @@ public import Mathlib.Topology.Order.Basic
 In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided that `f` tends to
 `Filter.atTop`, and similarly for `Filter.atBot`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

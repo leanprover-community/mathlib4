@@ -39,7 +39,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -49,7 +49,6 @@ needed.
 - https://en.wikipedia.org/wiki/Dilation_(metric_space)
 - [Marcel Berger, *Geometry*][berger1987]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

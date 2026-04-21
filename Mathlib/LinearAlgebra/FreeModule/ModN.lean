@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 
 If `G` is a rank `d` free `ℤ`-module, then `G/nG` is a finite group of cardinality `n ^ d`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

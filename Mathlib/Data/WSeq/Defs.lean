@@ -14,7 +14,6 @@ public import Mathlib.Data.WSeq.Basic
 These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are not needed for the
 development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

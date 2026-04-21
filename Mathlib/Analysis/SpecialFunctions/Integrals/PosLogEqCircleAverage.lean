@@ -17,7 +17,6 @@ public import Mathlib.MeasureTheory.Integral.CircleAverage
 If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ a` as
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -54,7 +54,6 @@ import Mathlib.Algebra.MvPolynomial.Nilpotent
   And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

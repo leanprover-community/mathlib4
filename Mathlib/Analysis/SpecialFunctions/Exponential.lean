@@ -54,7 +54,6 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 - `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

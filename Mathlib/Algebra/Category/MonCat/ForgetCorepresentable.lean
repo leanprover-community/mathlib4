@@ -18,7 +18,6 @@ by `ULift ℕ`. Similar results are obtained for the variants `CommMonCat`, `Add
 and `MonCat`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

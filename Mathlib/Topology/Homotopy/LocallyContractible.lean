@@ -65,7 +65,6 @@ imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot s
 `V ⊆ S` that remains contractible, so requiring neighborhoods to be open is potentially strictly
 stronger than SLC.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

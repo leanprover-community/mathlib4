@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Monoidal.Transport
 
 # Transport a symmetric monoidal structure along an equivalence of categories
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

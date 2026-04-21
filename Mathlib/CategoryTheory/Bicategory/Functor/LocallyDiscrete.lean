@@ -27,7 +27,6 @@ to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
 `LocallyDiscrete I`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

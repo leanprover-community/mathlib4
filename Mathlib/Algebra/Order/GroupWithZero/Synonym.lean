@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Group.Synonym
 
 Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

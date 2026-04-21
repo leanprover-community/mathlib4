@@ -20,7 +20,6 @@ information.
 It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

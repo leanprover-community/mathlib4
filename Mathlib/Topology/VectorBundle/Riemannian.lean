@@ -37,7 +37,6 @@ they are scoped to the `Bundle` namespace.
 ## Keywords
 Vector bundle, Riemannian metric
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

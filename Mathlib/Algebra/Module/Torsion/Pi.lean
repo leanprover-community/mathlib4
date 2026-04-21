@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Module.Pi
 
 This file shows that the product of torsion-free modules is torsion-free.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

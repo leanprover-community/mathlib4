@@ -16,7 +16,6 @@ public import Mathlib.Topology.MetricSpace.IsometricSMul
 This file proves lipschitzness of normed group operations and shows that normed groups are uniform
 groups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

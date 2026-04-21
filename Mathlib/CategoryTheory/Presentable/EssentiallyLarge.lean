@@ -16,7 +16,6 @@ then `C` is equivalent to a `w`-large category, i.e. a category whose type
 of objects is in `Type (w + 1)` and whose types of morphisms are in `Type w`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -16,7 +16,6 @@ public import Mathlib.Topology.Metrizable.Urysohn
 In this file we show that a σ-compact Hausdorff topological manifold over a finite-dimensional real
 vector space is metrizable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

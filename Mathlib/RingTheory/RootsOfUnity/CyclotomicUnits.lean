@@ -30,7 +30,6 @@ We sometimes state series of results of the form `a = u * b`, `IsUnit u` and `As
 Often, `Associated a b` is everything one needs, and it is more convenient to use, we include the
 other version for completeness.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

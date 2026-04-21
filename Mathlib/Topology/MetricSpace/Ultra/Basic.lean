@@ -36,7 +36,6 @@ TODO: Generalize to ultrametric uniformities
 
 ultrametric, nonarchimedean
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

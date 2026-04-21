@@ -20,7 +20,6 @@ public import Mathlib.Order.SuccPred.WithBot
 
 In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

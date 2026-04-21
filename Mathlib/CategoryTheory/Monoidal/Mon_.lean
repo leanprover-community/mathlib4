@@ -42,7 +42,6 @@ Please read the documentation in `Mathlib/Tactic/Attr/Register.lean` for full de
 * Can you transport this monoidal structure to `RingCat` or `AlgCat R`?
   How does it compare to the "native" one?
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ takes integer values at integers.  When evaluating at a rational number, we can 
 and obtain precise inequalities that ultimately allow us to prove transcendence of
 Liouville numbers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

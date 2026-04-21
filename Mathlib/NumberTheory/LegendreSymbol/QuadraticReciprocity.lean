@@ -34,7 +34,6 @@ properties of quadratic Gauss sums as provided by `NumberTheory.LegendreSymbol.G
 
 quadratic residue, quadratic nonresidue, Legendre symbol, quadratic reciprocity
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

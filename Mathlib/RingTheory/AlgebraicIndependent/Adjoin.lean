@@ -22,7 +22,6 @@ This file concerns adjoining an algebraic independent family to a field.
   algebraic independent family into the rational function field. It is the inverse of
   `AlgebraicIndependent.aevalEquivField`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

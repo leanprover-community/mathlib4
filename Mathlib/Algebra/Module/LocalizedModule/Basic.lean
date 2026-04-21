@@ -37,7 +37,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

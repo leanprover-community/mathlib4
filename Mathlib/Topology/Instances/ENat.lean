@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 /-!
 # Topology on extended natural numbers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

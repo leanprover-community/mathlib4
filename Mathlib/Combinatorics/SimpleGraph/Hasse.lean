@@ -23,7 +23,6 @@ path graph on `n` vertices.
 * `SimpleGraph.hasse`: Hasse diagram of an order.
 * `SimpleGraph.pathGraph`: Path graph on `n` vertices.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

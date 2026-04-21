@@ -11,7 +11,6 @@ public import Mathlib.Topology.DenseEmbedding
 /-!
 # Additive characters of topological monoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

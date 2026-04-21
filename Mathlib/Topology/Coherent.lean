@@ -31,7 +31,6 @@ and provide the others as corollaries.
   where `u : ℕ → X` is a sequence that converges to `x`,
   then we have `IsCoherentWith S`;
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

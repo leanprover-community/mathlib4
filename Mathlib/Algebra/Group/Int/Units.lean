@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Nat.Units
 /-!
 # Units in the integers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

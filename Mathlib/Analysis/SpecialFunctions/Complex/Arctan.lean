@@ -17,7 +17,6 @@ and shows that it extends `Real.arctan` to the complex plane. Its Taylor series 
 $$\arctan z = \frac{(-1)^n}{2n + 1} z^{2n + 1},\ |z|<1$$
 is proved in `Complex.hasSum_arctan`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

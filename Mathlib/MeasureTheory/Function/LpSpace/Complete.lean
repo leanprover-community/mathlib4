@@ -14,7 +14,6 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 In this file we show that `Lp` is a complete space for `1 ≤ p`,
 in `MeasureTheory.Lp.instCompleteSpace`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

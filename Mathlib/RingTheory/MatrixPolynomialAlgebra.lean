@@ -24,7 +24,6 @@ coeff (matPolyEquiv m) k i j = coeff (m i j) k
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

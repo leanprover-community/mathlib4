@@ -19,7 +19,6 @@ For example, we can more easily work with `Nat.bits` and `Nat.size`.
 See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 /-!
 # Canonically ordered semifields
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ The heavy part of the proof is done upstream in `ContDiffBump.dist_normed_convol
 and `HasCompactSupport.contDiff_convolution_left`.
 Here we wrap these results removing measure-related arguments from the assumptions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

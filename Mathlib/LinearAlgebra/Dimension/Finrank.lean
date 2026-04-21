@@ -31,7 +31,6 @@ in `Dimension.lean`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

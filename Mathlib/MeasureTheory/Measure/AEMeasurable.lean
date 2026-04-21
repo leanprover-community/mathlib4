@@ -15,7 +15,6 @@ A function is almost everywhere measurable if it coincides almost everywhere wit
 function. This property, called `AEMeasurable f μ`, is defined in the file `MeasureSpaceDef`.
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

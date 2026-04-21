@@ -38,7 +38,6 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 
 number field, canonical embedding, units, principal ideals
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

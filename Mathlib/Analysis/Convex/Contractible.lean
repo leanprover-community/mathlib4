@@ -14,7 +14,6 @@ public import Mathlib.Topology.Homotopy.Contractible
 In this file we prove that a (star) convex set in a real topological vector space is a contractible
 topological space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

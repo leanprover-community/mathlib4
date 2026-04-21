@@ -14,7 +14,6 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
 The result in this file is that the cardinality of `R[X]` is at most the maximum
 of `#R` and `ℵ₀`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

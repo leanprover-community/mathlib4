@@ -15,7 +15,6 @@ This file defines the cartesian monoidal structure on `LightProfinite` given by 
 product.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

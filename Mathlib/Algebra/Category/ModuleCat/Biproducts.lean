@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 /-!
 # The category of `R`-modules has finite biproducts
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

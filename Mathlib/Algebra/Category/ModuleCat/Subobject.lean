@@ -17,7 +17,6 @@ We construct an explicit order isomorphism between the categorical subobjects of
 and its submodules. This immediately implies that the category of `R`-modules is well-powered.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

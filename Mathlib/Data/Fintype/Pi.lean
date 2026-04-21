@@ -12,7 +12,6 @@ public import Mathlib.Data.Set.Finite.Basic
 /-!
 # Fintype instances for pi types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ We show that every module is the direct limit of its finitely generated submodul
 * `Module.fgSystem.equiv`: the isomorphism between a module and the direct limit of its
   finitely generated submodules.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

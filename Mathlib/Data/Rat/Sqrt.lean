@@ -17,7 +17,6 @@ This file defines the square root function on rational numbers `Rat.sqrt`
 and proves several theorems about it.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

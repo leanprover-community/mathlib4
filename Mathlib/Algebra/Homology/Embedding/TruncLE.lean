@@ -20,7 +20,6 @@ In order to achieve this, we dualize the constructions from the file
 `Embedding.TruncGE`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

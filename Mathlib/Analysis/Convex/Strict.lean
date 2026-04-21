@@ -16,7 +16,6 @@ This file defines strictly convex sets.
 
 A set is strictly convex if the open segment between any two distinct points lies in its interior.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

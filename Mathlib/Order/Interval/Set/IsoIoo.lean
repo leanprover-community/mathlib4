@@ -15,7 +15,6 @@ public import Mathlib.Tactic.FieldSimp
 In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the open interval
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

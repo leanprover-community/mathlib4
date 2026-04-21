@@ -15,7 +15,6 @@ public import Mathlib.Init
 # Generally useful tactics.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

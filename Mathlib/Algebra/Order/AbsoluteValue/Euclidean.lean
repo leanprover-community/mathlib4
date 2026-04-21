@@ -21,7 +21,6 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 * `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
   mapping negative `x` to `-x`, is Euclidean.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

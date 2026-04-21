@@ -24,7 +24,6 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

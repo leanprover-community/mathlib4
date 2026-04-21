@@ -13,7 +13,6 @@ public import Mathlib.Order.Filter.AtTopBot.Monoid
 /-!
 # Convergence to ±infinity in ordered commutative groups
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

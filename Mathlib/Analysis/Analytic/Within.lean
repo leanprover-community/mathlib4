@@ -22,7 +22,6 @@ This means there exists an extension of `f` which is analytic and agrees with `f
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

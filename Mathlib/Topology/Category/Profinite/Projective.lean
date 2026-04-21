@@ -24,7 +24,6 @@ Let `X` be a profinite set.
   is a projective presentation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

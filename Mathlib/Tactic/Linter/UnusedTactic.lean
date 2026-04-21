@@ -54,7 +54,6 @@ before and after and see if there is some change.
 
 Yet another linter copied from the `unreachableTactic` linter!
 -/
-set_option backward.defeqAttrib.useBackward true
 
 meta section
 

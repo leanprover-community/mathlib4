@@ -36,7 +36,6 @@ unnecessarily.
 * https://en.wikipedia.org/wiki/Law_of_sines
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

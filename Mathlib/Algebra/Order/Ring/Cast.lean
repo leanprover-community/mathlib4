@@ -22,7 +22,6 @@ which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Ba
 
 Move order lemmas about `Nat.cast`, `Rat.cast`, `NNRat.cast` here.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

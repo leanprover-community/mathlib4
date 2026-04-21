@@ -60,7 +60,6 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 + `Unitization.quasispectrum_eq_spectrum_inr`: the quasispectrum of `a` in a non-unital `R`-algebra
   `A` is precisely the spectrum of `a` in `Unitization R A` (via the coercion `Unitization.inr`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

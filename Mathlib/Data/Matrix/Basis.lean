@@ -13,7 +13,6 @@ public import Mathlib.Data.Matrix.Basic
 This file provides `Matrix.single`. The matrix `Matrix.single i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -258,7 +257,6 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
     liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by

@@ -32,7 +32,6 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 
 * <https://en.wikipedia.org/wiki/Tensor_rank_decomposition>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

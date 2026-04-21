@@ -28,7 +28,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -280,7 +279,6 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 
 variable [CommSemiring S] [Algebra S A]
 
-set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]

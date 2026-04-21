@@ -8,6 +8,5 @@ module
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-02-02")

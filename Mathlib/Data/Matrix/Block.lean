@@ -24,7 +24,6 @@ public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

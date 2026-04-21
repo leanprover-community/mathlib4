@@ -29,7 +29,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,7 +32,6 @@ the 0th component of which must be nonzero.
 * `WittVector.instIsDomain`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

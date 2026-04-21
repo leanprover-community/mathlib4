@@ -23,7 +23,6 @@ The main theorem `continuous_extend` gives a criterion for a function
 has to be `IsDenseInducing` (not necessarily injective).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

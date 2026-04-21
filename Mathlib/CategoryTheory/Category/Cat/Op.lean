@@ -15,7 +15,6 @@ We define a (strict) functor `opFunctor` and an equivalence assigning opposite c
 categories. We then show that this functor is strictly involutive and that it induces an
 equivalence on `Cat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,7 +31,6 @@ is automatically complete. All dually for `⊓`.
 * `SemilatticeInf.toCompleteSemilatticeInf`: A meet-semilattice where every inf-closed set has a
   greatest lower bound is automatically complete.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

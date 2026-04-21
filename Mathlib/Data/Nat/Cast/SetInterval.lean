@@ -17,7 +17,6 @@ public import Mathlib.Order.UpperLower.Basic
 In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast : ℕ → ℤ`
 is the corresponding interval in `ℤ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

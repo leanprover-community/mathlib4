@@ -15,7 +15,6 @@ import Mathlib.Probability.Notation
 
 This file proves a few lemmas about random variables that take at most two values.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

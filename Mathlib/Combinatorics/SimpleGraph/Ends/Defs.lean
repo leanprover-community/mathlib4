@@ -15,7 +15,6 @@ public import Mathlib.Data.Finite.Set
 This file contains a definition of the ends of a simple graph, as sections of the inverse system
 assigning, to each finite set of vertices, the connected components of its complement.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -76,7 +76,6 @@ The construction of the density process in this file follows the proof of Theore
 [O. Kallenberg, Foundations of modern probability][kallenberg2021], adapted to use a countably
 generated hypothesis instead of specializing to `ℝ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

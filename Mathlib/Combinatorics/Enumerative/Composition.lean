@@ -87,7 +87,6 @@ Composition, partition
 
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

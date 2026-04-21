@@ -26,7 +26,6 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 * `Equiv.traversable`: `Equiv.traverse` as a traversable functor.
 * `Equiv.isLawfulTraversable`: `Equiv.traverse` as a lawful traversable functor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

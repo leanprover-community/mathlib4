@@ -11,7 +11,6 @@ public import Mathlib.Data.Finset.Option
 /-!
 # fintype instances for option
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

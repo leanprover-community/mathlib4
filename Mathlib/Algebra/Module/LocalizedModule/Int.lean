@@ -23,7 +23,6 @@ After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` 
 can be unified.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

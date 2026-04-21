@@ -20,7 +20,6 @@ is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the
 the idempotent endomorphism `𝟙 P.X - P.p`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

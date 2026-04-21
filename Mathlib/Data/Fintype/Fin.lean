@@ -14,7 +14,6 @@ public import Mathlib.Data.Vector.Basic
 This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

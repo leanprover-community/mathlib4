@@ -16,7 +16,6 @@ We show that if `X, Y` are compact Hausdorff spaces with `X` profinite, then any
 on `X × Y` valued in a ring (with a uniform structure) can be uniformly approximated by finite
 sums of functions of the form `f x * g y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -32,7 +32,6 @@ a kernel from `α` to `γ`.
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

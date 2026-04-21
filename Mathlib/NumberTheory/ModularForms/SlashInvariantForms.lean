@@ -15,7 +15,6 @@ This file defines functions that are invariant under a `SlashAction` which forms
 defining `ModularForm` and `CuspForm`. We prove several instances for such spaces, in particular
 that they form a module over `ℝ`, and over `ℂ` if the group is contained in `SL(2, ℝ)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

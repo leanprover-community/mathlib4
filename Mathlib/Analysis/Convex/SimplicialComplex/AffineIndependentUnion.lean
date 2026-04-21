@@ -25,7 +25,6 @@ are affinely independent.
 * `Geometry.SimplicialComplex.ofSimpleGraph`: Construct a simplicial complex from a simple graph,
   where vertices of the graph are 0-simplices and edges are 1-simplices.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

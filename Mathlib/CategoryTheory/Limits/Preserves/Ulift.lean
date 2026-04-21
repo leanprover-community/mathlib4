@@ -21,7 +21,6 @@ As this functor is fully faithful, we also deduce that it creates `u`-small limi
 colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

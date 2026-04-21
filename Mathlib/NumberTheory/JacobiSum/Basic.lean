@@ -29,7 +29,6 @@ but generalize where appropriate.
 
 This is based on Lean code written as part of the bachelor's thesis of Alexander Spahl.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

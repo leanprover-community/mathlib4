@@ -16,7 +16,6 @@ We restate the existing result that if `F ⊣ G` is an adjunction and `G` preser
 then `F` preserves projective objects. We show that the converse is true if the domain of `F` has
 enough projectives.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ finite-dimensional distributions.
   same law.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

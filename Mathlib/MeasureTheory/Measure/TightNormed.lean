@@ -31,7 +31,6 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
   `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖⟪y, x⟫_𝕜‖}) atTop` tends to `0` at infinity for all `y`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

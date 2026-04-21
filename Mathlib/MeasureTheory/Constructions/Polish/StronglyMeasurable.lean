@@ -20,7 +20,6 @@ by corestricting the function to the closure of its range, some results about me
 can be extended to strongly measurable functions without assuming separability on the codomain.
 The purpose of this file is to collect those results.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

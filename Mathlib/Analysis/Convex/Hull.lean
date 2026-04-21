@@ -20,7 +20,6 @@ set containing `s`. In order theory speak, this is a closure operator.
 while the impact on writing code is minimal as `convexHull 𝕜 s` is automatically elaborated as
 `(convexHull 𝕜) s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

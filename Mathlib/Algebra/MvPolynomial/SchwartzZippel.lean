@@ -51,7 +51,6 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 * [schwartz_1980]
 * [zippel_1979]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

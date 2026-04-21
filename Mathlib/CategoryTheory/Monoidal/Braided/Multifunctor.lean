@@ -18,7 +18,6 @@ phrased as equalities of natural transformations between trifunctors
 `(-₁ ⊗ -₂) ⊗ -₃ ⟶ -₂ ⊗ (-₃ ⊗ -₁)` and `-₁ ⊗ (-₂ ⊗ -₃) ⟶ (-₃ ⊗ -₁) ⊗ -₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 
 Add q-expansions and prove that they are not all identically zero.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

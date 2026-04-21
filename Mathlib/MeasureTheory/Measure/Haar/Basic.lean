@@ -61,7 +61,6 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
     invalid.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

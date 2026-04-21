@@ -18,7 +18,6 @@ This file proves that `ℕ` and `ℤ` act commutatively and associatively on (se
 Those instances are in their own file only because they require much less imports than any existing
 file they could go to. This is unfortunate and should be fixed by reorganising files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

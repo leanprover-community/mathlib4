@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 /-!
 # Lemmas about pointwise operations in the presence of `Multiplicative` and `Additive`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

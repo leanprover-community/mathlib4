@@ -25,7 +25,6 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 - `AlgebraicGeometry.GeometricallyIntegral.isIntegral_of_subsingleton`:
   If `X` is geometrically integral over a field, then it is integral.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

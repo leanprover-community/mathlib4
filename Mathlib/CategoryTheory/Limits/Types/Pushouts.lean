@@ -19,7 +19,6 @@ the particular case when `f` is injective (in the file
 are stable under cobase change in the category of types).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

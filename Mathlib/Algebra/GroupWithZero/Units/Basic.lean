@@ -20,7 +20,6 @@ public import Mathlib.Tactic.Nontriviality
 We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 This file provides the definitions of ordered monoids.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

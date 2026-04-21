@@ -36,7 +36,6 @@ groups.
 
 topological space, group, topological group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -628,7 +627,6 @@ theorem nhds_one_symm' : map Inv.inv (𝓝 (1 : G)) = 𝓝 (1 : G) :=
 theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ ∈ 𝓝 (1 : G) := by
   rwa [← nhds_one_symm'] at hS
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map `(x, y) ↦ (x, x * y)` as a homeomorphism. This is a shear mapping. -/
 @[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a homeomorphism. This is a shear mapping. -/]
 protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=

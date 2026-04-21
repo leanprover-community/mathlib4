@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Group
 /-!
 # Infinite sums in the completion of a topological group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

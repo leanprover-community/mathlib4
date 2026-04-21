@@ -17,7 +17,6 @@ This file contains results about `CharP R 2`, in the `CharTwo` namespace.
 The lemmas in this file with a `_sq` suffix are just special cases of the `_pow_char` lemmas
 elsewhere, with a shorter name for ease of discovery, and no need for a `[Fact (Prime 2)]` argument.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

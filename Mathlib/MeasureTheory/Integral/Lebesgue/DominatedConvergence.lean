@@ -15,7 +15,6 @@ Lebesgue's dominated convergence theorem states that the limit and Lebesgue inte
 a sequence of (almost everywhere) measurable functions can be swapped if the functions are
 pointwise dominated by a fixed function. This file provides a few variants of the result.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

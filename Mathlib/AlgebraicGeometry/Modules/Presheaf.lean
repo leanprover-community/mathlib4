@@ -19,7 +19,6 @@ we also introduce a definition `X.ringCatSheaf` for the underlying sheaf
 of rings of `X`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

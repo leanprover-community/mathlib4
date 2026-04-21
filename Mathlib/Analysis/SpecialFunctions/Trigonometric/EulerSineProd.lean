@@ -19,7 +19,6 @@ for any real or complex `z`. Our proof closely follows the article
 is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x * cos x ^ (2 * n)`,
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

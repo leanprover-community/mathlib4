@@ -37,7 +37,6 @@ generators and relations.
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

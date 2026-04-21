@@ -19,7 +19,6 @@ that `W₁` is induced by `W₂`, that `W₂` is multiplicative and has
 the two-out-of-three property, then `Φ` is a right derivability structure.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

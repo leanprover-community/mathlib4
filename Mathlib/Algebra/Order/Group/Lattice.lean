@@ -36,7 +36,6 @@ in mathlib.
 
 lattice, order, group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

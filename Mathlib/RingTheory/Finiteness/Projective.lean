@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 # Finite and projective modules
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -49,7 +49,6 @@ Some care must be taken for shrinking such functions to make sure
 their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public meta section
 

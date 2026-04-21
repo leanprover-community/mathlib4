@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.EssentialFiniteness
 
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

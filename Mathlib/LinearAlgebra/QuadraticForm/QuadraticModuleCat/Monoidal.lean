@@ -25,7 +25,6 @@ For now, we simplify by insisting both universe levels are the same.
 
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

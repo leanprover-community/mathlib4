@@ -24,7 +24,6 @@ public import Mathlib.Topology.MetricSpace.Thickening
   of some second countable separable metrizable topology.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

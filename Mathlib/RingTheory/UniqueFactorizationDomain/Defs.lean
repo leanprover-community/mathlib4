@@ -20,7 +20,6 @@ public import Mathlib.Order.WellFounded
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

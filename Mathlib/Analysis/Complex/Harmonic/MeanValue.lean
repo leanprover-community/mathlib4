@@ -12,7 +12,6 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 /-!
 # The Mean Value Property of Harmonic Functions on the Complex Plane
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

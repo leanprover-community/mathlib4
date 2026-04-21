@@ -36,7 +36,6 @@ irreducible once we have established the universal property.
 free algebra, non-unital, non-associative, free magma, magma algebra, universal property,
 forgetful functor, adjoint functor
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

@@ -23,7 +23,6 @@ interval is convex on this interval.
 
 affine space, slope
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ public import Mathlib.RingTheory.TensorProduct.Quotient
   finite type is determined by its values on a finite set.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

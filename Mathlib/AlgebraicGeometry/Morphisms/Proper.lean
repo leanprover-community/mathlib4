@@ -23,7 +23,6 @@ Note that we don't require quasi-compact, since this is implied by universally c
   then `Γ(X, ⊤)` is finite dimensional over `K`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 * `numDerangements_sum`: A lemma giving an expression for `numDerangements n` in terms of
     factorials.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

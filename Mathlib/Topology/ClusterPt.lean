@@ -17,7 +17,6 @@ A filter `F` on `X` has `x` as a cluster point if `ClusterPt x F : 𝓝 x ⊓ F 
 clusters at `x` along `F : Filter α` if `MapClusterPt x F f : ClusterPt x (map f F)`.
 In particular the notion of cluster point of a sequence `u` is `MapClusterPt x atTop u`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -41,7 +41,6 @@ purposes and because it is easier than dealing with
 
 boolean ring, boolean algebra
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

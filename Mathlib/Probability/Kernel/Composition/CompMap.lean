@@ -18,7 +18,6 @@ Map and comap are particular cases of composition: they correspond to compositio
 a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_eq_comap`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

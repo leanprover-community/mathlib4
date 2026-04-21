@@ -16,7 +16,6 @@ and that the group of `n`th roots of unity in `M` is cyclic. Such monoids are su
 targets for homomorphisms from groups of exponent (dividing) `n`; for example,
 the homomorphisms can then be used to separate elements of the source group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

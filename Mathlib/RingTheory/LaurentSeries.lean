@@ -85,7 +85,6 @@ type with a zero. They are denoted `R⸨X⸩`.
   to `K⟦X⟧`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe u

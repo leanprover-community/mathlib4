@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 /-!
 # Monotonicity and ℒp seminorms
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

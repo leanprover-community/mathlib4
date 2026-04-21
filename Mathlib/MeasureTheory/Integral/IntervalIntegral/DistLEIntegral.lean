@@ -20,7 +20,6 @@ import Mathlib.Analysis.Normed.Module.Completion
 In this file we prove several version of the following fact:
 the displacement (`dist (f a) (f b)`) is at most the integral of `‖deriv f‖` over `[a, b]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 
 public section

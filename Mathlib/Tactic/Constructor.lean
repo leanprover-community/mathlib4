@@ -17,7 +17,6 @@ except that
 - `fconstructor` does not reorder goals
 - `econstructor` adds only non-dependent premises as new goals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

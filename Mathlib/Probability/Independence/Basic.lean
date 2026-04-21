@@ -74,7 +74,6 @@ when defining `μ` in the example above, the measurable space used is the last o
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
   Part A, Chapter 4.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

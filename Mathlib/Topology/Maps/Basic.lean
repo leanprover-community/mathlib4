@@ -44,7 +44,6 @@ This file introduces the following properties of a map `f : X → Y` between top
 open map, closed map, embedding, quotient map, identification map
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -23,7 +23,6 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

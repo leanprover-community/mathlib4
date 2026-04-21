@@ -64,7 +64,6 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 
 separable measure, measure-dense, Lp space, second-countable
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ algebra must *be* a C⋆-algebra already. As such, it may seem like this class i
 the main purpose is to allow for the continuous functional calculus to be an isometry for the other
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

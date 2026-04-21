@@ -40,7 +40,6 @@ with additional properties:
   show that a set is clopenable if and only if it is Borel-measurable, see
   `isClopenable_iff_measurableSet`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Data.Fintype.Sum
 /-!
 # Finiteness of sum types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

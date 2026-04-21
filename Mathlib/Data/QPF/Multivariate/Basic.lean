@@ -70,7 +70,6 @@ matched because they preserve the properties of QPF. The latter example,
 
 each proves that some operations on functors preserves the QPF structure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

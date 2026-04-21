@@ -29,7 +29,6 @@ We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHam
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 noncomputable section
 

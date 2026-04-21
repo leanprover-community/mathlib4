@@ -14,7 +14,6 @@ We prove that for `n > 0`, the inclusion functor from the `n`-truncated simplex 
 untruncated simplex category, and the inclusion functor from the `n`-truncated to the `m`-truncated
 simplex category, for `n ≤ m` are initial.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

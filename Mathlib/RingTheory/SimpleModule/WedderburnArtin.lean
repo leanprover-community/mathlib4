@@ -40,7 +40,6 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

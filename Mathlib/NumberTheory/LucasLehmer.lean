@@ -31,7 +31,6 @@ The tactic for certified computation of Lucas-Lehmer residues was provided by Ma
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

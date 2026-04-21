@@ -29,7 +29,6 @@ is a statement and proof of the universal property of these quotients.
 
 lie algebra, quotient
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

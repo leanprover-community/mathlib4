@@ -21,7 +21,6 @@ the semiring into the centre of the centroid becomes a *-homomorphism.
 
 centroid
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

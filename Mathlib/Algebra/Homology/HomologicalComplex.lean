@@ -35,7 +35,6 @@ Similarly we have `C.xPrev j`.
 Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 `C.dTo j : C.xPrev j ⟶ C.X j`, which are either defined as `C.d i j`, or zero, as needed.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ A way to restate this theorem is to say that the set of closed sets `a` with non
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms a Vitali family.
 This version is given in `Vitali.vitaliFamily`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

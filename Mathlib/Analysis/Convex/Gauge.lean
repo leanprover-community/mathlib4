@@ -37,7 +37,6 @@ For a real vector space,
 
 Minkowski functional, gauge
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

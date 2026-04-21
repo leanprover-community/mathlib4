@@ -28,7 +28,6 @@ Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projecti
 `π (kernel f) ≫ kernel.ι f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

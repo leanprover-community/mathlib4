@@ -17,7 +17,6 @@ We prove that if `M` is an `UniqueFactorizationMonoid` that can be equipped with
 Note. You need to import this file to get that the monoid of ideals of a Dedekind domain is
 torsion-free.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Tactic.NormNum.Inv
 /-!
 # `norm_num` extension for equalities
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

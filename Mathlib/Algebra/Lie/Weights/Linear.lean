@@ -40,7 +40,6 @@ or `R` has characteristic zero.
   with linear weights.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

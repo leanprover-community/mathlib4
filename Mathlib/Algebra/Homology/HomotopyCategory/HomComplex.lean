@@ -32,7 +32,6 @@ We follow the signs conventions appearing in the introduction of
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

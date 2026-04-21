@@ -22,7 +22,6 @@ public import ProofWidgets.Component.OfRpcMethod
 This file redefines the `calc` tactic so that it displays a widget panel allowing to create
 new calc steps with holes specified by selected sub-expressions in the goal.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

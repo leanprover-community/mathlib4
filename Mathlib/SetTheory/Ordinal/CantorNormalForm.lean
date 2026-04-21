@@ -32,7 +32,6 @@ normal form:
 
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

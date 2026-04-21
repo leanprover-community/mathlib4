@@ -36,7 +36,6 @@ is available as `BoxIntegral.Prepartition.compl`.
 
 rectangular box, partition, hyperplane
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

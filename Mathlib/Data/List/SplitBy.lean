@@ -21,7 +21,6 @@ The main results are the following:
 - `List.isChain_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
   related to the first element of the next list.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

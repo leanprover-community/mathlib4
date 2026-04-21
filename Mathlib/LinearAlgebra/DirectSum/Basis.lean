@@ -18,7 +18,6 @@ This file defines a `Module.Free` instance for the direct sum of modules.
 Currently, to get a basis on `⨁ i, M i` from a basis on each `M i`, use `DFinsupp.basis`
 (using that the types are defeq).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

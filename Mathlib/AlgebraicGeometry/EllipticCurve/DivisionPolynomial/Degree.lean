@@ -49,7 +49,6 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 
 elliptic curve, division polynomial, torsion point
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

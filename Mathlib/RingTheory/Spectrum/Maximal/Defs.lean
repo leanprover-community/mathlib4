@@ -18,7 +18,6 @@ It is naturally a subset of the prime spectrum endowed with the subspace topolog
 * `MaximalSpectrum R`: The maximal spectrum of a commutative (semi)ring `R`,
   i.e., the set of all maximal ideals of `R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

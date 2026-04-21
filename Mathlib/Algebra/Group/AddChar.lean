@@ -42,7 +42,6 @@ https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Additive.20ch
 
 additive character
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

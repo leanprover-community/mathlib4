@@ -26,7 +26,6 @@ The dual is also given.
 * Generalise to wide pullbacks
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

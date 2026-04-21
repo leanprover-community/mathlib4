@@ -21,7 +21,6 @@ This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the 
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

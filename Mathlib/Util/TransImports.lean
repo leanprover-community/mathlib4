@@ -13,7 +13,6 @@ public import Mathlib.Init
 The command takes an optional string input: `#trans_imports str` also shows the transitively
 imported modules whose name begins with `str`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

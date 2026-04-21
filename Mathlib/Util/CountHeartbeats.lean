@@ -20,7 +20,6 @@ theorem foo : 42 = 6 * 7 := rfl
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

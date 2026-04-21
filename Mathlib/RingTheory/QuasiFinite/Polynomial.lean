@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 
 /-! # Quasi-finite primes in polynomial algebras -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

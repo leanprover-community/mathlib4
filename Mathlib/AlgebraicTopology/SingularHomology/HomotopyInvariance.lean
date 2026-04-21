@@ -31,7 +31,6 @@ This result was first formalized in Lean 3 in 2022 by
 Brendan Seamus Murphy (with a different proof).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

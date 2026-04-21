@@ -26,7 +26,6 @@ convergence from them.
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

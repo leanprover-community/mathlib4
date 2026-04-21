@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Filtered.Final
 # Final functors between intervals
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

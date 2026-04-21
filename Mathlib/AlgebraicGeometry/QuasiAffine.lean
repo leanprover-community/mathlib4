@@ -19,7 +19,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

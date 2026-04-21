@@ -48,7 +48,6 @@ statement is clearer.
   for all $1 ≤ n.$
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

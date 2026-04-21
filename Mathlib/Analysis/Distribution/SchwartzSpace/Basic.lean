@@ -57,7 +57,6 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 
 Schwartz space, tempered distributions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

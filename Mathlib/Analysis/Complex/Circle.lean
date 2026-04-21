@@ -38,7 +38,6 @@ considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ |
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

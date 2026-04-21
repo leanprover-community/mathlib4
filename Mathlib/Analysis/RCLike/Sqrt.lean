@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 This file contains the definitions `Complex.sqrt` and `RCLike.sqrt` and builds basic API.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

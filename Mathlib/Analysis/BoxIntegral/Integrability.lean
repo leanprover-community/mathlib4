@@ -21,7 +21,6 @@ We deduce that the same is true for the Riemann integral for continuous function
 
 integral, McShane integral, Bochner integral
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

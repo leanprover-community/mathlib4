@@ -14,7 +14,6 @@ public import Mathlib.NumberTheory.LSeries.Basic
 We show that the `LSeries` of `f : ℕ → ℂ` is a linear function of `f` (assuming convergence
 of both L-series when adding two functions).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 This file concerns itself with `C(X, M)ˣ` and `C(X, Mˣ)` when `X` is a topological space
 and `M` has some monoid structure compatible with its topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

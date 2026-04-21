@@ -29,7 +29,6 @@ public import Mathlib.Analysis.Complex.HalfPlane
 We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log * f`, to avoid
 the problem that this expression does not type-check.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

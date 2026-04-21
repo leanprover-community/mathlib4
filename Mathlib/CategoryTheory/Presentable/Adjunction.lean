@@ -21,7 +21,6 @@ In particular, if `e : C ≌ D` is an equivalence of categories and
 `C` is locally presentable (resp. accessible), then so is `D`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

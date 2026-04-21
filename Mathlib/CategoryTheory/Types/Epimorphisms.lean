@@ -15,7 +15,6 @@ In this file, we show that in the category `Type u`, epimorphisms
 are stable under base change.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

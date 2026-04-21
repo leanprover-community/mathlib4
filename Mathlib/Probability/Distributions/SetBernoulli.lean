@@ -24,7 +24,6 @@ For a set `u : Set ι` and `p` between `0` and `1`, this is the measure on `Set 
 It is painful to convert from `unitInterval` to `ENNReal`. Should we introduce a coercion or
 explicit operation (like `unitInterval.toNNReal`, note the lack of dot notation!)?
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

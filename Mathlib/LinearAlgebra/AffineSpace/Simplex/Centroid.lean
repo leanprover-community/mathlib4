@@ -40,7 +40,6 @@ of the simplex.
 * https://en.wikipedia.org/wiki/Commandino%27s_theorem
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

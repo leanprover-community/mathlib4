@@ -19,7 +19,6 @@ which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason
 but slightly different.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

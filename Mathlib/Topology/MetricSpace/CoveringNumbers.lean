@@ -52,7 +52,6 @@ in the set), but we have the following inequality:
 * [R. Vershynin, *High-dimensional probability*][vershynin2018high]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

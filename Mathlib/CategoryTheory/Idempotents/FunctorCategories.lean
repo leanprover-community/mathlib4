@@ -18,7 +18,6 @@ We also provide a fully faithful functor
 `J` and `C`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

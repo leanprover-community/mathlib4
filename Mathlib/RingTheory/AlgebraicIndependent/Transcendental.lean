@@ -22,7 +22,6 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 transcendence
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

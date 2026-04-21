@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 This should be kept in sync with `Mathlib/Algebra/Order/Group/Pointwise/Interval.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

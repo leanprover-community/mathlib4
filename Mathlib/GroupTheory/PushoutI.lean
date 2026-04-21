@@ -41,7 +41,6 @@ in the diagram are injective).
 amalgamated product, pushout, group
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

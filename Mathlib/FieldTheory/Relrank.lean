@@ -26,7 +26,6 @@ This file contains basics about the relative rank of subfields and intermediate 
   This is similar to `Subgroup.relIndex`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 * `exp_eps`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -34,7 +34,6 @@ We provide several equivalent ways to characterize a strict map `f`:
 * `Topology.isStrictMap_iff_isEmbedding_kerLift`: `f` is strict if and only if
   the canonical injection `Quotient (Setoid.ker f) → Y` (`Setoid.kerLift f`) is an embedding.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

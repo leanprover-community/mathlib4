@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 In this file, we show that if a functor preserves spans and cospans, then it preserves images.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

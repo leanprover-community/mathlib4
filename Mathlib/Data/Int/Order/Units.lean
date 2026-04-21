@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Ring.Abs
 /-!
 # Lemmas about units in `ℤ`, which interact with the order structure.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

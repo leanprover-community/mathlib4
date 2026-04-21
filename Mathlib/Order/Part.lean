@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Common
 /-!
 # Monotonicity of monadic operations on `Part`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

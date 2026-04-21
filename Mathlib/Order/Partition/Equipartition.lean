@@ -24,7 +24,6 @@ difference of `1`.
   equipped with an equipartition. Indices of elements in the same part are congruent modulo
   the number of parts.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

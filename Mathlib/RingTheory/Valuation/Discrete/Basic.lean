@@ -60,7 +60,6 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

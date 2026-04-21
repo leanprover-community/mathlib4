@@ -15,7 +15,6 @@ In this file we define `ContinuousMap.Homotopy.affine f g`
 to be the homotopy between `f` and `g`
 such that `affine f g (t, x) = AffineMap.lineMap (f x) (g x) t`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -25,7 +24,6 @@ variable {X E : Type*} [TopologicalSpace X]
 
 namespace ContinuousMap.Homotopy
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The homotopy between `f` and `g`
 such that `affine f g (t, x) = AffineMap.lineMap (f x) (g x) t`. -/
 @[simps +simpRhs]

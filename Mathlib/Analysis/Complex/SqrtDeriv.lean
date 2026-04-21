@@ -21,7 +21,6 @@ This file proves that `Complex.sqrt` is differentiable on the slit plane
 * `Complex.differentiableOn_sqrt`: `Complex.sqrt` is differentiable on `slitPlane`.
 * `Complex.deriv_sqrt`: the derivative equals `z ^ (-1 / 2 : ℂ) / 2`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

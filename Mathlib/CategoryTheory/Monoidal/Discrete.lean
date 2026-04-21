@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 The discrete category on a monoid is a monoidal category.
 Multiplicative morphisms induce monoidal functors.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

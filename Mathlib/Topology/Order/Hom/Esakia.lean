@@ -31,7 +31,6 @@ be satisfied by itself and all stricter types.
 
 * [Wikipedia, *Esakia space*](https://en.wikipedia.org/wiki/Esakia_space)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

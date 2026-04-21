@@ -16,7 +16,6 @@ then limits in `FullSubcategory P` can be constructed from limits in `C`.
 More precisely, the inclusion creates such limits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

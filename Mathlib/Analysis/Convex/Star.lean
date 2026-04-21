@@ -47,7 +47,6 @@ Star-convex sets are contractible.
 
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ public import Mathlib.LinearAlgebra.Span.Basic
   in `q`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

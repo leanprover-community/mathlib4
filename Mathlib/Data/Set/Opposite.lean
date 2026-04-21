@@ -13,7 +13,6 @@ public import Mathlib.Data.Set.Operations
 
 The opposite of a set `s` is simply the set obtained by taking the opposite of each member of `s`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

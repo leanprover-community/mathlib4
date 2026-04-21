@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.MvPolynomial
 /-!
 # Rank of multivariate rational function field
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

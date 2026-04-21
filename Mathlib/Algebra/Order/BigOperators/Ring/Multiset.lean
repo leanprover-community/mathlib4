@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 rings.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Data.Multiset.Dedup
 /-!
 # The fold operation for a commutative associative operation over a multiset.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

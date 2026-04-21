@@ -14,7 +14,6 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 If `f` has a local extremum at a point, then the derivative at this point is zero.
 In this file we prove several versions of this fact for line derivatives.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

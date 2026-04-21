@@ -19,7 +19,6 @@ associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

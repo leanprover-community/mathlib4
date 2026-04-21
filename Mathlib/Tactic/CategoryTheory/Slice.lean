@@ -14,7 +14,6 @@ Applies a tactic to an interval of terms from a term obtained by repeated applic
 of `Category.comp`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

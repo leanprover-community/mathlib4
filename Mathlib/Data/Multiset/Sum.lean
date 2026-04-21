@@ -17,7 +17,6 @@ with the `Multiset.sum` operation which computes the additive sum.
 
 * `Multiset.disjSum`: `s.disjSum t` is the disjoint sum of `s` and `t`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

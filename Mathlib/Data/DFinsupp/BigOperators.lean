@@ -41,7 +41,6 @@ the `Add` instance as noncomputable. This design difference is independent of th
 `DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

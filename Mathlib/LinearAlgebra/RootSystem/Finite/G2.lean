@@ -43,7 +43,6 @@ Once sufficient API for `RootPairing.Base` has been developed:
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

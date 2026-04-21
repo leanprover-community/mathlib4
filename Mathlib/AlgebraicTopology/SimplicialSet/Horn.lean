@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 This file introduces horns `Λ[n, i]`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ any object `X : C` as a colimit of `κ`-presentable objects, and we show
 that this is a `κ`-filtered colimit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

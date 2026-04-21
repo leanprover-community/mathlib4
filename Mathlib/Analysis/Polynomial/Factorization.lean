@@ -21,7 +21,6 @@ This file contains two main results:
   shows that a monic polynomial of degree at least two over `ℝ` can be written as
   a monic polynomial of degree two times another monic factor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

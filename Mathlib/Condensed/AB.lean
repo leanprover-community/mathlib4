@@ -17,7 +17,6 @@ public import Mathlib.Condensed.Limits
 This file proves that the category of condensed modules over a ring satisfies Grothendieck's axioms
 AB5, AB4, and AB4*.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

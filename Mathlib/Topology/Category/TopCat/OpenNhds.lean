@@ -26,7 +26,6 @@ Besides `OpenNhds`, the main constructions here are:
 * `adjunctionNhds`: An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and
                     `OpenNhds (f x)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

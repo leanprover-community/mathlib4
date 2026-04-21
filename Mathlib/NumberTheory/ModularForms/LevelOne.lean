@@ -18,7 +18,6 @@ This file contains results specific to modular forms of level one, i.e. modular 
 TODO: Add finite-dimensionality of these spaces of modular forms.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

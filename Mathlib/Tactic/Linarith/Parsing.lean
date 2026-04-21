@@ -30,7 +30,6 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

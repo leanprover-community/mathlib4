@@ -17,7 +17,6 @@ instance on `DFinsupp π`.
 
 As an application, `σ →₀ R` has a `Small.{v}` instance if `σ` and `R` have one.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

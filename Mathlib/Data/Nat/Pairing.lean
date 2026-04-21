@@ -24,7 +24,6 @@ This file defines a pairing function for the naturals as follows:
 It has the advantage of being monotone in both directions and sending `⟦0, n^2 - 1⟧` to
 `⟦0, n - 1⟧²`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

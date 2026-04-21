@@ -14,7 +14,6 @@ Sometimes it is useful to make a copy of a lattice structure
 where one replaces the data parts with provably equal definitions
 that have better definitional properties.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

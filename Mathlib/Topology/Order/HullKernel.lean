@@ -52,7 +52,6 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 lower topology, hull-kernel topology, Jacobson topology, structure topology, primitive spectrum
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

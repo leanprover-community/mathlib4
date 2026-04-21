@@ -19,7 +19,6 @@ We show that the fiber functors `Φ.presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A`
 and `Φ.sheafFiber : Sheaf J A ⥤ A` are monoidal.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

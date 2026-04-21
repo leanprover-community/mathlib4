@@ -19,7 +19,6 @@ public import Mathlib.Data.Fintype.Basic
 This file contains theorems relevant to big operators in binary and arbitrary products
 of monoids and groups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

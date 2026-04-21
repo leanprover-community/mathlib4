@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.Defs
 /-!
 # Divisibility in finite types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

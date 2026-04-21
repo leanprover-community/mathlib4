@@ -21,7 +21,6 @@ This file defines the `@[higher_order]` attribute that applies to lemmas of the 
 `∀ x, f (g x) = h x`. It derives an auxiliary lemma of the form `f ∘ g = h` for reasoning about
 higher-order functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

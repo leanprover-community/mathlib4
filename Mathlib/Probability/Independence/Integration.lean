@@ -28,7 +28,6 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 ```
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

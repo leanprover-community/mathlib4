@@ -23,7 +23,6 @@ imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

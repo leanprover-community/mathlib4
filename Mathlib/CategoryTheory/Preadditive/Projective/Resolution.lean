@@ -18,7 +18,6 @@ along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting j
 of `Z` in degree zero.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

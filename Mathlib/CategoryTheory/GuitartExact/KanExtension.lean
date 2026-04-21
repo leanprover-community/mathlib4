@@ -35,7 +35,6 @@ induced by a Guitart exact square `w` is an isomorphism.
 * https://ncatlab.org/nlab/show/exact+square
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

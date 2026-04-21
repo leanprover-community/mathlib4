@@ -16,7 +16,6 @@ public import Mathlib.Data.Finset.Lattice.Fold
 We provide the `SemilatticeInf` with `OrderTop (Subobject X)` instance when `[HasPullback C]`,
 and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCoproducts C]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

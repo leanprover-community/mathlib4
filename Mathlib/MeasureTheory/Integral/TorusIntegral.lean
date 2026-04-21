@@ -56,7 +56,6 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 
 integral, torus
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

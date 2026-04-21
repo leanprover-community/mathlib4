@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres, open balls, and
 closed balls in a seminormed group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

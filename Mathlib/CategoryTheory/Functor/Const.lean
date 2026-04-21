@@ -20,7 +20,6 @@ We have `(const J).obj X ⋙ F ≅ (const J).obj (F.obj X)` for any `F : C ⥤ D
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation

@@ -42,7 +42,6 @@ We prove some basic facts about the category `Type`:
 * every type level `IsLawfulFunctor` gives a categorical functor `Type ⥤ Type`
   (the corresponding fact about monads is in `Mathlib/CategoryTheory/Monad/Types.lean`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

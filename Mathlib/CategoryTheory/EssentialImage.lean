@@ -22,7 +22,6 @@ The essential image can also be seen as a subcategory of the target category, an
 a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -168,7 +167,6 @@ end EssSurj
 variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
 functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/

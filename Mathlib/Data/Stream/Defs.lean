@@ -14,7 +14,6 @@ A stream `Stream' α` is an infinite sequence of elements of `α`. One can also 
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

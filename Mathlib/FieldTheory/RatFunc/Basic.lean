@@ -48,7 +48,6 @@ with the same condition on retaining the non-zero-divisor property across the ma
 - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
   `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

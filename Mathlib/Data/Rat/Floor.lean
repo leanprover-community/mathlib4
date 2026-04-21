@@ -24,7 +24,6 @@ division and modulo arithmetic are derived as well as some simple inequalities.
 
 rat, rationals, ℚ, floor
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

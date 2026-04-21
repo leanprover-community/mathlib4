@@ -48,7 +48,6 @@ from the construction. In the second case, we modify the individual limits
 (again using Riesz-Markov-Kakutani) to make sure that they are inner-regular, and then one can
 check the condition.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

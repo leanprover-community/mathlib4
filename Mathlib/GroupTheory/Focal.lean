@@ -36,7 +36,6 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 * [D. Gorenstein, *Finite Groups*][gorenstein1968]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

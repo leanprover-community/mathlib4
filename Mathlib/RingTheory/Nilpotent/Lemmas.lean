@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Nilpotent.Defs
 
 This file contains results about nilpotent elements that involve ring theory.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

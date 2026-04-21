@@ -25,7 +25,6 @@ This file defines the first-order theory of fields as a theory over the language
   by `fieldOfModelField` are compatible with the ring operations on `K` given by the
   `Language.ring.Structure` instance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

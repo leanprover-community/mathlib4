@@ -16,7 +16,6 @@ and `m : Set.Ici j` is successor limit, then
 `↑m : J` is also successor limit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

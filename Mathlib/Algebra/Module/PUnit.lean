@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Ring.PUnit
 
 This file collects facts about module structures on the one-element type
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Data.Real.Star
 /-!
 # The non-negative real numbers are a `*`-ring, with the trivial `*`-structure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

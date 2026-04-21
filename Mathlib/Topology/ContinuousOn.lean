@@ -21,7 +21,6 @@ these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

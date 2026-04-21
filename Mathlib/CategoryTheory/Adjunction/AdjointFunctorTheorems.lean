@@ -38,7 +38,6 @@ Finally, we prove the following corollaries of the special adjoint functor theor
   `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

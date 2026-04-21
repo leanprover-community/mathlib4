@@ -43,7 +43,6 @@ inner product spaces.
   `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

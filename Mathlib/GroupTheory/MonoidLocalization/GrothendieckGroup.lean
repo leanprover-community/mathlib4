@@ -21,7 +21,6 @@ obtained by formally making the last term of each short exact sequence invertibl
 
 * [*Grothendieck group*, Wikipedia](https://en.wikipedia.org/wiki/Grothendieck_group#Grothendieck_group_of_a_commutative_monoid)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

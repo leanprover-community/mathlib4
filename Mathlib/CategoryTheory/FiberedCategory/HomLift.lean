@@ -31,7 +31,6 @@ The class `IsHomLift` is defined as an inductive with the single constructor
 `.rfl (a : α) : Eq a a`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

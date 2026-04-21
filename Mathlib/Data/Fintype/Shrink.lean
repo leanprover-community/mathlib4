@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.EquivFin
 /-!
 # Fintype instance for `Shrink`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

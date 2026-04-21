@@ -15,7 +15,6 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 `log`, and `cpow` are analytic, since they are differentiable.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

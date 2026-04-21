@@ -35,7 +35,6 @@ final can be restated. We show:
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 3.2
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

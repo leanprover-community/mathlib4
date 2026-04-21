@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 This file defines the basis of an opposite space and shows
 that the opposite space is finite-dimensional and free when the original space is.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

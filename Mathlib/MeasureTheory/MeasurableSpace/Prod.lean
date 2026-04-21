@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.PiSystem
 
 This file talks about the measurability of operations on binary functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

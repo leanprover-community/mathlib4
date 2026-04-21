@@ -21,7 +21,6 @@ We also show that if `A` is a normed algebra over `𝕜`, then so is `UniformSpa
 
 TODO: Generalise the results here from the concrete `completion` to any `AbstractCompletion`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

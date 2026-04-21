@@ -19,7 +19,6 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 * `FreeGroup.norm`: the length of the maximal reduction of a word in a free group
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

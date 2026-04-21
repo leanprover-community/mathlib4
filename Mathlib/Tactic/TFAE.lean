@@ -18,7 +18,6 @@ public import Mathlib.Util.AtomM
 This file provides the tactics `tfae_have` and `tfae_finish` for proving goals of the form
 `TFAE [P₁, P₂, ...]`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -52,7 +52,6 @@ Let `C` refer to a category with a terminal object.
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ and `b : ZMod n`, then the sum `∑ χ : DirichletCharacter R n, χ a⁻¹ * χ 
 when `a ≠ b` and has the value `n.totient` otherwise. This requires `R` to have
 enough roots of unity (e.g., `R` could be an algebraically closed field of characteristic zero).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

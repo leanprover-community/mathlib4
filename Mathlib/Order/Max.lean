@@ -29,7 +29,6 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 * `NoMinOrder`: An order without minimal elements.
 * `NoMaxOrder`: An order without maximal elements.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

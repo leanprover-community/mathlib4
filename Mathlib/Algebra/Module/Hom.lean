@@ -22,7 +22,6 @@ functions.
 
 We also define a bundled versions of `(· • ·)` as `AddMonoidHom.smul`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

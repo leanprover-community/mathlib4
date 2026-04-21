@@ -20,7 +20,6 @@ limit along `L` of the sums over finsets (if this limit exists). This file only 
 machinery of summation filters - the key definitions `HasSum`, `tsum` and `summable` (and their
 product variants) are in the file `Mathlib/Topology/Algebra/InfiniteSum/Defs.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,7 +42,6 @@ Heyting algebras are the order-theoretic equivalent of Cartesian closed categori
 
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
 and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

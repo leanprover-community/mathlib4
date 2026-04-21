@@ -26,7 +26,6 @@ public import Mathlib.Tactic.Abel
   the left uniformity. We also give versions for the right uniformity. In particular,
   the quotient of a Banach space by a subspace is complete.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

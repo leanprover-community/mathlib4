@@ -14,7 +14,6 @@ public import Mathlib.Data.Multiset.Fold
 This file defines `Multiset.sup` and derives the dual `Multiset.inf` and their basic lemmas
 via `to_dual`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

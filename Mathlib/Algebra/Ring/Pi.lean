@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

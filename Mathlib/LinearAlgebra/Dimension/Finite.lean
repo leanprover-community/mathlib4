@@ -17,7 +17,6 @@ public import Mathlib.SetTheory.Cardinal.Cofinality
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

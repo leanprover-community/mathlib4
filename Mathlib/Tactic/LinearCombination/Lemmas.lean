@@ -16,7 +16,6 @@ public meta import Mathlib.Tactic.ToAdditive
 
 These should not be used directly in user code.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

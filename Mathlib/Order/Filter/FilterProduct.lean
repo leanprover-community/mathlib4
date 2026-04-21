@@ -21,7 +21,6 @@ ultrafilter. Definitions and properties that work for any filter should go to `O
 
 ultrafilter, ultraproduct
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ block by doing `lift s to ClosedSubmodule R E using hs`.
 
 Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

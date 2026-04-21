@@ -13,7 +13,6 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 This file computes special values of the integral of `log ∘ sin`. Given that the indefinite integral
 involves the dilogarithm, this can be seen as computing special values of `Li₂`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

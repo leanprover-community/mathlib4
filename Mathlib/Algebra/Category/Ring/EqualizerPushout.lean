@@ -20,7 +20,6 @@ to `R` when `R ⟶ S` is a faithfully flat ring map.
 Note that, under `CommRingCat.pushoutCoconeIsColimit`, the two maps `inl` and `inr` above can be
 described as `s ↦ s ⊗ₜ[R] 1` and `s ↦ 1 ⊗ₜ[R] s`, respectively.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

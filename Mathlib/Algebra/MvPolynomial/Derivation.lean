@@ -16,7 +16,6 @@ monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDeri
 builds a derivation from its values on `X i`s and a linear equivalence
 `MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

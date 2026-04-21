@@ -32,7 +32,6 @@ We define a Gaussian measure over the reals.
   variance `v`, then `c * X` is Gaussian with mean `c * μ` and variance `c ^ 2 * v`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,7 +33,6 @@ provides ways to access, modify, and combine `AList`s.
 * <https://en.wikipedia.org/wiki/Association_list>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

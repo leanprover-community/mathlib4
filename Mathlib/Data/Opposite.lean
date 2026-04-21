@@ -16,7 +16,6 @@ two bijections `op : α → αᵒᵖ` and `unop : αᵒᵖ → α`. If `α` is a
 opposite category, with all arrows reversed.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

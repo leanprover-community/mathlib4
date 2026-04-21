@@ -49,7 +49,6 @@ the model space is `ModelProd E E'` and the model vector space is `E × E'`, whi
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

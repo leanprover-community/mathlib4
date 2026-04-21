@@ -23,7 +23,6 @@ This file deals with the factors of natural numbers.
 - `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

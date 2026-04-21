@@ -12,7 +12,6 @@ public import Mathlib.Data.Finset.Density
 /-!
 # Results about big operators with values in a field
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

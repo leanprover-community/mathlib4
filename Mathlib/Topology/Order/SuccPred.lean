@@ -14,7 +14,6 @@ public import Mathlib.Order.SuccPred.Limit
 This file proves miscellaneous results under the assumption of `OrderTopology` plus either of
 `SuccOrder` or `PredOrder`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

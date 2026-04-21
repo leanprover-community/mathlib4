@@ -21,7 +21,6 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 `0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
 to zero. These results are important in the theory of modular forms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

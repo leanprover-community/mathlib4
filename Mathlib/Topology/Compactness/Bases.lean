@@ -11,7 +11,6 @@ public import Mathlib.Topology.Compactness.Compact
 /-!
 # Topological bases in compact sets and compact spaces
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

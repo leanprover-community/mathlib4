@@ -19,7 +19,6 @@ In this file we define `Filter.cocardinal hc`: the filter of sets with cardinali
   Such filters are `CardinalInterFilter` with cardinality `c`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

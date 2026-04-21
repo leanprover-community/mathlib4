@@ -16,7 +16,6 @@ This file contains the `CommMonoidWithZero` and `IsCancelMulZero` instances on t
 
 See note [foundational algebra order theory].
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

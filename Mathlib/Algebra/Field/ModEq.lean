@@ -15,7 +15,6 @@ public import Mathlib.Tactic.MinImports
 In this file we prove a few theorems about the congruence relation `_ ≡ _ [PMOD _]`
 in a division semiring or a semifield.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

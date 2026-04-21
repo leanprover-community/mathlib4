@@ -26,7 +26,6 @@ use it to define various important operations, notably the Lie span of a subset 
 
 lie algebra, lie submodule, lie ideal, lattice structure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

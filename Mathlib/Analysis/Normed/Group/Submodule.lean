@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-! # Submodules of normed groups -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

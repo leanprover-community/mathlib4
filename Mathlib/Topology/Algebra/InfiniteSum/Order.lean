@@ -16,7 +16,6 @@ public import Mathlib.Topology.Order.MonotoneConvergence
 
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

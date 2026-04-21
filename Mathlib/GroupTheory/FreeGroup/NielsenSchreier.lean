@@ -48,7 +48,6 @@ https://ncatlab.org/nlab/show/Nielsen-Schreier+theorem
 free group, free groupoid, Nielsen-Schreier
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it to show the
 dimension of the algebra is the cardinality of `List X`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

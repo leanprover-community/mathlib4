@@ -50,7 +50,6 @@ We also provide API for going between lax transformations and strong transformat
   section 4.2.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

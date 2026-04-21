@@ -20,7 +20,6 @@ This file contains `Nat` and `List` as examples of W types.
 * `WType.equivNat`: the construction of the naturals as a W-type is equivalent to `Nat`
 * `WType.equivList`: the construction of lists on a type `γ` as a W-type is equivalent to `List γ`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

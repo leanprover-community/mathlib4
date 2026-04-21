@@ -36,7 +36,6 @@ inverse, arsinh.
 
 arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

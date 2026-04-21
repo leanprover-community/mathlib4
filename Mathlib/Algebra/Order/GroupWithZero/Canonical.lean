@@ -31,7 +31,6 @@ The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Infinite sums in topological vector spaces -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

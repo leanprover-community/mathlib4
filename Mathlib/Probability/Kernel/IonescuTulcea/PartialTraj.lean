@@ -71,7 +71,6 @@ against `partialTraj κ a b`, taking inspiration from `MeasureTheory.lmarginal`.
 
 Ionescu-Tulcea theorem, composition of kernels
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

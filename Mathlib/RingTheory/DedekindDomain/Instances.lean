@@ -27,7 +27,6 @@ cannot be instances (since Lean has no way of guessing the submonoid). Having th
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

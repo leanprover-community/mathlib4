@@ -29,7 +29,6 @@ This file defines quantifier complexity of first-order formulas, and constructs 
   formula has the same realization as the original formula.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -36,7 +36,6 @@ distinct, and the count is bounded by the number of strings of each length.
 
 * McMillan, B. (1956), "Two inequalities implied by unique decipherability"
 -/
-set_option backward.defeqAttrib.useBackward true
 
 namespace InformationTheory
 

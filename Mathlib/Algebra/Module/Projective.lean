@@ -60,7 +60,6 @@ All of these should be relatively straightforward.
 projective module
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

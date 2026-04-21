@@ -19,7 +19,6 @@ to prove the identity
 for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,7 +22,6 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
   surjective homomorphism `R_{f⁻¹(P)} →+* S_P` for every prime ideal `P` of `S`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

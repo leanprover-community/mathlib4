@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prime dimension,
 then there are no non-trivial `F`-subalgebras.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

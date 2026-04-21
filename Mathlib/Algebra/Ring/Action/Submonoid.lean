@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 /-!
 # The subgroup of fixed points of an action
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

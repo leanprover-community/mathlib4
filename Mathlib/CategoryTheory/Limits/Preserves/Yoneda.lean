@@ -28,7 +28,6 @@ There is also a relative version of this statement where `F : J ⥤ Over A` for 
 `A`, see `Mathlib/CategoryTheory/Comma/Presheaf/Colimit.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

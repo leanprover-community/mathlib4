@@ -41,7 +41,6 @@ to be accessed with `A i j`. However, it is not advisable to _construct_ matrice
 form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
 as having the right type. Instead, `Matrix.of` should be used.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

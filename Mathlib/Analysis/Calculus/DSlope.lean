@@ -20,7 +20,6 @@ for `a = b`.
 In this file we define `dslope` and prove some basic lemmas about its continuity and
 differentiability.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

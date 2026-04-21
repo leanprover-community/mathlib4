@@ -27,7 +27,6 @@ not what is called "the category of simplices of `X`" in the literature
   simplices of a simplicial set `X` which do not belong to a given subcomplex.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

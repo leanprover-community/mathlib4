@@ -26,7 +26,6 @@ function when the base is coprime to the modulus.
   or towers of exponents using these results.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

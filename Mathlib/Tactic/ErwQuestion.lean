@@ -15,7 +15,6 @@ public meta import Lean.Elab.Tactic.Rewrite
 and then attempts to identify any subexpression which would block the use of `rw` instead.
 It does so by identifying subexpressions which are defeq, but not at reducible transparency.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

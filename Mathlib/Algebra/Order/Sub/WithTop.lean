@@ -21,7 +21,6 @@ additivization of the usual convention `0⁻¹ = 0` and is relevant in valuation
 other instance is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bottom
 element, unless the group is trivial), this shouldn't create diamonds.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

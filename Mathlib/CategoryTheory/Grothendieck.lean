@@ -48,7 +48,6 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of a fun
 * https://ncatlab.org/nlab/show/Grothendieck+construction
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ In this file, we show that for any `n : ℤ`, the functor
 `singleFunctor C n : C ⥤ DerivedCategory C` is fully faithful.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ public import Mathlib.MeasureTheory.Order.Lattice
 
 measurable function, group, lattice operation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

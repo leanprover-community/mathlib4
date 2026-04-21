@@ -53,7 +53,6 @@ separately.
   `L : A → A`, `R : A → A` satisfying the centrality condition `∀ x y, R x * y = x * L y`.
 + Show that if `A` is unital, then `A ≃⋆ₐ[𝕜] 𝓜(𝕜, A)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

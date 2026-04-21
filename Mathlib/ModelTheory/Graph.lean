@@ -22,7 +22,6 @@ This file defines first-order languages, structures, and theories in graph theor
 - `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
   of the theory of simple graphs.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

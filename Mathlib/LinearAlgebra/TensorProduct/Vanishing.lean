@@ -55,7 +55,6 @@ is injective for every submodule $M' \subseteq M$.
 * Prove the same theorems with $M$ and $N$ swapped.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

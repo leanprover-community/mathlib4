@@ -21,7 +21,6 @@ public import Mathlib.Data.Finite.Sigma
 We show that finite (co)limits exist in `FintypeCat` and that they are preserved by the natural
 inclusion `FintypeCat.incl`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

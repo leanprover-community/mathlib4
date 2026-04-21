@@ -17,7 +17,6 @@ The main application is in algebraic number theory, where `G := Gal(L/K)` is the
 of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their rings of
 integers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

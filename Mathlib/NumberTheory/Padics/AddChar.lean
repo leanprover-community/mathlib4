@@ -36,7 +36,6 @@ equivalent if `NormMulClass R` holds.
 
 * Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

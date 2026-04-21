@@ -44,7 +44,6 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Order.Lex
 This file proves additional properties about the *canonical* homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

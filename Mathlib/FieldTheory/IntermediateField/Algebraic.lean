@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Algebraic.Integral
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

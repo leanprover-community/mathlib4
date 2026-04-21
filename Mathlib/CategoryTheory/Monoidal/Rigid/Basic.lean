@@ -58,7 +58,6 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 rigid category, monoidal category
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ objects being points of `X`, and morphisms `x ⟶ y` being paths from `x` to `y`
 homotopy equivalence. With this, the fundamental group of `X` based at `x` is just the automorphism
 group of `x`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ This file contains basic facts about normed algebras.
 normed algebra, character space, continuous functional calculus
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

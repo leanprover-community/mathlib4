@@ -40,7 +40,6 @@ In `Mathlib.CategoryTheory.Monoidal.Arrow`, these constructions are used to defi
 monoidal (closed) structure on arrow categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

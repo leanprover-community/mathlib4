@@ -30,7 +30,6 @@ By combining these formulae, one deduces that the limit of `ζ s - 1 / (s - 1)` 
 exists and is equal to `γ`. Finally, using this and the Riemann removable singularity criterion
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ public import Mathlib.Data.Nat.Cast.Field
 This file proves that the probability of a permutation on n elements being a derangement is 1/e.
 The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -17,7 +17,6 @@ the long exact homology sequences associated to distinguished triangles in the
 derived category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

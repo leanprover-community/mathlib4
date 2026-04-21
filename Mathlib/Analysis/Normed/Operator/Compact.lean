@@ -48,7 +48,6 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 
 Compact operator
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

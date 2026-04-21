@@ -14,7 +14,6 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `Finsupp.update` and `Finsupp.single`, in the same way that `{a, b}` desugars to `insert` and
 `singleton`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

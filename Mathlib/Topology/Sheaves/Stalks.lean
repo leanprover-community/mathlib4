@@ -44,7 +44,6 @@ particular cases of general constructions for points of sites from
 `Mathlib/CategoryTheory/Sites/Point/Basic.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

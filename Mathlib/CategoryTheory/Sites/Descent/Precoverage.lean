@@ -31,7 +31,6 @@ Grothendieck topology associated to `J` if `F` satisfies
 that are part of `J`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe t t' v' v u' u
 

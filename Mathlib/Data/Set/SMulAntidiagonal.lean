@@ -19,7 +19,6 @@ and an element in `t` that scalar-multiply to `a`.
 * SMul.antidiagonal : Set-valued antidiagonal for SMul.
 * VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ as is done for the other algebraic categories.
 
 Analogous constructions for Noetherian modules.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

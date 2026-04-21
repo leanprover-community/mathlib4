@@ -34,7 +34,6 @@ when `A` is an abelian category.
 * https://ncatlab.org/nlab/show/Moore+complex
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

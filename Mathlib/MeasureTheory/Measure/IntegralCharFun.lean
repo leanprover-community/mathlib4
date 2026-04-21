@@ -30,7 +30,6 @@ relating the measure of some sets to integrals of characteristic functions.
   `μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

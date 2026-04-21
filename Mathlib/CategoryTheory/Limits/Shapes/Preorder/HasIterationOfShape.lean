@@ -19,7 +19,6 @@ an assumption in order to do constructions by transfinite induction indexed by
 a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -49,7 +49,6 @@ and transfer the generic results to these notions.
 * <https://en.wikipedia.org/wiki/Hemicontinuity>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

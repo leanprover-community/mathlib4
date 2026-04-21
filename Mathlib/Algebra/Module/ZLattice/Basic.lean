@@ -52,7 +52,6 @@ aspect appears to be the more useful one (especially in computations involving b
 consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

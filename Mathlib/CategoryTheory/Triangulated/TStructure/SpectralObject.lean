@@ -28,7 +28,6 @@ triangulated category `C`, and this extends to a functor
 `t.spectralObjectFunctor : C ⥤ SpectralObject C EInt`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

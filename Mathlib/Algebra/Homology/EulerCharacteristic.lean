@@ -44,7 +44,6 @@ These definitions may have junk values from `finsum` (0 for infinite support) an
   homological Euler characteristic equals the finite sum when homology has finite support
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

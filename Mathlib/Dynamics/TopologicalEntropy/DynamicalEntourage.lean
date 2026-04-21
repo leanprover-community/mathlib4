@@ -35,7 +35,6 @@ Add product of entourages.
 In the context of (pseudo-e)metric spaces, relate the usual definition of dynamical balls with
 these dynamical entourages.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

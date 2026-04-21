@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 This file contains many results about adjoining elements to fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

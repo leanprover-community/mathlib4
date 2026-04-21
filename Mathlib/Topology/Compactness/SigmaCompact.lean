@@ -18,7 +18,6 @@ public import Mathlib.Topology.Compactness.LocallyFinite
   of a countable collection of compact subspaces.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

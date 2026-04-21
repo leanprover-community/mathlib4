@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Finiteness.Defs
 This file contains the basic results on `Submodule.FG` and `Module.Finite` that do not need heavy
 further imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

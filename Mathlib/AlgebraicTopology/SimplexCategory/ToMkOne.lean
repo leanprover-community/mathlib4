@@ -15,7 +15,6 @@ This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
 in the study of simplices in the simplicial set `Δ[1]`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

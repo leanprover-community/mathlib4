@@ -19,7 +19,6 @@ We show that most standard real and complex functions are measurable, notably `e
 See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 `MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

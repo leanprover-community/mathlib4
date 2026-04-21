@@ -29,7 +29,6 @@ More properties of the Lebesgue measure are deduced from this in
 `Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean`, where they are proved more generally for any
 additive Haar measure on a finite-dimensional real vector space.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

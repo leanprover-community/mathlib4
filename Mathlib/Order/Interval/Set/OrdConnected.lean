@@ -20,7 +20,6 @@ the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

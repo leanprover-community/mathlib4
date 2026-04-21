@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Smooth.Locus
 In this file we define smooth ring homomorphisms and show their meta properties.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

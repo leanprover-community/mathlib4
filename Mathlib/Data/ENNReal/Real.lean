@@ -25,7 +25,6 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
     indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
     `ℝ≥0∞` is a complete lattice.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

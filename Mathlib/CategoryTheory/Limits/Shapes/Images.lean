@@ -53,7 +53,6 @@ so that `m` factors through the `m'` in any other such factorisation.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

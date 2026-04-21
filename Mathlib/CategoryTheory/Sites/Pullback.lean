@@ -27,7 +27,6 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
   sense of SGA 4 IV 4.9.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

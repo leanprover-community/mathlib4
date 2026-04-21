@@ -17,7 +17,6 @@ A few constructions for Finsets in `Fin n`.
 
 * `Finset.attachFin`: Turns a Finset of naturals strictly less than `n` into a `Finset (Fin n)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

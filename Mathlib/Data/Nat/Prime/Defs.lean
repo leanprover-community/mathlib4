@@ -26,7 +26,6 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
                                   only divisible by `1` iff it is prime
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -48,7 +48,6 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 - Grassmannians for schemes and quasi-coherent sheaf of modules.
 - Representability of `Module.Grassmannian.functor R M k`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-! # Equip `ℂ` with the Borel sigma-algebra -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

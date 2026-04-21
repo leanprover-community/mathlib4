@@ -27,7 +27,6 @@ This construction shall be used in the definition of the monoidal category struc
 on graded objects indexed by an additive monoid.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

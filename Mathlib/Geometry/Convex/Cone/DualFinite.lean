@@ -26,7 +26,6 @@ In this case, V- and H-cones are known as polyhedral cones.
 - `PointedCone.DualFG` expresses that a cone is the dual of a finite set.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

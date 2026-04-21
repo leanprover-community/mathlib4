@@ -12,7 +12,6 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 /-!
 # Transfer group with zero structures from `α` to `Shrink α`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

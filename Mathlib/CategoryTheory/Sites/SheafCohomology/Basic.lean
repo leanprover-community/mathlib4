@@ -34,7 +34,6 @@ of sets `yoneda.obj U` to `F`.
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

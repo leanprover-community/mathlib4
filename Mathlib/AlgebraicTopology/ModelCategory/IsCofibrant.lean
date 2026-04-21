@@ -17,7 +17,6 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 (Fibrant objects are defined similarly.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ We define the following properties for sets in a topological space:
 For both of these definitions, we also have a class stating that the whole space
 satisfies that property: `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,7 +31,6 @@ set functions with this stronger property to integrable (L1) functions.
 The starting object `T : Set α → E →L[ℝ] F` matters only through its restriction on measurable sets
 with finite measure. Its value on other sets is ignored.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

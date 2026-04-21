@@ -16,7 +16,6 @@ its characterization in terms of the canonical inclusions.
 We also provide `Faithful` and `EssSurj` instances on this functor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

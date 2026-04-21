@@ -53,7 +53,6 @@ this file.
 * On a connected open set `u`, a function which is `ConformalAt` each point is either holomorphic
   throughout or antiholomorphic throughout.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

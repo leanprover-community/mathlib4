@@ -28,7 +28,6 @@ of the inverse limit of `ZMod (p^n)`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

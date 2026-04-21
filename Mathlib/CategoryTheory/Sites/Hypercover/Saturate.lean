@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 Given a `0`-hypercover `E`, we define a `1`-hypercover `E.saturate`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

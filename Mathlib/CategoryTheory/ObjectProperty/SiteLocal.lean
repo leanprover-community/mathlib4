@@ -23,7 +23,6 @@ We say that
 
 The covers appearing in the definitions have index type in the morphism universe of `C`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

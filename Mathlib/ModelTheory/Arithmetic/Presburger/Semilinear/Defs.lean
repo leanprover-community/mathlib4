@@ -50,7 +50,6 @@ of sets in form `{ x | ∃ y, p x y }`.
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Order.Notation
 
 In this file we define `WithBot` and `WithTop`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

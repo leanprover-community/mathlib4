@@ -21,7 +21,6 @@ For each of the following structures we prove that if `β` has this structure, t
 
 filter, germ
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

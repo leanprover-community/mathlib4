@@ -18,7 +18,6 @@ the monad `(T, η_ T, μ_ T)` as well as the co-Kleisli adjunction which gives r
 ## References
 * [Riehl, *Category theory in context*, Definition 5.2.9][riehl2017]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

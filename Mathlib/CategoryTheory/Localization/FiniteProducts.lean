@@ -20,7 +20,6 @@ a localization functor for `W : MorphismProperty C` and that
 products, and `L` preserves finite products.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,7 +42,6 @@ operator. This is necessary for the heuristic in `@[to_additive]`.
 See the documentation of `to_additive.attr` for more information.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

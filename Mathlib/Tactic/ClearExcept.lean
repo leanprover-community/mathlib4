@@ -14,7 +14,6 @@ public meta import Lean.Elab.Tactic.ElabTerm
 This file provides a variant of the `clear` tactic, which clears all hypotheses it can
 besides a provided list.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

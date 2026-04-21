@@ -31,7 +31,6 @@ Generalize linear independence to:
   * just require coefficients are regular
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

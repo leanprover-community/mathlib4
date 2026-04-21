@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 
 This defines `PartOrd`, the category of partial orders with monotone maps.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ This actions is available in the `Pointwise` locale.
 This file is almost identical to the files `Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`
 and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep them in sync.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ This file defines star projections, which are self-adjoint idempotents.
 In star-ordered rings, star projections are non-negative.
 (See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

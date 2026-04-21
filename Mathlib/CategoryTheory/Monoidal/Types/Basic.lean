@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 # The category of types is a (symmetric) monoidal category
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

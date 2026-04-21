@@ -30,7 +30,6 @@ elementary properties, like locally convex spaces.
 * `ContinuousLinearMap.extendRCLike`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

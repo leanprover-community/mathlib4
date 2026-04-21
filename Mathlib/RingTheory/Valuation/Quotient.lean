@@ -16,7 +16,6 @@ with `h : J ⊆ supp v` then the induced valuation
 on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

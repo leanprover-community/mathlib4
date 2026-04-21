@@ -37,7 +37,6 @@ In this file we define the various notions of derivatives of Schwartz functions.
 * `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

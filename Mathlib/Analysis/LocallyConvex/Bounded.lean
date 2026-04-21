@@ -40,7 +40,6 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

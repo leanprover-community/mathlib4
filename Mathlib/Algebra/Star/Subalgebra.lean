@@ -17,7 +17,6 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 
 The centralizer of a *-closed set is a *-subalgebra.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,7 +33,6 @@ computes group homology.
   and the homology of `A --(ρ(g) - Id)--> A --N--> A` for all positive even `i`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

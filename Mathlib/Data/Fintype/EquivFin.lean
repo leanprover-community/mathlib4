@@ -34,7 +34,6 @@ We provide `Infinite` instances for
 * type constructors: `Multiset α`, `List α`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

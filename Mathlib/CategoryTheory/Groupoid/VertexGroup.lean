@@ -27,7 +27,6 @@ This file defines the vertex group (*aka* isotropy group) of a groupoid at a ver
 
 isotropy, vertex group, groupoid
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Group.Measure
 We develop properties of integrals with a group as domain.
 This file contains properties about Lebesgue integration.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

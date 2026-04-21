@@ -31,7 +31,6 @@ It is a finite field with `p ^ n` elements.
   above result helps to classify the category of finite fields.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

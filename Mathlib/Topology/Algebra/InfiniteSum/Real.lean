@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 This file provides lemmas about Cauchy sequences in terms of infinite sums and infinite sums valued
 in the reals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

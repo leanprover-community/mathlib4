@@ -24,7 +24,6 @@ public import Mathlib.Algebra.GroupWithZero.Nat
 ## Tags
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

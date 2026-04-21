@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Algebra.Bilinear
 This file provides versions of `LinearMap.mulLeft` and `LinearMap.mulRight` which work for the
 heterogeneous multiplication of matrices.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

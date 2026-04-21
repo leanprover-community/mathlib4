@@ -20,7 +20,6 @@ the images of `vᵢ` for `i : κ` form a basis of `P`.
 We treat linear independence and the span condition separately. For convenience this
 is stated not for `κ ⊕ σ`, but for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

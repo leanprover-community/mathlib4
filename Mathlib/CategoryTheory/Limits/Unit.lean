@@ -15,7 +15,6 @@ Mostly for the sake of constructing trivial examples, we show all (co)cones into
 are (co)limit (co)cones. We also show that such (co)cones exist, and that `Discrete PUnit` has all
 (co)limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

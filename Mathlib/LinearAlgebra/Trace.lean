@@ -24,7 +24,6 @@ See also `Mathlib/LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 linear map, trace, diagonal
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

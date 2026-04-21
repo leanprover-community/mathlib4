@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Semiconj.Units
 
 See also `MulAut.conj` and `Quandle.conj`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

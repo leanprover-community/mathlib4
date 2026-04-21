@@ -44,7 +44,6 @@ a `GroupWithZero` lemma instead.
 
 field, division ring, skew field, skew-field, skewfield
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

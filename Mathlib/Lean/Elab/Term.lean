@@ -11,7 +11,6 @@ public import Lean.Elab.Term
 /-!
 # Additions to `Lean.Elab.Term`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

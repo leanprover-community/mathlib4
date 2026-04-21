@@ -33,7 +33,6 @@ replace the uniformity and bornology by the Pi ones when registering the
 `NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

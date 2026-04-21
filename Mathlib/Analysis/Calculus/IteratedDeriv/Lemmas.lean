@@ -17,7 +17,6 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 This file contains a number of further results on `iteratedDerivWithin` that need more imports
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

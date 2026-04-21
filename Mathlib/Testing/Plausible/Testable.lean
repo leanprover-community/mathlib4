@@ -14,7 +14,6 @@ public meta import Plausible.Testable
 /-!
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

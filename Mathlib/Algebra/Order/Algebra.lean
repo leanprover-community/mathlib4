@@ -34,7 +34,6 @@ ordered algebra
 
 `positivity` extension for `algebraMap`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

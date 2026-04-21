@@ -17,7 +17,6 @@ We define `Ideal.ResidueField I` to be the residue field of the local ring `Loca
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

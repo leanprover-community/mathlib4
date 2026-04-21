@@ -19,7 +19,6 @@ We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additiviz
 `HasFiniteSupport`) on functions so that `fun_prop` can prove it for functions that are
 built from other functions with finite multiplicative support.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

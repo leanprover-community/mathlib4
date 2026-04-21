@@ -15,7 +15,6 @@ We define the `take` operation on `n`-tuples, which restricts a tuple to its fir
 * `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for an `n`-tuple `v = (v 0, ..., v (n - 1))` is
   the `m`-tuple `(v 0, ..., v (m - 1))`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

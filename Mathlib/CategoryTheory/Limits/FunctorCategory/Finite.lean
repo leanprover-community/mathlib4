@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/Basic.lean` because
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

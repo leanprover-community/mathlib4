@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Field.Equiv
 - `isSimpleRing_iff_isField`: a commutative ring is simple if and only if it is a field.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,7 +19,6 @@ These results are useful for proving that the uniform limit of a sequence of hol
 is holomorphic.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

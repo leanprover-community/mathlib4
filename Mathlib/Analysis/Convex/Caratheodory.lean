@@ -37,7 +37,6 @@ This theorem was formalized as part of the Sphere Eversion project.
 convex hull, caratheodory
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

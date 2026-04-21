@@ -25,7 +25,6 @@ public import Mathlib.Data.Fintype.Card
 * `SimpleGraph.tutte` states Tutte's theorem: A graph has a perfect matching, if and
   only if no Tutte violators exist.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

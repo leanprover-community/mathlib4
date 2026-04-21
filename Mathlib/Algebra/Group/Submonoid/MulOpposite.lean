@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Group.Opposite
 For every monoid `M`, we construct an equivalence between submonoids of `M` and that of `Mᵐᵒᵖ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

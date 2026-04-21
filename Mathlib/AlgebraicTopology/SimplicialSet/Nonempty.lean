@@ -11,7 +11,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 # Nonempty simplicial sets
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public meta import Lean.MetavarContext
 
 TODO: Ideally we would find good homes for everything in this file, eventually removing it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

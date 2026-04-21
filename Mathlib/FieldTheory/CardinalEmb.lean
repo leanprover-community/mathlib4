@@ -65,7 +65,6 @@ the only place the bottom element requires special treatment is in `equivLim` (t
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

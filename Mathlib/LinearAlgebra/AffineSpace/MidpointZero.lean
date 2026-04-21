@@ -17,7 +17,6 @@ We collect lemmas that require that the underlying ring has characteristic zero.
 
 midpoint
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

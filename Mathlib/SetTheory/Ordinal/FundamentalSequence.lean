@@ -18,7 +18,6 @@ with cofinal range. We can generalize this notion to arbitrary ordinals by setti
 
 - `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

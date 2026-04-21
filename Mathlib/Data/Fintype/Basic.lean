@@ -18,7 +18,6 @@ public import Mathlib.Data.List.FinRange
 
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

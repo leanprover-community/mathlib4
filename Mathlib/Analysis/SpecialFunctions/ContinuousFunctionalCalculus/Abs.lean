@@ -23,7 +23,6 @@ and provides basic API.
 + `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ multiple of `a` as the multiples of some fixed number (aka `ceilRoot n a`). See
 
 * `norm_num` extension
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

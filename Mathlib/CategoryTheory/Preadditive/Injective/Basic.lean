@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 An object `J` is injective iff every morphism into `J` can be obtained by extending a monomorphism.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

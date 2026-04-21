@@ -21,7 +21,6 @@ but with the conclusions simplified using basic proportions in isomorphisms in a
 This is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

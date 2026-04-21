@@ -41,7 +41,6 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 cramer, cramer's rule, adjugate
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

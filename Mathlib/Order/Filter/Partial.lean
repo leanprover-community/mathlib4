@@ -41,7 +41,6 @@ get two generalizations each.
 We first take care of relations. Then the definitions for partial functions are taken as special
 cases of the definitions for relations.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

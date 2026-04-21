@@ -60,7 +60,6 @@ For continuous maps `f : AddCircle T → ℂ`, the theorem
 coefficients of `f` is summable, then the Fourier series `∑ (i : ℤ), fourierCoeff f i * fourier i`
 converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ is bijective (but not in general an isomorphism) and conclude that the right adj
 The counit is an isomorphism for compactly generated spaces, and we conclude that the functor
 `topCatToCondensedSet` is fully faithful when restricted to compactly generated spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

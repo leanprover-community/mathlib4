@@ -16,7 +16,6 @@ also archimedean, but this is derived from the general instance for well-orderin
 to a specific `Fin` instance.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,7 +34,6 @@ Generalize all of this to double categories.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 

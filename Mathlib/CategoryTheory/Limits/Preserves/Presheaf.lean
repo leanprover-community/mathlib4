@@ -40,7 +40,6 @@ is small, we leave this as a TODO.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.3.13
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Proposition 6.1.2
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

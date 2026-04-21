@@ -21,7 +21,6 @@ of `ℕ∞`.
 
 Uniformize API between analytic and meromorphic functions
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

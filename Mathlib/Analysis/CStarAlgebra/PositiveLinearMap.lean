@@ -24,7 +24,6 @@ This file develops the API for positive linear maps over C⋆-algebras.
 * The proof that positive maps are bounded was taken from
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

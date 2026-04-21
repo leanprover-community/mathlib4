@@ -33,7 +33,6 @@ However, we restate some lemmas specifically for `ae`.
 
 outer measure, measure, almost everywhere
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

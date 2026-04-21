@@ -36,7 +36,6 @@ We also specialize these statements in the case of Hilbert spaces, with
 
 Gaussian measure, characteristic function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

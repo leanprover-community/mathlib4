@@ -11,7 +11,6 @@ public import Mathlib.Data.ZMod.Basic
 /-!
 # `ZMod p` is a field
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

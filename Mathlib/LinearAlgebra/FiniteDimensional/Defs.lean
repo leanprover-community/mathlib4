@@ -61,7 +61,6 @@ Plenty of the results hold for general finitely generated modules (see
 `Mathlib/RingTheory/Finiteness/Basic.lean`) or Noetherian modules (see
 `Mathlib/RingTheory/Noetherian/Basic.lean`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

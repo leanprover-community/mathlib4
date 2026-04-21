@@ -28,7 +28,6 @@ We also provide the following bundled versions:
 We include results on applying the definitions to `C`, `X` and ring operations.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

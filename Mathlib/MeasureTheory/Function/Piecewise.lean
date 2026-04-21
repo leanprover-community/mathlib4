@@ -15,7 +15,6 @@ In this file, we prove some results about measurability of functions defined by 
 `IndexedPartition.piecewise`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

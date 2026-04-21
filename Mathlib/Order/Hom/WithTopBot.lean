@@ -17,7 +17,6 @@ isomorphisms) and lattice homomorphisms, and properties about the results.
 Some definitions cause a possibly unbounded lattice homomorphism to become bounded,
 so they change the type of the homomorphism.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

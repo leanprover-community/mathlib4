@@ -44,7 +44,6 @@ Generally useful lemmas which are not related to integrals:
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

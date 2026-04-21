@@ -43,7 +43,6 @@ In this file, we define local properties in general.
   `ideal_eq_bot_of_localization`, `eq_zero_of_localization`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

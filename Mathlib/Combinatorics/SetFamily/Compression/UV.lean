@@ -47,7 +47,6 @@ Boolean algebra, so that one can use it for `Set α`.
 
 compression, UV-compression, shadow
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

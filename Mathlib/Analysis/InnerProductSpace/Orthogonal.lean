@@ -26,7 +26,6 @@ The orthogonal complement of a submodule `K` is denoted by `Kᗮ`.
 The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is denoted by `U ⟂ V`.
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

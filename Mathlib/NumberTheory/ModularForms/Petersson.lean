@@ -17,7 +17,6 @@ For `f, f'` functions `ℍ → ℂ`, we define `petersson k f f'` to be the func
 We show this function is (weight 0) invariant under `Γ` if `f, f'` are (weight `k`) invariant under
 `Γ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

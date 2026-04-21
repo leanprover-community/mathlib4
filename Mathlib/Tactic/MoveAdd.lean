@@ -103,7 +103,6 @@ Once that is done, it tries to replace the initial goal with the permuted one by
 Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
 This will be the content of a later PR.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

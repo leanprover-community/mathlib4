@@ -15,7 +15,6 @@ In this file, we show some consequences of lifting properties in the presence of
 certain (co)limits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

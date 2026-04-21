@@ -27,7 +27,6 @@ closed under subobjects.
   with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

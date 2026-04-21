@@ -21,7 +21,6 @@ These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order t
 - `Nat.Prime.not_dvd_lcm`: If `p ∤ a` and `p ∤ b`, then `p ∤ lcm a b`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,7 +19,6 @@ and `span f g` construct functors from the walking (co)span, hitting the given m
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

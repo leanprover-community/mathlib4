@@ -32,7 +32,6 @@ we say that `Y` is `X`-generated (typeclass `IsGeneratedBy X Y`).
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

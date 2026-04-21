@@ -58,7 +58,6 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 Angelo Vistoli
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

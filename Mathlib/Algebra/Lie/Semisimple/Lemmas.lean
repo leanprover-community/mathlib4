@@ -27,7 +27,6 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
   `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful` using `LieModule.IsTracefree`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

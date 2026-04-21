@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 Indeed, it is a field.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -46,7 +46,6 @@ closed sieve, closure, Grothendieck topology
 
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

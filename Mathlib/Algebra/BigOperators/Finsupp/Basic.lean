@@ -17,7 +17,6 @@ public import Mathlib.Data.Finsupp.Indicator
 
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

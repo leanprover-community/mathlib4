@@ -22,7 +22,6 @@ then we get `[a + b, a + c]`”. For the functions `x ↦ x ± a`, `x ↦ a ± x
 lemmas about preimages and images of all intervals. We also prove a few lemmas about images under
 `x ↦ a * x`, `x ↦ x * a` and `x ↦ x⁻¹`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

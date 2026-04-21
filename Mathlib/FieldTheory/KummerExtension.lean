@@ -45,7 +45,6 @@ TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe u

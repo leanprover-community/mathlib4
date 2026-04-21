@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 /-!
 # Deducing finiteness of a group.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

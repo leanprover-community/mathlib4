@@ -37,7 +37,6 @@ We also prove various basic properties of the relation `Inseparable`.
 
 topological space, separation setoid
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

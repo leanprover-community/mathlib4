@@ -28,7 +28,6 @@ For instances relating, e.g., `ContinuousSup` to `MeasurableSup` see file
 measurable function, lattice operation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ computed.
 
 sinh, cosh, tanh
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

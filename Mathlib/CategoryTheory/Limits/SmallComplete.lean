@@ -25,7 +25,6 @@ we instead show that the homsets are subsingleton.
 
 small complete, preorder, Freyd
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

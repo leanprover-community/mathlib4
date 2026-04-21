@@ -15,7 +15,6 @@ This file proves lemmas about the action of multilinear maps on basis vectors an
 basis for multilinear maps given bases on the domain and codomain.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

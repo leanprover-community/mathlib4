@@ -32,7 +32,6 @@ This is useful for instance when one needs `M/K` to be Galois.
 - `IntermediateField.extendRight.isIntegralClosure`: transfers the
   `IsIntegralClosure S R F` instance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -47,7 +47,6 @@ file because it is easily deducible from the `Monovary` API.
 Add equality cases for when the permute function is injective. This comes from the following fact:
 If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g ∘ σ) ↔ σ = 1`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,7 +19,6 @@ public import Mathlib.Tactic.Attr.Core
 /-!
 # Basic properties of lists
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

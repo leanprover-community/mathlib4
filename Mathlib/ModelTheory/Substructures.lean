@@ -40,7 +40,6 @@ substructures appearing in the algebra library.
 
 - `L.Substructure M` forms a `CompleteLattice`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

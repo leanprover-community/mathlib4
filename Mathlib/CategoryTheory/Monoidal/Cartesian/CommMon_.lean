@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 /-!
 # Yoneda embedding of `CommMon C`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

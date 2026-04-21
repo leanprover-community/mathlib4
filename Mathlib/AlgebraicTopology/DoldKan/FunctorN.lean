@@ -31,7 +31,6 @@ normalized Moore complex functor shall be obtained in `Normalized.lean`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,7 +28,6 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

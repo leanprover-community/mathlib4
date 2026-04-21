@@ -18,7 +18,6 @@ deprecated, and the API for `MonoidalClosed` should be used instead. This file n
 basic constructions for cartesian closed categories.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

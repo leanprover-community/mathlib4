@@ -19,7 +19,6 @@ continuous map `productOfMemOpens` from `X` to `Opens X → Prop` which is the p
 The map `productOfMemOpens` is always inducing. Whenever `X` is T0, `productOfMemOpens` is
 also injective and therefore an embedding.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

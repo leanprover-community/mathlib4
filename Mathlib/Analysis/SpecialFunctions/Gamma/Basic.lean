@@ -37,7 +37,6 @@ set it to be `0` by convention.)
 
 Gamma
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

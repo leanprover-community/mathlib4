@@ -58,7 +58,6 @@ and vice-versa:
   algebra over `R` where `Q = 0`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

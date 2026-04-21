@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Module.Defs
 /-!
 # Additive subgroups of rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

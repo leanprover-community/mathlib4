@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
 
 * `IsNoetherianRing.isNilpotent_nilradical`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

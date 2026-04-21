@@ -23,7 +23,6 @@ This file contains basic results on the following predicates of functions and se
 * `Set.InvOn f' f s t` : `f'` is a two-side inverse of `f` on `s` and `t`, i.e.
   we have `Set.LeftInvOn f' f s` and `Set.RightInvOn f' f t`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

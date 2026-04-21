@@ -37,7 +37,6 @@ The Stirling numbers of the second kind, represent the number of ways to partiti
 
 * [Knuth, *The Art of Computer Programming*, Volume 1, §1.2.6][knuth1997]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

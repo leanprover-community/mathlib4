@@ -16,7 +16,6 @@ with `u ∘ f = u ∘ g` factors uniquely via `p`.
 
 In this file we define the coequalizer and provide the basic API.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ This file defines oriented angles in Euclidean affine spaces.
   points.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

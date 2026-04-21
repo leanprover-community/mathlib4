@@ -65,7 +65,6 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

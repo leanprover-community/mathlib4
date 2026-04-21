@@ -27,7 +27,6 @@ integral is well-defined.
 
 partition, tagged partition, Henstock integral
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

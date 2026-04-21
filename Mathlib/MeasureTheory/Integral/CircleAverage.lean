@@ -28,7 +28,6 @@ property `circleAverage` is `CircleIntegrable`, as defined in
 Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

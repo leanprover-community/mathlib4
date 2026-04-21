@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Determinant
 
 This file provides a `WithLp` version of `Matrix.toLin'`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

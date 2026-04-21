@@ -71,7 +71,6 @@ We formalize several versions of this theorem in
 
 filter, countable
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -59,7 +59,6 @@ block matrices.
 
 To proceed with the induction, we reindex our matrices to reduce to the above situation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,7 +35,6 @@ used to golf the basic `Group` lemmas.
 
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

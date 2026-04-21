@@ -13,7 +13,6 @@ public import Mathlib.Tactic.FunProp.FunctionData
 
 this file defines environment extension for `funProp`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

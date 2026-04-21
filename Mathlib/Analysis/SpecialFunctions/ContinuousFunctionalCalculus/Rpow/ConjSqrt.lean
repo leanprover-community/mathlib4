@@ -16,7 +16,6 @@ This file defines `conjSqrt c a` as `sqrt c * a * sqrt c`, and develops API for 
 
 * `conjSqrt c`: the map `fun a => sqrt c * a * sqrt c`, bundled as a continuous linear map,
 -/
-set_option backward.defeqAttrib.useBackward true
 
 namespace CFC
 

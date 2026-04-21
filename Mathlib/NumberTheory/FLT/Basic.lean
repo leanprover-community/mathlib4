@@ -43,7 +43,6 @@ An ongoing Lean formalisation of the proof, using mathlib as a dependency, is ta
 https://github.com/ImperialCollegeLondon/FLT .
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

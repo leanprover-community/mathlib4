@@ -29,7 +29,6 @@ We use a simple unification algorithm. For all star/metavariable patterns in the
 and when it is attempted to be assigned again, we check that it is the same assignment.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

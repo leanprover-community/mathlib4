@@ -16,7 +16,6 @@ of connected *open* sets. Local connectivity is equivalent to each point having 
 of connected (not necessarily open) sets --- but in a non-trivial way, so we choose this definition
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

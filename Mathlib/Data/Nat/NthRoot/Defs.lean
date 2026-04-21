@@ -13,7 +13,6 @@ public import Mathlib.Init
 In this file we define `Nat.nthRoot n a` to be the floor of the `n`th root of `a`.
 The function is defined in terms of natural numbers with no dependencies outside of prelude.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

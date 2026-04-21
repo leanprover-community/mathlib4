@@ -34,7 +34,6 @@ the inner dual cone of any set is always closed and contains `0`, i.e. is a prop
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candidate to the name
 `ConvexCone.innerDual`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

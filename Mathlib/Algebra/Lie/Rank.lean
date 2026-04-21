@@ -31,7 +31,6 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

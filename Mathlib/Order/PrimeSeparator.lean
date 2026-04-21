@@ -25,7 +25,6 @@ ideal, filter, prime, distributive lattice
 * [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
   (1938)][Sto1938]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

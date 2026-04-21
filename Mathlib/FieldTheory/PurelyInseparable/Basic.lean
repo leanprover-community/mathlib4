@@ -85,7 +85,6 @@ This file contains basic definitions and results about purely inseparable extens
 separable degree, degree, separable closure, purely inseparable
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,7 +38,6 @@ easily. Here we apply that construction to the case `β = Unit` and then drop `�
   `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

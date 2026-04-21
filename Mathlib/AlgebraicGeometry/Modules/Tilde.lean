@@ -25,7 +25,6 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 * `AlgebraicGeometry.tilde.adjunction` : `~` is left adjoint to taking global sections.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

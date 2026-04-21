@@ -32,7 +32,6 @@ We prove two key formulae about this operator:
 We also prove some auxiliary results about iterated forward differences of the function
 `n ↦ n.choose k`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

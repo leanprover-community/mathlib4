@@ -53,7 +53,6 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -925,7 +924,6 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 

@@ -43,7 +43,6 @@ did essentially all the theory under the assumption `IsUniformGroup G`.
 For this reason, you may find results stated under this assumption even though they may hold
 under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

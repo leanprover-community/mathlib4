@@ -14,7 +14,6 @@ public import Mathlib.Topology.Separation.Basic
 In this file we show that a T₀ topological space with second countable
 topology has a countable family of open (or closed) sets separating the points.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,7 +23,6 @@ We construct etale neighborhoods that split fibers of finite algebras.
   This prime will also lie over `q`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

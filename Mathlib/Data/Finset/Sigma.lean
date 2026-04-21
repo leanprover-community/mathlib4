@@ -27,7 +27,6 @@ This file defines a few `Finset` constructions on `Σ i, α i`.
 worth it, we must first refactor the functor library so that the `alternative` instance for `Finset`
 is computable and universe-polymorphic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

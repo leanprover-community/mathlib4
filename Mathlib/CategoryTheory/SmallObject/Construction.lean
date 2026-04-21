@@ -47,7 +47,6 @@ provides a tautological morphism `B i ⟶ functorObj f πX`
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe t w v u

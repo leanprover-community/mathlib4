@@ -18,7 +18,6 @@ coproduct, then any presheaf `F` that preserves products is a sheaf for the sing
 
 We provide both a version for a general coefficient category and one for type values presheafs.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 universe w
 

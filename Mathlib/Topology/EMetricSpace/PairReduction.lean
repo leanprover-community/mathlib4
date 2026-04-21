@@ -100,7 +100,6 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 * [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

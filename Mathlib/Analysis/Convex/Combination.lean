@@ -26,7 +26,6 @@ We divide by the sum of the weights in the definition of `Finset.centerMass` bec
 mathematical arguments go: one doesn't change weights, but merely adds some. This also makes a few
 lemmas unconditional on the sum of the weights being `1`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

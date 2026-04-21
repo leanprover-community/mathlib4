@@ -24,7 +24,6 @@ converges if and only if `r < -1`; see `Nat.Primes.summable_rpow`.
 See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs].
 The proof is due to Erdős.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

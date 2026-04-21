@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here during the port to minimize imports of `Algebra.Order.Ring.Rat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

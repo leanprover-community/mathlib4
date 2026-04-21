@@ -18,7 +18,6 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
 eigenvalue, characteristic polynomial
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

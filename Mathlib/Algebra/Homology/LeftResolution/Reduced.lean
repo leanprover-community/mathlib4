@@ -33,7 +33,6 @@ corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

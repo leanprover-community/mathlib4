@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 This contains some basic results about the inversion of vectors, related to the fact that
 $ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

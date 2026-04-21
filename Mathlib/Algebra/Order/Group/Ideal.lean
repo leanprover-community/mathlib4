@@ -19,7 +19,6 @@ finitely generated, and the semigroup ideals satisfy the ascending chain conditi
 
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 
 /-! # The meta properties of quasi-finite ring homomorphisms. -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

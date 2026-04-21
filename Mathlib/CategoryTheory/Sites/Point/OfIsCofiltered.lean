@@ -23,7 +23,6 @@ We show that the fiber of a presheaf for the constructed point identifies
 to a colimit indexed by the category `N`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

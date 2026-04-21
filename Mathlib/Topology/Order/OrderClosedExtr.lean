@@ -22,7 +22,6 @@ and its dual.
 * `isLocalMin_of_anti_mono` : the dual statement for minima.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

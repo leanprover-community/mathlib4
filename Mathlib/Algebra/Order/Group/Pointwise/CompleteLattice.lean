@@ -18,7 +18,6 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 `sSup (s • t) = sSup s • sSup t` and `sInf (s • t) = sInf s • sInf t` hold as well but
 `CovariantClass` is currently not polymorphic enough to state it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

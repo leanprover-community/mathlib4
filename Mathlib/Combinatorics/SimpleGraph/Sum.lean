@@ -24,7 +24,6 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 
 * `G ⊕g H`: The disjoint sum of `G` and `H`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

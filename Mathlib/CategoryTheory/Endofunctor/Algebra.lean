@@ -23,7 +23,6 @@ coalgebras over `G`.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

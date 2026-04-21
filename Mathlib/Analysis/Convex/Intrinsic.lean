@@ -44,7 +44,6 @@ The main results are:
 * `IsClosed s → IsExtreme 𝕜 s (intrinsicFrontier 𝕜 s)`
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

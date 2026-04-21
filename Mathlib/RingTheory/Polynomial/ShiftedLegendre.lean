@@ -27,7 +27,6 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 
 shifted Legendre polynomials, derivative
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

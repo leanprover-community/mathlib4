@@ -16,7 +16,6 @@ TODO:
 should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

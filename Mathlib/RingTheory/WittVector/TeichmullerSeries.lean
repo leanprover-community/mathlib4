@@ -28,7 +28,6 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
 ## TODO
 Show that the Teichmuller series is unique.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

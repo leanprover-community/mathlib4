@@ -22,7 +22,6 @@ Defines classes for linear orders and proves some basic lemmas about them.
 We intentionally avoid using `grind` in this fundamental file to keep the proofs understandable,
 rather than hiding the reasoning behind automation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Order.Lex
 
 Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

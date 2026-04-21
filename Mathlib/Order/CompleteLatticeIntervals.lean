@@ -21,7 +21,6 @@ We check that an `OrdConnected` set satisfies these conditions.
 Add appropriate instances for all `Set.Ixx`. This requires a refactor that will allow different
 default values for `sSup` and `sInf`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ The extension in this file handles natural, integer, and rational numbers.
 Add extensions for `ℚ≥0`, `ℝ`, `ℝ≥0`, `ℝ≥0∞`, `ℂ` (or any algebraically closed field?), `ZMod n`.
 Probably, these extensions should go to different files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

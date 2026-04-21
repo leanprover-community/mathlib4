@@ -25,7 +25,6 @@ quotient of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ about the roots of the minimal polynomial of `s` over `R`.
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

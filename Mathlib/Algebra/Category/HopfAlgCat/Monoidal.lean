@@ -18,7 +18,6 @@ define a Hopf `R`-algebra instance on `A ⊗[R] B`.
 Here, we use this to declare a `MonoidalCategory` instance on the category of Hopf algebras, via
 the existing monoidal structure on `BialgCat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

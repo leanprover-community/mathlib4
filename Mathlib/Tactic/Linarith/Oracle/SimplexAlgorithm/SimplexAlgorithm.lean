@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we run the Simplex
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

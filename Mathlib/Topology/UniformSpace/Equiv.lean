@@ -22,7 +22,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
   This type can be denoted using the following notation: `α ≃ᵤ β`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

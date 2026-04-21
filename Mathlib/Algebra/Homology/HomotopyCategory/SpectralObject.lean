@@ -19,7 +19,6 @@ by the category `CochainComplex C ℤ`.
 complex), there is an associated spectral object indexed by `ι`.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

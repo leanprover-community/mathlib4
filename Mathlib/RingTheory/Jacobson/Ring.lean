@@ -42,7 +42,6 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 ## Tags
 Jacobson, Jacobson Ring
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

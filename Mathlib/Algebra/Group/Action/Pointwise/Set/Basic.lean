@@ -26,7 +26,6 @@ of `α`/`Set α` on `Set β`.
   since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -45,7 +45,6 @@ The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingCat`).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

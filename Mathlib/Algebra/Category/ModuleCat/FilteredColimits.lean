@@ -21,7 +21,6 @@ functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In 
 implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

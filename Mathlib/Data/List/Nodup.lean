@@ -13,7 +13,6 @@ public import Mathlib.Data.List.Forall2
 `List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
 predicate.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

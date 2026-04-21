@@ -50,7 +50,6 @@ definitions, which require an ambient `InnerProductSpace` structure, are `reflec
 should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

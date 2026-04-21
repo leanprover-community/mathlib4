@@ -27,7 +27,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
   If `X` is integral and `Y` is separated, then any `f : X ⤏ Y` can be realized as a partial
   map on `f.domain`, the domain of definition of `f`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,7 +10,6 @@ public import Mathlib.Init
 /-!
 # Additional functions using `CoreM` state.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

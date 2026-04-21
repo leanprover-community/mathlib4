@@ -54,7 +54,6 @@ Definitions in the file:
 
 set, sets, subset, subsets, union, intersection, insert, singleton, powerset
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

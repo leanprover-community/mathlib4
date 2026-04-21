@@ -24,7 +24,6 @@ see `Fintype.card_perm`.
 * `Nat.descFactorial`: The descending factorial. It is the product of natural numbers from
   `n - k + 1` to `n`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

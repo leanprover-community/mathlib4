@@ -23,7 +23,6 @@ In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

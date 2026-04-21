@@ -18,7 +18,6 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumLeft`
 * `TensorProduct.directSumRight`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

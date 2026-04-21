@@ -14,7 +14,6 @@ public import Mathlib.Topology.UniformSpace.Ascoli
 /-!
 # The compact-open topology on continuous monoid morphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

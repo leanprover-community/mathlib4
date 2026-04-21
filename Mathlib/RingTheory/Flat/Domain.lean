@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Flat.Localization
 We show that the tensor product of two injective linear maps is injective if the sources are flat
 and the ring is an integral domain.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

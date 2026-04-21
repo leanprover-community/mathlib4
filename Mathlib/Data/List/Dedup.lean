@@ -20,7 +20,6 @@ occurrence of each.
 
 duplicate, multiplicity, nodup, `nub`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

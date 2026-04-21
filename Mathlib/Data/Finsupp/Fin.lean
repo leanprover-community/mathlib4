@@ -18,7 +18,6 @@ We define the following operations:
 In this context, we prove some usual properties of `tail` and `cons`, analogous to those of
 `Data.Fin.Tuple.Basic`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ public import Mathlib.Util.AtomM
 
 This file implements the collection of facts for the `order` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

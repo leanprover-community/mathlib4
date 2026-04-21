@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Orientation
 This had previously been in `LinearAlgebra.Orientation`,
 but keeping it separate results in a significant import reduction.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

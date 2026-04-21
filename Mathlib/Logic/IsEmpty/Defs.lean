@@ -16,7 +16,6 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

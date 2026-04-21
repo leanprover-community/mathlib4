@@ -23,7 +23,6 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

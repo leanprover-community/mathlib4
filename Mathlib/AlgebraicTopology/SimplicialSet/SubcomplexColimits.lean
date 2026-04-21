@@ -21,7 +21,6 @@ Similarly, bicartesian squares in the lattice `Subcomplex X` give pushout
 squares in the category of simplicial sets.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

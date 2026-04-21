@@ -24,7 +24,6 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

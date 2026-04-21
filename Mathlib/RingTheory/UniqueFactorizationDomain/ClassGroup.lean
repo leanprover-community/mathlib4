@@ -21,7 +21,6 @@ which are known to be Normalized GCD Domains.
 
 - [stacks-project]: The Stacks project, [tag 0BCH](https://stacks.math.columbia.edu/tag/0BCH)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open scoped nonZeroDivisors
 

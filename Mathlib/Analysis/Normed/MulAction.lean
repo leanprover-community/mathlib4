@@ -19,7 +19,6 @@ Notably we prove that `NonUnitalSeminormedRing`s have bounded actions by left- a
 multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

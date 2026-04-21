@@ -21,7 +21,6 @@ for a continuous family of continuous maps `f z : C(X, Y)`,
 a null measurable set `s`, and a null measurable set `t` of finite measure,
 the set of parameters `z` such that `f z ⁻¹' t` is a.e. equal to `s` is a closed set.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

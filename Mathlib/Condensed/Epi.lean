@@ -18,7 +18,6 @@ This file characterises epimorphisms of condensed sets and condensed `R`-modules
 as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -15,7 +15,6 @@ public import Mathlib.Analysis.Calculus.Deriv.CompMul
 We show that if a function `f` has derivative `f'` at a point `a + x`, then `f (a + ·)`
 has derivative `f'` at `x`. Similarly for `x + a`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

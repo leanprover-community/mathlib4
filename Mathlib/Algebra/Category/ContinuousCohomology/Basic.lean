@@ -42,7 +42,6 @@ See `ContinuousCohomology.MultiInd.d`.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

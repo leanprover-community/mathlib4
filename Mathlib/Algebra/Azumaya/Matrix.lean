@@ -19,7 +19,6 @@ is an Azumaya algebra where `R` is a commutative ring.
 - `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open scoped TensorProduct

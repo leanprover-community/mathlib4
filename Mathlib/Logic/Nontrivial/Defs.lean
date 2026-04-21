@@ -18,7 +18,6 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 
 Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

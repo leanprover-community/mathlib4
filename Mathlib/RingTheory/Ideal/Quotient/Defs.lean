@@ -25,7 +25,6 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 - `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
 - `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

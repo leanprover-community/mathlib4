@@ -62,7 +62,6 @@ The two main results proved in this file are:
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

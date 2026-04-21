@@ -29,7 +29,6 @@ we show that the cocone obtained by sheafifying the cocone point is a colimit co
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

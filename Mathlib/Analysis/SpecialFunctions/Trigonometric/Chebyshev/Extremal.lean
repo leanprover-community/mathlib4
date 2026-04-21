@@ -43,7 +43,6 @@ by that of `T_n`, which is known to equal `2 ^ (n - 1)`.
 Moreover, equality holds iff `P` and `T_n` agree on the nodes, which implies that they coincide.
 -/
 
-set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 namespace Polynomial.Chebyshev
 

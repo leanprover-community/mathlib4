@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 We define bundled subsemirings and some standard constructions: `subtype` and `inclusion`
 ring homomorphisms.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

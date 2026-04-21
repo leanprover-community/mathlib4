@@ -17,7 +17,6 @@ public import Mathlib.Control.Basic
 This allows us to use Lean's `Type`-based applicative functors in category theory.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

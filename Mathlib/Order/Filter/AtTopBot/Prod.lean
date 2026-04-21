@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Prod
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

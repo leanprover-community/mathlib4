@@ -61,7 +61,6 @@ about the need for a non-manifold version of `SmoothPartitionOfUnity`.
   (we currently do `M = E` only).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

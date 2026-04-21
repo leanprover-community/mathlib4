@@ -24,7 +24,6 @@ In addition, the user may supply a term `e` via `... using e` in order to close 
 immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`. The `using` syntax
 may be paired with any of the other features of `peel`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

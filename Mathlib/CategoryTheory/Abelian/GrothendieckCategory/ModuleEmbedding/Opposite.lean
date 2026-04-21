@@ -16,7 +16,6 @@ If `C` is Grothendieck abelian and `F : D ⥤ Cᵒᵖ` is a functor from a small
 an object `G : Cᵒᵖ` such that `preadditiveCoyonedaObj G : Cᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful
 and exact and its precomposition with `F` is full if `F` is.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

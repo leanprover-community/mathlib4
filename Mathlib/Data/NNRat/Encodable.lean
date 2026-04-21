@@ -12,7 +12,6 @@ public import Mathlib.Data.NNRat.Defs
 
 As a consequence we also get the instance `Countable ℚ≥0`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 namespace NNRat
 

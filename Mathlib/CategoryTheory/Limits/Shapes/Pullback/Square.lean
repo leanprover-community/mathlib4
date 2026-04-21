@@ -18,7 +18,6 @@ in this language that a pullback of a monomorphism is
 a monomorphism (and similarly for pushouts of epimorphisms).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

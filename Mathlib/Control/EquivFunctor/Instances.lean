@@ -13,7 +13,6 @@ public import Mathlib.Data.Fintype.OfMap
 
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

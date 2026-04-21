@@ -36,7 +36,6 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 ## Tags
 number field, units, Dirichlet unit theorem
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

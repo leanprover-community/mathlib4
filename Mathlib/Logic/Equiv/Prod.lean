@@ -23,7 +23,6 @@ focusing on product types.
 
 equivalence, congruence, bijective map
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

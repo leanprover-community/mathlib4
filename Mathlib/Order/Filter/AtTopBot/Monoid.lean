@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.AtTopBot.Tendsto
 /-!
 # Convergence to ±infinity in ordered commutative monoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

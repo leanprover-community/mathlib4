@@ -47,7 +47,6 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

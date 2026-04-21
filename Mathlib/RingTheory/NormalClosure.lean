@@ -27,7 +27,6 @@ of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dede
   does not cause timeouts in this file, it does slow down considerably its compilation and
   does trigger timeouts in applications.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

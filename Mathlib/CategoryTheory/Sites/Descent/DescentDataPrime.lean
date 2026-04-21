@@ -19,7 +19,6 @@ equipped with a descent data relative to the morphisms `f i : X i ⟶ S`, where
 the data and compatibilities are expressed using the chosen pullbacks.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

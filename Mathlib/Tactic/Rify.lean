@@ -33,7 +33,6 @@ example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
 
 TODO: Investigate whether we should generalize this to other fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

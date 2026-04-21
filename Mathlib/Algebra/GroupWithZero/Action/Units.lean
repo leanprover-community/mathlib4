@@ -38,7 +38,6 @@ In particular, if `M` is cancellative, then we obtain
 * `Algebra.GroupWithZero.Action.Pi`
 * `Algebra.GroupWithZero.Action.Prod`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

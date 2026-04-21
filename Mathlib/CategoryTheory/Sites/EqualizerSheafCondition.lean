@@ -31,7 +31,6 @@ equalizer diagrams.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

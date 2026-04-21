@@ -19,7 +19,6 @@ morphism `Φ₂.fiber ⟶ Φ₁.fiber` (SGA 4 IV 3.2).
   SGA 4 IV 3.2][sga-4-tome-1]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

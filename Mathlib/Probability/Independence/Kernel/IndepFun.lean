@@ -28,7 +28,6 @@ measure is the Dirac measure on `Unit`.
 * `ProbabilityTheory.Kernel.iIndepFun`: independence of a family of functions (random variables).
   Variant for two functions: `ProbabilityTheory.Kernel.IndepFun`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

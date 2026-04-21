@@ -14,7 +14,6 @@ public import Mathlib.Probability.Independence.InfinitePi
 This file contains lemmas that state the existence of random variables with given distributions
 and a given dependency structure (currently only mutual independence is considered).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

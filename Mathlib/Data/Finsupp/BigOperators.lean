@@ -32,7 +32,6 @@ it is a member of the support of a member of the collection:
 * `Finset.mem_sup_support_iff`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

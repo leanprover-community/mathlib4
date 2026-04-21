@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Push
 The `by_cases!` tactic is a variant of the `by_cases` tactic that also calls `push Not`
 on the generated hypothesis that is a negation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

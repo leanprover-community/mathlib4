@@ -13,7 +13,6 @@ public import Mathlib.Logic.Function.Basic
 
 This file provides very basic algebraic operations on functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

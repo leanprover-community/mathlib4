@@ -23,7 +23,6 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -47,7 +47,6 @@ relations with prime and perfect numbers.
 
 abundant, deficient, weird, pseudoperfect
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

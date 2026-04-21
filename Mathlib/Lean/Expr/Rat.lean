@@ -18,7 +18,6 @@ This file defines some operations involving `Expr` and rational numbers.
 * `Lean.Expr.isExplicitNumber`: is an expression a number in normal form?
   This includes natural numbers, integers and rationals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

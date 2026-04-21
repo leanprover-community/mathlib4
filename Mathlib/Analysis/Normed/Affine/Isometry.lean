@@ -35,7 +35,6 @@ match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since
 algebra-homomorphisms.)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

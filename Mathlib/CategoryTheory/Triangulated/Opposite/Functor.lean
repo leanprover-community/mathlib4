@@ -21,7 +21,6 @@ equivalences `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` and `(Triangle D)ᵒᵖ �
 given by `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

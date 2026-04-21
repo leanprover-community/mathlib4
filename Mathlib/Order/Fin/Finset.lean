@@ -23,7 +23,6 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
   extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ with block matrices
 ## Tags
 column matrices, row matrices, column row block matrices
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

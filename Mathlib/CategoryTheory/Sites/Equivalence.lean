@@ -37,7 +37,6 @@ sufficiently small limits in the sheaf category on the essentially small site.
   taking a sheaf to its underlying presheaf.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,7 +22,6 @@ We prove basic properties of (pre)orderings on rings and their supports.
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

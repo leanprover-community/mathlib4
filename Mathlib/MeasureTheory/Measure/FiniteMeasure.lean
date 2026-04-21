@@ -82,7 +82,6 @@ considerations:
 weak convergence of measures, finite measure
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

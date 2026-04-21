@@ -61,7 +61,6 @@ at the cost of including the assumption `[NeBot f]` in a number of lemmas and de
 
 *  [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ This file contains lemmas about `Fin.rev : Fin n → Fin n` which maps `i` to `n
 * `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
   by `i ↦ n-(i+1)`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

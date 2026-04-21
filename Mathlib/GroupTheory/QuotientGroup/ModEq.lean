@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 In this file we show that in an additive commutative group, the congruence relation `a ≡ b [PMOD p]`
 is equivalent to the coercions of `a` and `b` to `G ⧸ AddSubgroup.zmultiples p` being equal.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

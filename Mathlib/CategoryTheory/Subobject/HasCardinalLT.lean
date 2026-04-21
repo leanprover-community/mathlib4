@@ -15,7 +15,6 @@ If `X ⟶ Y` is a monomorphism, and the cardinality of `Subobject Y`
 is `< κ`, then the cardinality of `Subobject X` is also `< κ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

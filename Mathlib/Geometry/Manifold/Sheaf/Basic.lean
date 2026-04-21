@@ -29,7 +29,6 @@ invariant" property is preserved under restriction and gluing.
 * `StructureGroupoid.LocalInvariantProp.sheaf`: the sheaf-of-types of functions `f : M → M'`
   which satisfy the lifted property `LiftProp P`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

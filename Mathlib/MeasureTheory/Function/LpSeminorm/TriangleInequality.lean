@@ -14,7 +14,6 @@ public import Mathlib.MeasureTheory.Integral.MeanInequalities
 In this file we prove several versions of the triangle inequality for the `Lp` seminorm,
 as well as simple corollaries.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

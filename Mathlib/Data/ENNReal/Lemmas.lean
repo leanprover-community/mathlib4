@@ -15,7 +15,6 @@ public import Mathlib.Data.Finset.Lattice.Fold
 These are some lemmas split off from `ENNReal.Basic` because they need a lot more imports.
 They are probably good targets for further cleanup or moves.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -31,7 +31,6 @@ morphisms are deterministic.
 
 deterministic, copy-discard category, comonoid morphism
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

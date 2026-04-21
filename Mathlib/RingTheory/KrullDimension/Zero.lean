@@ -16,7 +16,6 @@ We provide further API for zero-dimensional rings.
 Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

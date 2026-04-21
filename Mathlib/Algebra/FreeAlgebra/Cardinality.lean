@@ -14,7 +14,6 @@ public import Mathlib.SetTheory.Cardinal.Free
 This file contains some results about the cardinality of `FreeAlgebra`,
 parallel to that of `MvPolynomial`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

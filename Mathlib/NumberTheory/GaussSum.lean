@@ -46,7 +46,6 @@ Quadratic Reciprocity.
 
 additive character, multiplicative character, Gauss sum
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

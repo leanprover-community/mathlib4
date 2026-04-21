@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.SingleObj
 # `SingleObj α` is preadditive when `α` is a ring.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

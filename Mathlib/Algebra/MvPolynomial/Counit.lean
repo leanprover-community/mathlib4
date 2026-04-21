@@ -23,7 +23,6 @@ obtained by `X a ↦ a`.
 * `MvPolynomial.counitNat` is an “absolute” variant with `R = ℕ`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

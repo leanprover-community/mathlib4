@@ -40,7 +40,6 @@ images of different morphisms commute, we obtain a canonical morphism
   they are independent.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

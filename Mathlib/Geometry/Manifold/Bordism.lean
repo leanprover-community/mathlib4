@@ -91,7 +91,6 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 
 singular manifold, bordism, bordism group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

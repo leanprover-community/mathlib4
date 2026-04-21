@@ -46,7 +46,6 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

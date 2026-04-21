@@ -35,7 +35,6 @@ In scope `WithZero`:
 * `WithZero.exp`: The "exponential map" `M → Mᵐ⁰`
 * `WithZero.exp`: The "logarithm" `Mᵐ⁰ → M`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ property in `D` with respect to a morphism `p` if and only the morphism `i`
 has the left lifting property in `C` with respect to `F.map p`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

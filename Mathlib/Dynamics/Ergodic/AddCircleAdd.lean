@@ -15,7 +15,6 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 In this file we prove that rotation of `AddCircle p` by `a` is ergodic
 if and only if `a` has infinite order (in other words, if `a / p` is irrational).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

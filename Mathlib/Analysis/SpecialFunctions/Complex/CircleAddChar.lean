@@ -20,7 +20,6 @@ This file defines additive characters, valued in the unit circle, from either
 These results are separate from `Analysis.SpecialFunctions.Complex.Circle` in order to reduce
 the imports of that file.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

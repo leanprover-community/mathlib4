@@ -24,7 +24,6 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 
 Chinese Remainder Theorem, Gödel, beta function
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

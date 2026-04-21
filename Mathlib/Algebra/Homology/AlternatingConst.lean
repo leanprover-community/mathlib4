@@ -22,7 +22,6 @@ In particular, we show `... ⟶ X --𝟙--> X --0--> X --𝟙--> X --0--> X ⟶ 
 to the single complex where `X` is in degree `0`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe v u

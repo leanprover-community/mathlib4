@@ -50,7 +50,6 @@ Ultimately, we would also like to define characteristic functions to describe di
 it exists for all random variables. However, to define this, we will need Fourier transforms
 which we currently do not have.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

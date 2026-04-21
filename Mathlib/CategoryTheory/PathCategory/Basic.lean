@@ -22,7 +22,6 @@ We check that the quotient of the path category of a category by the canonical r
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 universe v₁ v₂ u₁ u₂

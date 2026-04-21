@@ -33,7 +33,6 @@ traversable bitraversable functor bifunctor applicative
 
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

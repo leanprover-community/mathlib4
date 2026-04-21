@@ -14,7 +14,6 @@ public import Batteries.Util.LibraryNote
 A library note giving advice on developing and using the continuous functional calculus, as well
 as the organizational structure within Mathlib.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

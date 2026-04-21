@@ -34,7 +34,6 @@ public import Mathlib.RingTheory.PowerSeries.Basic
   in `I`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

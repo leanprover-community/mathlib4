@@ -18,7 +18,6 @@ In this file we define the basic structures to talk about `C^n` monoids: `ContMD
 additive counterpart `ContMDiffAdd`. These structures are general enough to also talk about `C^n`
 semigroups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -51,7 +51,6 @@ matrices, permutation matrices being the extreme points.
 See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

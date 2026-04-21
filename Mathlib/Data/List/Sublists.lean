@@ -20,7 +20,6 @@ public import Mathlib.Tactic.Finiteness.Attr
 
 This file contains basic results on this function.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

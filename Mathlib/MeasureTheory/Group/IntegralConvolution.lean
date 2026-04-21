@@ -24,7 +24,6 @@ integrals over there.
 * `integral_conv`: if `f` is integrable with respect to the convolution `μ ∗ ν`, then
   `∫ x, f x ∂(μ ∗ₘ ν) = ∫ x, ∫ y, f (x + y) ∂ν ∂μ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

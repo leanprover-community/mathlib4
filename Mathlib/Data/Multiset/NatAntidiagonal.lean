@@ -20,7 +20,6 @@ generally for sums going from `0` to `n`.
 This refines file `Data.List.NatAntidiagonal` and is further refined by file
 `Data.Finset.NatAntidiagonal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

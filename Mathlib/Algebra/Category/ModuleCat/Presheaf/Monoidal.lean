@@ -22,7 +22,6 @@ This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

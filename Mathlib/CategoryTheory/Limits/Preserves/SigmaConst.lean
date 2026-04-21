@@ -19,7 +19,6 @@ a type `T` to the coproduct of copies of `R` indexed by `T`
 preserves all colimits.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

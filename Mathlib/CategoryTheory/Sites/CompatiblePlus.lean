@@ -17,7 +17,6 @@ See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

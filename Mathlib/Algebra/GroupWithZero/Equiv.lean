@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-! # Isomorphisms of monoids with zero -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

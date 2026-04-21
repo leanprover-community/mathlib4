@@ -42,7 +42,6 @@ ideal sheaf. This should be refactored as a constructor for ideal sheaves once t
 into mathlib.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

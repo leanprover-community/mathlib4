@@ -21,7 +21,6 @@ an error bound in terms of a bound on the second derivative of the integrand.
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

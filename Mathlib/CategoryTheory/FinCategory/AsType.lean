@@ -14,7 +14,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 
 universe w v u

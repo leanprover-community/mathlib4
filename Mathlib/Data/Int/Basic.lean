@@ -19,7 +19,6 @@ public import Mathlib.Tactic.OfNat
 This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

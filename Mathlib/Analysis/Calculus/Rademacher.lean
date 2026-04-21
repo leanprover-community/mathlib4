@@ -43,7 +43,6 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

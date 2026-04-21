@@ -6,6 +6,5 @@ Authors: Mario Carneiro
 module -- shake: keep-all
 
 public import Mathlib.Computability.Primrec.List
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-01-10")

@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 In this file, we provide the star algebra instance on `WithConv (Matrix m n R)` given by
 the Hadamard product and intrinsic star (i.e., the star of each element in the matrix). -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

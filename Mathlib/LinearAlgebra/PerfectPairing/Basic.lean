@@ -21,7 +21,6 @@ A perfect pairing of two (left) modules may be defined either as:
 In this file we provide a definition `IsPerfPair` corresponding to 1 above, together with logic
 to connect 1 and 2.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

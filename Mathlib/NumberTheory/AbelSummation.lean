@@ -42,7 +42,6 @@ Primed versions of the three results above are also stated for when the endpoint
 * <https://en.wikipedia.org/wiki/Abel%27s_summation_formula>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

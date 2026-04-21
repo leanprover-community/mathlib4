@@ -31,7 +31,6 @@ The covers appearing in the definitions have index type in the morphism universe
 
 - Define source and target local closure of a morphism property.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,7 +19,6 @@ functions, including various special cases such as the functions `0`, `1`, `Nat.
 derivative, differentiable, Fréchet, calculus
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

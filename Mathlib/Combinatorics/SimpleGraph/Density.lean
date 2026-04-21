@@ -27,7 +27,6 @@ Between two finsets of vertices,
 * `SimpleGraph.interedges`: Finset of edges of a graph.
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

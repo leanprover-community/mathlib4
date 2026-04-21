@@ -24,7 +24,6 @@ compositions and base changes.
   (injective + purely inseparable residue field extensions)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

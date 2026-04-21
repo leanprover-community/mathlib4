@@ -42,7 +42,6 @@ The relation `≤` is the `simp` normal form, and the API is developed entirely 
 
 graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -62,7 +62,6 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

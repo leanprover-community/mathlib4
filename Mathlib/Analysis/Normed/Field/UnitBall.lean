@@ -16,7 +16,6 @@ In this file we define algebraic structures (`Semigroup`, `CommSemigroup`, `Mono
 `Metric.sphere (0 : 𝕜) 1`. In each case we use the weakest possible typeclass assumption on `𝕜`,
 from `NonUnitalSeminormedRing` to `NormedField`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

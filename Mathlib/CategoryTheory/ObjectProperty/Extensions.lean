@@ -16,7 +16,6 @@ class `P.IsClosedUnderExtensions` expressing that the property
 is closed under extensions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

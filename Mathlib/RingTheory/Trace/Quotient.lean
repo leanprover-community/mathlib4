@@ -21,7 +21,6 @@ quotients and localizations.
   trace map on `B⧸pB → A⧸p`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

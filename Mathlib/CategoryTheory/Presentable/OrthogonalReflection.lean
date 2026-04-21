@@ -60,7 +60,6 @@ errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

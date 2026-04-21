@@ -43,7 +43,6 @@ continuity set of a function from a topological space to a metrizable space is a
 
 Gδ set, residual set, nowhere dense set, meagre set
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

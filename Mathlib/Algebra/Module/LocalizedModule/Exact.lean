@@ -17,7 +17,6 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 - `IsLocalizedModule.map_exact`: A variant expressed in terms of `IsLocalizedModule`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

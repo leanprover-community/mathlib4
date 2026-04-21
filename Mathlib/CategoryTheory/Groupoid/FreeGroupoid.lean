@@ -31,7 +31,6 @@ The free groupoid is first defined by symmetrifying the quiver, taking the induc
 and finally quotienting by the reducibility relation.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ We define the category `Sequential` of sequential topological spaces. We follow 
 for defining categories of topological spaces, by giving it the induced category structure from
 `TopCat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

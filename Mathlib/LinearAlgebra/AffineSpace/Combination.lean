@@ -38,7 +38,6 @@ These definitions are for sums over a `Finset`; versions for a
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

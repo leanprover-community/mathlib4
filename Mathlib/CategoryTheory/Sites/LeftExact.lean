@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 # Left exactness of sheafification
 In this file we show that sheafification commutes with finite limits.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

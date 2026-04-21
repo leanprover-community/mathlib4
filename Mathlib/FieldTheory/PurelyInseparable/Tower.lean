@@ -42,7 +42,6 @@ This file contains results related to `Field.sepDegree`, `Field.insepDegree` and
 separable degree, degree, separable closure, purely inseparable
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

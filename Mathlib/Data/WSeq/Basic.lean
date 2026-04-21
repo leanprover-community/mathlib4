@@ -14,7 +14,6 @@ public import Mathlib.Util.CompileInductive
 This file provides a `WSeq α` type representing partially defined possibly infinite lists
 (referred here as weak sequences).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

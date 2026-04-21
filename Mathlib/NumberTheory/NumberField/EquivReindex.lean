@@ -17,7 +17,6 @@ index set of the chosen basis of the ring of integers of `K`.
 
 house, number field, algebraic number
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

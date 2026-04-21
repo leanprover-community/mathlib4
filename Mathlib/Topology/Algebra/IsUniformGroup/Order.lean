@@ -16,7 +16,6 @@ We gather some results about `TendstoUniformlyOn f g K` on ordered spaces,
 in particular bounding the values of `f` in terms of bounds on the limit `g`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

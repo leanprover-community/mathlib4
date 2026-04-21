@@ -45,7 +45,6 @@ no way to inform `simp` about the expected RHS, which could cause `simp` to fail
 it eagerly wants to solve for instance arguments. The current version is able to use the
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

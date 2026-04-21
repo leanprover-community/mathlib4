@@ -19,7 +19,6 @@ that the component maps are morphisms of `S`-schemes.
 We provide instances of `𝒰.Over S` for standard constructions on covers.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

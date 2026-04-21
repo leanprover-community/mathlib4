@@ -22,7 +22,6 @@ but not necessarily additive categories, as is assumed in some sources.
 
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

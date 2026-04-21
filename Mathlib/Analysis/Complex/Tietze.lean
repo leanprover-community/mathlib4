@@ -22,7 +22,6 @@ There are two main results here:
   bounded continuous function it extends.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ any map `f : X ⟶ Y` vanishes when `P X` holds. Similarly, we define
 any map `f : X ⟶ Y` vanishes when `P Y` holds.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

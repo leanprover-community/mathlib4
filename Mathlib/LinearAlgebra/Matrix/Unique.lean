@@ -20,7 +20,6 @@ canonical map that sends a one by one matrix `!![a]` to `a`.
 ## Tags
 Matrix, Unique, AlgEquiv
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

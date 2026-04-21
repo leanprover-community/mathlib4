@@ -44,7 +44,6 @@ bundle the adjunctions in a structure `Triple F G H`.
 * `mono_leftToRight_app_iff`: `leftToRight : F ⟶ H` is componentwise monic iff
   `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

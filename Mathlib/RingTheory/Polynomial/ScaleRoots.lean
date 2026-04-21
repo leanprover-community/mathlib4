@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Polynomial.Splits
 This file defines `scaleRoots p s` for a polynomial `p` in one variable and a ring element `s` to
 be the polynomial with root `r * s` for each root `r` of `p` and proves some basic results about it.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

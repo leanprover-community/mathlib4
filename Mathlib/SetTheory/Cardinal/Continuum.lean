@@ -17,7 +17,6 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 - `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

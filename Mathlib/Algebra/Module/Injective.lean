@@ -35,7 +35,6 @@ public import Mathlib.RingTheory.Ideal.Maps
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

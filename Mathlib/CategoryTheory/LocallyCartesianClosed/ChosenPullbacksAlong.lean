@@ -34,7 +34,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
   the product projections have chosen pullbacks.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

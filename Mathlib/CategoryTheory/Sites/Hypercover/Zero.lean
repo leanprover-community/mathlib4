@@ -18,7 +18,6 @@ of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve
 We define this with respect to a coverage and not to a Grothendieck topology, because this
 yields more control over the components of the cover.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

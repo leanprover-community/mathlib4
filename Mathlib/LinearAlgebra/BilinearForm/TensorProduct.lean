@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
   free modules.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

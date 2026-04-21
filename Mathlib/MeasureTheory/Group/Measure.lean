@@ -27,7 +27,6 @@ We develop some properties of measures on (topological) groups
 
 We also give analogues of all these notions in the additive world.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

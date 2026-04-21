@@ -17,7 +17,6 @@ This file contains a `linarith` preprocessor for converting (in)equalities in `â
 By overriding the behaviour of the placeholder preprocessor `nnrealToReal` (which does nothing
 unless this file is imported) `linarith` can still be used without importing `NNReal`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -14,7 +14,6 @@ public import Mathlib.Geometry.Euclidean.Incenter
 This file proves lemmas relating incenters and excenters of a simplex to angle bisection.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ define `G'.image p : Subfunctor F` as the image of `G'` by `f`, and
 if `G : Subfunctor F`, we define its preimage `G.preimage f : Subfunctor F'`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

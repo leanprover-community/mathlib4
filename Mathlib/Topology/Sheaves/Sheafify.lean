@@ -29,7 +29,6 @@ Show sheafification is a functor from presheaves to sheaves,
 and that it is the left adjoint of the forgetful functor,
 following <https://stacks.math.columbia.edu/tag/007X>.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 * `RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

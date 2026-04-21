@@ -12,7 +12,6 @@ public import Mathlib.Order.Hom.Basic
 /-!
 # Multiplication by a positive element as an order isomorphism
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

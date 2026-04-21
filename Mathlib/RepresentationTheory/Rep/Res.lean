@@ -14,7 +14,6 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 `H`-representation `ρ.comp f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,7 +27,6 @@ This file defines the valuation at infinity on the field of rational functions `
 ## Tags
 function field, ring of integers
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

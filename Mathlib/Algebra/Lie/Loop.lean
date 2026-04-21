@@ -42,7 +42,6 @@ flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 ## Tags
 lie ring, lie algebra, base change, Laurent polynomial
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

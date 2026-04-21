@@ -29,7 +29,6 @@ This file defines morphisms between (additive) ordered monoids with zero.
 
 monoid with zero
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

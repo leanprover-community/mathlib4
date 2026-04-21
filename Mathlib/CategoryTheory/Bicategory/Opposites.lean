@@ -32,7 +32,6 @@ There are multiple notions of opposite categories for bicategories.
 Note: `Cᶜᵒᵒᵖ` is WIP by Christian Merten.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

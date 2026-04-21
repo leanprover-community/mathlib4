@@ -37,7 +37,6 @@ assumption, but one may use
 `HasLocalization.standard` in the proof instead.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

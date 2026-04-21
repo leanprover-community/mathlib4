@@ -23,7 +23,6 @@ instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
   categories of cones preserves limiting properties.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

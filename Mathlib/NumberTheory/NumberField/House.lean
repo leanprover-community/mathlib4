@@ -22,7 +22,6 @@ the largest of the modulus of its conjugates.
 ## Tags
 number field, algebraic number, house
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

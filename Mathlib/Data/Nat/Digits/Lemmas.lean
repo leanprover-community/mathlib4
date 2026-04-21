@@ -18,7 +18,6 @@ public import Mathlib.Data.Nat.Digits.Defs
 
 This provides lemma about the digits of natural numbers.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

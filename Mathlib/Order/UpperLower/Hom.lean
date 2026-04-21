@@ -14,7 +14,6 @@ public import Mathlib.Order.UpperLower.Principal
 In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.Ici` and
 `LowerSet.Iic` bundled as `SupHom`s, `InfHom`s, `sSupHom`s, or `sInfHom`s.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

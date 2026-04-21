@@ -27,7 +27,6 @@ constructive.
 * [nLab, *The category of sets and partial functions*]
   (https://ncatlab.org/nlab/show/partial+function)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

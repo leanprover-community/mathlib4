@@ -31,7 +31,6 @@ is not an issue mathematically. For this to be possible, however, we need `CharP
 able to import some part of `ZMod`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,7 +30,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

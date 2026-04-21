@@ -26,7 +26,6 @@ to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

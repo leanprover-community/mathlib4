@@ -19,7 +19,6 @@ rather than in `Analysis.PSeries` in order to keep the prerequisites of the form
 
 p-series, Cauchy condensation test
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

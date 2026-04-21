@@ -15,7 +15,6 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 ## Main Definition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

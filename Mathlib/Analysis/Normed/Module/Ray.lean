@@ -15,7 +15,6 @@ In this file we prove some lemmas about the `SameRay` predicate in case of a rea
 this case, for two vectors `x y` in the same ray, the norm of their sum is equal to the sum of their
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

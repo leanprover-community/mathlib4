@@ -36,7 +36,6 @@ in a categorical sense is a colimit.
 
 @[expose] public section
 
-set_option backward.defeqAttrib.useBackward true
 
 universe w₃ w₂ w₁ w₀ w₀' v u
 

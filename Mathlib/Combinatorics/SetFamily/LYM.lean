@@ -46,7 +46,6 @@ Provide equality cases. Local LYM gives that the equality case of LYM and Sperne
 
 shadow, lym, slice, sperner, antichain
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

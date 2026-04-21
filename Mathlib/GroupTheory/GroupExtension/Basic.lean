@@ -17,7 +17,6 @@ This file gives basic lemmas about group extensions.
 
 For the main definitions, see `Mathlib/GroupTheory/GroupExtension/Defs.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

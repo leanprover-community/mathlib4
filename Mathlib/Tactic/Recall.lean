@@ -14,7 +14,6 @@ public meta import Lean.PrettyPrinter.Delaborator
 /-!
 # `recall` command
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -21,7 +21,6 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

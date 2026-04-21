@@ -13,7 +13,6 @@ public import Mathlib.Order.Interval.Set.Basic
 Since every pair of elements are comparable in a linear order, intervals over them are
 better behaved. This file collects their properties under this assumption.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

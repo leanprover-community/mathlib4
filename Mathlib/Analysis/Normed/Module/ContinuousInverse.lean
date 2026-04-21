@@ -68,7 +68,6 @@ This concept is used to give an equivalent definition of immersions and submersi
   If `f` is injective, it has a continuous left inverse.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

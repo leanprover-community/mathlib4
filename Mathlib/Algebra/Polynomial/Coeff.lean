@@ -18,7 +18,6 @@ The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

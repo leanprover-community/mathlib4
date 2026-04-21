@@ -11,7 +11,6 @@ public import Mathlib.Init
 /-!
 # Term elaborators for reduction
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

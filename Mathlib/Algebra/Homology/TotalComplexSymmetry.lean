@@ -21,7 +21,6 @@ are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomo
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

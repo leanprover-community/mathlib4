@@ -62,7 +62,6 @@ is not differentiable on the right at that point, and similarly differentiabilit
   is increasing or its second derivative is nonnegative, then the original function is convex.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -60,7 +60,6 @@ the current `Module.Flat` to `Module.MonoFlat`.
 * Generalize flatness to noncommutative semirings.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

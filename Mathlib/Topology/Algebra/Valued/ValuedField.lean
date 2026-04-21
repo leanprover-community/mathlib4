@@ -29,7 +29,6 @@ separated, so the map from `K` to `hat K` is injective.
 
 Then we extend the valuation given on `K` to a valuation on `hat K`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

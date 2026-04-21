@@ -17,7 +17,6 @@ public import Mathlib.Data.DFinsupp.Defs
 
 * `DFinsupp.module`: pointwise scalar multiplication on `DFinsupp` gives a module structure
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

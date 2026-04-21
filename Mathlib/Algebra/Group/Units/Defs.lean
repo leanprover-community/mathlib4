@@ -30,7 +30,6 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 
 The results here should be used to golf the basic `Group` lemmas.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

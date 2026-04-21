@@ -25,7 +25,6 @@ See also `Matrix.UnitaryGroup` for specializations to `unitary (Matrix n n R)`.
 
 unitary
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

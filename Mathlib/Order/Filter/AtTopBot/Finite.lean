@@ -15,7 +15,6 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

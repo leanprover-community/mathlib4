@@ -22,7 +22,6 @@ both these procedures are Lie algebra homomorphisms themselves.
 lie algebra, extension of scalars, base change, derivation
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace Lie.Derivation

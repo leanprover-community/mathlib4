@@ -27,7 +27,6 @@ and `Frac R` denotes the fraction field of a domain `R`.
   (as an `A`-algebra) by `R₁` and `R₂`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

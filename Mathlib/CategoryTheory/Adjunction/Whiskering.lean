@@ -15,7 +15,6 @@ Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjun
 and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ In particular, we prove that
 as well as the infinite sum representation of cotangent (also known as the Mittag-Leffler
 expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

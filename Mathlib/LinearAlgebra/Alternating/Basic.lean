@@ -41,7 +41,6 @@ using `map_swap` as a definition, and does not require `Neg N`.
 * `AlternatingMap.coe_neg`
 * `AlternatingMap.coe_smul`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

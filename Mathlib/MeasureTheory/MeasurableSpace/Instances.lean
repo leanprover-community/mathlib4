@@ -16,7 +16,6 @@ public import Mathlib.Data.ZMod.Defs
 This file provides measurable-space instances for a selection of standard countable types,
 in each case defining the Σ-algebra to be `⊤` (the discrete measurable-space structure).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

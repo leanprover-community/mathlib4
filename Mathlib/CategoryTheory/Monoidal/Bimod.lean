@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 /-!
 # The category of bimodule objects over a pair of monoid objects.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

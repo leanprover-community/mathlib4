@@ -60,7 +60,6 @@ This file defines Følner sequences and filters for measurable spaces acted on b
 
 Foelner, Følner filter, amenability, amenable group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

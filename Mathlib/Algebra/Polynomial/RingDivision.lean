@@ -16,7 +16,6 @@ import Mathlib.Tactic.ComputeDegree
 We prove basic results about univariate polynomials.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

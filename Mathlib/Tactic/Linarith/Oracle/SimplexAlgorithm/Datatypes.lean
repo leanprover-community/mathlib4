@@ -11,7 +11,6 @@ public meta import Std.Data.HashMap.Basic
 /-!
 # Datatypes for the Simplex Algorithm implementation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -28,7 +28,6 @@ For design notes, see `PartialEquiv.lean`.
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -56,7 +56,6 @@ making some definitions and lemmas irrelevant.
 
 ordered monoid, ordered group
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

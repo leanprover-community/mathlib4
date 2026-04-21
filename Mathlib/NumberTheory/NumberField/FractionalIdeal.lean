@@ -23,7 +23,6 @@ Prove some results on the fractional ideals of number fields.
   field `K`, the absolute value of the determinant of the base change from `integralBasis` to
   `basisOfFractionalIdeal I` is equal to the norm of `I`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

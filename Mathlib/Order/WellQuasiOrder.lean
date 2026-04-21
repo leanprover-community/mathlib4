@@ -26,7 +26,6 @@ with no infinite antichains.
 
 wqo, pwo, well quasi-order, partial well order, dickson order
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

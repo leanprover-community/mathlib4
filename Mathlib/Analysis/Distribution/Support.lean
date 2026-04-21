@@ -27,7 +27,6 @@ compactly supported) and all basic properties are proved in an abstract setting 
 * `TemperedDistribution.dsupport_delta`: The support of the delta distribution is a single point.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

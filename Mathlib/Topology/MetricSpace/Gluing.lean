@@ -48,7 +48,6 @@ identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all 
 isometrically and in a way compatible with `f n`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

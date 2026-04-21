@@ -16,7 +16,6 @@ A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

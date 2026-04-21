@@ -15,7 +15,6 @@ This module contains the `pp_with_univ` attribute, which enables pretty-printing
 of universe parameters for the associated declaration.  This is helpful for definitions like
 `Ordinal`, where the universe levels are both relevant and not deducible from the arguments.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

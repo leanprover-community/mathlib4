@@ -20,7 +20,6 @@ This operation is called `MvPolynomial.expand` and it is an algebra homomorphism
 
 * `MvPolynomial.expand`: expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

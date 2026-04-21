@@ -22,7 +22,6 @@ An isomorphism `α : X ≅ Y` defines
   and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
   which are defined in  `CategoryTheory.HomCongr`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

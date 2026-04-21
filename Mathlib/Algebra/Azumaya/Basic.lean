@@ -29,7 +29,6 @@ over itself where `R` is a commutative ring.
 Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

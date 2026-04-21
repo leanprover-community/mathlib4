@@ -28,7 +28,6 @@ so as to make the operations (addition etc.) "computable".
 * `AddCommGroup.DirectLimit G f`
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

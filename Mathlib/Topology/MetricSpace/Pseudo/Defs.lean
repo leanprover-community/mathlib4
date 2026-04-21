@@ -55,7 +55,6 @@ continuity and uniform continuity.
 
 pseudometric space, dist
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

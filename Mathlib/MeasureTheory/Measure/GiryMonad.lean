@@ -28,7 +28,6 @@ monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 giry monad
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

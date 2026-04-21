@@ -12,7 +12,6 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 # Inner products of strongly measurable functions are strongly measurable.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

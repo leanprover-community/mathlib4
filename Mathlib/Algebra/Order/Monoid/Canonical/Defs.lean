@@ -15,7 +15,6 @@ public import Mathlib.Order.Interval.Set.Defs
 /-!
 # Canonically ordered monoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ This file contains an enum `Ineq` (whose constructors are `eq`, `le`, `lt`), and
 involving it. The type `Ineq` is one of the fundamental objects manipulated by the `linarith` and
 `linear_combination` tactics.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

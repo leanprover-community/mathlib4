@@ -16,7 +16,6 @@ with the quotient of `LinearMap.ker S.g` by the image of the morphism
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

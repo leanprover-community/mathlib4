@@ -15,7 +15,6 @@ depending on a single coordinate is integrable, in `MeasureTheory.integrable_fin
 that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

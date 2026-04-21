@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.GradedAlgebra.Basic
 The main result is `CliffordAlgebra.gradedAlgebra`, which says that the clifford algebra is a
 ℤ₂-graded algebra (or "superalgebra").
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

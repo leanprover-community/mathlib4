@@ -15,7 +15,6 @@ We show that if `P` is a morphism property in `Scheme` that is local at the sour
 colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open immersions
 exist and agree with the colimit in `Scheme`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

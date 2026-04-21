@@ -15,7 +15,6 @@ In this file we prove two auxiliary lemmas
 about `Filter.atTop : Filter (Finset _)` and `∏ b ∈ s, f b`.
 These lemmas are useful to build the theory of absolutely convergent series.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

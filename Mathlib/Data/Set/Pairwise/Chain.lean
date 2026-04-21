@@ -13,7 +13,6 @@ public import Mathlib.Order.Preorder.Chain
 
 In this file `Pairwise` results are applied to chains of sets.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

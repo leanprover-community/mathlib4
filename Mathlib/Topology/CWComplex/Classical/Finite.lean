@@ -29,7 +29,6 @@ finite CW complexes.
 * `RelCWComplex.finite_iff_finite_cells`: a CW complex is finite iff the total number of its cells
   is finite.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,7 +11,6 @@ public import Mathlib.Logic.Small.Set
 /-!
 # Small instances for pointwise operations
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

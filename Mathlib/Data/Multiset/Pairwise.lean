@@ -14,7 +14,6 @@ public import Mathlib.Data.Multiset.Defs
 This file provides basic results about `Multiset.Pairwise` (definitions are in
 `Mathlib/Data/Multiset/Defs.lean`).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

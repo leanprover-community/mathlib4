@@ -19,7 +19,6 @@ We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of p
 over non-symmetric intervals.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 open UpperHalfPlane hiding I
 

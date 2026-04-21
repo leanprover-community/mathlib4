@@ -11,7 +11,6 @@ public import Mathlib.Data.Nat.Cast.Prod
 /-!
 # The product of two `AddGroupWithOne`s.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

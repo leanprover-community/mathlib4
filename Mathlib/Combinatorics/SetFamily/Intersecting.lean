@@ -27,7 +27,6 @@ This file defines intersecting families and proves their basic properties.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

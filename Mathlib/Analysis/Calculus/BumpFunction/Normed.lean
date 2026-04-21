@@ -15,7 +15,6 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 In this file we define `ContDiffBump.normed f μ` to be the bump function `f` normalized so that
 `∫ x, f.normed μ x ∂μ = 1` and prove some properties of this function.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,7 +17,6 @@ so that downstream files can refer to `ValuativeRel R`,
 to facilitate a refactor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

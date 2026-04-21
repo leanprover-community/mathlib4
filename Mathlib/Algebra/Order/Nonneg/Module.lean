@@ -17,7 +17,6 @@ For an ordered ring `R`, this file proves that any (ordered) `R`-module `M` is a
 
 Among other things, these instances are useful for working with `ConvexCone`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

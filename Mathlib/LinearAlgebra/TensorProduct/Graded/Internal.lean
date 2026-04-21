@@ -49,7 +49,6 @@ type.
 * Show that the tensor product of graded algebras is itself a graded algebra.
 * Determine if replacing the synonym with a single-field structure improves performance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -241,7 +240,6 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
     rw [← SetLike.coe_gOne ℬ, tmul_coe_mul_coe_tmul, zero_mul, uzpow_zero, one_smul,
       SetLike.coe_gOne, one_mul]
 
-set_option backward.defeqAttrib.useBackward true in
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
@@ -294,7 +292,6 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 
 variable {C} [Ring C] [Algebra R C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
 product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
@@ -331,7 +328,6 @@ theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of the graded tensor product; every algebra morphism uniquely factors
 as a pair of algebra morphisms that anticommute with respect to the grading. -/
 def liftEquiv :

@@ -24,7 +24,6 @@ functors, the main construction `HasShift.induced` in this file shall be
 used for both quotient and localized shifts.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

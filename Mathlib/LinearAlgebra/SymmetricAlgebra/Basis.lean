@@ -29,7 +29,6 @@ public import Mathlib.RingTheory.MvPolynomial
 
 This file closely mirrors the corresponding file for `TensorAlgebra`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,7 +21,6 @@ Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
 do not immediately apply and a “primed” version is provided here.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

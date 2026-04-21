@@ -40,7 +40,6 @@ and convergence in distribution.
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

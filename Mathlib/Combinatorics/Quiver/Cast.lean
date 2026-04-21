@@ -16,7 +16,6 @@ This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to
 rewriting arrows and paths along equalities of their endpoints.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Positivity.Core
 /-!
 # Casts of rational numbers into linear ordered fields.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

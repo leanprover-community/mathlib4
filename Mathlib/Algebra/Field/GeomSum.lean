@@ -23,7 +23,6 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
 Several variants are recorded, generalising in particular to the case of a division ring in
 which `x` and `y` commute.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

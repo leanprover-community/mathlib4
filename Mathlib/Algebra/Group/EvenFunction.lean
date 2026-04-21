@@ -19,7 +19,6 @@ These definitions are `Function.Even` and `Function.Odd`; and they are `protecte
 conflicting with the root-level definitions `Even` and `Odd` (which, for functions, mean that the
 function takes even resp. odd _values_, a wholly different concept).
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

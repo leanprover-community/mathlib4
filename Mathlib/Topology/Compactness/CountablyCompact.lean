@@ -49,7 +49,6 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 * [Engelking, *General Topology*][engelking1989]
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

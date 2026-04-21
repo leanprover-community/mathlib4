@@ -25,7 +25,6 @@ If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)`
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

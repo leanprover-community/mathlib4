@@ -21,7 +21,6 @@ We provide instances for categories of sheaves over Abelian categories.
   category is exact if and only if it is exact on stalks.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

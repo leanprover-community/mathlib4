@@ -6,6 +6,5 @@ Authors: Salvatore Mercuri
 module -- shake: keep-all
 
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
-set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-03-09")

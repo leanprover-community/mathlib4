@@ -16,7 +16,6 @@ They map a type vector `α` to the type `Σ a : A, B a ⟹ α`, with `A : Type` 
 `B : A → TypeVec n`. They interact well with Lean's inductive definitions because
 they guarantee that occurrences of `α` are positive.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Tactic.NormNum
 /-!
 We register `linarith` with the `hint` tactic.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

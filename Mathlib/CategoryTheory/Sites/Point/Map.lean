@@ -20,7 +20,6 @@ and `(Φ.map F K).sheafFiber ≅ F.sheafPushforwardContinuous A J K ⋙ Φ.sheaf
 (the latter is defined only if `F` is also continuous).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

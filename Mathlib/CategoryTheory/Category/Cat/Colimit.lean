@@ -18,7 +18,6 @@ of simplicial sets (see `AlgebraicTopology.SimplicialSet.NerveAdjunction`), so t
 `Cat` can be computed by passing to nerves, taking the colimit in `SSet` and finally applying the
 homotopy category functor `SSet ⥤ Cat`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Order.Interval.Set.Defs
 /-!
 # Ordered instances on submonoids
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

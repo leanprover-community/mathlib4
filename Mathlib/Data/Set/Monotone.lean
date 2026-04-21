@@ -10,7 +10,6 @@ public import Mathlib.Data.Set.Function
 /-!
 # Monotone functions over sets
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

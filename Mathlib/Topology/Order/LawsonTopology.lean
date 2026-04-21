@@ -47,7 +47,6 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 
 Lawson topology, preorder
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

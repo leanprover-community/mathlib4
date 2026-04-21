@@ -21,7 +21,6 @@ The key characterizing lemma is `PresheafOfModules.germ_smul`, which describes t
 of the scalar action and `TopCat.Presheaf.germ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,7 +18,6 @@ orthogonal projections; the lemma
 stating that for a subspace `K` of `E` such that `K` admits an orthogonal projection we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,7 +26,6 @@ public import Mathlib.RingTheory.Polynomial.Basic
   Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
   associated with the _nodes_ `x i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

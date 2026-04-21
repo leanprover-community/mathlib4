@@ -29,7 +29,6 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,7 +14,6 @@ public import Mathlib.Tactic.FunProp
 
 At the moment, these tactics are just wrappers, but potentially they could be more sophisticated.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

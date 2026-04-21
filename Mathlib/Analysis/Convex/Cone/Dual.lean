@@ -38,7 +38,6 @@ We prove the following theorems:
 * https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
 * https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

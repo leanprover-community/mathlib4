@@ -22,7 +22,6 @@ Note: the file `Mathlib/CategoryTheory/Functor/Derived/PointwiseLeftDerived.lean
 by dualizing this file. These two files should be kept in sync.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

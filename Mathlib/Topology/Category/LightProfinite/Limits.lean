@@ -15,7 +15,6 @@ This file applies the general API for explicit limits and colimits in `CompHausL
 the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of
 `LightProfinite`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

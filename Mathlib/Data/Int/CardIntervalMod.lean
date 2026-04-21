@@ -18,7 +18,6 @@ The theorems in this file generalise `Nat.card_multiples` in
 `Mathlib/Data/Nat/Factorization/Basic.lean` to all integer intervals and any fixed residue (not just
 zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

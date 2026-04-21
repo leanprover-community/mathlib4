@@ -23,7 +23,6 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

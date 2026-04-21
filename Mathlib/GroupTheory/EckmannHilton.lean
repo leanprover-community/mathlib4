@@ -22,7 +22,6 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
   over a unital binary operation, then the group is commutative.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

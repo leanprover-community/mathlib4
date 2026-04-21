@@ -22,7 +22,6 @@ Later we show that this is always an isomorphism in an abelian category,
 and conversely a category with (co)kernels and finite products in which this morphism
 is always an isomorphism is an abelian category.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,7 +16,6 @@ Given an action of a group `G` on a type `α`, we say that a set `s : Set α` su
 
 This is crucial in Fourier-Motzkin constructions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

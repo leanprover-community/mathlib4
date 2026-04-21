@@ -31,7 +31,6 @@ Also, support functions for operating with n-tuples of types, such as:
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
 to it, we need support functions and lemmas to mediate between constructions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Group.Units.Equiv
 /-!
 # More lemmas about irreducible elements
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

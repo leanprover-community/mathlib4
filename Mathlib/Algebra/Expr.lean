@@ -13,7 +13,6 @@ public import Qq.Typ
 
 This file provides instances on `x y : Q($α)` such that `x + y = q($x + $y)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Qq

@@ -31,7 +31,6 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -50,7 +50,6 @@ Young diagram
 <https://en.wikipedia.org/wiki/Young_tableau>
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

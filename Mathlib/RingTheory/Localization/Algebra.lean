@@ -24,7 +24,6 @@ The proof that localization commutes with taking kernels does not use the result
 as the translation is currently tedious and can be unified easily after the localization refactor.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

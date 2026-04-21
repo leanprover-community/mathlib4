@@ -27,7 +27,6 @@ Obviously there's more to do:
 * various classes of smooth and structure-preserving functions
 * functions into spaces with algebraic structure, which the sections inherit
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

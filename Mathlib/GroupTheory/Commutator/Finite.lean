@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.Index
 /-!
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

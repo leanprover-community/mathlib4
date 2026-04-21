@@ -16,7 +16,6 @@ This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}
 $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some bounds on the
 "geometric" sum of `a/b^i` where `a b : ℕ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

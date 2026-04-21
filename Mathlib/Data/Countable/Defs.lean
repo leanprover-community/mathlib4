@@ -22,7 +22,6 @@ a specific encoding of elements of `α` by natural numbers.
 This file also provides a few instances of these typeclasses.
 More instances can be found in other files.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

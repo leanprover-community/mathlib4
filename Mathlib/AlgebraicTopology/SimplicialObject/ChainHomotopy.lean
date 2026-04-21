@@ -19,7 +19,6 @@ Concretely, if `H : Homotopy f g` gives maps
 `H.h i : X _⦋n⦌ ⟶ Y _⦋n+1⦌` indexed by `i : Fin (n + 1)`, we define the degree-`n` component
 of the chain homotopy as the opposite of alternating sum `∑ i, (-1)^i • H.h i`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

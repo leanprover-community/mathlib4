@@ -32,7 +32,6 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 * Prove that the identity component of a locally path connected group is an open subgroup.
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

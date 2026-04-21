@@ -22,7 +22,6 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 `F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

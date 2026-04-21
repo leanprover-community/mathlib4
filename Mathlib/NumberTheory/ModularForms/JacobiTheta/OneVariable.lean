@@ -18,7 +18,6 @@ and proves the modular transformation properties `θ (τ + 2) = θ τ` and
 `θ (-1 / τ) = (-I * τ) ^ (1 / 2) * θ τ`, using Poisson's summation formula for the latter. We also
 show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential decay as `im τ → ∞`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,7 +20,6 @@ Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreservin
   corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

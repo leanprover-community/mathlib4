@@ -28,7 +28,6 @@ this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ`.
   `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

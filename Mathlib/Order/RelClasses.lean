@@ -17,7 +17,6 @@ In this file we prove some properties of `Is*` classes defined in
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

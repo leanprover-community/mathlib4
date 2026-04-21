@@ -28,7 +28,6 @@ This file defines the kernel of a linear map.
 linear algebra, vector space, module
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

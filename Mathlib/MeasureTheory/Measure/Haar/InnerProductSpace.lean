@@ -19,7 +19,6 @@ rise to a canonical volume form. We show that the measure coming from this volum
 measure `1` to the parallelepiped spanned by any orthonormal basis, and that it coincides with
 the canonical `volume` from the `MeasureSpace` instance.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -87,7 +87,6 @@ If you would like to work on any of these, please coordinate with Michael Rothga
 to avoid duplicating or conflicting work.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

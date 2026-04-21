@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Noetherian.Basic
 /-!
 # Noetherian quotient rings and quotient modules
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

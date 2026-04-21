@@ -15,7 +15,6 @@ We show that any category with zero morphisms and binary biproducts is enriched 
 of commutative monoids.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

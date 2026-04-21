@@ -19,7 +19,6 @@ This file characterises the covering sieves of the extensive topology.
   extensive topology if and only if it contains a finite family of morphisms with fixed target
   exhibiting the target as a coproduct of the sources.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

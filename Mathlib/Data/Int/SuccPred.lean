@@ -13,7 +13,6 @@ public import Mathlib.Data.Nat.SuccPred
 
 In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

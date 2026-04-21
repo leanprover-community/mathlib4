@@ -13,7 +13,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 We prove that `f : X → Π i, E i` is in `Lᵖ` if and only if for all `i`, `f · i` is in `Lᵖ`.
 We do the same for `f : X → (E × F)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

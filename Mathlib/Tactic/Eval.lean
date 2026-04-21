@@ -14,7 +14,6 @@ public import Qq.Macro
 This file provides the `eval% x` term elaborator, which evaluates the constant `x` at compile-time
 in the interpreter, and interpolates it into the expression.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

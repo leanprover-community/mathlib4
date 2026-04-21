@@ -47,7 +47,6 @@ We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` st
 `CommShift` structures.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

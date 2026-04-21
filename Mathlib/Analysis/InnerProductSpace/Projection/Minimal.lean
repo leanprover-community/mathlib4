@@ -15,7 +15,6 @@ This file shows the existence of minimizers (also known as the Hilbert projectio
 This is the key tool that is used to define `Submodule.orthogonalProjection` in
 `Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -26,7 +26,6 @@ braided/symmetric structure.
 ## TODO
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

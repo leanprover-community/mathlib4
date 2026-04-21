@@ -24,7 +24,6 @@ This file defines regular and inaccessible cardinals.
 * Prove more theorems on inaccessible cardinals.
 * Define singular cardinals.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

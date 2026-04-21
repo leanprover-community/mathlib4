@@ -19,7 +19,6 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 This file starts looking like the ring theory of $R[X]$
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

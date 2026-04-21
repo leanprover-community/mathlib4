@@ -54,7 +54,6 @@ advantage of the fact that `(Sᵐᵒᵖ)ᵐᵒᵖ` is defeq to `S`.
 Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

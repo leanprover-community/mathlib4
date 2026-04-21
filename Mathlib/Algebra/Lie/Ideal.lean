@@ -27,7 +27,6 @@ on Lie submodules.
 
 Lie algebra, ideal, submodule, Lie submodule
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

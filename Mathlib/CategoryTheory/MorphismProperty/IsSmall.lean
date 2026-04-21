@@ -15,7 +15,6 @@ A class of morphisms `W : MorphismProperty C` is `w`-small
 if the corresponding set in `Set (Arrow C)` is.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

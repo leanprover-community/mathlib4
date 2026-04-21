@@ -14,7 +14,6 @@ In this file we first show that Lebesgue integrals can be subtracted with the ex
 `∫⁻ f - ∫⁻ g ≤ ∫⁻ (f - g)`, with equality if `g ≤ f` almost everywhere. Then we prove variants of
 the monotone convergence theorem that use this subtraction in their proofs.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

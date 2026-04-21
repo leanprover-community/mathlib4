@@ -17,7 +17,6 @@ Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

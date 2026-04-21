@@ -35,7 +35,6 @@ This file is a place to collect topological results about matrices.
   * `Matrix.blockDiagonal_tsum`: block diagonal commutes with infinite sums
   * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

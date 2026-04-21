@@ -26,7 +26,6 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

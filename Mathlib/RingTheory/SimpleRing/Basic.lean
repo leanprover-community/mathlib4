@@ -22,7 +22,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
   ring is injective.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

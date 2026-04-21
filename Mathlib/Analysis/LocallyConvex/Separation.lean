@@ -37,7 +37,6 @@ We provide many variations to stricten the result under more assumptions on the 
   other one is a singleton. Strict separation.
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,7 +25,6 @@ Almost by construction, this notion of exactness is self dual,
 see `Exact.op` and `Exact.unop`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

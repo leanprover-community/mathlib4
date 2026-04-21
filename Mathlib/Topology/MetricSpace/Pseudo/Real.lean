@@ -11,7 +11,6 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 /-!
 # Lemmas about distances between points in intervals in `ℝ`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

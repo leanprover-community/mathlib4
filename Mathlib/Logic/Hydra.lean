@@ -31,7 +31,6 @@ We follow the proof by Peter LeFanu Lumsdaine at https://mathoverflow.net/a/2290
 TODO: formalize the relations corresponding to more powerful (e.g. Kirby–Paris and Buchholz)
 hydras, and prove their well-foundedness.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

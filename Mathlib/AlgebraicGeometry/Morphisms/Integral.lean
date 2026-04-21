@@ -20,7 +20,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 and the induced ring map is integral.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

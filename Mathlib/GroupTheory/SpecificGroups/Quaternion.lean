@@ -41,7 +41,6 @@ inconvenient to carry around this condition we define `QuaternionGroup` also for
 Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,7 +24,6 @@ There are also various lemmas on bases on specific spaces (such as empty or sing
 * `Basis.mk`: construct a basis out of `v : ι → M` such that `LinearIndependent v` and
   `span (range v) = ⊤`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

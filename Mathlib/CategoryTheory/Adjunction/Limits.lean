@@ -26,7 +26,6 @@ the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `
 is naturally isomorphic to
 the functor associating to each `Y` the cocones over `K` with cone point `G.obj Y`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

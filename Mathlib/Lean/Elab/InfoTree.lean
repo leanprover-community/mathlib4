@@ -18,7 +18,6 @@ import Lean.Elab.Term.TermElabM
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

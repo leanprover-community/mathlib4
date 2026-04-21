@@ -35,7 +35,6 @@ construction/theorem that is easier to define/prove on binary products than on f
   if `l` contains every element of `ι` exactly once.
 * The product of sets is `Set.tprod : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,7 +12,6 @@ public import Mathlib.Data.Set.Function
 
 This file contains basic results on piecewise defined functions.
 -/
-set_option backward.defeqAttrib.useBackward true
 
 public section
 

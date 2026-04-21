@@ -16,7 +16,6 @@ If `P : ObjectProperty C`, then `P.isLocal : MorphismProperty C`
 is stable under transfinite compositions.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

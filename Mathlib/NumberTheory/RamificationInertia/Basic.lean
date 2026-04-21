@@ -42,7 +42,6 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
