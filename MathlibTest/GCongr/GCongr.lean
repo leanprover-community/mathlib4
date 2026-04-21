@@ -48,7 +48,7 @@ a b c d : ℕ
 h : b~d
 ⊢ a~a
 
-case a.a
+case a
 a b c d : ℕ
 h : b~d
 ⊢ c~c
