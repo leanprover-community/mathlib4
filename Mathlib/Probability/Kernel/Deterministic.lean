@@ -8,6 +8,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
 # IsDeterministic
@@ -24,8 +25,12 @@ properties about them.
 
 ## Main statements
 
+* `eq_zero_or_dirac`: in a standard Borel space, a zero-one measure is either the zero measure or a
+  Dirac measure.
 * `is_deterministic_iff_zero_one`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
+* `isDeterministic_eq_deterministic`: in a standard Borel space, a Markov kernel is
+  deterministic if and only if it equals the deterministic kernel of some measurable function.
 * `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. This corresponds to the equation of a Positive Markov category.
@@ -109,12 +114,11 @@ instance : IsZeroOrProbabilityMeasure μ where
 lemma exists_one_iff_univ_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
   constructor
   · rintro ⟨s, h⟩
-    cases μ.zero_one MeasurableSet.univ with
-    | inr h₁ => exact h₁
-    | inl h₀ =>
-      have := measure_mono (μ := μ) <| subset_univ s
+    rcases μ.zero_one MeasurableSet.univ with (h₀ | h₁)
+    · have := measure_mono (μ := μ) <| subset_univ s
       rw [h] at this
       simp_all
+    · exact h₁
   · intro h
     exact ⟨univ, h⟩
 
@@ -145,6 +149,69 @@ lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
   cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
   all_goals try simp_all [inter_eq_one]
+
+/-- In a standard Borel space, a zero-one measure is either the zero measure or a Dirac measure. -/
+theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Measure.dirac x₀ := by
+  by_cases hμ : μ = 0
+  · exact Or.inl hμ
+  · right
+    have : IsProbabilityMeasure μ := by
+      rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+      · rw [← ne_eq, ← μ.measure_univ_ne_zero] at hμ
+        contradiction
+      · exact ⟨h⟩
+    obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+    let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+    have mBn : MeasurableSet (⋂ n, B n) := by
+      refine MeasurableSet.iInter fun n ↦ ?_
+      simp only [dite_eq_ite, B]
+      split_ifs
+      · exact hAm n
+      · exact (hAm n).compl
+    have hBn : μ (⋂ n, B n) = 1 := by
+      refine (prob_compl_eq_zero_iff mBn).mp ?_
+      simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+      intro n
+      split_ifs with h
+      · simp_all
+      · rw [compl_compl]
+        rcases μ.zero_one₀ (A n) with (h₀ | h₁)
+        · exact h₀
+        · simp_all
+    obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+      have neBn : (⋂ n, B n).Nonempty := by
+        by_contra! h
+        rw [h] at hBn
+        simp_all
+      simp_rw [eq_singleton_iff_unique_mem]
+      refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
+      refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
+      have hsome := neBn.some_mem
+      simp only [dite_eq_ite, mem_iInter, B] at hsome hy
+      specialize hsome n
+      specialize hy n
+      constructor
+      · intro h
+        split_ifs at hy with hμAn
+        · simpa [hμAn] using hsome
+        · contradiction
+      · intro h
+        split_ifs at hsome with hμAn
+        · simpa [hμAn] using hy
+        · contradiction
+    use x₀
+    ext s hs
+    by_cases h : x₀ ∈ s
+    · simp [h]
+      have : {x₀} ⊆ s := by grind
+      have := measure_mono (μ := μ) this
+      rw [← hx₀, hBn] at this
+      simp_all
+    · simp [h]
+      have : s ⊆ {x₀}ᶜ := by grind
+      have := measure_mono (μ := μ) this
+      rw [← hx₀, measure_compl mBn (by simp), measure_univ, hBn] at this
+      simp_all
 
 end MeasureTheory
 
@@ -183,6 +250,31 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (is_deterministic_iff_zero_one κ).mp ‹_›
 
+/-- In a standard Borel space, a Markov kernel is deterministic if and only if it equals the
+deterministic kernel of some measurable function. -/
+theorem isDeterministic_eq_deterministic [StandardBorelSpace β] (κ : Kernel α β)
+    [IsMarkovKernel κ] [IsDeterministic κ] :
+    ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
+  have : ∀ a, ∃ x₀, κ a = Measure.dirac x₀ := by
+    intro a
+    rcases eq_zero_or_dirac (μ := κ a) with (h | h)
+    · have : κ a univ = 0 := by simp [h]
+      have : κ a univ = 1 := by simp
+      simp_all
+    · exact h
+  choose f hf using this
+  refine ⟨f, ?_, ?_⟩
+  · intro s hs
+    have : f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} := by
+      simp only [preimage, mem_singleton_iff]
+      simp_rw [hf, Measure.dirac_apply' _ hs]
+      ext x
+      exact (indicator_eq_one_iff_mem ENNReal).symm
+    rw [this]
+    exact κ.measurable_coe hs <| measurableSet_singleton 1
+  · ext a : 1
+    exact hf a
+
 /-- The equation of a Positive Markov category: if the composition of two Markov kernels `η ∘ₖ κ` is
  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. -/
@@ -201,13 +293,11 @@ lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Ker
     all_goals simp_all
   simp_rw [this]
   rw [lintegral_indicator ht]
-  cases ((η ∘ₖ κ) a).zero_one hs with
-  | inl h₀ =>
-    rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
+  rcases ((η ∘ₖ κ) a).zero_one hs with (h₀ | h₁)
+  · rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
     rw [comp_apply' _ _ _ hs, lintegral_eq_zero_iff <| η.measurable_coe hs] at h₀
     filter_upwards [h₀] with x hx _ using hx
-  | inr h₁ =>
-    /- In Example 11.25 of [gritz2020], the case where `((η ∘ₖ κ) a) s = 1` is not explicitly
+  · /- In Example 11.25 of [gritz2020], the case where `((η ∘ₖ κ) a) s = 1` is not explicitly
     treated. We prove it here by using the fact that the hypothesis implies that
     `((η ∘ₖ κ) a) sᶜ = 0`, and thus that the integral of `1 - (η b) s` over `κ a` is zero. -/
     rw [h₁, one_mul]
