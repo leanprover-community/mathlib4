@@ -403,6 +403,7 @@ theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 
+set_option linter.gcongr.grw false in
 /-- If a graph is cliquefree, any graph that is contained in it is also cliquefree. -/
 @[gcongr]
 theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree n) :

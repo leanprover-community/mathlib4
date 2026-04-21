@@ -144,6 +144,11 @@ public meta section
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
+/-- Linter for `@[gcongr]` lemmas that are not suitable for use in `grw`. -/
+register_option linter.gcongr.grw : Bool := {
+  defValue := true
+  descr := "Linter for `@[gcongr]` lemmas that are not suitable for use in `grw`" }
+
 /-- `GCongrKey` is the key used in the hashmap for looking up `gcongr` lemmas. -/
 structure GCongrKey where
   /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
@@ -178,6 +183,8 @@ structure GCongrLemma where
   This is used for sorting the lemmas.
   For example, `a + b ≤ a + c` has `numVarying := 1`. -/
   numVarying : Nat
+  /-- Whether the lemma is suitable for use in `grw`. -/
+  forGrw : Bool
   deriving Inhabited
 
 /-- A collection of `GCongrLemma`, to be stored in the environment extension. -/
@@ -297,11 +304,14 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
       | pure ()
     mainSubgoals := mainSubgoals.push mainSubgoal
     pairs := pairs.erase <| if isContra then (hyps[m]!, hyps[n]!) else (hyps[n]!, hyps[m]!)
-  unless pairs.isEmpty do
-    fail "Not all varying arguments have a corresponding hypothesis"
+  let forGrw := pairs.isEmpty
+  unless forGrw do
+    Linter.logLintIf linter.gcongr.grw (← getRef)
+      m!"Not all varying arguments have a corresponding hypothesis. \
+        This means that the lemma cannot be used in `grw`."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
-  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying }
+  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -525,7 +535,7 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
     declName := ``rel_imp_rel
     mainSubgoals := #[(5, 3, 7, 0, true), (4, 6, 8, 0, false)]
     numHyps := 9
-    key := default, prio := default, numVarying := default
+    key := default, prio := default, numVarying := default, forGrw := true
   }]
 
 end Trans

@@ -135,9 +135,9 @@ partial def grewriteCongr (g : MVarId) (inv : Bool) (config : Config) : GRewrite
       lemmas := lemmas ++ relImpRelLemma args.size
     let mctx ← getMCtx
     for gcongrLem in lemmas do
-      if ← processGCongrLemma g gcongrLem inv config then
-        return true
-      else
+      if gcongrLem.forGrw then
+        if ← processGCongrLemma g gcongrLem inv config then
+          return true
         setMCtx mctx
   -- Cache the fact that there are no applicable lemmas
   modify (·.insert cacheKey)
