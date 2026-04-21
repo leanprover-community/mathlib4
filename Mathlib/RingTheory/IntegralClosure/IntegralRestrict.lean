@@ -552,9 +552,7 @@ theorem Algebra.dvd_algebraMap_intNorm_self (x : B) : x ∣ algebraMap A B (intN
           (IsIntegral.isIntegral x)
       · replace ha := Multiset.erase_subset _ _ ha
         suffices (aeval a) ((minpoly A x).map (algebraMap A K)) = 0 by
-          #adaptation_note /-- Before #38329, this used to be `simpa` -/
-          rw [aeval_map_algebraMap] at this
-          rwa [← aeval_def]
+          simpa [aeval_map_algebraMap, ← aeval_def]
         rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (IsIntegral.isIntegral x)]
         simp only [mem_roots', ne_eq, Polynomial.map_eq_zero, IsRoot.def, eval_map_algebraMap] at ha
         exact ha.2
