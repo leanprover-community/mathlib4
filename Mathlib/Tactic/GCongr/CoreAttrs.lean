@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Jovan Gerbscheid
 -/
 module
 
@@ -18,21 +18,16 @@ public meta section
 
 namespace Mathlib.Tactic.GCongr
 
-variable {a b c : Prop}
+variable {a b c d : Prop}
 
-lemma imp_right_mono (h : a → b → c) : (a → b) → a → c :=
-  fun h' ha => h ha (h' ha)
+lemma imp_mono (h₁ : c → a) (h₂ : c → b → d) : (a → b) → c → d :=
+  fun h₃ hc => h₂ hc (h₃ (h₁ hc))
 
-lemma and_right_mono (h : a → b → c) : (a ∧ b) → a ∧ c :=
-  fun ⟨ha, hb⟩ => ⟨ha, h ha hb⟩
+lemma and_mono (h₁ : a → c) (h₂ : a → b → d) : (a ∧ b) → c ∧ d :=
+  fun ⟨ha, hb⟩ => ⟨h₁ ha, h₂ ha hb⟩
 
-attribute [gcongr] mt
-  Or.imp
-  And.imp GCongr.and_right_mono
-  imp_imp_imp GCongr.imp_right_mono
-  forall_imp Exists.imp
-  List.Sublist.append
-  List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
+attribute [gcongr] mt Or.imp and_mono imp_mono forall_imp Exists.imp
+  List.Sublist.append List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
   List.Perm.cons List.Perm.append List.Perm.map
   List.cons_subset_cons
   Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right

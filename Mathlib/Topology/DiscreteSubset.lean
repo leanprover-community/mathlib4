@@ -132,7 +132,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
     (H : ∀ x, IsDiscrete (f ⁻¹' {x})) : IsDiscrete (f ⁻¹' s) := by
   refine .of_nhdsWithin fun x hx ↦ ?_
   have h := ((H (f x)).nhdsWithin _ rfl).le
-  grw [nhdsWithin, ← comap_pure, ← hs.nhdsWithin _ hx, ← (hf.continuousWithinAt hx
+  grw' [nhdsWithin, ← comap_pure, ← hs.nhdsWithin _ hx, ← (hf.continuousWithinAt hx
     |>.tendsto_nhdsWithin fun _ ↦ by exact id).le_comap, inf_eq_right.mpr nhdsWithin_le_nhds] at h
   exact h
 
