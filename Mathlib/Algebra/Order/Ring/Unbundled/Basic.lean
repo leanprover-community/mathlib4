@@ -713,7 +713,7 @@ lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
 
 instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
     ZeroLEOneClass R where
-  zero_le_one := by simpa only [one_mul] using mul_self_nonneg (R := R) 1
+  zero_le_one := by simpa only [one_mul] using mul_self_nonneg (1 : R)
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
