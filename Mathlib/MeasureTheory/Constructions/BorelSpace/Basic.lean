@@ -324,7 +324,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
   exact hf s hs h1 h2
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
-  rw [nhds_def, iInf_subtype']
+  rw [nhds, iInf_subtype']
   refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 

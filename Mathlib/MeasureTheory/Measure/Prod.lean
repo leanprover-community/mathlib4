@@ -185,7 +185,7 @@ theorem volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
 /-- For an s-finite measure `ν`, see `prod_apply` below. -/
 theorem prod_apply_le {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp only [Measure.prod_def, ← map_apply measurable_prodMk_left hs]
+  simp only [Measure.prod, ← map_apply measurable_prodMk_left hs]
   exact bind_apply_le _ hs
 
 /-- For any measures `μ` and `ν` and any sets `s` and `t`,
@@ -226,7 +226,7 @@ variable [SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
-  simp_rw [Measure.prod_def, bind_apply hs (Measurable.map_prodMk_left (ν := ν)).aemeasurable,
+  simp_rw [Measure.prod, bind_apply hs (Measurable.map_prodMk_left (ν := ν)).aemeasurable,
     map_apply measurable_prodMk_left hs]
 
 /-- The product measure of the product of two sets is the product of their measures. Note that we
@@ -821,11 +821,11 @@ theorem add_prod (μ' : Measure α) [SFinite μ'] : (μ + μ').prod ν = μ.prod
 
 @[simp]
 theorem zero_prod (ν : Measure β) : (0 : Measure α).prod ν = 0 := by
-  rw [Measure.prod_def]
+  rw [Measure.prod]
   exact bind_zero_left _
 
 @[simp]
-theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod_def]
+theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod]
 
 theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (μa : Measure α)
     (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
@@ -1002,7 +1002,7 @@ theorem lintegral_prod_swap [SFinite μ] (f : α × β → ℝ≥0∞) :
   the integral of `f` is equal to the iterated integral. -/
 theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.prod ν)) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  rw [Measure.prod_def] at *
+  rw [Measure.prod] at *
   rw [lintegral_bind Measurable.map_prodMk_left.aemeasurable hf]
   apply lintegral_congr_ae
   filter_upwards [Measurable.map_prodMk_left.aemeasurable.ae_of_bind hf] with a ha
@@ -1011,7 +1011,7 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
 omit [SFinite ν] in
 theorem lintegral_prod_le (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z ∂μ.prod ν ≤ ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
-  rw [Measure.prod_def]
+  rw [Measure.prod]
   exact (lintegral_bind_le _ _ _).trans <| lintegral_mono fun a ↦ lintegral_map_le _ _
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable

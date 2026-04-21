@@ -221,10 +221,10 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
 theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   refine le_antisymm ?_ ?_
-  · rw [Measure.pi_def, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
+  · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     apply OuterMeasure.pi_pi_le
   · haveI : Encodable ι := Fintype.toEncodable ι
-    simp_rw [← pi'_pi μ s, Measure.pi_def,
+    simp_rw [← pi'_pi μ s, Measure.pi,
       toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
     clear hs s
@@ -838,7 +838,7 @@ theorem measurePreserving_piUnique {X : ι → Type*} [Unique ι] {m : ∀ i, Me
       ext1 s
       rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
       congr 1; exact e.toEquiv.image_eq_preimage_symm s
-    simp_rw [Measure.pi_def, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
+    simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
       toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 
 theorem volume_preserving_piUnique (X : ι → Type*) [Unique ι] [∀ i, MeasureSpace (X i)] :

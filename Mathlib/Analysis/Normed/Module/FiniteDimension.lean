@@ -51,6 +51,7 @@ finite-dimensional vector space `E` with a norm, and a copy `E'` of this type wi
 then the identities from `E` to `E'` and from `E'` to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -172,7 +173,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
     exact
       ((LinearMap.toMatrix b b).toLinearMap.comp
           (ContinuousLinearMap.coeLM 𝕜)).continuous_of_finiteDimensional
-  · rw [LinearMap.det_def]
+  · rw [LinearMap.det]
     simpa only [h, MonoidHom.one_apply, dif_neg, not_false_iff] using continuous_const
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real

@@ -79,18 +79,18 @@ scoped[ProbabilityTheory] infixl:100 " ⊗ₖ " => ProbabilityTheory.Kernel.comp
 theorem compProd_of_not_isSFiniteKernel_left (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel κ) :
     κ ⊗ₖ η = 0 := by
-  simp [compProd_def, h]
+  simp [compProd, h]
 
 @[simp]
 theorem compProd_of_not_isSFiniteKernel_right (κ : Kernel α β) (η : Kernel (α × β) γ)
     (h : ¬ IsSFiniteKernel η) :
     κ ⊗ₖ η = 0 := by
-  simp [compProd_def, h]
+  simp [compProd, h]
 
 theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α) :
     (κ ⊗ₖ η) a s = ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' s) ∂κ a := by
-  rw [compProd_def, comp_apply, copy_apply, Measure.dirac_bind (by fun_prop), comp_apply,
+  rw [compProd, comp_apply, copy_apply, Measure.dirac_bind (by fun_prop), comp_apply,
     parallelComp_apply, Kernel.id_apply, Measure.bind_apply hs (by fun_prop),
     lintegral_prod _ (Kernel.measurable_coe _ hs).aemeasurable, lintegral_dirac']
   swap

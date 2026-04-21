@@ -293,7 +293,7 @@ irreducible_def Gamma (s : ℂ) : ℂ :=
 theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
   have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := fun k ↦ by
     induction k with
-    | zero => simp [Gamma_def]
+    | zero => simp [Gamma]
     | succ k hk =>
       rw [← hk, ← add_assoc]
       refine (GammaAux_recurrence2 s (⌊1 - s.re⌋₊ + k) ?_).symm
@@ -340,7 +340,7 @@ theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
 @[simp]
 theorem Gamma_zero : Gamma 0 = 0 := by
-  simp_rw [Gamma_def, zero_re, sub_zero, Nat.floor_one, GammaAux, div_zero]
+  simp_rw [Gamma, zero_re, sub_zero, Nat.floor_one, GammaAux, div_zero]
 
 /-- At `-n` for `n ∈ ℕ`, the Gamma function is undefined; by convention we assign it the value 0. -/
 theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
@@ -357,7 +357,7 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 
 theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
   suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
-    simp [Gamma_def, this]
+    simp [Gamma, this]
   intro n
   induction n with
   | zero => rw [GammaAux]; exact GammaIntegral_conj

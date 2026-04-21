@@ -133,15 +133,15 @@ notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) =>
 thus it is defined as zero whenever the codomain is not a complete space. -/
 theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E →L[𝕜] F)
     (γ : Path a b) : ∫ᶜ x in γ, ω x = 0 := by
-  simp [curveIntegral_def', intervalIntegral, integral_def, h]
+  simp [curveIntegral, intervalIntegral, integral, h]
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
-  simp +instances only [curveIntegralFun_def', NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegralFun, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
     curveIntegral ω γ = ∫ t in 0..1, curveIntegralFun ω γ t := by
-  simp +instances only [curveIntegral_def', NormedSpace.restrictScalars_eq]
+  simp +instances only [curveIntegral, NormedSpace.restrictScalars_eq]
 
 theorem curveIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace ℝ F]
     (ω : E → E →L[𝕜] F) (γ : Path a b) :
@@ -167,11 +167,11 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 @[simp]
 theorem curveIntegralFun_refl (ω : E → E →L[𝕜] F) (a : E) : curveIntegralFun ω (.refl a) = 0 := by
   ext
-  simp [curveIntegralFun_def', ← Function.const_def]
+  simp [curveIntegralFun, ← Function.const_def]
 
 @[simp]
 theorem curveIntegral_refl (ω : E → E →L[𝕜] F) (a : E) : ∫ᶜ x in .refl a, ω x = 0 := by
-  simp [curveIntegral_def']
+  simp [curveIntegral]
 
 @[simp]
 theorem CurveIntegrable.refl (ω : E → E →L[𝕜] F) (a : E) : CurveIntegrable ω (.refl a) := by
@@ -186,7 +186,7 @@ theorem curveIntegralFun_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : 
 @[simp]
 theorem curveIntegral_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
     ∫ᶜ x in γ.cast hc hd, ω x = ∫ᶜ x in γ, ω x := by
-  simp [curveIntegral_def']
+  simp [curveIntegral]
 
 @[simp]
 theorem curveIntegrable_cast_iff (hc : c = a) (hd : d = b) :
@@ -197,7 +197,7 @@ protected alias ⟨_, CurveIntegrable.cast⟩ := curveIntegrable_cast_iff
 
 theorem curveIntegralFun_symm_apply (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ.symm t = -curveIntegralFun ω γ (1 - t) := by
-  simp [curveIntegralFun_def', γ.extend_symm, derivWithin_comp_const_sub]
+  simp [curveIntegralFun, γ.extend_symm, derivWithin_comp_const_sub]
 
 @[simp]
 theorem curveIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
@@ -214,7 +214,7 @@ theorem curveIntegrable_symm : CurveIntegrable ω γ.symm ↔ CurveIntegrable ω
 @[simp]
 theorem curveIntegral_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     ∫ᶜ x in γ.symm, ω x = -∫ᶜ x in γ, ω x := by
-  simp [curveIntegral_def', curveIntegralFun_symm]
+  simp [curveIntegral, curveIntegralFun_symm]
 
 theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Path a b) (γbc : Path b c)
     (ht : t < 1 / 2) :
@@ -353,7 +353,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 @[simp]
 theorem curveIntegralFun_add :
     curveIntegralFun (ω₁ + ω₂) γ = curveIntegralFun ω₁ γ + curveIntegralFun ω₂ γ := by
-  ext; simp [curveIntegralFun_def']
+  ext; simp [curveIntegralFun]
 
 protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     CurveIntegrable (ω₁ + ω₂) γ := by
@@ -363,7 +363,7 @@ protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : 
 theorem curveIntegral_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     curveIntegral (ω₁ + ω₂) γ = ∫ᶜ x in γ, ω₁ x + ∫ᶜ x in γ, ω₂ x := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
-  simp only [curveIntegral_def', curveIntegralFun_add]
+  simp only [curveIntegral, curveIntegralFun_add]
   exact intervalIntegral.integral_add h₁ h₂
 
 theorem curveIntegral_fun_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
@@ -372,7 +372,7 @@ theorem curveIntegral_fun_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveInt
 
 @[simp]
 theorem curveIntegralFun_zero : curveIntegralFun (0 : E → E →L[𝕜] F) γ = 0 := by
-  ext; simp [curveIntegralFun_def']
+  ext; simp [curveIntegralFun]
 
 @[simp]
 theorem curveIntegralFun_fun_zero : curveIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 :=
@@ -383,14 +383,14 @@ theorem CurveIntegrable.zero : CurveIntegrable (0 : E → E →L[𝕜] F) γ := 
   simp [CurveIntegrable, IntervalIntegrable.zero]
 
 @[simp]
-theorem curveIntegral_zero : curveIntegral (0 : E → E →L[𝕜] F) γ = 0 := by simp [curveIntegral_def']
+theorem curveIntegral_zero : curveIntegral (0 : E → E →L[𝕜] F) γ = 0 := by simp [curveIntegral]
 
 @[simp]
 theorem curveIntegral_fun_zero : ∫ᶜ _ in γ, (0 : E →L[𝕜] F) = 0 := curveIntegral_zero
 
 @[simp]
 theorem curveIntegralFun_neg : curveIntegralFun (-ω) γ = -curveIntegralFun ω γ := by
-  ext; simp [curveIntegralFun_def']
+  ext; simp [curveIntegralFun]
 
 @[to_fun]
 theorem CurveIntegrable.neg (h : CurveIntegrable ω γ) : CurveIntegrable (-ω) γ := by
@@ -406,7 +406,7 @@ theorem curveIntegrable_fun_neg_iff : CurveIntegrable (-ω ·) γ ↔ CurveInteg
 
 @[simp]
 theorem curveIntegral_neg : curveIntegral (-ω) γ = -∫ᶜ x in γ, ω x := by
-  simp [curveIntegral_def']
+  simp [curveIntegral]
 
 @[simp]
 theorem curveIntegral_fun_neg : ∫ᶜ x in γ, -ω x = -∫ᶜ x in γ, ω x := curveIntegral_neg
@@ -459,7 +459,7 @@ variable {𝕝 : Type*} [RCLike 𝕝] [NormedSpace 𝕝 F] [SMulCommClass 𝕜 �
 @[simp]
 theorem curveIntegralFun_smul : curveIntegralFun (c • ω) γ = c • curveIntegralFun ω γ := by
   ext
-  simp [curveIntegralFun_def']
+  simp [curveIntegralFun]
 
 theorem CurveIntegrable.smul (h : CurveIntegrable ω γ) :
     CurveIntegrable (c • ω) γ := by

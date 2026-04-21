@@ -513,7 +513,7 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
   by_cases h'f : Integrable f μ
   · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₁₂ f = 0 := by
-      ext w; simp [fourierIntegral, integral_def, h'f]
+      ext w; simp [fourierIntegral, integral, h'f]
     simpa [this] using contDiff_const
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier

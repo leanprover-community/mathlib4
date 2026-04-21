@@ -591,15 +591,15 @@ noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]�
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
-  simp only [addHaar_parallelepiped, AlternatingMap.measure_def, coe_nnreal_smul_apply,
+  simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
     AlternatingMap.smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
     ← Real.enorm_eq_ofReal_abs, enorm]
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
-  rw [AlternatingMap.measure_def]; infer_instance
+  rw [AlternatingMap.measure]; infer_instance
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
-  rw [AlternatingMap.measure_def]; infer_instance
+  rw [AlternatingMap.measure]; infer_instance
 
 end
 

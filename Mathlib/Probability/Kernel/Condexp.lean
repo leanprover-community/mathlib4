@@ -80,7 +80,7 @@ lemma condExpKernel_eq (μ : Measure Ω) [IsFiniteMeasure μ] [h : Nonempty Ω]
     (m : MeasurableSpace Ω) :
     condExpKernel (mΩ := mΩ) μ m = Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
       (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m)) := by
-  simp [condExpKernel_def, h]
+  simp [condExpKernel, h]
 
 lemma condExpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
     condExpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
@@ -89,7 +89,7 @@ lemma condExpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simpa [condExpKernel_def, h] using by infer_instance
+  · simpa [condExpKernel, h] using by infer_instance
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
