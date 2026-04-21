@@ -116,6 +116,14 @@ public instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal :=
 theorem le_maxIdeal : spanCoeffs k ≤ maxIdeal k :=
   (Classical.choose_spec <| Ideal.exists_le_maximal _ <| spanCoeffs_ne_top k).2
 
+theorem Monics.map_eq_prod (f : Monics k) :
+    f.1.map (algebraMap k (MvPolynomial (Vars k) k ⧸ maxIdeal k)) =
+      ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
+  ext
+  rw [← Ideal.Quotient.mk_comp_algebraMap, ← map_map, ← Polynomial.map_prod, ← sub_eq_zero,
+    ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
+  refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
+
 end AlgebraicClosure
 
 open AlgebraicClosure in
@@ -165,37 +173,28 @@ public instance instField : Field (AlgebraicClosure k) where
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem Monics.map_eq_prod {f : Monics k} :
-    f.1.map (algebraMap k (AlgebraicClosure k)) =
-      ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
-  ext
-  dsimp [AlgebraicClosure]
-  rw [← Ideal.Quotient.mk_comp_algebraMap, ← map_map, ← Polynomial.map_prod, ← sub_eq_zero,
-    ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
-  refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
-
-set_option backward.isDefEq.respectTransparency false in
-public instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  ⟨fun z =>
-    IsIntegral.isAlgebraic <| by
-      let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
-      rw [← hp]
-      induction p using MvPolynomial.induction_on generalizing z with
-        | C => exact isIntegral_algebraMap
-        | add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
-        | mul_X p fi ih =>
-          rw [map_mul]
-          refine (ih _ rfl).mul ⟨_, fi.1.2, ?_⟩
-          simp_rw [← eval_map, Monics.map_eq_prod, eval_prod, Polynomial.map_sub, eval_sub]
-          apply Finset.prod_eq_zero (Finset.mem_univ fi.2)
-          rw [map_C]
-          -- The `erw` is needed here because the `R` in `eval` is `AlgebraicClosure k`,
-          -- but this has been unfolded in the arguments of `eval`.
-          erw [eval_C]
-          simp⟩
+public instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) := by
+  constructor
+  intro z
+  apply IsIntegral.isAlgebraic
+  unfold AlgebraicClosure
+  obtain ⟨p, rfl⟩ := Ideal.Quotient.mk_surjective z
+  induction p using MvPolynomial.induction_on with
+  | C => exact isIntegral_algebraMap
+  | add p q hp hq => exact hp.add hq
+  | mul_X p fi ih =>
+    obtain ⟨f, i⟩ := fi
+    rw [map_mul]
+    refine ih.mul ⟨f.1, f.2, ?_⟩
+    rw [← eval_map, Monics.map_eq_prod, eval_prod, Finset.prod_eq_zero (Finset.mem_univ i)]
+    simp
 
 public instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
-  rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod]
+  unfold AlgebraicClosure
+  have := Monics.map_eq_prod k ⟨f, hf⟩
+  dsimp +instances at this
+  erw [this]
+  -- rw [show f = (⟨f, hf⟩ : Monics k) from rfl, Monics.map_eq_prod k ⟨f, hf⟩]
   exact Splits.prod fun _ _ ↦ (Splits.X_sub_C _).map _
 
 public instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) := IsAlgClosure.isAlgClosed k
