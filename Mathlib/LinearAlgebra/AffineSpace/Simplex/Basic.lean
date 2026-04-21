@@ -617,38 +617,38 @@ lemma closedInterior_restrict {n : ℕ} (s : Simplex k P n) {S : AffineSubspace 
 
 /-- Through a vertex draw a subspace parallel to `Affine.Simplex.faceOpposite`. The only common
 point between the subspace and the `Affine.Simplex.closedInterior` is the vertex itself. -/
--- Redeclaring all type variables because `k` needs to be a `DivisionRing`
+-- Redeclaring all type variables because `k` needs to be a `DivisionRing`.
 theorem closedInterior_inter_affineSubspaceMk'_affineSpan_faceOpposite {k V P : Type*}
     [DivisionRing k] [LinearOrder k] [IsOrderedRing k] [AddCommGroup V] [Module k V]
     [AffineSpace V P] {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.closedInterior ∩ AffineSubspace.mk' (s.points i)
-    (affineSpan k (Set.range (s.faceOpposite i).points)).direction = {s.points i} := by
-  refine Set.Subset.antisymm ?_ (by simp [s.point_mem_closedInterior i])
+    (affineSpan k <| Set.range (s.faceOpposite i).points).direction = {s.points i} := by
+  refine Set.Subset.antisymm ?_ <| by simp [s.point_mem_closedInterior i]
   intro p h
-  obtain ⟨hps, hpshift⟩ := (Set.mem_inter_iff _ _ _).mp h
-  obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype
-      (Set.mem_of_mem_of_subset hps setInterior_subset_affineSpan)
-  rw [affineCombination_mem_closedInterior_iff hw] at hps
-  rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw (s.points i),
-    AffineSubspace.mem_coe, AffineSubspace.vadd_mem_iff_mem_direction _ (by simp),
-    weightedVSubOfPoint_apply, ← sum_erase_add _ _ (show i ∈ univ by simp),
-    vsub_self, smul_zero, add_zero, AffineSubspace.direction_mk'] at hpshift
-  obtain ⟨q, hq⟩ := Classical.arbitrary (affineSpan k (Set.range (s.faceOpposite i).points))
+  obtain ⟨hpoint, hface⟩ := (Set.mem_inter_iff _ _ _).mp h
+  obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
+    Set.mem_of_mem_of_subset hpoint setInterior_subset_affineSpan
+  rw [affineCombination_mem_closedInterior_iff hw] at hpoint
+  rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw <| s.points i,
+    AffineSubspace.mem_coe, AffineSubspace.vadd_mem_iff_mem_direction _ <| by simp,
+    weightedVSubOfPoint_apply, ← sum_erase_add _ _ <| show i ∈ univ by simp,
+    vsub_self, smul_zero, add_zero, AffineSubspace.direction_mk'] at hface
+  obtain ⟨q, hq⟩ := Classical.arbitrary <| affineSpan k <| Set.range (s.faceOpposite i).points
   have (j : Fin (n + 1)) : s.points j -ᵥ s.points i = (s.points j -ᵥ q) + (q -ᵥ s.points i) := by
     simp
-  simp_rw [this, smul_add, sum_add_distrib] at hpshift
-  rw [Submodule.add_mem_iff_right _ (Submodule.sum_mem _ fun j hj ↦ Submodule.smul_mem _ _ <|
-    AffineSubspace.vsub_mem_direction (by simpa using hj) hq)] at hpshift
-  rw [← sum_smul] at hpshift
+  simp_rw [this, smul_add, sum_add_distrib] at hface
+  rw [Submodule.add_mem_iff_right _ <| Submodule.sum_mem _ fun j hj ↦ Submodule.smul_mem _ _ <|
+    AffineSubspace.vsub_mem_direction (by simpa using hj) hq] at hface
+  rw [← sum_smul] at hface
   have hwj : ∑ j ∈ univ.erase i, w j = 0 := by
-    by_contra!
-    rw [Submodule.smul_mem_iff _ this, AffineSubspace.vsub_left_mem_direction_iff_mem hq] at hpshift
-    simp at hpshift
-  rw [sum_eq_zero_iff_of_nonneg (fun j _ ↦ (hps j).1)] at hwj
+    by_contra
+    rw [Submodule.smul_mem_iff _ this, AffineSubspace.vsub_left_mem_direction_iff_mem hq] at hface
+    simp at hface
+  rw [sum_eq_zero_iff_of_nonneg fun j _ ↦ (hpoint j).1] at hwj
   rw [Set.mem_singleton_iff,
     affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw (s.points i),
-    weightedVSubOfPoint_apply, ← sum_erase_add _ _ (show i ∈ univ by simp),
-    sum_eq_zero (fun j hj ↦ by simp [hwj j hj])]
+    weightedVSubOfPoint_apply, ← sum_erase_add _ _ <| show i ∈ univ by simp,
+    sum_eq_zero fun j hj ↦ by simp [hwj j hj]]
   simp
 
 end Simplex
