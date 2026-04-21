@@ -141,4 +141,25 @@ protected lemma dvd_sub_self_right {n m : ℕ} :
   · simp [h]
   · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
 
+/-! ### Miscellaneous -/
+
+lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
+    a * b ≤ a ^ b := by
+  cases b with
+  | zero => exact Nat.zero_le _
+  | succ b =>
+      obtain ha0 | ha0 : a < 1 ∨ 1 < a := Nat.lt_or_gt_of_ne ha
+      · simp only [lt_one_iff.mp ha0, Nat.zero_mul, Nat.zero_le]
+      · rw [Nat.pow_succ']; exact Nat.mul_le_mul_left a (Nat.lt_pow_self ha0)
+
+lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2 * k) := by
+  obtain rfl | hk : k = 0 ∨ k > 0 := k.eq_zero_or_pos
+  · decide
+  · have hk0 : 0 < 2 * k ^ 2 := Nat.mul_pos Nat.two_pos (Nat.pow_pos hk)
+    calc 2 * k ^ 2
+      _ < 2 * (2 * k ^ 2) := (Nat.lt_mul_iff_one_lt_left hk0).mpr Nat.one_lt_two
+      _ = (2 * k) ^ 2 := by rw [Nat.mul_pow, ← Nat.mul_assoc, ← Nat.pow_two]
+      _ ≤ (2 ^ k) ^ 2 := Nat.pow_le_pow_left (Nat.mul_le_pow (by decide : 2 ≠ 1) _) 2
+      _ = 2 ^ (2 * k) := (Nat.pow_mul' _ _ _).symm
+
 end Nat
