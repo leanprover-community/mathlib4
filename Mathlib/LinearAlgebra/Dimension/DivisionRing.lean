@@ -97,7 +97,8 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker,
-      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range] at h ⊢
+      Prod.mk_inj, coprod_apply, map_neg, neg_apply, LinearMap.mem_range,
+      Function.prod_apply] at h ⊢
     grind
 
 end
