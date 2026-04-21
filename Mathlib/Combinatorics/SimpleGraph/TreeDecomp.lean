@@ -98,7 +98,7 @@ lemma TreeDecomp.ewidth_ge {k : ℕ} (t : TreeDecomp G) :
 def hasTreeDecomp (G : SimpleGraph V) (n : ℕ∞) : Prop := ∃ t : G.TreeDecomp, t.ewidth ≤ n
 
 @[mono]
-def hasTreeDecomp.mono {n m : ℕ∞} (h : n ≤ m) : G.hasTreeDecomp n → G.hasTreeDecomp m := by
+lemma hasTreeDecomp.mono {n m : ℕ∞} (h : n ≤ m) : G.hasTreeDecomp n → G.hasTreeDecomp m := by
   intro ⟨t, ht⟩
   use t
   exact le_trans ht h
@@ -279,7 +279,7 @@ section Adhesion
 
 /-- Given a tree decomposition (𝓧, T), the adhesion set is the intersection of bags along some edge
   in T. -/
-def TreeDecomp.adhesion [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (_h : t.T.Adj x y)
+def TreeDecomp.adhesion [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (_ : t.T.Adj x y)
     : Finset V := (t.𝓧 x) ∩ (t.𝓧 y)
 
 -- TODO: Restate using subtree notation.
