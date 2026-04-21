@@ -133,6 +133,13 @@ lemma eq_of_inj_apply_eq_of_isColimit
     i₁ = i₂ :=
   congr_arg Sigma.fst ((equivOfIsColimit hc).injective (a₁ := ⟨i₁, y₁⟩) (a₂ := ⟨i₂, y₂⟩) h)
 
+lemma inj_apply_eq_iff_of_isColimit
+    {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) :
+    c.inj i₁ y₁ = c.inj i₂ y₂ ↔ ∃ (h : i₁ = i₂), y₂ = cast (by rw [h]) y₁ := by
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ by subst h₁ h₂; rfl⟩
+  obtain rfl := eq_of_inj_apply_eq_of_isColimit hc _ _ h
+  exact ⟨rfl, (inj_injective_of_isColimit hc i₁ h).symm⟩
+
 end
 
 end CofanTypes
@@ -176,6 +183,10 @@ lemma eq_of_inj_apply_eq_of_isColimit (hc : IsColimit c)
     {i₁ i₂ : C} (y₁ : F i₁) (y₂ : F i₂) (h : c.inj i₁ y₁ = c.inj i₂ y₂) :
     i₁ = i₂ :=
   CofanTypes.eq_of_inj_apply_eq_of_isColimit ((isColimit_cofanTypes_iff c).2 ⟨hc⟩) _ _ h
+
+lemma inj_apply_eq_iff_of_isColimit (hc : IsColimit c) {i j : C} (x : F i) (y : F j) :
+    c.inj i x = c.inj j y ↔ ∃ (hij : i = j), y = cast (by rw [hij]) x :=
+  CofanTypes.inj_apply_eq_iff_of_isColimit ((isColimit_cofanTypes_iff c).2 ⟨hc⟩) _ _
 
 end Cofan
 
