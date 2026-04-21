@@ -217,7 +217,7 @@ public def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp 
   let lem ← elabGRewriteLemma stx (symm := symm) (config := config)
   if lem.relName matches ``Eq | ``Iff && config.useRewrite then
     -- Elaborate `stx` again, because `rw` elaborates its arguments a bit differently.
-    let { eNew, eqProof, mvarIds } ← Elab.Tactic.elabRewrite mvarId e stx symm
+    let { eNew, eqProof, mvarIds } ← Tactic.elabRewrite mvarId e stx symm
     let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
     let impProof ← mkAppOptM mp #[e, eNew, eqProof]
     return { eNew, impProof, mvarIds }
