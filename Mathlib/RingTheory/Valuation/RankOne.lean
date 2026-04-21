@@ -146,6 +146,7 @@ instance restrict_RankOne : RankOne (v.restrict) where
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable {K} in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by

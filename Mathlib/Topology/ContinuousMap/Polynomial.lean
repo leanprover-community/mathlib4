@@ -150,6 +150,7 @@ theorem polynomialFunctions_coe (X : Set R) :
   ext
   simp [polynomialFunctions]
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
 -- induces a normed algebra isomorphism between `polynomialFunctions X` and
@@ -165,6 +166,7 @@ open unitInterval
 
 open ContinuousMap
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The preimage of polynomials on `[0,1]` under the pullback map by `x ↦ (b-a) * x + a`
 is the polynomials on `[a,b]`. -/
 theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :

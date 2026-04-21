@@ -383,6 +383,7 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/
 @[simps! apply symm_apply toAffineEquiv]
 def prodAssoc : (P₁ × P₂) × P₃ ≃ᴬ[k] P₁ × (P₂ × P₃) where

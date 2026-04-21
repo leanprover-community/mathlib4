@@ -79,6 +79,7 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- To check a linear map preserves multiplication, it suffices to check it on pure tensors. See
 `algHomOfLinearMapTensorProduct` for a bundled version. -/
 lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
