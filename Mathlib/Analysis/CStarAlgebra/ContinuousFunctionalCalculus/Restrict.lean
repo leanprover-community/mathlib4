@@ -136,18 +136,14 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       rw [SpectrumRestricts.starAlgHom_apply]
       simp only [← @spectrum.preimage_algebraMap (R := R) S, cfcHom_map_spectrum]
       ext x
+      simp only [Set.mem_preimage, Set.mem_range, ContinuousMap.comp_apply]
       constructor
       · rintro ⟨y, hy⟩
-        have := congr_arg f hy
-        simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply] at this
-        rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
-        exact ⟨_, this⟩
+        exact ⟨((h a).mp ha).2.homeomorph y, halg.injective hy⟩
       · rintro ⟨y, rfl⟩
-        rw [Set.mem_preimage]
-        refine ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, ?_⟩
-        simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
-        congr
-        exact Subtype.ext (((h a).mp ha).2.left_inv y)
+        refine ⟨((h a).mp ha).2.homeomorph.symm y, ?_⟩
+        exact
+          congrArg (fun z => algebraMap R S (g z)) (((h a).mp ha).2.homeomorph.apply_symm_apply y)
     case predicate_hom =>
       intro g
       rw [h]
@@ -313,19 +309,14 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       rw [nonUnitalStarAlgHom_apply]
       simp only [← @quasispectrum.preimage_algebraMap (R := R) S, cfcₙHom_map_quasispectrum]
       ext x
+      simp only [Set.mem_preimage, Set.mem_range]
       constructor
       · rintro ⟨y, hy⟩
-        have := congr_arg f hy
-        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
-          at this
-        rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
-        exact ⟨_, this⟩
+        exact ⟨((h a).mp ha).2.homeomorph y, halg.injective hy⟩
       · rintro ⟨y, rfl⟩
-        rw [Set.mem_preimage]
-        refine ⟨⟨algebraMap R S y, quasispectrum.algebraMap_mem S y.prop⟩, ?_⟩
-        simp only [comp_apply, coe_mk, ContinuousMap.coe_mk, StarAlgHom.ofId_apply]
-        congr
-        exact Subtype.ext (((h a).mp ha).2.left_inv y)
+        refine ⟨((h a).mp ha).2.homeomorph.symm y, ?_⟩
+        exact
+          congrArg (fun z => algebraMap R S (g z)) (((h a).mp ha).2.homeomorph.apply_symm_apply y)
     case predicate_hom =>
       intro g
       rw [h]
