@@ -99,7 +99,7 @@ section IsRegularRing
 
 variable {R} in
 lemma isRegularRing_iff [IsNoetherianRing R] : IsRegularRing R ↔
-    ∀ (p : Ideal R) (_ : p.IsPrime), IsRegularLocalRing (Localization.AtPrime p) :=
+    ∀ (p : Ideal R) [p.IsPrime], IsRegularLocalRing (Localization.AtPrime p) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 variable {R} in
