@@ -79,7 +79,7 @@ where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
-  cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
+  cyclicPermute! : Array α → List Nat → Array α
     | a, [] => a
     | a, i :: is => cyclicPermuteAux a is a[i]! i
   cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
