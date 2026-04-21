@@ -74,7 +74,7 @@ lemma reesAlgebra_quotient_isNoetherian [IsNoetherianRing (R ⧸ I)] (fg : I.FG)
 
 open Polynomial
 
-lemma Polynomial.monimial_mem_reesAlgebra (i : ℕ) {r : R} (mem : r ∈ I ^ i) :
+lemma Polynomial.monomial_mem_reesAlgebra (i : ℕ) {r : R} (mem : r ∈ I ^ i) :
     monomial i r ∈ reesAlgebra I := by
   refine (mem_reesAlgebra_iff _ _).mpr (fun n ↦ ?_)
   by_cases eqi : n = i
@@ -89,8 +89,8 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     | smul r hr m hm =>
       simpa [pow_succ'] using Ideal.mul_mem_mul hr ((mem_reesAlgebra_iff I _).mp m.2 n)
     | add x hx y hy memx memy => simpa using add_mem memx memy
-  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := fun mem ↦ monimial_mem_reesAlgebra I i mem
-    have mem (i : ℕ) := monimial_mem_reesAlgebra I i ((mem_reesAlgebra_iff I _).mp f.2 i)
+  · have mem' (i : ℕ) {r : R} : r ∈ I ^ i → _ := fun mem ↦ monomial_mem_reesAlgebra I i mem
+    have mem (i : ℕ) := monomial_mem_reesAlgebra I i ((mem_reesAlgebra_iff I _).mp f.2 i)
     have : f = ∑ i ∈ f.1.support, ⟨(Polynomial.monomial i) (f.1.coeff i), mem i⟩ :=
       SetCoe.ext (by simpa using f.1.as_sum_support)
     rw [this]
@@ -135,14 +135,41 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
   let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
   have monomial_mem (i : ι) : monomial (deg i) (coeff i) ∈ reesAlgebra I := by
     match i with
+    | ⟨i, j⟩ => exact monomial_mem_reesAlgebra I _ ((mem_reesAlgebra_iff I _).mp (g i).2 j)
+  have monomial_mem' (i : ι) : monomial (deg i) (coeff i) ∈ J.map C := by
+    match i with
     | ⟨i, j⟩ =>
-      simp only [deg, coeff]
-      sorry
+      rw [Ideal.mem_map_C_iff]
+      intro n
+      by_cases eq : n = deg ⟨i, j⟩
+      · have := (g_spec i).1
+        simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
+        simpa [eq, coeff] using this j
+      · simp [coeff_monomial_of_ne _ eq]
   let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
   use ι, f, deg, coeff
-  refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, ?_⟩
-  · sorry
-  · sorry
+  refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, le_antisymm ?_ ?_⟩
+  · have := (g_spec i).1
+    simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
+    exact this j
+  · simp only [Ideal.map_span, Ideal.span_le, Set.image_subset_iff]
+    rintro x ⟨y, hy⟩
+    apply Ideal.mem_map_of_mem
+    simpa [← hy] using monomial_mem' y
+  · simp only [← hs, Ideal.span_le]
+    intro x hx
+    have : _ = x := (g_spec ⟨x, hx⟩).2
+    rw [← this]
+    apply Ideal.mem_map_of_mem
+    have : g ⟨x, hx⟩ =
+      ∑ j, ⟨monomial (deg ⟨⟨x, hx⟩, j⟩) (coeff ⟨⟨x, hx⟩, j⟩), monomial_mem ⟨⟨x, hx⟩, j⟩⟩ := by
+      apply SetCoe.ext
+      simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finset_sum, deg, coeff]
+      rw [(g ⟨x, hx⟩).1.support.sum_attach (fun n ↦ (monomial n) ((g ⟨x, hx⟩).1.coeff n))]
+      exact (sum_monomial_eq (g ⟨x, hx⟩).1).symm
+    rw [this]
+    apply sum_mem (fun i hi ↦ Ideal.subset_span ?_)
+    exact ⟨⟨⟨x, hx⟩, i⟩, rfl⟩
 
 lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (f : ι → reesAlgebra I)
     (deg : ι → ℕ) (coeff : ι → R) (eq : ∀ i : ι, (f i).1 = monomial (deg i) (coeff i))
