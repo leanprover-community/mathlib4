@@ -56,7 +56,7 @@ class PositiveCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] ex
     MarkovCategory C where
   /-- Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, if their composition is deterministic, then
   process `f`, copy and then process `g` equals copy and process `f` and `g` independently. -/
-  copy_comp_natural {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Deterministic (f ≫ g)) :
+  copy_comp_natural {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [h : Deterministic (f ≫ g)] :
       f ≫ Δ ≫ (g ⊗ₘ 𝟙 Y) = Δ ≫ (f ≫ g ⊗ₘ f)
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
