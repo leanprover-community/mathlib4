@@ -101,7 +101,7 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     (P.costructuredArrowObj L (X := L.obj Y)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) where
   limitsOfShape_le := by
     rintro X p
-    letI t : IsTerminal X := (ObjectProperty.limitsOfShape_isEmpty_iff _ _ _|>.mp p).some
+    letI t : IsTerminal X := (ObjectProperty.limitsOfShape_isEmpty_iff _ _ _ |>.mp p).some
     let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) := t.uniqueUpToIso CostructuredArrow.mkIdTerminal
     simpa [MorphismProperty.costructuredArrowObj_iff,
       P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
