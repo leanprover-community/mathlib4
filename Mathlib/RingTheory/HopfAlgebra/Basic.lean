@@ -132,7 +132,8 @@ We prove that `antipode (a * b) = antipode b * antipode a`. The proof uses the "
 equals right inverse" trick in the convolution algebra `(A ⊗ A) →ₗ[R] A`.
 -/
 
-open scoped ConvolutionProduct TensorProduct
+open scoped TensorProduct
+open WithConv
 
 /-- The antipode reverses multiplication: `S(ab) = S(b)S(a)`. -/
 theorem antipode_mul (a b : A) :
@@ -143,9 +144,16 @@ theorem antipode_mul (a b : A) :
       LinearMap.mul' R A ∘ₗ TensorProduct.map (antipode R) (antipode R) ∘ₗ
         TensorProduct.comm R A A by
     exact congr(($h) (a ⊗ₜ b))
-  apply left_inv_eq_right_inv (a := LinearMap.mul' R A)
+  -- Use `left_inv_eq_right_inv` in the convolution algebra `WithConv ((A ⊗ A) →ₗ[R] A)`.
+  refine toConv_injective
+    (left_inv_eq_right_inv
+      (b := toConv (antipode R ∘ₗ LinearMap.mul' R A))
+      (a := toConv (LinearMap.mul' R A))
+      (c := toConv (LinearMap.mul' R A ∘ₗ TensorProduct.map (antipode R) (antipode R) ∘ₗ
+        TensorProduct.comm R A A))
+      ?_ ?_)
   · -- Left inverse: `(S ∘ μ) * μ = 1`.
-    refine TensorProduct.ext' fun x y => ?_
+    refine WithConv.ext (TensorProduct.ext' fun x y => ?_)
     -- Unfold convolution product: `(f * g)(x ⊗ y) = μ(f ⊗ g)(Δ(x ⊗ y))`.
     simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
     -- The coalgebra on `A ⊗ A: Δ(x ⊗ y) = σ (Δx ⊗ Δy)` where `σ = tensorTensorTensorComm`.
@@ -167,7 +175,7 @@ theorem antipode_mul (a b : A) :
     rw [Finset.sum_comm] at key
     simpa [Algebra.algebraMap_eq_smul_one, mul_comm (counit x) (counit y)] using key
   · -- Right inverse: `μ * (μ ∘ (S ⊗ S) ∘ comm) = 1`.
-    refine TensorProduct.ext' fun x y => ?_
+    refine WithConv.ext (TensorProduct.ext' fun x y => ?_)
     simp only [LinearMap.convMul_apply, LinearMap.convOne_apply]
     rw [TensorProduct.comul_tmul]
     let ℛx := ℛ R x; let ℛy := ℛ R y
