@@ -45,7 +45,6 @@ lemma essentiallySmall_of_localizationAway [ObjectProperty.EssentiallySmall.{u} 
   wlog hs' : s.Finite generalizing s
   · obtain ⟨s', hs's, hs'⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
     exact this s' hs' (fun f hf ↦ H f (hs's hf)) s'.finite_toSet
-  have := hs'.equivFin
   choose S' hS' e using fun (f : s) ↦ hQQ' _ (H _ f.2)
   let φ : S →+* Π i, S' (hs'.equivFin.symm i) :=
     ((RingEquiv.piCongrRight fun i ↦ (e i).some.commRingCatIsoToRingEquiv).trans
