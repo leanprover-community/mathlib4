@@ -17,6 +17,7 @@ on the space of continuous alternating maps between topological vector spaces.
 The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

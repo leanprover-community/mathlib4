@@ -33,6 +33,7 @@ It is accessible in the locales `ArithmeticFunction` (like the notations for oth
 functions) and also in the scope `ArithmeticFunction.vonMangoldt`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

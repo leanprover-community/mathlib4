@@ -18,6 +18,8 @@ This equivalence is characterized in both directions.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory.Join
 open Opposite Functor
 

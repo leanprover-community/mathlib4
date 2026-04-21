@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Int
 public import Mathlib.Topology.Instances.Rat
 
 /-! # ℚ as a normed group -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

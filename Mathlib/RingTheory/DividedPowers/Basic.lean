@@ -64,6 +64,7 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

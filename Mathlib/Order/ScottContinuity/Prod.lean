@@ -18,6 +18,7 @@ public import Mathlib.Order.Bounds.Lattice
 - `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

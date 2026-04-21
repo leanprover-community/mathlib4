@@ -29,6 +29,7 @@ as internals of other proofs.
 
 Prove the invariance property of the Dyson e-transform.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

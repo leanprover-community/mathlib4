@@ -32,6 +32,7 @@ For now, we specialize our results to `C = ModuleCat R`, which is the only place
 In the future they might be generalized by assuming a `HasForget₂ C (ModuleCat R)` instance,
 plus assertions that the module structures induced by `HasForget₂` coincide.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

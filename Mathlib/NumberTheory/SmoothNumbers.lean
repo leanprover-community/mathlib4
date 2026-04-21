@@ -31,6 +31,7 @@ up to and including `N`, and similarly `Nat.roughNumbersUpTo` for its complement
 and we provide some API, in particular bounds for their cardinalities; see
 `Nat.smoothNumbersUpTo_card_le` and `Nat.roughNumbersUpTo_card_le`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

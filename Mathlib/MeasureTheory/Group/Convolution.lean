@@ -20,6 +20,7 @@ In this file we define and prove properties about the convolutions of two measur
 * `MeasureTheory.Measure.conv`: The additive convolution of two measures: the map of `+`
   under the product measure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

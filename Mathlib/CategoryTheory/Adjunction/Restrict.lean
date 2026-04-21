@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.HomCongr
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
 inclusions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ compute its image as a morphism `Q.obj K ⟶ (Q.obj L)⟦n⟧` in the
 derived category when `x` is given as the class of a cocycle.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

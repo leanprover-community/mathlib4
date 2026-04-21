@@ -41,6 +41,7 @@ of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnit
 
 non-unital, algebra, morphism, star
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

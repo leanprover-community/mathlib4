@@ -26,6 +26,7 @@ from a given list. These are list versions of `Nat.multichoose`.
   and lift the result to `Multiset` and `Finset`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

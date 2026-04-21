@@ -11,6 +11,7 @@ public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 /-!
 # A Polish Borel space is measurably equivalent to a set of reals
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

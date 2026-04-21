@@ -35,6 +35,7 @@ to the adjunction `(F.map f.op.toLoc).adj`.
   pullbacks exist and certain base change morphisms are isomorphisms
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

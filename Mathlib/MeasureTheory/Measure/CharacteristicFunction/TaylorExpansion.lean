@@ -26,6 +26,7 @@ This file provides the Taylor expansion of the characteristic function of a meas
 
 characteristic function, Taylor expansion
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

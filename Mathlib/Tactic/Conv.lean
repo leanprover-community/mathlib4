@@ -12,6 +12,7 @@ public meta import Lean.Elab.Command
 /-!
 Additional `conv` tactics.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

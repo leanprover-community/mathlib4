@@ -20,6 +20,7 @@ An assumption such as continuity is necessary, as otherwise one could alternate 
 way between differentiable and non-differentiable functions along the various lines
 directed by `v`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

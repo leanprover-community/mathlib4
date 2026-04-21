@@ -22,6 +22,7 @@ over an algebraically closed field `𝕜`:
 the hom space `X ⟶ Y` between simple objects `X` and `Y` is at most one dimensional,
 and is 1-dimensional iff `X` and `Y` are isomorphic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

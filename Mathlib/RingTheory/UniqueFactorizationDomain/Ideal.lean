@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending
   chain condition on principal ideals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

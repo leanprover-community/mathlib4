@@ -19,6 +19,7 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in groups and the corresponding ordered groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

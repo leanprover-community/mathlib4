@@ -12,6 +12,7 @@ public import Mathlib.Order.BooleanAlgebra.Set
 
 See also `Set.indicator` and `Set.piecewise`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 /-!
 # Nilpotent elements in quotient rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

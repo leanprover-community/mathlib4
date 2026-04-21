@@ -31,6 +31,7 @@ Let `C` refer to a category with pullbacks.
 
 subobject, representable functor, presheaf, topos theory
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ to `(Cᵒᵖ)ᴹᵒᵖ` (the monoidal opposite of the opposite category).
 
 * Show that in a `RigidCategory`, these functors are monoidal equivalences.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 namespace CategoryTheory
 

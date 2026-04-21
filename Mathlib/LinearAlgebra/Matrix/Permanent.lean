@@ -17,6 +17,7 @@ This file defines the permanent of a matrix, `Matrix.permanent`, and some of its
 * `Matrix.permanent`: the permanent of a square matrix, as a sum over permutations
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

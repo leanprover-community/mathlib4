@@ -26,6 +26,7 @@ of maps is given by  `AugmentedSimplexCategory.tensorObj_hom_ext`, which charact
 of the associator isomorphism with respect to these maps.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ Also provides API for showing the standard locality and stability properties for
 types of properties.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

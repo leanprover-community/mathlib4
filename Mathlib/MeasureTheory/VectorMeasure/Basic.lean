@@ -43,6 +43,7 @@ since this provides summability.
 
 vector measure, signed measure, complex measure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

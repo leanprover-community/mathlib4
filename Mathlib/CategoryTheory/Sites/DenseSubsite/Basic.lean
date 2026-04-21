@@ -48,6 +48,7 @@ that factors through images of the functor for each object in `D`.
 * https://ncatlab.org/nlab/show/comparison+lemma
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

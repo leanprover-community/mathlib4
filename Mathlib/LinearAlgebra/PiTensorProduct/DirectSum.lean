@@ -19,6 +19,7 @@ This file shows that taking `PiTensorProduct`s commutes with taking `DirectSum`s
 * `ofDirectSumEquiv`: the linear equivalence between a `PiTensorProduct` of `DirectSum`s
   and the `DirectSum` of the `PiTensorProduct`s.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

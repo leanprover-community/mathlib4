@@ -22,6 +22,7 @@ We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficien
 This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

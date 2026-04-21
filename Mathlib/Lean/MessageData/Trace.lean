@@ -22,6 +22,7 @@ and prepends emoji to the rendered header:
 
 The `traceResultOf` function provides backward-compatible parsing of rendered headers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

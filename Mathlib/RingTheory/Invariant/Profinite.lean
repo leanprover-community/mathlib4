@@ -28,6 +28,7 @@ Let `G` be a profinite group acting continuously on a
   a prime ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

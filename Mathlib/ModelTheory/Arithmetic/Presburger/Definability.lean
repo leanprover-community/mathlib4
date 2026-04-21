@@ -35,6 +35,7 @@ definable.
   ginsburg1966]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

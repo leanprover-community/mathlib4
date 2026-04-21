@@ -27,6 +27,7 @@ open subsets, but their intersection `(0, 1]` is not.
 - `QuasiSeparatedSpace.of_isOpenEmbedding`: If `f : α → β` is an open embedding, and `β` is
   a quasi-separated space, then so is `α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ Note that this file is imported by basic tactics like `linarith` and so must hav
 imports. Further results about divisibility in rings may be found in
 `Mathlib/Algebra/Ring/Divisibility/Lemmas.lean` which is not subject to this import constraint.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

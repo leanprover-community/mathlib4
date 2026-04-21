@@ -39,6 +39,7 @@ These require `open Kronecker`:
   Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

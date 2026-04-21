@@ -25,6 +25,7 @@ Prove that `Path.truncateOfLE` and `Path.subpath` are reparameterizations of eac
 (`Path.subpath` is still a useful definition because it works without assuming an order on `t₀` and
 `t₁`, and is convenient for concrete manipulations.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

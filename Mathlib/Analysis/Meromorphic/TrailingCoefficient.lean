@@ -17,6 +17,7 @@ point `x`, the trailing coefficient is defined as the (unique!) value `g x` for 
 The lemma `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt` expresses the trailing coefficient
 as a limit.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

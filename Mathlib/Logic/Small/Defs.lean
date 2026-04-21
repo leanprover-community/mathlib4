@@ -22,6 +22,7 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 
 See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

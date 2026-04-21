@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding initial feasible
 solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

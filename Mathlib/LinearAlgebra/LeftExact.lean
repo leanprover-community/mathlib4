@@ -20,6 +20,7 @@ the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
 
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

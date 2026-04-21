@@ -46,6 +46,7 @@ sub-relation of the adjacency relation of the simple graph.
 * Images of graph homomorphisms as subgraphs.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

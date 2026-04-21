@@ -17,6 +17,7 @@ In this file we prove that a finite measure `μ` is an ergodic measure for a sel
 iff it is an extreme point of the set of invariant measures of `f` with the same total volume.
 We also specialize this result to probability measures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

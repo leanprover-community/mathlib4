@@ -36,6 +36,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 * `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

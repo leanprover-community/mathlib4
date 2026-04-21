@@ -37,6 +37,7 @@ We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for 
 
 rectangular box, partition
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

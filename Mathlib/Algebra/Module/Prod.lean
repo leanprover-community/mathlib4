@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Module.Defs
 
 This file defines instances for binary product of modules
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

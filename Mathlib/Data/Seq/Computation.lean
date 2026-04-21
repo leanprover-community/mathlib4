@@ -17,6 +17,7 @@ public import Batteries.Tactic.Lint.Simp
 This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

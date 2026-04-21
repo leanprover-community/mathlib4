@@ -39,6 +39,7 @@ convergence in measure and other notions of convergence.
 * `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm`: convergence in Lp implies convergence
   in measure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

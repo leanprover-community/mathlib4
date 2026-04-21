@@ -41,6 +41,7 @@ obtain unitary representations of various Lie groups.
 
 Define the Tomita conjugation, prove Tomita's theorem, prove the KMS condition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

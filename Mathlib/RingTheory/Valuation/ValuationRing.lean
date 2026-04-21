@@ -44,6 +44,7 @@ is defined in further generality that can be used in places where the ring canno
 The `ValuationRing` class is kept to be in sync with the literature.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.Data.Set.Image
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

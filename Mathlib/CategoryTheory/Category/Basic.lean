@@ -30,6 +30,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 ```
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

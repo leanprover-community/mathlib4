@@ -29,6 +29,7 @@ once the `Field` class has been defined.
 - `/.` is infix notation for `Rat.divInt`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

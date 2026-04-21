@@ -19,6 +19,7 @@ see `hasContDiffBump_of_innerProductSpace`.
 
 smooth function, bump function, inner product space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

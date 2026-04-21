@@ -35,6 +35,7 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

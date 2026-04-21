@@ -17,6 +17,7 @@ public import Mathlib.CategoryTheory.Monad.Comonadicity
 TODO (in progress by Joël Riou): make a more explicit construction of the internal hom in functor
 categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

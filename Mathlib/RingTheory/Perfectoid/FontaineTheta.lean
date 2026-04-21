@@ -40,6 +40,7 @@ Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 * [Fontaine, *Le corps des périodes p-adiques*][fontaine1994corps]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

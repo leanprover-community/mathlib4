@@ -34,6 +34,7 @@ Given a group `G` and a ring `R`:
 
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

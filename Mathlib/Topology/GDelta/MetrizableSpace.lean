@@ -17,6 +17,7 @@ We prove that the continuity set of a function from a topological space to a met
 Gδ set.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ This file proves basic properties about maxima and minima on a `LinearOrder`.
 
 min, max
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

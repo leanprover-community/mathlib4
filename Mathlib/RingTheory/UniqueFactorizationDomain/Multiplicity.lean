@@ -18,6 +18,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

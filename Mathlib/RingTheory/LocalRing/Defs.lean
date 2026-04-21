@@ -22,6 +22,7 @@ Define local rings as commutative rings having a unique maximal ideal.
   `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_ideal_unique`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.

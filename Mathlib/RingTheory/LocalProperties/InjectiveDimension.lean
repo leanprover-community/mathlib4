@@ -22,6 +22,7 @@ public import Mathlib.RingTheory.LocalProperties.Injective
 # Relation of Injective Dimension with Localizations
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

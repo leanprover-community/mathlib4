@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 
 In this file, we show that several conditions on submodules can be checked on stalks.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,6 +24,7 @@ groups were introduced in [scholze2019condensed], Definition 5.1.
 TODO (hard): prove that `((profiniteSolid ℤ).obj S).IsSolid` for `S : Profinite`.
 TODO (slightly easier): prove that `((profiniteSolid 𝔽ₚ).obj S).IsSolid` for `S : Profinite`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

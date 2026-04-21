@@ -35,6 +35,7 @@ in the lemma `Cylinder.exists_very_good`.
 * https://ncatlab.org/nlab/show/cylinder+object
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

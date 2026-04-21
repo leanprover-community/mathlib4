@@ -23,6 +23,7 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

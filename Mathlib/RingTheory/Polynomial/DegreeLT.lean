@@ -34,6 +34,7 @@ This file contains the properties of the submodule of polynomials of degree less
   `X + r` and preserves degrees.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

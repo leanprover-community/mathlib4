@@ -36,6 +36,7 @@ commutative rings `S` (the data is the same: it suffices
 to show that the two vanishing conditions `d_app` are equivalent).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

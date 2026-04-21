@@ -25,6 +25,7 @@ this is another small category at that level.
 However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ categories, but for definitional equality and universe issues we reprove them he
 - `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

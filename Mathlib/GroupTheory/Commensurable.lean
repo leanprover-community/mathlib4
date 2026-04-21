@@ -34,6 +34,7 @@ We define `Commensurable` both for additive and multiplicative groups (in the `A
 interesting concept for abelian groups, and it would be unusual to write a non-abelian group
 additively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

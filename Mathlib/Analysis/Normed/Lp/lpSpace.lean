@@ -56,6 +56,7 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

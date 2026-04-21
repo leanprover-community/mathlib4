@@ -9,6 +9,7 @@ public import Mathlib.Lean.Meta
 /-!
 # Additions to `Lean.Elab.Tactic.Basic`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

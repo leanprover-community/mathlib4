@@ -19,6 +19,7 @@ for any limit element `j : J`. It follows that if
 `F : J ⥤ C` is well order continuous, then so is `F ⋙ G`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

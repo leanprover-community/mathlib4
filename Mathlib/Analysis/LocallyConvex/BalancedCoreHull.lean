@@ -37,6 +37,7 @@ this is `balancedCore_eq_iInter`.
 
 balanced
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -43,6 +43,7 @@ pairs `Sigma`.
 
 Gaussian process, independence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

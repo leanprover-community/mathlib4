@@ -24,6 +24,7 @@ In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

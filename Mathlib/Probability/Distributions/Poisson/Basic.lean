@@ -20,6 +20,7 @@ measure which to `{n}` associates `exp (-r) * r ^ n / (n)!`.
 
 * `poissonMeasure r`: a Poisson measure on `ℕ`, parametrized by its rate `r : ℝ≥0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

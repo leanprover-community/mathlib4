@@ -23,6 +23,7 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

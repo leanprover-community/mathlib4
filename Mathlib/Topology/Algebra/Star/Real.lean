@@ -12,6 +12,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 /-!
 # Topological properties of conjugation on ℝ
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

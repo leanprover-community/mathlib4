@@ -20,6 +20,7 @@ functions.
 In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides with
 `Finsupp.support (f - g)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.OreLocalization.Ring
 
 This file contains some results on cardinality of Ore localizations of rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

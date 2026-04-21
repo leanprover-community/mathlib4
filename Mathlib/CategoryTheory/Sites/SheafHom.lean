@@ -25,6 +25,7 @@ TODO:
 - use these results in order to show that the category of sheaves of types is Cartesian closed
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

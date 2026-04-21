@@ -16,6 +16,7 @@ at `c` are nonnegative real, then `f z ≥ 0` for all `z ≥ c` in the disk; see
 variant `Differentiable.nonneg_of_iteratedDeriv_nonneg` for entire functions and versions
 showing `f z ≥ f c` when all iterated derivatives except `f` itself are nonnegative.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

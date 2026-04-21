@@ -31,6 +31,7 @@ lying over `R`, then
   Suppose `R ⊆ S` is finite and unramified at `q`.
   If `κ(p) = κ(q)` then there exists `r ∉ p` such that `R[1/f] = S[1/f]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

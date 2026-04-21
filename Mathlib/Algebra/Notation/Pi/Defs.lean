@@ -15,6 +15,7 @@ This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, 
 See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

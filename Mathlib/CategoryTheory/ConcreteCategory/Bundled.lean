@@ -23,6 +23,7 @@ Note: this structure will be deprecated in the future in favor of defining the c
 and then providing the `ConcreteCategory` instance on top of this. See
 `Mathlib/CategoryTheory/ConcreteCategory/Basic.lean` for more details.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

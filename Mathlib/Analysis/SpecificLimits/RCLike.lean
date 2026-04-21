@@ -12,6 +12,7 @@ public import Mathlib.Analysis.RCLike.Basic
 # A collection of specific limit computations for `RCLike`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

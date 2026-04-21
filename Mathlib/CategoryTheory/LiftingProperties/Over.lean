@@ -20,6 +20,7 @@ property with respect to `p` when `i.left` has
 the left lifting property with respect to `p.left`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

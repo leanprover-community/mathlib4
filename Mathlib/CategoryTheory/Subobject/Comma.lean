@@ -31,6 +31,7 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 `A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

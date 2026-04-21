@@ -13,6 +13,7 @@ public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

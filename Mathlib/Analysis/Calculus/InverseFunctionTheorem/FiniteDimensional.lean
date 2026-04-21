@@ -18,6 +18,7 @@ can be extended to a homeomorphism of the whole space.
 This used to be the only lemma in `Mathlib/Analysis/Calculus/Inverse`
 depending on `FiniteDimensional`, so it was moved to a new file when the original file got split.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

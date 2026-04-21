@@ -24,6 +24,7 @@ We define a symmetric monoidal structure on light condensed modules by localizin
 monoidal structure on the presheaf category. By Day's reflection theorem, we obtain a closed
 structure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

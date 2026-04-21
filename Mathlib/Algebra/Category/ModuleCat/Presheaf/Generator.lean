@@ -42,6 +42,7 @@ in order to obtain that any presheaf of modules is a cokernel
 of a morphism between coproducts of objects in `freeYoneda R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

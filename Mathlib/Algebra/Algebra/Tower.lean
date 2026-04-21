@@ -21,6 +21,7 @@ compatibility condition `(r • s) • a = r • (s • a)`.
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

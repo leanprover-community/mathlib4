@@ -20,6 +20,7 @@ and show that they satisfy the same kind of laws (`Monoid` etc) as the original 
 Finally, we construct a section of the quotient map
 which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

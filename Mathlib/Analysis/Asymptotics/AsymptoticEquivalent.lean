@@ -54,6 +54,7 @@ Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

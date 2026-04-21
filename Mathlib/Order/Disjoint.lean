@@ -21,6 +21,7 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.Opposite
 /-!
 # Group isomorphism between a group and its opposite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

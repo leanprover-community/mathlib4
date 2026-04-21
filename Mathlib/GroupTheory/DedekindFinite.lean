@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.Card
 /-!
 # Finite monoids are Dedekind-finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ there is a natural "pointwise" monoidal structure on `C ⥤ D`.
 
 The initial intended application is tensor product of presheaves.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

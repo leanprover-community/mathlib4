@@ -31,6 +31,7 @@ Let `v : ℝ → E → E` be a time-dependent vector field on `E`, and let `γ :
 
 integral curve, vector field
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

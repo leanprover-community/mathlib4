@@ -23,6 +23,7 @@ order `(· < ·)`, but without the ordering conditions on `α`.
 
 All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

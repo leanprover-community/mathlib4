@@ -18,6 +18,7 @@ public import Mathlib.Tactic.Lift
 This file contains the definitions, and basic results.
 Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

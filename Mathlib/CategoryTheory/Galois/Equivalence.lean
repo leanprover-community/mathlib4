@@ -17,6 +17,7 @@ Let `C` be a Galois category with fiber functor `F`.
 In this file we conclude that the induced functor from `C` to the category of finite,
 discrete `Aut F`-sets is an equivalence of categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

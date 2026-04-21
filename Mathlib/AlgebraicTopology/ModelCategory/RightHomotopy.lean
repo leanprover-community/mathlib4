@@ -26,6 +26,7 @@ relation on `X ⟶ Y`.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

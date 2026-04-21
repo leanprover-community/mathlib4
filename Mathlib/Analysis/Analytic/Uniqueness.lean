@@ -17,6 +17,7 @@ public import Mathlib.Analysis.Analytic.ChangeOrigin
 We show that two analytic functions which coincide around a point coincide on whole connected sets,
 in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

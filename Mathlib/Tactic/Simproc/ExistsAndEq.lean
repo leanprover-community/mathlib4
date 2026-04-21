@@ -25,6 +25,7 @@ variables bound by existential quantifiers, those quantifiers are moved outside.
 
 For example, `∃ a, p a ∧ ∃ b, a = f b ∧ q b` will be rewritten as `∃ b, p (f b) ∧ q b`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

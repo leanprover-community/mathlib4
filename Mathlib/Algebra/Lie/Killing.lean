@@ -41,6 +41,7 @@ This file contains basic definitions and results for such Lie algebras.
 * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

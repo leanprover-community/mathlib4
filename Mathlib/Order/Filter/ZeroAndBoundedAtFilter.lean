@@ -18,6 +18,7 @@ that are `ZeroAtFilter`. Similarly, we construct the `Submodule` and `Subalgebra
 that are `BoundedAtFilter`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

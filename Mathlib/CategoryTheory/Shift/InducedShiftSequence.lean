@@ -27,6 +27,7 @@ will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

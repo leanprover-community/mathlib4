@@ -23,6 +23,7 @@ It would be good to merge the remaining lemmas with other files, e.g.
 `GroupTheory.Perm.ViaEmbedding` looks like it could benefit from such a treatment (splitting into
 the algebra and non-algebra parts).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

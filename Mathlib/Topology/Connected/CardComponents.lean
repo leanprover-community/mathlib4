@@ -22,6 +22,7 @@ Let `f : X → Y` be an open and closed map.
 - `IsOpenMap.finite_connectedComponents_of_finite_preimage_singleton`: If `f` is also continuous
   with finite fibers and `Y` has finitely many connected components, so does `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

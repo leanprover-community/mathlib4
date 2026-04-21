@@ -30,6 +30,7 @@ These notations are inspired by
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

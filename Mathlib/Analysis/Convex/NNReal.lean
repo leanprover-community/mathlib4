@@ -15,6 +15,7 @@ public import Mathlib.Data.NNReal.Defs
 This file collects some specific results about convexity over the ring `ℝ≥0`.
 Expand as needed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

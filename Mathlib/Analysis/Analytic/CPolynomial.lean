@@ -17,6 +17,7 @@ We also prove that continuous multilinear maps are continuously polynomial, and 
 are continuous linear maps into continuous multilinear maps. In particular, such maps are
 analytic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

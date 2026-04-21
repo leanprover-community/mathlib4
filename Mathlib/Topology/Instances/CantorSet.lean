@@ -32,6 +32,7 @@ This file defines the Cantor ternary set and proves a few properties.
   in the Cantor set.
 * `ofDigits_zero_two_sequence_unique`: such a representation is unique.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

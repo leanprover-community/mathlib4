@@ -19,6 +19,7 @@ real part `x` and provide some results about it.
 
 L-series, abscissa of convergence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

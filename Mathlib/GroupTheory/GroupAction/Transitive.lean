@@ -29,6 +29,7 @@ Given `MulAction G X` where `G` is a group,
   iff `MulAction.orbit G a` is full.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -50,6 +50,7 @@ For instance, if `h : IdentDistrib f g μ ν`, then `h.sq` states that `f^2` and
 identically distributed, and `h.norm` states that `‖f‖` and `‖g‖` are identically distributed, and
 so on.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

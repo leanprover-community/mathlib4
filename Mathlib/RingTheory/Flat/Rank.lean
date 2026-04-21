@@ -25,6 +25,7 @@ bijectivity of `R → S` with the rank of `S` over `R`.
   `S` is isomorphic to `R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

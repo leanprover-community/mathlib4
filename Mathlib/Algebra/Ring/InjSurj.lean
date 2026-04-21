@@ -23,6 +23,7 @@ as we want the multiplicative versions to be `∀ x n, f (x ^ n) = f x ^ n`.
 As a result, we must use `Function.swap` when using additivised transfer definitions in
 non-additivised ones.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

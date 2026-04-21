@@ -14,6 +14,7 @@ This file contains lemmas about the composition of measures and kernels that do 
 the other files in this directory, because they involve several types of compositions/products.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

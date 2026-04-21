@@ -22,6 +22,7 @@ into the corresponding summand of `(Σ k, ι k) →₀ M`.
 
 This is a special case of `Finsupp.embDomain` using `Function.Embedding.sigmaMk`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

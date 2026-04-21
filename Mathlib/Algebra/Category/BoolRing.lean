@@ -18,6 +18,7 @@ This file defines `BoolRing`, the category of Boolean rings.
 
 Finish the equivalence with `BoolAlg`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

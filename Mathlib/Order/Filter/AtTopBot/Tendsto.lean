@@ -14,6 +14,7 @@ public import Mathlib.Order.Filter.Tendsto
 In this file we prove many lemmas on the combination of `Filter.atTop` and `Filter.atBot`
 and `Tendsto`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -16,6 +16,7 @@ The completion of a nonarchimedean additive group is a nonarchimedean additive g
 
 The completion of a nonarchimedean ring is a nonarchimedean ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ The category `Profinite` is defined using the structure `CompHausLike`. See the 
 profinite
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

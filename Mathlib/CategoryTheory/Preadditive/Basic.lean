@@ -45,6 +45,7 @@ is simplified to `f ≫ g`.
 
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

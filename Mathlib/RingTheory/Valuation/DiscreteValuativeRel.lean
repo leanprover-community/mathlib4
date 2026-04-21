@@ -18,6 +18,7 @@ Discrete valuative relations have a maximal element less than one in the value g
 In the rank-one case, this is equivalent to the value group being isomorphic to `ℤᵐ⁰`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

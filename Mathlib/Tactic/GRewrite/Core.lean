@@ -26,6 +26,7 @@ using `gcongr` lemmas. This is tricky due to the many different `gcongr` for eac
 With the current implementation, we can instead use `nth_grw`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

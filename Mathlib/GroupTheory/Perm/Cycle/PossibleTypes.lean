@@ -14,6 +14,7 @@ public import Mathlib.GroupTheory.Perm.Cycle.Concrete
   its sum is at most `Fintype.card α` and its members are at least 2.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

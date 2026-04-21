@@ -21,6 +21,7 @@ We prove variants of this statement also for the `AddMonoidHom` bundled version 
 as well as the bundled version of `mulLeft₃` and `mulRight₃`, the multiplications `(x * y) * z` and
 `x * (y * z)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

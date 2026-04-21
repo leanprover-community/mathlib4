@@ -21,6 +21,7 @@ We provide some basic properties of schemes
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
   are reduced.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

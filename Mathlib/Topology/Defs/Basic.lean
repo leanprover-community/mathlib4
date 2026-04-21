@@ -57,6 +57,7 @@ other than `Mathlib/Data/Set/Lattice.lean`.
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

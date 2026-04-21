@@ -17,6 +17,7 @@ This file proves that the category of modules over a ring satisfies Grothendieck
 and AB4*. Further, it proves that `R` is a separator in the category of modules over `R`, and
 concludes that this category is Grothendieck abelian.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

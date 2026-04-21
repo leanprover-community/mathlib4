@@ -19,6 +19,7 @@ See also `AddMonoidHom.mulLeft`, `AddMonoidHom.mulRight`, `AddMonoid.End.mulLeft
 `AddMonoid.End.mulRight` for multiplication by `R` as an endomorphism instead of multiplication by
 `Rˣ` as an automorphism.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

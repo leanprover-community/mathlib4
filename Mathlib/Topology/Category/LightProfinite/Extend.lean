@@ -25,6 +25,7 @@ We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`
 `Mathlib/Topology/Category/LightProfinite/AsLimit.lean`, in which the
 indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

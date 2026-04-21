@@ -21,6 +21,7 @@ Over (and under) categories are special cases of comma categories.
 
 Comma, Slice, Coslice, Over, Under
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

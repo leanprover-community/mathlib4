@@ -25,6 +25,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
   is the dimension of the nullspace of its Laplacian matrix.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

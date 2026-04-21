@@ -32,6 +32,7 @@ into an ordered ring, and vice versa.
 - [*An introduction to real algebra*, T.Y. Lam][lam_1984]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

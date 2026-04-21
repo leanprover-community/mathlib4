@@ -17,6 +17,7 @@ If a category has pullbacks and binary products, then it has equalizers.
 
 TODO: generalize universe
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

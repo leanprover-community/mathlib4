@@ -13,6 +13,7 @@ public import Mathlib.Data.Matrix.Basic
 This file provides `Matrix.single`. The matrix `Matrix.single i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

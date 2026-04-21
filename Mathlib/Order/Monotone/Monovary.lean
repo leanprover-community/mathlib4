@@ -25,6 +25,7 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 * `MonovaryOn f g s`: `f` monovaries with `g` on `s`.
 * `AntivaryOn f g s`: `f` antivaries with `g` on `s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

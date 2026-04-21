@@ -19,6 +19,7 @@ This file defines notions of lists of points in an affine space being in order o
 * `List.Sbtw R l`: The points in list `l` are strictly in order on a line.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ For the last statement, we both prove it as a proposition and define a bundled
 
 rectangular box, measure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ import Mathlib.NumberTheory.Niven
 
 Show that the bound on `T_n^{(k)} (x)` is achieved only at `x = ±1`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

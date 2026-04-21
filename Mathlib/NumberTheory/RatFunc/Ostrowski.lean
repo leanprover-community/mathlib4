@@ -20,6 +20,7 @@ valuation at infinity `FunctionField.inftyValuation K`.
 ## Main results
 - `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

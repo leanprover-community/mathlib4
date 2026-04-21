@@ -26,6 +26,7 @@ In this file we establish functorial properties of the adic completion.
 - `piEquivOfFintype`: adic completion commutes with finite products
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ Morphisms of graphs are abbreviations for `RelHom`, `RelEmbedding` and `RelIso`.
 To make use of pre-existing simp lemmas, definitions involving morphisms are
 abbreviations as well.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

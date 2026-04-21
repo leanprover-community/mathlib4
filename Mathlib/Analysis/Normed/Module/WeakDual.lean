@@ -103,6 +103,7 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 weak-star, weak dual
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

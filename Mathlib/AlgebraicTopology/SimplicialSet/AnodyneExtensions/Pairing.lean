@@ -40,6 +40,7 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Topology.Covering.Basic
 /-!
 # Covering maps to quotients by free and properly discontinuous group actions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

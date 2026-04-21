@@ -17,6 +17,7 @@ This file constructs examples of harmonic functions.
 If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`, then so is its real
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

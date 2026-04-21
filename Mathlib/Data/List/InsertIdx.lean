@@ -14,6 +14,7 @@ public import Mathlib.Util.CompileInductive
 
 Proves various lemmas about `List.insertIdx`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 /-!
 # The category of module objects over a monoid object.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

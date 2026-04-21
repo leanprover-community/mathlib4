@@ -24,6 +24,7 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 * [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
   [cabreragarciarodriguezpalacios2014]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

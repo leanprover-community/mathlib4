@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
 /-!
 # Scalar multiplication on ℒp space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

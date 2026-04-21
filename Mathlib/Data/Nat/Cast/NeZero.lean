@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Cast.Defs
 /-!
 # Lemmas about nonzero elements of an `AddMonoidWithOne`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

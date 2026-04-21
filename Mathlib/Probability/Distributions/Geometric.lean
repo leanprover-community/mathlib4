@@ -20,6 +20,7 @@ Define the geometric measure over the natural numbers
   `geometricPMF p = ENNReal.ofReal (geometricPMFReal p)`.
 * `geometricMeasure`: a geometric measure on `ℕ`, parametrized by its success probability `p`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ nonempty directed set `t` is contained in `s`, then `t` and `s` must have nonemp
 - `DirSupClosed`: sets closed under directed suprema.
 - `DirSupInacc`: sets inaccessible by directed suprema.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

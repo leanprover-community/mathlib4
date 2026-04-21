@@ -35,6 +35,7 @@ Let `R` be a commutative ring with a linear topology.
 These lemmas are actually deduced from their analogues for commuting elements of rings.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

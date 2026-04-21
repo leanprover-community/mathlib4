@@ -23,6 +23,7 @@ We can also define monads in a bicategory. This is not yet done as we don't have
 structure on the set of lax functors at this point, which is needed to show that monads form a
 bicategory.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

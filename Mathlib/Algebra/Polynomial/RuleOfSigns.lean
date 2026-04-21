@@ -37,6 +37,7 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 [Wikipedia: Descartes' Rule of Signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

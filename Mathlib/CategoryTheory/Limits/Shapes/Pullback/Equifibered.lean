@@ -24,6 +24,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 - `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

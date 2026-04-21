@@ -49,6 +49,8 @@ public import Mathlib.Tactic.SuppressCompilation
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 suppress_compilation
 
 noncomputable section KaehlerDifferential

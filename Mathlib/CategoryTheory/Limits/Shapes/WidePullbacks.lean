@@ -25,6 +25,7 @@ Namely, if `C` has wide pullbacks then `C/B` has limits for any object `B` in `C
 Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence of wide
 pullbacks and finite wide pullbacks.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

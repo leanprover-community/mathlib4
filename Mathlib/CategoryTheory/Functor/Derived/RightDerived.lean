@@ -35,6 +35,7 @@ along the localization functor `L`.
 * https://ncatlab.org/nlab/show/derived+functor
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

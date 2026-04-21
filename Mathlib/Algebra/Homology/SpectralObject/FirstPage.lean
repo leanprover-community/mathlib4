@@ -20,6 +20,7 @@ and we compute the differential on the first page in terms of `X.δ`,
 see `spectralSequence_first_page_d_eq`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

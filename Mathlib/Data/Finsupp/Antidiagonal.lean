@@ -17,6 +17,7 @@ import Mathlib.Data.Finsupp.Order
 The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

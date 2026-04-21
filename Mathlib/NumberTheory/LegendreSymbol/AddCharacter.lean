@@ -37,6 +37,7 @@ is nontrivial (and the target is a domain); see `AddChar.sum_eq_zero_of_isNontri
 
 additive character
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

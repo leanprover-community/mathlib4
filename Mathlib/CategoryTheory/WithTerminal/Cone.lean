@@ -16,6 +16,7 @@ it has an obvious lift `liftFromOver K : WithTerminal J ⥤ C`, namely, send the
 object to `X`. These two functors have equivalent categories of cones (`coneEquiv`).
 As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-versa.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,7 @@ Then the range of `f` is a maximal chain.
 
 We formulate this result in terms of `IsMaxChain` and `Flag`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

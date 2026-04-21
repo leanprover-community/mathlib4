@@ -49,6 +49,7 @@ algebraic or order structure on the whole type of linear (say) trivializations o
 Indeed, since trivializations only have meaning on their base sets (taking junk values outside), the
 type of linear trivializations is not even particularly well-behaved.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

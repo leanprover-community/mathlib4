@@ -34,6 +34,7 @@ enveloping algebra of `L`, together with its universal property.
 
 lie algebra, universal enveloping algebra, tensor algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

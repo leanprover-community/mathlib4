@@ -16,6 +16,7 @@ public import Mathlib.Analysis.RCLike.Basic
 In this file we prove that if a function `f` is analytic on the ball of convergence of its Taylor
 series, then the series converges to `f` on this ball.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

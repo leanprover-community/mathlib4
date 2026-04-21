@@ -20,6 +20,7 @@ This file shows that `Ring.inverse` is convex on strictly positive operators.
 * `convexOn_ringInverse`: `Ring.inverse` is convex on strictly positive operators, i.e. the inverse
   is operator convex.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 namespace CStarAlgebra
 

@@ -24,6 +24,7 @@ This file defines notions of a point in an affine space being between two given 
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

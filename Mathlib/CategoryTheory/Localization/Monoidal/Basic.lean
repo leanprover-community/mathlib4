@@ -26,6 +26,7 @@ The symmetric case is considered in the file
 `Mathlib/CategoryTheory/Localization/Monoidal/Braided.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

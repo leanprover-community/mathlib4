@@ -14,6 +14,7 @@ public import Mathlib.Topology.Category.CompHausLike.Limits
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
 the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of `CompHaus`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

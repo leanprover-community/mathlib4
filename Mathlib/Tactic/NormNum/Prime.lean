@@ -27,6 +27,7 @@ generate a proof that has a smaller depth.
 Note: `evalMinFac.aux` does not raise a stack overflow, which can be checked by replacing the
 `prf'` in the recursive call by something like `(.sort .zero)`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

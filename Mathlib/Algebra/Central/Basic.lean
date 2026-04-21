@@ -21,6 +21,7 @@ In this file, we prove some basic results about central algebras over a commutat
 - `Algebra.IsCentral.baseField_essentially_unique`: Let `D/K/k` be a tower of scalars where
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 assert_not_exists Monoid

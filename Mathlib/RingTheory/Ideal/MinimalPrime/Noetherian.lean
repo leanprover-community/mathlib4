@@ -18,6 +18,7 @@ We prove finiteness of minimal primes above an ideal.
 This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

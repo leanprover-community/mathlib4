@@ -16,6 +16,7 @@ In this file, when the category `A` is abelian, we obtain the homotopy equivalen
 normalized Moore complex and the alternating face map complex of a simplicial object in `A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

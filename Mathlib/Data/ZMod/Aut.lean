@@ -11,6 +11,7 @@ public import Mathlib.Data.ZMod.Basic
 /-!
 # Automorphism Group of `ZMod`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

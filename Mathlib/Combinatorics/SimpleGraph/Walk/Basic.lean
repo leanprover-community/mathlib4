@@ -35,6 +35,7 @@ counterparts in [Chou1994].
 ## Tags
 walks
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

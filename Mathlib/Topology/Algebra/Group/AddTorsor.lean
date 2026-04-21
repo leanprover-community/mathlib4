@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Group.Defs
 This file defines topological torsors of additive groups, that is, torsors where `+ᵥ` and `-ᵥ` are
 continuous.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

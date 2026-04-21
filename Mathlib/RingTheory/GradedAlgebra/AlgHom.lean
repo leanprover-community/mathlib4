@@ -20,6 +20,7 @@ This file defines bundled `R`-linear homomorphisms of graded `R`-algebras.
 
 * `𝒜 →ₐᵍ[R] ℬ` : `R`-linear graded homomorphism from `𝒜` to `ℬ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

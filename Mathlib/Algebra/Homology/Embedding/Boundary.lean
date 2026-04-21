@@ -33,6 +33,7 @@ only element in this lower boundary. Similarly, we define
 `Embedding.BoundaryLE`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

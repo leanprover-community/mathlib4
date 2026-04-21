@@ -43,6 +43,7 @@ In this file, we develop the basic properties of these notions, notably:
 More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, with heavier
 imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ does the category of Ind-objects of `C`.
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

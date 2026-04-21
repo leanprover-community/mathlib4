@@ -56,6 +56,7 @@ public import Mathlib.Order.Disjointed
   insertion, nor do we define a complete lattice. In theory, we could define a complete
   lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

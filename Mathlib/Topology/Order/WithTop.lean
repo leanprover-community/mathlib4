@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.WithTopBot
 When `ι` is a topological space with the order topology, we also endow `WithTop ι` with the order
 topology. If `ι` is second countable, we prove that `WithTop ι` also is.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

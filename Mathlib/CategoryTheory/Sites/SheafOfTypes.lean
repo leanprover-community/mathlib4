@@ -47,6 +47,7 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

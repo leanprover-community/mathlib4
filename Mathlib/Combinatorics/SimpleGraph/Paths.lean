@@ -46,6 +46,7 @@ counterparts in [Chou1994].
 ## Tags
 trails, paths, circuits, cycles
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

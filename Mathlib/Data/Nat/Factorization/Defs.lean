@@ -37,6 +37,7 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

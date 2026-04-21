@@ -22,6 +22,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
   `p ∈ Ass (S⁻¹M)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

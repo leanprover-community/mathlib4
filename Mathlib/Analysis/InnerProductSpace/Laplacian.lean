@@ -22,6 +22,7 @@ canonical covariant tensor of `E`, as defined and discussed in
 We show that the Laplacian is `ℝ`-linear on continuously differentiable functions, and establish the
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

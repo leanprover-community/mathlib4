@@ -33,6 +33,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 
 self-adjoint, symmetric
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,7 @@ Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall c
 "0-th coefficient" map `Perfection (R ⧸ I) p →+* R ⧸ I`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

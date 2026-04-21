@@ -16,6 +16,7 @@ We define the closures of convex and pointed cones. This construction is primari
 defining maps between proper cones. The current API is basic and should be extended as necessary.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

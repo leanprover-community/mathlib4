@@ -24,6 +24,7 @@ We check `Action V G ≌ (CategoryTheory.SingleObj G ⥤ V)`,
 and construct the restriction functors
 `res {G H} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 
 The integers form a conditionally complete linear order.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

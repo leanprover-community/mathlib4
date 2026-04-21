@@ -15,6 +15,7 @@ This file defines `UpperHalfPlane` to be the upper half plane in `ℂ`.
 We define the notation `ℍ` for the upper half plane available in the locale
 `UpperHalfPlane` so as not to conflict with the quaternions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

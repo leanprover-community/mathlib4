@@ -38,6 +38,7 @@ Gaussian integers are implemented using the more general definition `Zsqrtd`, th
 adjoined a square root of `d`, in this case `-1`. The definition is reducible, so that properties
 and definitions about `Zsqrtd` can easily be used.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

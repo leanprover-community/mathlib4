@@ -21,6 +21,7 @@ ideal `I`, we may furthermore obtain a matrix representation whose entries fall 
 
 This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbitrary rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

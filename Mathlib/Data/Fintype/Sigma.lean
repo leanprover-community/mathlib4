@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.OfMap
 /-!
 # fintype instances for sigma types
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

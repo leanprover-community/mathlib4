@@ -32,6 +32,7 @@ public import Mathlib.RingTheory.Trace.Quotient
 ## TODO
 - Show properties of the different ideal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

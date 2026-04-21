@@ -21,6 +21,7 @@ In this file we promote this monoidal structure to a braided structure in the ca
 braided, in such a way that the localization functor is braided. If `C` is symmetric monoidal, then
 the monoidal structure on `D` is also symmetric.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -60,6 +60,7 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 
 divisibility, gcd, lcm, normalize
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

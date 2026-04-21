@@ -23,6 +23,7 @@ the setting where `g` is merely meromorphic. In that case, the `circleAverage (l
 equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros and
 poles of `g` within the ball.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

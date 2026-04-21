@@ -16,6 +16,7 @@ public import Mathlib.Data.DFinsupp.Defs
 * `DFinsupp.addHom_ext`, `DFinsupp.addHom_ext'`: if two additive homomorphisms from `Π₀ i, β i`
   are equal on each `single a b`, then they are equal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

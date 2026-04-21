@@ -15,6 +15,7 @@ public import Batteries.Data.List.Basic
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

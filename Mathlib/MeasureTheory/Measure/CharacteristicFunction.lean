@@ -8,5 +8,6 @@ public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Group.IntegralConvolution
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-03-03")

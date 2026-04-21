@@ -17,6 +17,7 @@ For various types of normed algebraic structures `β`, we show in this file that
 bounded continuous functions from `α` to `β` inherits the same normed structure, by using
 pointwise operations and checking that they are compatible with the uniform distance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

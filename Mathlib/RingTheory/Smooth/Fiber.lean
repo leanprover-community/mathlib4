@@ -34,6 +34,7 @@ public import Mathlib.RingTheory.Etale.Locus
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open TensorProduct IsLocalRing
 

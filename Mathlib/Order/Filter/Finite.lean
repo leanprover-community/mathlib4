@@ -14,6 +14,7 @@ public import Mathlib.Order.Filter.Basic
 
 This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

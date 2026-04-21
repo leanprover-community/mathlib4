@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 
 /-! # The `ofNat()` macro -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

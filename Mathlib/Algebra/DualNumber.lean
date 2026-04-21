@@ -35,6 +35,7 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 * https://en.wikipedia.org/wiki/Dual_number
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ to monoid objects.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

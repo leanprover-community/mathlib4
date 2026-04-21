@@ -15,6 +15,7 @@ public import Mathlib.Tactic.Ring
 This file contains the results concerning the interaction of finset big operators with groups with
 zero, where order is involved.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 A function between inner product spaces which has a derivative at `x`
 is conformal at `x` iff the derivative preserves inner products up to a scalar multiple.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

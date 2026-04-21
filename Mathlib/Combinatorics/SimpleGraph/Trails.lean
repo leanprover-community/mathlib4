@@ -35,6 +35,7 @@ as Eulerian circuits).
 Eulerian trails
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

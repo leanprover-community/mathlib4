@@ -33,6 +33,7 @@ isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 `Mathlib/Topology/Sheaves/Forget.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

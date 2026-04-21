@@ -29,6 +29,7 @@ Where possible, the results in this file should be first proved in the generalit
 `AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

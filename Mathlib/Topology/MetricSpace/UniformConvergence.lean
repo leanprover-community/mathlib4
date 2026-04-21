@@ -40,6 +40,7 @@ There are a few advantages of equipping this space with this metric structure.
 2. It provides a natural setting in which one can talk about the metrics on `α →ᵇ β` or, when
   `α` is compact, `C(α, β)`, relative to their underlying bare functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

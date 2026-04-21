@@ -19,6 +19,7 @@ some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the 
 `M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

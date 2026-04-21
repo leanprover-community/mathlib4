@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Noetherian.Nilpotent
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-! # Descend finiteness along quotients by nilpotent ideals -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -23,6 +23,7 @@ one of the vertices in the set.
 * `SimpleGraph.IsVertexCover G c`: Predicate that `c` is a vertex cover of `G`.
 * `SimpleGraph.vertexCoverNum G`: The vertex cover number, e.g. the size of a minimal vertex cover.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.Order.Hom.Basic
 * `Multiset.filter`: `filter p s` is the multiset of elements in `s` that satisfy `p`.
 * `Multiset.filterMap`: `filterMap f s` is the multiset of `b`s where `some b ∈ map f s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

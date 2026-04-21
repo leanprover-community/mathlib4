@@ -35,6 +35,7 @@ In this file we prove several forms of Jensen's inequality for integrals.
 
 convex, integral, center mass, average value, Jensen's inequality
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

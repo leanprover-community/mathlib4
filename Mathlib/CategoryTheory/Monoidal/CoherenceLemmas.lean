@@ -16,6 +16,7 @@ These lemmas are all proved `by coherence`.
 Investigate whether these lemmas are really needed,
 or if they can be replaced by use of the `coherence` tactic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

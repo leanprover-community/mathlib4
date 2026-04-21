@@ -18,6 +18,7 @@ discrete subspace of cardinality continuum is not a normal topological space.
 
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -28,6 +28,7 @@ thus we do not deal with monoid actions.
 Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

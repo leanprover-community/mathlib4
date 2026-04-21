@@ -21,6 +21,7 @@ curve.
 
 integral curve, vector field
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

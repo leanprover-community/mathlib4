@@ -26,6 +26,8 @@ The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOp
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory
 
 open Category

@@ -19,6 +19,7 @@ It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

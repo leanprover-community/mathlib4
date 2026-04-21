@@ -45,6 +45,7 @@ generators, and it is used to prove that, for a domain `R`, we have
 Prove noetherianity of `MvPowerSeries` in finitely many variables.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

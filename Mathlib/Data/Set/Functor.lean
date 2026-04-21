@@ -16,6 +16,7 @@ public import Mathlib.Data.Set.Notation
 
 This file defines the functor structure of `Set`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

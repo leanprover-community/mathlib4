@@ -29,6 +29,7 @@ unit and `0` if not.  The other major results of this file (notably `NormedRing.
 `NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

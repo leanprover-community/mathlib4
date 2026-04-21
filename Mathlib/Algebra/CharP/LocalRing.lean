@@ -19,6 +19,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
   zero or a prime power.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

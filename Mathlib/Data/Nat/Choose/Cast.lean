@@ -16,6 +16,7 @@ public import Mathlib.Data.Nat.Factorial.Cast
 This file allows calculating the binomial coefficient `a.choose b` as an element of a division ring
 of characteristic `0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

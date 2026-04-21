@@ -16,6 +16,7 @@ we construct a homeomorphism `gaugeRescaleHomeomorph`
 that sends the interior, the closure, and the frontier of one set
 to the interior, the closure, and the frontier of the other set.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

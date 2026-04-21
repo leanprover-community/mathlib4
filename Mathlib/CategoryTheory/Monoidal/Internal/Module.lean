@@ -18,6 +18,7 @@ is equivalent to the category of "native" bundled `R`-algebras.
 
 Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

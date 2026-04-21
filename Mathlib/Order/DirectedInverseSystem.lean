@@ -57,6 +57,7 @@ is everything. However, the author chose the `compat` approach in the end becaus
 the distinguished bijection that is compatible with the projections to all `X i`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

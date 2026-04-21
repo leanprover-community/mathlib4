@@ -28,6 +28,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

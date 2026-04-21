@@ -41,6 +41,7 @@ case, it would be a particular case of Čech cohomology (TODO).
 * [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

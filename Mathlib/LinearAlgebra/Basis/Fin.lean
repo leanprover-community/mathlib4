@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Pi
 /-!
 # Bases indexed by `Fin`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

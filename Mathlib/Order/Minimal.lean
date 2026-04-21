@@ -40,6 +40,7 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 * API for `MinimalFor`/`MaximalFor`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

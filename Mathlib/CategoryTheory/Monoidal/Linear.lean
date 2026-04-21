@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Preadditive
 A monoidal category is `MonoidalLinear R` if it is monoidal preadditive and
 tensor product of morphisms is `R`-linear in both factors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

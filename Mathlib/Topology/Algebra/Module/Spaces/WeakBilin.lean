@@ -45,6 +45,7 @@ We prove the following results characterizing the weak topology:
 weak-star, weak dual, duality
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

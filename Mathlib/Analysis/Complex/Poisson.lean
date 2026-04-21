@@ -14,6 +14,7 @@ We present two versions of the **Poisson Integral Formula** for ℂ-differentiab
 arbitrary disks in the complex plane, formulated with the real part of the Herglotz–Riesz kernel of
 integration and with the Poisson kernel, respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

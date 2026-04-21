@@ -42,6 +42,7 @@ Clean up the namespaces by renaming `Prefunctor` to `Quiver.Prefunctor`.
 
 Cover, covering, quiver, path, lift
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

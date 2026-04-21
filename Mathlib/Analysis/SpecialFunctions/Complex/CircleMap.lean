@@ -20,6 +20,7 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 ## Tags
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section circleMap

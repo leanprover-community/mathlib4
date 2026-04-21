@@ -16,6 +16,7 @@ public import Mathlib.Order.PiLex
 This file proves that the lexicographic order on pi types is compatible with the pointwise algebraic
 operations.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

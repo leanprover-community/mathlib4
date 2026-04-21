@@ -56,6 +56,7 @@ convergence theorems.
 We mostly follow the proof from [Kallenberg, *Foundations of modern probability*][kallenberg2021]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

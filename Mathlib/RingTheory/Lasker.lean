@@ -25,6 +25,7 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

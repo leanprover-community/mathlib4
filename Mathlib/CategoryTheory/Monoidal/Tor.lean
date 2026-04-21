@@ -22,6 +22,7 @@ but showing `Tor C n ≅ Tor' C n` will require a bit more theory!
 Possibly it's best to axiomatize delta functors, and obtain a unique characterisation?
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

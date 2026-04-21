@@ -73,6 +73,7 @@ composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Me
 convergence in distribution, convergence in law, weak convergence of measures, probability measure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

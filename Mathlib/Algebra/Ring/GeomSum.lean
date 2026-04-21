@@ -20,6 +20,7 @@ Several variants are recorded, generalising in particular to the case of a nonco
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
 are recorded.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

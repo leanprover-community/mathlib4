@@ -23,6 +23,7 @@ they provide useful information in development, but are not intended to be prese
 Most of them are noisy and get picked up anyway by CI, but even the quiet ones are not expected to
 outlive their in-development status.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

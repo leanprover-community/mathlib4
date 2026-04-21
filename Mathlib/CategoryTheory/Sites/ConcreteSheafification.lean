@@ -19,6 +19,7 @@ and reflects isomorphisms.
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

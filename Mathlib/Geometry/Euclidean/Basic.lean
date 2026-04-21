@@ -36,6 +36,7 @@ theorems that need it.
 * https://en.wikipedia.org/wiki/Euclidean_space
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

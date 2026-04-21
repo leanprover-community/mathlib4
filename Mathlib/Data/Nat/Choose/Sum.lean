@@ -19,6 +19,7 @@ This file includes variants of the binomial theorem and other results on sums of
 coefficients. Theorems whose proofs depend on such sums may also go in this file for import
 reasons.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

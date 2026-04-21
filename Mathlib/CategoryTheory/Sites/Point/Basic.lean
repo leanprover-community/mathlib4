@@ -45,6 +45,7 @@ and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
 is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

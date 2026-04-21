@@ -46,6 +46,7 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,6 +33,7 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
   closed.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

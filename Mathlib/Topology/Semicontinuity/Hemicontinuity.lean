@@ -17,6 +17,7 @@ import Mathlib.Topology.ContinuousOn
 This files provides basic facts about upper and lower hemicontinuity of correspondences
 `f : α → Set β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

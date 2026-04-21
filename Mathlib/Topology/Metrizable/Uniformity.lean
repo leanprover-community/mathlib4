@@ -45,6 +45,7 @@ The proof follows [Sergey Melikhov, Metrizable uniform spaces][melikhov2011].
 
 metrizable space, uniform space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

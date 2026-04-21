@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Basic
 public import Mathlib.Tactic.Set
 
 /-! ### List.takeWhile and List.dropWhile -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

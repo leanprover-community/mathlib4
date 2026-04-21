@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 # Basic properties of Haar measures on real vector spaces
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

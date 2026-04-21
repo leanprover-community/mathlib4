@@ -15,6 +15,7 @@ Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 `P.HasCardinalLT κ` saying that the cardinality of `Subtype P` is `< κ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

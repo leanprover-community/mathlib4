@@ -24,6 +24,7 @@ In this file we define
 
 submodule, subspace, linear map
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -40,6 +40,7 @@ the derivative of the `n`-th derivative is the `n+1`-th derivative in `iteratedD
 by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` for the
 iterated Fréchet derivative.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

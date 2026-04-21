@@ -43,6 +43,7 @@ it is equal to the lowest common multiple of the order of all elements of the gr
 ## TODO
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ equalities.
   `∀ a, a * a⁻¹ = 1` and associativity.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagram
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -89,6 +89,7 @@ The strategy to construct simp lemmas that give the simplifier the possibility t
 derivatives is the same as the one for differentiability statements, as explained in
 `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. See the explanations there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

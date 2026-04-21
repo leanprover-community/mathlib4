@@ -54,6 +54,7 @@ that the composition of this embedding with the measurable embedding from a stan
 ## Tags
 sigmoid, embedding, measurable embedding, topological embedding
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

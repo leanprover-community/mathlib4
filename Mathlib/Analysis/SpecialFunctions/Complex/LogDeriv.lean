@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 # Differentiability of the complex `log` function
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

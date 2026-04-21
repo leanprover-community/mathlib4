@@ -27,6 +27,7 @@ Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
 and show that `iSup U` provides a colimit cocone over this functor.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

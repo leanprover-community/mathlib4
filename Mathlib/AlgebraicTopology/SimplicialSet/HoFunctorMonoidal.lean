@@ -18,6 +18,7 @@ We use this in order to construct an equivalence of categories
 `(X ⊗ Y).HomotopyCategory ≌ X.HomotopyCategory × Y.HomotopyCategory`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ This file provides an alternative to `QuadraticMap.associated`; unlike that defi
 does not require `Invertible (2 : R)`. Unlike that definition, this only works in the presence of
 a basis.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

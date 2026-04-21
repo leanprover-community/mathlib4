@@ -22,6 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * negative of a function
 * subtraction of two functions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

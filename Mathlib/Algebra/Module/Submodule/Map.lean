@@ -25,6 +25,7 @@ public import Mathlib.Algebra.Module.Submodule.LinearMap
 
 submodule, subspace, linear map, pushforward, pullback
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

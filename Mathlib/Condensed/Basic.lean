@@ -29,6 +29,7 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

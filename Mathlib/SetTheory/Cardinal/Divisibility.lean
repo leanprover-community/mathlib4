@@ -29,6 +29,7 @@ cancellative `CommMonoidWithZero`.
   which is itself a prime power.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

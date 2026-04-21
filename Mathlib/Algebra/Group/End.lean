@@ -31,6 +31,7 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 
 end monoid, aut group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ be written as sums of products of coefficients of `p` and `q`.
 Precisely, we show that each summand needs at most one coefficient of `p` and `deg p` coefficients
 of `q`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

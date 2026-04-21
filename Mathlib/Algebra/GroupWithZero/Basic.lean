@@ -36,6 +36,7 @@ As is usual in mathlib, we extend the inverse function to the zero element,
 and require `0⁻¹ = 0`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

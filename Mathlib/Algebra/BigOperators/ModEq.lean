@@ -17,6 +17,7 @@ and similarly for sums.
 
 We prove it for lists, multisets, and finsets, as well as for natural and integer numbers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

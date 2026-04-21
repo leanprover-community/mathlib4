@@ -17,6 +17,7 @@ This file proves results about multivariate polynomials
 that hold when the coefficient (semi)ring has no zero divisors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

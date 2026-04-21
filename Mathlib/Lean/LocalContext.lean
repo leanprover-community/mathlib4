@@ -12,6 +12,7 @@ public import Batteries.Control.AlternativeMonad
 /-!
 # Additional methods about `LocalContext`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

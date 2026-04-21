@@ -21,6 +21,7 @@ for all natural numbers `n`.
 - `fermat_primeFactors_one_lt`: For 1 < n, Prime factors the Fermat number Fₙ are of
   form `k * 2 ^ (n + 2) + 1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

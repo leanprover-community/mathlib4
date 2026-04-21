@@ -18,6 +18,7 @@ to be the subspace spanned by the first `k` vectors of the basis `b`.
 
 We also prove some lemmas about this definition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

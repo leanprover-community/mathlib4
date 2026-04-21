@@ -29,6 +29,7 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 `∀ x n, f (n • x) = n • f x`, with the binders in a slightly unnatural order, as they are
 `to_additive`ized from the versions for `^`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

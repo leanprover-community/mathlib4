@@ -33,6 +33,7 @@ stones towards proving that the canonical functor
 ## TODOs:
 - Show that every `P_δ` admits a unique normal form.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 Binary products and coproducts with a zero object always exist,
 and pullbacks/pushouts over a zero object are products/coproducts.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

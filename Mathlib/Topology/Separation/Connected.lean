@@ -11,6 +11,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 /-!
 # Interaction of separation properties with connectedness properties
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

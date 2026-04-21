@@ -41,6 +41,7 @@ the property through `turanGraph n r` using the isomorphism provided by the forw
 
 * https://en.wikipedia.org/wiki/Turán%27s_theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

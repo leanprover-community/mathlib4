@@ -20,6 +20,7 @@ This operation is called `PowerSeries.expand` and it is an algebra homomorphism.
 * `PowerSeries.expand`: expand a power series by a nonzero factor of p,
   so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

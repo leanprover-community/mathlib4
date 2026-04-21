@@ -27,6 +27,7 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

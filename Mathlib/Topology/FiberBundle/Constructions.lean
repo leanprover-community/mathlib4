@@ -26,6 +26,7 @@ This file contains several standard constructions on fiber bundles:
 fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

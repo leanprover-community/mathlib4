@@ -15,6 +15,7 @@ public import Mathlib.Order.Interval.Set.Fin
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

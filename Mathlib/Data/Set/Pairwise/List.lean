@@ -13,6 +13,7 @@ public import Mathlib.Data.Set.Pairwise.Basic
 
 On a list with no duplicates, the condition of `Set.Pairwise` and `List.Pairwise` are equivalent.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

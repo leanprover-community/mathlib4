@@ -11,6 +11,7 @@ public import Mathlib.Init
 # `elabTermWithoutNewMVars`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

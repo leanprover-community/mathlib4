@@ -22,6 +22,7 @@ here because we need the order on `ℚ` to define `ℚ≥0`, which we itself nee
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

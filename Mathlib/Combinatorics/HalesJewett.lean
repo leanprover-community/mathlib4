@@ -65,6 +65,7 @@ combinatorial line, Ramsey theory, arithmetic progression
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

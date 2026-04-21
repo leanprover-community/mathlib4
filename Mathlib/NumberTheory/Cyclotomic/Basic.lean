@@ -59,6 +59,7 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 included in the `Cyclotomic` locale.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Ring.NegOnePow
 
 In this file, we collect various formulas about determinant of matrices.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

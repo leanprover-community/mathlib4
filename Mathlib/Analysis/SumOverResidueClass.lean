@@ -18,6 +18,7 @@ The main result is `summable_indicator_mod_iff`, which states that when `f : ℕ
 decreasing, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

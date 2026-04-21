@@ -48,6 +48,9 @@ basis, det, determinant
 @[expose] public section
 
 
+
+
+
 noncomputable section
 
 open Matrix Module LinearMap Submodule Set Function
@@ -142,7 +145,7 @@ See also `detAux_def''` which allows you to vary the basis.
 -/
 theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
     LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := by
-  rw [detAux]
+  simp only [detAux_def, Trunc.lift_mk]
   rfl
 
 theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)

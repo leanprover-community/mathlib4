@@ -33,6 +33,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 
 metric, pseudometric space, bounded, diameter, Heine-Borel theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

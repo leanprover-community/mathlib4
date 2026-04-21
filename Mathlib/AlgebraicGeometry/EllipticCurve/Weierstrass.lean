@@ -62,6 +62,7 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 elliptic curve, weierstrass equation, j invariant
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

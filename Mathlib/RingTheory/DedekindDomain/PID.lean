@@ -24,6 +24,7 @@ principal.
 * `IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid`: a Dedekind domain
   that is a unique factorisation domain, is also a principal ideal domain.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

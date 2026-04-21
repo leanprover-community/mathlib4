@@ -59,6 +59,7 @@ so don't hesitate to have a look!
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

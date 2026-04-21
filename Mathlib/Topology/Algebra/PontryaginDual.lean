@@ -21,6 +21,7 @@ isomorphic to its double dual.
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

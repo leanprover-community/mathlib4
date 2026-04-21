@@ -63,6 +63,7 @@ TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComple
   unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
   would remove all the unification hints in this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

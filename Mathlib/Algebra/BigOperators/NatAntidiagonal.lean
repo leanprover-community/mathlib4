@@ -13,6 +13,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

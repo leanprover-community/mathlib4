@@ -84,6 +84,7 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

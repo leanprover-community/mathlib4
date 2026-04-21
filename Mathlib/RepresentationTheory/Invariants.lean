@@ -19,6 +19,7 @@ The action of this special element gives a projection onto the subspace of invar
 In order for the definition of the average element to make sense, we need to assume for most of the
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

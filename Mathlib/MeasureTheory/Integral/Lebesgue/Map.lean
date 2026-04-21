@@ -11,6 +11,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 /-!
 # Behavior of the Lebesgue integral under maps
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

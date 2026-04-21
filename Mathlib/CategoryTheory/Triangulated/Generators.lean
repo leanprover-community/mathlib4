@@ -47,6 +47,7 @@ This is not to be confused with `ObjectProperty.IsStrongGenerator` defined in
 * [Stacks 09SJ](https://stacks.math.columbia.edu/tag/09SJ)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

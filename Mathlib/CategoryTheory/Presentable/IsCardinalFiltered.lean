@@ -28,6 +28,7 @@ if any subset of `J` of cardinality `< κ` has an upper bound.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

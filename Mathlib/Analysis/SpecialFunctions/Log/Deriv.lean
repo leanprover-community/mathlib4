@@ -23,6 +23,7 @@ that the series `∑' n : ℕ, x ^ (n + 1) / (n + 1)` converges to `(-Real.log (
 
 logarithm, derivative
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

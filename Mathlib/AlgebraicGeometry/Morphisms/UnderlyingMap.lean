@@ -25,6 +25,7 @@ of the underlying map of topological spaces, including
 - `DenseRange` (`IsDominant`)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

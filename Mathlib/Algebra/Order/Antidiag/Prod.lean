@@ -48,6 +48,7 @@ def s : Multiset ℕ := {0, 0, 0}
 * Define `HasMulAntidiagonal` (for monoids).
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ there are finitely many such states.
 
 * <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

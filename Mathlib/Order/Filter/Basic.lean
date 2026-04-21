@@ -61,6 +61,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -69,6 +69,7 @@ for commutative rings.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

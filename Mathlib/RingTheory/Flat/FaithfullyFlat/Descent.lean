@@ -18,6 +18,7 @@ We show the following properties of ring homomorphisms descend under faithfully 
 - surjective
 - bijective
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

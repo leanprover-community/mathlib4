@@ -29,6 +29,7 @@ apply to `ℝ`, `ℝ × ℝ`, `EuclideanSpace ι ℝ`? `_pi` has been appended t
 from the other possible lemmas, but we will want there to be a single set of lemmas for all
 situations.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

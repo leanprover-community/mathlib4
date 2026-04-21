@@ -21,6 +21,7 @@ lattice structure of invariant submodules.
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

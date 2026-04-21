@@ -37,6 +37,7 @@ These files also contain appropriate `Infinite` instances for these types.
 
 `Infinite` instances for `ℕ`, `ℤ`, `Multiset α`, and `List α` are in `Data.Fintype.Lattice`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

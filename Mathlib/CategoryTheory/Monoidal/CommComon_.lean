@@ -22,6 +22,7 @@ We define the category of commutative comonoid objects in a braided monoidal cat
 
 comonoid, commutative, braided
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ We show that being universally closed is local at the target, and is stable unde
 base changes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

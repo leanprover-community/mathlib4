@@ -17,6 +17,7 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

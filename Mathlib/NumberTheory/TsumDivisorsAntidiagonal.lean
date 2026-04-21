@@ -21,6 +21,7 @@ which are used for Eisenstein series and their q-expansions. This is also a spec
 Lambert series.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

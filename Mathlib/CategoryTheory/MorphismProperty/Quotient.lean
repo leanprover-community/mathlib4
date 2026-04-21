@@ -20,6 +20,7 @@ induced property of morphisms: a morphism in `C` satisfies `W` iff
 `(Quotient.functor homRel).map f` does.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

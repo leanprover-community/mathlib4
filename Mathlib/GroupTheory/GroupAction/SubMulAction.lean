@@ -33,6 +33,7 @@ For most uses, typically `Submodule R M` is more powerful.
 
 submodule, multiplicative action
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

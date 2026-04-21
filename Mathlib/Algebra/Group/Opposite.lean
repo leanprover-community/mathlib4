@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Conv
 /-!
 # Group structures on the multiplicative and additive opposites
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

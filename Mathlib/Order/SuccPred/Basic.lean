@@ -39,6 +39,7 @@ for all non-maximal elements (enforced by the combination of `le_succ` and the c
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

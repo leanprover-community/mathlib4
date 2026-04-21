@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Spread
 /-!
 # Extensionality of monoid homs from `ℕ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

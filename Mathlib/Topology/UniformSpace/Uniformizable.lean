@@ -31,6 +31,7 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 * <https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 variable {X : Type*}
 

@@ -17,6 +17,7 @@ This file contains some results on absolute values applied to integers.
 
 * `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

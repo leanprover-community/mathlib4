@@ -32,6 +32,7 @@ public import Mathlib.LinearAlgebra.Finsupp.SumProd
   is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Geometry.Euclidean.Angle.Oriented.Projection
 This file proves lemmas relating to bisecting angles.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

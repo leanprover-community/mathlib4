@@ -43,6 +43,7 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 - Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

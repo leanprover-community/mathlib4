@@ -20,6 +20,7 @@ category `C`, these definitions shall be used in order to construct a monoidal s
 on `GradedObject I C` (TODO @joelriou).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ In this file we show how operations on submodules interact with `Submodule.spanR
   generators of the unique maximal ideal is equal to the dimension of the cotangent space.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -49,6 +49,7 @@ Instances for `AddOpposite`, `MulOpposite`, `ULift`, `Subsemiring`, `Subring`, `
 
 kleene algebra, idempotent semiring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

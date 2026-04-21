@@ -17,6 +17,7 @@ The contents of this file are somewhat random since both
 `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean` and `Mathlib/RingTheory/Ideal/Operations.lean` are
 somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,6 +42,7 @@ We register the following instances:
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

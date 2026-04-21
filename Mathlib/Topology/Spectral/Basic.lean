@@ -23,6 +23,7 @@ subsets form an open basis. Prime spectra of commutative semirings are spectral 
 
 See [stacks-project], tag 08YF for details.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

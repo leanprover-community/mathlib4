@@ -34,6 +34,7 @@ where `F` is an exact functor between abelian categories.
   `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

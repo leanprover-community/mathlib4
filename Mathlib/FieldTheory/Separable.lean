@@ -30,6 +30,7 @@ properties about separable polynomials here.
   over `K`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

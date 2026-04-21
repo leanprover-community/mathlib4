@@ -74,6 +74,7 @@ small category, then this does not change anything.
 * https://stacks.math.columbia.edu/tag/05PL
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 9.6
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

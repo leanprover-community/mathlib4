@@ -19,6 +19,7 @@ This file lists various basic lemmas about semigroups, monoids, and groups. Most
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

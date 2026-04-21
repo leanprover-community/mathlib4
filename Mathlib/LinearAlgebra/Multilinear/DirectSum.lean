@@ -20,6 +20,7 @@ This file describes multilinear maps on direct sums.
   the linear equivalence between `Π p : (i : ι) → κ i, MultilinearMap R (fun i ↦ M i (p i)) M'` and
   `MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M'`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
   topological realization of `X` (@joelriou)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

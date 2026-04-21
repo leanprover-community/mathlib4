@@ -25,6 +25,7 @@ is equal to the coercion of an explicit natural number, integer, or rational num
 or is either `true` or `false`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

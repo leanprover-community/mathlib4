@@ -16,6 +16,7 @@ public import Qq
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

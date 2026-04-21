@@ -30,6 +30,7 @@ Approximation*][MR3156076] for a detailed discussion.
   discussed in Theorem 2.6 on p. 170 of [Lang, *Introduction to Complex Hyperbolic
   Spaces*][MR886677].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

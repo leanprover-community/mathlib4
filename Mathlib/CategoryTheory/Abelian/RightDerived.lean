@@ -47,6 +47,7 @@ and show how to compute the components.
   and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -51,6 +51,7 @@ then `m.multinomial = l.toFinsupp.multinomial`.
 Then we prove its invariance under permutation.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

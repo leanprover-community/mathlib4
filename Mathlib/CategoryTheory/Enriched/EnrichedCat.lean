@@ -19,6 +19,7 @@ category `V`.
 * Define change of base and `ForgetEnrichment` as 2-functors.
 * Define the bicategory of enriched ordinary categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

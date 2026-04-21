@@ -48,6 +48,7 @@ lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and t
 result follows as `continuous_equivFun_basis`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

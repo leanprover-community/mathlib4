@@ -27,6 +27,7 @@ correlate in the uniform measure.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

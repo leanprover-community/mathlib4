@@ -18,6 +18,7 @@ any larger category of small categories.
 
 Show that `asSmallFunctor` is faithful.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

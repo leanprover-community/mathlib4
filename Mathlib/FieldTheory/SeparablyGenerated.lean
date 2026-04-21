@@ -31,6 +31,7 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 - `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

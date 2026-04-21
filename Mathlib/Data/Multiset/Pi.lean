@@ -14,6 +14,7 @@ public import Mathlib.Data.Multiset.Bind
 
 * `Multiset.pi`: Cartesian product of multisets indexed by a multiset.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

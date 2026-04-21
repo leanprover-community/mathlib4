@@ -43,6 +43,7 @@ formulate the martingale convergence theorem.
 ## Tags
 uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

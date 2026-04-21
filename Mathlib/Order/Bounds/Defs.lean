@@ -24,6 +24,7 @@ In this file we define:
 * `IsCoinitial s`: for every `a`, there exists a member of `s` less than or equal to it.
 * `IsCoinitialFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

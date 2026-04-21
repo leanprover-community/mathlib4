@@ -16,6 +16,7 @@ In this file, we collect facts relating being stable under shifts with
 closure properties of object properties.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

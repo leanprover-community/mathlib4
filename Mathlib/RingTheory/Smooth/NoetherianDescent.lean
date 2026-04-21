@@ -17,6 +17,7 @@ In this file, we show if `S` is a smooth `R`-algebra, there exists a `ℤ`-subal
 
 The analogous result for etale algebras is also provided.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 universe u
 

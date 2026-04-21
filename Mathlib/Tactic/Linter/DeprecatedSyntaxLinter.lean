@@ -35,6 +35,7 @@ probably possible to prove `False` using `native_decide`.
 This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

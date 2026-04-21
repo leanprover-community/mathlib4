@@ -17,6 +17,7 @@ This module defines some `norm_num` extensions for functions such as
 Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `Nat.gcd` extension
 also indirectly provides a `Nat.coprime` extension.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

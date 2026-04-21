@@ -61,6 +61,7 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 perfect ring, perfect closure, purely inseparable
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

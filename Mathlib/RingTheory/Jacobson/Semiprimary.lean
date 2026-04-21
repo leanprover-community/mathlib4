@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 * `IsSemiprimaryRing R`: a ring `R` is semiprimary if
   `Ring.jacobson R` is nilpotent and `R ⧸ Ring.jacobson R` is semisimple.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,6 +39,7 @@ In the definition of `LocPathConnectedSpace X` we require neighbourhoods in the 
 path-connected, but not necessarily open; that they can also be required to be open is shown as
 a theorem in `isOpen_isPathConnected_basis`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -41,6 +41,7 @@ For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ --
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

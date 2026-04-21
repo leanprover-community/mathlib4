@@ -18,6 +18,7 @@ and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

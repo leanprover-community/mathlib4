@@ -19,6 +19,7 @@ This file develops theory about the `List.Perm` relation.
 
 The notation `~` is used for permutation equivalence.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

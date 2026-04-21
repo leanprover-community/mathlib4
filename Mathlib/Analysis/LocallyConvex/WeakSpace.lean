@@ -19,6 +19,7 @@ in a locally convex space coincides with the closure in the original topology.
 Of course, we phrase this in terms of linear maps between locally convex spaces, rather than
 creating two separate topologies on the same space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

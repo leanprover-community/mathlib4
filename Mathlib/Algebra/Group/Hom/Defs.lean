@@ -59,6 +59,7 @@ deprecated and moved to `Deprecated/Group`.
 MonoidHom, AddMonoidHom
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

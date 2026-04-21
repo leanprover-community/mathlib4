@@ -20,6 +20,7 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 6.1.15 (though
   our proof is more direct).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

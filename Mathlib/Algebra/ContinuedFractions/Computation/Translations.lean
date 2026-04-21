@@ -39,6 +39,7 @@ The file consists of three sections:
   of the computed continued fraction can be obtained from the stream of integer and fractional
   parts.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

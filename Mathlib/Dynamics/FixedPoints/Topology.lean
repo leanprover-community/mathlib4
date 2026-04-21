@@ -20,6 +20,7 @@ Currently this file contains two lemmas:
 
 fixed points, iterates
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

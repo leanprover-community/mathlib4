@@ -14,6 +14,7 @@ public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

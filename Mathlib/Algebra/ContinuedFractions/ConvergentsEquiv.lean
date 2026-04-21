@@ -64,6 +64,7 @@ The corresponding lemma in this file is `succ_nth_conv_eq_squashGCF_nth_conv`.
 
 fractions, recurrence, equivalence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

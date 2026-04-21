@@ -47,6 +47,7 @@ with the original topology. See `Topology.Specialization`.
 
 upper set topology, lower set topology, preorder, Alexandrov
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

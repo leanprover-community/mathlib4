@@ -18,6 +18,7 @@ This is a `PartialOrder`, with `PredOrder` with the immediate parent as a predec
 `OrderBot` which is the root. We also have an `IsPredArchimedean` assumption to prevent infinite
 dangling chains.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 Hausdorff, group action, proper action
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

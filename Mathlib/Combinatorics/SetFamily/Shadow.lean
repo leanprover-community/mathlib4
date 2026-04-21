@@ -42,6 +42,7 @@ are finsets, and `𝒜, ℬ : Finset (Finset α)` are finset families.
 
 shadow, set family
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

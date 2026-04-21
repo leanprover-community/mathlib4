@@ -47,6 +47,7 @@ the bundled version, see `Rel`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

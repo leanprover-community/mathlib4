@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Star.Basic
 /-!
 # The *-ring structure on suitable quotients of a *-ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

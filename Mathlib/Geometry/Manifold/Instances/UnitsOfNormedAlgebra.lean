@@ -24,6 +24,7 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

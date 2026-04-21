@@ -21,6 +21,7 @@ definition, which is made irreducible for this purpose.
 
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

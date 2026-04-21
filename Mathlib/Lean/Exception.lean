@@ -16,6 +16,7 @@ This file contains two additional methods for working with `Exception`s
 * `isFailedToSynthesize`: check if an exception is of the "failed to synthesize" form
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

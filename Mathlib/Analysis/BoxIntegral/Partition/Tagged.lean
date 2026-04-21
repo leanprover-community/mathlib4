@@ -23,6 +23,7 @@ requirement.
 
 rectangular box, box partition
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

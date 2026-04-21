@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 # Open immersions of schemes
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.StdBasis
 
 * `Basis.matrix`: extend a basis on `M` to the standard basis on `Matrix n m M`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

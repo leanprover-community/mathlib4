@@ -14,6 +14,7 @@ public import Mathlib.Data.ENNReal.Operations
 This file defines basic scalar actions on extended nonnegative reals, showing that
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

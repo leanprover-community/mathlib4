@@ -24,6 +24,7 @@ This file contains results related to classifying algebraically closed fields.
 * `IsAlgClosed.ringEquivOfCardinalEqOfCharEq` Two uncountable algebraically closed fields
   are isomorphic if they have the same characteristic and the same cardinality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

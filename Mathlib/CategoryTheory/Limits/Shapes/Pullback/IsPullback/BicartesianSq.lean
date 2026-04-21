@@ -26,6 +26,7 @@ is a pullback square *and* a pushout square.
 
 We show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

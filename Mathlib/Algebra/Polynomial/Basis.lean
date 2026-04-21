@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 # Basis of a polynomial ring
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

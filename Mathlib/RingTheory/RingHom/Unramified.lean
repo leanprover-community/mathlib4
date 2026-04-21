@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 # The meta properties of unramified ring homomorphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

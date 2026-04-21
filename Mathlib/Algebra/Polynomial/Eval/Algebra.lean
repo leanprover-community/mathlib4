@@ -15,6 +15,7 @@ This file concerns evaluating polynomials where the map is `algebraMap`
 
 TODO: merge with parts of `Mathlib/Algebra/Polynomial/AlgebraMap.lean`?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Analysis.SumIntegralComparisons
 We bound the integral and sums of `x ^ k * exp (-c * x)` by `k ! / c ^ (k + 1)`,
 using the Gamma function.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open scoped Nat
 open Real MeasureTheory Set Filter

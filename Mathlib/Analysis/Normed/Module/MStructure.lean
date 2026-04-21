@@ -60,6 +60,7 @@ special case.
 M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

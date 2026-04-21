@@ -36,6 +36,7 @@ We provide the following functions to work with these objects:
   The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
   This notation is available with `open SimplexCategory.Truncated`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

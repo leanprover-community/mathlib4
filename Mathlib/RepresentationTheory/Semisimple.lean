@@ -18,6 +18,7 @@ public import Mathlib.Tactic.Positivity
 This file defines the typeclass `IsSemisimpleRepresentation` for semisimple monoid representations.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 namespace Representation
 

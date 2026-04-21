@@ -19,6 +19,7 @@ In this file we define
 * `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

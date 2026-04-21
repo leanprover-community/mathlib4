@@ -57,6 +57,7 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

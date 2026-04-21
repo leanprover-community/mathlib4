@@ -26,6 +26,7 @@ locally convex.
 
 locally convex, bounded convergence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

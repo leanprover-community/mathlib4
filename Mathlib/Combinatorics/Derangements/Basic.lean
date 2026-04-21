@@ -26,6 +26,7 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
 on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

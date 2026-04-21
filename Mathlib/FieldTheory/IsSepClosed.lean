@@ -48,6 +48,7 @@ separable closure, separably closed
   closed field is purely inseparable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

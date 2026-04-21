@@ -28,6 +28,7 @@ public import Mathlib.Topology.Instances.Real.Lemmas
   (also similar results for a.e.-measurability);
 * `Measurable.ennreal*` : measurability of special cases for arithmetic operations on `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

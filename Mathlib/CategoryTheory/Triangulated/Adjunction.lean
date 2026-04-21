@@ -32,6 +32,7 @@ if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

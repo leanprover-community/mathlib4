@@ -28,6 +28,7 @@ and extensive topologies.
 * `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

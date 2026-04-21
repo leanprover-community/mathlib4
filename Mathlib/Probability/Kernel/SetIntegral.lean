@@ -13,6 +13,7 @@ public import Mathlib.Probability.Kernel.Integral
 This file contains lemmas about the integral against a kernel and over a set.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

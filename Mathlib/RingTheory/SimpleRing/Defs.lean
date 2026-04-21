@@ -17,6 +17,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 - `IsSimpleRing`: a predicate expressing that a ring is simple.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

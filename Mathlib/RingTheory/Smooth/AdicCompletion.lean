@@ -17,6 +17,7 @@ Let `A` be a formally smooth `R`-algebra. Then any algebra map
 This is used in the proof that a smooth algebra over a Noetherian ring is flat
 (see `Mathlib.RingTheory.Smooth.Flat`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 universe u v
 

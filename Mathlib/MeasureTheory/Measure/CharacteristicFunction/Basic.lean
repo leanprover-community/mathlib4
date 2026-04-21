@@ -50,6 +50,7 @@ and `L`.
   `μ` and `ν` on a Banach space coincide, then `μ = ν`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

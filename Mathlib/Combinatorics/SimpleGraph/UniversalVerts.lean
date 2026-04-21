@@ -22,6 +22,7 @@ in the proof of Tutte's Theorem.
 * `G.universalVerts` is the set of vertices that are connected to all other vertices.
 * `G.deleteUniversalVerts` is the subgraph of `G` with the universal vertices removed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

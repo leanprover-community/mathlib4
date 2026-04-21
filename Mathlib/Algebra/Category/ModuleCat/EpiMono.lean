@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 This file shows that an `R`-linear map is a monomorphism in the category of `R`-modules
 if and only if it is injective, and similarly an epimorphism if and only if it is surjective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

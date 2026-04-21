@@ -27,6 +27,7 @@ or `I`-indexed families of isomorphisms to natural transformations or natural is
 We define `functorToCat : Type u ⥤ Cat.{0,u}` which sends a type to the codiscrete category and show
 it is right adjoint to `Cat.objects`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace CategoryTheory

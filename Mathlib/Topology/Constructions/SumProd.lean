@@ -35,6 +35,7 @@ neighborhood filters and so on.
 product, sum, disjoint union
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

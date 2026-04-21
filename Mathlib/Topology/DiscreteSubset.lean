@@ -39,6 +39,7 @@ This is the filter of all open codiscrete sets within S. We also define `Filter.
 `Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

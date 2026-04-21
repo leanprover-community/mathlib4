@@ -24,6 +24,7 @@ public import Mathlib.Logic.Small.Basic
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

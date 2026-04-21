@@ -22,6 +22,7 @@ for their boundaries `∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

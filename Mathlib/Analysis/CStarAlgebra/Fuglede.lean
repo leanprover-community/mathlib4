@@ -53,6 +53,7 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 + [cater1961] S. Cater, "Observations on a paper by Rosenblum"
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 
 open NormedSpace selfAdjoint Bornology Complex

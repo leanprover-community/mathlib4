@@ -19,6 +19,7 @@ public import Mathlib.RingTheory.Finiteness.Prod
   of `f` in any basis.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

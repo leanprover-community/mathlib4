@@ -15,6 +15,7 @@ In this file we define `Bornology` and `BoundedSpace` instances on `α × β`, `
 `{x // p x}`. We also prove basic lemmas about `Bornology.cobounded` and `Bornology.IsBounded`
 on these types.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

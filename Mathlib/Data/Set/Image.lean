@@ -33,6 +33,7 @@ public import Mathlib.Data.Set.Inclusion
 set, sets, image, preimage, pre-image, range
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

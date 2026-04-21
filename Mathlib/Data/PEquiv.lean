@@ -41,6 +41,7 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 pequiv, partial equivalence
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

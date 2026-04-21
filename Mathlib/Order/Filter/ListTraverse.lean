@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Map
 In this file we prove basic properties (monotonicity, membership)
 for `Traversable.traverse f l`, where `f : β → Filter α` and `l : List β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

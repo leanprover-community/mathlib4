@@ -26,6 +26,7 @@ primary value stems from their utility when constructing the classical Lie algeb
 
 lie algebra, matrix
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

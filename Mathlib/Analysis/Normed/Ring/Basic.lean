@@ -21,6 +21,7 @@ In this file we define (semi)normed rings. We also prove some theorems about the
 A normed ring instance can be constructed from a given real absolute value on a ring via
 `AbsoluteValue.toNormedRing`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

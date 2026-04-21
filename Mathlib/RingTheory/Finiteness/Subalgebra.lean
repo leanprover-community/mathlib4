@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Bilinear
 /-!
 # Subalgebras that are finitely generated as submodules
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

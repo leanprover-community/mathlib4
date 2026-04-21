@@ -64,6 +64,7 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 - Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

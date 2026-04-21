@@ -30,6 +30,7 @@ of functions that depend on the norm only in terms of integral over `(0, +∞)`.
 We also provide a positive lower estimate on the `(Measure.toSphere μ)`-measure
 of a ball of radius `ε > 0` on the unit sphere.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

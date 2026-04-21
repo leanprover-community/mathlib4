@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 subgroup, subgroups
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -41,6 +41,7 @@ The next steps are:
 - [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

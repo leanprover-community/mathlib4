@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 /-!
 # Ideals in polynomial rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

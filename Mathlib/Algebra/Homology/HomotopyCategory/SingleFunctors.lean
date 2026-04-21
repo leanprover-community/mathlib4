@@ -19,6 +19,7 @@ Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

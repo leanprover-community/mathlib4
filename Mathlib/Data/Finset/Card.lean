@@ -28,6 +28,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.Nonempty.strong_induction`
 * `Finset.eraseInduction`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

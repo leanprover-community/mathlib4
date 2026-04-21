@@ -11,6 +11,7 @@ public import Mathlib.Order.Basic
 /-!
 # Type synonyms
 -/
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module "The material on `Lex` and `Colex` is now in `Mathlib.Order.Lex`"
   (since := "2026-03-12")

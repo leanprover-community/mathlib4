@@ -46,6 +46,7 @@ the other half by arguing in the opposite category), and the use of "refinements
 (see `CategoryTheory.Abelian.Refinements`) instead of a weak form of pseudo-elements.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

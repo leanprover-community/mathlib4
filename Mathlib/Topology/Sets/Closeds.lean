@@ -19,6 +19,7 @@ For a topological space `α`,
 * `TopologicalSpace.Closeds α`: The type of closed sets.
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

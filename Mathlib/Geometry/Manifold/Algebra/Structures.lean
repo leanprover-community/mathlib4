@@ -15,6 +15,7 @@ In this file we define `C^n` structures that build on Lie groups. We prefer usin
 term `ContMDiffRing` instead of Lie mainly because Lie ring has currently another use
 in mathematics.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

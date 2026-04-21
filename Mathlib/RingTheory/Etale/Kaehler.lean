@@ -23,6 +23,8 @@ public import Mathlib.RingTheory.Flat.Localization
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe u
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]

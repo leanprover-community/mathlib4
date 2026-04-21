@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Common
 This file defines the square root function on integers. `Int.sqrt z` is the greatest integer `r`
 such that `r * r ≤ z`. If `z ≤ 0`, then `Int.sqrt z = 0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

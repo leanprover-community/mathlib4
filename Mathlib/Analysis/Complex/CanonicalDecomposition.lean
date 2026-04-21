@@ -22,6 +22,7 @@ discussion.
 
 TODO: Formulate the canonical decomposition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

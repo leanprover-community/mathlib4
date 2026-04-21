@@ -31,6 +31,7 @@ We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_aver
 `⨍ x in a..b, f x`: average of `f` over the interval `Ι a b` w.r.t. the Lebesgue measure.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we prove basic properties of the Lp-seminorm of a function
 with respect to the restriction of a measure to a sub-σ-algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

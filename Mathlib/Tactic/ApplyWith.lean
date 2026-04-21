@@ -15,6 +15,7 @@ public import Lean.Elab.Tactic.Config
 The `applyWith` tactic is like `apply`, but allows passing a custom configuration to the underlying
 `apply` operation.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

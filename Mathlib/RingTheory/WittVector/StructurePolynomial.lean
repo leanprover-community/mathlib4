@@ -85,6 +85,7 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

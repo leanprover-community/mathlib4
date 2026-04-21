@@ -24,6 +24,7 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
   trinomials.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

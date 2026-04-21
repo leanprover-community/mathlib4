@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Regular.SMul
 /-!
 # Results about `IsRegular` and `ULift`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

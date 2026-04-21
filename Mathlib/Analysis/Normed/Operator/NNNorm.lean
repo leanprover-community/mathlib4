@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

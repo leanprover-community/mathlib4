@@ -14,5 +14,6 @@ which has been renamed to `Mathlib/Data/List/InsertIdx.lean`.
 
 This file can be removed once the deprecation for `List.insertNth` is removed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section

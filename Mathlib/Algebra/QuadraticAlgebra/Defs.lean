@@ -40,6 +40,7 @@ basic theorems about `QuadraticAlgebra` are stated using the general instance
 Quadratic algebra, quadratic extension
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

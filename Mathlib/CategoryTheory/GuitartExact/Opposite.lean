@@ -14,6 +14,7 @@ A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,6 +33,7 @@ We define the following properties for sets in a topological space:
 * This API is mainly based on the API for IsCompact and follows notation and style as much
   as possible.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Set Filter Topology TopologicalSpace

@@ -37,6 +37,7 @@ This file defines the space of complete types over a first-order theory.
 
 - Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

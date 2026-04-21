@@ -12,6 +12,7 @@ public meta import Lean.Meta.Eval
 /-!
 # Defines the `trace` tactic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

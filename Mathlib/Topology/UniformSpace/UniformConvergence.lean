@@ -50,6 +50,7 @@ practice. Thus, we provide the more traditional definition in `TendstoUniformlyO
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

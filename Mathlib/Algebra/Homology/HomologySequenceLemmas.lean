@@ -27,6 +27,7 @@ So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
 for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,6 +35,7 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 p-adic, p adic, padic, norm, valuation
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

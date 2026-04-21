@@ -18,6 +18,7 @@ over a field that has a `Height.AdmissibleAbsValues` instance.
 The height is defined to be the height of any representative tuple; it does not depend
 on which representative is chosen.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

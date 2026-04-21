@@ -75,6 +75,7 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   types), thus we provide `IsLinearTopology.mk_of_hasBasis'` as an alternative not relying on
   typeclass inference.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 /-!
 # Bases of submodules
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

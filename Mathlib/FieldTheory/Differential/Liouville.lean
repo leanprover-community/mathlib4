@@ -29,6 +29,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
   (of a field with characteristic 0) are Liouville.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `An
 because this would create a circular dependency once we redefine `exp` using
 `FormalMultilinearSeries`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

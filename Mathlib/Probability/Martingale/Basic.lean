@@ -35,6 +35,7 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
   martingale with respect to `ℱ` and `μ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Order
 We gather some results about the uniform convergence of infinite products, in particular those of
 the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

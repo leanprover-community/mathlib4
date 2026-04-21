@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.EquivFin
 # fintype instance for the product of two fintypes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

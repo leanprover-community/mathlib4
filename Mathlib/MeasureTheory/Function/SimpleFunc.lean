@@ -21,6 +21,7 @@ measurable function into `ℝ≥0∞`, it is sufficient to show that the propert
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

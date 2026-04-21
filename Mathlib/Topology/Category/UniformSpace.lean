@@ -18,6 +18,7 @@ form a reflective subcategory, and hence possess all limits that uniform spaces 
 
 TODO: show that uniform spaces actually have all limits!
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

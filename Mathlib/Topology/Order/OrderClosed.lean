@@ -56,6 +56,7 @@ see their statements.
 * `Tendsto.min`, `Tendsto.max` : if `f` tends to `a` and `g` tends to `b`, then their pointwise
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

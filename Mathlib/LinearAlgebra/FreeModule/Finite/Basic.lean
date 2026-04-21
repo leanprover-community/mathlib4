@@ -19,6 +19,7 @@ We provide some instances for finite and free modules.
 * `Module.Free.ChooseBasisIndex.fintype` : If a free module is finite, then any basis is finite.
 * `Module.Finite.of_basis` : A free module with a basis indexed by a `Fintype` is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

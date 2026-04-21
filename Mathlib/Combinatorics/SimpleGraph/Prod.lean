@@ -29,6 +29,7 @@ two edges is a square.
 
 Define all other graph products!
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

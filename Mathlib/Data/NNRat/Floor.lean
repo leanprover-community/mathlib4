@@ -23,6 +23,7 @@ Note that we cannot talk about `Int.fract`, which currently only works for rings
 
 nnrat, rationals, ℚ≥0, floor
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

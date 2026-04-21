@@ -29,6 +29,7 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

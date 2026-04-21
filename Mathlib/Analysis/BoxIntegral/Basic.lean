@@ -52,6 +52,7 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 
 integral
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

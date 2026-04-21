@@ -19,6 +19,7 @@ Instances for `Subsemiring` and `Subring` are provided next to the other scalar 
 for those subobjects.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

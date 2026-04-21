@@ -17,6 +17,7 @@ to concrete binary fans.
 In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
 the product of `X` and `Y`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

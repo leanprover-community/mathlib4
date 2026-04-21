@@ -25,6 +25,7 @@ This file proves results on the localization of rings (monoids with zeros) over 
 localization, Ore, non-commutative
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

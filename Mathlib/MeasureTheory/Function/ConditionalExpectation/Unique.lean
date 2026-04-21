@@ -26,6 +26,7 @@ defined in this file but is introduced in
   Requires `[SigmaFinite (μ.trim hm)]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

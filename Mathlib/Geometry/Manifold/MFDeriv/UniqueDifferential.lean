@@ -21,6 +21,7 @@ In this file, we prove various properties of unique derivative sets in manifolds
 * `tangentBundle_proj_preimage`: if `s` has the unique differential property,
   its preimage under the tangent bundle projection also has
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

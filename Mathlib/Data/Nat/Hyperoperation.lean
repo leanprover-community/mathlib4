@@ -27,6 +27,7 @@ This file defines the Hyperoperation sequence.
 
 hyperoperation
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

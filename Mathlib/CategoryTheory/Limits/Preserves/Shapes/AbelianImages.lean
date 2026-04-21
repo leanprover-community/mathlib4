@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 If a functor preserves kernels and cokernels, then it preserves abelian images, abelian coimages
 and coimage-image comparisons.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ that the types involved are subsingletons.
 To first approximation, it does `apply Subsingleton.elim` but it also will try `proof_irrel_heq`,
 and it is careful not to accidentally specialize `Sort _` to `Prop`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

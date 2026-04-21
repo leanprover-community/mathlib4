@@ -17,6 +17,7 @@ import Mathlib.Algebra.Module.End
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

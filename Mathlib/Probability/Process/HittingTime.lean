@@ -31,6 +31,7 @@ we have only proved it for the discrete case so far).
   is a stopping time
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

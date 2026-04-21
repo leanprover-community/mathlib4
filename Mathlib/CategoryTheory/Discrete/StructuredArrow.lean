@@ -17,6 +17,7 @@ if `F : C ⥤ Discrete T`, then the categories
 `CostructuredArrow (Discrete.mk t) F` are equivalent to `C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -51,6 +51,7 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 `Mathlib/Analysis/CStarAlgebra/Matrix.lean` and `open scoped Matrix.Norms.L2Operator`.
 It is separated to avoid extraneous imports in this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

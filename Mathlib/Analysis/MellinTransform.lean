@@ -24,6 +24,7 @@ differentiable in a suitable vertical strip.
   `O(x ^ (-b))` at 0, then `mellin f` is holomorphic on the domain `b < re s < a`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

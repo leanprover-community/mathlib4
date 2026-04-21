@@ -16,6 +16,7 @@ The main theorem `Orbit.duplicate` proves that applying `w⁻¹` to the orbit of
 of `FreeGroup.startsWith w` yields the orbit of `x` under the action of `FreeGroup.startsWith v`
 for every `v ≠ w⁻¹` (and the point `x`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

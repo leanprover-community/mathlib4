@@ -27,6 +27,7 @@ bounds in binomial coefficients. These include:
 
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

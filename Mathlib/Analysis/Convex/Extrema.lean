@@ -16,6 +16,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 We show that if a function `f : E → β` is convex, then a local minimum is also
 a global minimum, and likewise for concave functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

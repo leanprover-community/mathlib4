@@ -54,6 +54,7 @@ In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

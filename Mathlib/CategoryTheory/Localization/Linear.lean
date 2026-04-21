@@ -18,6 +18,7 @@ and `C` is `R`-linear, we show that `D` can also be equipped with an `R`-linear
 structure such that `L` is an `R`-linear functor.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ is final (or initial).
 We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is connected.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

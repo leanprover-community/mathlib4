@@ -18,6 +18,7 @@ This file defines a predicate for a set to be covered by at most `K` cosets of a
 
 This is a fundamental relation to study in additive combinatorics.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

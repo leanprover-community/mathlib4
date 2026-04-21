@@ -14,6 +14,7 @@ public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 /-!
 # Further results on (semi)linear maps
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

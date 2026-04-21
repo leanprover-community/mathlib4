@@ -54,6 +54,7 @@ Note that:
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

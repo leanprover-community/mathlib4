@@ -15,6 +15,7 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 This file proves results about angles in circles and spheres.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -28,6 +28,7 @@ This file defines finitely presented groups.
 ## Tags
 finitely presented group, finitely generated normal closure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

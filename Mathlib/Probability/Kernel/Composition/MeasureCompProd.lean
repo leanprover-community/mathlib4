@@ -26,6 +26,7 @@ This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : Kernel α
 
 * `μ ⊗ₘ κ = μ.compProd κ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ way and show equivalent characterisations.
                                acts transitively on `F.obj X` for a fiber functor `F`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe u₁ u₂ v₁ v₂ v w

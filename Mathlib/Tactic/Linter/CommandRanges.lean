@@ -19,6 +19,7 @@ of each declaration that should be removed.
 This linter is strictly tied to the `#clear_deprecations` command in
 `Mathlib/Tactic/Linter/FindDeprecations.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

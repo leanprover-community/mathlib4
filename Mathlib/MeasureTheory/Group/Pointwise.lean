@@ -14,6 +14,7 @@ In this file we prove several versions of the following fact: if `s` is a measur
 `a • s`. Note that the pointwise product of two measurable sets need not be measurable, so there is
 no `MeasurableSet.mul` etc.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

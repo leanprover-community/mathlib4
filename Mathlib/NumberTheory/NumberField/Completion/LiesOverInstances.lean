@@ -16,6 +16,7 @@ over the place of `K`. This file contains the relevant instances and properties 
 as `scoped` instances. These are scoped because they create non-defeq instance diamonds when
 `K = L`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

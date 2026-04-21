@@ -36,6 +36,7 @@ It is possible to configure `simp` to compute determinants. See the file
 `MathlibTest/matrix.lean` for some examples.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

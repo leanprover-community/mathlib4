@@ -31,6 +31,7 @@ means that for all elements `x` and `y > 0` there exists a natural number `n` su
 
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

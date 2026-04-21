@@ -16,6 +16,7 @@ to the product of the characteristic functions. More specifically, prove this in
 two variables and a finite family of variables. We prove the analogous statements in Banach spaces,
 with an arbitrary Lp norm, for the dual characteristic function.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

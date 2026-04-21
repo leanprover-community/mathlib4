@@ -36,6 +36,7 @@ Since `H` preserves finite coproducts, it hence suffices to treat the case `Y = 
 For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

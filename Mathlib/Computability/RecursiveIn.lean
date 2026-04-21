@@ -44,6 +44,7 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

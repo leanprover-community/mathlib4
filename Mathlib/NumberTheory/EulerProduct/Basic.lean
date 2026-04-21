@@ -43,6 +43,7 @@ for `s : Finset ℕ`.
 
 Euler product, multiplicative function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

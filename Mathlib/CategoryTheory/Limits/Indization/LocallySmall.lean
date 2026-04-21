@@ -20,6 +20,7 @@ serve as the basis for our definition of the category of Ind-objects.
 The equivalence established here serves as the basis for a well-known calculation of hom-sets of
 ind-objects as a limit of a colimit.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

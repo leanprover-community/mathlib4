@@ -49,6 +49,7 @@ partial orders. TODO: extend to morphisms.
 
 birkhoff, representation, stone duality, lattice embedding
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

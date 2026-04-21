@@ -19,6 +19,7 @@ from an inner product space.
 
 absolute value, derivative
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

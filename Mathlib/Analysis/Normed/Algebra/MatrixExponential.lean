@@ -60,6 +60,7 @@ results for general rings are instead stated about `Ring.inverse`:
 
 * https://en.wikipedia.org/wiki/Matrix_exponential
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

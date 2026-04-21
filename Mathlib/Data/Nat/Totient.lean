@@ -24,6 +24,7 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `sum_totient`. We also prove two lemmas to help compute totients, namely `totient_mul` and
 `totient_prime_pow`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

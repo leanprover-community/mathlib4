@@ -26,6 +26,7 @@ It satisfies the `IsNormalClosure` predicate if `L/F` satisfies the
 abovementioned splitting condition, in particular if `L/K/F` form a tower and
 `L/F` is normal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

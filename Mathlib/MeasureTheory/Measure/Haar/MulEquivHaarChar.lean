@@ -21,6 +21,7 @@ real constant which we call `mulEquivHaarChar φ`.
 * `addEquivAddHaarChar φ`: the additive version.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

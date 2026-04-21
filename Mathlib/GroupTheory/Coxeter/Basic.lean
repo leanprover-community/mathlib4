@@ -85,6 +85,7 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 coxeter system, coxeter group
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

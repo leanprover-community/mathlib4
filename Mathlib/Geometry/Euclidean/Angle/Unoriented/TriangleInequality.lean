@@ -15,6 +15,7 @@ import Mathlib.Geometry.Euclidean.Triangle
 
 This file contains the proof that angles obey the triangle inequality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open InnerProductGeometry
 open NormedSpace

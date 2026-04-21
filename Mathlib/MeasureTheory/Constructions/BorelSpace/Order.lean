@@ -37,6 +37,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
   are measurable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ When a category is well-powered, you can obtain nonconstructive witnesses as
 and
 `equivShrink (Subobject X) : Subobject X ≃ Shrink (Subobject X)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ We describe arbitrary products in the category of types, as well as binary produ
 and the terminal object.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

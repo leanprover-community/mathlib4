@@ -25,6 +25,7 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

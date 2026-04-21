@@ -20,6 +20,7 @@ Define (right) closed objects and (right) closed monoidal categories.
 Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

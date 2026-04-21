@@ -19,6 +19,7 @@ contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the s
 as it allows us to use the `Module` API to work with convex cones.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

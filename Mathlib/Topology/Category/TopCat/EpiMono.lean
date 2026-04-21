@@ -15,6 +15,7 @@ This file shows that a continuous function is an epimorphism in the category of 
 if and only if it is surjective, and that a continuous function is a monomorphism in the category of
 topological spaces if and only if it is injective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

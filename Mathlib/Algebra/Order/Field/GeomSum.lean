@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
 $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

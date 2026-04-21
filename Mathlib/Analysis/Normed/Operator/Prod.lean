@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 Interaction of operator norm with Cartesian products.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

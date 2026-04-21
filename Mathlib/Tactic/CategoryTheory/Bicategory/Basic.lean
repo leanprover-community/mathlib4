@@ -23,6 +23,7 @@ The core function for the `bicategory` tactic is provided in
 implementation.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

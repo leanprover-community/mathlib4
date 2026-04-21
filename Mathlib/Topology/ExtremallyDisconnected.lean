@@ -29,6 +29,7 @@ compact Hausdorff spaces.
 
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

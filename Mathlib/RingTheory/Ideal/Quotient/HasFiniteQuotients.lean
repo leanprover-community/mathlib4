@@ -25,6 +25,7 @@ quotient `R ⧸ I` is finite.
   has finite quotients.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

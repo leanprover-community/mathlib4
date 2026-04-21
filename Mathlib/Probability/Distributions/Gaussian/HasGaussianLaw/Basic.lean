@@ -26,6 +26,7 @@ directly through dot notation, the lemma used must syntactically correspond to t
 
 Gaussian random variable
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Qq
 This file adds additional tools for metaprogramming with the `simp` tactic
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

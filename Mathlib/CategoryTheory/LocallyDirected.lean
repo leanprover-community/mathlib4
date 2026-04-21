@@ -17,6 +17,7 @@ the set of elements containing `x` is directed (and hence the name).
 This is the condition needed to show that a colimit (in `TopCat`) of open embeddings is the
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

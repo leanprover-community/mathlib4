@@ -20,6 +20,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

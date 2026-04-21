@@ -20,6 +20,7 @@ Adds a deriving handler for the `Encodable` class.
 The resulting `Encodable` instance should be considered to be opaque.
 The specific encoding used is an implementation detail.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

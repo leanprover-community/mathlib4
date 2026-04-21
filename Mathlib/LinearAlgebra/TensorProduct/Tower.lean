@@ -45,6 +45,7 @@ We could thus consider replacing the less general definitions with these ones. I
 probably should still implement the less general ones as abbreviations to the more general ones with
 fewer type arguments.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

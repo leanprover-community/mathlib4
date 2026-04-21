@@ -27,6 +27,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 
 WithZero, multiplicative, nnreal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

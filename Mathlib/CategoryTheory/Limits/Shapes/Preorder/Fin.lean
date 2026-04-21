@@ -18,6 +18,7 @@ limits and colimits indexed by `Fin (n + 1)`, see
 in the file `Limits.Shapes.IsTerminal`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

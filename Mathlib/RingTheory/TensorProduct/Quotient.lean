@@ -22,6 +22,7 @@ This file proves algebra analogs of the isomorphisms in
 - `Algebra.TensorProduct.quotIdealMapEquivTensorQuot`:
   `B ⧸ (I.map <| algebraMap A B) ≃ₐ[B] B ⊗[A] (A ⧸ I)`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

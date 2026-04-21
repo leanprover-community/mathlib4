@@ -32,6 +32,7 @@ However, some lemmas also use `𝕜 : RCLike`:
   have `NormedSpace 𝕜 F`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

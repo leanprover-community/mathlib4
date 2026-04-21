@@ -60,6 +60,7 @@ We are only interested in Dedekind domains with Krull dimension 1.
 ## Tags
 dedekind domain, dedekind ring, adic valuation
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

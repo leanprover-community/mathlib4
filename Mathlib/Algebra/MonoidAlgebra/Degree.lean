@@ -18,6 +18,7 @@ The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support
 
 Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

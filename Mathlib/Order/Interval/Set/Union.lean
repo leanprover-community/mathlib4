@@ -16,6 +16,7 @@ This file contains lemmas about finite unions of intervals which can't be includ
 concerning infinite unions in `Mathlib/Order/Interval/Set/Disjoint.lean` because we use
 `Finset.range`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

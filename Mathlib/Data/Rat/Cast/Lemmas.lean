@@ -18,6 +18,7 @@ to avoiding needing to import `Mathlib/Algebra/Field/Basic.lean` there.
 In fact, these lemmas don't appear to be used anywhere in Mathlib,
 so perhaps this file can simply be deleted.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

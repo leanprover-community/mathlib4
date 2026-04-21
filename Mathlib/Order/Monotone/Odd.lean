@@ -16,6 +16,7 @@ An odd function on a linear ordered additive commutative group `G` is monotone o
 provided that it is monotone on `Set.Ici 0`, see `monotone_of_odd_of_monotoneOn_nonneg`. We also
 prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -30,6 +30,7 @@ we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove 
 and then construct the other examples using duality and restriction.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 
 - [cohen1950]: *Commutative rings with restricted minimum condition*, I. S. Cohen, Theorem 2
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

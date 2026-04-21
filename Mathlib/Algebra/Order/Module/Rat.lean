@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Order.Module.Defs
 /-!
 # Monotonicity of the action by rational numbers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

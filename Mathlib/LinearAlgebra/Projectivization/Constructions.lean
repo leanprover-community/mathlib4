@@ -22,6 +22,7 @@ This file defines the dot product and cross product on projective spaces.
   instead define `cross v v = v`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

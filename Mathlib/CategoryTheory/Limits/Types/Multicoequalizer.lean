@@ -26,6 +26,7 @@ that given `X : Type u`, a `MulticoequalizerDiagram` in `Set X` gives
 a multicoequalizer in the category of types.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

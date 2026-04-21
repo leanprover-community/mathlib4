@@ -29,6 +29,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

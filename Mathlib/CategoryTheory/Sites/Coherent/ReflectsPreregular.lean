@@ -16,6 +16,7 @@ We prove that given a fully faithful functor `F : C ⥤ D`, with `Preregular D`,
 object `X` of `D` there exists an object `W` of `C` with an effective epi `π : F.obj W ⟶ X`, the
 category `C` is `Preregular`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,6 +22,7 @@ with the "hand-rolled" definition of subobjects.
 This may be possible using Lawvere theories,
 but it remains to be seen whether this just pushes lumps around in the carpet.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

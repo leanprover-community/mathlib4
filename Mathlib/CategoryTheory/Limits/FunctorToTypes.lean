@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 Some of the concrete descriptions of (co)limits in `Type v` extend to (co)limits in the functor
 category `K ⥤ Type v`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

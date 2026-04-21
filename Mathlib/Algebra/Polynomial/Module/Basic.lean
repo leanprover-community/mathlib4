@@ -15,6 +15,7 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 universe u v

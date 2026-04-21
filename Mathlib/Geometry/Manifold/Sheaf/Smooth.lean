@@ -64,6 +64,7 @@ typeclass, and some (but not all) of the underlying category theory construction
 generalized by this method: see https://github.com/leanprover-community/mathlib4/pull/5724,
 https://github.com/leanprover-community/mathlib4/pull/5726.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ In this file, for any `n : ℤ`, we introduce the truncation functors
 `Mathlib/CategoryTheory/Triangulated/TStructure/TruncLTGE.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

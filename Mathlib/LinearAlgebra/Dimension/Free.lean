@@ -20,6 +20,7 @@ public import Mathlib.SetTheory.Cardinal.Finsupp
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Combinatorics.Quiver.Basic
 /-!
 This file defines a few basic properties of groupoids.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

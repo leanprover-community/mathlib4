@@ -24,6 +24,7 @@ given a valuation to `ℝ≥0`.
 Define the valuation on the tilt, and define a characteristic predicate for the tilt.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

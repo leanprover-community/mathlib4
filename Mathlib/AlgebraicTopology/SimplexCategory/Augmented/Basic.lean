@@ -24,6 +24,7 @@ objects, and we provide a translation of the main constructions on augmented (co
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

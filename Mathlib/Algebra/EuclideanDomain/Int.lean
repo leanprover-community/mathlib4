@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Ring.Int.Defs
 # Instances for Euclidean domains
 * `Int.euclideanDomain`: shows that `ℤ` is a Euclidean domain.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ and show that bounded above complexes of projective objects are K-projective.
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

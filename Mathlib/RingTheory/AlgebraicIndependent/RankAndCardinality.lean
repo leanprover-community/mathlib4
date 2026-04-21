@@ -25,6 +25,7 @@ This file concerns the cardinality of a transcendence basis.
 transcendence basis, transcendence degree, transcendence
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

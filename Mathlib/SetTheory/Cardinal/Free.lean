@@ -23,6 +23,7 @@ and are thus infinite, and specifically countable over countable generators.
 Combined with the ring `Fin n` for the finite cases, this lets us show that there is a `CommRing` of
 any cardinality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

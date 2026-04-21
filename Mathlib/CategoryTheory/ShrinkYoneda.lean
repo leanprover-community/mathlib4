@@ -16,6 +16,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 `uliftYoneda`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

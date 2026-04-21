@@ -35,6 +35,7 @@ characteristic 0 form a root system. We achieve this by studying root chains.
   relative to a splitting Cartan subalgebra.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

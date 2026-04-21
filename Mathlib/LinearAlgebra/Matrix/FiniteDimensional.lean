@@ -26,6 +26,7 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 matrix, finite dimensional, findim, finrank
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

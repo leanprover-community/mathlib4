@@ -25,6 +25,7 @@ public import Mathlib.ModelTheory.Substructures
 - The Tarski-Vaught Test for embeddings: `FirstOrder.Language.Embedding.isElementary_of_exists`
   gives a simple criterion for an embedding to be elementary.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

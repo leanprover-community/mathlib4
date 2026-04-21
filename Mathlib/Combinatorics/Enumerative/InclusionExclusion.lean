@@ -42,6 +42,7 @@ See also `MeasureTheory.integral_biUnion_eq_sum_powerset` for the version with i
 
 * Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

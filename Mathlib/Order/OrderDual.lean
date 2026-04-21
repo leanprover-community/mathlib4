@@ -24,6 +24,7 @@ One should not abuse definitional equality between `α` and `αᵒᵈ`. Instead,
 coercions should be inserted:
 * `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -43,6 +43,7 @@ so that we can apply basic API on Artinian modules to division rings without a h
 Artinian, artinian, Artinian ring, artinian ring
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

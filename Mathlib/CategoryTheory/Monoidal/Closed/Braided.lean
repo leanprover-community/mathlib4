@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 Interactions between monoidal closed and braided category structures.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

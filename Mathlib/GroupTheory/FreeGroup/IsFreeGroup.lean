@@ -38,6 +38,7 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
   a free group basis.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

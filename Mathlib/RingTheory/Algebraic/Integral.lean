@@ -36,6 +36,7 @@ is algebraic and that every algebraic element over a field is integral.
 * `Transcendental.extendScalars`: an element of an `R`-algebra that is transcendental over `R`
   remains transcendental over any algebraic `R`-subalgebra that has no zero divisors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

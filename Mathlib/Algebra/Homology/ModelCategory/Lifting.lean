@@ -26,6 +26,7 @@ we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

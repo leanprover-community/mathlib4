@@ -22,6 +22,7 @@ family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,6 +32,7 @@ As in Lean 3, `Set X := X → Prop`
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

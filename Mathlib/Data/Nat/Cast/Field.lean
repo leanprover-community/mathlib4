@@ -20,6 +20,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 * `Nat.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

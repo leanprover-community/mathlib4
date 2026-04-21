@@ -27,6 +27,7 @@ preserves connectedness, which translates to the fact that `Aut F` acts transiti
 the fibers of connected objects.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -59,6 +59,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

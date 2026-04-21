@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 - `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

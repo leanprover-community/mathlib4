@@ -21,6 +21,7 @@ We prove several asymptotics involving integral ideals of a number field.
   of bounded norm.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ This is used to show that `Coalgebra T` has any colimits which `C` has, and any 
 and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

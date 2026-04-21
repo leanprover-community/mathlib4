@@ -22,6 +22,7 @@ We prove that the conditional kernels `ProbabilityTheory.Kernel.condKernel` and
 * `ProbabilityTheory.Kernel.condKernel_apply_eq_condKernel`: the kernel `condKernel` is almost
   everywhere equal to the measure `condKernel`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

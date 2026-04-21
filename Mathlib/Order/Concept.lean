@@ -33,6 +33,7 @@ of `r` determines `α` and `β` already, so we do not define contexts as a separ
 
 concept, formal concept analysis, intent, extent, object, attribute
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

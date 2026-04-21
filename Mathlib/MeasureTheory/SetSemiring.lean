@@ -51,6 +51,7 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   * `⋃ x ∈ J, x = ⋃ x ∈ J, ⋃ s ∈ K x, s`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

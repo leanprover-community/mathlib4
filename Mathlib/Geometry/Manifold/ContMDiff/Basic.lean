@@ -22,6 +22,7 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 chain rule, manifolds, higher derivative
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

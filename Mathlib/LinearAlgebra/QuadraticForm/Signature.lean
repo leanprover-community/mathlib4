@@ -30,6 +30,7 @@ computed from any sum-of-squares representation.
 This file is based on work carried out by Sina Keller, Philipp Schumann, and Nicolas Trutmann in
 the course of their studies at ETH Zürich.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open Finset QuadraticMap
 

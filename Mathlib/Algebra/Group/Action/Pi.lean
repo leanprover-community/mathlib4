@@ -21,6 +21,7 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

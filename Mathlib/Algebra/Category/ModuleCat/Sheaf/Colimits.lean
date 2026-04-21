@@ -15,6 +15,7 @@ of sheaves of modules if it exists in the corresponding category
 of presheaves of modules.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -44,6 +44,7 @@ inversions of $w$ in some order, but we do not prove that in this file.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

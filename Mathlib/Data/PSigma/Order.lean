@@ -32,6 +32,7 @@ Define the disjoint order on `Σ' i, α i`, where `x ≤ y` only if `x.fst = y.f
 Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when its summands
 are.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

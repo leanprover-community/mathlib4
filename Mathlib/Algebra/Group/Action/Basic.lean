@@ -16,6 +16,7 @@ public import Mathlib.Logic.Embedding.Basic
 This file contains lemmas about group actions that require more imports than
 `Mathlib/Algebra/Group/Action/Defs.lean` offers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Init
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 open Lean Elab Command Linter

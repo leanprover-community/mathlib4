@@ -23,6 +23,7 @@ This file records basic facts about uniformly locally doubling measures.
   * `IsUnifLocDoublingMeasure.doublingConstant`: a function yielding the doubling constant `C`
     appearing in the definition of a uniformly locally doubling measure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

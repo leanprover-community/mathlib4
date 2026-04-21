@@ -10,6 +10,7 @@ public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.Multiset
 
 /-! # Results on the cardinality of finitely supported functions and multisets. -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

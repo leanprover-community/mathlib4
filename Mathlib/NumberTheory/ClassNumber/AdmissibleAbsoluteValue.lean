@@ -28,6 +28,7 @@ of the ring of integers of a global field is finite.
 * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

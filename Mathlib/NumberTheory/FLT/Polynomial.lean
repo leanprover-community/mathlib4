@@ -29,6 +29,7 @@ FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 (in the characteristic p case).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

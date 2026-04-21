@@ -66,6 +66,7 @@ If the space is also compact:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

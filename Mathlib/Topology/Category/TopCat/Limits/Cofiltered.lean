@@ -15,6 +15,7 @@ Given a *compatible* collection of topological bases for the factors in a cofilt
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

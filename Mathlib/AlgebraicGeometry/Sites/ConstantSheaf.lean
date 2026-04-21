@@ -25,6 +25,7 @@ When `T` is discrete, this is the constant sheaf associated to `T` (TODO).
 
 - Show that `continuousMapPresheaf` is a sheaf for the fpqc topology (@chrisflav).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

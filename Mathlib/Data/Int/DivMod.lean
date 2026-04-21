@@ -12,6 +12,7 @@ public import Mathlib.Init
 # Basic lemmas about division and modulo for integers
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -21,6 +21,7 @@ continuous linear equivalences.
 We also prove the usual formula for the derivative of the inverse function, assuming it exists.
 The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

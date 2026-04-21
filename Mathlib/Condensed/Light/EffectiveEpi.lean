@@ -13,6 +13,7 @@ public import Mathlib.Condensed.Light.Functors
 
 # The functor from light profinite sets to light condensed sets preserves effective epimorphisms
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

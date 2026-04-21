@@ -23,6 +23,7 @@ monotone functions.
 
 monotone map, bundled morphism
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

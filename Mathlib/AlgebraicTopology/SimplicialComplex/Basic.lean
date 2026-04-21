@@ -32,6 +32,7 @@ name `Geometry.SimplicialComplex` using affine combinations in another file.
 * `K ≤ L` means that the faces of `K` are faces of `L`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

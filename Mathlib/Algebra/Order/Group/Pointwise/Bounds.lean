@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 In this file we prove a few facts like “`-s` is bounded above iff `s` is bounded below”
 (`bddAbove_neg`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

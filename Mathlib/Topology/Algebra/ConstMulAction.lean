@@ -44,6 +44,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

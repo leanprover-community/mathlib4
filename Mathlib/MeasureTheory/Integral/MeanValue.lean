@@ -23,6 +23,7 @@ We prove versions of the first mean value theorem for set integrals.
 
 first mean value theorem, set integral
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

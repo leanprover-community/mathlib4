@@ -139,6 +139,7 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 `IsSelfAdjoint a` or `0 ≤ a`. For the moment we provide a rudimentary tactic to deal with these
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

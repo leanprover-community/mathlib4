@@ -25,6 +25,7 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 
 Consider generalizing these constructions to matrices over localizations of rings (or semirings).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ import Mathlib.Algebra.Module.Torsion.Field
 /-!
 # Order properties of the average over a finset
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

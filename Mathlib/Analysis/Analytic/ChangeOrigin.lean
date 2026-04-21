@@ -34,6 +34,7 @@ point `y` of this ball, and the power series there can be expressed in terms of 
 series `p` as `p.changeOrigin y`. See `HasFPowerSeriesOnBall.changeOrigin`. It follows in particular
 that the set of points at which a given function is analytic is open, see `isOpen_analyticAt`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

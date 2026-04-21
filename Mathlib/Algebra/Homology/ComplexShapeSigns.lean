@@ -25,6 +25,7 @@ and `I` is an additive monoid equipped with a group homomorphism `ε' : Multipli
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

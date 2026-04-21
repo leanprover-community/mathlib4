@@ -15,6 +15,7 @@ In this file we define `AlternatingMap.curryLeft`
 which interprets an alternating map in `n + 1` variables
 as a linear map in the 0th variable taking values in the alternating maps in `n` variables.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

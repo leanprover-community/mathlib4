@@ -23,6 +23,7 @@ which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.le
 * https://ncatlab.org/nlab/show/comparison+lemma
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,6 +35,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 * `E →SLₚₜ[σ] F` is space of continuous linear maps equipped with pointwise convergence topology.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

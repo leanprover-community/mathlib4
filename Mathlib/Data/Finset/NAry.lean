@@ -23,6 +23,7 @@ This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Order/Filter
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
 and `Set.image2` already fulfills this task.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ and then as a right-rigid monoidal category.
 * Show that `FGModuleCat R` is abelian when `R` is (left)-Noetherian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

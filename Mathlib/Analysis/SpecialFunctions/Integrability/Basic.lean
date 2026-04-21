@@ -15,6 +15,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 This file establishes basic facts about the interval integrability of special functions, including
 powers and the logarithm.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

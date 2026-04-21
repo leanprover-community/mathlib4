@@ -24,6 +24,7 @@ We also prove specialised versions when `f` is the inclusion of a subgroup of th
 (The version for general homomorphisms can easily be reduced to this special case, but the
 homomorphism version is more flexible in applications.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

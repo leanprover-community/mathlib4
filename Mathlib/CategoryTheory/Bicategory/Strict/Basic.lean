@@ -22,6 +22,7 @@ We cannot use this definition directly here since the types of 2-morphisms depen
 For this reason, we use `eqToIso`, which gives isomorphisms from equalities, instead of
 identities.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -72,6 +72,8 @@ Torsion, submodule, module, quotient
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 open Module
 
 namespace Ideal

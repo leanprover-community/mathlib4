@@ -23,6 +23,7 @@ We actually define `Cardinal.univ` as the cardinality of `Ordinal`, rather than 
 This makes the basic API easier to set up. See `Cardinal.mk_cardinal` for a proof that
 `Cardinal.univ = #Cardinal`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

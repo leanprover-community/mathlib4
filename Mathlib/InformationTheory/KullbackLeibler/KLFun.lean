@@ -39,6 +39,7 @@ This is a continuous nonnegative, strictly convex function on $[0,∞)$, with mi
   `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

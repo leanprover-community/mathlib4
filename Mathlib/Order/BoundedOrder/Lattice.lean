@@ -21,6 +21,7 @@ This file contains miscellaneous lemmas about lattices with top or bottom elemen
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
   Typical examples include `Prop` and `Set α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

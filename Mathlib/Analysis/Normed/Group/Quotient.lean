@@ -93,6 +93,7 @@ is compatible with the norm is not obvious; this is where the mathematical conte
 the previous paragraph kicks in.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

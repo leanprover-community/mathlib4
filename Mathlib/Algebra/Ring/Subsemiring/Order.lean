@@ -14,6 +14,7 @@ public import Mathlib.Tactic.FastInstance
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

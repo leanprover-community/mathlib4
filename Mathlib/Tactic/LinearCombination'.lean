@@ -36,6 +36,7 @@ implementation, but this version is provided for backward-compatibility.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

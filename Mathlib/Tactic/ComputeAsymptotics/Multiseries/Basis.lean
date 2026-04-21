@@ -17,6 +17,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
   `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

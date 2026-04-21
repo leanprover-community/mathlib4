@@ -23,6 +23,7 @@ homeomorphism, i.e. it stays a homeomorphism after arbitrary base change.
 - `PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable`: `Spec K ⟶ Spec k` is a universal
   homeomorphism for a purely inseparable field extension `K` over `k`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

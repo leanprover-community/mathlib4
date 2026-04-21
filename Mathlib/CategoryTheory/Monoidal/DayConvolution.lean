@@ -44,6 +44,7 @@ a monoidal structure.
 - Fix the abuse of functor associativity that causes `erw [id_apply]` in a few places in this file.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

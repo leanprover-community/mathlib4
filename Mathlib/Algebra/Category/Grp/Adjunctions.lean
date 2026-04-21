@@ -33,6 +33,7 @@ category of abelian groups.
 * `abelianizeAdj`: proves that `GrpCat.abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

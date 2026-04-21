@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 /-!
 # Lemmas about (linear) ordered (semi)fields
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

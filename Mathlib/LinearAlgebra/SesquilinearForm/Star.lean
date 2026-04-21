@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Matrix.PosDef
 This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M →ₗ[R] R` when `R` is a
 `StarRing`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

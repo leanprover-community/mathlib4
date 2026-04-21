@@ -19,6 +19,7 @@ generally for sums going from `0` to `n`.
 Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successively turn the
 `List` definition we have here into `Multiset` and `Finset`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

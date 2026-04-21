@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Bialgebra.GroupLike
 
 This file proves that group-like elements in a Hopf algebra form a group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

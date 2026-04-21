@@ -33,6 +33,7 @@ of the vertical maps: in order to get the expected long exact sequence, it suffi
 to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ≫ g)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

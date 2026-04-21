@@ -10,5 +10,6 @@ public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-04-08")

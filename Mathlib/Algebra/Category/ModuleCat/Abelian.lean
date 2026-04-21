@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 
 Additionally, two linear maps are exact in the categorical sense iff `range f = ker g`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,6 +35,7 @@ Because there is a global multiplication instance on `Module.End R A` (defined a
 which is mathematically distinct from this product, we provide this instance on
 `WithConv (C →ₗ[R] A)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

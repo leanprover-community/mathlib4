@@ -22,6 +22,7 @@ for any `n : ℤ`, which we phrase here by saying that
   show that the conclusion holds when `K` and `L` are cohomologically bounded.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

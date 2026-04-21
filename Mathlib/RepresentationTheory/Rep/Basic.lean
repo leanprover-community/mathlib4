@@ -18,6 +18,7 @@ Given a `G`-representation `ρ` on a module `V`, you can construct the bundled r
 module as `A.V` and the representation on it as `A.ρ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

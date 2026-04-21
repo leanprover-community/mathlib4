@@ -18,6 +18,7 @@ This is a field when the scheme is integral.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

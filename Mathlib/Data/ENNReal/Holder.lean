@@ -22,6 +22,7 @@ to reprove them each time.
 For convenience we also define `ENNReal.HolderConjugate` (with arguments `p q`) as an
 abbreviation for `ENNReal.HolderTriple p q 1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

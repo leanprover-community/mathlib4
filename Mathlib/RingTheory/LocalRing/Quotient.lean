@@ -21,6 +21,7 @@ public import Mathlib.RingTheory.Nakayama
 We gather results about the quotients of local rings.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

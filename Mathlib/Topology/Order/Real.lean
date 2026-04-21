@@ -17,6 +17,7 @@ We
 - endow `EReal` with the order topology (and prove some very basic lemmas),
 - define the topology `ℝ≥0∞` (which is the order topology, *not* the `EMetricSpace` topology)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

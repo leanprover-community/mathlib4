@@ -32,6 +32,7 @@ As with the other special shapes in the limits library, all the definitions here
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

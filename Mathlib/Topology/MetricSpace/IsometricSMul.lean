@@ -29,6 +29,7 @@ If `G` is a group, then `IsIsometricSMul G G` means that `G` has a left-invarian
 these two notions are equivalent. A group with a right-invariant metric can be also represented as a
 `NormedGroup`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

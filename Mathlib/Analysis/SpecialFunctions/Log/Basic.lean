@@ -23,6 +23,7 @@ We prove some basic properties of this function and show that it is continuous.
 
 logarithm, continuity
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

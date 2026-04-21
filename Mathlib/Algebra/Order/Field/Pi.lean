@@ -16,6 +16,7 @@ public import Mathlib.Data.Fintype.Basic
 
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

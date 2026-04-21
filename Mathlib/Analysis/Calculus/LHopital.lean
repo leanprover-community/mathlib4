@@ -30,6 +30,7 @@ namespace.
 
 L'Hôpital's rule, L'Hopital's rule
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

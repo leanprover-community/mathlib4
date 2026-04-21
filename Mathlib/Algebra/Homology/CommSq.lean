@@ -30,6 +30,7 @@ identifies to the kernel of the difference map `X₂ ⊞ X₃ ⟶ X₄`
 via the obvious map `X₁ ⟶ X₂ ⊞ X₃`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

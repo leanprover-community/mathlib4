@@ -78,6 +78,7 @@ This feature wasn't needed yet, so it's not implemented yet.
 
 ring, semiring, exponent, power
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

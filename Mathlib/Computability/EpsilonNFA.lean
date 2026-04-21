@@ -18,6 +18,7 @@ which can be followed without reading a character.
 Since this definition allows for automata with infinite states, a `Fintype` instance must be
 supplied for true `εNFA`'s.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

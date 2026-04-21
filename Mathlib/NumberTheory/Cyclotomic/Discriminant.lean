@@ -20,6 +20,7 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
   `hζ : IsPrimitiveRoot ζ p`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

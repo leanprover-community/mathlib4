@@ -36,6 +36,7 @@ We prove a multitude of elementary lemmas about these, and one more substantial 
 
 measurable equivalence, measurable embedding
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

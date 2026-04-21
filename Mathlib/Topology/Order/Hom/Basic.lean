@@ -26,6 +26,7 @@ be satisfied by itself and all stricter types.
 
 * `ContinuousOrderHomClass`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

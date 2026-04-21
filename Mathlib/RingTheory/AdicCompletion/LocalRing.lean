@@ -15,6 +15,7 @@ In this file we prove that a ring that is adic complete with respect to a maxima
 ia a local ring (complete local ring).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

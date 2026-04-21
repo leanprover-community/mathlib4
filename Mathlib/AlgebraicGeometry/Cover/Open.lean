@@ -19,6 +19,7 @@ This file provides the basic API for open covers of schemes.
 - `AlgebraicGeometry.Scheme.affineCover`: `X.affineCover` is a choice of an affine cover of `X`.
 - `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

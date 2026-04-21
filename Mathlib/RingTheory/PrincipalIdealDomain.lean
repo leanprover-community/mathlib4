@@ -37,6 +37,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,6 +10,7 @@ public import Mathlib.Topology.ContinuousOn
 /-!
 ### Continuity of piecewise defined functions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

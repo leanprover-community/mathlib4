@@ -50,6 +50,7 @@ is just used to show existence. However for (potential) convenience the actual d
 * Prove a dominated convergence theorem.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

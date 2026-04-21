@@ -31,6 +31,7 @@ The orthogonal projection construction is adapted from
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

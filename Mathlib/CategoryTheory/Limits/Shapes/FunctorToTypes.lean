@@ -17,6 +17,7 @@ Defines an explicit construction of binary products and coproducts of type-value
 
 Also defines isomorphisms to the categorical product and coproduct, respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

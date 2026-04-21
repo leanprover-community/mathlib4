@@ -29,6 +29,7 @@ The spectral object attached to an object `X : C` is constructed in the file
 `Mathlib/CategoryTheory/Triangulated/TStucture/SpectralObject.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 universe v u
 

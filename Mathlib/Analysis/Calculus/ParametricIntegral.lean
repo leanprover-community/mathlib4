@@ -54,6 +54,7 @@ We also provide versions of these theorems for set integrals.
 ## Tags
 integral, derivative
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

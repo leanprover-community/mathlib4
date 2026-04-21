@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 We characterize the condition in which colimits on Grothendieck constructions preserve limits: By
 preserving limits on the Grothendieck construction's base category as well as on each of its fibers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

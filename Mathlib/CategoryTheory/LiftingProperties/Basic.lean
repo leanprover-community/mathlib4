@@ -27,6 +27,8 @@ lifting property
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe v
 

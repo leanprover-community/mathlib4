@@ -34,6 +34,7 @@ A description of this formalization is in [Gusakov2021].
 
 Hall's Marriage Theorem, indexed families
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

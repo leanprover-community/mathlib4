@@ -23,6 +23,7 @@ In particular, when `R = S` we get tensor products of coalgebras, and when `A = 
 the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

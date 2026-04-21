@@ -24,6 +24,7 @@ There are several possible measurability assumptions:
 Although the first two options are equivalent, the last two are not if the index set is not
 countable.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

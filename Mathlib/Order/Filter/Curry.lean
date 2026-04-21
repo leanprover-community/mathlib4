@@ -47,6 +47,7 @@ of describing the product of two sets:
 
 uniform convergence, curried filters, product filters
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

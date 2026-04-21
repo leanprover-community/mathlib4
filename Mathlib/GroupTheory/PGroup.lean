@@ -15,6 +15,7 @@ This file contains a proof that if `G` is a `p`-group acting on a finite set `α
 then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
 It also contains proofs of some corollaries of this lemma about existence of fixed points.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

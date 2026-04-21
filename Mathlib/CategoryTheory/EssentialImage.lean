@@ -22,6 +22,7 @@ The essential image can also be seen as a subcategory of the target category, an
 a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

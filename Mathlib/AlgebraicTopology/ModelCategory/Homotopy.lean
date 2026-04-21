@@ -26,6 +26,7 @@ then any weak equivalence `X ⟶ Y` is a homotopy equivalence.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

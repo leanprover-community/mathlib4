@@ -27,6 +27,7 @@ In this file we calculate the Fourier transform of a convolution.
   for functions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

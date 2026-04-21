@@ -19,6 +19,7 @@ public meta import Mathlib.Tactic.ToDual
 
 Adds a deriving handler for the `Countable` class.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

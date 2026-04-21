@@ -28,6 +28,7 @@ proves some basic properties.
 
 * Prove Gauss' integral representation of the digamma function.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

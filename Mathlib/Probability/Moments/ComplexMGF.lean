@@ -55,6 +55,7 @@ properties of the mgf from those of the characteristic function).
 * Prove that if two random variables have the same `mgf`, then the have the same `complexMGF`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

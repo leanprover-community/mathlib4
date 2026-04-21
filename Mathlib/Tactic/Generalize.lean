@@ -22,6 +22,7 @@ This file can be removed once all uses of the compatibility shim have been remov
 (Possibly we will instead add a `transparency` argument to `generalize`.
 This would also allow removing this file.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

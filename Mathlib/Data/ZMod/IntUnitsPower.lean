@@ -24,6 +24,7 @@ In future, we could consider a `LawfulPower M R` typeclass; but we can save ours
 by using `Module R (Additive M)` in its place, especially since this already has instances for
 `R = ℕ` and `R = ℤ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

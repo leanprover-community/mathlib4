@@ -28,6 +28,7 @@ Among the basic results, we show that
 * `IsPerfect.ofSurjective`: The image of a perfect group under a surjective monoid
   homomorphism is perfect.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

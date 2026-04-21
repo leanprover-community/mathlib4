@@ -38,6 +38,7 @@ between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2
 `whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

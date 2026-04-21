@@ -13,6 +13,7 @@ public import Mathlib.Order.Zorn
 This file constructs a linear order which is an extension of the given partial order, using Zorn's
 lemma.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

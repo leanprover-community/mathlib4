@@ -17,6 +17,7 @@ a sharper upper bound than `#s * c`, because the elements are distinct.
 
 This file provides these sharp bounds, both in the upper-bounded and analogous lower-bounded cases.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

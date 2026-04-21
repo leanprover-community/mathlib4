@@ -25,6 +25,7 @@ This file defines the first-order language of Presburger arithmetic as (0,1,+).
 - Define the theory of Presburger arithmetic and prove its properties (quantifier elimination,
   completeness, etc).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

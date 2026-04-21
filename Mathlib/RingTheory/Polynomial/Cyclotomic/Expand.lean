@@ -26,6 +26,7 @@ We gather results relating cyclotomic polynomials and `expand`.
 * `Polynomial.cyclotomic_mul_prime_pow_eq` : If `R` is of characteristic `p` and `¬p ∣ m`, then
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

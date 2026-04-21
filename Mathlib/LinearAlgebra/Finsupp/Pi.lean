@@ -22,6 +22,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 
 function with finite support, module, linear algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

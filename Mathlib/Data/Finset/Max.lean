@@ -11,6 +11,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 /-!
 # Maximum and minimum of finite sets
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

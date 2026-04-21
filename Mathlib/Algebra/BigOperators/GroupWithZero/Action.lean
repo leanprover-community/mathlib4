@@ -24,6 +24,7 @@ This file contains results about two kinds of actions:
 
 Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other files.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,6 +20,7 @@ public import Mathlib.Tactic.ComputeDegree
 The degree of `cancelLeads` is less than that of the larger of the two polynomials being cancelled.
 Thus it is useful for induction or minimal-degree arguments.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

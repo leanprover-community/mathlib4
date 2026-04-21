@@ -83,6 +83,7 @@ The following notations are localized in the scope `Convolution`:
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere (this likely requires changes in `to_additive`)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists ContDiffAt HasDerivAt
 

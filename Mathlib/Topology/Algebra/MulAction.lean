@@ -33,6 +33,7 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

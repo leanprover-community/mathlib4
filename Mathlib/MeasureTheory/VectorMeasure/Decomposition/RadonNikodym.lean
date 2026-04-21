@@ -15,6 +15,7 @@ This file contains results about Radon-Nikodym derivatives of signed measures
 that depend both on the Lebesgue decomposition of signed measures
 and the theory of Radon-Nikodym derivatives of usual measures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

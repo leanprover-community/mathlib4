@@ -35,6 +35,7 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

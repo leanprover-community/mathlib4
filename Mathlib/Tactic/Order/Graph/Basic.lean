@@ -14,6 +14,7 @@ public meta import Mathlib.Util.AtomM
 This module defines the `Graph` structure and basic operations on it. The `order` tactic uses
 `≤`-graphs, where the vertices represent atoms, and an edge `(x, y)` exists if `x ≤ y`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

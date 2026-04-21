@@ -20,6 +20,7 @@ This file establishes a number of equivalences related to power series rings.
   with respect to the ideal spanned by all variables when the index is finite.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

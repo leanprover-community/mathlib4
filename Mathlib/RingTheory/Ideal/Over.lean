@@ -18,6 +18,7 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Data.Finset.Piecewise
 
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

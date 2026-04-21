@@ -16,6 +16,7 @@ there is a neighborhood of `x` which meets only finitely many sets in the family
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

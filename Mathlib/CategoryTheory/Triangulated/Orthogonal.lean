@@ -18,6 +18,7 @@ map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual r
 for `P.leftOrthogonal` is also obtained.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

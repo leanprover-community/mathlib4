@@ -22,6 +22,7 @@ and strictly less than `n`.
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
 - Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

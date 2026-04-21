@@ -39,6 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 ## TODO
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

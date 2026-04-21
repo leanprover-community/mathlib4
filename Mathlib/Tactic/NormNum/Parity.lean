@@ -14,6 +14,7 @@ public import Mathlib.Tactic.NormNum.Core
 In this file we provide `norm_num` extensions for `Even n` and `Odd n`,
 where `n : ℕ` or `n : ℤ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

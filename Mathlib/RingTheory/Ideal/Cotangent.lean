@@ -25,6 +25,7 @@ also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

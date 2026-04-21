@@ -13,6 +13,7 @@ public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 This file defines the inner-product structure on a subspace of an inner-product space, and proves
 some theorems about orthogonal families of subspaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

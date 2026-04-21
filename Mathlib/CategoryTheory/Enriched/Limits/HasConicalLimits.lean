@@ -34,6 +34,7 @@ inference prefers this. Otherwise it failed with
 However, it is not fully clear yet whether this could lead to potential issues, for example
 if there are multiple `MonoidalCategory _` instances in scope.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
   a point iff its pre / post composition with an open partial homeomorphism is so (assuming the
   point is in the source / target).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

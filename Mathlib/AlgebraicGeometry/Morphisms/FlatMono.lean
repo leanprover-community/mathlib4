@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 
 We show the titular result `AlgebraicGeometry.IsOpenImmersion.of_flat_of_mono` by fpqc descent.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

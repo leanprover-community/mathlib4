@@ -17,6 +17,7 @@ the krull dimension of its support. It is equal to the krull dimension of `R / A
 `M` is finitely generated.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

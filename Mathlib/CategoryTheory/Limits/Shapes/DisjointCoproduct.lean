@@ -25,6 +25,7 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 * Define extensive categories, and show every extensive category has disjoint coproducts.
 * Define coherent categories and use this to define positive coherent categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

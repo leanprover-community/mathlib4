@@ -17,6 +17,7 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 `Algebra.BigOperators.Group.Finset` leads to a cyclic import.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

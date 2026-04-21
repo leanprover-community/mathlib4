@@ -21,6 +21,7 @@ are formalized in `Differentiable.apply_eq_apply_of_bounded`,
 The proof is based on the Cauchy integral formula for the derivative of an analytic function, see
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

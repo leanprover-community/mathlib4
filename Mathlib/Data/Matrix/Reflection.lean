@@ -31,6 +31,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.etaExpand`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

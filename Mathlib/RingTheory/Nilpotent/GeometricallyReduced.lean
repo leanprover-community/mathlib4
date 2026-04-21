@@ -30,6 +30,7 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
   `k` the `K`-algebra `K ⊗[k] A` is reduced.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

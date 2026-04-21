@@ -48,6 +48,7 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
   then its volume can be computed via an integral over `normAtAllPlaces '' A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

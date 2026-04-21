@@ -24,6 +24,7 @@ the category has pullbacks.
 * https://ncatlab.org/nlab/show/extremal+epimorphism
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

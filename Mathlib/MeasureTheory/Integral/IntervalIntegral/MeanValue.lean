@@ -30,6 +30,7 @@ We prove versions of the first mean value theorem for interval integrals.
 
 mean value theorem, interval integral
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

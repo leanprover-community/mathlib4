@@ -14,6 +14,7 @@ public import Mathlib.Tactic.NormNum
 This `norm_num` extension uses a strategy parallel to that of `Nat.fastFib`, but it instead
 produces proofs of what `Nat.fib` evaluates to.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

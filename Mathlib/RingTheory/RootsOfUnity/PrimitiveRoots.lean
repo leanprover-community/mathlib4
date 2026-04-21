@@ -45,6 +45,7 @@ This creates a little bit of friction with how `rootsOfUnity` is implemented (as
 of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

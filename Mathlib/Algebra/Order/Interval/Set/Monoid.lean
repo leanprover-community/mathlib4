@@ -19,6 +19,7 @@ The lemmas in this file state that addition maps intervals bijectively. The type
 `OrderedCancelAddCommMonoid`; the lemmas below therefore apply to all
 `OrderedAddCommGroup`, but also to `ℕ` and `ℝ≥0`, which are not groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -37,6 +37,7 @@ The key axioms ensure tensor products respect the comonoid structure.
 
 copy-discard, comonoid, symmetric monoidal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

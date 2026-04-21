@@ -17,6 +17,7 @@ This file defines the function `FirstOrder.Ring.termOfFreeCommRing` which constr
 The theorem `FirstOrder.Ring.realize_termOfFreeCommRing` shows that the term constructed when
 realized in a ring `R` is equal to the lift of the element of `FreeCommRing α` to `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

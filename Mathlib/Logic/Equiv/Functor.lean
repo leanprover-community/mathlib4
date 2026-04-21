@@ -22,6 +22,7 @@ def Bifunctor.mapEquiv (F : Type u → Type v → Type w) [Bifunctor F] [LawfulB
     α ≃ β → α' ≃ β' → F α α' ≃ F β β'
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

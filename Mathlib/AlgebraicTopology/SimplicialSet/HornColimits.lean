@@ -19,6 +19,7 @@ In this file, we express horns as colimits:
   horns in `Δ[3]`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

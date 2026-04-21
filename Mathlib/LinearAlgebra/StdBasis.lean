@@ -32,6 +32,7 @@ this is a basis over `Fin 3 → R`.
   `Matrix.stdBasis R n m (i, j) i' j' = if (i, j) = (i', j') then 1 else 0`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

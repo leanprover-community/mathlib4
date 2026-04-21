@@ -11,6 +11,7 @@ public import Mathlib.Data.Multiset.Antidiagonal
 public import Mathlib.Data.Multiset.Sections
 
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

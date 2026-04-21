@@ -12,6 +12,7 @@ public import Mathlib.Data.List.Basic
 
 In this file we prove basic lemmas about `List.reduceOption`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

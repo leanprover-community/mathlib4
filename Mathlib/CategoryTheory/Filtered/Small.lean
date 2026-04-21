@@ -17,6 +17,7 @@ A consequence of this is that if `C` is filtered and finally small, then `C` is 
 This is occasionally useful, for example in the proof of the recognition theorem for ind-objects
 (Proposition 6.1.5 in [Kashiwara2006]).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

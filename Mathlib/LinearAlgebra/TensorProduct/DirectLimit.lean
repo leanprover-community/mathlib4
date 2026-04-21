@@ -21,6 +21,7 @@ as `R`-modules.
 * `TensorProduct.directLimitRight : M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f)`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

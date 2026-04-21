@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Normed.Operator.NormedSpace
 This file (split off from `OperatorNorm.lean`) contains results about the operator norm
 of multiplication and scalar-multiplication operations in normed algebras and normed modules.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

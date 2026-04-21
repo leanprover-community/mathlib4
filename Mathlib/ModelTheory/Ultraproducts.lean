@@ -27,6 +27,7 @@ public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 ultraproduct, Los's theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

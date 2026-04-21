@@ -14,6 +14,7 @@ public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 This file proves lemmas relating to oriented angles involving orthogonal projections.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

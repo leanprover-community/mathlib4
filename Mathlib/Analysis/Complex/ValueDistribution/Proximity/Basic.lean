@@ -25,6 +25,7 @@ See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

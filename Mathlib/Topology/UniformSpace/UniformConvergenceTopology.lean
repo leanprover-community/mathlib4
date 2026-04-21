@@ -133,6 +133,7 @@ connection API to do most of the work.
 
 uniform convergence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

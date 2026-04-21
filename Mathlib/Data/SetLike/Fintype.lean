@@ -14,6 +14,7 @@ public import Mathlib.Data.Fintype.Powerset
 This file contains a fintype instance for set-like objects such as subgroups. If `SetLike A B`
 and `Fintype B` then `Fintype A`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

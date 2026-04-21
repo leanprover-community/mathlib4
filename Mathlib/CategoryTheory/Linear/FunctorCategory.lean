@@ -15,6 +15,7 @@ If `C` and `D` are categories and `D` is `R`-linear,
 then `C ⥤ D` is also `R`-linear.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

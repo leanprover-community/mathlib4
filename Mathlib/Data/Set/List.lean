@@ -13,6 +13,7 @@ public import Mathlib.Data.List.Defs
 
 In this file we prove lemmas about range of some operations on lists.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

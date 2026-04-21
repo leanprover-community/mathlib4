@@ -17,6 +17,7 @@ import Mathlib.Data.Fintype.Defs
 This file contains simple definitions and lemmas for reasoning about state transition systems
 defined by a function `σ → Option σ`, where `σ` is the type of states.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

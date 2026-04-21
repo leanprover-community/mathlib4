@@ -79,6 +79,7 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 [van der Waerden, *Free products of groups*][MR25465]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

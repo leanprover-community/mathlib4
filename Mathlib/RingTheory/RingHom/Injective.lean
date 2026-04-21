@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.RingHomProperties
 
 /-! # Meta properties of injective ring homomorphisms -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

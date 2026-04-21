@@ -63,6 +63,7 @@ We define the following variants.
 Height, absolute value
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

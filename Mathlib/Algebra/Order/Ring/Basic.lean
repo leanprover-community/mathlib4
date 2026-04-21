@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Bound.Attribute
 /-!
 # Basic lemmas about ordered rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

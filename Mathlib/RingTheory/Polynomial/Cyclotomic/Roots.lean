@@ -31,6 +31,7 @@ To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic 
 `Polynomial.cyclotomic_eq_minpoly` that `cyclotomic n ℤ` is the minimal polynomial of any `n`-th
 primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

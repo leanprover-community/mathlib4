@@ -53,6 +53,7 @@ A special class could be defined for `foldable`, similarly to Haskell,
 but the author cannot think of instances of `foldable` that are not also
 `Traversable`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ In this file we provide basic API for `Under R` when `R : CommRingCat`. `Under R
 (equivalent to) the category of commutative `R`-algebras. For not necessarily commutative
 algebras, use `AlgCat R` instead.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

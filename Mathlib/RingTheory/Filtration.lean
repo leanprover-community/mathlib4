@@ -37,6 +37,7 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

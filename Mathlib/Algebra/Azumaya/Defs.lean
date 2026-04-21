@@ -28,6 +28,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 Azumaya algebra, central simple algebra, noncommutative algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

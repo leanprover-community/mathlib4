@@ -33,6 +33,7 @@ We have three ways to construct terms of `ℙ K V`:
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

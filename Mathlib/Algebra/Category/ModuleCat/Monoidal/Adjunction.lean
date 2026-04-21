@@ -16,6 +16,7 @@ Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 `restrictScalars f : ModuleCat S ⥤ ModuleCat R` is lax monoidal.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

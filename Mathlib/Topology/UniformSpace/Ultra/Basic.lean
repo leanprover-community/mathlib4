@@ -45,6 +45,7 @@ but rather extend the relation properties as needed.
 * [A. C. M. van Rooij, *Non-Archimedean uniformities*][vanrooij1970]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

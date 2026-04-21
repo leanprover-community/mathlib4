@@ -34,6 +34,7 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 arithmetic functions, dirichlet convolution, divisors
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

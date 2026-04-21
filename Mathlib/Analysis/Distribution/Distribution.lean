@@ -139,6 +139,7 @@ longer true for general filters.
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

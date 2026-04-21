@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Generator.Basic
 In this file, we show that `PUnit` is a separator of the category `Type u`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ It is shown in this file that any spanning set of a module over a ring satisfyin
 property of cardinality not exceeding the rank of the module must be linearly independent,
 and therefore is a basis.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

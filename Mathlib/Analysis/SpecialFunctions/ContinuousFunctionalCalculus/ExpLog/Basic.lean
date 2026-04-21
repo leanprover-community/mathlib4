@@ -41,6 +41,7 @@ definitions for them.
   products).
 + Relate `CFC.log` to `rpow`, `zpow`, `sqrt`, `inv`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

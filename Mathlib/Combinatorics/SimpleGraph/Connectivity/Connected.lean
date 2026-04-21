@@ -37,6 +37,7 @@ See https://github.com/leanprover-community/mathlib4/issues/31690.
 ## Tags
 trails, paths, cycles, bridge edges
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

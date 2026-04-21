@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 - `TrivSqZeroExt.kerIdeal_sq `: this ideal has square zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

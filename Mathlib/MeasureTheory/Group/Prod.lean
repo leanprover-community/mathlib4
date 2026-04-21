@@ -38,6 +38,7 @@ groups, when the topology is not second-countable. For arguments along the same 
 continuous functions instead of measurable sets and working in the general locally compact
 setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

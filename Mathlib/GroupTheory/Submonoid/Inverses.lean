@@ -29,6 +29,7 @@ Define the submonoid of right inverses and two-sided inverses.
 See the comments of https://github.com/leanprover-community/mathlib4/pull/10679 for a possible
 implementation.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

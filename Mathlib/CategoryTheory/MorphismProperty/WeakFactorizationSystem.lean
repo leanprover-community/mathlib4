@@ -20,6 +20,7 @@ and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 * https://ncatlab.org/nlab/show/weak+factorization+system
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

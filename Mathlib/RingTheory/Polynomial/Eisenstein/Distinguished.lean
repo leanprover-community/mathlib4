@@ -15,6 +15,7 @@ In this file we define the predicate `Polynomial.IsDistinguishedAt`
 and develop the most basic lemmas about it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

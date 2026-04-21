@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Group.Defs
 This file collects facts about algebraic structures on the one-element type, e.g. that it is a
 commutative ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

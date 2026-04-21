@@ -18,6 +18,7 @@ In particular, from a presentation of an `A`-module `M`, we get
 a presentation of `ι →₀ M`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

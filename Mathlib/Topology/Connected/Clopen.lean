@@ -24,6 +24,7 @@ to clopen sets.
 + `ConnectedComponents`: The connected components of a topological space, as a quotient type.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

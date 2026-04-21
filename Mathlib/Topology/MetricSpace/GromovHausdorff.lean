@@ -41,6 +41,7 @@ We prove the most important properties of the Gromov-Hausdorff space: it is a po
 i.e., it is complete and second countable. We also prove the Gromov compactness criterion.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

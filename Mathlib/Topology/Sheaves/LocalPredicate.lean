@@ -35,6 +35,7 @@ to the types in the ambient type family.
 
 We give conditions sufficient to show that this map is injective and/or surjective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

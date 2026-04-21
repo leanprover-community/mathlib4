@@ -18,6 +18,7 @@ If the predicate `P` is preserved under taking type-theoretic sums, we provide a
 cocone in `CompHausLike P`. When we have the dual of `CartesianMonoidalCategory`, this can be used
 to provide an instance of that on `CompHausLike P`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

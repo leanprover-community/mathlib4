@@ -28,6 +28,7 @@ terms of the induced uniformity and bornology, which means users will need to do
 choose to use these convenience lemmas. This encourages good hygiene in the development of type
 synonyms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

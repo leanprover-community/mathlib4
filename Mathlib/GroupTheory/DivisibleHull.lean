@@ -37,6 +37,7 @@ it.
   `ArchimedeanClass (DivisibleHull M)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

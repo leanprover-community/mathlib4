@@ -15,6 +15,7 @@ In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

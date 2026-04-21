@@ -18,6 +18,7 @@ the trifunctor `bifunctorComp₂₃ F G₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`
 objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ saying that these averages converge to the "space average" `⨍ x, g x ∂μ` in
 
 See also `birkhoffAverage` defined in `Dynamics/BirkhoffSum/Average`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

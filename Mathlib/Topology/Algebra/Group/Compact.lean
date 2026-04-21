@@ -14,6 +14,7 @@ public import Mathlib.Topology.Sets.Compacts
 A result on topological groups that has been separated out
 as it requires more substantial imports developing positive compacts.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

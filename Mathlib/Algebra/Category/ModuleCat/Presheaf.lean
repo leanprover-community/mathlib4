@@ -26,6 +26,7 @@ of scalars of `M.obj Y` via `R.map f`.
 * Presheaves of modules over a presheaf of commutative rings form a monoidal category.
 * Pushforward and pullback.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

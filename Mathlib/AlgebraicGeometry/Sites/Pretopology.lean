@@ -21,6 +21,7 @@ The pretopology is obtained from the precoverage `AlgebraicGeometry.Scheme.preco
 `Mathlib.AlgebraicGeometry.Sites.MorphismProperty`. The definition is postponed to this file,
 because the former does not have `HasPullbacks Scheme`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

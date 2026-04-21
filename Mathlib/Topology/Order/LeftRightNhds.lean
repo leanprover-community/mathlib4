@@ -15,6 +15,7 @@ public import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

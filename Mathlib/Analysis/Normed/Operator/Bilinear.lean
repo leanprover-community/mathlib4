@@ -16,6 +16,7 @@ This file contains lemmas concerning operator norm as applied to bilinear maps `
 interpreted as linear maps `E → F → G` as usual (and similarly for semilinear variants).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -48,6 +48,7 @@ we could keep the collection of instances behind an `open scoped`.
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

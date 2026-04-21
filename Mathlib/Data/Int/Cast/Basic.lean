@@ -22,6 +22,7 @@ and results involving the order structure of `ℤ`.
 By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 `Mathlib.Algebra.Group.Basic`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

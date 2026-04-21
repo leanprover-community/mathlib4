@@ -22,6 +22,7 @@ for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

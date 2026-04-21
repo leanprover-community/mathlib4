@@ -33,6 +33,7 @@ Fix `k : ℕ`. Assuming `n * p n → r` as `n → ∞`, we show
 
 binomial distribution, Poisson distribution, asymptotics, limits, probability mass function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

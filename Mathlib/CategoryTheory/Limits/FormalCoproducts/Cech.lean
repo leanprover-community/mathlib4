@@ -18,6 +18,7 @@ which sends `⦋n⦌` to the formal coproduct, indexed by `i : Fin (n + 1) → �
 of the products of the objects `U (i a)` for all `a : Fin (n + 1)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,6 +30,7 @@ the same ray).
 
 convex, uniformly convex
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

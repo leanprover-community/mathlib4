@@ -28,6 +28,7 @@ This file has been adapted to `Mathlib/CategoryTheory/Limits/Shapes/SplitEqualiz
 to keep them in sync.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ This file proves results about betweenness for points in an affine space for a s
 space.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

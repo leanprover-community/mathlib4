@@ -25,6 +25,7 @@ This file contains results in number theory relating to multiplicity.
 * [Wikipedia, *Lifting-the-exponent lemma*]
   (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

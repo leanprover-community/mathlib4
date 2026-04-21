@@ -17,6 +17,7 @@ terminates_parallel and exists_of_mem_parallel.
 (This operation is nondeterministic in the sense that it does not
 honor sequence equivalence (irrelevance of computation time).)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

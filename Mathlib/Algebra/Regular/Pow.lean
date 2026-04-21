@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Regular.Basic
 
 Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

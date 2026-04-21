@@ -18,6 +18,7 @@ sheafification is possible in `C`, `Sheaf J D` is abelian as well (`sheafIsAbeli
 Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

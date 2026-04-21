@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Filtered
 These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/Basic.lean` because
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

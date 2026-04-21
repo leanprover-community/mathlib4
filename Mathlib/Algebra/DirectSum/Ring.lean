@@ -73,6 +73,7 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 
 graded ring, filtered ring, direct sum, additive submonoid
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

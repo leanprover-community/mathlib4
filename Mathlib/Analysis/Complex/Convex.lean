@@ -16,6 +16,7 @@ We show that the open and closed half-spaces in ℂ given by an inequality on ei
 imaginary part are all convex over ℝ. We also prove some results on star-convexity for the
 slit plane.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ does what is probably clear: it extends the doc-string of `decl` by adding the s
 
 At least one of `before` and `after` must appear, but either one of them is optional.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

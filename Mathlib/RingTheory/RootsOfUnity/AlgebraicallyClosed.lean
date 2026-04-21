@@ -15,6 +15,7 @@ We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is a separably c
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

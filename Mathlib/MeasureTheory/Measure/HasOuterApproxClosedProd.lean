@@ -52,6 +52,7 @@ We specialize these results to the cases where one of the families contains only
 
 bounded continuous function, product measure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

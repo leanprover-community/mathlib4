@@ -22,6 +22,7 @@ including the action of `Module.End` on the module we are considering endomorphi
 * `Module.End.instSemiring` and `Module.End.instRing`: the (semi)ring of endomorphisms formed by
   taking the additive structure above with composition as multiplication.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

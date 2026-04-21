@@ -21,6 +21,7 @@ this is the usual left or right quotient of a group by a subgroup.
 * `setoid`: The double coset relation defined by two subgroups `H K` of `G`.
 * `DoubleCoset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

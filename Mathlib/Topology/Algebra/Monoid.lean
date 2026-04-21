@@ -21,6 +21,7 @@ In this file we define mixin classes `ContinuousMul` and `ContinuousAdd`. While 
 applications the underlying type is a monoid (multiplicative or additive), we do not require this in
 the definitions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

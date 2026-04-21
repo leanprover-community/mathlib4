@@ -15,6 +15,7 @@ In this file, we give characterizations of epimorphisms and monomorphisms
 in the category of presheaves of modules.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

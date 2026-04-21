@@ -16,6 +16,7 @@ We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
 `IsLocalHom` on the stalk maps).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

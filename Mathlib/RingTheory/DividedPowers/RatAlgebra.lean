@@ -47,6 +47,7 @@ In this file we show that, for certain choices of a commutative (semi)ring `A` a
 * [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

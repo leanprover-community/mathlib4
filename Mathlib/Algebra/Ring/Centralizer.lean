@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.Defs
 /-!
 # Centralizers of rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

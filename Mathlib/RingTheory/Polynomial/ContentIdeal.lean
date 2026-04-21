@@ -38,6 +38,7 @@ Let `p : R[X]`.
 - Prove the Dedekind-Mertens lemma, see https://www.cse.chalmers.se/~coquand/mertens.pdf
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

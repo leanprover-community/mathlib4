@@ -40,6 +40,7 @@ This file defines operations on two-sided ideals of a ring `R`.
   `fromIdeal : Ideal R → TwoSidedIdeal R` is defined as the smallest two-sided ideal containing an
   ideal and `asIdeal : TwoSidedIdeal R → Ideal R` the inclusion map.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

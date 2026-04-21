@@ -19,6 +19,7 @@ of primes `p = f⁻¹(q)`. We show that this property is stable under compositio
 that surjections and localizations satisfy this.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

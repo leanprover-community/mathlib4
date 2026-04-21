@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Positivity.Finset
 This file proves the Ruzsa covering lemma. This says that, for `A`, `B` finsets, we can cover `A`
 with at most `#(A + B) / #B` copies of `B - B`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

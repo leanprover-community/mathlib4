@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.Mod_
 /-!
 # Additional results about module objects in Cartesian monoidal categories
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

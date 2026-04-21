@@ -31,6 +31,7 @@ Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 square root
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ to the equivalence class of `(x, 1)` in the localization of `R` at an `M`.
   is a topological ring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

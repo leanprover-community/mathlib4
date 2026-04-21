@@ -16,6 +16,7 @@ Let `E` be a finite-dimensional real vector space, let `μ` be a Haar measure on
 convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaar_frontier`), hence
 `s` is a `NullMeasurableSet` (see `Convex.nullMeasurableSet`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

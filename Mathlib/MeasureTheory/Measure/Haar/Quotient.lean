@@ -45,6 +45,7 @@ is equipped with a sigma-finite Haar measure.
 Note that a group `G` with Haar measure that is both left and right invariant is called
 **unimodular**.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

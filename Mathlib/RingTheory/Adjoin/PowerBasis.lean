@@ -15,6 +15,7 @@ public import Mathlib.LinearAlgebra.Matrix.Basis
 This file defines the canonical power basis on `R[x]`,
 where `x` is an integral element over `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

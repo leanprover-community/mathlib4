@@ -46,6 +46,7 @@ of the exterior algebra.
 The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

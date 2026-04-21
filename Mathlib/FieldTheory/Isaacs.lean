@@ -28,6 +28,7 @@ in `F[X]` has a root in `E`, then `E` is an algebraic closure of `F`.
 The American Mathematical Monthly
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

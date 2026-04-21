@@ -61,6 +61,7 @@ Ported from Haskell's `Data.Set`.
 ordered map, ordered set, data structure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ is preserved by the functors `Fᵢ`. In this file, we show that a cone for `G`
 is a limit if it is so after applying the functors `Fᵢ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

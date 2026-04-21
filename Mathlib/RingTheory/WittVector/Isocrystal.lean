@@ -51,6 +51,7 @@ This file introduces notation in the scope `Isocrystal`.
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

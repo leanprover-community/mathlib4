@@ -17,6 +17,7 @@ We define the logarithmic derivative of a function `f` as `deriv f / f`. We then
 facts about this, including how it changes under multiplication and composition.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

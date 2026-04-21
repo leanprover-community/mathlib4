@@ -36,6 +36,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean inserts `NNRat.cast`, not
 `Subtype.val`. Else your lemma will never apply.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

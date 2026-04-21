@@ -41,6 +41,7 @@ Perhaps one could be favored but there is no real reason to.
 [J.-M. Oudom, D. Guin, *On the Lie enveloping algebra of a pre-Lie algebra*][oudom_guin_2008]
 <https://ncatlab.org/nlab/show/pre-Lie+algebra>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ Compared to the results for analytic functions, the principles established here 
 complicated to state. This is because meromorphic functions can be modified at will along discrete
 subsets and still remain meromorphic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

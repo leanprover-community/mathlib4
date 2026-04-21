@@ -16,6 +16,7 @@ public import Mathlib.Data.Set.Lattice
 This file contains the results concerning the interaction of finset big operators with groups with
 zero.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

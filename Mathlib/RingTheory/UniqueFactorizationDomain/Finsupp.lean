@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 ## Main definitions
 * `UniqueFactorizationMonoid.factorization`: the multiset of irreducible factors as a `Finsupp`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

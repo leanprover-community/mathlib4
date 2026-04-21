@@ -39,6 +39,7 @@ folders, and in `ContDiff.lean`.
 
 derivative, strictly differentiable, continuously differentiable, smooth, inverse function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

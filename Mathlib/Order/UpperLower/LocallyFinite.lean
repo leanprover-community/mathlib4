@@ -14,6 +14,7 @@ public import Mathlib.Order.UpperLower.Closure
 
 In this file we characterise the interaction of `UpperSet`/`LowerSet` and `LocallyFiniteOrder`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

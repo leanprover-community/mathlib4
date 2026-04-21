@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 /-!
 # Chosen finite products in `GrpCat` and friends
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -51,6 +51,7 @@ with respect to other language operations.
   then `l` is the language `m∗ * n`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

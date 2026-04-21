@@ -22,6 +22,7 @@ on the underlying order (such as `PartialOrder` and `LinearOrder`).
 * Lattice structure on antichains.
 * Order equivalence between upper/lower sets and antichains.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

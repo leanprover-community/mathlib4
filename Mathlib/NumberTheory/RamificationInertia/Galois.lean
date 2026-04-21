@@ -42,6 +42,7 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

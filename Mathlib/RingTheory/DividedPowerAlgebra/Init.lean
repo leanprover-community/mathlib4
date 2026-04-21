@@ -57,6 +57,8 @@ divided powers.
 -/
 
 @[expose] public section
+
+
 noncomputable section
 
 open Finset Ideal MvPolynomial RingQuot

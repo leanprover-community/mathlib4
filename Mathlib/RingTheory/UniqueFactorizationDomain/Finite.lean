@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `UniqueFactorizationMonoid.fintypeSubtypeDvd`: elements of a UFM with finitely many units have
   finitely many divisors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

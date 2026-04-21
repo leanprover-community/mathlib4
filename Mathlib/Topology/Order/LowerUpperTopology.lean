@@ -50,6 +50,7 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 
 lower topology, upper topology, preorder
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

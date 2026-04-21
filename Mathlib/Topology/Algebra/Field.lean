@@ -19,6 +19,7 @@ A topological division ring is a topological ring whose inversion function is co
 non-zero element.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

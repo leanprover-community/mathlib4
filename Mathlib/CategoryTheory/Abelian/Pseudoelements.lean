@@ -73,6 +73,7 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Topology.ContinuousMap.StarOrdered
 This provides the instances of `ContinuousSqrt` for `ℝ`, `ℝ≥0`, and `ℂ`, thereby yielding instances
 of `StarOrderedRing C(α, R)` and `StarOrderedRing C(α, R)₀` for any topological space `α` and `R`
 among `ℝ≥0`, `ℝ`, and `ℂ`. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,8 @@ We define the pointwise category structure on indexed families of objects in a c
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory
 
 open Functor

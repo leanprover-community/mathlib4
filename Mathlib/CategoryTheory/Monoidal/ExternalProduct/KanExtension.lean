@@ -21,6 +21,7 @@ of `H ⊠ K` along `L.prod (𝟭 E)`.
 We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
 extension of `K ⊠ H` along `(𝟭 E).prod L`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄

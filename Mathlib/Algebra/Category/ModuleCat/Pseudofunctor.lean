@@ -24,6 +24,7 @@ We also define a pseudofunctor
 is given by the extension of scalars functors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

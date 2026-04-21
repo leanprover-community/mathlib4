@@ -26,6 +26,7 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
 ## Tags
 ENNReal, EReal, exponential
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace EReal

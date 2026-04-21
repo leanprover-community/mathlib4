@@ -38,6 +38,7 @@ they are actually satisfied. If they are actually satisfied, then we show that
   `[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2)` are pairwise disjoint
   for `j < k + 1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

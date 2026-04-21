@@ -33,6 +33,7 @@ We introduce the notation `M [×n]→L[R] M'` for the space of continuous `n`-mu
 types as the arguments of our continuous multilinear maps), but arguably the most important one,
 especially when defining iterated derivatives.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

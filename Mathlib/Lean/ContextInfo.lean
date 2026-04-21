@@ -15,6 +15,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 This file contains helper functions for running `CoreM`, `MetaM` and tactic actions
 in the context of an infotree node.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public meta section
 

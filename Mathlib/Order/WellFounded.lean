@@ -19,6 +19,7 @@ The predicate `WellFounded` is defined in the core library. In this file we prov
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
 and an induction principle `WellFounded.induction_bot`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

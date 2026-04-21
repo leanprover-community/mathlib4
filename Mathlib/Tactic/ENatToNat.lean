@@ -22,6 +22,7 @@ The implementation follows these steps:
 3. Translate the remaining goals from `ENat` to `Nat` using the `enat_to_nat_coe` simp set.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

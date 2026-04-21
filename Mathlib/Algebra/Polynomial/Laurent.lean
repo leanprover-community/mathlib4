@@ -68,6 +68,7 @@ Lots is missing!
 --  `Polynomial.toFinsuppIso`.
 -- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

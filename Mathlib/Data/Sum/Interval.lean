@@ -15,6 +15,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 This file provides the `LocallyFiniteOrder` instance for the disjoint sum and linear sum of two
 orders and calculates the cardinality of their finite intervals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

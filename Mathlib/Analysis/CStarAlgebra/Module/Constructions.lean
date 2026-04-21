@@ -59,6 +59,7 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 and then replace the uniformity and bornology with the correct ones.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Algebraic.Defs
 
 This file contains results on cardinality of algebraic extensions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -15,6 +15,7 @@ public import Mathlib.Logic.Equiv.Nat
 
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

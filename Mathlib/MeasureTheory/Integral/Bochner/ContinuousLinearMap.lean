@@ -18,6 +18,7 @@ operations on the space `L¹`. Note that composition by a continuous linear map 
 the composition, as we are dealing with classes of functions, but it has already been defined
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

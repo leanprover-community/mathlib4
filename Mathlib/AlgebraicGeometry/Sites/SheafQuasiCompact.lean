@@ -14,6 +14,7 @@ In this file we show that a presheaf is a sheaf in the `AlgebraicGeometry.Scheme
 if and only if it is a sheaf in the Zariski topology and a sheaf on single object
 `P`-coverings of affine schemes.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

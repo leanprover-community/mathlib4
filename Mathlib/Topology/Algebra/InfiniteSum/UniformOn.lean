@@ -18,6 +18,7 @@ public import Mathlib.Order.Filter.AtTopBot.Finset
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.
 - `HasProdLocallyUniformly f g` : `∏ i, f i b` converges locally uniformly to `g`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

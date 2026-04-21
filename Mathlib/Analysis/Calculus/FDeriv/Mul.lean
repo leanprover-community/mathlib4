@@ -21,6 +21,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * product of finitely many scalar functions
 * taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

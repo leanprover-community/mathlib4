@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 For every ring `R`, we construct an equivalence between subrings of `R` and that of `Rᵐᵒᵖ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

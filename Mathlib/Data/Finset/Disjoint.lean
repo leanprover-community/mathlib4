@@ -21,6 +21,7 @@ public import Mathlib.Data.Finset.Insert
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

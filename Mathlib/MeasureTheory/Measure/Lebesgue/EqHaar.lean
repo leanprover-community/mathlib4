@@ -45,6 +45,7 @@ small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 Statements on integrals of functions with respect to an additive Haar measure can be found in
 `MeasureTheory.Measure.Haar.NormedSpace`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ This file is almost identical to the file `Mathlib/Algebra/Ring/Subsemiring/Poin
 possible, try to keep them in sync.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ This defines left Ore sets on arbitrary monoids.
 * https://ncatlab.org/nlab/show/Ore+set
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

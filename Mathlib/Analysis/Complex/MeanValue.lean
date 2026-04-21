@@ -16,6 +16,7 @@ computing the value of a function at the center of a circle as a circle average.
 generalized versions that computing the value of a function at arbitrary points of a disk as circle
 averages over suitable weighted functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

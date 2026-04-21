@@ -24,6 +24,7 @@ blowup in the future.
   implies that the rees algebra over a Noetherian ring is still Noetherian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -55,6 +55,7 @@ the conditioning set has non-zero measure should be named using the abbreviation
 
 conditional, conditioned, bayes
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

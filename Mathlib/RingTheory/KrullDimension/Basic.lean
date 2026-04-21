@@ -19,6 +19,7 @@ Given a commutative ring, its ring-theoretic Krull dimension is the order-theore
 of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
 prime ideals ordered by strict inclusion.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

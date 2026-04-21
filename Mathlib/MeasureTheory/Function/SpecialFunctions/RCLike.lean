@@ -12,6 +12,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 # Measurability of the basic `RCLike` functions
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

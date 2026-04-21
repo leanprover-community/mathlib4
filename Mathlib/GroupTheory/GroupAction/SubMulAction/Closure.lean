@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 /-!
 # Closure and finiteness of `SubMulAction` and `SubAddAction`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

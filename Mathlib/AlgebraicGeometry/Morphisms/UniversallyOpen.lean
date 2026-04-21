@@ -20,6 +20,7 @@ We show that being universally open is local at the target, and is stable under 
 base changes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

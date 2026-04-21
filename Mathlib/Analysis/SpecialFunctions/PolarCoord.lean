@@ -20,6 +20,7 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 `∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) = ∫ p, f p`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

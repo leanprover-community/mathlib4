@@ -28,6 +28,7 @@ root pairings.
   a root.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

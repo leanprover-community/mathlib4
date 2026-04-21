@@ -12,6 +12,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Defs
 
 This file defines maps of monoid algebras along both the ring and monoid arguments.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 

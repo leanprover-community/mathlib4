@@ -31,6 +31,7 @@ and adapted. We also give an equivalent characterization of predictability for d
 predictable, previsible
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

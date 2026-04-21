@@ -44,6 +44,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 * Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

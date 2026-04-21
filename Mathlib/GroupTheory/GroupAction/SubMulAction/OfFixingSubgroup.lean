@@ -66,6 +66,7 @@ Given a `MulAction` of `G` on `α` and `s : Set α`,
     of an enumeration of `s`, as an equivariant map.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

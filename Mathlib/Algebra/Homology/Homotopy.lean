@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Abel
 
 We define chain homotopies, and prove that homotopic chain maps induce the same map on homology.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

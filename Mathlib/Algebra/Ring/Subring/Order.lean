@@ -20,6 +20,7 @@ We study subrings of ordered rings and prove their basic properties.
 * various ordered instances: a subring of an `IsOrderedRing` or an `IsStrictOrderRing` is again
   the respective kind of ordered ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

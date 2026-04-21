@@ -20,6 +20,7 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 * class `LawfulFix`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

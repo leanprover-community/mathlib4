@@ -68,6 +68,7 @@ Here are some additions to this file that could be made in the future:
 * [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnell1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

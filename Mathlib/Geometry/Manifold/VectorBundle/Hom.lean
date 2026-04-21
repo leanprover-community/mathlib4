@@ -20,6 +20,7 @@ Note that we only do this for bundles of linear maps, not for bundles of arbitra
 Indeed, semilinear maps are typically not smooth. For instance, complex conjugation is not
 `ℂ`-differentiable.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ The Bochner integral of a strongly measurable function against a kernel is stron
   `f : α → β → E` such that `uncurry f` is measurable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

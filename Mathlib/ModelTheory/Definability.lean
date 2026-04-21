@@ -37,6 +37,7 @@ This file defines what it means for a set over a first-order structure to be def
   composition.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

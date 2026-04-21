@@ -25,6 +25,8 @@ example (a b c x y z : Nat) (h : ¬ x*y*z < 0) : c < a + 3*b := by
   h : ¬↑x * ↑y * ↑z < 0
   ⊢ ↑c < ↑a + 3 * ↑b
   -/
+
+set_option backward.defeqAttrib.useBackward true
 ```
 -/
 

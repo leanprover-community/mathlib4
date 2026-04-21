@@ -49,6 +49,7 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

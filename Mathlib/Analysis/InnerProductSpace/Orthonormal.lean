@@ -25,6 +25,7 @@ This file defines orthonormal sets in inner product spaces.
 For the existence of orthonormal bases, Hilbert bases, etc., see the file
 `Analysis.InnerProductSpace.projection`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

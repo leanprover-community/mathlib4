@@ -23,6 +23,7 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

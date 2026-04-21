@@ -17,6 +17,7 @@ public import Mathlib.Order.Filter.Cofinite
 This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

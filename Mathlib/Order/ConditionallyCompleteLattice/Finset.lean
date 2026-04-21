@@ -13,6 +13,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 # Conditionally complete lattices and finite sets.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

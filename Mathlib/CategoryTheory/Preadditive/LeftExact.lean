@@ -23,6 +23,7 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 * and then derive the preservation of all finite limits with the usual construction.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

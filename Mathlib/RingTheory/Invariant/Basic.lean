@@ -37,6 +37,7 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
   If `k` is a domain containing `B/Q`, then any `A/P`-algebra automorphism of `k` restricts to
   an automorphism of `B/Q`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 `AddCommGroup` also has zero morphisms. For definitional reasons, we infer this from preadditivity
 rather than from the existence of a zero object.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

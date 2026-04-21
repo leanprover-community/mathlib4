@@ -62,6 +62,7 @@ https://doc.sagemath.org/html/en/reference/number_fields/sage/rings/number_field
 
 class group, selmer group, unit group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

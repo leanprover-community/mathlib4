@@ -14,6 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 In this file we prove that if a function is monotone and is bounded on a set `s`, then it admits a
 monotone extension to the whole space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

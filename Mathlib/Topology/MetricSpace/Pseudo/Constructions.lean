@@ -14,6 +14,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

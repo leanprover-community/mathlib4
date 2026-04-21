@@ -34,6 +34,7 @@ to use a canonical `Module` typeclass throughout.
 
 semimodule, module, vector space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

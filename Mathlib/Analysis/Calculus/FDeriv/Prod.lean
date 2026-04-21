@@ -18,6 +18,7 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions) for the derivative of
 Cartesian products of functions, and functions into Pi-types.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

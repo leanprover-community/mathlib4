@@ -23,6 +23,7 @@ is obvious from the construction, and the latter is what is commonly known as th
 theorem. Both of these properties are proved in the file `Coherence.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ In the following, `*` can represent either `c`, `o`, or `i`.
   * `Set.Iic.boundedOrder`, within an `OrderBot`
   * `Set.Ici.boundedOrder`, within an `OrderTop`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

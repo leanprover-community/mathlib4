@@ -20,6 +20,7 @@ This file provides results about row and column matrices.
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

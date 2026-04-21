@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Determinant
 /-!
 # The determinant of a continuous linear map.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

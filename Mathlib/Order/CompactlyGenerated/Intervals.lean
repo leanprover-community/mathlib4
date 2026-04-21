@@ -11,6 +11,7 @@ public import Mathlib.Order.CompactlyGenerated.Basic
 /-!
 # Results about compactness properties for intervals in complete lattices
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

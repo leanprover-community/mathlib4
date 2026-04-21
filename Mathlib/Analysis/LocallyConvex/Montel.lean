@@ -27,6 +27,7 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 * [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

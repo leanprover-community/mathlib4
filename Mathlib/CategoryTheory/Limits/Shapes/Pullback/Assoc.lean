@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 This file shows that pullbacks (and pushouts) are associative up to natural isomorphism.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

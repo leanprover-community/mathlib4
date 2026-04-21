@@ -16,6 +16,7 @@ public import Mathlib.Logic.Equiv.Fintype
 This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
 of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

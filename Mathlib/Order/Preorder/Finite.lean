@@ -14,6 +14,7 @@ public import Mathlib.Order.Minimal
 This file shows that non-empty finite sets in a preorder have minimal/maximal elements, and
 contrapositively that non-empty sets without minimal or maximal elements are infinite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

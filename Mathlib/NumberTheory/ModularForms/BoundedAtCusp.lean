@@ -15,6 +15,7 @@ public import Mathlib.NumberTheory.ModularForms.SlashActions
 We define the notions of "bounded at c" and "vanishing at c" for functions on `ℍ`, where `c` is
 an element of `OnePoint ℝ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

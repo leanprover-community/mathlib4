@@ -21,6 +21,7 @@ Equivalently, `L` is equal to the preimage in `M × N` of the graph of this isom
 `M'` and `N'` can be explicitly constructed as `Submodule.goursatFst L` and `Submodule.goursatSnd L`
 respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

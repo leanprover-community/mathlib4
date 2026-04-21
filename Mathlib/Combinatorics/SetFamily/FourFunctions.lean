@@ -55,6 +55,7 @@ earlier file and give it a proper API.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Data.Complex.Basic
 /-!
 # Finite sums and products of complex numbers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

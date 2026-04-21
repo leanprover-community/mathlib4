@@ -23,6 +23,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
 * `Finsupp.orderEmbeddingToFun`: The order embedding from finitely supported functions to
   functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

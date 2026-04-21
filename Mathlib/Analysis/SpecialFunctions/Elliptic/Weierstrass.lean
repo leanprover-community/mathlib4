@@ -46,6 +46,7 @@ public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 Weierstrass p-functions, Weierstrass p functions
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

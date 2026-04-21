@@ -33,6 +33,7 @@ the Kolmogorov extension theorem.
   family of measures.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

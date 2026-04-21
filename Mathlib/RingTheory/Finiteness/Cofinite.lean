@@ -19,6 +19,7 @@ generated (i.e. FG).
 - `Submodule.CoFG` expresses that a submodule is co-finitely generated.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

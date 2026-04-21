@@ -18,6 +18,7 @@ contain only finitely many arrows.
 - `CategoryTheory.Precoverage.finite`: The finite precoverage on a category.
 - `CategoryTheory.Pretopology.finite`: The finite pretopology on a category.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

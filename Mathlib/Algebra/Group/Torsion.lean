@@ -14,6 +14,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 This file proves lemmas about torsion-free monoids.
 A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

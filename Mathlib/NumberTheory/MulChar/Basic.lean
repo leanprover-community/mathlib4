@@ -36,6 +36,7 @@ character vanishes; see `MulChar.IsNontrivial.sum_eq_zero`.
 
 multiplicative character
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

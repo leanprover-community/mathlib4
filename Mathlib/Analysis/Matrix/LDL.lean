@@ -28,6 +28,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 * Prove that `LDL.lower` is lower triangular from `LDL.lowerInv_triangular`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

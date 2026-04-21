@@ -17,6 +17,7 @@ This file characterises the covering sieves of the regular topology.
 * `regularTopology.mem_sieves_iff_hasEffectiveEpi`: a sieve is a covering sieve for the
   regular topology if and only if it contains an effective epi.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

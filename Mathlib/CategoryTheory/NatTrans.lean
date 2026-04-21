@@ -30,6 +30,7 @@ Introduces notations
 * `σ ◫ τ` for horizontal compositions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

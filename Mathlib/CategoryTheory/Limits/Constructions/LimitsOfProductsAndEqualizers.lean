@@ -29,6 +29,7 @@ Similarly, if it preserves all finite products and equalizers, then it preserves
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

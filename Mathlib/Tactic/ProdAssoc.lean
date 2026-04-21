@@ -19,6 +19,7 @@ For example,
 ```
 gives the "obvious" equivalence between `(α × β) × (γ × δ)` and `α × (β × γ) × δ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

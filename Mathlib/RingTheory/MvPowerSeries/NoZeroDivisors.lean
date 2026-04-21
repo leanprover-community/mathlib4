@@ -34,6 +34,7 @@ The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 (McCoy theorem) holds for power series over a Noetherian ring,
 but not in general. See [Fields1971]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

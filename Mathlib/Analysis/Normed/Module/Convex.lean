@@ -26,6 +26,7 @@ We prove the following facts:
 * `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

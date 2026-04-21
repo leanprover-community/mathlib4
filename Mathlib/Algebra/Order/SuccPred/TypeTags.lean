@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 This file declares successor and predecessor orders on type tags.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

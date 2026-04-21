@@ -17,6 +17,7 @@ If a category `C` has a separator, then `HomologicalComplex C c`
 has a separating family, and a separator when suitable coproducts exist.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

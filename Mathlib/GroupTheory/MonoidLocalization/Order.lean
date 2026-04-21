@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.MonoidLocalization.Basic
 # Ordered structures on localizations of commutative monoids
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

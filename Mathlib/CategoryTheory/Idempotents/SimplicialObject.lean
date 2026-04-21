@@ -17,6 +17,7 @@ and `CosimplicialObject C` are idempotent complete categories when the
 category `C` is.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

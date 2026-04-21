@@ -15,6 +15,7 @@ skyscraper sheaf functor `skyscraperSheafFunctor : A ⥤ Sheaf J A` and
 show that it is a right adjoint to `Φ.sheafFiber : Sheaf J A ⥤ A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

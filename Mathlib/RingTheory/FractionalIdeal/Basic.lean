@@ -54,6 +54,7 @@ making the localization a field.
 
 fractional ideal, fractional ideals, invertible ideal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

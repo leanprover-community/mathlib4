@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 Typeclasses representing categories with (co)products over finite indexing types.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ If `f` does not have these properties, then we define `comap f μ` to be zero.
 In the future, we may decide to redefine `comap f μ` so that it gives meaningful results, e.g.,
 for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

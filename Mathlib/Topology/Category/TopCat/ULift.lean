@@ -16,6 +16,7 @@ In this file, we construct the functor `uliftFunctor.{v, u} : TopCat.{u} ⥤ Top
 which sends a topological space `X : Type u` to a homeomorphic space in `Type (max u v)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

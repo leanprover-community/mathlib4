@@ -15,6 +15,7 @@ public import Mathlib.Tactic.FastInstance
 This file generalizes the Cauchy completion of `(ℚ, abs)` to the completion of a ring
 with absolute value.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

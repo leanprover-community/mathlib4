@@ -19,6 +19,7 @@ we show that `sq₁₂.ι` has the left lifting property with respect to
 to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ This module extends the core library's treatment of quotient types (`Init.Core`)
 
 quotient
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

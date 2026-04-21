@@ -19,6 +19,7 @@ finitely-generated and free.
 We do not put this in `LinearAlgebra.Multilinear.Basic` to avoid making the imports too large
 there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

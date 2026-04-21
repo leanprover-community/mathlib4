@@ -23,6 +23,7 @@ This file establishes the class equation for finite groups.
   nontrivial conjugacy classes. Also `Group.nat_card_center_add_sum_card_noncenter_eq_card`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -26,6 +26,7 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 * https://en.wikipedia.org/wiki/Zero_morphism
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

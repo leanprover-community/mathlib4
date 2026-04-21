@@ -31,6 +31,7 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

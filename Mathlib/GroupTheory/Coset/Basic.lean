@@ -38,6 +38,7 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

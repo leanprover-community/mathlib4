@@ -38,6 +38,7 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 number field, infinite places
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

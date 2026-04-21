@@ -27,6 +27,7 @@ These equivs are defined here as opposed to in the quotients file since they can
 formed as ring equivs.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -61,6 +61,7 @@ binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
 
 multilinear, tensor, tensor product
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

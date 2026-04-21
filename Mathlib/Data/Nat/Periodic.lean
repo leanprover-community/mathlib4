@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Count
 This file identifies a few functions on `ℕ` which are periodic, and also proves a lemma about
 periodic predicates which helps determine their cardinality when filtering intervals over them.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

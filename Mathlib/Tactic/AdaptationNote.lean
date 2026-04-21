@@ -16,6 +16,7 @@ Adaptation notes are comments that are used to indicate that a piece of code
 has been changed to accommodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

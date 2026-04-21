@@ -69,6 +69,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
 
 equicontinuity, uniform convergence, ascoli
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

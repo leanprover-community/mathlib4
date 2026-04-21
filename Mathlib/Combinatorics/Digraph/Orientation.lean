@@ -33,6 +33,7 @@ the edge orientations of `Digraph`.
 
 digraph, simple graph, oriented graphs
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

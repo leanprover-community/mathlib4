@@ -32,6 +32,7 @@ of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

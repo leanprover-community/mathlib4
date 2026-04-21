@@ -24,6 +24,7 @@ This is a special case of `ProperSpace.of_locallyCompactSpace` from
 `Mathlib/Analysis/Normed/Module/FiniteDimension.lean`, specialized to be on the field itself
 with a proof that requires fewer imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

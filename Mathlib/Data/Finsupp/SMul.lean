@@ -21,6 +21,7 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
   (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

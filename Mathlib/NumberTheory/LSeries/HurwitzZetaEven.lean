@@ -46,6 +46,7 @@ multiples of `1 / s` and `1 / (1 - s)`.
 * `hasSum_int_hurwitzZetaEven` and `hasSum_nat_cosZeta`: relation between the zeta functions and
   the corresponding Dirichlet series for `1 < re s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

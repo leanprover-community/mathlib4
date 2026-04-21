@@ -26,6 +26,7 @@ finite type.
 ## Tags
 finite set, finite type, induction, function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

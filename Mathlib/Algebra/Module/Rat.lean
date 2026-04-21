@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Field.Rat
 /-!
 # Basic results about modules over the rationals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

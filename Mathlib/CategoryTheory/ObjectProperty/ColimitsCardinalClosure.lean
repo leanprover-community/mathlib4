@@ -22,6 +22,7 @@ we show that this closure `P.colimitsCardinalClosure κ` is
 also essentially `w`-small.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

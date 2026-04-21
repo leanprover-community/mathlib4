@@ -42,6 +42,7 @@ incidence matrix for each `SimpleGraph α` has the same type.
 * Define the graph Laplacian of a simple graph using the oriented incidence matrix from an
   arbitrary orientation of a simple graph.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

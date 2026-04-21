@@ -26,6 +26,7 @@ import Mathlib.Probability.Kernel.Composition.RadonNikodym
   if `f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b))` is integrable, then `f (μ.rnDeriv ν a)` is integrable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

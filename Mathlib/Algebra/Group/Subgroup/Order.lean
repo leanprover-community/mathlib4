@@ -14,6 +14,7 @@ public import Mathlib.Order.Atoms
 /-!
 # Facts about ordered structures and ordered instances on subgroups
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

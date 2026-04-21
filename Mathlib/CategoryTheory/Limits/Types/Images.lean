@@ -15,6 +15,7 @@ In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

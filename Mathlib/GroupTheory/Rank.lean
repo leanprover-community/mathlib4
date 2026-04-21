@@ -18,6 +18,7 @@ This file defines the rank of a group, namely the minimum size of a generating s
 Should we define `erank G : ℕ∞` the rank of a not necessarily finitely generated group `G`,
 then redefine `rank G` as `(erank G).toNat`? Maybe a `Cardinal`-valued version too?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

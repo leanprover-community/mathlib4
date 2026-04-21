@@ -34,6 +34,7 @@ if all monomials occurring in `φ` have degree `n`.
 * The special case with `w = 1` of the above yields the algebra isomorphism
   `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ for any presheaf `P : Cᵒᵖ ⥤ A`, the sheafification map `toSheafify J P` is
 We show that this holds under certain universe assumptions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Order.Heyting.Hom
 
 This file defines `HeytAlg`, the category of Heyting algebras.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

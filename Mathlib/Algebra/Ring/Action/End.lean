@@ -27,6 +27,7 @@ the group structure is defined.
 
 ring aut
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

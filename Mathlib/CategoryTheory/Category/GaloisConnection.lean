@@ -16,6 +16,7 @@ public import Mathlib.Order.GaloisConnection.Defs
 * `GaloisConnection.adjunction` is the adjunction associated to a Galois connection.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

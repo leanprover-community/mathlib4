@@ -25,6 +25,7 @@ In this file, we define the height of a prime ideal and the height of an ideal.
   minimal prime ideals of I.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

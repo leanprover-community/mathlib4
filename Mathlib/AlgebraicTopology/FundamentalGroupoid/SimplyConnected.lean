@@ -23,6 +23,7 @@ We also define the corresponding predicate for sets.
 
   - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

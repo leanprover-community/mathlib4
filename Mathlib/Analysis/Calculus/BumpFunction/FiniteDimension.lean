@@ -23,6 +23,7 @@ in `IsOpen.exists_contDiff_support_eq`.
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

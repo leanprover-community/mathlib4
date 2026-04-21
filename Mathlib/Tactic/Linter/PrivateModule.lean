@@ -51,6 +51,7 @@ Note that metaprograms should not add public declarations when run in private sc
 likely be a bug in the metaprogram. As such, we do not perform further checks for automatically
 generated declarations such as those detected by `isAutoDecl` or `isInternalDetail`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Ideal.Operations
 This lemma generalises `exists_sum_eq_one_iff_pairwise_coprime` to the case of non-principal ideals.
 It is on a separate file due to import requirements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

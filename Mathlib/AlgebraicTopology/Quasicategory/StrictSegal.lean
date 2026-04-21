@@ -18,6 +18,7 @@ simplices are uniquely determined by their spine.
 In this file, we prove that any simplicial set satisfying the strict Segal
 condition is a quasicategory.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

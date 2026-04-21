@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 /-!
 # Additional instances for two-sided ideals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 instance {R} [NonUnitalNonAssocRing R] : NonUnitalSubringClass (TwoSidedIdeal R) R where

@@ -19,6 +19,7 @@ A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U
 We show that these properties are local, and are stable under compositions and base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

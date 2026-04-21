@@ -18,6 +18,7 @@ We define `HahnSeries.cardSupp` as the cardinality of the support of a Hahn seri
 for the cardinalities of different operations. We also build the subgroups, subrings, etc. of Hahn
 series bounded by a given infinite cardinal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

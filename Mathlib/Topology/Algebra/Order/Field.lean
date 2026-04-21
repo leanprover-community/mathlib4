@@ -18,6 +18,7 @@ and division (apart from zero in the denominator). We also prove theorems like
 `Filter.Tendsto.mul_atTop`: if `f` tends to a positive number and `g` tends to positive infinity,
 then `f * g` tends to positive infinity.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

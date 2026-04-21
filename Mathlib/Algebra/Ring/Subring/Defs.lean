@@ -62,6 +62,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 subring, subrings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

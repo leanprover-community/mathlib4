@@ -17,6 +17,7 @@ In this file we define the 1-skeleton of a CW complex as a graph.
 * `CWComplex.OneSkeletonGraph`: the 1-skeleton of a CW complex as a graph.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

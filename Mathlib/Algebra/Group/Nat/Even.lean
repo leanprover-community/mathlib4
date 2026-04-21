@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Sqrt
 /-!
 # `IsSquare` and `Even` for natural numbers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

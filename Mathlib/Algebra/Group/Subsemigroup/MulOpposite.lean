@@ -15,6 +15,7 @@ For every semigroup `M`, we construct an equivalence between subsemigroups of `M
 `Mᵐᵒᵖ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,8 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe w v u
 

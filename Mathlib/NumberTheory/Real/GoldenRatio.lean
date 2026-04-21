@@ -23,6 +23,7 @@ Along with various computational facts about them, we prove their
 irrationality, and we link them to the Fibonacci sequence by proving
 Binet's formula.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

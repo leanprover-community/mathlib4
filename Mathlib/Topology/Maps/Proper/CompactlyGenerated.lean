@@ -14,6 +14,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 This file proves that if `Y` is a Hausdorff and compactly generated space, a continuous map
 `f : X → Y` is proper if and only if preimage of compact sets are compact.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

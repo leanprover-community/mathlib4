@@ -20,6 +20,7 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 * once we have scalar actions by semigroups (as opposed to monoids), implement the action of a
   non-unital subalgebra on the larger algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

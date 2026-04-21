@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -15,6 +15,7 @@ We formulate conditions about `F` which imply that `F.op`, `F.unop`, `F.leftOp` 
 preserve certain (co)limits and vice versa.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

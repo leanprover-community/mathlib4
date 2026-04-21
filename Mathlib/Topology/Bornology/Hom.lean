@@ -23,6 +23,7 @@ be satisfied by itself and all stricter types.
 
 * `LocallyBoundedMapClass`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

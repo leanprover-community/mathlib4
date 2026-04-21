@@ -20,6 +20,7 @@ In many cases, one can generalize results about the tangent cone
 by using `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
 instead of these lemmas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

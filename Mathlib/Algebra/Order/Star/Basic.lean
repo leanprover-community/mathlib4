@@ -40,6 +40,7 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
   [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
   the advantage of not requiring a topology.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

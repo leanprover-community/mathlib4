@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Module.LinearMap.Defs
 /-!
 # Reinterpret an additive homomorphism as a `ℚ`-linear map.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

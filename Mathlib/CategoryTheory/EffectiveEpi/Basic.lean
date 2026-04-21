@@ -34,6 +34,7 @@ our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

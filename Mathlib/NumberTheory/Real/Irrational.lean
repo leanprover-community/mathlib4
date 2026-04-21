@@ -25,6 +25,7 @@ With the `Decidable` instances in this file, is possible to prove `Irrational âˆ
 when `n` is a numeric literal or cast;
 but this only works if you `unseal Nat.sqrt.iter in` before the theorem where you use this proof.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

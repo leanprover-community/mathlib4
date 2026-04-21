@@ -22,6 +22,7 @@ public import Mathlib.ModelTheory.Definability
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

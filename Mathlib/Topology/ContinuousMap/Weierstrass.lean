@@ -21,6 +21,7 @@ Here we rephrase this more abstractly as
 and then, by precomposing with suitable affine functions,
 `polynomialFunctions_closure_eq_top : (polynomialFunctions (Set.Icc a b)).topologicalClosure = ⊤`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

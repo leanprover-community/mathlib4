@@ -28,6 +28,7 @@ the resulting permutation is cyclic (if `l` has at least two elements).
 The presence of duplicates in a particular placement can lead `List.formPerm` to produce a
 nontrivial permutation that is noncyclic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

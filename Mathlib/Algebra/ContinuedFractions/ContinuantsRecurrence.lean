@@ -17,6 +17,7 @@ function indeed satisfies the following recurrences:
 - `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`, and
 - `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

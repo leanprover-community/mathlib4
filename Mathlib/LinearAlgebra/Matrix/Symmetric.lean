@@ -21,6 +21,7 @@ This file contains the definition and basic results about symmetric matrices.
 
 symm, symmetric, matrix
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

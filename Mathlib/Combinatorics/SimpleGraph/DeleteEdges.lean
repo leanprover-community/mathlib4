@@ -27,6 +27,7 @@ case.
 * `SimpleGraph.deleteFar G p r` is the predicate that a graph is `r`-*delete-far* from a property
   `p`, that is, at least `r` edges must be deleted to satisfy `p`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,6 +29,7 @@ this instance on `WithConv (E →ₗ[R] F)`.
 The reason we chose `WithConv` is because together with the convolution product from
 `Mathlib/RingTheory/Coalgebra/Convolution.lean`, we get a ⋆-algebra when
 `star (WithConv.toConv comul) = WithConv.toConv (comm ∘ comul)`. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

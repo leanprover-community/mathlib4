@@ -49,6 +49,7 @@ in this file we take the `Fintype Kˣ` argument directly to reduce the chance of
 diamonds, as `Fintype` carries data.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

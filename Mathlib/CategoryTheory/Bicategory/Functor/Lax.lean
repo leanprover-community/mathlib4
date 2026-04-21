@@ -38,6 +38,8 @@ be to mirror these constructions for lax functors.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory
 
 open Category Bicategory

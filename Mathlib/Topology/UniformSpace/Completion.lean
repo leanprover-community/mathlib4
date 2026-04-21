@@ -41,6 +41,7 @@ This formalization is mostly based on
   I. M. James: Topologies and Uniformities
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

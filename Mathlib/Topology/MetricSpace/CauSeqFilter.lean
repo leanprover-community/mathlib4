@@ -15,6 +15,7 @@ In this file we apply `Metric.complete_of_cauchySeq_tendsto` to prove that a `No
 is complete in terms of `Cauchy` filter if and only if it is complete in terms
 of `CauSeq` Cauchy sequences.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

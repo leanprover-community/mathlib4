@@ -19,6 +19,7 @@ sufficient to check that it preserves colimits indexed by nonempty directed
 types.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

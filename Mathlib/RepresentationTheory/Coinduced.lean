@@ -42,6 +42,7 @@ coinduction functor and hence that the coinduction functor preserves limits.
   along `φ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

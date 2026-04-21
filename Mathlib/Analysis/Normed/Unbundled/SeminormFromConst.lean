@@ -37,6 +37,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 SeminormFromConst, Seminorm, Nonarchimedean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

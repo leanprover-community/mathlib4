@@ -18,6 +18,7 @@ Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 self-adjoint matrix, hermitian matrix
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.Data.Set.Image
 In this file we define `Function.support f = {x | f x ≠ 0}` and prove its basic properties.
 We also define `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

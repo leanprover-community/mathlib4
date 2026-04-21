@@ -29,6 +29,7 @@ There are a handful of definitions in this file, given `X : Profinite`:
 7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

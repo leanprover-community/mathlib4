@@ -15,6 +15,7 @@ Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

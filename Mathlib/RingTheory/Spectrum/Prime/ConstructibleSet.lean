@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

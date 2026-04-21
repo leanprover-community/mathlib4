@@ -46,6 +46,7 @@ on the direction would make them barely usable:
 * We do not define an analogue of the predicate `UniqueDiffOn`;
 * We do not define `LineDifferentiableOn` nor `LineDifferentiable`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ If `C` has finitely many objects, then so do `WithTerminal C` and `WithInitial C
 and likewise if `C` has finitely many morphisms as well.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

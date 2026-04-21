@@ -16,6 +16,7 @@ This file defines
 * `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
 and proves various lemmas about them.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

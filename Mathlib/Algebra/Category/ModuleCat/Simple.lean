@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 We prove simple modules are exactly simple objects in the category of `R`-modules.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

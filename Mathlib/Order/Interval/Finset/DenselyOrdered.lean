@@ -15,6 +15,7 @@ public import Mathlib.Order.Interval.Finset.Basic
   A linear locally finite order is densely ordered if and only if it is a subsingleton.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

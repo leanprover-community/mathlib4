@@ -20,6 +20,7 @@ the associated distinguished triangle in the derived category:
   exact sequence in the heart of a t-structure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

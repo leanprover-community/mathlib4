@@ -22,6 +22,7 @@ We construct some simple examples of presheaves of functions on a topological sp
   `presheafToTopCommRing X (TopCommRingCat.of ℂ)`
   is the presheaf of rings of continuous complex-valued functions on `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

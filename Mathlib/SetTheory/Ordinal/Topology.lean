@@ -28,6 +28,7 @@ We prove some miscellaneous results involving the order topology of ordinals.
 Most things in this file should be generalized to other well-orders, or to Scott-Hausdorff
 topologies.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

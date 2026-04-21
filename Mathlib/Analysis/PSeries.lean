@@ -23,6 +23,7 @@ converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. We prove this test in
 
 p-series, Cauchy condensation test
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

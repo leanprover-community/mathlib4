@@ -17,6 +17,7 @@ public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 We define the cusps of a subgroup of `GL(2, ℝ)` as the fixed points of parabolic elements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

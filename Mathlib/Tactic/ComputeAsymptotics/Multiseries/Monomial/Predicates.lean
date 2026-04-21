@@ -24,6 +24,7 @@ This trichotomy determines the asymptotic behaviour of a monomial:
 `FirstNonzeroIsPos` means it tends to infinity, `FirstNonzeroIsNeg` means it tends to zero and
 `AllZero` means it tends to a constant.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

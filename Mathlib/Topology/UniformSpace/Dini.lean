@@ -31,6 +31,7 @@ basis is `nhds_basis_Ioo`. In the case of a normed lattice additive commutative 
 is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity criterion
 corresponds to `HasSolidNorm`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

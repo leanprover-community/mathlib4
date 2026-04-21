@@ -10,6 +10,7 @@ public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
 
 /-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

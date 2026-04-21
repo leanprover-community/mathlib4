@@ -51,6 +51,7 @@ All the hard work is done in `Mathlib/Geometry/RingedSpace/PresheafedSpace/Gluin
 glue presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

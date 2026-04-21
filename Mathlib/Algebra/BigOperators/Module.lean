@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Abel
 /-!
 # Summation by parts
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

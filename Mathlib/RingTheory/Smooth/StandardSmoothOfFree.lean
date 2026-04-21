@@ -35,6 +35,7 @@ For an example of an algebra with `H¹(S/R) = 0` and `Ω[S⁄R]` finite and free
 coordinate ring of the circle. One can show that then `Ω[S⁄R]` is `S`-free on `ω = xdy - ydx`,
 but there are no `f g : S` such that `ω = g df`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

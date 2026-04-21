@@ -18,6 +18,7 @@ public import Mathlib.Topology.Order.Real
 This file currently only contains results on `ENNReal` but is named `Real.lean`
 to make it clear we can accept more `(E)(NN)Real` results.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

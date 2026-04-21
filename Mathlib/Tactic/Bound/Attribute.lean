@@ -16,6 +16,7 @@ Any lemma tagged with `@[bound]` is registered as an apply rule for the `bound` 
 converting it to either `norm apply` or `safe apply <priority>`.  The classification is based
 on the number and types of the lemma's hypotheses.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -24,6 +24,7 @@ invariant under Moebius transformations. We also calculate the derivative, and g
 formula for its Jacobian determinant over `ℝ` (used in proving that the action preserves
 a suitable measure).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

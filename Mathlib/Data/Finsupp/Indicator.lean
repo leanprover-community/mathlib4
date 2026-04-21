@@ -16,6 +16,7 @@ This file defines `Finsupp.indicator` to help create finsupps from finsets.
 
 * `Finsupp.indicator`: Turns a map from a `Finset` into a `Finsupp` from the entire type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

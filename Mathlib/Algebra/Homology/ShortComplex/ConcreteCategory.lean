@@ -18,6 +18,7 @@ which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

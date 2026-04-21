@@ -37,6 +37,7 @@ This file contains some finiteness results of tensor product.
 tensor product, finitely generated
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,6 +22,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castAddHom`: `cast` bundled as an `AddMonoidHom`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

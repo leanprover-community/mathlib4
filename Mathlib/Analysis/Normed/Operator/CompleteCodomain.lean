@@ -19,6 +19,7 @@ linear maps from `E` to `F` is equivalent to the completeness of `F`.
 
 A similar statement holds for spaces of continuous multilinear maps
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

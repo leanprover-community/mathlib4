@@ -13,6 +13,7 @@ public import Mathlib.Data.W.Basic
 This file defines polynomial functors and the W-type construction as a polynomial functor.
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

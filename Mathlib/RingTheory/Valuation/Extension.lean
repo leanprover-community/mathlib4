@@ -48,6 +48,7 @@ without first determining the normalizations once and for all.
 Valuation, Extension of Valuations
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Qq.Typ
 
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

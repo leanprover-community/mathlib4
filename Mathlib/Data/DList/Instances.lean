@@ -15,6 +15,7 @@ public import Mathlib.Control.Traversable.Instances
 This file provides the equivalence between `List α` and `DList α` and the traversable instance
 for `DList`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

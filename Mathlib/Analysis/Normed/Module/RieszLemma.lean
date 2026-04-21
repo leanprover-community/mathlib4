@@ -26,6 +26,7 @@ property. This is `riesz_lemma_one`.
 A further lemma, `Metric.closedBall_infDist_compl_subset_closure`, finds a *closed* ball within
 the closure of a set `s` of optimal distance from a point in `x` to the frontier of `s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 /-!
 # Limits in lattice categories are given by infimums and supremums.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

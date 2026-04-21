@@ -37,6 +37,7 @@ documentation of `Algebra`.
 [Munthe-Kaas, H.Z., Lundervold, A. **On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.**][munthe-kaas_lundervold_2013]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

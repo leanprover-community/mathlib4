@@ -26,6 +26,7 @@ of a simplicial sets. We also introduce typeclasses
 - [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

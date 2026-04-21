@@ -18,6 +18,7 @@ public import Mathlib.RingTheory.Ideal.Over
 We prove basic properties of the residue field of a local ring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

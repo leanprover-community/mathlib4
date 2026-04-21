@@ -16,6 +16,7 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 `τ : F.obj ⟨j, _⟩ ⟶ X` is given.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

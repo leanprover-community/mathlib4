@@ -28,6 +28,7 @@ In this setting, `exists_dual_vector` states that, for any nonzero `x`, there ex
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
 of `𝕜`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

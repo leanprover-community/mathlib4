@@ -25,6 +25,7 @@ We define:
 These concepts relate strong and weak connectivity and let us reason about strongly connected
 components in directed graphs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

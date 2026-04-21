@@ -14,6 +14,7 @@ public import Mathlib.Topology.Neighborhoods
 In this file we prove properties of `Filter.PTendsto` etc. in topological spaces. We also introduce
 `PContinuous`, a version of `Continuous` for partially defined functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

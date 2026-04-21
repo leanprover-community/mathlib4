@@ -15,6 +15,7 @@ Usually we would use `@[elementwise]` at the point of definition,
 however some early parts of the category theory library are imported by `Tactic.Elementwise`,
 so we need to add the attribute after the fact.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

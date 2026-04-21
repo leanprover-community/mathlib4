@@ -16,6 +16,7 @@ a section `s : F.obj U`, we define a sieve `G.sieveOfSection s : Sieve (unop U)`
 and the associated compatible family of elements with values in `G.toFunctor`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

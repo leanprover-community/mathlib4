@@ -21,6 +21,7 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
 - `interior_closedBall'`, `frontier_closedBall'`, `interior_sphere'`, `frontier_sphere'`:
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

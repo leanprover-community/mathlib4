@@ -15,6 +15,7 @@ public import Mathlib.Order.Category.FinPartOrd
 This file defines `FinBddDistLat`, the category of finite distributive lattices with
 bounded lattice homomorphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

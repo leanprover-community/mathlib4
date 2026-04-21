@@ -36,6 +36,7 @@ Show that compact Hausdorff rings are totally disconnected and linearly topologi
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

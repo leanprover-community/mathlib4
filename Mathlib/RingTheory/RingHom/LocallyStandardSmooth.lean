@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 In this file we show that a ring homomorphism is smooth if and only if it is locally standard
 smooth.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 universe u
 

@@ -20,6 +20,7 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   measurable with respect to the tail σ-algebra `limsup s atTop` of an independent sequence of
   σ-algebras `s` has probability 0 or 1.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 This file proves some lemmas about pointwise algebraic operations with lists of sets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

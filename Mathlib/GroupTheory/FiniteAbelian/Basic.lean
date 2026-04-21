@@ -20,6 +20,7 @@ public import Mathlib.Data.ZMod.QuotientRing
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

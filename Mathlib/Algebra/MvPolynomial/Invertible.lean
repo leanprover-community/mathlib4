@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AlgebraTower
 This file is a stub containing some basic facts about
 invertible elements in the ring of polynomials.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

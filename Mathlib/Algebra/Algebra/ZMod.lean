@@ -11,6 +11,7 @@ public import Mathlib.Data.ZMod.Basic
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

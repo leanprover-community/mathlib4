@@ -76,6 +76,7 @@ equivalence between `(c : OrderedFinpartition n) × Option (Fin c.length)`
 and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
 of Faa di Bruno formula to identify the sums that show up.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

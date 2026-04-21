@@ -51,6 +51,7 @@ category of an abelian category (TODO).
   in degrees in the image of `e.f` (TODO);
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

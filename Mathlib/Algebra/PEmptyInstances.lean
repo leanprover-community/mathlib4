@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Group.Defs
 This file collects facts about algebraic structures on the (universe-polymorphic) empty type, e.g.
 that it is a semigroup.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

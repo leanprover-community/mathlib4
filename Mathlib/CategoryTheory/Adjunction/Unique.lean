@@ -21,6 +21,7 @@ This file shows that adjoints are unique up to natural isomorphism.
   naturally isomorphic.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

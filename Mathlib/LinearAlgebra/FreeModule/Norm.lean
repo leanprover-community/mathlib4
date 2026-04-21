@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Norm.Defs
 /-!
 # Norms on free modules over principal ideal domains
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

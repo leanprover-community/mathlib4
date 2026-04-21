@@ -17,6 +17,7 @@ This file proves various versions of Ceva's theorem.
 * https://en.wikipedia.org/wiki/Ceva%27s_theorem
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

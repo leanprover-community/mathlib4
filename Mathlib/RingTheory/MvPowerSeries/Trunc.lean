@@ -53,6 +53,7 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
   a total degree `n` when the index `σ` is finite
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

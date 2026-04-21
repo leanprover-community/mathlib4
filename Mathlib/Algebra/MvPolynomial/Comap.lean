@@ -24,6 +24,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

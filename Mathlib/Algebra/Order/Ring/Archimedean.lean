@@ -37,6 +37,7 @@ reasons:
 * The order we defined on `ArchimedeanClass R` matches the order on `AddValuation`, rather than the
   one on `Valuation`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

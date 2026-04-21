@@ -23,6 +23,7 @@ We provide the following versions of the pigeonholes principle.
 
 Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

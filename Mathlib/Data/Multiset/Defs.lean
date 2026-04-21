@@ -53,6 +53,7 @@ importing `Multiset.Defs`.
 * `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
   occurrences of `a` in `s` and `t`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

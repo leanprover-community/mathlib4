@@ -17,6 +17,7 @@ The lemmas in this file require at least one of the following of the Lebesgue in
 * The set of integration is finite or countable
 * The measure is finite, s-finite or sigma-finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

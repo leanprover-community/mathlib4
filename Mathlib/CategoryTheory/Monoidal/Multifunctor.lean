@@ -19,6 +19,7 @@ and the unitality conditions are phrased as equalities of natural transformation
 Once we have more API for quadrifunctors, we can add constructors for monoidal category structures
 by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ public import Mathlib.Analysis.Complex.Polynomial.Basic
 Develop more theory (e.g., it suffices to check that `aeval z p ≠ 0` for `z = 0` and `z` a root of
 unity).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -32,6 +32,7 @@ We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and
 ## Tags
 ENNReal, EReal, logarithm, exponential
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

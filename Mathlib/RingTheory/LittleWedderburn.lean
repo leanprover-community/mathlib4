@@ -35,6 +35,7 @@ not clear, but assuming that such a theory could be found where every module con
 below proof is free, then the proof works nearly verbatim.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

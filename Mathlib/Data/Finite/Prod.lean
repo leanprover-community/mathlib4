@@ -15,6 +15,7 @@ public import Mathlib.Data.Set.NAry
 /-!
 # Finiteness of products
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

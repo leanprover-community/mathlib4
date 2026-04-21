@@ -33,6 +33,7 @@ This is often quite convenient.
 We use the abbreviation `deleteElem` in lemma names to refer to the deletion `M ＼ {e}`
 of a single element `e : α` from `M : Matroid α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

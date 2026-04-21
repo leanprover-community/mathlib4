@@ -30,6 +30,7 @@ Note that `NatIso` is a namespace without a corresponding definition;
 we put some declarations that are specifically about natural isomorphisms in the `Iso`
 namespace so that they are available using dot notation.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

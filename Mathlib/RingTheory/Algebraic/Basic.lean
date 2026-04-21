@@ -19,6 +19,7 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 The main result in this file proves transitivity of algebraicity:
 a tower of algebraic field extensions is algebraic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

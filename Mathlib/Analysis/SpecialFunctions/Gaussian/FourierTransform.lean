@@ -25,6 +25,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 `integral_cexp_neg_mul_sq_norm_add` and `fourierIntegral_gaussian_innerProductSpace`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

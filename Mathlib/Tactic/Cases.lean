@@ -36,6 +36,7 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -19,6 +19,7 @@ This statement is deduced from a similar statement for
 the category `SimplexCategory.Truncated d`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

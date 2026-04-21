@@ -38,6 +38,7 @@ In this file we provide various results regarding idempotent elements in rings.
   If `R` is commutative, then a family `{ eᵢ }` of complete orthogonal idempotent elements induces
   a ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

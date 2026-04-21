@@ -24,6 +24,7 @@ We also show that outer measures on a type `α` form a complete lattice.
 outer measure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

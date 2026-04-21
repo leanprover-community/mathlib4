@@ -16,6 +16,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 
 This file proves lemmas about `∏ x ∈ Ixx a b, f x` and `∑ x ∈ Ixx a b, f x`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

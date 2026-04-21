@@ -37,6 +37,7 @@ is given by `ContinuousMultilinearMap.fderivCompContinuousLinearMap`.
 All statements in the first section are claiming this, for various notions of differentiation.
 The second section deduces the corresponding differentiability results when `ι` is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

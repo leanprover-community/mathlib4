@@ -32,6 +32,7 @@ In a category with binary products, for any object `X` the functor
 ## TODO
 Show `star X` itself has a right adjoint provided `C` is Cartesian closed and has pullbacks.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Prod.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

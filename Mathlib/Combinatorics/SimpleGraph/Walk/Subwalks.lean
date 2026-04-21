@@ -22,6 +22,7 @@ We define a relation on walks stating that one walk is the subwalk of another.
 ## Tags
 walks, subwalks
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

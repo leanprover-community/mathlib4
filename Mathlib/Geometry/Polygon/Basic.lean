@@ -20,6 +20,7 @@ For the special case `n = 3`, an interconversion is provided with `Affine.Triang
 * `Polygon P n`: A polygon with `n` vertices in a type `P`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

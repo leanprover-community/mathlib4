@@ -11,6 +11,7 @@ public import Mathlib.Data.QPF.Multivariate.Basic
 /-!
 # Dependent product and sum of QPFs are QPFs
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

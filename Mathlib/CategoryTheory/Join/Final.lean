@@ -16,6 +16,7 @@ This file records the fact that `inclLeft C D : C ⥤ C ⋆ D` is initial if `C`
 Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono
 this file we tag a few foundational lemmas with the mono attribute.  Lemmas in more advanced files
 are tagged in place.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

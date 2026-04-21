@@ -36,6 +36,7 @@ topological vector space has a basis consisting of absolutely convex sets.
 
 disks, convex, balanced
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

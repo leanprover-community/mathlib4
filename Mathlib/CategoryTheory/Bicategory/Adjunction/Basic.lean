@@ -29,6 +29,7 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
   2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

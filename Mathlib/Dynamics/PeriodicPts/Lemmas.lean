@@ -18,6 +18,7 @@ public import Mathlib.Dynamics.PeriodicPts.Defs
 /-!
 # Extra lemmas about periodic points
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

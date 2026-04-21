@@ -20,6 +20,7 @@ Let `β` be a `Fintype` and `f : Equiv.Perm β`.
 * `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations
   that multiply to `f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

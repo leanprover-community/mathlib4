@@ -23,6 +23,7 @@ public import Mathlib.Topology.Order.LiminfLimsup
 The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -17,6 +17,7 @@ with zero `Γ`, and a submonoid `S` of `v.supp.primeCompl`, the valuation `v` ca
 extended to the localization `S⁻¹A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public meta import Lean.Meta.Tactic.LibrarySearch
 
 `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

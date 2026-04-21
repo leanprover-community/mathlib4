@@ -16,6 +16,7 @@ import Mathlib.Tactic.Positivity.Finset
 This file proves theorems about `MeasureTheory.lpNorm`,
 a real-valued version of `MeasureTheory.eLpNorm`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open Filter
 open scoped BigOperators ComplexConjugate ENNReal NNReal

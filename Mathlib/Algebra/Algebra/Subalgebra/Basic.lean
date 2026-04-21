@@ -18,6 +18,7 @@ In this file we define `Subalgebra`s and the usual operations on them (`map`, `c
 The `Algebra.adjoin` operation and complete lattice structure can be found in
 `Mathlib/Algebra/Algebra/Subalgebra/Lattice.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

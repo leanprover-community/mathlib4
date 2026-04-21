@@ -16,6 +16,7 @@ the functor which takes a set to the condensed set corresponding to locally cons
 set, and the forgetful functor from the category of condensed sets to the category of sets
 (see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

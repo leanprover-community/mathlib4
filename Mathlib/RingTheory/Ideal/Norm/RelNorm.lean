@@ -32,6 +32,7 @@ spanned by the norms of elements in `I`.
 * `relNorm_relNorm`: transitivity of the relative ideal norm
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

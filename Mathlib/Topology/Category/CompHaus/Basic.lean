@@ -32,6 +32,7 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 `CompHausLike.Basic` for more information.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

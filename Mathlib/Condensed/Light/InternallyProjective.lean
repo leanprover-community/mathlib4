@@ -35,6 +35,7 @@ condensed module on a condensed set (`free_internallyProjective_iff_tensor_condi
 light profinite set (`free_lightProfinite_internallyProjective_iff_tensor_condition`/
 `free_lightProfinite_internallyProjective_iff_tensor_condition'`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

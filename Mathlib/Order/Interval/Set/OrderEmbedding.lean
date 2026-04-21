@@ -16,6 +16,7 @@ is an interval in the domain.
 
 Note that similar statements about images require the range to be order-connected.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Units.Defs
 /-!
 # Units in multiplicative and additive opposites
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

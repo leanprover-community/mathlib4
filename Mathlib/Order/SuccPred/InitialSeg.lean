@@ -13,6 +13,7 @@ public import Mathlib.Order.SuccPred.Limit
 
 We establish some connections between initial segment embeddings and successors and predecessors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -25,6 +25,7 @@ This file proves statements about limits and continuity of functions involving `
 * `ContinuousOn.comp_fract`: Precomposing a continuous function satisfying `f 0 = f 1` with
   `Int.fract` yields another continuous function.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

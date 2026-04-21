@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Positivity.Core
 /-!
 # Lemmas about powers in ordered fields.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,6 +18,7 @@ the inverse Fourier transform, respectively.
 Moreover, we provide type-classes that encode the linear structure and the Fourier inversion
 theorem.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

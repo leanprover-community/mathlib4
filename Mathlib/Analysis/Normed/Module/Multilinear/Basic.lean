@@ -45,6 +45,7 @@ is only well defined when there is an order on the variables (for instance on `F
 the final result is independent of the order. While everything could be done following this
 approach, it turns out that direct proofs are easier and more efficient.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

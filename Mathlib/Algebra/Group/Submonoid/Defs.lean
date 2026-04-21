@@ -47,6 +47,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 ## Tags
 submonoid, submonoids
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

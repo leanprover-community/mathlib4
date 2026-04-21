@@ -19,6 +19,7 @@ although typically `simp` should reduce rather than increase the reported discre
 
 `check_compositions` may be useful in diagnosing uses of `erw` in the category theory library.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

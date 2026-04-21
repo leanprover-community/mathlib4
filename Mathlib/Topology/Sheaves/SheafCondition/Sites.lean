@@ -22,6 +22,7 @@ functor from a topological basis to `TopologicalSpace.Opens` is cover dense, tha
 induce cover-preserving functors, and that open embeddings induce continuous functors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

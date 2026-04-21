@@ -43,6 +43,7 @@ take a perfectoid field as the input.
 ## Tags
 Period rings, p-adic Hodge theory
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

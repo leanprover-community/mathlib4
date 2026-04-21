@@ -95,6 +95,7 @@ so it was not done in https://github.com/leanprover-community/mathlib4/pull/1064
 
 uniform space, separated space, Hausdorff space, separation quotient
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

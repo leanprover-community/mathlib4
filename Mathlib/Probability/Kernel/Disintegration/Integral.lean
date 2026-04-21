@@ -24,6 +24,7 @@ Integrals of `ProbabilityTheory.Kernel.condKernel` and `MeasureTheory.Measure.co
 Corresponding statements for the Lebesgue integral and/or without the sets `s` and `t` are also
 provided.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

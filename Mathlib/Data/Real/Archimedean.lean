@@ -17,6 +17,7 @@ import Mathlib.Data.Int.LeastGreatest
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

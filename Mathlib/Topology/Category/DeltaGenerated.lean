@@ -21,6 +21,7 @@ Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 ## TODO
 * `DeltaGenerated` is Cartesian closed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

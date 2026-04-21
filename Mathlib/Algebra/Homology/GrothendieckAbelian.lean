@@ -18,6 +18,7 @@ category (with `IsGrothendieckAbelian.{w} C`), the category
 `HomologicalComplex C c` is Grothendieck abelian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

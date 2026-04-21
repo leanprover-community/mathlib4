@@ -39,6 +39,7 @@ of requiring self adjointness in the definition.
 
 Positive operator
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

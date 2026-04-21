@@ -22,6 +22,7 @@ An element `x : α` can be reinterpreted as an element of `star α ⟶ star α` 
 More generally, a list of elements of `a` can be reinterpreted as a path from `star α` to
 itself using `pathEquivList`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,7 @@ We prove enough about `maxPowDvd` in this file to show equality with `Nat.padicV
 
 The implementation of `maxPowDvd` improves on the speed of `padicValNat`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Topology.Instances.Int
 
 The structure of a metric space on `ℕ` is introduced in this file, induced from `ℝ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

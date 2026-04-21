@@ -17,6 +17,7 @@ public import Mathlib.Data.Sign.Defs
 This file defines the sign function for types with zero and a decidable less-than relation, and
 proves some basic theorems about it.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

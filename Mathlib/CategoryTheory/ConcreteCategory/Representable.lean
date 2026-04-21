@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 This file provides some API for the situation `(F ⋙ forget D).RepresentableBy Y`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

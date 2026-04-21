@@ -19,6 +19,7 @@ We define this correspondence as `enumOrd`, and use it to then define an order i
 
 This can be thought of as an ordinal analog of `Nat.nth`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

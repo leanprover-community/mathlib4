@@ -21,6 +21,7 @@ definitionally equal to ours.
 * `Class.iota`: Definite description operator.
 * `ZFSet.isOrdinal_notMem_univ`: The Burali-Forti paradox. Ordinals form a proper class.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

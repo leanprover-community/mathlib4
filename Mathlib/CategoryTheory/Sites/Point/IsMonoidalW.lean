@@ -21,6 +21,7 @@ i.e. this can be used in order to construct the monoidal
 category structure on `Sheaf J A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

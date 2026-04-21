@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Adjoin.FG
 * `fg_of_fg_of_fg`: **Artin--Tate lemma**: if C/B/A is a tower of rings, and A is Noetherian, and
   C is algebra-finite over A, and C is module-finite over B, then B is algebra-finite over A.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

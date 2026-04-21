@@ -20,6 +20,7 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 `π / 4 = arctan 1`), including John Machin's original one at
 `four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

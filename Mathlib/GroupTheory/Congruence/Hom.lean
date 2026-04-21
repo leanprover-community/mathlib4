@@ -25,6 +25,7 @@ This file contains elementary definitions involving congruence relations and mor
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

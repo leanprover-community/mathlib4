@@ -24,6 +24,7 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
   `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

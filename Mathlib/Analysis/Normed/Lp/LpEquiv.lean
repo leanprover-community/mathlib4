@@ -37,6 +37,7 @@ the subtype of `PreLp` satisfying `Memℓp`.
   pi-types) and the counting measure on `α`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

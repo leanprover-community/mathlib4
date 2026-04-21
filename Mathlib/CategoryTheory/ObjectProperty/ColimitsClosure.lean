@@ -20,6 +20,7 @@ and under certain smallness assumptions, we show that it is essentially small.
 results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

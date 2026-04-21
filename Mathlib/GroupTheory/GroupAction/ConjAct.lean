@@ -32,6 +32,7 @@ is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

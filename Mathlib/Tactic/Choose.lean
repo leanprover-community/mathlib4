@@ -14,6 +14,7 @@ Performs Skolemization, that is, given `h : ∀ a:α, ∃ b:β, p a b |- G` prod
 
 TODO: switch to `rcases` syntax: `choose ⟨i, j, h₁ -⟩ := expr`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

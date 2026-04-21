@@ -16,6 +16,7 @@ import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 Supplementary theorems about the `String` type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

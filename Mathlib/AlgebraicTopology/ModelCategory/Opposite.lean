@@ -11,6 +11,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 # The opposite of a model category structure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

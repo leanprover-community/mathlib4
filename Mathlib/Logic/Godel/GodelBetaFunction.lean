@@ -44,6 +44,7 @@ and other key results from the repository https://github.com/iehality/lean4-logi
 
 Gödel, beta function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

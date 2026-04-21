@@ -41,6 +41,7 @@ small colimits.
 * https://stacks.math.columbia.edu/tag/00XI
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

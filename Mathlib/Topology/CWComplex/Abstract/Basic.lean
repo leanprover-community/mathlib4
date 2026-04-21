@@ -43,6 +43,7 @@ The two approaches are equivalent but serve different purposes:
   `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
   Currently there is no way to move between the two definitions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

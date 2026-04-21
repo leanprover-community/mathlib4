@@ -28,6 +28,7 @@ be satisfied by itself and all stricter types.
 * `CoheytingHomClass`
 * `BiheytingHomClass`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

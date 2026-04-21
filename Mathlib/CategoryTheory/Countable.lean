@@ -15,6 +15,7 @@ public import Mathlib.Data.Countable.Small
 A category is countable in this sense if it has countably many objects and countably many morphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

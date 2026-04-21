@@ -17,6 +17,7 @@ form `x ^ a`.
 
 logarithm, tonality
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

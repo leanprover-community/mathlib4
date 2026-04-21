@@ -27,6 +27,7 @@ Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

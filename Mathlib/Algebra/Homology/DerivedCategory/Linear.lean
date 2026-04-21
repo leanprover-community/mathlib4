@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Shift.Linear
 # The derived category of a linear abelian category is linear
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

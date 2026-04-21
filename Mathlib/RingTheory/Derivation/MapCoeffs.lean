@@ -21,6 +21,8 @@ are generalizations of that for algebras. We also have a special case for `Diffe
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 noncomputable section
 
 open Polynomial Module

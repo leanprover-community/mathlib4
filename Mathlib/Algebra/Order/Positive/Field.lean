@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Positive.Ring
 In this file we prove that the set of positive elements of a linear ordered field is a linear
 ordered commutative group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

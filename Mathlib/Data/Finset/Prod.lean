@@ -23,6 +23,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
 * `Finset.offDiag`: For `s : Finset α`, `s.offDiag` is the `Finset (α × α)` of pairs `(a, b)` with
   `a, b ∈ s` and `a ≠ b`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ We show that flatness is stable under composition and base change.
                                           then the localization of `M` at `S` is flat as a module
                                           for the localization of `R` at `S`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

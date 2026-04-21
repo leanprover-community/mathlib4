@@ -32,6 +32,7 @@ The proof and motivation are described in the paper
 
 p-adic, p adic, padic, p-adic integer
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

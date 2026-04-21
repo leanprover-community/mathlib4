@@ -22,6 +22,7 @@ public import Mathlib.CategoryTheory.Abelian.Opposite
 * [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

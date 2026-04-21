@@ -71,6 +71,7 @@ the literature and turn the order around?
 
 The specialisation to `Finset α` could be generalised to atomistic orders.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

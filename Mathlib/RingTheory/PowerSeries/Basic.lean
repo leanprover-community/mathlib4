@@ -47,6 +47,7 @@ We then build some glue to treat formal power series as if they were indexed by 
 Occasionally this leads to proofs that are uglier than expected.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

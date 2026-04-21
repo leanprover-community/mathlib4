@@ -22,6 +22,7 @@ of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
 and the same applies to `t.minus` and `t.bounded`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

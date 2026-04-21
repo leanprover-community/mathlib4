@@ -55,6 +55,7 @@ supremum helps define the meaning of recursive procedures.
 * [Recursive definitions of partial functions and their computations][cadiou1972]
 * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

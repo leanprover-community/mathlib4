@@ -20,6 +20,7 @@ Prove that the height of `(x₀ : x₁ : ··· : xₙ) ∈ ℙⁿ(ℚ)` equals 
 maximum of the absolute values of the `xᵢ` when they are chosen to be coprime integers. This
 should then be split off into a separate `Mathlib.NumberTheory.Height.Rat` file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

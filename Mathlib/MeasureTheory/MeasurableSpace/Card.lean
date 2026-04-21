@@ -26,6 +26,7 @@ construction is parameterized by an ordinal `< ω₁`, and the cardinality bound
 each step of the construction. We show in `MeasurableSpace.generateMeasurable_eq_rec` that this
 indeed generates this sigma-algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

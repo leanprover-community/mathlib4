@@ -22,6 +22,7 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 uniform space, uniform continuity, compact space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

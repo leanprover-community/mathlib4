@@ -36,6 +36,7 @@ The theory of classes is developed in `Mathlib/SetTheory/ZFC/Class.lean`.
 To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
 respectively as "`Set`" and "ZFC set".
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

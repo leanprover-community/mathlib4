@@ -18,6 +18,7 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

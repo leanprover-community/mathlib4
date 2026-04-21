@@ -36,6 +36,7 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

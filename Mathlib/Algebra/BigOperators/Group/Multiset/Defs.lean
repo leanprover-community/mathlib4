@@ -22,6 +22,7 @@ and sums indexed by finite sets.
   the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

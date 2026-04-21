@@ -44,6 +44,7 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

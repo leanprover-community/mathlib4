@@ -15,6 +15,7 @@ public import Mathlib.Data.List.Basic
 
 This file provides lemmas for reasoning about the vertices of a path.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

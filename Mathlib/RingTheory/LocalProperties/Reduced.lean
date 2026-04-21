@@ -21,6 +21,7 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 * `isReduced_ofLocalizationMaximal` : `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

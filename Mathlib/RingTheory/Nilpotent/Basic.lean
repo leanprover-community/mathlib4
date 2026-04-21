@@ -30,6 +30,7 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
   * `Commute.isNilpotent_sub`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

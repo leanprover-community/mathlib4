@@ -28,6 +28,8 @@ and products of functors and natural transformations, written `F.prod G` and `α
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 namespace CategoryTheory
 

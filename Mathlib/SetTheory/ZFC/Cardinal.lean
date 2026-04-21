@@ -17,6 +17,7 @@ In this file, we define the cardinalities of ZFC sets as `ZFSet.{u} → Cardinal
 
 * `ZFSet.card`: Cardinality of a ZFC set.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

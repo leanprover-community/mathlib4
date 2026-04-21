@@ -31,6 +31,7 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   is the trailing degree of its characteristic polynomial
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

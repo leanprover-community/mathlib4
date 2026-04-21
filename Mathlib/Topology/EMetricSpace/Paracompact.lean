@@ -27,6 +27,7 @@ Generalize to `PseudoMetrizableSpace`s.
 
 metric space, paracompact space, normal space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

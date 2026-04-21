@@ -25,6 +25,7 @@ that it is a colimit cocone when `PreservesColimit₂ F₁ F₂ (curriedTensor C
 holds and `J` is sifted.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

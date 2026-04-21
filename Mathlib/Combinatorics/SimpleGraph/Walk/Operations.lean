@@ -27,6 +27,7 @@ Operations on walks that produce a new walk in the same graph.
 ## Tags
 walks
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

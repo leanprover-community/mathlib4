@@ -113,6 +113,7 @@ relating the order structures and ring structures are added as needed.
 TODO: the mixin assumptions can be relaxed in most cases
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

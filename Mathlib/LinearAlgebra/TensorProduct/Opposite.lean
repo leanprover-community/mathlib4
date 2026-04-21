@@ -14,6 +14,7 @@ The main result in this file is:
 
 * `Algebra.TensorProduct.opAlgEquiv R S A B : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

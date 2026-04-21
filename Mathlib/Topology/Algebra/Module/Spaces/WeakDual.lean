@@ -44,6 +44,7 @@ with the respective topology instances on it.
 weak-star, weak dual, duality
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

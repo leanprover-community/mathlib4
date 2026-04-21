@@ -27,6 +27,7 @@ In this file we show some global properties satisfy fpqc descent.
 - being an open immersion
   (`AlgebraicGeometry.descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact`)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

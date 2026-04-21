@@ -34,6 +34,7 @@ to take the values `0` and `∞`.
 
 * Eradicate the `1 / p` spelling in lemmas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

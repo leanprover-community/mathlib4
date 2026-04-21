@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Ring.Basic
 /-!
 # Non-zero divisors in a ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

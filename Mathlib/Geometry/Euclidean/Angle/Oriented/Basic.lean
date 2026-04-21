@@ -29,6 +29,7 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 * Evan Chen, Euclidean Geometry in Mathematical Olympiads.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

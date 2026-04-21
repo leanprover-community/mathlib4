@@ -10,6 +10,7 @@ public import Mathlib.Data.Set.Image
 /-!
 ### Recursion on the natural numbers and `Set.range`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

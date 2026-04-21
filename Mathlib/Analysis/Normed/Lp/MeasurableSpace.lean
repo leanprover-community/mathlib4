@@ -14,6 +14,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 If `X` is a measurable space, we set the measurable space structure on `WithLp p X` to be the
 same as the one on `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

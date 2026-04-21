@@ -33,6 +33,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 uniform convergence, bounded convergence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

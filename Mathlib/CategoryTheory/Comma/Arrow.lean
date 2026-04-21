@@ -21,6 +21,8 @@ comma, arrow
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 namespace CategoryTheory
 

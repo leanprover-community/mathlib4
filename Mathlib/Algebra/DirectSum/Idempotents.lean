@@ -16,6 +16,7 @@ of (left) ideals `R = V₁ ⊕ V₂ ⊕ ⋯ ⊕ Vₙ` then in the corresponding 
 `1 = e₁ + e₂ + ⋯ + eₙ` with `eᵢ ∈ Vᵢ`, each `eᵢ` is an idempotent and the
 `eᵢ`'s form a family of complete orthogonal idempotents.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

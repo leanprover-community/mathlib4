@@ -26,6 +26,7 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 * `𝓝ˢ[t] s`: the filter `nhdsSetWithin s t` of neighborhoods of a set `s` within a set `t`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

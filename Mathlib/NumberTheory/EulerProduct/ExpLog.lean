@@ -17,6 +17,7 @@ We consider `f : ℕ →*₀ ℂ` and show that `exp (∑ p in Primes, log (1 - 
 under suitable conditions on `f`. This can be seen as a logarithmic version of the
 Euler product for `f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

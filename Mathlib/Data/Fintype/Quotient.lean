@@ -26,6 +26,7 @@ by a finite type.
   dependent version of `Quotient.finLiftOn`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

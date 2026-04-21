@@ -15,6 +15,7 @@ This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

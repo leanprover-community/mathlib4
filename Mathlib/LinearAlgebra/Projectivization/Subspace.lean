@@ -28,6 +28,7 @@ also in the subset.
 - There is a one-to-one order-preserving correspondence between subspaces of a
   projective space and the submodules of the underlying vector space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

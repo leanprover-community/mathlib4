@@ -12,6 +12,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

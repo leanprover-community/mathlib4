@@ -35,6 +35,7 @@ For a module over a normed ring:
 
 seminorm, locally convex, LCTVS
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

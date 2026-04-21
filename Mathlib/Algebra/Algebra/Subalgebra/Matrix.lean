@@ -18,6 +18,7 @@ In this file we define the subalgebra of square matrices with entries in some su
 
 * `Subalgebra.matrix`: the subalgebra of square matrices with entries in some subalgebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

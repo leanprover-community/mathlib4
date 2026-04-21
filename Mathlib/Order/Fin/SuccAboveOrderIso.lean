@@ -15,6 +15,7 @@ Given `i : Fin (n + 2)`, we show that `Fin.succAboveOrderEmb` induces
 an order isomorphism `Fin (n + 1) ≃o ({i}ᶜ : Finset (Fin (n + 2)))`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

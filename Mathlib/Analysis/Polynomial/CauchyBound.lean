@@ -17,6 +17,7 @@ The bound is given by `Polynomial.cauchyBound`, which for `a_n x^n + a_(n-1) x^(
 
 The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

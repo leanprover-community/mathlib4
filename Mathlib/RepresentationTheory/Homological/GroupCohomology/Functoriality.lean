@@ -27,6 +27,7 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   a normal subgroup `S ≤ G` and a `G`-representation `A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

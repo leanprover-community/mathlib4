@@ -26,6 +26,7 @@ measure.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

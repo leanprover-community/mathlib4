@@ -27,6 +27,7 @@ This file contains several standard constructions on vector bundles:
 ## Tags
 Vector bundle, direct sum, pullback
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

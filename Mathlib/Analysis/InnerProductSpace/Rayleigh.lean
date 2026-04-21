@@ -35,6 +35,7 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 `⨅ x, ⟪T x, x⟫ / ‖x‖ ^ 2` (not necessarily both).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

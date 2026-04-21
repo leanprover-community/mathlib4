@@ -16,6 +16,7 @@ category `C`, we define a fully faithful functor
 `e.extendHomotopyFunctor C : HomotopyCategory C c ⥤ HomotopyCategory C c'`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

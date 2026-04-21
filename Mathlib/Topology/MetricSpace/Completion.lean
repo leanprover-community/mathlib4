@@ -18,6 +18,7 @@ here that the uniform space completion of a metric space inherits a metric space
 by extending the distance to the completion and checking that it is indeed a distance, and that
 it defines the same uniformity as the already defined uniform structure on the completion
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

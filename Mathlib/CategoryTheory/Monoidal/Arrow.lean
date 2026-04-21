@@ -20,6 +20,7 @@ If `C` also has pullbacks, then `Arrow C` has a monoidal closed structure given 
 (the Leibniz construction given by the internal hom on `C`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,8 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 namespace CategoryTheory

@@ -40,6 +40,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   `p` has height no greater than `n` if and only if it is a minimal ideal over some ideal generated
   by no more than `n` elements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

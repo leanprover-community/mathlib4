@@ -20,6 +20,7 @@ public import Mathlib.Data.ENat.Basic
 Converts most results about `degree`, `natDegree` and `leadingCoeff` to results about the bottom
 end of a polynomial
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

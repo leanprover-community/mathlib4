@@ -10,6 +10,7 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-! # Properties of integration with respect to the Lebesgue measure -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

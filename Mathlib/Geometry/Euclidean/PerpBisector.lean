@@ -22,6 +22,7 @@ define this subspace.
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

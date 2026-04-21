@@ -33,6 +33,7 @@ which may need to be revised if it turns out some operations violate these assum
 because there is a decent amount of slop in the actual data structure invariants, so the
 theorem will go through with multiple choices of assumption.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

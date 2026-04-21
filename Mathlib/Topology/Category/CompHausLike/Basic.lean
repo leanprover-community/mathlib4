@@ -62,6 +62,7 @@ of `CompHaus` and `Profinite` is used in the proof in question, and then proving
 `CompHausLike P` satisfying that property, and it will automatically apply to both `CompHaus` and
 `Profinite`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

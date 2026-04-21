@@ -37,6 +37,7 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
 There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

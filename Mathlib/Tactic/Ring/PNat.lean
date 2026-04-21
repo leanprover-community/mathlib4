@@ -16,6 +16,7 @@ public import Mathlib.Tactic.Ring.Basic
 This adds some instances which enable `ring` to work on `PNat` even though it is not a commutative
 semiring, by lifting to `Nat`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

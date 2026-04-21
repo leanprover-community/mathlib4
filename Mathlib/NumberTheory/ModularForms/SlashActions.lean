@@ -23,6 +23,7 @@ Scoped in the `ModularForm` namespace, this file defines
 
 * `f ∣[k] A`: the `k`th slash action by `A` on `f`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 # Miscellany about preservation of (co)limits in monoidal categories
 
 This file records some `PreservesColimits` instances on tensor products in monoidal categories. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

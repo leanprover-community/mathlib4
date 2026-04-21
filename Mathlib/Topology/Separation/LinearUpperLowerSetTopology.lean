@@ -11,6 +11,7 @@ public import Mathlib.Topology.Separation.Regular
 /-!
 # Linear upper or lower sets topologies are completely normal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

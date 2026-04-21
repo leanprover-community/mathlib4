@@ -20,6 +20,7 @@ These form a category with morphisms `g : Y ⟶ Y'` making the obvious diagram c
 
 We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects with source `T.obj Y`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

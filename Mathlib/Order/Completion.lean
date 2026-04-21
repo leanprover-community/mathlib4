@@ -28,6 +28,7 @@ lattice factors through it.
 
 Dedekind completion, Dedekind cut
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

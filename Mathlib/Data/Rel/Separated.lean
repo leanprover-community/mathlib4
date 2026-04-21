@@ -25,6 +25,7 @@ The concept of uniformly separated sets is used to define two further notions of
 * Actually use `SetRel.IsSeparated` to define the above two notions.
 * Link to the notion of separation given by pairwise disjoint balls.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

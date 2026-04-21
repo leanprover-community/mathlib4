@@ -16,6 +16,7 @@ zero, is closed under kernels, cokernels and finite products, we show that the
 full subcategory defined by `P` is abelian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

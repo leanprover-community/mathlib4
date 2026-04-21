@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 /-!
 # Lemmas about `Multiplicative ℤ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

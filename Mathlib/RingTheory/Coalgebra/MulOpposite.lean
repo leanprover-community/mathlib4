@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Coalgebra.Basic
 Suppose `R` is a commutative semiring, and `A` is an `R`-coalgebra,
 then `Aᵐᵒᵖ` is an `R`-coalgebra, where we define the comultiplication and counit maps naturally.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

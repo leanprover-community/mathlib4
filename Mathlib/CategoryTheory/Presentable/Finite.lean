@@ -18,6 +18,7 @@ We define finitely presentable objects as a synonym for `ℵ₀`-presentable obj
 and link this definition with the preservation of filtered colimits.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

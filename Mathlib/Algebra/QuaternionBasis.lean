@@ -24,6 +24,7 @@ public import Mathlib.Tactic.LinearCombination
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
   data / proofs is non-negligible.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

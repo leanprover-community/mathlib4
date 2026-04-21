@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 Lemmas about finiteness of ideal operations.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

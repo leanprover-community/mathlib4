@@ -27,6 +27,7 @@ See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for tran
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

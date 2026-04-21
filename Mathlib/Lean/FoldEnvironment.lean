@@ -17,6 +17,7 @@ It splits the environment into parts, each of which is folded over in a separate
 We also provide `foldCurrFileDecls` which loops through the declarations of the current module,
 without any parallelism.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 variable {α : Type}
 

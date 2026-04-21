@@ -49,6 +49,7 @@ We also provide API for going between oplax transformations and strong transform
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

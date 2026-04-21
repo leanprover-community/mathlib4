@@ -28,6 +28,7 @@ functions both take a complex variable as input.)
 This file defines these functions, and proves some elementary properties, including a reflection
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

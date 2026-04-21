@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.Instances.Int
 
 /-! # ℤ as a normed group -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

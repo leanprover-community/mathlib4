@@ -28,6 +28,7 @@ This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 * Limits in these categories
 * free/forgetful adjunctions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

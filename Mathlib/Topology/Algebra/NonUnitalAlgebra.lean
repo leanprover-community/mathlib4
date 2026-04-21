@@ -21,6 +21,7 @@ Any non-unital subalgebra of a non-unital topological algebra is itself a non-un
 topological algebra, and its closure is again a non-unital subalgebra.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

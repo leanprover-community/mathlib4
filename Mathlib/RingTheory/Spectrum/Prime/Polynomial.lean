@@ -29,6 +29,7 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

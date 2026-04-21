@@ -20,6 +20,7 @@ for showing that `C ⥤ Type max w v u` is monoidal closed.
 See `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

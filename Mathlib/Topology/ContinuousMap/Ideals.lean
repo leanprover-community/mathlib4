@@ -68,6 +68,7 @@ order isomorphism described above, and instead we only consider the Galois inser
 
 ideal, continuous function, compact, Hausdorff
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

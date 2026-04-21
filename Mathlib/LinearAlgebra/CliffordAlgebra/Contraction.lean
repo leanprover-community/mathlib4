@@ -41,6 +41,7 @@ Within this file, we use the local notation
 * `d ⌋ x` for `contractLeft d x`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

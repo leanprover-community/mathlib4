@@ -28,6 +28,7 @@ sometimes we don't need them to prove extensionality.
 ## Tags
 semiring, ring, extensionality
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

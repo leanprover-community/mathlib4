@@ -13,6 +13,7 @@ public import Mathlib.Data.Finset.Pi
 
 This file is concerned with folding binary lattice operations over finsets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

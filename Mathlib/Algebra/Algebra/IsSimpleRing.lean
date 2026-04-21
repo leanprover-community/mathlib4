@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.SimpleRing.Basic
 /-!
 # Facts about algebras when the coefficient ring is a simple ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

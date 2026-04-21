@@ -73,6 +73,7 @@ manifold, interior, boundary
   `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv` once submersions are defined.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

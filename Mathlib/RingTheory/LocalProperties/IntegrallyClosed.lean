@@ -19,6 +19,7 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
 * `IsIntegrallyClosed.of_localization_maximal` : An integral domain `R` is integral closed
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

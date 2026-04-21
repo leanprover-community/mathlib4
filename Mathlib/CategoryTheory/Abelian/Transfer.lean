@@ -35,6 +35,7 @@ must be an isomorphism, and thus that `C` is a reflective subcategory of `D`.
 Someone may like to formalize that lemma, and restate this theorem in terms of `Reflective`.
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

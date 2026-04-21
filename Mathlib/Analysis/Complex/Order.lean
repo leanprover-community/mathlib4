@@ -27,6 +27,7 @@ provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 These are all only available with `open scoped ComplexOrder`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

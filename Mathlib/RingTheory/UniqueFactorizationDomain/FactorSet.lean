@@ -19,6 +19,7 @@ public import Mathlib.Tactic.Ring
 * set up the complete lattice structure on `FactorSet`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

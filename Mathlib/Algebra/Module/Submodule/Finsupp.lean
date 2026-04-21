@@ -17,6 +17,7 @@ When we consider subsets of `R` acting on `M`
 - `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
   `rᵢ ∈ s` and `nᵢ ∈ N`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

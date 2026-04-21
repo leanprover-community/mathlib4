@@ -21,6 +21,7 @@ When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

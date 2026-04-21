@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Multiset.UnionInter
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

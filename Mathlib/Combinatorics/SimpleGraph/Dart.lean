@@ -14,6 +14,7 @@ public import Mathlib.Data.Fintype.Sigma
 A `Dart` or half-edge or bond in a graph is an ordered pair of adjacent vertices, regarded as an
 oriented edge. This file defines darts and proves some of their basic properties.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

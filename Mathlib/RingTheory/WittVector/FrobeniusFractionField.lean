@@ -36,6 +36,7 @@ We approximately follow an approach sketched on MathOverflow:
 The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

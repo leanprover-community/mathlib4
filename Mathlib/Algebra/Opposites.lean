@@ -38,6 +38,7 @@ definitional eta reduction for structures (Lean 3 does not).
 
 multiplicative opposite, additive opposite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

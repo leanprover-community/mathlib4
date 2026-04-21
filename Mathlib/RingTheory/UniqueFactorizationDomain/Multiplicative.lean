@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `UniqueFactorizationMonoid.multiplicative_of_coprime`: if `f` maps `p ^ i` to `(f p) ^ i` for
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

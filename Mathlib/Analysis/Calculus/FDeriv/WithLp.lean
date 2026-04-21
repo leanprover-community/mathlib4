@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 /-!
 # Derivatives on `WithLp`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

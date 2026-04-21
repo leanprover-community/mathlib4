@@ -31,6 +31,7 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
   property with respect to `I`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

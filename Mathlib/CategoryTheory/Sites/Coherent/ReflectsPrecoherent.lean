@@ -16,6 +16,7 @@ We prove that given a fully faithful functor `F : C ⥤ D` which preserves and r
 effective epimorphic families, such that for every object `X` of `D` there exists an object `W` of
 `C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

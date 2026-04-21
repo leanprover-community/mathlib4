@@ -26,6 +26,7 @@ The main definitions and theorems are:
   topology `K`, a `Type*`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf
   for all pullbacks of the covering presieves of `J`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

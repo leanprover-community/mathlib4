@@ -24,6 +24,7 @@ We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not t
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
 for `ContinuousLinearMap R E F`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

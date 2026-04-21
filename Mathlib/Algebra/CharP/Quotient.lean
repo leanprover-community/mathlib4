@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 /-!
 # Characteristic of quotient rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,6 +11,7 @@ public import Lean.Meta.Tactic.Rewrite
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

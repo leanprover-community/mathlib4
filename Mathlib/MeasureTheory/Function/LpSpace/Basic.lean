@@ -55,6 +55,7 @@ The lemma `coeFn_add` states that the coercion of `f + g` coincides almost every
 of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to distinguish the
 function coercion from the coercion to almost everywhere defined functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

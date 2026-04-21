@@ -27,6 +27,7 @@ public import Mathlib.Order.SuccPred.WithBot
 
 * `Polynomial.degree_eq_natDegree`: the degree and natDegree coincide for nonzero polynomials
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ This file is a place for results related to nilpotency in (single-variable) poly
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

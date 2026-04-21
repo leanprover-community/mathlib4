@@ -86,6 +86,7 @@ Currently the two types of guessing rules are
 
 We close numerical goals with `norm_num` and `linarith`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -36,6 +36,7 @@ However, this automation serves as the discharger for the `linear_combination` t
 goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
 by calling `linear_combination` without arguments.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -20,6 +20,8 @@ the composition `g ∘ f` is continuous.
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
 universe v v' t u
 
 @[expose] public section

@@ -35,6 +35,7 @@ Let `G` be a group acting on a type `α`.
   is `m`-primitive.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

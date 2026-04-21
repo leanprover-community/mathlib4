@@ -23,6 +23,7 @@ on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

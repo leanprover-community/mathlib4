@@ -17,6 +17,7 @@ sequences that are stable under taking prefixes.
 
 * `tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

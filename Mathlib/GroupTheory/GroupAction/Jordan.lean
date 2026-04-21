@@ -43,6 +43,7 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 - Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

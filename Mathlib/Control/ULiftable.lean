@@ -35,6 +35,7 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 universe polymorphism functor
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

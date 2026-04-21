@@ -16,6 +16,7 @@ public import Mathlib.Tactic.NormNum.Prime
 Note that since `norm_num` can only produce numerals,
 we can't register this as a `norm_num` extension.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

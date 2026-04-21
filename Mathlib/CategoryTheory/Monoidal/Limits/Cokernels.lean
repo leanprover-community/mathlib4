@@ -18,6 +18,7 @@ and show that it is colimit if `c₁` and `c₂` are colimit, and the
 cokernels of `f₁` and `f₂` are preserved by suitable tensor products.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

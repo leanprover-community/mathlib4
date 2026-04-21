@@ -18,6 +18,7 @@ Geometrically, this corresponds to a trivial covering.
 Every totally split algebra is finite étale and conversely, every finite étale covering is étale
 locally totally split (TODO, @chrisflav).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

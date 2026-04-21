@@ -34,6 +34,7 @@ We have two versions of the above statements, one with a.e. equality to the cond
 conditional expectation `condExp` built from the Bochner integral.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

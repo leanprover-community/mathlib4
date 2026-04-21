@@ -15,6 +15,7 @@ public meta import Lean.Meta.Tactic.Replace
 In this file we define a tactic `infer_param` that closes a goal with default value by using
 this default value.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

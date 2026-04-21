@@ -14,6 +14,7 @@ public import Mathlib.Tactic.NoncommRing
 This file contains the basic API for "pushing through" the isomorphism
 `opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
 over a semiring and the polynomial ring over the opposite semiring. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

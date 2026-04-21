@@ -15,6 +15,7 @@ public import Mathlib.Data.ENNReal.Inv
 In this file we prove elementary properties of sums and products on `ℝ≥0∞`, as well as how these
 interact with the order structure on `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -23,6 +23,8 @@ cotangent space of the extended ideal `I · (T ⊗[R] S)`.
 - `Ideal.tensorCotangentEquiv`: When `T` is `R`-flat, `tensorCotangentHom` is an isomorphism.
 -/
 
+
+set_option backward.defeqAttrib.useBackward true
 @[expose] public noncomputable section
 
 universe u

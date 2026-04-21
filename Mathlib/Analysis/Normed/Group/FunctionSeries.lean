@@ -19,6 +19,7 @@ For smoothness of series of functions, see the file `Mathlib/Analysis/Calculus/S
 TODO: update this to use `SummableUniformlyOn`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

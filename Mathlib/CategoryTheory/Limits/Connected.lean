@@ -27,6 +27,7 @@ that the functor given by `(X × -)` preserves any connected limit.
 That is, any limit of shape `J` where `J` is a connected category is
 preserved by the functor `(X × -)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ then the closed points of `X` are in bijection with the `k`-points of `X`.
 See `AlgebraicGeometry.pointEquivClosedPoint`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

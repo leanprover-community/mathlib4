@@ -28,6 +28,7 @@ In this file we construct the algebraic closure of a field
 
 algebraic closure, algebraically closed
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

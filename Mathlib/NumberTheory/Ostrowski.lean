@@ -38,6 +38,7 @@ Extend to arbitrary number fields.
 
 absolute value, Ostrowski's theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

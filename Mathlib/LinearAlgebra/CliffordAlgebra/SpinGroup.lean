@@ -44,6 +44,7 @@ https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/1
 
 Try to show the reverse statement is true in finite dimensions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

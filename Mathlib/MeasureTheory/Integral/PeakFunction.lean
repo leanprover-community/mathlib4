@@ -34,6 +34,7 @@ functions are also called approximations of unity, or approximations of identity
 Note that there are related results about convolution with respect to peak functions in the file
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Mathlib.FieldTheory.Finite.Basic
 This file shows that the `ZMod p` has `p - 1` roots-of-unity.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

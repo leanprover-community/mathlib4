@@ -21,6 +21,7 @@ For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n
 represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of the
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

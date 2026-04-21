@@ -29,6 +29,7 @@ We do not include compactness in the definition, so a Priestley space is to be d
 * [Wikipedia, *Priestley space*](https://en.wikipedia.org/wiki/Priestley_space)
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

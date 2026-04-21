@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 This file proves that, when the relevant limits and colimits exist, exactness of limits and
 colimits carries over from `A` to the functor category `C ⥤ A`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

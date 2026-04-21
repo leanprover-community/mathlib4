@@ -33,6 +33,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 * https://en.wikipedia.org/wiki/Field_norm
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

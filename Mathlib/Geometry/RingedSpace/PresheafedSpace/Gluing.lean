@@ -54,6 +54,7 @@ blue arrows. To lift this into a map from `Γ(𝒪_X, ι i '' U)`, we also need 
 commute with the maps in the diagram (the green arrows), which is just a lengthy diagram-chasing.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

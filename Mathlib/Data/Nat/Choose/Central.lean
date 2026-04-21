@@ -25,6 +25,7 @@ This file proves properties of the central binomial coefficients (that is, `Nat.
 * `succ_dvd_centralBinom`: The result that `n+1 ∣ n.centralBinom`, ensuring that the explicit
   definition of the Catalan numbers is integer-valued.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

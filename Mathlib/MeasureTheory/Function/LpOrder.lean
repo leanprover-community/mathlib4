@@ -22,6 +22,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

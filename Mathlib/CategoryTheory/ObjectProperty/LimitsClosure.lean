@@ -19,6 +19,7 @@ a family of categories `J : α → Type _`, we introduce the closure
 and under certain smallness assumptions, we show that it is essentially small.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

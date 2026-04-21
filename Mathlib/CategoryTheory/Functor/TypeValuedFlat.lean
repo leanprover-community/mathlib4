@@ -24,6 +24,7 @@ In this file, we show that if finite limits exist in `C` and are preserved by `F
 then `F.Elements` is cofiltered.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

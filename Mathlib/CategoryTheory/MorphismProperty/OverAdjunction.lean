@@ -20,6 +20,7 @@ a morphism `f : X ⟶ Y` defines two functors:
 
 such that `Over.map` is the left adjoint to `Over.pullback`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

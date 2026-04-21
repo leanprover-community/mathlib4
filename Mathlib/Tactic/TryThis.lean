@@ -15,6 +15,7 @@ This is a convenient shorthand intended for macro authors to be able to generate
 recommendations. (It is not the main implementation of 'Try this',
 which is implemented in Lean core, see `Lean.Meta.Tactic.TryThis`.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar results.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -34,6 +34,7 @@ the present file is about their interaction.
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

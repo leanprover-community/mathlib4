@@ -49,6 +49,7 @@ numbers but instead Davis' variant of using solutions to Pell's equation.
 Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

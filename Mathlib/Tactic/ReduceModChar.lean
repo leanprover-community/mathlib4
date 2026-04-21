@@ -34,6 +34,7 @@ In addition to the main functionality, we call `normNeg` and `normNegCoeffMul` t
 with multiplication by `p - 1`, and simp lemmas tagged `@[reduce_mod_char]` to clean up the
 resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

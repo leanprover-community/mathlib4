@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Common
 /-!
 # Lemmas about the divisibility relation in product (semi)groups
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

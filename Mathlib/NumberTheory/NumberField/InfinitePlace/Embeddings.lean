@@ -30,6 +30,7 @@ the field of complex numbers.
 
 number field, embeddings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

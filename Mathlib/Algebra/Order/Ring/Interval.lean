@@ -16,6 +16,7 @@ for `ℕ` instead of `ℤ`, or a version for locally finite `SuccOrder`s with st
 functions), but for now these are the ones that have found utility in practice (e.g., for lemmas
 about `Real.Angle`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

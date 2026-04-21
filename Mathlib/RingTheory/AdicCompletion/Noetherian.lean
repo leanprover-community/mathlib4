@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.HopkinsLevitzki
 /-!
 # Hausdorff-ness for Noetherian rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

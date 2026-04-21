@@ -50,6 +50,7 @@ Given a functor `F : J ⥤ Type v`:
 Mittag-Leffler, surjective, eventual range, inverse system,
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

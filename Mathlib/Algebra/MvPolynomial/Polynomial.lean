@@ -10,6 +10,7 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 /-!
 # Some lemmas relating polynomials and multivariable polynomials.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

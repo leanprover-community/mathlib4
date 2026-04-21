@@ -19,6 +19,7 @@ public import Mathlib.Analysis.Normed.MulAction
 In this file we define (semi)normed spaces and algebras. We also prove some theorems
 about these definitions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

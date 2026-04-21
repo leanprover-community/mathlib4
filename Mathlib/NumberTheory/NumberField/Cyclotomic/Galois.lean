@@ -42,6 +42,7 @@ defined by `(n, χ) ↦ χ n`.
   characters whose conductor divides `m`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

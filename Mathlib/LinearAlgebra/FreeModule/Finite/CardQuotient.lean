@@ -19,6 +19,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
   is given by taking the determinant of `bN` over `b`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

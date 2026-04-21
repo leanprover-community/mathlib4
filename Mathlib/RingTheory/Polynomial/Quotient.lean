@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 /-!
 # Quotients of polynomial rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ given by substitution of the generating variable to an element of strictly posit
   (for finite σ) taking each `X i` to a positive order Hahn Series.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,6 +32,7 @@ to a ball of positive radius in an affine space over `E`, see `OpenPartialHomeom
 
 homeomorphism, ball
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

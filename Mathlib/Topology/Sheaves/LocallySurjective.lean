@@ -28,6 +28,7 @@ In this file we formulate two notions for what it means for
 We prove that these are equivalent.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

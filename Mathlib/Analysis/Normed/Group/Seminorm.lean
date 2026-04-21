@@ -44,6 +44,7 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 norm, seminorm
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -58,6 +58,7 @@ Using `IsAdjoinRoot` to map out of `S`:
 * `IsAdjoinRootMonic.minpoly_eq`: the minimal polynomial of the adjoined root of `f` is equal to
   `f`, if `f` is irreducible and monic, and `R` is a GCD domain
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.Order.Interval.Finset.Basic
 This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

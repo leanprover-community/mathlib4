@@ -31,6 +31,7 @@ of these could also be switched to elementary proofs, like in
 `Analysis.Convex.SpecificFunctions.Basic`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

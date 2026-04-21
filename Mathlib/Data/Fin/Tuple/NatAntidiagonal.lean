@@ -40,6 +40,7 @@ In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` fur
 support finitely-supported functions, as in `Finset.finsuppAntidiag` from
 `Mathlib/Algebra/Order/Antidiag/Finsupp.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

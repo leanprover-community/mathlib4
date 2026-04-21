@@ -32,6 +32,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
   compared to `Module.charP_end`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

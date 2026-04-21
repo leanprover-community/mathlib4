@@ -16,6 +16,7 @@ public import Mathlib.MeasureTheory.Integral.MeanInequalities
 In this file we compare `MeasureTheory.eLpNorm'` and `MeasureTheory.eLpNorm` for different
 exponents.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -16,6 +16,7 @@ We equip `ℝ`, `ℝ≥0`, and `ℝ≥0∞` with their natural norms / enorms.
 
 normed group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

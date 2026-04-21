@@ -15,6 +15,7 @@ We construct the pairing
 `TensorPower.pairingDual : ⨂[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⨂[R]^n M))`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

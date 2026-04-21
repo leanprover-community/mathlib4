@@ -67,6 +67,7 @@ relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/Double
 * Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
   I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

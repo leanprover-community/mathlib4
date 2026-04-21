@@ -40,6 +40,7 @@ greater than `(1 - ε)`.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

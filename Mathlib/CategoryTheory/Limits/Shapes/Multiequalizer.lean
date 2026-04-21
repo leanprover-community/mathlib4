@@ -27,6 +27,7 @@ an equalizer between products (and analogously for multicoequalizers).
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

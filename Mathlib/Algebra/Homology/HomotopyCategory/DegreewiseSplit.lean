@@ -17,6 +17,7 @@ is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

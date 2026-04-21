@@ -13,6 +13,7 @@ public import Mathlib.Logic.Equiv.Set
 
 In particular we prove `small_of_injective` and `small_of_surjective`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

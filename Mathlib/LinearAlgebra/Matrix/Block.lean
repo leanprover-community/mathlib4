@@ -33,6 +33,7 @@ matrices built out of blocks.
 matrix, diagonal, det, block triangular
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

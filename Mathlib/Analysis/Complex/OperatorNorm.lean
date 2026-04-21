@@ -16,6 +16,7 @@ The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imagina
 `Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

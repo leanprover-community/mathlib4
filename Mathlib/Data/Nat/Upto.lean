@@ -22,6 +22,7 @@ the difference that, in `Nat.Upto p`, `p` does not need to be decidable. In fact
 `Nat.find` could be slightly altered to factor decidability out of its
 well-founded relation and would then fulfill the same purpose as this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

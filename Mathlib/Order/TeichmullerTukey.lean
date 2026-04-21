@@ -29,6 +29,7 @@ Teichmuller-Tukey lemma.
 
 - <https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey_lemma>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

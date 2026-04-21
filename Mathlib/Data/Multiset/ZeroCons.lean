@@ -32,6 +32,7 @@ It also defines the following predicates on multisets:
 
 * `Multiset.rec`: recursion on adding one element to a multiset at a time.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Zify
 This file provides additional results about `NNRat` that cannot live in earlier files due to import
 cycles.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

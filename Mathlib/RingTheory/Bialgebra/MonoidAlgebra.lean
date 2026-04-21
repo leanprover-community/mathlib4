@@ -23,6 +23,7 @@ coalgebra structure.
 * `LaurentPolynomial.instBialgebra`: the `R`-bialgebra structure on the Laurent polynomials
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

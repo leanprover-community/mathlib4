@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Order.CompleteLattice.Basic
 
 /-! # Complete lattices and groups -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

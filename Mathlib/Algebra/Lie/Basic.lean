@@ -48,6 +48,7 @@ are partially unbundled.
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

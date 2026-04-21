@@ -38,6 +38,7 @@ the spectral order.
 
 continuous functional calculus, normal, selfadjoint
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

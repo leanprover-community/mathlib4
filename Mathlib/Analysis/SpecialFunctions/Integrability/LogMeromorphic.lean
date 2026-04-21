@@ -20,6 +20,7 @@ functions are interval integrable over every interval of the real line. This imp
 that logarithms of trigonometric functions are interval integrable. In the complex setting, the
 functions are circle integrable over every circle in the complex plane.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

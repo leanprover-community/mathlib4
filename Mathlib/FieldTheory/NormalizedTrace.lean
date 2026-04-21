@@ -32,6 +32,7 @@ integral) extension of `F`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

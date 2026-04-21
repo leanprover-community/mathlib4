@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Module.Prod
 /-!
 # Further results on (semi)linear equivalences.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

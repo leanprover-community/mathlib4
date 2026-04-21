@@ -20,6 +20,7 @@ Alexandrov topology.
 This file proves that this presheaf is a sheaf.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

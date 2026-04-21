@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 # Bundled ordered algebra structures on `ℚ≥0`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

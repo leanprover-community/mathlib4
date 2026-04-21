@@ -18,6 +18,7 @@ We define the following predicates:
 * `Function.Commute`: `f : α → α` commutes with `g : α → α` if `f ∘ g = g ∘ f`,
   or equivalently `Semiconj f g g`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

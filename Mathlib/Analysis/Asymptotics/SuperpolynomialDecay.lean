@@ -43,6 +43,7 @@ https://ncatlab.org/nlab/show/rapidly+decreasing+function
 * `superpolynomialDecay_iff_zpow_tendsto_zero` gives an equivalence between definitions in terms
     of decaying faster than `k(x) ^ n` for all naturals `n` or `k(x) ^ c` for all integer `c`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

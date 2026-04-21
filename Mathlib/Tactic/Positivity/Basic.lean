@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Positivity.Core
 
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

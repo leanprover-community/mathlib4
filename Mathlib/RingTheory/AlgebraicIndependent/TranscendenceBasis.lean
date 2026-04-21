@@ -31,6 +31,7 @@ This file defines the transcendence basis as a maximal algebraically independent
 transcendence basis, transcendence degree, transcendence
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

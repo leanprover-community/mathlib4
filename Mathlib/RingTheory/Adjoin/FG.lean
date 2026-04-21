@@ -26,6 +26,7 @@ This file develops the basic theory of finitely-generated subalgebras.
 adjoin, algebra, finitely-generated algebra
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

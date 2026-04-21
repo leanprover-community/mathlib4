@@ -14,6 +14,7 @@ public import Mathlib.Tactic.NormNum.Basic
 
 TODO: plugins for `mabs`, `norm`, `nnorm`, and `enorm`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

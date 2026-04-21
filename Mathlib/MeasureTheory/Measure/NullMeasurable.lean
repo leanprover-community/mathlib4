@@ -56,6 +56,7 @@ the output type.
 
 measurable, measure, null measurable, completion
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

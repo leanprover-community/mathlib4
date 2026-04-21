@@ -26,6 +26,7 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 * `IsCompact.inter_riemannZetaZeros_finite`: for any compact set `S : Set ℂ`, the intersection
   `S ∩ riemannZetaZeros` is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

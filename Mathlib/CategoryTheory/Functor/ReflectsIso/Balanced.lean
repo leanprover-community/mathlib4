@@ -18,6 +18,7 @@ Furthermore, categories that admit a functor that `ReflectsIsomorphisms`, `Prese
 and `PreservesMonomorphisms` are balanced.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

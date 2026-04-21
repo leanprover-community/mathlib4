@@ -31,6 +31,7 @@ and computes their expectation and variance.
 `Bin(n, p)` is the binomial distribution with parameters `n` and `p` in `ℕ`.
 `Bin(R, n, p)` is the binomial distribution with parameters `n` and `p` in `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

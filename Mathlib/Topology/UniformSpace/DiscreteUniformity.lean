@@ -17,6 +17,7 @@ It induces the discrete topology.
 It is complete.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

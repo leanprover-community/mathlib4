@@ -35,6 +35,7 @@ a uniqueness characterization, and the functional equation for multiplication.
 * `PowerSeries.exp_pow_eq_rescale_exp`: Powers of exp satisfy `(e^X)^k = e^{kX}`.
 * `PowerSeries.exp_pow_sum`: Formula for the sum of powers of `exp`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

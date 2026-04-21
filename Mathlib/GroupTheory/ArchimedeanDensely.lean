@@ -23,6 +23,7 @@ integers, or they are densely ordered.
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

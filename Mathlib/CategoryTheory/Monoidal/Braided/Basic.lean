@@ -32,6 +32,7 @@ The rationale is that we are not carrying any additional data, just requiring a 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

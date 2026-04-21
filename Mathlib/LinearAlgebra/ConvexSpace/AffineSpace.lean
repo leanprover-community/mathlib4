@@ -21,6 +21,7 @@ This file shows that every affine space is a convex space.
   combination.
 * `AddTorsor.convexComboPair_eq_lineMap`: Binary convex combinations are given by `lineMap`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 noncomputable section
 

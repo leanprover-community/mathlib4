@@ -14,6 +14,7 @@ public import Mathlib.FieldTheory.PrimitiveElement
 This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
 This is defined algebraically, compared to `logDeriv` which is analytical.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

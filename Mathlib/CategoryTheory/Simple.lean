@@ -32,6 +32,7 @@ and any nonzero morphism into a simple object has trivial cokernel.
 
 We show that any simple object is indecomposable.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ In this file we give a characterization of the predicate `zero_at_infty` from
 for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < ‖x‖` it holds that
 `‖f x‖ < ε`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

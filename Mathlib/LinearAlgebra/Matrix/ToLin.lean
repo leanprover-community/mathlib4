@@ -68,6 +68,7 @@ and (presumably) adding `_left` where necessary.
 
 linear_map, matrix, linear_equiv, diagonal, det, trace
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

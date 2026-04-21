@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 
 This file proves results about finite sums over monoids extended by a bottom or top element.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

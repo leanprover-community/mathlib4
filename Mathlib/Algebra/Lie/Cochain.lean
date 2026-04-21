@@ -29,6 +29,7 @@ general theory of Lie algebra cohomology.
 * [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

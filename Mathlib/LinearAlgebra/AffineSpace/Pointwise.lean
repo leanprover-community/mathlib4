@@ -14,6 +14,7 @@ This file provides the additive action `AffineSubspace.pointwiseAddAction` in th
 `Pointwise` locale.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

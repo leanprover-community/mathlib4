@@ -17,6 +17,7 @@ several variants of this theorem, then uses it to show that the Lebesgue integra
 (assuming one of the functions is at least `AEMeasurable`) and respects multiplication by
 a constant.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

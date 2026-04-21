@@ -38,6 +38,7 @@ TODO:
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

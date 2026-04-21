@@ -16,6 +16,7 @@ This file defines `Submodule.colon N P` as the ideal of all elements `r : R` suc
 The normal notation for this would be `N : P` which has already been taken by type theory.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

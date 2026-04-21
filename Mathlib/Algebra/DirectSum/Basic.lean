@@ -23,6 +23,7 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

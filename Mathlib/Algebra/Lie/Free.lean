@@ -49,6 +49,7 @@ A related MathOverflow question is [this one](https://mathoverflow.net/questions
 lie algebra, free algebra, non-unital, non-associative, universal property, forgetful functor,
 adjoint functor
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

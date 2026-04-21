@@ -22,6 +22,7 @@ mimicking the API for Fréchet derivatives.
 - composition lemmas and the chain rule
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

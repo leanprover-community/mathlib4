@@ -82,6 +82,8 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 namespace CategoryTheory
 

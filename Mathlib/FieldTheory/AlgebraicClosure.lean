@@ -20,6 +20,7 @@ In this file we construct the relative algebraic closure of a field extension.
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

@@ -21,6 +21,7 @@ corresponds to `BddLat`.
 
 The free functor from `Lat` to `BddLat` is `X → WithTop (WithBot X)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

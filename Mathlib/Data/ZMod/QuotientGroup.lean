@@ -23,6 +23,7 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 
 zmod, quotient group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

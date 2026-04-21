@@ -25,6 +25,7 @@ public import Mathlib.AlgebraicGeometry.PullbackCarrier
 - `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

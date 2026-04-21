@@ -36,6 +36,7 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is
   corner-free.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

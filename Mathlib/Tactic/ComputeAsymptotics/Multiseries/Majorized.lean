@@ -18,6 +18,7 @@ This file defines the `Majorized` predicate, along with a few basic lemmas.
   Intuitively, this means that the right order of `f` in terms of `b` is at most `b ^ exp`.
   This predicate is used in the definition of the `MultiseriesExpansion.Approximates` predicate.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

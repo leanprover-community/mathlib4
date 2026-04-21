@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Types.Basic
 `IsIsomorphic X Y := Nonempty (X ≅ Y)` is an equivalence relation on the objects of a category.
 The quotient with respect to this relation defines a functor from our category to `Type`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

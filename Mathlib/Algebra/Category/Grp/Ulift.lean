@@ -68,6 +68,7 @@ then the colimit of `K` in `GrpCat.{u}` exists and is the trivial group; meanwhi
 of `K ⋙ GrpCat.uliftFunctor.{u + 1}` is nontrivial (it is the "union" of all the `K j`, which is
 too big to be in `GrpCat.{u}`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

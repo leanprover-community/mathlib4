@@ -29,6 +29,7 @@ generator (see `Functor.isStrongGenerator_of_isDense`).
 * https://ncatlab.org/nlab/show/dense+subcategory
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

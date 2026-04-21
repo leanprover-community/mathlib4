@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.CommMon_
 /-!
 # The category of commutative groups in a Cartesian monoidal category
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

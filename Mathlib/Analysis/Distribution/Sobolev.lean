@@ -46,6 +46,7 @@ the definition of the Sobolev spaces.
 * [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations][mclean2000]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

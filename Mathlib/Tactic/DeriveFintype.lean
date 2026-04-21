@@ -69,6 +69,7 @@ A difference is that the Mathlib 3 version does not explicitly construct the tot
 and instead it opts to construct the underlying `Finset` as a disjoint union of the `Finset.univ`
 for each individual constructor's proxy type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

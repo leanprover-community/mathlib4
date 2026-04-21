@@ -21,6 +21,8 @@ This is used in the localization of categories API (folder `CategoryTheory.Local
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe w v v' u u'
 
 namespace CategoryTheory

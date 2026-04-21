@@ -25,6 +25,7 @@ is an equivalence of categories. (Similarly for `ComonadicLeftAdjoint`.)
 Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflective functors are
 `ComonadicLeftAdjoint`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

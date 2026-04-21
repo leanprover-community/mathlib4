@@ -15,6 +15,7 @@ We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.p
 is injective and surjective under various assumptions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ We verify that this is equivalent to the monoid objects in the category of comon
   in good circumstances this is representable by a bimonoid in `D`, and then
   `C` is monoidally equivalent to the modules over that bimonoid.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

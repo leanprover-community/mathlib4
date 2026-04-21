@@ -32,6 +32,7 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 Note that the partial order instance is scoped to `MatrixOrder`.
 Please `open scoped MatrixOrder` to use this.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Analysis.InnerProductSpace.Continuous
 We show that the separation quotient and the completion of an inner product space are inner
 product spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

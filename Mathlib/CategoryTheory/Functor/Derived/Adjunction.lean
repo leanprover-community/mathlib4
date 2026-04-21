@@ -30,6 +30,7 @@ that `F' ⋙ G'` is the right derived functor of `F ⋙ L₁ ⋙ G'`).
   foncteurs dérivés, revisité*][Maltsiniotis2007]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

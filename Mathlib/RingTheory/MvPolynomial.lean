@@ -18,6 +18,7 @@ This file contains basic facts about multivariate polynomials over fields, for e
 dimension of the space of multivariate polynomials over a field is equal to the cardinality of
 finitely supported functions from the indexing set to `ℕ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

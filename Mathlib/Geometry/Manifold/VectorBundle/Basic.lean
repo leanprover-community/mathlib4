@@ -58,6 +58,7 @@ fields, etc.
 * `Bundle.Prod.contMDiffVectorBundle`: The direct sum of two `C^n` vector bundles is a `C^n`
   vector bundle.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

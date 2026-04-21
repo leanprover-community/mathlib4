@@ -26,6 +26,7 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

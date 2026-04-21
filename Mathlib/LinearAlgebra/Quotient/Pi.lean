@@ -21,6 +21,7 @@ and the direct sum of quotients of modules by submodules.
 * `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

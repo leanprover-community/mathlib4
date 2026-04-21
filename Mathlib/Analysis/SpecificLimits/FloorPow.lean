@@ -19,6 +19,7 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 * `sum_div_nat_floor_pow_sq_le_div_sq`: The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable
   to `1/j^2`, up to a multiplicative constant.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

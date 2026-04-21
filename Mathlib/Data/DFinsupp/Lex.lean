@@ -15,6 +15,7 @@ public import Mathlib.Order.WellFoundedSet
 
 This file defines the lexicographic order on `DFinsupp`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

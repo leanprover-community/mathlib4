@@ -25,6 +25,7 @@ public import Mathlib.LinearAlgebra.Matrix.Stochastic
 
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

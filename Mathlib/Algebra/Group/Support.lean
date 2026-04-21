@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Notation.Support
 In this file we prove basic properties of `Function.support f = {x | f x ≠ 0}`, and similarly for
 `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

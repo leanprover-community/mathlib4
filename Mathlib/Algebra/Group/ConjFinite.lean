@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.Units
 /-!
 # Conjugacy of elements of finite groups
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 /-!
 # fintype instances relating to units
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -43,6 +43,7 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 While any two-valued type could have been used for `DyckStep`, a new enumerated type is used here
 to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

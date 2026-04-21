@@ -32,6 +32,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

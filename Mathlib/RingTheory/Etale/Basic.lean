@@ -26,6 +26,7 @@ We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

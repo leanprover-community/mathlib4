@@ -43,6 +43,7 @@ see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of th
 These results are mostly special cases of more general results for even Hurwitz zeta functions
 proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

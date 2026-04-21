@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 This file proves that the 0-th grade of a Noetherian ring is
 also a Noetherian ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ public import Mathlib.Data.Finset.Lattice.Basic
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

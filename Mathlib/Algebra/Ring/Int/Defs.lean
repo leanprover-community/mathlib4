@@ -18,6 +18,7 @@ This file contains the commutative ring instance on `ℤ`.
 
 See note [foundational algebra order theory].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

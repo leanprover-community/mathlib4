@@ -25,6 +25,7 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
   A module `M` over a ring `R` is flat iff for all (finitely generated) ideals `I` of `R`, the
   tensor product of the inclusion `I → R` and the identity `M → M` is injective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

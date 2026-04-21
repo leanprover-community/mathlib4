@@ -11,6 +11,7 @@ public import Mathlib.Logic.Equiv.List
 /-!
 # `Encodable` and `Denumerable` instances for `Multiset`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

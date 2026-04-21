@@ -18,6 +18,7 @@ It is formalized as a `Prop`-valued typeclass `ReflectsIsomorphisms F`.
 
 Any fully faithful functor reflects isomorphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

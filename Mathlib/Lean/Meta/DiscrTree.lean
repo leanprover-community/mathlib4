@@ -10,6 +10,7 @@ public import Mathlib.Init
 /-!
 # Additions to `Lean.Meta.DiscrTree`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,6 +10,7 @@ public import Mathlib.Topology.Order.LeftRightNhds
 /-!
 # Properties of LUB and GLB in an order topology
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

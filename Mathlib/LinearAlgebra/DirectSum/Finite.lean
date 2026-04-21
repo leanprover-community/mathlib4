@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 This file defines a `Module.Finite` instance for a finite direct sum of finite modules.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

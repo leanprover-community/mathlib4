@@ -19,6 +19,7 @@ complex which in degree `n` consists of the product, indexed by `i : Fin (n + 1)
 of the value of `P` on the product of the objects `U (i a)` for `a : Fin (n + 1)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

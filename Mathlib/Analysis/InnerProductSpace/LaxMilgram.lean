@@ -29,6 +29,7 @@ that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
 
 dual, Lax-Milgram
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

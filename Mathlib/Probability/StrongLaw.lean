@@ -54,6 +54,7 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 * To generalize it to all indices, we use the fact that `∑_{i=0}^{n-1} Xᵢ` is nondecreasing and
   that, if `c` is close enough to `1`, the gap between `c^k` and `c^(k+1)` is small.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

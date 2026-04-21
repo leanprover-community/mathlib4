@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 In this file, we record the equivalence between `Mon C` and `Mon Cᴹᵒᵖ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

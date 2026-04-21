@@ -26,6 +26,7 @@ The main results are the following:
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

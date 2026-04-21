@@ -28,6 +28,7 @@ weights of its edges, where weights are taken from a monoid.
 * `Quiver.Path.weight_pos`: If all edge weights are positive, the path weight is positive.
 * `Quiver.Path.weightOfEPs_nonneg`: If all edge weights are non-negative, so is the path weight.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

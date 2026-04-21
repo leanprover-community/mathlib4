@@ -26,6 +26,7 @@ representations of reals as sequences of digits in positional system.
 
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

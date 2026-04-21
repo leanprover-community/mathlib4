@@ -17,6 +17,7 @@ for `P.factors f`, where `P` is one of these special subobjects.
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ and `Preorder.frestrictLe₂`.
 ## Main definitions
 * `Preorder.restrictLe a f`: Restricts the function `f` to the variables indexed by elements `≤ a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

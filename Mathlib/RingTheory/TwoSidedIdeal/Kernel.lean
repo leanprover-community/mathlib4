@@ -16,6 +16,7 @@ In this file we define the kernel of a ring homomorphism `f : R → S` as a two-
 We put this in a separate file so that we could import it in
 `Mathlib/RingTheory/SimpleRing/Basic.lean` without importing any finiteness result.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

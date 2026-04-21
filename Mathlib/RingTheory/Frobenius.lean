@@ -44,6 +44,7 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

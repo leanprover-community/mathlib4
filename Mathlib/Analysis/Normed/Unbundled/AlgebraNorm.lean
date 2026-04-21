@@ -23,6 +23,7 @@ We define algebra norms and multiplicative algebra norms.
 
 norm, algebra norm
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

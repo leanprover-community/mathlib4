@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 If `C` is a preadditive category and `F` is an additive endofunctor on `C` then `Algebra F` is
 also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

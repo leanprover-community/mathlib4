@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
     The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

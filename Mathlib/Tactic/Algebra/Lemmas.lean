@@ -11,6 +11,7 @@ public import Mathlib.Tactic.Ring.RingNF
 
 /-! # Lemmas for the `algebra` tactic.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

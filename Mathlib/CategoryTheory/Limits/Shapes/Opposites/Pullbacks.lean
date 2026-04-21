@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 We construct pullbacks and pushouts in the opposite categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

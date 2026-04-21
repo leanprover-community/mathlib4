@@ -25,6 +25,7 @@ where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj 
   colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
   monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

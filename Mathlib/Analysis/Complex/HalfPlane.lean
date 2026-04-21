@@ -15,6 +15,7 @@ We state that open left, right, upper and lower half-planes in the complex numbe
 where the bounding value of the real or imaginary part is given by an `EReal` `x`.
 So this includes the full plane and the empty set for `x = ⊤`/`x = ⊥`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

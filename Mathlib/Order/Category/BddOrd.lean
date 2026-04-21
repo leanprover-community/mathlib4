@@ -14,6 +14,7 @@ public import Mathlib.Order.Hom.Bounded
 
 This defines `BddOrd`, the category of bounded orders.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

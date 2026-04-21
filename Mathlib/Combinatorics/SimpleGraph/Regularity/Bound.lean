@@ -29,6 +29,7 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

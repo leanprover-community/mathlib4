@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Ring.Invertible
 # Further basic results about modules.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

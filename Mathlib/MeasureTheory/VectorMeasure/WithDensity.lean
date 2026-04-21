@@ -22,6 +22,7 @@ the Radon-Nikodym theorem for signed measures.
   with respect to a measure `μ` on some set if `f` is integrable, and `0` otherwise.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

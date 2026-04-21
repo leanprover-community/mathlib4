@@ -38,6 +38,7 @@ This development originally appeared in Bhavik Mehta's "Topos theory for Lean" r
 and was ported to mathlib by Kim Morrison.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

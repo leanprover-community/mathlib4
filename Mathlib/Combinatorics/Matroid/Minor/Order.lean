@@ -28,6 +28,7 @@ instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 * `Matroid.IsMinor.exists_eq_contract_delete_disjoint` : we can choose `C` and `D` disjoint.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

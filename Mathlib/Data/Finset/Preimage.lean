@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Finite.Basic
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

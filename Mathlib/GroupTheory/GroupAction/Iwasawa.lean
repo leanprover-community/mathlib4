@@ -34,6 +34,7 @@ there is an Iwasawa structure.
 Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

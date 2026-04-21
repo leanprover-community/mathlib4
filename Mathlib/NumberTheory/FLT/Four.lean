@@ -15,6 +15,7 @@ public import Mathlib.Tactic.LinearCombination
 # Fermat's Last Theorem for the case n = 4
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ The main statements pertain to lists generated using `List.ofFn`
 - `List.equivSigmaTuple`, which is an `Equiv` between lists and the functions that generate them
   via `List.ofFn`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

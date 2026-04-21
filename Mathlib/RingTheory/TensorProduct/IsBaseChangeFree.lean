@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 * `IsBaseChange.free` : a base change of a free module is free.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

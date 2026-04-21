@@ -17,6 +17,7 @@ public import Mathlib.Topology.Instances.Nat
 
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

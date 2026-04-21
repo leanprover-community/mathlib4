@@ -26,6 +26,7 @@ We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full
 presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

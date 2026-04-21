@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 We prove basic properties of the maximal ideal of a local ring.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

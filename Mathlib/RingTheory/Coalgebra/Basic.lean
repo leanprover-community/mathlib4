@@ -23,6 +23,7 @@ In this file we define `Coalgebra`, and provide instances for:
 
 * <https://en.wikipedia.org/wiki/Coalgebra>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

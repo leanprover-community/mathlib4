@@ -22,6 +22,7 @@ to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

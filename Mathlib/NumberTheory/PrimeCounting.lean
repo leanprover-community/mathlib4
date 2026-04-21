@@ -34,6 +34,7 @@ With `open scoped Nat.Prime`, we use the standard notation `π` to represent the
 function (and `π'` to represent the reindexed version).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

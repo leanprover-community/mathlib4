@@ -24,6 +24,7 @@ We prove basic properties of the topology on `EReal`.
 
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

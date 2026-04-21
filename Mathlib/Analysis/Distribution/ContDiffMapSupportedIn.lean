@@ -79,6 +79,7 @@ In the `Distributions` scope, we introduce the following notations:
 
 distributions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

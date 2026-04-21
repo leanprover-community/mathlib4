@@ -53,6 +53,7 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

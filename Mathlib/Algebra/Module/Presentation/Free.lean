@@ -17,6 +17,7 @@ A module is free iff it admits a presentation with generators but no relation,
 see `Module.free_iff_exists_presentation`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

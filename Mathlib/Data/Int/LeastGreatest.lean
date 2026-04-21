@@ -38,6 +38,7 @@ counterpart of this statement for the least element.
 
 integer numbers, least element, greatest element
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

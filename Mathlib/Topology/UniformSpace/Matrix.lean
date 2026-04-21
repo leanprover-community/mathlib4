@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 /-!
 # Uniform space structure on matrices
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

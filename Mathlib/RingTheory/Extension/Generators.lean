@@ -48,6 +48,8 @@ unification hints.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe w u v
 
 open TensorProduct MvPolynomial

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.GradedAlgebra.Basic
 The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor algebra is a
 ℕ-graded algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

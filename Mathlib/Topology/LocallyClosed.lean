@@ -26,6 +26,7 @@ public import Mathlib.Tactic.TFAE
   5. `s` is open in the closure of `s`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

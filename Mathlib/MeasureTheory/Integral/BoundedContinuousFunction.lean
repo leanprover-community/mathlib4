@@ -17,6 +17,7 @@ mostly specializations of results in general integration theory, but they are us
 specialized form in some other files, in particular in those related to the topology of weak
 convergence of probability measures and finite measures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

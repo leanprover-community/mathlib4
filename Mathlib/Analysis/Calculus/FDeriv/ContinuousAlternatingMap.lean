@@ -17,6 +17,7 @@ In this file we prove formulas for the derivatives of
   along a continuous linear map;
 - application of a `ContinuousAlternatingMap` as a function of both the map and the vectors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

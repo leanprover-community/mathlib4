@@ -21,6 +21,7 @@ This file contains the definition and lemmas about `MvPolynomial.supported`.
 ## Tags
 variables, polynomial, vars
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

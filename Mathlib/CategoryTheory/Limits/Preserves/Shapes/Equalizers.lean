@@ -18,6 +18,7 @@ to concrete (co)forks.
 In particular, we show that `equalizerComparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,g`, as well as the dual result.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

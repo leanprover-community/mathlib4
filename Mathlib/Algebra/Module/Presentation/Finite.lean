@@ -15,6 +15,7 @@ A module is finitely presented (in the sense of `Module.FinitePresentation`) iff
 it admits a presentation with finitely many generators and relations.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

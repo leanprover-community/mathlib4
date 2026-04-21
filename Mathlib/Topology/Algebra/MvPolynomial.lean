@@ -19,6 +19,7 @@ In this file we prove the following lemma:
 
 multivariate polynomial, continuity
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

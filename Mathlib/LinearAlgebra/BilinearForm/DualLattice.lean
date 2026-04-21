@@ -18,6 +18,7 @@ public import Mathlib.LinearAlgebra.BilinearForm.Properties
 ## TODO
 Properly develop the material in the context of lattices.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

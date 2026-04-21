@@ -28,6 +28,7 @@ This file studies the ramification of completions of number fields.
 
 number field, infinite places, ramification
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,6 +30,7 @@ generally contains multiple "fundamental" steps (pushing, popping, and so on).
 However, as functions only contain a finite number of executions and each one is executed at most
 once, this execution time is up to multiplication by a constant the amount of fundamental steps.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

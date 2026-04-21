@@ -102,6 +102,7 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 * [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

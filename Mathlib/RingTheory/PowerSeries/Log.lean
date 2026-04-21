@@ -31,6 +31,7 @@ over ℚ-algebras and establishes its key properties.
 * `PowerSeries.deriv_log`: The derivative of `log(1+X)` is the geometric series
   `∑ (-1)^n · Xⁿ = 1/(1+X)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

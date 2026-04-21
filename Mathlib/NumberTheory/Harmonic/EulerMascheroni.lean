@@ -35,6 +35,7 @@ It follows that both sequences tend to a common limit `γ`, and we have the ineq
 `eulerMascheroniSeq n < γ < eulerMascheroniSeq' n` for all `n`. Taking `n = 6` gives the bounds
 `1 / 2 < γ < 2 / 3`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

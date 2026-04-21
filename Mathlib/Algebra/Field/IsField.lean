@@ -17,6 +17,7 @@ multiplicative inverse. In contrast to `Field`, which contains the data of a fun
 to an element of the field its multiplicative inverse, this predicate only assumes the existence
 and can therefore more easily be used to e.g. transfer along ring isomorphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

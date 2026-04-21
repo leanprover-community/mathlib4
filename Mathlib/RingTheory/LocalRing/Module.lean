@@ -34,6 +34,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   Given an `R`-linear map `l : M → N` with `M` finite and `N` finite free,
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

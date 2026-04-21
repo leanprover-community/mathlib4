@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Cast.Order.Ring
 /-!
 # `Finset.sup` and ring operations
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

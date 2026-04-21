@@ -28,6 +28,7 @@ modulo `p`. Despite this, the theorem still holds vacuously for `p = 0` and `p =
 cases, we can take `q` to be any prime and see that `hd` does not hold, since `a^((p-1)/q)` reduces
 to `1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

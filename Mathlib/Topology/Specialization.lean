@@ -15,6 +15,7 @@ public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 This file defines a type synonym for a topological space considered with its specialisation order.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

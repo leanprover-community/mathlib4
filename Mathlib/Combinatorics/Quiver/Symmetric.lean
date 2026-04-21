@@ -21,6 +21,7 @@ This file contains constructions related to symmetric quivers:
 * `Symmetrify.of`, `Symmetrify.lift`, and the associated lemmas witness the universal property
   of `Symmetrify`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,6 +28,7 @@ Here we collect results about projections specific to C⋆-algebras.
   - `q - p` is an idempotent element
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

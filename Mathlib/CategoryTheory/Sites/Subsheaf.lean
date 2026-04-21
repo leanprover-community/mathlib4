@@ -31,6 +31,7 @@ We define the subsheaf of a type-valued presheaf.
 - `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
   `Limits.imageFactorization`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

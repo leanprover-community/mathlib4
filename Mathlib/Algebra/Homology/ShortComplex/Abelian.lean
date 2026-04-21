@@ -32,6 +32,7 @@ of `kf.ι ≫ cc.π` where `kf` is a limit kernel fork of `S.g` and
 `cc` is a limit cokernel cofork of `S.f`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

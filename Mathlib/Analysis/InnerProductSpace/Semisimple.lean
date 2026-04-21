@@ -15,6 +15,7 @@ This file is a place to gather results related to semisimplicity of linear opera
 product spaces.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

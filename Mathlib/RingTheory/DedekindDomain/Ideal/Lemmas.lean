@@ -59,6 +59,7 @@ After the deprecations have been removed, the shorter names can be restored:
 
 dedekind domain, dedekind ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

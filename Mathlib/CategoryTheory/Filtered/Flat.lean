@@ -19,6 +19,7 @@ Transferring (co)filteredness *along* representably (co)flat functors is given b
 `IsFiltered.of_final` and its dual, since every representably flat functor is final and every
 representably coflat functor is initial.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

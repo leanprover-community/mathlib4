@@ -20,6 +20,7 @@ In this file we prove a few versions of the shrinking lemma for coverings by bal
 
 shrinking lemma, metric space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

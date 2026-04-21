@@ -28,6 +28,7 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 - `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

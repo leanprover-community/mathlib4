@@ -33,6 +33,7 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 graph metric, distance
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ registered as an instance without the type synonym.
 One application of this is a straightforward proof that the quasispectrum of an element in a
 non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

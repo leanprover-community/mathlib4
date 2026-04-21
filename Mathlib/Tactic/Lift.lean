@@ -20,6 +20,7 @@ under a specified condition.
 
 lift, tactic
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

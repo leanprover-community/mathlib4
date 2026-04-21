@@ -37,6 +37,7 @@ As a corollary we obtain
   commutes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

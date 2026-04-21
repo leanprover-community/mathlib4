@@ -37,6 +37,7 @@ TODO: This argument can be extended to prove the general `k`-multiplication form
 to a constant, and it should be possible to deduce the value of this constant using Stirling's
 formula).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

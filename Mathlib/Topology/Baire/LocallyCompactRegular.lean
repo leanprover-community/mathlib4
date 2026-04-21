@@ -12,6 +12,7 @@ public import Mathlib.Topology.Sets.Compacts
 
 In this file we prove that a locally compact regular topological space has Baire property.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

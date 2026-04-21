@@ -42,6 +42,7 @@ requiring `𝓞 K`. This is so that `ℤ` and `𝓞 ℚ` can be used interchange
 ## Tags
 number field, places, finite places
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

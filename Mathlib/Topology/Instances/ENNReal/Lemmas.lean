@@ -17,6 +17,7 @@ public import Mathlib.Topology.Metrizable.Uniformity
 /-!
 # Topology on extended non-negative reals
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

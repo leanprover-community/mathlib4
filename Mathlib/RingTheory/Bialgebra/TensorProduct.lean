@@ -17,6 +17,7 @@ instance on a tensor product of bialgebras, and the tensor product of two `Bialg
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

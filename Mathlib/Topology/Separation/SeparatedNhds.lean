@@ -26,6 +26,7 @@ formulating separation axioms for topological spaces.
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

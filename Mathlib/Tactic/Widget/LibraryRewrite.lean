@@ -57,6 +57,7 @@ Ways to extend `rw??`:
   just point & click.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -24,6 +24,7 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   with `X` profinite, and `S` is a neighbourhood of the diagonal in `V × V`, then `f` can be
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

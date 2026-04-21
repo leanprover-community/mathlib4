@@ -19,6 +19,7 @@ because they refer to other notions defined in Mathlib.
 Please do not extend this file further: material about BitVec needed in downstream projects
 can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,6 +39,7 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

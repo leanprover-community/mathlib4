@@ -17,6 +17,7 @@ In this file we define
 
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

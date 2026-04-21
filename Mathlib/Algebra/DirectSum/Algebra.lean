@@ -25,6 +25,7 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 * `DirectSum.toAlgebra` extends `DirectSum.toSemiring` to produce an `AlgHom`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

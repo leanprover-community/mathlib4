@@ -28,6 +28,7 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 - self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

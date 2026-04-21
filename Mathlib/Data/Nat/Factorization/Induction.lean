@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Factorization.Defs
 /-!
 # Induction principles involving factorizations
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

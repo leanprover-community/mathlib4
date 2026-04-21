@@ -30,6 +30,7 @@ an algebraically closed field in which the order of `G` is invertible:
   if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

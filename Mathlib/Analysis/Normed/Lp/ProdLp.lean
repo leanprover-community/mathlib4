@@ -46,6 +46,7 @@ TODO: the results about uniformity and bornology in the `Aux` section should be 
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

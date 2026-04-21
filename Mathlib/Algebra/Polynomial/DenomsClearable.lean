@@ -17,6 +17,7 @@ Let `i : R → K` be a homomorphism of semirings.  Assume that `K` is commutativ
 `f ∈ R[X]` the "mathematical" expression `b ^ f.natDegree * f (a / b) ∈ K` is in
 the image of the homomorphism `i`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

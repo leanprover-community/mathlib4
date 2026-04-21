@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.IsTensorProduct
 
 Given `[CommSemiring R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 We construct `Action (Type*) G` from a `[MulAction G X]` instance and give some applications.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

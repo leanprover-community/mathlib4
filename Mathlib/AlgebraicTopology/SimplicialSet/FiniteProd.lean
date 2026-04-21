@@ -16,6 +16,7 @@ then `X₁ ⊗ X₂` has dimension `≤ d₁ + d₂`.
 We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also finite.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

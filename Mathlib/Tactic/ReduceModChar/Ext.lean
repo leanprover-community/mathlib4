@@ -13,6 +13,7 @@ public meta import Lean.Meta.Tactic.Simp.Attr
 
 This file registers `@[reduce_mod_char]` as a `simp` attribute.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

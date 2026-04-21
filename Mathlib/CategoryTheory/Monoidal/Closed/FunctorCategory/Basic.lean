@@ -16,6 +16,7 @@ we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
 limits.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

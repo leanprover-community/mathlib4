@@ -16,6 +16,7 @@ In this file, we show that the wide pullback of a family of arrows `objs j ⟶ B
 exists when `B` is terminal and the product of the objects `objs j` exists.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

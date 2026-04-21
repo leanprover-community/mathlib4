@@ -20,6 +20,7 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 - `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

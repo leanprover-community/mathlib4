@@ -20,6 +20,7 @@ We define subfunctors of a type-valued functors.
 `CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

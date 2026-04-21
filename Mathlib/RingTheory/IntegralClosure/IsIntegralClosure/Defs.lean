@@ -18,6 +18,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
   in `B`, i.e. that an element of `B` is integral over `R` iff it is an element of
   (the image of) `A`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

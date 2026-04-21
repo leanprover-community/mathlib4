@@ -19,6 +19,7 @@ natural number.
 
 * `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

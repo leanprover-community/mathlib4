@@ -38,6 +38,7 @@ namespace `Complex`.
 We also register the fact that `ℂ` is an `RCLike` field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

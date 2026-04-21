@@ -39,6 +39,7 @@ section `set_acting_on_submodules` does not have a counterpart in the files
 Other than section `DistribMulAction`, most of the lemmas in this file are direct copies of
 lemmas from the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ Every cartesian monoidal category is a copy-discard category where:
 
 cartesian, copy-discard, comonoid, symmetric monoidal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

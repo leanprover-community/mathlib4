@@ -37,6 +37,7 @@ assuming additionally that `s` has finite measure.
   compactly supported functions. This property is also known as completion-regularity of Haar
   measures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

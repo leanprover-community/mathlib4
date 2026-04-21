@@ -53,6 +53,7 @@ is proved in `RingTheory.Polynomial`.
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

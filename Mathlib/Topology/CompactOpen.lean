@@ -33,6 +33,7 @@ topological spaces.
 
 compact-open, curry, function space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

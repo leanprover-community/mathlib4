@@ -18,6 +18,7 @@ then do `open scoped PiNotation`.
 The notation also accepts extended binders, like `Π x ∈ s, β x` for `Π x, x ∈ s → β x`.
 This can be disabled with the `pp.mathlib.binderPredicates` option.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

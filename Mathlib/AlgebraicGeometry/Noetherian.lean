@@ -44,6 +44,7 @@ giving definitions, equivalent conditions, and basic properties.
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

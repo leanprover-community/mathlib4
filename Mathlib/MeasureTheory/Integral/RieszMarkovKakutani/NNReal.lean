@@ -25,6 +25,7 @@ reducing the statement to the `ℝ`-version of the theorem.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ This is mostly useful to define pointwise operations and `Set.seq`.
 This file is very similar to `Mathlib/Data/Finset/NAry.lean`, `Mathlib/Order/Filter/NAry.lean`, and
 `Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

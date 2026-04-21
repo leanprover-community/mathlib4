@@ -45,6 +45,7 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 * [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

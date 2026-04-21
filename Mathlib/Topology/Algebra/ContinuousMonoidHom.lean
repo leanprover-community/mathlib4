@@ -20,6 +20,7 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousMonoidHom A B`: The continuous homomorphisms `A →* B`.
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

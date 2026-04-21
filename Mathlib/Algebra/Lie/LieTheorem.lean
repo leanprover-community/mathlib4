@@ -15,6 +15,7 @@ Lie's theorem asserts that Lie modules of solvable Lie algebras over fields of c
 have a common eigenvector for the action of all elements of the Lie algebra.
 This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

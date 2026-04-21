@@ -29,6 +29,7 @@ which allows to verify that a family of points is conservative
 using a condition involving covering sieves (SGA 4 IV 6.5 (a)).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

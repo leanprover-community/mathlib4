@@ -10,6 +10,7 @@ public import Mathlib.Init
 /-!
 # Functor Laws, applicative laws, and monad Laws
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

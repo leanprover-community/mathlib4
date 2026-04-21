@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 This file relates the support of a function to order constructions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

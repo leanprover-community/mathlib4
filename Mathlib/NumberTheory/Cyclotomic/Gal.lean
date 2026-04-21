@@ -37,6 +37,7 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

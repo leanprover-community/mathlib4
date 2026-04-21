@@ -35,6 +35,7 @@ make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` 
 The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and should be changed
 in the future. Please do not rely on this interface being stable.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

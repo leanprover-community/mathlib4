@@ -14,6 +14,7 @@ In this file we prove Gauss-Lucas Theorem:
 the roots of the derivative of a nonconstant complex polynomial
 are included in the convex hull of the roots of the polynomial.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open scoped Polynomial ComplexConjugate

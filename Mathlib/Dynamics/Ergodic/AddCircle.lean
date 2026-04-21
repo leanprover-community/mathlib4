@@ -29,6 +29,7 @@ This file contains proofs of ergodicity for maps of the additive circle.
   self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

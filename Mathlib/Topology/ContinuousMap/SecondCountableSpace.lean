@@ -15,6 +15,7 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 - both `X` and `Y` have second countable topology;
 - `X` is a locally compact space;
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

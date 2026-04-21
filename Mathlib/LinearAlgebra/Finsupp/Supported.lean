@@ -24,6 +24,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 
 function with finite support, module, linear algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

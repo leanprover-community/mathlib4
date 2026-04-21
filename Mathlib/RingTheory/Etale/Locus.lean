@@ -21,6 +21,7 @@ Let `A` be a `R`-algebra.
 - `Algebra.isOpen_etaleLocus` :
   If `A` is of finite type over `R`, then the etale locus is open.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

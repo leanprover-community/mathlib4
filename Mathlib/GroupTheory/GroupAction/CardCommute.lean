@@ -23,6 +23,7 @@ See `Mathlib/GroupTheory/GroupAction/Quotient.lean` for the construction of isom
 prove these cardinality properties.
 These lemmas are separate because they require the development of cardinals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

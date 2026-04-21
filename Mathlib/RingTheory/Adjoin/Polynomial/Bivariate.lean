@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Ring.Defs
   Given two transcendental elements `a`, `b` over `R`, if one of them, say `a`, is algebraic over
   `R[b]` then `b` is algebraic over `R[a]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

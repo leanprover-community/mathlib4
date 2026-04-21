@@ -15,6 +15,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 This file constructs the infinity distance on finite products of pseudometric spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

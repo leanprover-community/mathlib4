@@ -20,6 +20,7 @@ We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsA
 
 Finite length, Composition series
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

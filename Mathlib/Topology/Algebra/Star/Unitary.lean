@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Monoid
 * In a topological star monoid `R`, `unitary R` is a topological group
 * In a topological star monoid `R` which is T1, `unitary R` is closed as a subset of `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

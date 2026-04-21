@@ -32,6 +32,7 @@ The dual results are also obtained.
 * https://ncatlab.org/nlab/show/left+Bousfield+localization+of+model+categories
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

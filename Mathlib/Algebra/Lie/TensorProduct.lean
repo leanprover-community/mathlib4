@@ -17,6 +17,7 @@ Tensor products of Lie modules carry natural Lie module structures.
 
 lie module, tensor product, universal property
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

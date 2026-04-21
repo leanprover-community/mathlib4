@@ -17,6 +17,7 @@ We show that if a category `C` has equalizers, then ind-objects are closed under
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

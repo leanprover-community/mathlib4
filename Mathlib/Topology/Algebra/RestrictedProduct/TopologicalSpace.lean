@@ -90,6 +90,7 @@ restrain from specializing these instances to principal and cofinite filters if 
 
 restricted product, adeles, ideles
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

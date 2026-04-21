@@ -28,6 +28,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 * `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
   norm of its generator
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

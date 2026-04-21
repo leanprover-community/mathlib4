@@ -22,6 +22,7 @@ More specifically,
 
 We also give versions of these statements which are localized to a set.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

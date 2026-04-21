@@ -15,6 +15,7 @@ This file contains the `field` tactic, a finishing tactic which roughly consists
 `field_simp; ring1`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

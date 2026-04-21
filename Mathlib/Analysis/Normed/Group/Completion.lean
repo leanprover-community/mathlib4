@@ -18,6 +18,7 @@ In this file we prove that the completion of a (semi)normed group is a normed gr
 
 normed group, completion
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

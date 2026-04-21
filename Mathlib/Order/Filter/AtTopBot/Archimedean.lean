@@ -19,6 +19,7 @@ the function `Nat.cast ∘ f : α → R` tends to `Filter.atTop` along a filter 
 does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` along `Filter.atTop`, as
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

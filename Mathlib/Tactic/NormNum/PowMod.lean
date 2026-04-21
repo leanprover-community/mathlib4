@@ -23,6 +23,7 @@ The approach taken here is identical to (and copied from) the development in
   of the form `a ^ b % m` using `evalNatPowMod`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -41,6 +41,7 @@ a product set.
   product σ-algebra
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

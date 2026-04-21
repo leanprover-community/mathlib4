@@ -16,6 +16,7 @@ The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts 
 morphism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

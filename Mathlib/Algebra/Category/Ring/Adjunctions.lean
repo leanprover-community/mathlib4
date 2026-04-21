@@ -20,6 +20,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 - `CommRingCat.unitsAdj`: `G ↦ ℤ[G]` is left adjoint to `S ↦ Sˣ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

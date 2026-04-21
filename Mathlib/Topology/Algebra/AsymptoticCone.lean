@@ -34,6 +34,7 @@ that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
   convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
   `s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -36,6 +36,7 @@ sums in the convergence range.)
   Fourier series which are only conditionally convergent, which is difficult to approach using the
   methods in the library at the present time (May 2024).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

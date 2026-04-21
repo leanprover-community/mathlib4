@@ -20,6 +20,7 @@ We also develop basic API about these equivalences.
 - Add missing lemmas (compare to other `*Equiv` structures).
 - [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ to be the σ-algebra of sets `s : Set α` such that
 - `s` is measurable w.r.t. the canonical σ-algebra on `α`;
 - and `f ⁻¹' s = s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

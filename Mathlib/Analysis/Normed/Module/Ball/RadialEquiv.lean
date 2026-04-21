@@ -17,6 +17,7 @@ One may think about it as generalization of polar coordinates to any normed spac
 
 We also specialize this definition to the case `r = 1` and prove
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

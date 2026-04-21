@@ -23,6 +23,7 @@ For `R` be an integral domain (so that `p.roots` is defined for any `p : R[X]` a
 we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between the coefficients and
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

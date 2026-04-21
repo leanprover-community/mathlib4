@@ -14,6 +14,7 @@ public import Mathlib.Data.Vector.Basic
 These must not be in `Logic.Small.Basic` as this is very low in the import hierarchy,
 and is used by category theory files which do not need everything imported by `Data.Vector.Basic`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

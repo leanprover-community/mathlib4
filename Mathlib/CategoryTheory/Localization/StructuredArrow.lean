@@ -23,6 +23,7 @@ We obtain a similar lemma `Localization.induction_costructuredArrow` for
 costructured arrows.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,6 +29,7 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ We prove that a minimal prime over an ideal of the form `N.colon {x}` in a Noeth
 itself an ideal of the form `N.colon {x'}`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

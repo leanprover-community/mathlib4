@@ -22,6 +22,7 @@ functions are inverses of each other.
 This property already has a name, namely `α ≃ ℕ`, but here we are interested in using it as a
 typeclass.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

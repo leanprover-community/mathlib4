@@ -18,6 +18,7 @@ tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
 While the Stacks Project is the main focus, because the tag format at Kerodon is
 compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

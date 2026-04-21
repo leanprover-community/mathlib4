@@ -19,6 +19,7 @@ We prove basic properties of (semi)normed groups.
 
 normed group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

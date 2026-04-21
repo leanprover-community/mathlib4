@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Card
 /-!
 # `Finite`, `Infinite` and `Fintype` are preserved by `Additive` and `Multiplicative`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

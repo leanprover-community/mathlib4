@@ -19,6 +19,7 @@ for the vanishing of elements (especially in modules over division rings).
 Note that `NoZeroSMulDivisors` is deprecated in favor of `Module.IsTorsionFree`, which is the
 mathematically correct generalisation to semimodules.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

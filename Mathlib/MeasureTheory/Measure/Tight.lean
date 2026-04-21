@@ -32,6 +32,7 @@ measures in the set, the complement of `K` has measure at most `ε`.
 
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

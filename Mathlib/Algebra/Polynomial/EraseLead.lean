@@ -20,6 +20,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Monomial
 The definition is set up so that it does not mention subtraction in the definition,
 and thus works for polynomials over semirings as well as rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

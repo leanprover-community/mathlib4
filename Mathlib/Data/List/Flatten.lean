@@ -13,6 +13,7 @@ public import Mathlib.Tactic.GCongr.Core
 This file proves basic properties of `List.flatten`, which concatenates a list of lists. It is
 defined in `Init.Prelude`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

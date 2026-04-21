@@ -21,6 +21,7 @@ U ⊓ V --->   U
 ```
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

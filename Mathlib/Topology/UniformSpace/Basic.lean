@@ -36,6 +36,7 @@ The formalization uses the books:
 
 But it makes a more systematic use of the filter library.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

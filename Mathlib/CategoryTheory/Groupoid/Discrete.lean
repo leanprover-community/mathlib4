@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Discrete.Basic
 
 # Discrete categories are groupoids
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

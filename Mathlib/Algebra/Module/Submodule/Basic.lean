@@ -21,6 +21,7 @@ As such it is a good target for organizing and splitting further.
 
 submodule, subspace, linear map
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

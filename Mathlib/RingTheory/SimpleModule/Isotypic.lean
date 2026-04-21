@@ -41,6 +41,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 isotypic component, fully invariant submodule
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

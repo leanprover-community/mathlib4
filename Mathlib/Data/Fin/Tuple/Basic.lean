@@ -78,6 +78,7 @@ For a **pivot** `p : Fin (n + 1)`,
 * `Fin.repeat n a` : repeat a tuple `n` times.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

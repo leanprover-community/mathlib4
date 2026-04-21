@@ -69,8 +69,8 @@ instances should not be a global instance.
 > be obtained via `ModularLattice`. This is not the case in `mathlib4`.
 > See `JordanHolderModule.instJordanHolderLattice`.
 -/
-
 set_option backward.defeqAttrib.useBackward true
+
 
 @[expose] public section
 
@@ -286,6 +286,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)

@@ -12,6 +12,7 @@ public import Mathlib.Data.List.Basic
 
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -20,6 +20,7 @@ This file contains basic results on `Algebra.adjoin`.
 adjoin, algebra
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

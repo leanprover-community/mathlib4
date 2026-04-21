@@ -17,6 +17,7 @@ there exists (or for all) localization functors `L : C ⥤ D` for `W`,
 the category `D` is locally `w`-small.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

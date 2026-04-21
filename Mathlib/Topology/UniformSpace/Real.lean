@@ -15,6 +15,7 @@ This file provides the instances `CompleteSpace ℝ` and `CompleteSpace ℝ≥0`
 Along the way, we add a shortcut instance for the natural topology on `ℝ≥0`
 (the one induced from `ℝ`), and add some basic API.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

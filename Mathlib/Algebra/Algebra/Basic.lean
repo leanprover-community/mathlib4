@@ -22,6 +22,7 @@ import Mathlib.Algebra.Ring.Hom.InjSurj
 
 This file could usefully be split further.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

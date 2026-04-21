@@ -34,6 +34,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
   *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

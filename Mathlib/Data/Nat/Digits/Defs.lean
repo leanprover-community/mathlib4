@@ -28,6 +28,7 @@ Also included is a bound on the length of `Nat.toDigits` from core.
 A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
 are numerals is not yet ported.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ are also discrete, both in the form of explicit equivalences and through the
 * `IsDiscrete.sum`: an `IsDiscrete` instance on the sum of two discrete categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

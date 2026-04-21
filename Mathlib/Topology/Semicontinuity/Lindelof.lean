@@ -38,6 +38,7 @@ equipped with the order topology.
 * [N. Bourbaki, *Topologie Générale*, Chapitre IX, Appendice I][bourbaki1974] (this appendix does
   not seem to exist in the English translation)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

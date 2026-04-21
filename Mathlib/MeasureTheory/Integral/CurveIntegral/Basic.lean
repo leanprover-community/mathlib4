@@ -85,6 +85,7 @@ This allows us to avoid using `ContinuousLinearMap.restrictScalars`
 in `HasFDerivWithinAt.curveIntegral_segment_source`
 and a future formalization of Poincaré lemma.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

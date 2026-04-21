@@ -16,6 +16,7 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

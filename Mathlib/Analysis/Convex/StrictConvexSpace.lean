@@ -53,6 +53,7 @@ formulated only for the case `𝕜 = ℝ`.
 
 convex, strictly convex
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

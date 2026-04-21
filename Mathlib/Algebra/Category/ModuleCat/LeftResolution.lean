@@ -19,6 +19,7 @@ we may obtain a functor `(projectiveResolution R).chainComplexFunctor` which
 sends `M : ModuleCat R` to a projective resolution.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

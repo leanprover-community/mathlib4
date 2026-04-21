@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 # GCD domains are integrally closed
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

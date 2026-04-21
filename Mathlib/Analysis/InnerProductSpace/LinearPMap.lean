@@ -51,6 +51,7 @@ We use the junk value pattern to define the adjoint for all `LinearPMap`s. In th
 
 Unbounded operators, closed operators
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,6 +29,7 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 field, algebraic closure, galois group, abelianization
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

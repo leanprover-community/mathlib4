@@ -36,6 +36,7 @@ at `t • x` when `t ≠ 0`.
 differentiability, norm
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

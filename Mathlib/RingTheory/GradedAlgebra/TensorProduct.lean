@@ -19,6 +19,7 @@ In this file we show that if `𝒜` is a graded `R`-algebra, and `S` is any `R`-
 We need to provide the shortcut instances afterwards for the grade zero because it is expensive to
 deduce via unification the function `fun i ↦ (𝒜 i).baseChange S`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

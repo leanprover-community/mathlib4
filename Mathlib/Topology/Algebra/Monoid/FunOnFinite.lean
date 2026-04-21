@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Pi
 # Continuity of the functoriality of `X → M` when `X` is finite
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

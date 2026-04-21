@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
 Continuity and derivatives of the tangent and arctangent functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

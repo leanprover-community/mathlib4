@@ -50,6 +50,7 @@ about the grading type and then a generic statement of the form "look at the coe
 'unique product/sum'".
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

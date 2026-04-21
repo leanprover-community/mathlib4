@@ -14,6 +14,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 # Interactions between `∑, ∏` and `(Add)Con`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Logic.Embedding.Set
 
 We provide the `Fintype` instance for the sum of two fintypes.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

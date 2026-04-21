@@ -48,6 +48,7 @@ Extend to cover the case of subalgebras of the continuous functions vanishing at
 on non-compact spaces.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

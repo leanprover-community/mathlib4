@@ -58,6 +58,7 @@ We provide `DFinsupp.toFinsupp` and `finsuppEquivDFinsupp` computably by adding
 `[DecidableEq ι]` and `[Π m : M, Decidable (m ≠ 0)]` arguments. To aid with definitional unfolding,
 these arguments are also present on the `noncomputable` equivs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ public import Mathlib.Topology.Instances.Irrational
 In this file we prove that the set of Liouville numbers form a dense `Gδ` set. We also prove a
 similar statement about irrational numbers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

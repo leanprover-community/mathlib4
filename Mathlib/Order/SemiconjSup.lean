@@ -31,6 +31,7 @@ bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper the
 homeomorphisms of the circle, so in order to apply results from this file one has to lift these
 homeomorphisms to the real line first.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

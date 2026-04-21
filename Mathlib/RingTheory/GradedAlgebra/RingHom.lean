@@ -30,6 +30,7 @@ We do **not** define a separate class of graded ring homomorphisms; instead, we 
 * We don't really need the fact that they are graded rings until the theorem
   `DirectSum.decompose_map` which describes how the decomposition interacts with the map.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

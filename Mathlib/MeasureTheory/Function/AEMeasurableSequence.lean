@@ -21,6 +21,7 @@ and a measurable set `aeSeqSet hf p`, such that
 * `x ∈ aeSeqSet hf p → ∀ i : ι, aeSeq hf hp i x = f i x`
 * `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

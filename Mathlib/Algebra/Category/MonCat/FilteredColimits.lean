@@ -22,6 +22,7 @@ showing that the forgetful functor `forget MonCat` preserves filtered colimits. 
 `AddMonCat`, `CommMonCat` and `AddCommMonCat`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

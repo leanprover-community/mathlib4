@@ -35,6 +35,7 @@ function, we provide a convenience lemma `MeasureTheory.Integrable.to_average`.
 
 integral, center mass, average value, set average
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

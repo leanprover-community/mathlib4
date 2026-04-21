@@ -32,6 +32,7 @@ The two constructions agree for 2-truncated quasicategories (TODO: handled by fu
 Throughout this file, we make use of `Edge` and `CompStruct` to conveniently deal with
 edges and triangles in a 2-truncated simplicial set.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

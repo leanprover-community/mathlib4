@@ -54,6 +54,7 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
 ## Tags
 number field, embeddings, infinite places, completion, absolute value
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

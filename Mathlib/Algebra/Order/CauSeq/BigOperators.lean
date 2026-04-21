@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Order.CauSeq.Basic
 
 This file proves some more lemmas about basic Cauchy sequences that involve finite sums.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

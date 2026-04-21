@@ -55,6 +55,7 @@ duplicated.
 * https://en.wikipedia.org/wiki/Incenter
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

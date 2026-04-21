@@ -16,6 +16,7 @@ For every ring `A` over a commutative ring `R`, we construct an equivalence betw
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

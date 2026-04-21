@@ -15,6 +15,7 @@ TODO:
 either use this equivalence to transport the monoidal structure from `Module ℤ` to `Ab`,
 or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

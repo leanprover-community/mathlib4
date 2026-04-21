@@ -30,6 +30,7 @@ countable set), and moreover `f ((y - (y-x)^2)^+) ≤ f y ≤ f (y^+)`. This is 
 limit of `(f y - f x) / (y - x)` by a lower and upper approximation argument from the known
 behavior of `μ [x, y]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,6 +22,7 @@ Some notable definitions are:
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

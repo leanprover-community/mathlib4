@@ -30,6 +30,7 @@ This file is heavily inspired by `Mathlib/Algebra/Star/StarAlgHom.lean`.
 
 non-unital, ring, morphism, star
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

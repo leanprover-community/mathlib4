@@ -9,6 +9,7 @@ public import Mathlib.Init
 public meta import Lean.Elab.Tactic.ElabTerm
 
 /-! # `clear!` tactic -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

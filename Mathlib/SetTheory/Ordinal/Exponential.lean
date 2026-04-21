@@ -15,6 +15,7 @@ In this file we define the power function and the logarithm function on ordinals
 related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x` for nontrivial inputs
 `b`, `c`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

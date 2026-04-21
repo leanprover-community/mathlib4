@@ -15,6 +15,7 @@ public import Mathlib.Analysis.Normed.Operator.NNNorm
 This file contains statements about operator norm for which it really matters that the
 underlying space has a norm (rather than just a seminorm).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

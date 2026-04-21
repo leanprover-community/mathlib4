@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Shrink
 
 For a functor `C ⥤ GrpCat.{w'}` with `w`-small image, we shrink to a functor `C ⥤ GrpCat.{w}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

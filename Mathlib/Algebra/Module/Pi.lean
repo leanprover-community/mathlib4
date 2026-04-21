@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Ring.Pi
 
 This file defines instances for module and related structures on Pi Types
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

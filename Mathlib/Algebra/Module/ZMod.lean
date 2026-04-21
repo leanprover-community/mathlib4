@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.Sylow
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,6 +39,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
   invariant under it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Util.Delaborators
 
 /-! # Units in pi types -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

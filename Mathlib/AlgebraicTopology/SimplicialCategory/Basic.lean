@@ -32,6 +32,7 @@ category of simplicial sets in such a way that morphisms in
 * [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

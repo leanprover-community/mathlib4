@@ -17,6 +17,7 @@ We define
   and stores an array of pending `LazyEntry`s
 * `RefinedDiscrTree`, the discrimination tree itself.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

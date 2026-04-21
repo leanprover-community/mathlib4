@@ -34,6 +34,8 @@ See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 namespace CategoryTheory
 

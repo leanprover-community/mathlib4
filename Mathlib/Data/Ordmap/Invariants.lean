@@ -45,6 +45,7 @@ Contributors are encouraged to pick this up and finish the job, if it appeals to
 
 ordered map, ordered set, data structure, verified programming
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -36,6 +36,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 
 function with finite support, module, linear algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

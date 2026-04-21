@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 This file contains a few facts regarding the continuity of affine maps.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

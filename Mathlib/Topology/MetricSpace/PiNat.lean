@@ -56,6 +56,7 @@ in general), and `ι` is countable.
   continuous functions to metric spaces, can be embedded inside their product.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

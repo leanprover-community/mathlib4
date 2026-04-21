@@ -30,6 +30,7 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 * The cofinality is defined for ordinals.
   If `c` is a cardinal number, its cofinality is `c.ord.cof`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

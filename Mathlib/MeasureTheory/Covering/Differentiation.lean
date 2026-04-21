@@ -74,6 +74,7 @@ make no sense. However, the measure is not globally zero if the space is big eno
 
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.9][Federer1996]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

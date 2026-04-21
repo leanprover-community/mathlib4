@@ -15,6 +15,7 @@ an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

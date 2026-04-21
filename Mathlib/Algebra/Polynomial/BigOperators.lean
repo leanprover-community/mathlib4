@@ -26,6 +26,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 - `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

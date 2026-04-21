@@ -49,6 +49,7 @@ relevant in applications, and would needlessly complicate the proof.
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

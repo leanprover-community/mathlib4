@@ -25,6 +25,7 @@ In a field extension `K/k`
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

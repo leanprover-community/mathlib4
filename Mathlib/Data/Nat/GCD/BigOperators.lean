@@ -11,6 +11,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

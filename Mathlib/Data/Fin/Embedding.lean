@@ -26,6 +26,7 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

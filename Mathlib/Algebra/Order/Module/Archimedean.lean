@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Order.Module.Basic
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
 * `ArchimedeanClass.closedBall` are `ArchimedeanClass.closedBallAddSubgroup` as a submodules.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

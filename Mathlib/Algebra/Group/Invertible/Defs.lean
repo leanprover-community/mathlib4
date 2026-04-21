@@ -74,6 +74,7 @@ See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -41,6 +41,7 @@ Other:
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

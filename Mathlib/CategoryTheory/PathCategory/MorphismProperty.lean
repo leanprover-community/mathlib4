@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 We provide a formulation of induction principles for morphisms in a path category in terms of
 `MorphismProperty`. This file is separate from `Mathlib/CategoryTheory/PathCategory/Basic.lean` in
 order to reduce transitive imports. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

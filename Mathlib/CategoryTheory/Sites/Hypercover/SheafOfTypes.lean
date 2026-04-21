@@ -26,6 +26,7 @@ In this file we provide some API for working with `1`-hypercovers for sheaves of
   for `E` is limiting.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 universe w
 

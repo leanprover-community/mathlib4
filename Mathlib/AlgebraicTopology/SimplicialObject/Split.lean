@@ -33,6 +33,7 @@ Simplicial objects equipped with a splitting form a category
 * [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

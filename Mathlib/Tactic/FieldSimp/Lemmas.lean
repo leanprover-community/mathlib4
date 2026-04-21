@@ -13,6 +13,7 @@ public import Mathlib.Util.Qq
 /-! # Lemmas for the `field_simp` tactic
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

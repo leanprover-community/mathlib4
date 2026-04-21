@@ -31,6 +31,7 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 - [engelking1989]: *General Topology*, 1989.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

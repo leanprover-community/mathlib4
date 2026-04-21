@@ -39,6 +39,7 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

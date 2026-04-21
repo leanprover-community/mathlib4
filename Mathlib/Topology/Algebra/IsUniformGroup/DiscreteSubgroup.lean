@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 Note that the instance `Subgroup.isClosed_of_discrete` does not live here, in order that it can
 be used in other files without requiring lots of group-theoretic imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,6 +42,7 @@ These notations belong to the `InitialSeg` locale.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -10,6 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.Basic
 /-! # Unitary maps in C⋆-algebras
 
 This file defines some basic maps by unitaries in C⋆-algebras. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ Many of these results are copied with minimal modification from the tensor algeb
 The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior algebra is a
 ℕ-graded algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

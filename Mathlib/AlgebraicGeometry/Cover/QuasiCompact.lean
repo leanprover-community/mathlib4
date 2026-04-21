@@ -19,6 +19,7 @@ by a finite union of images of quasi-compact opens of the components.
 This is used to define the fpqc (faithfully flat, quasi-compact) topology, where covers are given by
 flat covers that are quasi-compact.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

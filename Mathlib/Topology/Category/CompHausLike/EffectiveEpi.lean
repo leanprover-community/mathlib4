@@ -18,6 +18,7 @@ preregular.
 
 If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoherent.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

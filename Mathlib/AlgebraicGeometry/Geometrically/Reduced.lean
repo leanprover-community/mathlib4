@@ -29,6 +29,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 ## TODO
 Get rid of the noetherian assumption.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

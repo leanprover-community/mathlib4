@@ -17,6 +17,7 @@ using a `Group(Semi)normClass` when the codomain is the reals.
 See `Mathlib/Analysis/Normed/Order/Hom/Ultra.lean` for further upgrades to nonarchimedean normed
 groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -35,6 +35,7 @@ being positive/negative with respect to the signed measure `s`.
 
 Hahn decomposition theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

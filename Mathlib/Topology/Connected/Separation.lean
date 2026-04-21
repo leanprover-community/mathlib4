@@ -16,6 +16,7 @@ This file provides an instance `T2Space X` given `TotallySeparatedSpace X`.
 ## TODO
 * Move the last part of `Topology/Separation` to this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

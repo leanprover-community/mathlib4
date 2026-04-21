@@ -21,6 +21,7 @@ In this file, we define the generating maps for the simplex category, show that
 this category is equivalent to `NonemptyFinLinOrd`, and establish basic
 properties of its epimorphisms and monomorphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

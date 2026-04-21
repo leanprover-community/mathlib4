@@ -31,6 +31,7 @@ defined in `Mathlib/CategoryTheory/Simple.lean`
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

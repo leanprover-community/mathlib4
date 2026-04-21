@@ -19,6 +19,7 @@ bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate fil
 
 Urysohn's lemma, normal topological space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

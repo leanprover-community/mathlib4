@@ -12,6 +12,7 @@ public import Mathlib.Data.Nat.Choose.Sum
 /-!
 # Characteristic of semirings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -34,6 +34,7 @@ Under the assumption `SeparatingDual R V`, we show in
 `SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`

@@ -33,6 +33,7 @@ The proof idea is as follows.
   `n → ∞`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

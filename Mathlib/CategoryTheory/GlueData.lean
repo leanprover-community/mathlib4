@@ -19,6 +19,7 @@ provide the API to realize it as a multispan diagram, and also state lemmas abou
 interaction with a functor that preserves certain pullbacks.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ To compute all the keys at once, we have
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

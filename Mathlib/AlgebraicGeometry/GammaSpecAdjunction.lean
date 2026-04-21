@@ -33,6 +33,7 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `Scheme`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ can be defined (TODO) as functors from `SemiSimplexCategoryᵒᵖ` similarly
 as simplicial objects are functors from `SimplexCategory`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ The following meta-properties of predicates on ring homomorphisms are defined
   implies `P (X ⟶ X ⊗[S] Y)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

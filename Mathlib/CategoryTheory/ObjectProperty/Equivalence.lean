@@ -18,6 +18,8 @@ by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v v' u u'

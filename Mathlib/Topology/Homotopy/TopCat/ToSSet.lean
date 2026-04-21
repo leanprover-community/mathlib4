@@ -24,6 +24,7 @@ which corresponds to the isomorphism `SSet.stdSimplex.toTopObjIsoI|Δ[1]| ≅ To
 by adjunction.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

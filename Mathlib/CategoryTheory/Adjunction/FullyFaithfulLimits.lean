@@ -19,6 +19,7 @@ In particular, a functor from a category of sheaves preserves colimits
 iff it does so after precomposition with the sheafification functor.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

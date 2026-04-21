@@ -25,6 +25,7 @@ conditions.
 We show that these properties are local, and are stable under compositions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

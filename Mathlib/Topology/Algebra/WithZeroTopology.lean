@@ -32,6 +32,7 @@ This topology is defined as a scoped instance since it may not be the desired to
 a linearly ordered commutative group with zero. You can locally activate this topology using
 `open WithZeroTopology`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -53,6 +53,7 @@ by David Loeffler and Michael Stoll.
 
 L-series
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

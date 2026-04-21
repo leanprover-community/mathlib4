@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 In this file we prove that the space of continuous maps from a topological space
 to a locally convex topological vector space is a locally convex topological vector space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

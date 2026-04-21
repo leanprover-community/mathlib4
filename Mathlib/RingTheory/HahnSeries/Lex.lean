@@ -25,6 +25,7 @@ In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this i
   can be decomposed by `Γ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

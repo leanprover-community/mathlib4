@@ -13,6 +13,7 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 The two-sided ideal of compactly supported bounded continuous functions taking values in a metric
 space, with the uniform distance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

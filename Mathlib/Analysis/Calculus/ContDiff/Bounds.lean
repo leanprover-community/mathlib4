@@ -17,6 +17,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
   of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
   derivative of `f` is bounded by `D ^ i`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

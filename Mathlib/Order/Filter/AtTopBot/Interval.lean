@@ -15,6 +15,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 This file contains some lemmas about how filters `Ixx` behave as the endpoints tend to `±∞`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

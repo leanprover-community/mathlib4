@@ -26,6 +26,7 @@ We call this the AKLB setup.
   defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

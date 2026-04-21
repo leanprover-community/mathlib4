@@ -24,6 +24,7 @@ and the other is σ-finite.
 It isn't clear if the finiteness assumptions are optimal in this file.
 We should either weaken them, or describe an example showing that it's impossible.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

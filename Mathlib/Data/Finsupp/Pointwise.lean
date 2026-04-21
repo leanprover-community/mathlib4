@@ -17,6 +17,7 @@ see the type synonyms `AddMonoidAlgebra`
 (which is in turn used to define `Polynomial` and `MvPolynomial`)
 and `MonoidAlgebra`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

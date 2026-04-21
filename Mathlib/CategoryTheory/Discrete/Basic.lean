@@ -35,6 +35,8 @@ discrete categories.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [category theory universes].

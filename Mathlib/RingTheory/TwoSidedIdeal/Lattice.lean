@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 /-!
 # The complete lattice structure on two-sided ideals
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

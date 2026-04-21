@@ -31,6 +31,7 @@ object, when `C` has finite products. We call this `cechNerveTerminalFrom`. When
 `G`-set, which is useful for group cohomology.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -36,6 +36,7 @@ some basic facts about them.
 adapted, progressively measurable
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 /-!
 # Lifting bilinear forms to quotients
 -/
+
+set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 namespace LinearMap

@@ -13,6 +13,7 @@ public import Mathlib.Topology.EMetricSpace.Pi
 In this file we define the diameter of a set in the extended metric space
 as an extended nonnegative real number.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

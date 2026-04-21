@@ -19,6 +19,7 @@ This file characterises the covering sieves of the coherent topology.
   coherent topology if and only if it contains a finite effective epimorphic family.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

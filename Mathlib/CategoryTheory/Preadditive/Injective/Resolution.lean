@@ -25,6 +25,7 @@ v       v                 v
 I⁰ ---> I¹ ---> ... ----> Iⁿ ---> ...
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

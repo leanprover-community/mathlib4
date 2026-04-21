@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.SModEq.Basic
 In this file, we record more lemmas about `SModEq` on elements
 of modules or rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

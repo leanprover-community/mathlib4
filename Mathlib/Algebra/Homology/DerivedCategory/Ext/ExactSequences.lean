@@ -18,6 +18,7 @@ Similarly, if `Y : C`, there is a contravariant long exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

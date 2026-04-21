@@ -32,6 +32,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 
 complex, real part, imaginary part, closure, interior, frontier
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

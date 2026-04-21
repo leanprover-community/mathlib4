@@ -45,6 +45,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

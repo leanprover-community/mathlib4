@@ -25,6 +25,7 @@ the dual statements between pushouts and epimorphisms.
 
 The dual notions for pushouts are also available.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

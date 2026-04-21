@@ -22,6 +22,7 @@ instead of `R[X][Y]` (i.e., `Polynomial (Polynomial R)`),
 because Mathlib has a theory about homogeneous multivariate polynomials,
 but not about homogeneous bivariate polynomials encoded as `R[X][Y]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

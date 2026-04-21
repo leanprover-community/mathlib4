@@ -25,6 +25,7 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
   quotient of `J.obj (SingleObj.star G)` by the induced action.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

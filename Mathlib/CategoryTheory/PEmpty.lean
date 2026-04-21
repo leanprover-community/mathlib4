@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Discrete.Basic
 
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

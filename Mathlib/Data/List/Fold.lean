@@ -35,6 +35,7 @@ The third duality theorem is in the standard library under the names
 `List.foldl_reverse`, `List.foldr_eq_foldl_reverse`,
 `List.foldr_reverse` and `List.foldl_eq_foldr_reverse`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

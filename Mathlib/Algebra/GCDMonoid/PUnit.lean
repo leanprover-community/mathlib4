@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Ring.PUnit
 This file collects facts about algebraic structures on the one-element type, e.g. that it is has a
 GCD.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

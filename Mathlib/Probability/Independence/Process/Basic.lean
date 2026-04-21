@@ -23,6 +23,7 @@ We prove an analogous condition for a family of stochastic processes.
 
 independence, stochastic processes
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

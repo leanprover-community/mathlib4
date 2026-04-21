@@ -15,6 +15,8 @@ The associator functor `((C ⊕ D) ⊕ E) ⥤ (C ⊕ (D ⊕ E))` and its inverse
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

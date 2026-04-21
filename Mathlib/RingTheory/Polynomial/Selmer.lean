@@ -20,6 +20,7 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 
 TODO: Show that the Selmer polynomials have full Galois group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,6 +19,7 @@ expressions `e` in a `msg : MessageData`. The surrounding monad must support `Ba
 
 Some helpers are provided implemented in terms of this.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

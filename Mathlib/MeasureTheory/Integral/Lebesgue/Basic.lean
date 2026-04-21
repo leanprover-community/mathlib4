@@ -25,6 +25,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 * `∫⁻ x in s, f x`: integral of a function `f : α → ℝ≥0∞` over a set `s` with respect
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

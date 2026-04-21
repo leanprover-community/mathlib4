@@ -42,6 +42,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 * `isEmpty_satelliteConfig_multiplicity` is the main theorem, saying that there are
   no satellite configurations of `(multiplicity E) + 1` points, for the parameter `goodτ E`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

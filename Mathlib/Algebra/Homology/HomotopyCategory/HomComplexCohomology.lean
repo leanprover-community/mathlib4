@@ -24,6 +24,7 @@ around `HomComplex` which is centered on terms in types
 We also show that `HomComplex.CohomologyClass K L n` identifies to
 the type of morphisms between `K` and `L⟦n⟧` in the homotopy category.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

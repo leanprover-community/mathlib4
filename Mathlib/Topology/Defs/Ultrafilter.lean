@@ -18,6 +18,7 @@ public import Mathlib.Topology.Defs.Filter
   with a proof of `Nonempty X` deduced from existence of an ultrafilter on `X`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

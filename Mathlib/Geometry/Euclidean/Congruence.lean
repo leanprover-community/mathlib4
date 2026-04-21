@@ -31,6 +31,7 @@ then reduces to ASA.
 * https://en.wikipedia.org/wiki/Congruence_(geometry)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

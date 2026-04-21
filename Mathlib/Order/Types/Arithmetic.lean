@@ -39,6 +39,7 @@ The following are notations in the `OrderType` namespace:
 
 order type, order isomorphism, linear order
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

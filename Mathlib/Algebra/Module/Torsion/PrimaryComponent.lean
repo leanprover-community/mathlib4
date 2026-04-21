@@ -23,6 +23,7 @@ For `P : HeightOneSpectrum A`, the main result of this file (TODO) is that
 * `Ideal.primaryComponent` : The `I`-primary component of an `A`-module `M`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

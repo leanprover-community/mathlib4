@@ -34,6 +34,7 @@ semantics for regular logic.
 * [Marino Gran, An Introduction to Regular Categories][Gran2021]
 * <https://ncatlab.org/nlab/show/regular+category>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

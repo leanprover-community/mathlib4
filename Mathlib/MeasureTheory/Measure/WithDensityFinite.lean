@@ -36,6 +36,7 @@ In this definition and the results below, `μ` is an s-finite measure (`SFinite 
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

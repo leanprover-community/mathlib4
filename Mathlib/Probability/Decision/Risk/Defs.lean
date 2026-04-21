@@ -31,6 +31,7 @@ to that integral as `risk` in lemma names.
 * `minimaxRisk ℓ P`: minimax risk, infimum over all estimators of the maximum over `θ` of the risk.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

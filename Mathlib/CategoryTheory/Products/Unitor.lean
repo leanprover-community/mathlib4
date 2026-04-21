@@ -14,6 +14,8 @@ public import Mathlib.CategoryTheory.Discrete.Basic
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe w v u
 
 open CategoryTheory

@@ -34,6 +34,7 @@ Related files are:
 * `Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
 * `Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

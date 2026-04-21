@@ -11,6 +11,7 @@ public import Mathlib.Data.Vector.Snoc
 /-!
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

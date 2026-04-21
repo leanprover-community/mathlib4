@@ -17,6 +17,7 @@ public import Mathlib.Data.Multiset.Fold
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

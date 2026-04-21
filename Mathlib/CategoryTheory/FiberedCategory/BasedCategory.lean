@@ -28,6 +28,8 @@ underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj 
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory

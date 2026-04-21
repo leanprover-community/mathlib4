@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Basic
 # Lemmas about semiconjugate elements of a group
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -17,6 +17,7 @@ This file proves variants of the infinite pigeonhole principle.
 
 Generalize universes of results.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

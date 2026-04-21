@@ -42,6 +42,7 @@ This file defines the following linters:
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

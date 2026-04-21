@@ -11,6 +11,7 @@ public import Mathlib.Order.Filter.AtTopBot.Ring
 /-!
 # Convergence to ±infinity in linear ordered (semi)fields
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

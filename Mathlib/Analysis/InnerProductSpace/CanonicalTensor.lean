@@ -23,6 +23,7 @@ The theorem `canonicalCovariantTensor_eq_sum` shows that
 `InnerProductSpace.canonicalCovariantTensor E` can be computed from any orthonormal basis `v` as
 `∑ i, (v i) ⊗ₜ[ℝ] (v i)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

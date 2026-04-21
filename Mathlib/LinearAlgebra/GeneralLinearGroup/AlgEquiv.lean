@@ -22,6 +22,7 @@ In other words, for `V = W`, the map `MulSemiringAction.toAlgEquiv` from
 
 For the continuous versions, see `Mathlib/Analysis/Normed/Operator/ContinuousAlgEquiv.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open Module LinearMap LinearEquiv
 

@@ -11,6 +11,7 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 /-!
 # Algebra-related equicontinuity criteria
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -56,6 +56,7 @@ The conditions on `A` imposed in `NoZeroDivisors.of_right_ordered` are sometimes
 These conditions are sufficient, but not necessary.  As mentioned above, *Kaplansky's Conjecture*
 asserts that `A` being torsion-free may be enough.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

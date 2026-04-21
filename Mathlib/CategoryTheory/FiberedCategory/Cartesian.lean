@@ -37,6 +37,7 @@ equalities.
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 * [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

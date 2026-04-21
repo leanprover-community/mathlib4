@@ -29,6 +29,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

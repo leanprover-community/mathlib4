@@ -43,6 +43,7 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

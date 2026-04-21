@@ -30,6 +30,7 @@ since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the
 providing as much API as possible.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

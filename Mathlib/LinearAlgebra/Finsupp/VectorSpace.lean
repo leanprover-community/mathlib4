@@ -21,6 +21,7 @@ This file contains results on the `R`-module structure on functions of finite su
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ Given a map `σ : V → W` and a `Quiver` instance on `V`, this file defines a `
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,7 @@ in the suggestion.
 `term` can also be omitted, in which case `change?` simply suggests `change` with the main goal.
 This is helpful after tactics like `dsimp`, which can then be deleted.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -20,6 +20,7 @@ then `α` has a group structure, and similarly for monoids, semigroups and so on
 When adding new definitions that transfer type-classes across an equivalence, please use
 `abbrev`. See note [reducible non-instances].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,6 +39,7 @@ connected fields, that is not useful in practice.
 ## Tags
 ample set
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

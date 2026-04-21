@@ -18,6 +18,7 @@ compact support.
 
 derivative, support
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

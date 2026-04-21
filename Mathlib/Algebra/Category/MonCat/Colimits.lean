@@ -47,6 +47,7 @@ Monoid.mk : {M : Type u} →
               autoParam (∀ (n : ℕ) (x : M), npow (n + 1) x = x * npow n x) _auto✝¹ → Monoid M
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

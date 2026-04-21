@@ -38,6 +38,7 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -63,6 +63,7 @@ The conditional kernel is unique (almost everywhere w.r.t. `fst κ`): this is pr
 * `ProbabilityTheory.Kernel.compProd_fst_condKernel`: `fst κ ⊗ₖ condKernel κ = κ`
 * `MeasureTheory.Measure.compProd_fst_condKernel`: `ρ.fst ⊗ₘ ρ.condKernel = ρ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

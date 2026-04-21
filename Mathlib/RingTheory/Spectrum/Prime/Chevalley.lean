@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 In this file we provide the usual (algebraic) version of Chevalley's theorem.
 For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

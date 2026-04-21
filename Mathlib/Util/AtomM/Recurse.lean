@@ -30,6 +30,7 @@ recursive ring-normalization in which `sin (x + y) + sin (y + x)` is normalized 
   expression.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

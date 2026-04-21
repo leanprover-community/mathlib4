@@ -22,6 +22,7 @@ This file mainly concerns the interaction between submonoids and products/sums o
 * `AddSubmonoid.mem_bsupr_iff_exists_dfinsupp`: elements of the supremum of additive commutative
   monoids can be given by taking finite sums of elements of each monoid.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

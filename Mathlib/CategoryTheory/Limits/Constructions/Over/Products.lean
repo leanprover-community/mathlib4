@@ -23,6 +23,7 @@ category.
 * Generalise from arbitrary products to arbitrary limits. This is done in Toric.
 * Dualise to get the `Under X` results.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

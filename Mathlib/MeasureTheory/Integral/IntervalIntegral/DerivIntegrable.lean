@@ -26,6 +26,7 @@ This file proves that:
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

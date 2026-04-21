@@ -40,6 +40,7 @@ The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

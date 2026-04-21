@@ -18,6 +18,7 @@ In this file we show that the supremum of two subalgebras that are finitely gene
 is again finitely generated.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

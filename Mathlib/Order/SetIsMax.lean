@@ -15,6 +15,7 @@ Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

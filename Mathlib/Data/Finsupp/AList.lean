@@ -18,6 +18,7 @@ public import Mathlib.Data.List.AList
   via `AList.lookup`, sending absent keys to zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

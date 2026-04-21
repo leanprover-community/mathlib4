@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 /-!
 # Ring-theoretic results in terms of categorical language
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

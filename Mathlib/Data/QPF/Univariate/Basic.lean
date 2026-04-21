@@ -38,6 +38,7 @@ The present theory focuses on the univariate case for qpfs
   Functors*][avigad-carneiro-hudon2019]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

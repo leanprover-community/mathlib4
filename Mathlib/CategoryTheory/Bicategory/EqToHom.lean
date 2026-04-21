@@ -33,6 +33,7 @@ well under `eqToHom`s.
 * Define `eqToEquiv` that puts the `eqToHom`s in an `Equivalence` between
   objects.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ about `sl₂`.
   natural number if the representation is finite-dimensional.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

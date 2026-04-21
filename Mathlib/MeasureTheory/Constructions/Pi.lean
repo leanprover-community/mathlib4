@@ -53,6 +53,7 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 finitary product measure
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

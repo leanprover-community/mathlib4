@@ -26,6 +26,7 @@ This file contains basic results on algebraic independence of a family of elemen
 transcendence basis, transcendence degree, transcendence
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

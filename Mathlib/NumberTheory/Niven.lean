@@ -20,6 +20,7 @@ also have rational cosines, are 0, 30 degrees, and 90 degrees - up to reflection
 by π. Equivalently, the only rational numbers that occur as `cos(π * p / q)` are the five
 values `{-1, -1/2, 0, 1/2, 1}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -37,6 +37,7 @@ cobounded filter is generally referred to as the *filter at infinity*.
 Although use of `cobounded α` is discouraged for indicating the (co)boundedness of individual sets,
 it is intended for regular use as a filter on `α`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

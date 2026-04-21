@@ -19,6 +19,7 @@ epimorphic families.
 - Find nice sufficient conditions in terms of preserving/reflecting (co)limits, to preserve/reflect
   effective epis, similar to `CategoryTheory.preserves_epi_of_preservesColimit`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

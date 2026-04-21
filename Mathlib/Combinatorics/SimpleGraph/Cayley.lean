@@ -26,6 +26,7 @@ The elements of `s` are called generators.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 # Algebra structure on monoid algebras
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

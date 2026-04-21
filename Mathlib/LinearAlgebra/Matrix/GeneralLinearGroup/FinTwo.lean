@@ -25,6 +25,7 @@ This classification is used (among other places) in classifying the fixed points
 `GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
 (https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

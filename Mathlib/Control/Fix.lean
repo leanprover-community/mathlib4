@@ -22,6 +22,7 @@ An instance is defined for `Part`.
 * class `Fix`
 * `Part.fix`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

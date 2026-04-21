@@ -78,6 +78,7 @@ as possible is phrased internally to `C`.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

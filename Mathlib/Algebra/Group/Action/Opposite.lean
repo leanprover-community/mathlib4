@@ -26,6 +26,7 @@ With `open scoped RightActions`, this provides:
 * `v +ᵥ> p` as an alias for `v +ᵥ p`
 * `p <+ᵥ v` as an alias for `AddOpposite.op v +ᵥ p`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

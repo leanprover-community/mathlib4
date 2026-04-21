@@ -32,6 +32,7 @@ because this is the way `PresheafedSpace C` is set up.)
 
 The limit of this diagram then constitutes the colimit presheaf.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

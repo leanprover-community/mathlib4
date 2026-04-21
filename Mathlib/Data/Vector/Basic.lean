@@ -18,6 +18,7 @@ public import Mathlib.Data.Fin.SuccPred
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

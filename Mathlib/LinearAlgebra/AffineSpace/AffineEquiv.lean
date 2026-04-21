@@ -32,6 +32,7 @@ composition in `AffineEquiv.group`.
 
 affine space, affine equivalence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

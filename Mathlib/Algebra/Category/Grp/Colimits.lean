@@ -18,6 +18,7 @@ This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

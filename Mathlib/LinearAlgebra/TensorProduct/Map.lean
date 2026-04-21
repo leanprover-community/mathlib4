@@ -21,6 +21,7 @@ We also define one-sided versions `lTensor` and `rTensor`.
 
 bilinear, tensor, tensor product
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

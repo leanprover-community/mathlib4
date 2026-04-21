@@ -20,6 +20,7 @@ is finite.
 * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
   mapping negative `x` to `-x`, is admissible.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

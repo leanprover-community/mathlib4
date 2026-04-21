@@ -12,6 +12,7 @@ public import Mathlib.Order.SuccPred.WithBot
 /-!
 # Algebraic properties of the successor function on `WithBot`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

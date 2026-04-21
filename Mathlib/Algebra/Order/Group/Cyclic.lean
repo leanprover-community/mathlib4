@@ -19,6 +19,7 @@ The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

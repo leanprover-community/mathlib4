@@ -35,6 +35,7 @@ We follow the proof of Proposition 3.4.13 in [borceux-vol3]
 The first part of that proof, the result for presheaf categories, is proved in the file
 `Mathlib.CategoryTheory.Functor.RegularEpi`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

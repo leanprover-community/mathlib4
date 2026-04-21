@@ -25,6 +25,7 @@ We also prove that the inversion sends an affine subspace passing through the ce
 
 inversion
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

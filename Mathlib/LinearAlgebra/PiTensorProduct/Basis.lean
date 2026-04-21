@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 
 This file constructs a basis for `PiTensorProduct` given bases on the component spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

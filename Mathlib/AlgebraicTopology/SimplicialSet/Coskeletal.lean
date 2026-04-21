@@ -23,6 +23,7 @@ extension. In fact, we show that when `X` is `StrictSegal` then
 As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of categories are
 2-coskeletal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ support is the pole or zero-divisor of a meromorphic function.
 Establish the analogous characterization of meromorphic functions with finite set of poles, as
 functions whose logarithmic counting function is big-O of `log`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

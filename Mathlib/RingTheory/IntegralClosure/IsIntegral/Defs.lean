@@ -24,6 +24,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 * `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
                           coefficients in `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

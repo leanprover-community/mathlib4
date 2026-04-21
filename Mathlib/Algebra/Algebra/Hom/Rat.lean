@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Algebra.Rat
 # Homomorphisms of `ℚ`-algebras
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

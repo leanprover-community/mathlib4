@@ -19,6 +19,7 @@ This file defines `BddLat`, the category of bounded lattices.
 In literature, this is sometimes called `Lat`, the category of lattices, because being a lattice is
 understood to entail having a bottom and a top element.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

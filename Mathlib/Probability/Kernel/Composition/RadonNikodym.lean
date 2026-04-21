@@ -29,6 +29,7 @@ Under suitable assumptions to have Radon-Nikodym derivatives defined for kernels
 equivalent statements with `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` replaced by `∂κ/∂η`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 
 public section

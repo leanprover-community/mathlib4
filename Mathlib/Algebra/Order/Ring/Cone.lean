@@ -18,6 +18,7 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

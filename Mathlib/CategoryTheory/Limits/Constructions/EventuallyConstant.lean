@@ -21,6 +21,7 @@ A typeclass `Cofiltered.IsEventuallyConstant` is also introduced, and
 the dual results for filtered categories and colimits are also obtained.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

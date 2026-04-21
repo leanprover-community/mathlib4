@@ -18,6 +18,7 @@ for `@[simps]`.
 We put this in a separate file so that we can already tag some declarations with this attribute
 in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

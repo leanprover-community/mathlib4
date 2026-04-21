@@ -19,6 +19,7 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 `HasDerivAt.conj_conj` and `DifferentiableAt.conj_conj`, showing that `conj ∘ f ∘ conj` is
 differentiable when `f` is (and giving a formula for its derivative).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

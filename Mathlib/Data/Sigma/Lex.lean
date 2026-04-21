@@ -29,6 +29,7 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`. Can be thought of as the special case of
   `Sigma.Lex` where all summands are the same
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ public import Mathlib.CategoryTheory.ShrinkYoneda
 
 sieve, pullback
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

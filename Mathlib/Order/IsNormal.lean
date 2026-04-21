@@ -20,6 +20,7 @@ bound of `f b` with `b < a`.
 
 See `Order.isNormal_iff_strictMono_and_continuous` for a proof that these notions are equivalent.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

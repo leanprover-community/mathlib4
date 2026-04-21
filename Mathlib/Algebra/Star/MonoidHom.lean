@@ -25,6 +25,7 @@ a corresponding morphism between the unitary groups in a star monoid.
 
 monoid, star
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

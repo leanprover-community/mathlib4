@@ -50,6 +50,7 @@ Version for `circle`.
 
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

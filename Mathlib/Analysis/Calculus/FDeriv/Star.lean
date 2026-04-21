@@ -23,6 +23,7 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 `HasFDerivAt.star_star` and `DifferentiableAt.star_star`, showing that `star ∘ f ∘ star` is
 differentiable when `f` is (and giving a formula for its derivative).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

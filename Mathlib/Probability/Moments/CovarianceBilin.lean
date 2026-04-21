@@ -34,6 +34,7 @@ as the scalar product against some element of `E`. This motivates the definition
 
 covariance, Hilbert space, bilinear form
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

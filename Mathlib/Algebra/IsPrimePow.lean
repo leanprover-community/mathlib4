@@ -16,6 +16,7 @@ public import Mathlib.Data.Nat.Prime.Pow
 
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 assert_not_exists Nat.divisors

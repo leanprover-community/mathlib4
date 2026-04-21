@@ -17,6 +17,7 @@ In this file, we transfer a (semi-)normed (additive) commutative group and norme
 across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

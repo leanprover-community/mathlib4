@@ -34,6 +34,7 @@ properties inherited from `X`.
 
 one point compactification, Alexandroff compactification, compactness
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Tactic.Linarith
 /-!
 # Absolute value in `ZMod n`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,6 +28,7 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
   `(f '' s).chainHeight = s.chainHeight`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

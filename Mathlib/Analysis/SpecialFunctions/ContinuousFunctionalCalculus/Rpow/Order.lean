@@ -32,6 +32,7 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

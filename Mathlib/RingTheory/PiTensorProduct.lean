@@ -18,6 +18,7 @@ with structure map defined by `r ↦ r • 1`.
 
 In particular if we take `R` to be `ℤ`, then this collapses into the tensor product of rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

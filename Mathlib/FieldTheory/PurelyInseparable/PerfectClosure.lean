@@ -40,6 +40,7 @@ This file contains basic results about relative perfect closures.
 separable degree, degree, separable closure, purely inseparable
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

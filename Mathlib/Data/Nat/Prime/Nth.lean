@@ -11,6 +11,7 @@ public import Mathlib.Data.Nat.Nth
 /-!
 # The Nth primes
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

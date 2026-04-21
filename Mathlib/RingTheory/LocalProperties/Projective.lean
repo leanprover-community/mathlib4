@@ -27,6 +27,8 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 -/
 
+
+set_option backward.defeqAttrib.useBackward true
 public section
 
 universe uM

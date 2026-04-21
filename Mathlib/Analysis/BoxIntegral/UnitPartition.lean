@@ -53,6 +53,7 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
   `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

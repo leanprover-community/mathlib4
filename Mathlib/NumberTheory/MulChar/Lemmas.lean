@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.RootsOfUnity.Complex
 /-!
 # Further Results on multiplicative characters
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

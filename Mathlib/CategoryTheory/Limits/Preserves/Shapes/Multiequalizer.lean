@@ -21,6 +21,7 @@ the colimit of `d.multispan`, we deduce that if `c` is a colimit,
 then `c.map F` also is (see `Multicofork.isColimitMapOfPreserves`).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

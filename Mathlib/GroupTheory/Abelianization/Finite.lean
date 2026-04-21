@@ -11,6 +11,7 @@ public import Mathlib.GroupTheory.Coset.Card
 /-!
 # The abelianization of a finite group is finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

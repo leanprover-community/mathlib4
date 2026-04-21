@@ -76,6 +76,7 @@ has some further discussion.
 
 quadratic map, homogeneous polynomial, quadratic polynomial
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,6 +33,7 @@ of complexes of injective objects in `C`. This will be used in the construction
 of total derived functors (and a refactor of the sequence of derived functors).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

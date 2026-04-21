@@ -24,6 +24,7 @@ In particular, if `α` is the identity of `R.val`, we obtain the
 sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

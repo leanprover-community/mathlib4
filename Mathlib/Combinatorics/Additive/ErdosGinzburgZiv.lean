@@ -21,6 +21,7 @@ elements of sum zero.
 * `Int.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ℤ`
 * `ZMod.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ZMod n`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

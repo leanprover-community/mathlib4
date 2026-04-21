@@ -21,6 +21,7 @@ If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In thi
 this API can be used to remove Noetherian hypothesis in certain cases.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

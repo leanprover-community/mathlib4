@@ -53,6 +53,7 @@ we state it for maps between any two normed spaces.
 
 Schwarz lemma
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open Metric Set Function Filter TopologicalSpace
 

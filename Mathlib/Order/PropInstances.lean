@@ -14,6 +14,7 @@ public import Mathlib.Order.Disjoint
 Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

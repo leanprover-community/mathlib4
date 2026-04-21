@@ -16,6 +16,7 @@ This defines `Bipointed`, the category of bipointed types.
 
 Monoidal structure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

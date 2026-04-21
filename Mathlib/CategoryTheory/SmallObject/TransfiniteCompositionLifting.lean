@@ -51,6 +51,7 @@ This is constructed by transfinite induction on `j`:
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

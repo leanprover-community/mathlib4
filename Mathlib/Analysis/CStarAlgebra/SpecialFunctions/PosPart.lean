@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

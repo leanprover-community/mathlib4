@@ -14,6 +14,7 @@ public import Mathlib.Analysis.Calculus.TangentCone.Real
 A set of unique differentiability for `ℝ` is also a set of unique differentiability for `ℂ`
 (or for a general field satisfying `IsRCLikeNormedField 𝕜`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -37,6 +37,7 @@ in this setup.
   on a neighbourhood of `U` and not locally constant, then the preimage of any subset codiscrete
   within `f '' U` is codiscrete within `U`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

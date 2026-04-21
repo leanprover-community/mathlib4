@@ -32,6 +32,7 @@ the order of the densities would be flipped.
 * `MeasureTheory.lconvolution f g μ x = (f ⋆ₗ[μ] g) x = ∫⁻ y, (f y) * (g (-y + x)) ∂μ`
   is the additive convolution of `f` and `g` w.r.t. the measure `μ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

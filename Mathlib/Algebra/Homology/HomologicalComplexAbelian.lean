@@ -19,6 +19,7 @@ We also obtain that a short complex in `HomologicalComplex C c`
 is exact (resp. short exact) iff degreewise it is so.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

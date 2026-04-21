@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 * `Polynomial.isNoetherianRing`:
   Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

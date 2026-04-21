@@ -24,6 +24,7 @@ and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

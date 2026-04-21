@@ -21,6 +21,7 @@ Possibly only of archaeological significance.
 * `Int.bitCasesOn`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

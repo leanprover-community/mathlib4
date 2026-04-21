@@ -16,6 +16,7 @@ right lifting property with respect to monomorphisms,
 `injective_iff_rlp_monomorphisms_zero`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

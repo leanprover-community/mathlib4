@@ -23,6 +23,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
 metric, pseudometric space, dist
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

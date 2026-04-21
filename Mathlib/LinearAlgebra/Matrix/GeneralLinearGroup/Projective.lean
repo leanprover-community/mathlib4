@@ -16,6 +16,7 @@ We introduce notation `PGL(n, R)` for this group,
 which works if `n` is either a finite type or a natural number.
 If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open scoped MatrixGroups
 

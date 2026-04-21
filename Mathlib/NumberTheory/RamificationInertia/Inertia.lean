@@ -32,6 +32,7 @@ We will try to relax the above hypotheses as much as possible.
 In this file, `f` stands for the inertia degree of `P` over `p`, leaving `p` and `P` implicit.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

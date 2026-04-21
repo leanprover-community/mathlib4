@@ -21,6 +21,7 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 * `(s * t)⋆ = t⋆ + s⋆`
 * `(s⁻¹)⋆ = (s⋆)⁻¹`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

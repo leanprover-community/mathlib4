@@ -18,6 +18,7 @@ First, we prove lemmas in terms of filter equalities.
 Then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are intervals.
 Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

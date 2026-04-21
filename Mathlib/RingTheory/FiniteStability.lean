@@ -17,6 +17,7 @@ In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` 
 stable under base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

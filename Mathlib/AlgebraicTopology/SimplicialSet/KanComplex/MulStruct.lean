@@ -17,6 +17,7 @@ We introduce structures `PtSimplex.RelStruct` and `PtSimplex.MulStruct`
 which will be used in the definition of homotopy groups of Kan complexes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

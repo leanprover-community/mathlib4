@@ -25,6 +25,7 @@ let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ �
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

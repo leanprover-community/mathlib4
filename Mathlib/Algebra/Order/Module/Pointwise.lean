@@ -15,6 +15,7 @@ public import Mathlib.Order.GaloisConnection.Basic
 
 This file proves order properties of pointwise operations of sets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

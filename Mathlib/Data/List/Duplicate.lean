@@ -19,6 +19,7 @@ public import Mathlib.Data.List.Nodup
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

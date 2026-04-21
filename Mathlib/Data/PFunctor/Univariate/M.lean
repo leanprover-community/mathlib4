@@ -13,6 +13,7 @@ public import Mathlib.Data.PFunctor.Univariate.Basic
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

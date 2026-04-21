@@ -105,6 +105,7 @@ less than or equal to the sum of the maximum values of the summands.
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

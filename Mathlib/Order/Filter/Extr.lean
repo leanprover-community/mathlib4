@@ -75,6 +75,7 @@ Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
   list of known (anti)monotone (binary) functions with their names, as well as a list of special
   types of filters, and define the missing lemmas once one of these two lists grows.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -80,6 +80,7 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 
 Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric isomorphism
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

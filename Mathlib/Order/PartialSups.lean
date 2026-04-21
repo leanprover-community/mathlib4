@@ -38,6 +38,7 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ functorial manner as a composition of a surjective morphism followed
 by an injective morphism.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

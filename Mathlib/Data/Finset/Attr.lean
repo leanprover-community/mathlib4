@@ -13,6 +13,7 @@ public import Aesop.Frontend
 
 This file defines `finsetNonempty`, an aesop rule set to prove that a given finset is nonempty.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 -- `finsetNonempty` rules try to prove that a given finset is nonempty,
 -- for use in positivity extensions.

@@ -33,6 +33,7 @@ categories. We give the corresponding statements for `Profinite` as well.
 * `Condensed.ProfiniteCompHaus.equivalence`: the equivalence from coherent sheaves on `Profinite` to
   coherent sheaves on `CompHaus` (i.e. condensed sets).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

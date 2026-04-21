@@ -30,6 +30,7 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

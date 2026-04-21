@@ -29,6 +29,7 @@ In addition to comprehensive API on these two notions, the main results are the 
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

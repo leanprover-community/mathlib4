@@ -42,6 +42,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public meta section
 

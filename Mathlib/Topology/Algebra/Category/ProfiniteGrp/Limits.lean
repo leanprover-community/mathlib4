@@ -32,6 +32,7 @@ its quotients by open normal subgroups.
   open normal subgroup contained in it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

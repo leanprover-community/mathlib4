@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Basic
 /-!
 # Properties of `List.enum`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

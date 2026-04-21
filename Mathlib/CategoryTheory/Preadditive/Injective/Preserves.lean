@@ -16,6 +16,7 @@ We restate the existing result that if `F ⊣ G` is an adjunction and `F` preser
 then `G` preserves injective objects. We show that the converse is true if the codomain of `F` has
 enough injectives.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

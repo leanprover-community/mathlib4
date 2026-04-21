@@ -12,6 +12,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 /-!
 # A map is proper iff it is continuous and universally closed
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -30,6 +30,7 @@ an isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and simila
 See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

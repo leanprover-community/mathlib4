@@ -26,6 +26,7 @@ that needs to happen in characteristic 0.
   in terms of the previous coefficients of the multiplicands.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ We equip the upper half-plane with the structure of a `GL (Fin 2) ℝ` action by
 transformations (composing with complex conjugation when needed to extend the action from the
 positive-determinant subgroup, so that `!![-1, 0; 0, 1]` acts as `z ↦ -conj z`.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

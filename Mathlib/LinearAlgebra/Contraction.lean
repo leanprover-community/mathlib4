@@ -19,6 +19,7 @@ some basic properties of these maps.
 
 contraction, dual module, tensor product
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

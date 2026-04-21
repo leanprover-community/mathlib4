@@ -18,6 +18,7 @@ This file proves various versions of Ceva's theorem in a `NormedAddTorsor`.
 * https://en.wikipedia.org/wiki/Ceva%27s_theorem
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

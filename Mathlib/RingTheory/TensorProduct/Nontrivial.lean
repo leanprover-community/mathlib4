@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Ring.Hom.InjSurj
 This file contains some more results on nontriviality of tensor product of algebras.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

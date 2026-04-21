@@ -14,6 +14,7 @@ public import Mathlib.Data.Rat.Cast.CharZero
 
 This file could usefully be split further.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

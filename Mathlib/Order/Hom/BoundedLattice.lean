@@ -33,6 +33,7 @@ be satisfied by itself and all stricter types.
 
 Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

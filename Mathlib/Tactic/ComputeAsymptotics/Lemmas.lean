@@ -29,6 +29,7 @@ We also use lemmas from other files:
 * `IsLittleO.of_tendsto_div_atBot` and `IsLittleO.of_tendsto_div_atTop` for `f =o[l] g`
 * `isEquivalent_of_tendsto_one` for `f ∼ g`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

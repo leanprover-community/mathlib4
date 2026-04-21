@@ -21,6 +21,7 @@ we define a point `Φ.over x` of the site `(Over X, J.over X)`.
 We show that if `(C, J)` has enough points, then so does `(Over X, J.over X)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

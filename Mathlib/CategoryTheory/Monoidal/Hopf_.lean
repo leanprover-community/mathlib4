@@ -17,6 +17,7 @@ public import Mathlib.CategoryTheory.Monoidal.Conv
 * Show that in a Cartesian monoidal category Hopf monoids are exactly group objects.
 * Show that `Hopf (ModuleCat R) ≌ HopfAlgCat R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

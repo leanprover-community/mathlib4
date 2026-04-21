@@ -54,6 +54,7 @@ It should be possible to unify some of the definitions here such as `LieModule.c
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

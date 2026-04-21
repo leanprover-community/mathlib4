@@ -32,6 +32,7 @@ the theory of continued fractions.
 
 See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

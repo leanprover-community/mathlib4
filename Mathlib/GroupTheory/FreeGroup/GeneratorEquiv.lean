@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 # Isomorphisms between free groups imply equivalences of their generators
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

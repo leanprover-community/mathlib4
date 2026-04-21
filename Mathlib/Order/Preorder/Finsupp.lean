@@ -12,6 +12,7 @@ public import Mathlib.Data.Finsupp.Defs
 
 This file lifts order structures on `M` to `ι →₀ M`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

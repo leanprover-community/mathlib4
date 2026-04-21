@@ -74,6 +74,7 @@ with the seminorm characterization!
 
 banach-steinhaus, uniform boundedness, equicontinuity
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

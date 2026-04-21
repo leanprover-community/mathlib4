@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 # Higher differentiability in finite dimensions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -25,6 +25,7 @@ commutative group.
 
 Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ that acts on `α` by iterates of `f`, `⟨n⟩ • x = f^[n] x`.
 
 It is useful to convert between definitions and theorems about maps and monoid actions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

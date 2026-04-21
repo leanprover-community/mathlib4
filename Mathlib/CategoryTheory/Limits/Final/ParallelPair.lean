@@ -17,6 +17,7 @@ The conditions are that there is a morphism out of `X` to every object of `C` an
 parallel morphisms out of `X` factor through the parallel pair `f`, `g`
 (`h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z), ∃ (a : Y ⟶ Z), i = f ≫ a ∧ j = g ≫ a`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

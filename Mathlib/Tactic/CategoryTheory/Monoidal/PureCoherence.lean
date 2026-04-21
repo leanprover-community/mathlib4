@@ -18,6 +18,7 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

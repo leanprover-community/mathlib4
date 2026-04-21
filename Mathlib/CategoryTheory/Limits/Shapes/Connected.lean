@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 In this file we prove that various shapes are connected.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

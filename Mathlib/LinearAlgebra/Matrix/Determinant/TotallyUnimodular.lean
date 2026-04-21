@@ -26,6 +26,7 @@ This file defines totally unimodular matrices and provides basic API for them.
 - `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

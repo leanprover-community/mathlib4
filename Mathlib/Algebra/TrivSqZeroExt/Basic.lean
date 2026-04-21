@@ -53,6 +53,7 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

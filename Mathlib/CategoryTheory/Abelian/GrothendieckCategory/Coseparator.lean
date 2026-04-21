@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Generator.Abelian
 /-!
 # Grothendieck categories have a coseparator
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

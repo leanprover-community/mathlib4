@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Basic
 Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentation of `M₁ ⊗[A] M₂`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

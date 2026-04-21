@@ -26,6 +26,7 @@ to specialize API about long exact sequences to group homology.
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,6 +19,7 @@ This file concerns `Multiset.dedup` and `List.dedup` as a way to create `Finset`
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

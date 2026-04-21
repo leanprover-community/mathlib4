@@ -42,6 +42,7 @@ in terms of Chebyshev polynomials.
 
 sin, cos, tan, angle
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

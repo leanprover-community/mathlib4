@@ -25,6 +25,7 @@ The order induced is the definitionally equal underlying order, which makes the 
 constructions quicker to implement.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

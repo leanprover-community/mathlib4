@@ -24,6 +24,7 @@ Note that the covering condition is necessary: for a counterexample otherwise, t
 the counting measure and `C = {∅, {0}}`. Then the set `{1}` can not be approximated by
 an element of `C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

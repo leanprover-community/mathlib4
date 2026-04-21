@@ -10,6 +10,7 @@ public import Mathlib.Data.Vector.Basic
 /-!
 # The `zipWith` operation on vectors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

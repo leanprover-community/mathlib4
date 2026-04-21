@@ -53,6 +53,7 @@ a category `A'` instead, whose morphism universe of `A'` is defined to be `max u
 inequalities this can be changed.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

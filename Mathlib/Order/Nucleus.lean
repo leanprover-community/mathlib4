@@ -21,6 +21,7 @@ A nucleus is an endomorphism of a frame which corresponds to a sublocale.
 https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

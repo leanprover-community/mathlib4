@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 /-!
 # Isomorphism of submonoids of ordered monoids
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

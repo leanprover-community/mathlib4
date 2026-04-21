@@ -53,6 +53,7 @@ There are two obstructions, though :
   that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

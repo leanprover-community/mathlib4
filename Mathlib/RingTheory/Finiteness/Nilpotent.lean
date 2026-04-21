@@ -14,6 +14,7 @@ import Mathlib.Data.Fintype.Order
 # Nilpotent maps on finite modules
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

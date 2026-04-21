@@ -17,6 +17,7 @@ of `R.complex : ChainComplex C ℕ`, and the quasi-isomorphism
 `R.π' : R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).obj X`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

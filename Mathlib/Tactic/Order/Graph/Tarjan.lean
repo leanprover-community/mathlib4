@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Order.Graph.Basic
 This file implements Tarjan's algorithm for finding the strongly connected components (SCCs) of
 a graph.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

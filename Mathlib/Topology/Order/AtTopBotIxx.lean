@@ -24,6 +24,7 @@ as well as `Filter.atTop` and `Filter.atBot`.
 The assumption on `a` is automatically satisfied for densely ordered types,
 see `Order.IsSuccPrelimit.of_dense`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

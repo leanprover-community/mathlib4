@@ -19,6 +19,7 @@ Similarly, the binary coproduct of two types `X` and `Y` identifies to
 `X ⊕ Y`, and the initial object of `Type u` if `PEmpty`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

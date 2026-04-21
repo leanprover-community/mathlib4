@@ -29,6 +29,7 @@ We promote `eval₂` to an algebra hom in `aeval`.
   coefficients of a polynomial in `S[X]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

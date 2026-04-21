@@ -56,6 +56,7 @@ practice.
 local diffeomorphism, manifold
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

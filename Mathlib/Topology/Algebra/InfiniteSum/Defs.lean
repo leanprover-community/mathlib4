@@ -49,6 +49,7 @@ rather than in `ℝ`.
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

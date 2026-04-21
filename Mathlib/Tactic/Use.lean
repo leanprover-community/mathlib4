@@ -21,6 +21,7 @@ that more closely matches `use` from mathlib3.
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
 applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

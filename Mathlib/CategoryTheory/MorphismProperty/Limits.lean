@@ -27,6 +27,7 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

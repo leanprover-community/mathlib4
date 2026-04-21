@@ -13,6 +13,7 @@ We define the property `RingHom.IsStandardOpenImmersion` on ring homomorphisms: 
 morphism is a localization map away from some element. We also define the equivalent
 `Algebra.IsStandardOpenImmersion`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

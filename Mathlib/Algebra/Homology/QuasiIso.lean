@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

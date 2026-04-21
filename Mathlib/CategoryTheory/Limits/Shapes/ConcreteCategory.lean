@@ -35,6 +35,7 @@ Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

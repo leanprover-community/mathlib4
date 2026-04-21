@@ -17,6 +17,7 @@ inherit the same pointwise multiplications as sets.
 To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

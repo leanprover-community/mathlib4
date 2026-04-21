@@ -20,6 +20,7 @@ This is a separate file, to avoid unnecessary imports in basic files.
 
 Previously some of these results were in the `MeasureTheory` folder.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

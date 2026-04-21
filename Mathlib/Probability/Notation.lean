@@ -30,6 +30,7 @@ We note that the notation `∂P/∂Q` applies to three different cases, namely,
 To use these notations, you need to use `open scoped ProbabilityTheory`
 or `open ProbabilityTheory`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -26,6 +26,7 @@ Moreover, we prove some lemmas about the fixed points of specific normal functio
 * `deriv_add_eq_mul_omega0_add`: a characterization of the derivative of addition.
 * `deriv_mul_eq_opow_omega0_mul`: a characterization of the derivative of multiplication.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ This file implements a tactic that succeeds only if its argument fails with a sp
 It's mostly useful in tests, where we want to make sure that tactics fail in certain ways under
 circumstances.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

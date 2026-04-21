@@ -16,6 +16,7 @@ In an abelian category `C`, the class of morphisms
 `epimorphisms C` is stable under base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

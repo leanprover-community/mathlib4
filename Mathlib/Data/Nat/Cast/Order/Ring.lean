@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 # Cast of natural numbers: lemmas about bundled ordered semirings
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

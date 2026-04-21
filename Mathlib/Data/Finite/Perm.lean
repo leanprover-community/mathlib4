@@ -23,6 +23,7 @@ Let `α` be a `Finite` type.
 * `Equiv.Perm.isMulCommutative_iff_card_le_two`: `Equiv.Perm α` is commutative iff `Nat.card α ≤ 2`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

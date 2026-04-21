@@ -29,6 +29,8 @@ any category `C` such that `HasCardinalLT C κ` holds.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe w v u
 
 namespace CategoryTheory

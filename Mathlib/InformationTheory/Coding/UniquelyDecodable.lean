@@ -24,6 +24,7 @@ This file defines uniquely decodable codes and proves basic properties.
 * `UniquelyDecodable.flatten_injective`: The flatten function is injective on lists of
   codewords from a uniquely decodable code.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Category.Bipointed
 
 This file defines `GrpWithZero`, the category of groups with zero.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

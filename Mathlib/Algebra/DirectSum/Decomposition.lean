@@ -29,6 +29,7 @@ we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies
 `AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

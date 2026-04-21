@@ -19,6 +19,7 @@ overly burdensome on type class synthesis.
 Of course, one could generalize to maps between pointed topological spaces, but that goes beyond
 the purpose of this type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

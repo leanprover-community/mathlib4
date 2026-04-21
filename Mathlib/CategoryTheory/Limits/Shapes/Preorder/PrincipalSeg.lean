@@ -17,6 +17,7 @@ there is a cocone for `f.monotone.functor ⋙ F : α ⥤ C`
 the point of which is `F.obj f.top`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

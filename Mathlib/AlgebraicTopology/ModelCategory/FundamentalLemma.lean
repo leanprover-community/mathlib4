@@ -21,6 +21,7 @@ the left and right homotopy relations coincide).
 * [Daniel G. Quillen, Homotopical algebra, I.1][Quillen1967]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

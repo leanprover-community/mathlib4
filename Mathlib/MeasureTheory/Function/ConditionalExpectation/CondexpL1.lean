@@ -28,6 +28,7 @@ The conditional expectation of an `L²` function is defined in
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

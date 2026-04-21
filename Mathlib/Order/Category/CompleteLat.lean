@@ -13,6 +13,7 @@ public import Mathlib.Order.Hom.CompleteLattice
 
 This file defines `CompleteLat`, the category of complete lattices.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

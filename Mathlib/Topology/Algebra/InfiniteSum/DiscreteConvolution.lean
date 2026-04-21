@@ -56,6 +56,7 @@ The `mul/add` distinction refers to the index monoid `M`: multiplicative sums ov
 Precedence design: `f:68` and `g:67` gives right associativity (`f ⋆ g ⋆ h` parses as
 `f ⋆ (g ⋆ h)`), matching function composition `∘` and `MeasureTheory.convolution`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

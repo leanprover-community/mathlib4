@@ -14,6 +14,7 @@ This file defines fixed-point-free automorphisms and proves some basic propertie
 
 An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only fixed point of `φ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ In number theory, the height function `h` satisfies the *Northcott property* tha
 
 * [D. Northcott, *An inequality in the theory of arithmetic on algebraic varieties*](northcott1949)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

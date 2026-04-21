@@ -20,6 +20,7 @@ a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, a
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

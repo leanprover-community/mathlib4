@@ -15,6 +15,7 @@ We prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

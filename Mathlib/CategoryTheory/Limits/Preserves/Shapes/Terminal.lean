@@ -17,6 +17,7 @@ to concrete objects.
 In particular, we show that `terminalComparison G` is an isomorphism iff `G` preserves terminal
 objects.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

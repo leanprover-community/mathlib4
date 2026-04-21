@@ -37,6 +37,7 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

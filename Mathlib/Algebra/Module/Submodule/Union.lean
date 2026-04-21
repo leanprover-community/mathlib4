@@ -23,6 +23,7 @@ This file is a home for results about unions of submodules.
   a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

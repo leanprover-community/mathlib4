@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 We prove that polynomials are `C^∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -28,6 +28,7 @@ Let `R` be a ring and let `M` be an `R`-module.
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

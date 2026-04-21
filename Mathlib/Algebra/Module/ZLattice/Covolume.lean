@@ -53,6 +53,7 @@ the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

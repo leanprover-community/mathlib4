@@ -16,6 +16,7 @@ public import Mathlib.Data.Set.Functor
 
 finite sets
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

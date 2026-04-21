@@ -23,6 +23,7 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 multilinear, formal series
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,6 +32,7 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

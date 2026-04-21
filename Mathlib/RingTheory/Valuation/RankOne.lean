@@ -31,6 +31,8 @@ We define rank one valuations.
 
 valuation, rank one
 -/
+
+set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 noncomputable section

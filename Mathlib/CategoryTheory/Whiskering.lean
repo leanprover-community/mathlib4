@@ -26,6 +26,7 @@ We also provide analogues for composition on the right, and for these operations
 We show the associator and unitor natural isomorphisms satisfy the triangle and pentagon
 identities.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

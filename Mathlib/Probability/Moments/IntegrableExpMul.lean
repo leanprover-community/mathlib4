@@ -36,6 +36,7 @@ We prove the integrability of other functions for `t` in the interior of that in
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

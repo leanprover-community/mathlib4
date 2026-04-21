@@ -49,6 +49,7 @@ In this file we prove the following facts:
 * `hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt` : a C^1 function over the reals is
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

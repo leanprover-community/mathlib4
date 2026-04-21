@@ -17,6 +17,7 @@ the action by an element `s : S` of a submonoid `S : Submonoid M` such that `s �
 These instances work particularly well in conjunction with `Monoid.toMulAction`, enabling
 `s • m` as an alias for `↑s * m`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

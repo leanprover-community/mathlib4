@@ -32,6 +32,7 @@ To go from linear maps to morphisms in `Module R`, use `ModuleCat.ofHom`.
 Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

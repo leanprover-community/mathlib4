@@ -24,6 +24,7 @@ public import Mathlib.LinearAlgebra.FreeAlgebra
 * `TensorAlgebra.rank_eq`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

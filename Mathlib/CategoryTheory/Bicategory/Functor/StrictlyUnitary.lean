@@ -35,6 +35,7 @@ unitary).
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

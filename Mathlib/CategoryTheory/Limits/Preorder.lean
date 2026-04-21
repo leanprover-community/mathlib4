@@ -17,6 +17,7 @@ We provide basic results about (co)limits in the associated category of a preord
 - We show that (co)products correspond to infima (suprema).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

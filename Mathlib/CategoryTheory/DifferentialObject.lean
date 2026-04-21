@@ -21,6 +21,7 @@ We build the category of differential objects, and some basic constructions
 such as the forgetful functor, zero morphisms and zero objects, and the shift functor
 on differential objects.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

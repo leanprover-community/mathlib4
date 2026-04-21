@@ -31,6 +31,7 @@ In this file we construct the category of formal coproducts given a category.
 * `FormalCoproduct.incl C : C ⥤ FormalCoproduct.{w} C` probably preserves every limit?
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

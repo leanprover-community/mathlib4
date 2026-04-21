@@ -20,6 +20,7 @@ This file contains lemmas on the units of `ℤ`.
 
 See note [foundational algebra order theory].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

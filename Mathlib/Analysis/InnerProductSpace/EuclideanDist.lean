@@ -20,6 +20,7 @@ Then we define `Euclidean.dist x y = dist (toEuclidean x) (toEuclidean y)` and
 provide some definitions (`Euclidean.ball`, `Euclidean.closedBall`) and simple lemmas about this
 distance. This way we hide the usage of `toEuclidean` behind an API.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

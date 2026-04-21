@@ -44,6 +44,7 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
   Fuss-Catalan, etc.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

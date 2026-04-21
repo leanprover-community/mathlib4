@@ -36,6 +36,7 @@ and the set of factors of `a`.
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

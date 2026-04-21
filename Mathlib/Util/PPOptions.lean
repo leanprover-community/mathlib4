@@ -10,6 +10,7 @@ public import Mathlib.Init
 /-!
 Mathlib-specific pretty printer options.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

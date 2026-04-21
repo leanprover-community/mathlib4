@@ -11,6 +11,7 @@ public import Mathlib.Init
 /-!
 # Extra facts about `PProd`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

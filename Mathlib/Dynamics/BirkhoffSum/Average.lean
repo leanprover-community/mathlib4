@@ -24,6 +24,7 @@ the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

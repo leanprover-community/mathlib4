@@ -26,6 +26,7 @@ Corollaries of the above is that, in a nontrivial normed space, the extreme poin
 closed ball is contained in the sphere (see `extremePoints_closedBall_subset_sphere`).
 And in a nontrivial strictly convex space, the extreme points of the closed ball is exactly the
 sphere (see `StrictConvexSpace.extremePoints_closedBall_eq_sphere`). -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

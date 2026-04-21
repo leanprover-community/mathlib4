@@ -26,6 +26,7 @@ for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

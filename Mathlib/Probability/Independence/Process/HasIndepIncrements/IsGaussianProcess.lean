@@ -39,6 +39,7 @@ and `X tᵢ` and `X tᵢ₊₁ - X tᵢ` are independent (see `IndepFun.hasGauss
 independent increments, Gaussian process
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open MeasureTheory Finset
 

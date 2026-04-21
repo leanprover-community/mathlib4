@@ -26,6 +26,7 @@ Results require `RCLike 𝕜`.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ and
 In addition, this file gives characterizations of monotone and strictly monotone functions
 out of `Finset α` in terms of `Finset.insert`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

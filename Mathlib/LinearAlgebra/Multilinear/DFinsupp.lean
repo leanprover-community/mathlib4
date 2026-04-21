@@ -31,6 +31,7 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
   supported maps.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

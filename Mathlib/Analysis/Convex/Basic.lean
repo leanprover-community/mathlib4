@@ -23,6 +23,7 @@ We provide various equivalent versions, and prove that some specific sets are co
 
 Generalize all this file to affine spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

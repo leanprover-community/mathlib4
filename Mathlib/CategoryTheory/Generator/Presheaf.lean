@@ -16,6 +16,7 @@ has a separator (and suitable coproducts), then the category of
 presheaves `Cᵒᵖ ⥤ A` also has a separator.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

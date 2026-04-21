@@ -21,6 +21,7 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

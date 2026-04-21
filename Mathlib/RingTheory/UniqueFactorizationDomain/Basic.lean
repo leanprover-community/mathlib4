@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 * `UniqueFactorizationMonoid.exists_reduced_factors`: in a UFM, we can divide out a common factor
   to get relatively prime elements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

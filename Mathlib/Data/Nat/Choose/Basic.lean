@@ -39,6 +39,7 @@ see `Finset.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 binomial coefficient, combination, multicombination, stars and bars
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

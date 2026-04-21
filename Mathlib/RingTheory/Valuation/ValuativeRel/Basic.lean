@@ -60,6 +60,7 @@ Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
 `IsRankLeOne` could be separated out.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

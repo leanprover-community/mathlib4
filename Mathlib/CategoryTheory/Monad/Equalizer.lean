@@ -23,6 +23,7 @@ This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

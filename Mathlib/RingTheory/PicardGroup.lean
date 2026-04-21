@@ -60,6 +60,7 @@ Show:
   constant finite rank to locally free sheaves on `Spec R`.
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

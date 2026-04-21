@@ -18,6 +18,7 @@ kernel `μ.bind κ` is the same measure.
 * `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

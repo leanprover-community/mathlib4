@@ -21,6 +21,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ More generally, the functor `pullback φ` sends the free sheaf
 of modules `free I` to `free I`, see `pullbackObjFreeIso` and
 `freeFunctorCompPullbackIso`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

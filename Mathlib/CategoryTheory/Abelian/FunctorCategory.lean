@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

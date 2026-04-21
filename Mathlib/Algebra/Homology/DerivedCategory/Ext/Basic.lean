@@ -37,6 +37,7 @@ Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 sheaves over `X` shall be in `Type u`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

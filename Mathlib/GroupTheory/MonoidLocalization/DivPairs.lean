@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 This file defines the submonoid of pairs whose quotient lies in a submonoid of the localization.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

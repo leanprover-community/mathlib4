@@ -24,6 +24,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 norm, nonarchimedean, rank one, compact, locally compact
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

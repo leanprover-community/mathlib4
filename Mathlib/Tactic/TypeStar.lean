@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Linter.Header  --shake: keep
 
 These elaborate as `Sort u` and `Type u` with a fresh implicit universe variable `u`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

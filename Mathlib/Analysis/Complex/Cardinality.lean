@@ -13,6 +13,7 @@ public import Mathlib.Data.Complex.Basic
 
 This file shows that the complex numbers have cardinality continuum, i.e. `#ℂ = 𝔠`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

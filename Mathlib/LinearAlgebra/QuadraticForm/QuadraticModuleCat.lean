@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 # The category of quadratic modules
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

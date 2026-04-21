@@ -17,6 +17,7 @@ then `X : Type u` is `κ`-presentable in the category of types iff
 `HasCardinalLT X κ` holds, i.e. the cardinal number of `X` is less than `κ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

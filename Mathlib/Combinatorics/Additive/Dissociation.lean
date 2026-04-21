@@ -25,6 +25,7 @@ independence and linear span of sets in a vector space but where the scalars are
 * `MulDissociated`/`AddDissociated`: Predicate for a set to be dissociated.
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

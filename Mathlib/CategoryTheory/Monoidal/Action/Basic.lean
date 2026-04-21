@@ -40,6 +40,8 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)

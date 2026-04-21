@@ -36,6 +36,7 @@ We also produce the following instances:
 * `to_additive`?
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

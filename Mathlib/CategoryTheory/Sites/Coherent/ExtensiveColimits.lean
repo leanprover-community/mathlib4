@@ -20,6 +20,7 @@ This holds for all shapes `J` if `A` is a preadditive category.
 This can also easily be applied to filtered `J` in the case when `A` is a category of sets, and
 eventually to sifted `J` once that API is developed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

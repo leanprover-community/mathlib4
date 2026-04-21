@@ -19,6 +19,7 @@ of matrices and some applications.
 
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

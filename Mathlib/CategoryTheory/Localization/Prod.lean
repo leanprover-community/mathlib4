@@ -26,6 +26,7 @@ the strict universal property of the localization for `W₁.prod W₂`. The gene
 case follows by transporting this result through equivalences of categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

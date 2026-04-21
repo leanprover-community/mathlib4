@@ -57,6 +57,7 @@ integral, and involutive quantales easier to add on later.
 <https://ncatlab.org/nlab/show/quantale>
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

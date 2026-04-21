@@ -17,6 +17,7 @@ This file defines `SetSemiring α`, an alias of `Set α`, which we endow with `�
 pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring α` is a
 (commutative) semiring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

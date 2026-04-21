@@ -20,6 +20,7 @@ Subsemilattices, if people care about them.
 
 sublattice
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

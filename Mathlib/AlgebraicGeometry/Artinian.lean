@@ -36,6 +36,7 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
   Spec R is Artinian.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

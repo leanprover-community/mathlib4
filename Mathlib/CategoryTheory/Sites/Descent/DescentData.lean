@@ -31,6 +31,7 @@ satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
   when `F` also has a covariant functoriality, etc.).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

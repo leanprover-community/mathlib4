@@ -20,6 +20,7 @@ import Mathlib.Tactic.Tauto
 # Lemmas about division (semi)rings and (semi)fields
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ Some of them are true for arbitrary algebras but the proof is substantially hard
   The smooth locus is the whole spectrum if and only if `A` is smooth over `R`.
 - `Algebra.isOpen_smoothLocus` : The smooth locus is open.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

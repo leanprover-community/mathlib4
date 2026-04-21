@@ -12,6 +12,7 @@ public import Mathlib.Data.Fintype.Card
 /-!
 # Results about pointwise operations on sets and big operators.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

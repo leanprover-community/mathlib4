@@ -27,6 +27,7 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
   only the zero polynomial evaluates to 0 at `x`.
 * `Subalgebra.isAlgebraic_iff`: a subalgebra is algebraic iff it is algebraic as an algebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,6 +30,7 @@ We construct the universal ring of the following functors on `R-Alg`:
   See `Polynomial.UniversalCoprimeFactorizationRing.homEquiv`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

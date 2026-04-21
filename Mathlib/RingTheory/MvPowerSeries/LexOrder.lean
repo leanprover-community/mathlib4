@@ -16,6 +16,7 @@ which can be used to define a natural valuation `lexOrder` on the ring `MvPowerS
 the smallest exponent in the support.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

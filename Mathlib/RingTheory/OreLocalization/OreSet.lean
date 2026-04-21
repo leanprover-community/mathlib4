@@ -20,6 +20,7 @@ This file contains results on left Ore sets for rings and monoids with zero.
 * https://ncatlab.org/nlab/show/Ore+set
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

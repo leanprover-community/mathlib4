@@ -26,6 +26,7 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 
 Liouville number, Lebesgue measure, residual, generic property
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

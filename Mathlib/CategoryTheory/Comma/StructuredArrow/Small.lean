@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Small
 Here we prove a technical result about small sets in the category of structured arrows that will
 be used in the proof of the Special Adjoint Functor Theorem.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 (see `Sites.LeftExact`), then epimorphisms are exactly locally surjective morphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

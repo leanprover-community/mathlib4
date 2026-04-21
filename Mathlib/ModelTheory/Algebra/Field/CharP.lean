@@ -20,6 +20,7 @@ language of rings
 - `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
   as a theory over the language of rings
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

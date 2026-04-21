@@ -52,6 +52,7 @@ while the "stars and bars" technique gives
 
 stars and bars, multichoose
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

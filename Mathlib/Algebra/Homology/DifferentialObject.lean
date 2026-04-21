@@ -17,6 +17,7 @@ essentially the same thing as a differential graded object.
 This equivalence is probably not particularly useful in practice;
 it's here to check that definitions match up as expected.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

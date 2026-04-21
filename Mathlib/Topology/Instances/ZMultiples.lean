@@ -15,6 +15,7 @@ public import Mathlib.Topology.Metrizable.Basic
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

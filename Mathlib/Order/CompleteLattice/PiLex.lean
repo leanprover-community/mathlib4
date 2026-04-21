@@ -15,6 +15,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 We show that for `α` a family of complete linear orders, the lexicographically ordered type of
 dependent functions `Πₗ i, α i` is itself a complete linear order.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

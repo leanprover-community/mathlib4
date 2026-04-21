@@ -16,6 +16,7 @@ The same results are obtained here for squares `sq : Square C` where
 `C` is an additive category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace CategoryTheory

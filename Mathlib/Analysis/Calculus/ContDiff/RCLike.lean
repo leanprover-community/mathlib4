@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 /-!
 # Higher differentiability over `ℝ` or `ℂ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

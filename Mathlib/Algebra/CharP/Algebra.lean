@@ -29,6 +29,7 @@ Instances constructed from this result:
 - The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 ## Main results
 - `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -41,6 +41,7 @@ vertices.
 
 Simplicial complexes can be generalized to affine spaces once `ConvexHull` has been ported.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

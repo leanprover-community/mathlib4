@@ -33,6 +33,7 @@ make such a definition in this file.
 
 lie algebra, ring commutator, adjoint action
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

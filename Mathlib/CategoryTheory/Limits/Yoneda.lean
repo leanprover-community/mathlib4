@@ -18,6 +18,7 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

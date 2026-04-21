@@ -23,6 +23,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
   `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of
   `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multiplication.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

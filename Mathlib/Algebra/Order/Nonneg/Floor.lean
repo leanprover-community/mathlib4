@@ -20,6 +20,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 * `{x : α // 0 ≤ x}` is a `FloorSemiring` if `α` is.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

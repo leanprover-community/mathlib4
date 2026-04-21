@@ -30,6 +30,7 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 See `SymAlg R` instead if you are looking for the symmetrized algebra, which gives a commutative
 multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

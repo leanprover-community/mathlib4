@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Data.DFinsupp.Small
 
 /-! # Smallness properties of modules and algebras -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

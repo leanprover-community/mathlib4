@@ -63,6 +63,7 @@ change the induced topology.
 
 ring theory, ideal, filter, uniform filter, Gabriel filter, torsion theory
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

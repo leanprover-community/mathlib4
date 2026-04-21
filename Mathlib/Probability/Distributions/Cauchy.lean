@@ -27,6 +27,7 @@ Note that we use "location" and "scale" to refer to these parameters in theorem 
   measure with density `cauchyPDF x₀ γ` with respect to the Lebesgue measure.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

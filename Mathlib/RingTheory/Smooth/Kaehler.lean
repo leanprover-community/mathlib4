@@ -36,6 +36,8 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe u
 
 open TensorProduct KaehlerDifferential

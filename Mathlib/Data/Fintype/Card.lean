@@ -21,6 +21,7 @@ We also include some elementary results on the values of `Fintype.card` on speci
   itself is also surjective.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

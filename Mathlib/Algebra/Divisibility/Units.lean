@@ -18,6 +18,7 @@ public import Mathlib.Algebra.Group.Units.Basic
   divisors of `x` and `y` are the units.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 /-!
 # Lemmas about subtraction in an unbundled canonically ordered monoids
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

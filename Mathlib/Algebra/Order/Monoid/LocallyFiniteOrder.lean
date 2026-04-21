@@ -31,6 +31,7 @@ public import Mathlib.Order.Interval.Finset.Basic
   is isomorphic to `ℤᵐ⁰`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

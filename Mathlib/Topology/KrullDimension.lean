@@ -26,6 +26,7 @@ the length of longest series of closed irreducible subsets ordered by inclusion.
 The proofs use order-preserving maps between posets of irreducible closed sets to establish
 dimension inequalities.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

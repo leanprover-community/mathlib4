@@ -46,6 +46,7 @@ where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses l
 `a % n = b`. In this way, the only divisions we have to compute and prove
 are the ones occurring in the use of QR above.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

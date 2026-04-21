@@ -50,6 +50,7 @@ The existence of eigenvalues over an algebraically closed field
 
 eigenspace, eigenvector, eigenvalue, eigen
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

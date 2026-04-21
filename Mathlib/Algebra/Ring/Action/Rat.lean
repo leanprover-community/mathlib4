@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 /-!
 # Actions by nonnegative rational numbers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

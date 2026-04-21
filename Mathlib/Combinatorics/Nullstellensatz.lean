@@ -50,6 +50,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   Nullstellensatz Lemma*][Rote_2023]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

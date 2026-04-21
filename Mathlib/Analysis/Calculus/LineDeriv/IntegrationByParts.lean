@@ -45,6 +45,7 @@ towards applications to Fourier transforms.
 TODO: prove similar theorems assuming that the functions tend to zero at infinity and have
 integrable derivatives.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

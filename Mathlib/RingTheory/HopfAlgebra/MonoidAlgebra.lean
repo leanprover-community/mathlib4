@@ -23,6 +23,7 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   `A[T;T⁻¹]` when `A` is an `R`-Hopf algebra. When `A = R` this corresponds to the fact that `𝔾ₘ/R`
   is a group scheme.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

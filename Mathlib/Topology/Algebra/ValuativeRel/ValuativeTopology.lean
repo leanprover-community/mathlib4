@@ -31,6 +31,7 @@ The canonical way to introduce the topological structure from a chosen valuation
 1. First define the `ValuativeRel` structure using `ValuativeRel.ofValuation`;
 2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

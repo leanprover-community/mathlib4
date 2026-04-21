@@ -15,6 +15,7 @@ Any separable metric space can be embedded isometrically in `ℓ^∞(ℕ, ℝ)`.
 Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole space.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

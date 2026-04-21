@@ -15,6 +15,7 @@ public import Mathlib.Data.Setoid.Partition
   the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

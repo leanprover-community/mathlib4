@@ -35,6 +35,7 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

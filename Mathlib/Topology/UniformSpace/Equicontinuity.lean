@@ -78,6 +78,7 @@ types, and in that case one should go back to the family definition rather than 
 
 equicontinuity, uniform convergence, ascoli
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

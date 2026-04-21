@@ -35,6 +35,7 @@ and prove basic properties of this predicate.
 In Moreira's paper, `k` is assumed to be a strictly positive number.
 We define the predicate for any `k : ℕ`, then assume `k ≠ 0` whenever it is necessary.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

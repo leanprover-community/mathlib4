@@ -50,6 +50,7 @@ Proof from the Book" by John McCuan:
 boolean ring, generalized boolean algebra, boolean algebra, symmetric difference, bi-implication,
 Heyting
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

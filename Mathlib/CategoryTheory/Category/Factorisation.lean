@@ -19,6 +19,7 @@ TODO: Show that `Factorisation f` is isomorphic to a comma category in two ways.
 
 TODO: Make `MonoFactorisation f` a special case of a `Factorisation f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

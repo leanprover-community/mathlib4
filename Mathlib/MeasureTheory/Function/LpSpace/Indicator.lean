@@ -21,6 +21,7 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 * `MeasureTheory.indicatorConstLp`: Indicator of a set as an element of `Lp`.
 * `MeasureTheory.Lp.const`: Constant function as an element of `Lp` for a finite measure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

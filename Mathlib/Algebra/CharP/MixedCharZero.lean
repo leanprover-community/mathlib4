@@ -59,6 +59,7 @@ equivalent conditions.
 
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,6 +19,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

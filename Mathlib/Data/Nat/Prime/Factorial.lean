@@ -11,6 +11,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 # Prime natural numbers and the factorial operator
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

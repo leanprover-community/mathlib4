@@ -18,6 +18,7 @@ and define bundled versions of some operations on continuous alternating maps.
 
 Most proofs just invoke the corresponding fact about continuous multilinear maps.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

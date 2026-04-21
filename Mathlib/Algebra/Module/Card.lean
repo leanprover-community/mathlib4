@@ -14,6 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Basic
 This file proves that the cardinality of a module without zero divisors is at least the cardinality
 of its base ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

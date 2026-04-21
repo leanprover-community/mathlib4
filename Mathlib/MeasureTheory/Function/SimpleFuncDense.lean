@@ -32,6 +32,7 @@ by a sequence of simple functions.
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

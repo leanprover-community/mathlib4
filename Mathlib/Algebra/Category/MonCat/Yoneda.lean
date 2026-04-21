@@ -17,6 +17,8 @@ This file defines a few Yoneda embeddings for the category of commutative monoid
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 open CategoryTheory
 
 universe u

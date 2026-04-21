@@ -29,6 +29,7 @@ import Mathlib.Algebra.Module.Torsion.Field
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

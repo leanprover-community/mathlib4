@@ -10,6 +10,7 @@ public import Mathlib.Topology.Order.IsLUB
 /-!
 # Order topology on a densely ordered set
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

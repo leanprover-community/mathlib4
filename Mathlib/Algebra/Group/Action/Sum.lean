@@ -19,6 +19,7 @@ This file defines instances for additive and multiplicative actions on the binar
 * `Mathlib/Algebra/Group/Action/Prod.lean`
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

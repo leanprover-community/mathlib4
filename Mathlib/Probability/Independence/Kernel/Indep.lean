@@ -46,6 +46,7 @@ definitions in the particular case of the usual independence notion.
   then the measurable space structures they generate are independent.
 * `ProbabilityTheory.Kernel.IndepSets.Indep`: variant with two π-systems.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

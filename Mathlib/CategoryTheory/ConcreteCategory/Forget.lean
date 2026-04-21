@@ -35,6 +35,7 @@ automatically, see `HasForget₂.mk'`.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

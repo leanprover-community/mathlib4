@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.InvariantBasisNumber
 /-!
 # Invertible matrices over a ring with invariant basis number are square.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

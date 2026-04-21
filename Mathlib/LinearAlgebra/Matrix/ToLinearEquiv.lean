@@ -31,6 +31,7 @@ to linear equivs.
 matrix, linear equivalence, linear isomorphism, determinant, inverse
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

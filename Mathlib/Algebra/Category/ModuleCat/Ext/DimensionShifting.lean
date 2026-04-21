@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Continuity
 # Dimension Shifting
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

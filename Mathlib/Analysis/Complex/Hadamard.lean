@@ -57,6 +57,7 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 The proof follows from Phragmén-Lindelöf when both frontiers are not everywhere zero.
 We then use a limit argument to cover the case when either of the sides are `0`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

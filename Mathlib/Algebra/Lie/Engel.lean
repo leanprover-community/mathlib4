@@ -66,6 +66,7 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
   * `LieAlgebra.isNilpotent_iff_forall`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

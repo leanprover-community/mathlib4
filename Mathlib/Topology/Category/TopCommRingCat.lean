@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 We introduce the category `TopCommRingCat` of topological commutative rings together with the
 relevant forgetful functors to topological spaces and commutative rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

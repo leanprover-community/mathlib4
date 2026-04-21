@@ -17,6 +17,7 @@ to concrete fans.
 In particular, we show that `piComparison G f` is an isomorphism iff `G` preserves
 the limit of `f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

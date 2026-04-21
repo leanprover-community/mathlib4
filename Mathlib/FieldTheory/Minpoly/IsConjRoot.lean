@@ -37,6 +37,7 @@ over `K` if they have the same minimal polynomial over `K`.
 ## Tags
 conjugate root, minimal polynomial
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

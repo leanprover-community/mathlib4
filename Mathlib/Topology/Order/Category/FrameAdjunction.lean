@@ -38,6 +38,7 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 topological space, frame, locale, Stone duality, adjunction, points
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

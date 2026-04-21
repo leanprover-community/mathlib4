@@ -32,6 +32,7 @@ Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where eith
 see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`. See `EReal.left_distrib_of_nonneg`
 (similarly for right distributivity).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

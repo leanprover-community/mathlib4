@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 # The opposite of a subcomplex
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -30,6 +30,7 @@ which is what one would expect from the triangle inequality.
   are moved to proper places.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -49,6 +49,7 @@ type.
 * Show that the tensor product of graded algebras is itself a graded algebra.
 * Determine if replacing the synonym with a single-field structure improves performance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

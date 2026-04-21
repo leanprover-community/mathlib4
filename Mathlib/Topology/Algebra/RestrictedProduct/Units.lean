@@ -28,6 +28,7 @@ of the units.
 
 restricted product, adeles, ideles
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,6 +33,7 @@ The following notation is introduced:
 quotient, group quotient, quotient group, module quotient, quotient module, ring quotient,
 ideal quotient, quotient ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ In a metric space, the type of nonempty compact subsets (called `NonemptyCompact
 inherits a metric space structure from the Hausdorff distance, as the Hausdorff edistance is
 always finite in this context.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

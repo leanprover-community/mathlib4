@@ -23,6 +23,7 @@ which we construct here.
   `LieAlgebra.IsKilling.rootSystem` is left inverse to `RootPairing.GeckConstruction.lieAlgebra`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

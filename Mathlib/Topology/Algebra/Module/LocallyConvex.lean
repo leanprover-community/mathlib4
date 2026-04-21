@@ -33,6 +33,7 @@ In a module, this is equivalent to `0` satisfying such properties.
   bases generating a locally convex topology
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

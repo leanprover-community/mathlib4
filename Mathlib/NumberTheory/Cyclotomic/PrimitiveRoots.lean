@@ -63,6 +63,7 @@ these two are equal. Therefore, whenever possible, we prove our results for any 
 and only at the "final step", when we need to provide an "explicit" primitive root, we use `zeta`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

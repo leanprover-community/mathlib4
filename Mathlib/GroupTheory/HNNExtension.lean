@@ -32,6 +32,7 @@ and Hanna Neumann.
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -20,6 +20,7 @@ applies, until one of the lists is exhausted. For example,
 `zip [a₁, a₂] [b₁, b₂, b₃] = [(a₁, b₁), (a₂, b₂)]`.
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

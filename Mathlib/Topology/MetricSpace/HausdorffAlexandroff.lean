@@ -34,6 +34,7 @@ The proof consists of three steps. Let `X` be a compact metric space.
 3. Taking the preimage of `X` under this surjection, it remains to prove that any closed
    subset of the Cantor space is the continuous image of the Cantor space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

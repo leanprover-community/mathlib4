@@ -18,6 +18,7 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

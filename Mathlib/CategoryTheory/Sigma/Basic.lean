@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.NatIso
 
 We define the category structure on a sigma-type (disjoint union) of categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

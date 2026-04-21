@@ -13,6 +13,7 @@ public import Mathlib.Topology.Homotopy.Equiv
 
 In this file, we define `ContractibleSpace`, a space that is homotopy equivalent to `Unit`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

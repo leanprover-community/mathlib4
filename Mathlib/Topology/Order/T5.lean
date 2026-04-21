@@ -15,6 +15,7 @@ public import Mathlib.Topology.Separation.Regular
 In this file we prove that a linear order with order topology is a completely normal Hausdorff
 topological space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproduc
 as well as a terminal object.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

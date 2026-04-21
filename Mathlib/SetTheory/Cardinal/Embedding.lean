@@ -32,6 +32,7 @@ Let `s : Set α` be a finite set.
   If `α` is finite and `m + n ≤ Nat.card α`, then the restriction
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

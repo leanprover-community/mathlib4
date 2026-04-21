@@ -50,6 +50,7 @@ We develop the basic properties of these notions, notably:
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

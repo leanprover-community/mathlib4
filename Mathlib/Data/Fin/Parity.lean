@@ -18,6 +18,7 @@ iff `n` is odd or `Fin.val k` is even.
 We also prove a lemma about parity of `Fin.succAbove i j + Fin.predAbove j i`
 which can be used to prove `d ∘ d = 0` for de Rham cohomologies.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

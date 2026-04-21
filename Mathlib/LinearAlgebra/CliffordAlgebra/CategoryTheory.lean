@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 
 * `QuadraticModuleCat.cliffordAlgebra`: the functor from quadratic modules to algebras
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

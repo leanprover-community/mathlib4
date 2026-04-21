@@ -25,6 +25,7 @@ TODO:
 * `replace`, `classical!`, `classical`, `tauto` internally use `have`:
   should the linter act on them as well?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

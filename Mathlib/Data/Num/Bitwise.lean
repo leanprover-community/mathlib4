@@ -17,6 +17,7 @@ public import Mathlib.Data.Vector.Basic
 * `SNum`, a type that represents integers as a bit string with a sign bit at the end,
 * arithmetic operations for `SNum`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

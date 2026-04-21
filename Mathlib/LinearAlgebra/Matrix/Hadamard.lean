@@ -31,6 +31,7 @@ and contains basic properties about them.
 
 hadamard product, hadamard
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

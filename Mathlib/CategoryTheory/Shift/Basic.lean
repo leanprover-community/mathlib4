@@ -37,6 +37,7 @@ which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero
 `shiftFunctorAdd'_add_zero`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

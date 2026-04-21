@@ -33,6 +33,7 @@ These two are defined in later files. For precoverages, we define stability cond
   presieves yields a covering presieve.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

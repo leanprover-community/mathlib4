@@ -24,6 +24,7 @@ The main results of this file are as follows.
   see `LSeries.positive_of_eq_differentiable` and
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

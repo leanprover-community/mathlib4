@@ -36,6 +36,7 @@ measure.
 - `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

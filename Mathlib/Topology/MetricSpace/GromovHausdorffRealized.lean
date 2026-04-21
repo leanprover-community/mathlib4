@@ -31,6 +31,7 @@ embeddings of `X` and `Y` in metric spaces is a set of equicontinuous functions.
 it is compact, and one can find such a distance which is minimal. This distance defines a premetric
 space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCoupling X Y`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Translate.Core
 The `@[to_additive]` attribute is used to translate multiplicative declarations to their
 additive equivalent. See the docstrings of `to_additive` for more information.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

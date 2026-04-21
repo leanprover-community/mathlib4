@@ -25,6 +25,7 @@ public import Mathlib.Tactic.StacksAttribute
 - https://stacks.math.columbia.edu/tag/005T
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

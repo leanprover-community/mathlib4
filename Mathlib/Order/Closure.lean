@@ -45,6 +45,7 @@ place when using concrete closure operators such as `ConvexHull`.
 
 * https://en.wikipedia.org/wiki/Closure_operator#Closure_operators_on_partially_ordered_sets
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

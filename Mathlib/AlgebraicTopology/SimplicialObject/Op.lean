@@ -16,6 +16,7 @@ of the category of simplicial objects that is induced by the
 covariant involution `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

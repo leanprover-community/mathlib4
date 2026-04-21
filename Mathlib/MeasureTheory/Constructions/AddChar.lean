@@ -18,6 +18,7 @@ discrete measurable space.
 
 Give the definition in the correct generality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

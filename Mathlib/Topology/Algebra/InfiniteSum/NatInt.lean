@@ -18,6 +18,7 @@ applied to the important special cases where the domain is `ℕ` or `ℤ`. For i
 formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add_tsum_nat_add`, as well as
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

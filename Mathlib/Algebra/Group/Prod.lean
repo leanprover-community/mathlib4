@@ -37,6 +37,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
   multiplicative/monoid homomorphism.
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

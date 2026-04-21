@@ -31,6 +31,7 @@ weakly locally compact.
 
 group action, proper action, properly discontinuous, compactly generated
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open scoped Pointwise
 

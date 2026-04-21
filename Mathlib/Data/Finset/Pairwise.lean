@@ -15,6 +15,7 @@ In this file we prove a few results about the interaction of `Set.PairwiseDisjoi
 as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

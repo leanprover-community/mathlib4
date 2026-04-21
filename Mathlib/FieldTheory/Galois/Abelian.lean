@@ -14,6 +14,7 @@ public import Mathlib.FieldTheory.Galois.Infinite
 In this file, we define the typeclass of abelian extensions and provide some basic API.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

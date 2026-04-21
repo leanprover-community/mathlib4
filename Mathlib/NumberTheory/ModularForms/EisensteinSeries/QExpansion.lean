@@ -37,6 +37,7 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

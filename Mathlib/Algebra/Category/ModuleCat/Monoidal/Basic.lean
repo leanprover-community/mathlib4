@@ -29,6 +29,7 @@ We construct the monoidal closed structure on `ModuleCat R` in
 If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

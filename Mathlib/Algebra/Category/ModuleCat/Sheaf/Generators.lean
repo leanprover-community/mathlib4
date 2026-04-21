@@ -26,6 +26,7 @@ define sheaves of modules of finite type.
 * https://stacks.math.columbia.edu/tag/01B4
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

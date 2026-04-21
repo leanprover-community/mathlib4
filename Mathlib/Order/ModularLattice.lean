@@ -53,6 +53,7 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 - Relate atoms and coatoms in modular lattices
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

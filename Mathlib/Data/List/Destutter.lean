@@ -27,6 +27,7 @@ Note that we make no guarantees of being the longest sublist with this property;
 
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

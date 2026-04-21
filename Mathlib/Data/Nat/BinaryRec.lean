@@ -18,6 +18,7 @@ This file defines binary recursion on `Nat`.
   the bit being appended is `true`.
 * `Nat.binaryRecFromOne`: The same as `binaryRec`, but special casing both 0 and 1 as base cases.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

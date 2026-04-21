@@ -38,6 +38,7 @@ with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 + Lift this to the case where the CFC is over `ℝ≥0`
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

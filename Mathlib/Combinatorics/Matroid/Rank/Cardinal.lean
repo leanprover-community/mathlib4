@@ -60,6 +60,7 @@ which sometime makes their proofs longer than they would be with the instance.
   then every matroid is `InvariantCardinalRank`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

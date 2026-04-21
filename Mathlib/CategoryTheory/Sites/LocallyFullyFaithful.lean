@@ -26,6 +26,7 @@ public import Mathlib.CategoryTheory.Sites.LocallySurjective
 * [caramello2020]: Olivia Caramello, *Denseness conditions, morphisms and equivalences of toposes*
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

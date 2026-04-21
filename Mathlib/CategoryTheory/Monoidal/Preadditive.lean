@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Functor
 A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor product of morphisms
 is linear in both factors.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

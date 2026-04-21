@@ -22,6 +22,7 @@ a restricted measure.
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -19,6 +19,7 @@ We prove the following facts:
 * `Convex.exists_subset_interior_convexHull_finset_of_isCompact`: We can intercalate a convex
   polytope between a compact convex set and one of its neighborhoods.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

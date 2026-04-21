@@ -20,6 +20,7 @@ This file characterises sheaves for the coherent topology
   if it satisfies the sheaf condition with respect to every presieve consisting of a finite
   effective epimorphic family.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

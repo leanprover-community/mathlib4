@@ -21,6 +21,7 @@ The facts collected in this file are typically stated for locally ringed spaces,
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

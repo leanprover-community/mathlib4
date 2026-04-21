@@ -17,6 +17,7 @@ are locally small when the relevant categories that are
 involved are locally small.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

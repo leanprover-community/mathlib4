@@ -21,6 +21,7 @@ estimates.
 See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

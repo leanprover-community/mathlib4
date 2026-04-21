@@ -21,6 +21,7 @@ This file is one of the earliest imports in mathlib.
 Theorems that require decidability hypotheses are in the namespace `Decidable`.
 Classical versions are in the namespace `Classical`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

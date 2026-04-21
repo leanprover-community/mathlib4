@@ -34,6 +34,7 @@ bounds of a list. For concretely defined lists that are made up of elements of d
 this holds. More work will be needed to support lists over non-dec-eq types like `ℝ`, where the
 elements are beyond the dec-eq terms of casted values from `ℕ, ℤ, ℚ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

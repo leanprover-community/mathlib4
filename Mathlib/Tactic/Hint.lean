@@ -20,6 +20,7 @@ on the current goal, and reports which ones succeed.
 ## Future work
 It would be nice to run the tactics in parallel.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

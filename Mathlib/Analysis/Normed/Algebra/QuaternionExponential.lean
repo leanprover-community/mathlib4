@@ -23,6 +23,7 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
   the real part.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

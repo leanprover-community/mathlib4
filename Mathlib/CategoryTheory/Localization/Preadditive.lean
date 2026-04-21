@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 # Localization of natural transformations to preadditive categories
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

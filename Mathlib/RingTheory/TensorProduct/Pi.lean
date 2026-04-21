@@ -17,6 +17,7 @@ In this file we examine the behaviour of the tensor product with (finite) produc
 is a direct application of `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` to the algebra case.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 * `integrable_sinc`: the sinc function is integrable with respect to any finite measure on `ℝ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

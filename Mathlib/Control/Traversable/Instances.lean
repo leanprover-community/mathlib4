@@ -16,6 +16,7 @@ public import Mathlib.Data.Set.Functor
 This file provides instances of `LawfulTraversable` for types from the core library: `Option`,
 `List` and `Sum`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

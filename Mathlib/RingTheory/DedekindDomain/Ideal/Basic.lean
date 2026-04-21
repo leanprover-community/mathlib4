@@ -48,6 +48,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

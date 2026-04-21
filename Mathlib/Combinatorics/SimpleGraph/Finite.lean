@@ -39,6 +39,7 @@ or `card_verts`.
 * Given instances `DecidableRel G.Adj` and `Fintype V`, then the graph
   is locally finite, too.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

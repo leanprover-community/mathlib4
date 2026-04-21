@@ -29,6 +29,7 @@ Both hold for all (non-minimal) elements in a linear order.
 * `exists_supIrred_decomposition`/`exists_infIrred_decomposition`: Decomposition into irreducibles
   in a well-founded semilattice.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -45,6 +45,7 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
   that is bounded by a certain regular cardinal (@joelriou)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

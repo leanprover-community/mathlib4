@@ -39,6 +39,7 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
   set of values `v (coeff t f) * c ^ t` is bounded above (similarily for `g`), then
   the Gauss norm has the non-archimedean property.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

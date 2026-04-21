@@ -21,6 +21,7 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
   on each fiber shape `F.obj X` and on the base category `C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

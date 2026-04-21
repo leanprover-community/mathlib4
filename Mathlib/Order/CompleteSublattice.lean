@@ -25,6 +25,7 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

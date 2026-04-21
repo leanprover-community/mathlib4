@@ -19,6 +19,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 TODO: should this be extended further?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

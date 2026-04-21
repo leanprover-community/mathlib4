@@ -31,6 +31,7 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
   element of `G`, where `G` is a group that acts on `F`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -88,6 +88,7 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
 - [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

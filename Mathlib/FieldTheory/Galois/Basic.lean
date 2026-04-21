@@ -39,6 +39,7 @@ Together, these two results prove the Galois correspondence.
   with cyclic and thus abelian Galois group.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

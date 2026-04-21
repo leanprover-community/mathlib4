@@ -40,6 +40,7 @@ Since we do not assume `R` to be commutative, we cannot say in general that the 
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

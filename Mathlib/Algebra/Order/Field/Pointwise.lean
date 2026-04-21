@@ -17,6 +17,7 @@ public import Mathlib.Order.Interval.Set.OrderIso
 
 This file contains lemmas about the effect of pointwise operations on sets with an order structure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

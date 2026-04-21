@@ -19,6 +19,7 @@ It is related to `dissipate s := ⋂ y ≤ x, s y`.
 slightly different typeclass assumptions and API. `partialSups_eq_accumulate` shows
 that they coincide on `ℕ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

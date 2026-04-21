@@ -17,6 +17,7 @@ Given a family of monoidal categories `C i`, we define a monoidal structure on
 `Π i, C i` where the tensor product is defined pointwise.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

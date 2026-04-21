@@ -32,6 +32,7 @@ the matrix of their coordinates with respect to some basis.
 
 matrix, basis
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

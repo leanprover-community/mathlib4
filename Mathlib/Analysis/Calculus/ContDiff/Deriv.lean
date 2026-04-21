@@ -18,6 +18,7 @@ to use. In this file, we reformulate some higher smoothness results in terms of 
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

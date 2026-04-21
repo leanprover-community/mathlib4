@@ -18,6 +18,7 @@ over a nontrivial commutative ring, nontrivial commutative ring without zero div
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

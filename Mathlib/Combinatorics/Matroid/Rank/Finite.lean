@@ -20,6 +20,7 @@ integer arithmetic involving the rank function.
 Unlike most set predicates on matroids, a set `X` with `M.IsRkFinite X` need not satisfy `X ⊆ M.E`,
 so may contain junk elements. This seems to be what makes the definition easiest to use.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

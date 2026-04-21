@@ -26,6 +26,7 @@ then `f n ≤ a` for all `n`.
 
 monotone convergence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

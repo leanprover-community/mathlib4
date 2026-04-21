@@ -22,6 +22,7 @@ This file contains basic definitions and results about irreducible root systems.
   coefficients are a field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

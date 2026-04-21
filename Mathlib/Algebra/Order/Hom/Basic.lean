@@ -46,6 +46,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 
 Finitary versions of the current lemmas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 ## Main results
 * `UniqueFactorizationMonoid.toGCDMonoid`: choose a GCD monoid structure given unique factorization.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

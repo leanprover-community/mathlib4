@@ -45,6 +45,7 @@ relations and morphisms for rings and semirings
 congruence, congruence relation, quotient, quotient by congruence relation, ring,
 quotient ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

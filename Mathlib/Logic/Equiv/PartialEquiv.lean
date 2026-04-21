@@ -68,6 +68,7 @@ If a lemma deals with the intersection of a set with either source or target of 
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 open Lean Meta Elab Tactic

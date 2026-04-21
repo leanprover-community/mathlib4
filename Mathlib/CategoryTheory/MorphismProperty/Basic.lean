@@ -24,6 +24,8 @@ The following meta-property is defined
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe w v v' u u'
 

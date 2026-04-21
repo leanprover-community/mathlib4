@@ -17,6 +17,7 @@ This file defines homogeneous subsemirings of a graded semiring, as well as oper
 
 * `HomogeneousSubsemiring 𝒜`: The type of subsemirings which satisfy `SetLike.IsHomogeneous`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

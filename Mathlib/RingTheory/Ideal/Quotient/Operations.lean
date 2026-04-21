@@ -24,6 +24,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Topology.Metrizable.Real
 
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -32,6 +32,7 @@ We also port the API to antitone functions.
 
 Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

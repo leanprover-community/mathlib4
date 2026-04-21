@@ -39,6 +39,7 @@ periodic group, aperiodic group, torsion subgroup, torsion abelian group
 * complete direct and free products of torsion free groups are torsion free
 * groups which are residually finite p-groups with respect to 2 distinct primes are torsion free
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

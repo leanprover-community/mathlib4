@@ -23,6 +23,7 @@ In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symm
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

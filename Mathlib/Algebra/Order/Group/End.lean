@@ -11,6 +11,7 @@ public import Mathlib.Order.RelIso.Basic
 /-!
 # Relation isomorphisms form a group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

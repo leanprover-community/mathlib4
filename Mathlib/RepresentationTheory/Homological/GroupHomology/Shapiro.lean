@@ -36,6 +36,7 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
   `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

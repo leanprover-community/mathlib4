@@ -15,6 +15,7 @@ In this file we prove several versions of the following statement: if `f : X →
 not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the closure of `s`, then
 `f` has an extremum of the same type on `Closure s` at `a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

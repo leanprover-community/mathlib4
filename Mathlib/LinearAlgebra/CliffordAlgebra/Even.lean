@@ -33,6 +33,7 @@ between one recursor invocation and the next.
 For the universal property of the even subalgebra, we apply a variant of the first trick again by
 choosing `S` to itself be a submodule of morphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

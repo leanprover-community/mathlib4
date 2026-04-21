@@ -17,6 +17,7 @@ an R-algebra is at most `#R[X] * ℵ₀`.
 Although this can be used to prove that real or complex transcendental numbers exist, a more direct
 proof is given by `Liouville.transcendental`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

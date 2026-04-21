@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Coprime.Lemmas
 
 finset, lcm, prod, coprime
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

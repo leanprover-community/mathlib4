@@ -22,6 +22,7 @@ field has dense complement, in `Set.Countable.dense_compl`. This follows from th
 argument and the fact that a complete nontrivially normed field has cardinality at least
 continuum, proved in `continuum_le_cardinal_of_nontriviallyNormedField`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 universe u v

@@ -16,6 +16,7 @@ public import Mathlib.Util.CompileInductive
 
 This file provides lemmas involving both `List.IsChain` and `List.ofFn`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

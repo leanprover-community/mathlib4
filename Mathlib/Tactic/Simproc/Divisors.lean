@@ -16,6 +16,7 @@ This file implements (d)simprocs to compute various objects related to divisors:
 - `Nat.properDivisors_ofNat`: computes `Nat.properDivisors n` for explicit values of `n`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

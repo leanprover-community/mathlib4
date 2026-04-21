@@ -19,6 +19,7 @@ interaction between union, intersection, empty set and inserting elements.
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

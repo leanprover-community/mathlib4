@@ -29,6 +29,7 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 * `essSup f μ := (ae μ).limsup f`
 * `essInf f μ := (ae μ).liminf f`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

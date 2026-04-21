@@ -44,6 +44,7 @@ combination operator.
 * Connect `Finset.expect` with the expectation over `s` in the probability theory sense.
 * Give a formulation of Jensen's inequality in this language.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

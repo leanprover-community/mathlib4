@@ -36,6 +36,7 @@ groups.
 
 topological space, group, topological group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

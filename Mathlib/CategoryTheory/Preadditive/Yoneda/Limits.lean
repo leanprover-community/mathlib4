@@ -20,6 +20,7 @@ This is in a separate file to avoid having to import the development of the abel
 `ModuleCat` in the main file about the preadditive Yoneda embedding.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

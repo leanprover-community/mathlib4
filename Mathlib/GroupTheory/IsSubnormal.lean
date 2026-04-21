@@ -41,6 +41,7 @@ This turns out to be more convenient to work with.
 We show the equivalence of the current definition with the existence of chains in
 `isSubnormal_iff`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 variable {G : Type*} [Group G] {H K : Subgroup G}
 

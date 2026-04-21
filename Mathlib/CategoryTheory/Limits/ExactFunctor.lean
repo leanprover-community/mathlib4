@@ -17,6 +17,7 @@ preserves finite colimits, and it is exact if it is both left exact and right ex
 In this file, we define the categories of bundled left exact, right exact and exact functors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

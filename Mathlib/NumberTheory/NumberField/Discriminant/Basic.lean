@@ -28,6 +28,7 @@ This file defines the discriminant of a number field.
 ## Tags
 number field, discriminant
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

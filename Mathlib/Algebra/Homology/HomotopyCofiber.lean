@@ -35,6 +35,7 @@ which asserts that if a functor inverts homotopy equivalences, then the images o
 two homotopic maps are equal.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

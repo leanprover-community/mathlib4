@@ -30,6 +30,7 @@ the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`.
   is unique.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

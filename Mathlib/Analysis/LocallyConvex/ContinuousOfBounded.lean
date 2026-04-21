@@ -20,6 +20,7 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

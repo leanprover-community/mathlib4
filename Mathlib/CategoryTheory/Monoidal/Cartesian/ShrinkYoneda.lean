@@ -16,6 +16,7 @@ Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{w} w` and its `Grp` analogue.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

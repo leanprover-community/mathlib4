@@ -71,6 +71,7 @@ All linters imported here have no bulk imports;
 - the `upstreamableDecls` linter, as it is also mostly informational
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

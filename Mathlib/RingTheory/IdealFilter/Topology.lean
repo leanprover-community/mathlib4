@@ -35,6 +35,7 @@ uniform ideal filters in terms of ring filter bases.
 
 ring theory, ideal, filter, linear topology
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

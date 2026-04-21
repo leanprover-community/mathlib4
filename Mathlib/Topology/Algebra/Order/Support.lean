@@ -16,6 +16,7 @@ support, we show that `f ⊔ g` has compact support. Similarly, in `β` with `In
 has compact support if so do `f` and `g`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

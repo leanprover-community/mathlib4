@@ -23,6 +23,7 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

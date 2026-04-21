@@ -49,6 +49,7 @@ The strategy is the following:
   construct such an isomorphism, tactics like `decide` would not work.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 section case1
 

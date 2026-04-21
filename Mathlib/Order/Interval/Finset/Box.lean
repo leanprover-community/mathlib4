@@ -22,6 +22,7 @@ differences of consecutive intervals.
 
 We don't need the full ring structure, only that there is an order embedding `ℤ → `
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

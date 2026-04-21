@@ -53,6 +53,7 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
 `IsIntegrallyClosed` (even for Noetherian rings?).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

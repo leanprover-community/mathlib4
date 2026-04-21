@@ -26,6 +26,7 @@ $\exp ( \log (1+X)) = 1+X$ by differentiating twice.
 - `PowerSeries.derivative R : Derivation R R⟦X⟧ R⟦X⟧` the formal derivative operation.
   This is abbreviated `d⁄dX R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

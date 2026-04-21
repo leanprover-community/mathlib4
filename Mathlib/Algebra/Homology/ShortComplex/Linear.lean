@@ -16,6 +16,7 @@ In this file, it is shown that if `C` is an `R`-linear category, then
 are also shown to be linear.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

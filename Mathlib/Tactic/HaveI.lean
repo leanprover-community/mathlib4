@@ -16,6 +16,7 @@ They need an apostrophe after their name for disambiguation with the term varian
 This is necessary because the do-notation has a hardcoded list of keywords which can appear both
 as term-mode and do-elem syntax (like for example `let` or `have`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

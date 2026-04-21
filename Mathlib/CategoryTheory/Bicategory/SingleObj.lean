@@ -26,6 +26,7 @@ is equivalent to the bicategory consisting of
 * pseudofunctors, and
 * (oplax) natural transformations `η` such that `η.app Unit.unit = 𝟙 _`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

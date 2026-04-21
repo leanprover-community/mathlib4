@@ -24,6 +24,7 @@ It is in a separate file for now so as to not add imports to the file `Order.Wel
 
 Dickson, order, partial well order
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 /-- A version of **Dickson's lemma**: `σ →₀ α` is well-quasi-ordered when `σ` is `Finite` and `α` is

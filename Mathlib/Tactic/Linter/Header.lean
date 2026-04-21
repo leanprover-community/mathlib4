@@ -23,6 +23,8 @@ Authors ...
 -/
 
 import statements*
+
+set_option backward.defeqAttrib.useBackward true
 module doc-string*
 remaining file
 ```

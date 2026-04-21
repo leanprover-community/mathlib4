@@ -32,6 +32,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
 
 elliptic curve, weierstrass equation, change of variables
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -55,6 +55,7 @@ However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `
 as it is easier to use.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

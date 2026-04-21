@@ -17,6 +17,7 @@ an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.Order.Atoms
 
 This file contains results on the order radical of a lattice: the infimum of the coatoms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

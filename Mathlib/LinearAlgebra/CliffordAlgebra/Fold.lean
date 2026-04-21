@@ -29,6 +29,7 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 * `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
 * `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

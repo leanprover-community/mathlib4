@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
   by normalizing them.
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

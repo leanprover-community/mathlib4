@@ -17,6 +17,7 @@ it is stable under colimits of shape `K'` when they
 commute to limits of shape `K` (resp. to finite limits).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -8,6 +8,7 @@ module -- shake: keep-all
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Util.CompileInductive
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module
 "for `[LinearOrderedSemifield]`, use `[Semifield K] [LinearOrder K] [IsStrictOrderedRing K]` \

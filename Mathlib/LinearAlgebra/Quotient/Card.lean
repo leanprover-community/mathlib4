@@ -10,6 +10,7 @@ public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.GroupTheory.Coset.Basic
 
 /-! Results about the cardinality of a quotient module. -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

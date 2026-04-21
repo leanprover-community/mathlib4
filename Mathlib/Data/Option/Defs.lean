@@ -14,6 +14,7 @@ This file defines more operations involving `Option α`. Lemmas about them are l
 files under `Mathlib/Data/Option/`.
 Other basic operations on `Option` are defined in the core library.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

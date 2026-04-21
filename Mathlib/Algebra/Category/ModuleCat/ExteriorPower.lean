@@ -15,6 +15,7 @@ In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower 
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

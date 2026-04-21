@@ -27,6 +27,7 @@ limits and `F` preserves finite limits, our constructed functor also preserves f
 can be shown that this construction gives a quasi-inverse to the whiskering operation
 `(C ⥤ₗ AddCommGrpCat.{v}) ⥤ (C ⥤ₗ Type v)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ less than `n`.
 
 This could be unified with `Data.List.Intervals`. See the TODOs there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

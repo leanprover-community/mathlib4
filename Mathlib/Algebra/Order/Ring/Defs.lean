@@ -103,6 +103,7 @@ immediate predecessors and what conditions are added to each of them.
   - `LinearOrderedCommSemiring` & additive inverses
   - `CommRing` & `IsDomain` & linear order structure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ Methods for constructing a normed field instance from a given real absolute valu
 given in:
 * AbsoluteValue.toNormedField
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

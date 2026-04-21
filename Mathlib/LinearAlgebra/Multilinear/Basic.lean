@@ -69,6 +69,7 @@ Option 3 of course does something similar, but of the form `Fin.decidableEq n = 
 which is much easier to clean up since `_inst` is a free variable
 and so the equality can just be substituted.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

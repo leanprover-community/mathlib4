@@ -19,6 +19,7 @@ See also `Matrix.GeneralLinearGroup`
 * `LinearMap.GeneralLinearGroup`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -33,6 +33,7 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

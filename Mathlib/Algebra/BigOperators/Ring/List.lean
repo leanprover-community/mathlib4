@@ -17,6 +17,7 @@ public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 This file contains the results concerning the interaction of list big operators with rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

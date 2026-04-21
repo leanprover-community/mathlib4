@@ -29,5 +29,6 @@ TODO: These magic lemmas have been skipped for now, though the plumbing lemmas i
 `Mathlib/Data/Matrix/Reflection.lean` are still available.
 They should probably be implemented as simprocs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section

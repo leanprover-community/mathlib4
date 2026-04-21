@@ -35,6 +35,7 @@ Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cart
 that it fails to preserve infinite products.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

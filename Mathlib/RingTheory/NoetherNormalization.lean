@@ -50,6 +50,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 ## TODO
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 open Polynomial MvPolynomial Ideal Nat RingHom List

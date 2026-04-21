@@ -21,6 +21,7 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 * `SimpleGraph.circulantGraph s`: the circulant graph over `G` with jumps `s`.
 * `SimpleGraph.cycleGraph n`: the cycle graph over `Fin n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

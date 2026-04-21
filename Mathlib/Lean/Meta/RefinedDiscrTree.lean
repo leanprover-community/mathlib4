@@ -98,6 +98,7 @@ matching, the lookup algorithm is most optimized for matching.
 Improve the unification lookup.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

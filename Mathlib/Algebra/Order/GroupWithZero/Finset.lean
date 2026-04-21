@@ -12,6 +12,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 /-!
 # `Finset.sup` in a group with zero
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

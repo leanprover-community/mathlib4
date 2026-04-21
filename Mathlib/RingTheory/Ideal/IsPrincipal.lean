@@ -25,6 +25,7 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
   `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

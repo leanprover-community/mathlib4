@@ -27,6 +27,7 @@ including:
 
 projection, idempotent
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

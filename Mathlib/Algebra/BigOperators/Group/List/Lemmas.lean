@@ -24,6 +24,7 @@ This file provides further results about `List.prod`, `List.sum`,
 which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat

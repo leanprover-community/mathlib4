@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Asymptotics.Theta
 
 In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc. and `(↑) : ℝ → ℂ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

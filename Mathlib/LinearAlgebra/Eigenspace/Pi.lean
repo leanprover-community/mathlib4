@@ -25,6 +25,7 @@ for commuting endomorphisms but there are important more general situations wher
   is true of each map individually.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

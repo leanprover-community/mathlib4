@@ -11,6 +11,7 @@ public import Mathlib.Tactic.NormNum.Basic
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

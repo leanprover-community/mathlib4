@@ -52,6 +52,7 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
   between two sheafed spaces is an open immersion if all the stalk maps are isomorphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

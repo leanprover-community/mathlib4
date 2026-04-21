@@ -38,6 +38,7 @@ binomial coefficient given in `Nat.four_pow_lt_mul_centralBinom`.
 
 Bertrand, prime, binomial coefficients
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

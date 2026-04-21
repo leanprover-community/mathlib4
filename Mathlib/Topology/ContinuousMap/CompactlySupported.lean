@@ -26,6 +26,7 @@ When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapE
 gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

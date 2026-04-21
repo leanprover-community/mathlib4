@@ -23,6 +23,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
   under an open embedding `X → X'`, to an open partial homeomorphism `X' → Z`.
   (This is used to define the disjoint union of charted spaces.)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

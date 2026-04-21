@@ -38,6 +38,7 @@ Some key definitions are not yet present.
   (in the general case) or function type (in the finite-dimensional case) that gives the
   coordinates, with appropriate proofs of existence when `k` is a field.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

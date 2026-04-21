@@ -20,6 +20,7 @@ and `A : Type u₁` (with `Category.{v} A`) is a Grothendieck abelian category,
 then `Sheaf J A` is a Grothendieck abelian category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

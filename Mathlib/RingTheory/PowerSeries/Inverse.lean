@@ -27,6 +27,7 @@ monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism betw
 field of `k⟦X⟧` and `k`, when `k` is a field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

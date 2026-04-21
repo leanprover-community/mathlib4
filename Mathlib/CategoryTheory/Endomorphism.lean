@@ -19,6 +19,7 @@ Definition and basic properties of endomorphisms and automorphisms of an object 
 For each `X : C`, we provide `CategoryTheory.End X := X ⟶ X` with a monoid structure,
 and `CategoryTheory.Aut X := X ≅ X` with a group structure.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

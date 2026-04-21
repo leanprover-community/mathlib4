@@ -20,6 +20,7 @@ This file contains results on the behavior of ultrametrics in products of ultram
 
 ultrametric, nonarchimedean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

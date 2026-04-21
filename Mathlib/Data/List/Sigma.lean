@@ -31,6 +31,7 @@ If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having
 - `List.kunion` computes the union of two stores.
 - `List.kextract` returns a value with a given key and the rest of the values.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

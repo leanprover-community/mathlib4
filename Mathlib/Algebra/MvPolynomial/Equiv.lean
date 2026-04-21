@@ -42,6 +42,7 @@ As in other polynomial files, we typically use the notation:
 equivalence, isomorphism, morphism, ring hom, hom
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Ideal.Nonunits
 We prove basic properties of local rings.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

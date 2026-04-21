@@ -21,6 +21,7 @@ This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in ter
 * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

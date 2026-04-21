@@ -20,6 +20,7 @@ path in a simplicial set `X` is then defined as a 1-truncated path in the
 An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
 of length `n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

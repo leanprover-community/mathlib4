@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.RingHomProperties
 
 We define the category of finitely generated `R`-algebras and show it is essentially small.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

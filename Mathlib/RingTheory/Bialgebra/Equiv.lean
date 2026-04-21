@@ -22,6 +22,7 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

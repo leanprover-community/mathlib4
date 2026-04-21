@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

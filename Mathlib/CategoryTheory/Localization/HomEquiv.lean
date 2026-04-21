@@ -22,6 +22,7 @@ The definition `Localization.homEquiv` is obtained by applying the construction
 to the identity localizer morphism.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

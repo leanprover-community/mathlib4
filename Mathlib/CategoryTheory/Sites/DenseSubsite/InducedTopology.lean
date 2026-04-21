@@ -30,6 +30,7 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 * https://ncatlab.org/nlab/show/comparison+lemma
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

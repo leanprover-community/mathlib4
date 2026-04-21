@@ -25,6 +25,7 @@ Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAl
 to a graded algebra equivalence.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

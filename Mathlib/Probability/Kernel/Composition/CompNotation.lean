@@ -21,6 +21,7 @@ This file does not define composition but only introduces notation for
 
 * `κ ∘ₘ μ = MeasureTheory.Measure.bind μ κ`, for `κ` a kernel.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -16,6 +16,7 @@ public import Mathlib.Topology.Maps.OpenQuotient
 In this file we construct a section of the quotient map `E → SeparationQuotient E` as a continuous
 linear map `SeparationQuotient E →L[K] E`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

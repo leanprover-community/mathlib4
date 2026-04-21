@@ -19,6 +19,7 @@ This is useful when dealing with integral elements in an extension of fields.
 * `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
   of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

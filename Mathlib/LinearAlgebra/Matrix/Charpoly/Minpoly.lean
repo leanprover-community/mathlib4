@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.PowerBasis
 
 This also includes some miscellaneous results about `minpoly` on matrices.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

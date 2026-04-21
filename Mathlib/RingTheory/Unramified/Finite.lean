@@ -31,6 +31,7 @@ of formally unramified algebras which are essentially of finite type.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

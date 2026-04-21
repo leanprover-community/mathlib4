@@ -28,6 +28,7 @@ to hold many of these basic facts.
 The spelling `s.PairwiseDisjoint id` is preferred over `s.Pairwise Disjoint` to permit dot notation
 on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -161,6 +161,7 @@ There are a few design decisions worth discussing.
 * [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

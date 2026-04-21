@@ -27,6 +27,7 @@ For instance, `sInf_le` is a statement in complete lattices ensuring `sInf s ≤
 while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

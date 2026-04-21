@@ -16,6 +16,7 @@ We construct a separating set in the category of ind-objects and conclude that i
 and additive, then `Ind C` has a separator.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

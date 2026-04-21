@@ -18,6 +18,7 @@ has pullbacks and a terminal object, then it has binary products.
 
 We also provide the dual.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ This file defines the derived set of a set, the set of all `AccPt`s of its princ
 and proves some properties of it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -43,6 +43,7 @@ to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedA
 
 * [M. Hausner, J.G. Wendel, *Ordered vector spaces*][hausnerwendel1952]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

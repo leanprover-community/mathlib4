@@ -59,6 +59,7 @@ Here, we split the argument into two separate facts:
 - [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

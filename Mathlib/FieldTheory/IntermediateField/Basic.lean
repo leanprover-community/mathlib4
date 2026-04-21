@@ -38,6 +38,7 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 ## Tags
 intermediate field, field extension
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -50,6 +50,7 @@ When the space is locally compact, `μ.measure` is also regular.
 * Paul Halmos (1950), Measure Theory, §53
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

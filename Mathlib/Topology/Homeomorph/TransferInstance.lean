@@ -14,6 +14,7 @@ We show how to transport a topological space structure across an `Equiv` and pro
 make the equivalence a homeomorphism between the original space and the transported topology.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

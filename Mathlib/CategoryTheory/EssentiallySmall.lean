@@ -24,6 +24,7 @@ A category is `w`-locally small if every hom type is `w`-small.
 The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

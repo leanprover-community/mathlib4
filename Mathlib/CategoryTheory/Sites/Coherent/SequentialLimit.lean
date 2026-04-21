@@ -26,6 +26,7 @@ the projection map `lim Xₙ ⟶ X₀` is an epimorphism (see `coherentTopology.
 This is deduced from the corresponding statement about locally surjective morphisms of sheaves
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

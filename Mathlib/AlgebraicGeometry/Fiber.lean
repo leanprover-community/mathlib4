@@ -21,6 +21,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

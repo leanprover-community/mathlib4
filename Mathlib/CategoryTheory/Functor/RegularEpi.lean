@@ -18,6 +18,7 @@ is regular) and has pushouts and kernel pairs of epimorphisms, the functor categ
 regular epi category. This is an instance that applies directly when `D` is `Type*`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

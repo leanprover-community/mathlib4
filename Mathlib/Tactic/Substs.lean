@@ -12,6 +12,7 @@ public import Mathlib.Init
 
 The `substs` macro applies the `subst` tactic to a list of hypothesis, in left to right order.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

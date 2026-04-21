@@ -32,6 +32,7 @@ In many cases, the maximal Bayes risk and the minimax risk are equal
 (by a so-called minimax theorem).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -11,6 +11,7 @@ public import Mathlib.Data.Fintype.EquivFin
 /-!
 # fintype instance for `Set α`, when `α` is a fintype
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

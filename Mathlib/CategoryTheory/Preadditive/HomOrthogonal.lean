@@ -36,6 +36,7 @@ theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β
 
 This is preliminary to defining semisimple categories.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Data.Matrix.Basic
 Showing this for the more general case of `TrivSqZeroExt R M` would require an action between
 `Matrix n n R` and `Matrix n n M`, which would risk causing diamonds.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

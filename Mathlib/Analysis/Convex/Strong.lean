@@ -24,6 +24,7 @@ If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖
 
 Prove derivative properties of strongly convex functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

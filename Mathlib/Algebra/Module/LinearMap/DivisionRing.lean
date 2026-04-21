@@ -19,6 +19,7 @@ This file proves some results on linear functionals on division semirings.
 * `LinearMap.range_smulRight_apply`: for a nonzero linear functional `f` and element `x`,
   the range of `f.smulRight x` is the span of the set `{x}`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

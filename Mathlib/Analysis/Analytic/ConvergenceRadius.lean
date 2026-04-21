@@ -37,6 +37,7 @@ For a power series in finitely many dimensions, there is a finer (directional, c
 notion, describing the polydisk of convergence. This notion is more specific, and not necessary to
 build the general theory. We do not define it here.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

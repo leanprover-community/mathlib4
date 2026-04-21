@@ -41,6 +41,7 @@ relation and that isomorphic algebras are Morita equivalent.
 Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

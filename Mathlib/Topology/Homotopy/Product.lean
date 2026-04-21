@@ -45,6 +45,7 @@ of products.
 
 - `Path.Homotopic.prod` The product of two path classes.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

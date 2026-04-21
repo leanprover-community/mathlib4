@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Units
 
 /-! # Isomorphism of ordered monoids descends to units
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

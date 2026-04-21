@@ -20,6 +20,7 @@ See note [foundational algebra order theory].
 
 Move the `LinearOrder ℕ` instance here (https://github.com/leanprover-community/mathlib4/pull/13092).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

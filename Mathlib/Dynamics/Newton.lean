@@ -31,6 +31,7 @@ as Hensel's lemma and the Jordan-Chevalley decomposition.
   Jordan-Chevalley decomposition of linear endomorphisms.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

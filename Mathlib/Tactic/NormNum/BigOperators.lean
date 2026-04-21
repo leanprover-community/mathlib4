@@ -36,6 +36,7 @@ In particular, we can't use the plugin on sums containing variables.
   the sum/prod, without computing its numeric value (using the `ring` tactic to do some
   normalization?)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

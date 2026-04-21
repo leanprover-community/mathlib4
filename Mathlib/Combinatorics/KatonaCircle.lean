@@ -16,6 +16,7 @@ public import Mathlib.Data.Nat.Choose.Cast
 This file provides tooling to use the Katona circle method, which is double-counting ways to order
 `n` elements on a circle under some condition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

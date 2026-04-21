@@ -25,6 +25,7 @@ principle. Also provided are conversions to and from other equivalent definition
 
 palindrome, reverse, induction
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

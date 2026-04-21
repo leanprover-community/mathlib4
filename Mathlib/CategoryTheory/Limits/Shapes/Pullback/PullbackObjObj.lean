@@ -47,6 +47,7 @@ a parameterized adjunction `F.leibnizAdjunction G adj₂ : F.leibnizPushout ⊣�
 
 pushout-product, pullback-hom, pullback-power, Leibniz
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

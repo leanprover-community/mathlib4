@@ -25,6 +25,7 @@ In the future, we will make `x + 1` and `x - 1` the `simp`-normal forms for `suc
 respectively. This will require a refactor of `Ordinal` first, as the `simp`-normal form is
 currently set the other way around.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

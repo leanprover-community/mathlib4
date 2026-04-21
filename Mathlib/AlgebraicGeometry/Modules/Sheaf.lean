@@ -21,6 +21,7 @@ In this file, we define the abelian category of sheaves of modules
 `X.Modules` over a scheme `X`, and study its basic functoriality.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

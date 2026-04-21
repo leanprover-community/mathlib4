@@ -17,6 +17,7 @@ public import Mathlib.Data.Fintype.Defs
   computable versions of `Function.invFun`.
 * `Fintype.choose`: computably obtain a witness for `ExistsUnique`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

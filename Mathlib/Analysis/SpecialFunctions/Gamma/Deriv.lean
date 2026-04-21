@@ -25,6 +25,7 @@ This file shows that the (complex) `Γ` function is complex-differentiable at al
 
 Gamma
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

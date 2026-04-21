@@ -28,6 +28,7 @@ sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file
 We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

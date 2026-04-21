@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.Card
 This adapts Pigeonhole-like results from `Mathlib.Data.Fintype.Card` to the setting where the map
 has the type `f : Fin m → Fin n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

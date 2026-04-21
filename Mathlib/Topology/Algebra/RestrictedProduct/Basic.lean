@@ -54,6 +54,7 @@ puts the structure of a topological space on a restricted product of topological
 
 restricted product, adeles, ideles
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

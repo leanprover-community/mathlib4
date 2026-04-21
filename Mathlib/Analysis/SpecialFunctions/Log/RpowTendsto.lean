@@ -20,6 +20,7 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
 * `tendsto_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)`: the analogous statement for pointwise
   convergence.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

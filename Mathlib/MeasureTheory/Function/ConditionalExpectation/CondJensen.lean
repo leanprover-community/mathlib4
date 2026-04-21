@@ -25,6 +25,7 @@ This file contains the conditional Jensen's inequality. We follow the proof in
   `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -15,6 +15,7 @@ public import Mathlib.Data.Fintype.BigOperators
 Some lemmas on the combination of `Finsupp`, `Fintype` and `Infinite`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

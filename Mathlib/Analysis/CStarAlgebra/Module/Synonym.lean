@@ -49,6 +49,7 @@ However, by utilizing the type synonym, these actually correspond to *different 
 The pattern here is the same one as is used by `Lex` for order structures; it avoids having a
 separate synonym for each type, and allows all the structure-copying code to be shared.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

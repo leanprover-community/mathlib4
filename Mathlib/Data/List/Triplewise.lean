@@ -16,6 +16,7 @@ public import Batteries.Data.List.Lemmas
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

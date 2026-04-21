@@ -12,6 +12,7 @@ public import Mathlib.Tactic.ToDual
 /-!
 # Homomorphisms and group actions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

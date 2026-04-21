@@ -13,6 +13,7 @@ public import Mathlib.Order.CompleteLattice.Basic
 # ObjectProperty is a complete lattice
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

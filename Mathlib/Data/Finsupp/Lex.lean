@@ -14,6 +14,7 @@ public import Mathlib.Data.Finsupp.ToDFinsupp
 
 This file defines the lexicographic order on `Finsupp`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ Suggestions for better ways to state this theorem or organize things are welcome
 The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

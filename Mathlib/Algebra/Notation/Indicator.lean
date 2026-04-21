@@ -35,6 +35,7 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 
 indicator, characteristic
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

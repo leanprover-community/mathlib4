@@ -11,6 +11,7 @@ public import Mathlib.Topology.Order.DenselyOrdered
 /-!
 # Lemmas about `extendFrom` in an order topology.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

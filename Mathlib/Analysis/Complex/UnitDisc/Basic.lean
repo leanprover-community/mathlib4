@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Group.PNatPowAssoc
 In this file we define `Complex.UnitDisc` to be the unit disc in the complex plane. We also
 introduce some basic operations on this disc.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,6 +32,7 @@ This statement is essentially Lemme 6.5 in
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

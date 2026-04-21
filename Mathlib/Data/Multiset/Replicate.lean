@@ -15,6 +15,7 @@ public import Mathlib.Data.Multiset.AddSub
 * `replicate n a` is the multiset containing only `a` with multiplicity `n`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

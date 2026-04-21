@@ -47,6 +47,7 @@ The core of this module is constructing the inverse system: for every finite sub
 
 Hall's Marriage Theorem, indexed families
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

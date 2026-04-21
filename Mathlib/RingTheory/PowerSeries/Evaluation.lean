@@ -43,6 +43,7 @@ the following lemmas furnish the properties of evaluation:
 We refer to the documentation of `MvPowerSeries.eval₂` for more details.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 namespace PowerSeries

@@ -12,6 +12,7 @@ public import Mathlib.Logic.Encodable.Pi
 
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 # Finite colimits of finite simplicial sets are finite
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

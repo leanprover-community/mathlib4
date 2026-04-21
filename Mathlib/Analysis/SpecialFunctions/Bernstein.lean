@@ -49,6 +49,7 @@ but can also be given a probabilistic account.
 This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], ℝ)`,
 although we defer an abstract statement of this until later.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

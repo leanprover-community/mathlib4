@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 Derivatives of `arcsin` and `arccos`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

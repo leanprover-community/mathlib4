@@ -25,6 +25,7 @@ morphisms such that every compact open is compact-open covered.
 - `IsCompactOpenCovered.of_isOpenMap`: If all the `fᵢ` are open maps, then every compact open
   of `S` is compact-open covered.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ a `1`-field structure. Use `InducedCategory.homMk` to construct
 morphisms in induced categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

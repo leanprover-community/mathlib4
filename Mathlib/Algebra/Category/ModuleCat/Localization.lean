@@ -19,6 +19,7 @@ this file defines an exact functor `ModuleCat.{v} R ⥤ ModuleCat.{v} (Localizat
 see `ModuleCat.localizedModuleFunctor`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

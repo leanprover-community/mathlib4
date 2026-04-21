@@ -26,6 +26,7 @@ We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimensio
 `injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

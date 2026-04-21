@@ -16,6 +16,7 @@ the context without requiring their proofs to be provided immediately.
 As a style choice, this should not be used in mathlib; but is provided for downstream users who
 preferred the old style.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

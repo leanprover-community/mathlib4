@@ -50,6 +50,7 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 distributions, test function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

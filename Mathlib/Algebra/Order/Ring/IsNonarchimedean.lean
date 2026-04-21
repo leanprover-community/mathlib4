@@ -16,6 +16,7 @@ A function `f : α → R` is nonarchimedean if it satisfies the strong triangle 
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of
 nonarchimedean functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

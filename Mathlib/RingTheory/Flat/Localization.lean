@@ -23,6 +23,7 @@ In this file we show that localizations are flat, and flatness is a local proper
   and `S` be a set that spans `R`. If the localization of `M` at each `s : S` is flat
   over `Localization.Away s`, then `M` is flat over `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

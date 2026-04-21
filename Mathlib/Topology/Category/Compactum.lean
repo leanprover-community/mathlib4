@@ -72,6 +72,7 @@ We also add wrappers around structures which already exist. Here are the main on
 - https://ncatlab.org/nlab/show/ultrafilter
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -31,6 +31,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
   A Lie subalgebra of a Noetherian Lie algebra is nilpotent
   if it is contained in the Engel subalgebra of all its elements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

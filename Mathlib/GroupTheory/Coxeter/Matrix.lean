@@ -60,6 +60,7 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

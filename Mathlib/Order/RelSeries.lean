@@ -23,6 +23,8 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 open scoped SetRel

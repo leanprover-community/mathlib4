@@ -24,6 +24,7 @@ These notations are developed further in `Data.Set.Functor` and `Data.Set.Subset
 They are defined here separately so that this file can be added as an exception to the shake linter
 and can thus be imported without a linting false positive when only the notation is desired.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

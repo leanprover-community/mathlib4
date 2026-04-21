@@ -35,6 +35,7 @@ the metric comes from an inner product space. However, as all the current applic
 are to Riemannian spaces we stick with the simpler name. This could be changed when Finsler
 manifolds are studied in mathlib.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

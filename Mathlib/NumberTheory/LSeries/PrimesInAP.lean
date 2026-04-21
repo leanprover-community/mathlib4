@@ -67,6 +67,7 @@ We give two versions of **Dirichlet's Theorem**:
 
 prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

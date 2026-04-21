@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
 in `D`, there exists an effective epi to it from an object in the image of `F`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

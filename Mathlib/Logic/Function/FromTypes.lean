@@ -16,6 +16,7 @@ Note that it is often preferable to use `((i : Fin n) → p i) → τ` in place 
 
 * `Function.FromTypes p τ`: `n`-ary function `p 0 → p 1 → ... → p (n - 1) → β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

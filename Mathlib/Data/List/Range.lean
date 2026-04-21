@@ -17,6 +17,7 @@ and defines `List.finRange`.
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
 Actual maths should use `List.Ico` instead.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

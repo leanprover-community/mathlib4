@@ -20,6 +20,7 @@ Define the Lebesgue conditional variance. See
 [GibbsMeasure](https://github.com/james18lpc/GibbsMeasure) for a definition of the Lebesgue
 conditional expectation.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

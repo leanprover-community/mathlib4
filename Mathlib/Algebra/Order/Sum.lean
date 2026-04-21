@@ -13,6 +13,7 @@ public import Mathlib.Order.Basic
 
 This file provides basic API for part-wise comparison of `Sum.elim` vectors against `0` or `1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

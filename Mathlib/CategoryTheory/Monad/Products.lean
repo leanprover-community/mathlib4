@@ -21,6 +21,7 @@ over category of `X`.
 Show that `Over.forget X : Over X ⥤ C` is a comonadic left adjoint and `Under.forget : Under X ⥤ C`
 is a monadic right adjoint.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

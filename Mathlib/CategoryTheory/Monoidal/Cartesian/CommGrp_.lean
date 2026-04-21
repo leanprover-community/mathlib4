@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 /-!
 # Yoneda embedding of `CommGrp C`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -49,6 +49,7 @@ This notation emphasizes that the posterior is a kind of inverse of `κ`, which 
 denote `κ†`, but we have to also specify the measure `μ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

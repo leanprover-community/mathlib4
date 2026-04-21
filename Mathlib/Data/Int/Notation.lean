@@ -9,6 +9,7 @@ public import Mathlib.Init
 /-!
 # Notation `ℤ` for the integers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

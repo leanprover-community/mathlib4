@@ -18,6 +18,7 @@ public import Mathlib.Tactic.FinCases
 We say that a filter `f` is measurably generated if every set `s ∈ f` includes a measurable
 set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `Filter.Eventually`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

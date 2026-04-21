@@ -26,6 +26,7 @@ functors `C ⥤ CochainComplex C ℤ` (or `C ⥤ DerivedCategory C` (TODO))
 which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

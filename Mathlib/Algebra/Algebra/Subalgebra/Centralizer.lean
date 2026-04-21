@@ -23,6 +23,7 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 - `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

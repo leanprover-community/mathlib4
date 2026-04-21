@@ -34,6 +34,7 @@ and `t`.
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 bipartite simple graph `G : SimpleGraph V`, see `Mathlib/Combinatorics/SimpleGraph/Bipartite.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

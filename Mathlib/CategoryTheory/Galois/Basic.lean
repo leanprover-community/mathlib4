@@ -44,6 +44,7 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

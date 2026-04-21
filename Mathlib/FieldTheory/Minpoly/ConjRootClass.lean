@@ -13,6 +13,7 @@ public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 In this file, we define the `ConjRootClass` of a field extension `L / K` as the quotient of `L` by
 the relation `IsConjRoot K`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

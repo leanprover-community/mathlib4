@@ -66,6 +66,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 [Halmos, Measure Theory][halmos1950measure]
 [Fremlin, *Measure Theory* (volume 4)][fremlin_vol4]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

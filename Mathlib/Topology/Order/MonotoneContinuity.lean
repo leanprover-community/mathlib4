@@ -21,6 +21,7 @@ We also prove that an `OrderIso` is continuous.
 
 continuous, monotone
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

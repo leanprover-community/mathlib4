@@ -20,6 +20,7 @@ up to the degree `p₀ + n`, then we construct a cochain
 `n`th-iteration of `φ` evaluated on `x₀` up to the degree `p₀ + n` for any `n : ℕ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

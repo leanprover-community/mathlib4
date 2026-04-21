@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 In this file we restate theorems about derivatives of integrals depending on parameters for interval
 integrals. -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

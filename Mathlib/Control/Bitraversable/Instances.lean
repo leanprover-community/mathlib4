@@ -27,6 +27,7 @@ This file provides `Bitraversable` instances for concrete bifunctors:
 
 traversable bitraversable functor bifunctor applicative
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

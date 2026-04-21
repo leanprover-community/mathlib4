@@ -36,6 +36,7 @@ theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
 ```
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

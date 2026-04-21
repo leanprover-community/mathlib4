@@ -34,6 +34,7 @@ order on matrices on `ℝ` or `ℂ`.
   positive semidefinite.
 * `Matrix.PosDef.isUnit`: A positive definite matrix in a field is invertible.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

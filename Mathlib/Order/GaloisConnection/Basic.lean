@@ -37,6 +37,7 @@ This means the infimum of subgroups will be defined to be the intersection of se
 with a proof that intersection of subgroups is a subgroup, rather than the closure of the
 intersection.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

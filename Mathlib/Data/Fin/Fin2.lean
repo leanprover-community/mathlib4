@@ -30,6 +30,7 @@ equalities.
 * `Fin2.remapLeft f`: Function `Fin2 (m + k) → Fin2 (n + k)` by applying `f : Fin m → Fin n` to
   `0, ..., m - 1` and sending `m + i` to `n + i`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

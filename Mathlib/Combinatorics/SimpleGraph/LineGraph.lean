@@ -19,6 +19,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Copy
 
 line graph
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

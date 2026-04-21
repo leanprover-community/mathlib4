@@ -20,6 +20,7 @@ They express the property that permuting arguments of type `α` does not change 
 * `LeftCommutative`: for `op : α → β → β`, `op a₁ (op a₂ b) = op a₂ (op a₁ b)`.
 * `RightCommutative`: for `op : β → α → β`, `op (op b a₁) a₂ = op (op b a₂) a₁`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

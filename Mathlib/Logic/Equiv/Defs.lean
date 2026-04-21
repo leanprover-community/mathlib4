@@ -56,6 +56,7 @@ Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/B
 
 equivalence, congruence, bijective map
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

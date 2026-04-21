@@ -15,6 +15,7 @@ public import Mathlib.Data.Int.Interval
 This file contains some lemmas about sums and products over integer intervals `Ixx`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

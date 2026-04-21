@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 We show that the category of types has all colimits, by providing the usual concrete models.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

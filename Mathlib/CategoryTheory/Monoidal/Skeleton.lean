@@ -21,6 +21,7 @@ The skeleton of a monoidal category is a monoid.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

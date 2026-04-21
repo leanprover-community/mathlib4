@@ -12,6 +12,7 @@ public import Mathlib.Data.Int.Cast.Lemmas
 # Centers of rings
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

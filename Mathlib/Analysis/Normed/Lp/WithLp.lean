@@ -38,6 +38,7 @@ to be shared.
 TODO: is it safe to copy across the topology and uniform space structure too for all reasonable
 choices of `V`?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

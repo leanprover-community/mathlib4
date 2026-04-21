@@ -12,6 +12,7 @@ public import Mathlib.Order.SuccPred.Basic
 
 This file defines the successor of `a : WithBot α` as an element of `α`, and dually for `WithTop`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

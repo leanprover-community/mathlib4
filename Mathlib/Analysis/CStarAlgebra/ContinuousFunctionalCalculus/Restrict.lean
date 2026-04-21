@@ -24,6 +24,7 @@ simply by proving:
 1. `IsSelfAdjoint x ↔ IsStarNormal x ∧ SpectrumRestricts Complex.re x`,
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

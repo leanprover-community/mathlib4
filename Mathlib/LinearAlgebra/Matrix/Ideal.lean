@@ -25,6 +25,7 @@ We also characterize Jacobson radicals of ideals in such rings.
 * `TwoSidedIdeal.jacobson_matrix` shows that $J(Mₙ(I)) = Mₙ(J(I))$
   for any two-sided ideal $I ≤ R$.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

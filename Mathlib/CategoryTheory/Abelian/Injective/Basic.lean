@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 * Objects in an abelian category are injective if and only if the preadditive Yoneda functor
   on them preserves finite colimits.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

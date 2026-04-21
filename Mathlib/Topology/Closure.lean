@@ -25,6 +25,7 @@ endowed with a topology.
 
 interior, closure, frontier
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

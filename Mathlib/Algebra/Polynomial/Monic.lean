@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Regular.SMul
 We give several tools for proving that polynomials are monic, e.g.
 `Monic.mul`, `Monic.map`, `Monic.pow`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

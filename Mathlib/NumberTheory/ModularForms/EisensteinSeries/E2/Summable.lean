@@ -38,6 +38,7 @@ The difference `-2πi/z` between these two orderings is precisely the correction
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open UpperHalfPlane hiding I σ
 

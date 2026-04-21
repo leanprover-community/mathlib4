@@ -17,6 +17,7 @@ import Mathlib.Tactic.ToDual
 Defines classes for preorders, partial orders, and linear orders
 and proves some basic lemmas about them.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

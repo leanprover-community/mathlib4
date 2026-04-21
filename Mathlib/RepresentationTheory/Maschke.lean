@@ -33,6 +33,7 @@ taking the average over `G` of the conjugates of `π`.
 It's not so far to give the usual statement, that every finite-dimensional representation
 of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

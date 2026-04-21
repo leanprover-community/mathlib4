@@ -23,6 +23,7 @@ We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euc
 ball/sphere with another center and radius.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

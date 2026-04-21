@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 /-!
 # The category of additive commutative groups is preadditive.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

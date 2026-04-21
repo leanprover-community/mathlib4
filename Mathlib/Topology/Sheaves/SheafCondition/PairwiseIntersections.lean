@@ -35,6 +35,7 @@ We express this in two equivalent ways, as
 We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

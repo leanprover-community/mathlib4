@@ -27,6 +27,7 @@ commute with base change.
 - `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

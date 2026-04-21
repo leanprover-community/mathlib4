@@ -35,6 +35,7 @@ For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file charac
 * [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
 * [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

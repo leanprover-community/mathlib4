@@ -18,6 +18,7 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 - `LinearMap.fixedSubmodule`: the submodule of a linear map consisting of its fixed points.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

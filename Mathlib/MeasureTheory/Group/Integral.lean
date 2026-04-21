@@ -14,6 +14,7 @@ public import Mathlib.MeasureTheory.Group.Measure
 We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

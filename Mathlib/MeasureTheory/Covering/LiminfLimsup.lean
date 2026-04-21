@@ -24,6 +24,7 @@ carrying a uniformly locally doubling measure.
   rather than closed thickenings.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

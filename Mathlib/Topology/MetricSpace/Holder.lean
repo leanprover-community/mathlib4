@@ -34,6 +34,7 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 Hölder continuity, Lipschitz continuity
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

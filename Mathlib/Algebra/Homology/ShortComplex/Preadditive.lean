@@ -16,6 +16,7 @@ In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

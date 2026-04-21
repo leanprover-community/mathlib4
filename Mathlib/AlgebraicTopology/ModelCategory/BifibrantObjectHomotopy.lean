@@ -23,6 +23,7 @@ category (up to equivalence) by inverting weak equivalences in `C`,
 `CofibrantObject C`, `FibrantObject C` or `BifibrantObject C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

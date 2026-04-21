@@ -17,6 +17,7 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ Generalize statements from `EReal` to `ENNReal` (or others). This may need addit
 Lemma about coercion from `ENNReal` to `EReal`. This needs additional lemmas about
 `ENNReal.toEReal`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

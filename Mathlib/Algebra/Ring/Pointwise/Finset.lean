@@ -19,6 +19,7 @@ This file proves properties of pointwise operations of sets in a ring.
 set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

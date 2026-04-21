@@ -29,6 +29,7 @@ the dimension of the cotangent space over the residue field being equal to `ring
   `Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

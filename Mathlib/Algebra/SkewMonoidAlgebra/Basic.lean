@@ -28,6 +28,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
   `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 
 algNormOfAlgEquiv, invariantExtension, norm, nonarchimedean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

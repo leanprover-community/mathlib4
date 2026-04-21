@@ -17,6 +17,8 @@ We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 open Coalgebra TensorProduct HopfAlgebra
 
 /-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map with

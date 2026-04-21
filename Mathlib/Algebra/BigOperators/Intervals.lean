@@ -15,6 +15,7 @@ public import Mathlib.Data.Fintype.BigOperators
 
 We prove results about big operators over intervals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

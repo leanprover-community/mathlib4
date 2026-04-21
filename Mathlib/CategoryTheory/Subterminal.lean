@@ -27,6 +27,7 @@ We also construct the subcategory of subterminal objects.
   is Cartesian closed (equivalently, a Heyting algebra).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

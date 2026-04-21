@@ -19,6 +19,7 @@ public import Mathlib.Algebra.GCDMonoid.Basic
 * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

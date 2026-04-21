@@ -41,6 +41,7 @@ not the standard one unless there is a primitive `n`th root of unity in `R`. For
 To get the standard cyclotomic polynomials, we use `unique_int_coeff_of_cycl`, with `R = ℂ`,
 to get a polynomial with integer coefficients and then we map it to `R[X]`, for any ring `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

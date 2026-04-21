@@ -15,6 +15,7 @@ public import Mathlib.Data.FunLike.Basic
 This file contains the results concerning the interaction of list big operators with ordered
 groups with zeros.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

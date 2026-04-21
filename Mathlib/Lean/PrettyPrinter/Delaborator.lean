@@ -11,6 +11,7 @@ public import Lean.PrettyPrinter.Delaborator.Basic
 /-!
 # Additions to the delaborator
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

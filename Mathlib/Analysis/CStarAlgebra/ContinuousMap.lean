@@ -14,6 +14,7 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 We place these here because, for reasons related to the import hierarchy, they cannot be placed in
 earlier files.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

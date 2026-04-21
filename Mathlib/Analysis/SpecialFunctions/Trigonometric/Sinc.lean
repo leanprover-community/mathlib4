@@ -23,6 +23,7 @@ This file contains the definition of the sinc function and some of its propertie
 * `continuous_sinc`: the sinc function is continuous.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

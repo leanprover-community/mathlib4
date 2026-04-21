@@ -25,6 +25,7 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

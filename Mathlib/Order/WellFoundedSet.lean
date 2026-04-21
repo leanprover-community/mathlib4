@@ -47,6 +47,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
 * [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

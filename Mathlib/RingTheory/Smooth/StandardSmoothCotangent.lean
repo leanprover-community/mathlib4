@@ -28,6 +28,7 @@ We also provide the corresponding instances for standard smooth algebras as coro
 
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

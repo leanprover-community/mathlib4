@@ -44,6 +44,7 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
   representation on `A` is trivial.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

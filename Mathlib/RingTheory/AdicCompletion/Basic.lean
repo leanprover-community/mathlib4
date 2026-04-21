@@ -31,6 +31,7 @@ with respect to an ideal `I`:
   Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
   `I`-adically complete.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

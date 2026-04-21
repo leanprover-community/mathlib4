@@ -33,6 +33,7 @@ inverse of an analytic open partial homeomorphism is analytic.
   power series `p` at a point, with invertible linear part, then the inverse also has a power series
   at the image point, given by `p.leftInv`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ Let `C` refer to a category with (when relevant) Grothendieck topology `J`.
 * generalize `Presheaf.isClosed_χ_app_apply_of` to only assuming `G` is separated
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

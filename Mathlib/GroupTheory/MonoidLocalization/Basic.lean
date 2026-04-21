@@ -70,6 +70,7 @@ the `LocalizationMap.mk'` induced by any localization map.
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

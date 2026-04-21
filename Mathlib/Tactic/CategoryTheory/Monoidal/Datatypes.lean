@@ -17,6 +17,7 @@ or `Mor` terms. The converted expressions are used in the coherence tactics and 
 widgets.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

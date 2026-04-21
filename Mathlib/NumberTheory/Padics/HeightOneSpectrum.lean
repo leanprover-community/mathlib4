@@ -50,6 +50,7 @@ along the lines of `IsComplete` + uniformity arises from a valuation + the valua
 equivalent. It is best to do this after `Valued` has been refactored, or at least after
 `adicCompletion` has `IsValuativeTopology` instance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,7 @@ Some basic results on lattice operations on ideals: `⊥`, `⊤`, `⊔`, `⊓`.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

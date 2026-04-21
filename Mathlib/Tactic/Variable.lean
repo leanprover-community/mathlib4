@@ -21,6 +21,7 @@ An inherent limitation with this command is that variables are recorded in the s
 *syntax*. This means that `variable?` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

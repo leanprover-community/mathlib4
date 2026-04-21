@@ -57,6 +57,7 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 `IsZariskiLocalAtTarget P`, `IsZariskiLocalAtSource P`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

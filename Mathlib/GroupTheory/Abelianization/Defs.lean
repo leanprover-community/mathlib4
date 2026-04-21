@@ -22,6 +22,7 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 * `MulEquiv.abelianizationCongr`: Equivalent groups have equivalent abelianizations
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

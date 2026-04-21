@@ -35,6 +35,7 @@ This file defines partial isomorphisms between first-order structures.
   linear orders, a special case of this phenomenon in the case where `L = Language.order`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

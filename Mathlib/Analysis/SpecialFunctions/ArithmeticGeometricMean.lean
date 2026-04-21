@@ -22,6 +22,7 @@ This file defines the AGM in the `NNReal` namespace and proves some of its basic
 
 * https://en.wikipedia.org/wiki/Arithmetic–geometric_mean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

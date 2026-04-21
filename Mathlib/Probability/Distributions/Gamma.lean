@@ -21,6 +21,7 @@ Define the gamma measure over the reals.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -39,6 +39,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
   components of a Noetherian space is finite.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

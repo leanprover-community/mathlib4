@@ -34,6 +34,7 @@ difference between the two is that the latter is more flexible with respect to n
 equalities.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

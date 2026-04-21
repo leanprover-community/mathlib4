@@ -29,6 +29,7 @@ Restate the theorem using the upper density of a set of naturals, once we have i
 Use the ergodic theorem to deduce the refinement of the Poincaré recurrence theorem proved by
 Bergelson.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -22,6 +22,7 @@ corresponding structure on its coefficients, defined in `Mathlib/RingTheory/Coal
 * `LaurentPolynomial.instCoalgebra`: the `R`-coalgebra structure on the Laurent polynomials
   `A[T;T⁻¹]` when `A` is an `R`-coalgebra.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

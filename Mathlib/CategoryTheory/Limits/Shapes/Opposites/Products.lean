@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 We construct products and coproducts in the opposite categories.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

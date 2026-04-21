@@ -15,6 +15,7 @@ public import Mathlib.Util.MemoFix
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-01-26")
 

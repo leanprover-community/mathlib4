@@ -93,6 +93,7 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
 elliptic curve, weierstrass equation, normal form
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

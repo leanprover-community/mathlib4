@@ -46,6 +46,7 @@ This file defines notions of spheres being tangent to affine subspaces and other
 * `EuclideanGeometry.Sphere.IsIntTangent`: the property of two spheres being internally tangent.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

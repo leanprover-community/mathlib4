@@ -15,6 +15,7 @@ public import Lean.Meta.Tactic.Simp
 This file defines a wrapper for `Simp.Discharger`s as regular tactics, that allows them to be
 used via the tactic frontend of `simp` via `simp (discharger := wrapSimpDischarger my_discharger)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

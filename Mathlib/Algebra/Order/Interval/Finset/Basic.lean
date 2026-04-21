@@ -14,6 +14,7 @@ public import Mathlib.Order.Interval.Finset.Defs
 
 This file provides results about the interaction of algebra with `Finset.Ixx`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

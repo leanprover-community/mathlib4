@@ -30,6 +30,7 @@ convex open neighborhoods of zero.
 * `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

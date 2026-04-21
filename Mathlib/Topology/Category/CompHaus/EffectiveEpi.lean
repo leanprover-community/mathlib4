@@ -26,6 +26,7 @@ equivalent.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

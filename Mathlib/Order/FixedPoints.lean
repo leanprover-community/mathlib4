@@ -29,6 +29,7 @@ This file sets up the basic theory of fixed points of a monotone function in a c
 
 fixed point, complete lattice, monotone function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

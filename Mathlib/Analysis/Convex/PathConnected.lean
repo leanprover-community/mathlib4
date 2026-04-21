@@ -19,6 +19,7 @@ We also prove basic properties of this construction,
 then use it to show that a nonempty convex set is path connected.
 In particular, a topological vector space over `ℝ` is path connected.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

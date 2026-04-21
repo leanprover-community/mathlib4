@@ -21,6 +21,7 @@ Some useful results that relate the topology of the normed field to the discrete
 * `discreteTopology_of_bddAbove_range_norm`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

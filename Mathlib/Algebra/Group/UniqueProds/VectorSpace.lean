@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 /-!
 # A `ℚ`-vector space has `TwoUniqueSums`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

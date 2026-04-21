@@ -29,6 +29,7 @@ that `P` descends along `P'` from a codescent property of ring homomorphisms.
   `HasAffineProperty.descendsAlong_of_affineAnd` useful.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

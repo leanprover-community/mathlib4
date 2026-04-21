@@ -29,6 +29,7 @@ of continuous affine linear functions. We follow the proof in
   linear functions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 /-!
 # Lemmas about the support of a finitely supported function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

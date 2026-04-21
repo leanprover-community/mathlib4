@@ -87,6 +87,7 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

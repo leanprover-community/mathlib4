@@ -25,6 +25,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `RingHom.eqLocus` is the equalizer
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

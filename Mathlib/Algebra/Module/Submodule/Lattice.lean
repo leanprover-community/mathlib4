@@ -29,6 +29,7 @@ This structure should match the `AddSubmonoid.CompleteLattice` structure, and we
 to unify the APIs where possible.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

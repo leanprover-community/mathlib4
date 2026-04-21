@@ -86,6 +86,7 @@ for the inverse of `e`).
 
 * `Matroid.ofIsBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

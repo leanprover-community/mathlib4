@@ -16,6 +16,7 @@ We provide various API and isomorphisms considering the diagonal object `Δ_{Y/X
 of a morphism `f : X ⟶ Y`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ functions is also given in `ae_eq_of_integral_contDiff_smul_eq`.
 These are deduced from the same results on finite-dimensional real manifolds, given respectively
 as `ae_eq_zero_of_integral_contMDiff_smul_eq_zero` and `ae_eq_of_integral_contMDiff_smul_eq`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

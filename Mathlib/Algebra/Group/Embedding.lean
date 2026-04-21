@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.Defs
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ We also provide various adjunctions:
 ## Future projects
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

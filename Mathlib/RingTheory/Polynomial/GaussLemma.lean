@@ -36,6 +36,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
   Two primitive polynomials over `ℤ` divide each other if they do in `ℚ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

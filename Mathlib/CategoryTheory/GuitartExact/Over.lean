@@ -26,6 +26,7 @@ We show that this square is Guitart exact if for all `Y : C`, the binary product
 exists and `F` commutes with it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

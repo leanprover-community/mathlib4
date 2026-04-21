@@ -38,6 +38,7 @@ these definitions are equivalent.
 The definitions that use `MeasureTheory.Measure.map`
 imply that the left (resp., right) multiplication is `AEMeasurable`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

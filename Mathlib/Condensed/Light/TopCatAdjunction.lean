@@ -19,6 +19,7 @@ is bijective (but not in general an isomorphism) and conclude that the right adj
 The counit is an isomorphism for sequential spaces, and we conclude that the functor
 `topCatToLightCondSet` is fully faithful when restricted to sequential spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

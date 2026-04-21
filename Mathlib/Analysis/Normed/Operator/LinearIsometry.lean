@@ -27,6 +27,7 @@ We also prove some trivial lemmas and provide convenience constructors.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

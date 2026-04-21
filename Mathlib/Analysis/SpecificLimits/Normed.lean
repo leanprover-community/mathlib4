@@ -25,6 +25,7 @@ public import Mathlib.Tactic.NoncommRing
 This file contains important specific limit computations in (semi-)normed groups/rings/spaces, as
 well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

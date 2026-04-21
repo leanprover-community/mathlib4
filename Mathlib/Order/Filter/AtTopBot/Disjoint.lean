@@ -11,6 +11,7 @@ public import Mathlib.Order.Interval.Set.Disjoint
 /-!
 # Disjointness of `Filter.atTop` and `Filter.atBot`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

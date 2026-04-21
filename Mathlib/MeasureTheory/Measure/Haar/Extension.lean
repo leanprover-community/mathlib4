@@ -28,6 +28,7 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
   then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

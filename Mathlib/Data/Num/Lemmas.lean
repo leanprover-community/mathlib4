@@ -17,6 +17,7 @@ import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 /-!
 # Properties of the binary representation of integers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

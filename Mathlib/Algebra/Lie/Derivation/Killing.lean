@@ -24,6 +24,7 @@ This file establishes that all derivations of finite-dimensional Killing Lie alg
 - `LieDerivation.Killing.exists_eq_ad`: in a finite-dimensional Lie algebra with non-degenerate
   Killing form, any derivation is an inner derivation.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

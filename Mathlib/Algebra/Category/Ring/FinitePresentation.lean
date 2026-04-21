@@ -20,6 +20,7 @@ In this file, we show that finitely presented algebras are finitely presentable 
 i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,6 +18,7 @@ This file defines `Frm`, the category of frames.
 
 * [nLab, *Frm*](https://ncatlab.org/nlab/show/Frm)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

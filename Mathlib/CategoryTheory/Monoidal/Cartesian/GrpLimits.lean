@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 
 We show that `Grp C` has limits.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

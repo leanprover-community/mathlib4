@@ -18,6 +18,7 @@ we prove that the number of `false`s plus the number of `true` equals the length
 we prove that in a list with alternating `true`s and `false`s, the number of `true`s differs from
 the number of `false`s by at most one. We provide several versions of these statements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

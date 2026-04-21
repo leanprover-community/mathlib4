@@ -16,6 +16,7 @@ We show that two functions `f` and `g : ℕ → ℂ` whose L-series agree and bo
 must agree on all nonzero arguments. See `LSeries_eq_iff_of_abscissaOfAbsConv_lt_top`
 and `LSeries_injOn`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

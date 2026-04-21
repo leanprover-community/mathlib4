@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.OreLocalization.Basic
 # Localizations of commutative monoids with zeroes
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.Topology.Sequences
 
 normed group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

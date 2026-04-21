@@ -30,6 +30,7 @@ Note `Zero` has already been defined in core Lean.
 - `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

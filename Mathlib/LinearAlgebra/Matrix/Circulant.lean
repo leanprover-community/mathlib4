@@ -32,6 +32,7 @@ Namely, the index type of the circulant matrices in discussion is `Fin n`.
 
 circulant, matrix
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

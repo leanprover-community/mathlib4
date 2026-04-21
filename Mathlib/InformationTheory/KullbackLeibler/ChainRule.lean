@@ -77,6 +77,7 @@ Add a version of the chain rule for the integral form of the contional KL diverg
 `μ[fun x ↦ klDiv (κ x) (η x)]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

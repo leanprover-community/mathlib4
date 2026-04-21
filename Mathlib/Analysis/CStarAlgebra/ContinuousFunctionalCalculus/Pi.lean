@@ -20,6 +20,7 @@ This file contains results about the continuous functional calculus on (indexed)
 + `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -60,6 +60,7 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

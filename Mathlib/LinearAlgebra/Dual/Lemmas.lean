@@ -71,6 +71,7 @@ This file contains basic results on dual vector spaces.
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

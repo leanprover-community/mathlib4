@@ -23,6 +23,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

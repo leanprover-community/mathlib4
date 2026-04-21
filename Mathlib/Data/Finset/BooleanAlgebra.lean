@@ -20,6 +20,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

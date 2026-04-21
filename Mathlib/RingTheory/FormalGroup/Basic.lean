@@ -34,6 +34,7 @@ of the formal group law `F(X,Y)`.
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

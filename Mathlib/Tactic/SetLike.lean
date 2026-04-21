@@ -16,6 +16,7 @@ This module defines the `SetLike` and `SetLike!` Aesop rule sets.
 Aesop rule sets only become visible once the file in which they're declared is imported,
 so we must put this declaration into its own file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

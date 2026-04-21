@@ -30,6 +30,7 @@ Definition of the integers mod n, and the field structure on the integers mod p.
   This is a ring hom if the ring has characteristic dividing `n`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

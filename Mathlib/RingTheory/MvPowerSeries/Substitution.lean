@@ -58,6 +58,7 @@ as it is discrete.
   of a legit substitution is nilpotent; prove that the converse holds when
   the kernel of `algebraMap R S` is a nil ideal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

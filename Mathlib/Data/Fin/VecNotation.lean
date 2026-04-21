@@ -35,6 +35,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

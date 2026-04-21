@@ -25,6 +25,7 @@ triangle unnecessarily.
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

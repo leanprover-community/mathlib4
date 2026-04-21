@@ -27,6 +27,7 @@ mathlib.
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

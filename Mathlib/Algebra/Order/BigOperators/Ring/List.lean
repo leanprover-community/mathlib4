@@ -13,6 +13,7 @@ public import Batteries.Data.List.Lemmas
 
 This file contains the results concerning the interaction of list big operators with ordered rings.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

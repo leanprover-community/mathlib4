@@ -31,6 +31,7 @@ We provide the glue to go back and forth to the usual `IsLimit` API for pullback
 `IsPullback (pullback.fst f g) (pullback.snd f g) f g`
 for the usual `pullback f g` provided by the `HasLimit` API.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ and `forgetToCat : Grpd ⥤ Cat`.
 Though `Grpd` is not a concrete category, we use `Bundled` to define
 its carrier type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

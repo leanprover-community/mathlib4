@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Monoidal.Mon_
 /-!
 # The category of commutative monoids in a braided monoidal category.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

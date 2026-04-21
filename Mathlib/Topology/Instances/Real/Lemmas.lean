@@ -16,6 +16,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 /-!
 # Topological properties of ℝ
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

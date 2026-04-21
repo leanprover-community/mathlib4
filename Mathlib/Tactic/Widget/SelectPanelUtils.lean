@@ -18,6 +18,7 @@ generating tactic calls based on selected sub-expressions in the main goal.
 
 There are also some minor helper functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

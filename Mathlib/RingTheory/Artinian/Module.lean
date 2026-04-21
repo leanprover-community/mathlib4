@@ -54,6 +54,7 @@ itself, or simply Artinian if it is both left and right Artinian.
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

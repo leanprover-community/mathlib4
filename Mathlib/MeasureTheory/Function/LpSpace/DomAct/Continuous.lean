@@ -32,6 +32,7 @@ and `μ` is the Haar measure.
 
 measure theory, group action, domain action, continuous action, Lp space
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

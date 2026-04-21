@@ -20,6 +20,7 @@ The mathlib notation `≃ₕ` stands for a homotopy equivalence, `≃ₜ` stands
 and `≃ₘ⟮𝓡 n, 𝓡 n⟯` stands for a diffeomorphism, where `𝓡 n` is the `n`-dimensional Euclidean
 space viewed as a model space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

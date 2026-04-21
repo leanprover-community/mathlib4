@@ -37,6 +37,7 @@ Approximation*][MR3156076] for a detailed discussion.
 - Discuss the logarithmic counting function for rational functions, add a forward reference to the
   upcoming converse, formulated in terms of the Nevanlinna height.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

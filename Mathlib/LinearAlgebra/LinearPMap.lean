@@ -34,6 +34,7 @@ is bounded above.
 They are also the basis for the theory of unbounded operators.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

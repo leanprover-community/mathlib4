@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 /-!
 # Lemmas about quotients in characteristic zero
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

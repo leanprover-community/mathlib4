@@ -18,6 +18,7 @@ We also define the additive variant (`AddIrreducible`).
 In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `Prime`
 (see `irreducible_iff_prime`), however this is not true in general.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

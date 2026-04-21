@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 # Units in semirings and rings
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

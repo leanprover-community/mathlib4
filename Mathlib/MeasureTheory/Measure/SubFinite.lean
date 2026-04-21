@@ -28,6 +28,7 @@ not imported in the other file: the Hahn decomposition of finite measures and me
   `μ.withDensity (f - g) = μ.withDensity f - μ.withDensity g`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

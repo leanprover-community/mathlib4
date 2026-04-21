@@ -15,6 +15,7 @@ A monotone surjective function sends any interval in the domain onto the interva
 endpoints in the range.  This is expressed in this file using `Set.surjOn`, and provided for all
 permutations of interval endpoints.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

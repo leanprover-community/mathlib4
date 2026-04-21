@@ -16,6 +16,7 @@ This file provides two equivalences for linearly ordered fintypes:
 * `finSumEquivOfFinset`: Equivalence between `α` and `Fin m ⊕ Fin n` where `m` and `n` are
   respectively the cardinalities of some `Finset α` and its complement.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

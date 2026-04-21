@@ -21,6 +21,7 @@ characteristic zero. Some more cases are given as a `def`, to be included only
 when needed. To construct instances for concrete numbers,
 `invertibleOfNonzero` is a useful definition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

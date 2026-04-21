@@ -24,6 +24,7 @@ A non-example is `𝔸ₖ`, because the topology on ideles is not the induced to
 This condition is necessary and sufficient for `U(R)` to be an open subspace of `X(R)`
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

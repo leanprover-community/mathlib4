@@ -27,6 +27,7 @@ You can use these to produce instances for specific `DFunLike` types.
 (Although there might be options for `Fintype` instances with better definitional behaviour.)
 They can't be instances themselves since they can cause loops.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

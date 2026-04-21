@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Functor.RegularEpi
 # The category of simplicial sets is a regular epi category
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

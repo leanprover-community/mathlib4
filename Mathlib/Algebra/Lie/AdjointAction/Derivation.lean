@@ -29,6 +29,7 @@ This file defines the *adjoint action* of a Lie algebra on itself, and establish
 - `LieDerivation.ad_isIdealMorphism`: the range of the adjoint action is an ideal of the
   derivations.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

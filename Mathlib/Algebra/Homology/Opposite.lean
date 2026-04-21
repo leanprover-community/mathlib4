@@ -28,6 +28,7 @@ It is convenient to define both `op` and `opSymm`; this is because given a compl
 ## Tags
 opposite, chain complex, cochain complex, homology, cohomology, homological complex
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

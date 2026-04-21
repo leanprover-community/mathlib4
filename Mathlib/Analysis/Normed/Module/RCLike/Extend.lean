@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 
 This file shows that `StrongDual.extendRCLike` preserves the norm of the functional.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,6 +24,7 @@ they are equivalent to `K.IsSupported e'` or `K.IsStrictlySupported e'` for a
 complementary embedding `e'`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

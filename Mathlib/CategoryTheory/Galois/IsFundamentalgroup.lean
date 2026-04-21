@@ -47,6 +47,7 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
   `G` being a `T2Space`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

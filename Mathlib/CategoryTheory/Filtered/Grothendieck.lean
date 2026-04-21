@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Grothendieck
 We show that if `F : C ⥤ Cat` is such that `C` is filtered and `F.obj c` is filtered for all
 `c : C`, then `Grothendieck F` is filtered.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

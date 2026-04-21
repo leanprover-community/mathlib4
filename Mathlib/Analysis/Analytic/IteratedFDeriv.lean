@@ -45,6 +45,7 @@ is not complete). This makes it possible to avoid all completeness assumptions i
 statements. When needed, we give versions of some statements assuming completeness and dropping
 analyticity, for ease of use.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

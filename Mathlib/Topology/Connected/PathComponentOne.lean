@@ -14,6 +14,7 @@ This file defines the path component of the identity is an `OpenNormalSubgroup` 
 topological group is locally path connected. We place this in a separate file to avoid importing
 additional algebra into the topology hierarchy.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

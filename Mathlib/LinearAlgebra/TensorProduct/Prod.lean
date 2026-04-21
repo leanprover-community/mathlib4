@@ -23,6 +23,7 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

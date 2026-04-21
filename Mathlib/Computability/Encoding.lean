@@ -27,6 +27,7 @@ It also contains several examples:
 - `finEncodingList`     : an encoding of `List α` in the alphabet `α`.
 - `finEncodingPair`     : an encoding of `α × β` from encodings of `α` and `β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

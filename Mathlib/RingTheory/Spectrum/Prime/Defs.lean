@@ -22,6 +22,7 @@ which is constructed in `AlgebraicGeometry.StructureSheaf`.)
 * `PrimeSpectrum R`: The prime spectrum of a commutative (semi)ring `R`,
   i.e., the set of all prime ideals of `R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

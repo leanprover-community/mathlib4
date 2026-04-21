@@ -19,6 +19,7 @@ at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` 
 at `l`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

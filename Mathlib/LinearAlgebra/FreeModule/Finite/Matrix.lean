@@ -20,6 +20,7 @@ We provide some instances for finite and free modules involving matrices.
 * `Module.Finite.linearMap` : if `M` and `N` are finite and free, then `M →ₗ[R] N`
   is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

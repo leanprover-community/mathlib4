@@ -19,6 +19,7 @@ import Mathlib.Tactic.Attr.Register
 This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ This module defines the `CategoryTheory` Aesop rule set which is used by the
 `aesop_cat` tactic. Aesop rule sets only become visible once the file in which
 they're declared is imported, so we must put this declaration into its own file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

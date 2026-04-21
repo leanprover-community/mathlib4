@@ -39,6 +39,7 @@ you must add local instances with definitions like `ModelTheory.Field.fieldOfMod
 `FirstOrder.Ring.compatibleRingOfModelField K`.
 (in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

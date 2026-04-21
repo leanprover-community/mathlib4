@@ -31,6 +31,7 @@ descriptive name.
 Erdős-Rényi graph, Erdős-Renyi graph, Erdös-Rényi graph, Erdös-Renyi graph, Erdos-Rényi graph,
 Erdos-Renyi graph
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

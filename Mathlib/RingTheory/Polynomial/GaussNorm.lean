@@ -39,6 +39,7 @@ nonnegative function with `v 0 = 0` and `c ≥ 0`.
 * `Polynomial.gaussNorm_isAbsoluteValue`: if `v` is a nonarchimedean absolute value, then the
   Gauss norm is an absolute value.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 variable {R F : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : ℝ)

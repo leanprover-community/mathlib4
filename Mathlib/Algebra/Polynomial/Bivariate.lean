@@ -19,6 +19,7 @@ It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomi
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
 the abbreviation `CC` to view a constant in the base ring `R` as a bivariate polynomial.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

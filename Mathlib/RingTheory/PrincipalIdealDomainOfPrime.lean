@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 - `IsPrincipalIdealRing.of_prime`: a ring where all prime ideals are principal is a principal ideal
   ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

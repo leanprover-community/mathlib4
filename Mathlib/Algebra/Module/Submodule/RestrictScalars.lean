@@ -21,6 +21,7 @@ this restriction of scalars for submodules.
 * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

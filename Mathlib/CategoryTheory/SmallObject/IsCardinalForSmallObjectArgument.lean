@@ -56,6 +56,7 @@ pushouts of coproducts of morphisms in `I`.
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ A ring is then formally real if `¬ IsSumNonzeroSq 0`.
 - `IsFormallyReal`: typeclass stating that a ring is formally real.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

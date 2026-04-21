@@ -20,6 +20,7 @@ from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor compositi
 
 TODO: Switch to using the `⇒` arrow.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

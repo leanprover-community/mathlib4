@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 Basic properties the maximal spectrum of a ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

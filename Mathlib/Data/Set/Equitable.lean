@@ -21,6 +21,7 @@ useful when the codomain of `f` is `ℕ` or `ℤ` (or more generally a successor
 `ℕ` can be replaced by any `SuccOrder` + `ConditionallyCompleteMonoid`, but we don't have the
 latter yet.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

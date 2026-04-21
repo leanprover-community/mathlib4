@@ -8,6 +8,7 @@ public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-! # Finite-rank vector bundles -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

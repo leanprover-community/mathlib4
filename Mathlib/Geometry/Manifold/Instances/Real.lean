@@ -43,6 +43,7 @@ model with corners cannot be implicit, see the discussion in
 The manifold structure on the interval `[x, y] = Icc x y` requires the assumption `x < y` as a
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

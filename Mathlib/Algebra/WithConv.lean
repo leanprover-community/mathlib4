@@ -18,6 +18,7 @@ This is to ensure that we only have one multiplication, one unit, and one star.
 This is given for any type `A` so that we can have `WithConv (A →ₗ[R] B)`,
 `WithConv (A →L[R] B)`, `WithConv (Matrix m n R)`, etc.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

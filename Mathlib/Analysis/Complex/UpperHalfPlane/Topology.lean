@@ -19,6 +19,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 In this file we introduce a `TopologicalSpace` structure on the upper half plane and provide
 various instances.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

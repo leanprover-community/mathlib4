@@ -17,6 +17,7 @@ public import Mathlib.Tactic.Translate.ToAdditive
 * `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
 * `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

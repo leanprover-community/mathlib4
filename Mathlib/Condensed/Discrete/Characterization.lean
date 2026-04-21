@@ -30,6 +30,7 @@ The analogues for light condensed sets, condensed `R`-modules over any ring, and
 condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ public import Mathlib.Data.Set.UnionLift
 * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

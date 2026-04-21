@@ -31,6 +31,7 @@ and we show that, if `adj` is compatible with `CommShift` structures
 on `F` and `G`, then `PullbackShift.adjunction adj φ` is also compatible with the pulled back
 `CommShift` structures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

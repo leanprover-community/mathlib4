@@ -44,6 +44,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

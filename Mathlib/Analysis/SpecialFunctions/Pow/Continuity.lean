@@ -13,6 +13,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

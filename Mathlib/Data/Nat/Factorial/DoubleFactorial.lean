@@ -20,6 +20,7 @@ This file defines the double factorial,
 
 * `Nat.doubleFactorial`: The double factorial.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

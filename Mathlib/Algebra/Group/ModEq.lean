@@ -32,6 +32,7 @@ and it is given with the use case of natural numbers in mind.
 - Delete `Nat.ModEq` and `Int.ModEq` in favour of `AddCommGroup.ModEq`.
 - Relate to `SModEq`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

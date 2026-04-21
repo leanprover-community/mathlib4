@@ -61,6 +61,7 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 + Versions of all of the above for non-unital algebras, and versions over `ℝ≥0` as well.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

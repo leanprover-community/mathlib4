@@ -50,6 +50,7 @@ Delone sets appear in discrete geometry, crystallography, aperiodic order, and t
   of `∈` notation while ensuring radii remain bundled, computationally accessible, and tracked by
   extensionality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

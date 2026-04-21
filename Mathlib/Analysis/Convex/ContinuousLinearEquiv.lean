@@ -14,6 +14,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 In this file we prove that the (pre)image of a strict convex set
 under a continuous linear equivalence is a strict convex set.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

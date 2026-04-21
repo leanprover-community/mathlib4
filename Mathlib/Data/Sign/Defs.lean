@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Group.Int.Defs
 
 This file defines the type of signs $\{-1, 0, 1\}$ and its basic arithmetic instances.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

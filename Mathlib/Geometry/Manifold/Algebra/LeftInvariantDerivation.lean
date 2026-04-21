@@ -27,6 +27,7 @@ fields, this identification is not always true, though, so the derivations point
 work in these settings. The left-invariant vector fields should
 therefore be favored to construct a theory of Lie groups in suitable generality.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -42,6 +42,7 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
 - `GenContFract.of_correctness_of_terminatedAt` shows the equality
   `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

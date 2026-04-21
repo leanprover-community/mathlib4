@@ -63,6 +63,7 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open UpperHalfPlane hiding I
 

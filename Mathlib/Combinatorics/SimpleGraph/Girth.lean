@@ -20,6 +20,7 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
   non-zero.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

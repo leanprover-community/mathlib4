@@ -29,6 +29,7 @@ is finite, then evaluation of functions commutes with finprod, and the helper le
 There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` is constant one, while
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

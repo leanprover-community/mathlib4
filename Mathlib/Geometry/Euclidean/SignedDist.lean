@@ -27,6 +27,7 @@ reference point.
 * https://en.wikipedia.org/wiki/Trilinear_coordinates
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

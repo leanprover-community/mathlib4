@@ -33,6 +33,7 @@ generalization of the lemmas on closures.
 
 closure, entropy, subset, union
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

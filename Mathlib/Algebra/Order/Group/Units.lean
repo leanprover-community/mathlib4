@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Units
 /-!
 # The units of an ordered commutative monoid form an ordered commutative group
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -23,6 +23,7 @@ center to itself.
 Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality, see
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ Given an `A`-module `M`, we provide its tautological presentation:
 * the relations are `[m₁] + [m₂] - [m₁ + m₂] = 0` and `a • [m] - [a • m] = 0`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

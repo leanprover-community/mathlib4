@@ -21,6 +21,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 This file proves that the Cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

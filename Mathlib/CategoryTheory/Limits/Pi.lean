@@ -17,6 +17,7 @@ Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
 3. if we have limits for each of `F ⋙ Pi.eval C i`, we can produce a
    `HasLimit F` instance
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

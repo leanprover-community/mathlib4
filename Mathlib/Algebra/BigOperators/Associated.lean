@@ -16,6 +16,7 @@ This file contains some theorems relating definitions in `Algebra.Associated`
 and products of multisets, finsets, and finsupps.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

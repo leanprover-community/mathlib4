@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Normed.Affine.Convex
 This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

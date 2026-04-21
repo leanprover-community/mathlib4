@@ -27,6 +27,7 @@ following [barnes1967].
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -12,6 +12,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 # Measurability of arctan
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

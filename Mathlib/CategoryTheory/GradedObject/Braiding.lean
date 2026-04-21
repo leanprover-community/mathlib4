@@ -19,6 +19,7 @@ When `C` is a braided category and suitable assumptions are made, we obtain the 
 structure on `GradedObject I C` and show that it is symmetric if `C` is symmetric.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

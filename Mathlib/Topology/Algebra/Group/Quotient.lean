@@ -16,6 +16,7 @@ public import Mathlib.Topology.Maps.OpenQuotient
 In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

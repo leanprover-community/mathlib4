@@ -26,6 +26,7 @@ Related files are:
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

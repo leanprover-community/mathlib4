@@ -20,6 +20,7 @@ is preserved by `F.obj c₁.pt` and the cokernel of `f₂` is preserved by
 `F.flip.obj X₁` and `F.flip.obj Y₁`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

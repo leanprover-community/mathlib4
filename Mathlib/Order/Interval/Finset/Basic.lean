@@ -34,6 +34,7 @@ Complete the API. See
 https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

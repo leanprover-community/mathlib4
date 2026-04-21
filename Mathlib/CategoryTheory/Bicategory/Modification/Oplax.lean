@@ -44,6 +44,7 @@ Given two oplax functors `F` and `G`, we define:
   to access it.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,6 +29,7 @@ This file proves analysis theorems for Pochhammer polynomials.
 * `descPochhammer_eval_div_factorial_le_sum_choose` is a special case of **Jensen's inequality**
   for `Nat.choose`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

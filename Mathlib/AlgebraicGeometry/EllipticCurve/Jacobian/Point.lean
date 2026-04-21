@@ -60,6 +60,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Point.lean`.
 
 elliptic curve, Jacobian, point, group law
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

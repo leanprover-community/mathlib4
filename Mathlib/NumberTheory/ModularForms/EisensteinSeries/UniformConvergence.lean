@@ -25,6 +25,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 `(c, d) ∈ ℤ × ℤ` is convergent for `2 < k`. This is proved by decomposing `ℤ × ℤ` using the
 `Finset.box` lemmas.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

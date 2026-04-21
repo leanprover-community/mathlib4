@@ -16,6 +16,7 @@ a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ TODO:
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open UpperHalfPlane hiding I
 open Real Complex

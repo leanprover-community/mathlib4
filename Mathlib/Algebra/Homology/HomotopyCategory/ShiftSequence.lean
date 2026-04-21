@@ -21,6 +21,7 @@ when `n + a = a'`. This is summarized by instances
 and `HomotopyCategory` namespaces.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

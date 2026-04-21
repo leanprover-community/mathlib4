@@ -23,6 +23,7 @@ lifted to a ring homomorphism `R →+* S`.
   Together with `mk_liftRingHom_apply` and `eq_liftRingHom`, it gives the universal property
   of `R` being `I`-adically complete.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

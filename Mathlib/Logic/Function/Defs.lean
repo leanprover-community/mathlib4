@@ -12,6 +12,7 @@ import Mathlib.Tactic.Attr.Register
 /-!
 # General operations on functions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

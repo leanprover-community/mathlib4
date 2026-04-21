@@ -19,6 +19,7 @@ C⋆-algebra that involve the norm.
 * `CFC.norm_posPart_le` and `CFC.norm_negPart_le`: state that `‖a⁺‖ ≤ ‖a‖` and `‖a⁻‖ ≤ ‖a‖`
   respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

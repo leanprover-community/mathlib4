@@ -36,6 +36,7 @@ fundamentally difficult.
 * `field_simp_discharge`: tactic syntax for the discharger (most useful for testing/debugging)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

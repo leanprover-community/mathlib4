@@ -25,6 +25,7 @@ redefined using morphisms in the derived category, and then it will be possible 
 compute `Ext` using both projective or injective resolutions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

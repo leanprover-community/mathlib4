@@ -18,6 +18,7 @@ public import Mathlib.Logic.Pairwise
 This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` that require more
 imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

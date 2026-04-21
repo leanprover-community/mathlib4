@@ -24,6 +24,7 @@ In this file we define the following power series:
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

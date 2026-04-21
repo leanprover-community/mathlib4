@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

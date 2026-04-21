@@ -21,6 +21,7 @@ Combinations in a type are finite subsets of given cardinality.
   of this set is equal to `(Nat.card α).choose n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ where subtraction is not given by `a - b = a + (-b)`.
 
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

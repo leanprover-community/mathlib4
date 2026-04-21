@@ -13,6 +13,7 @@ public import Mathlib.Geometry.Manifold.Instances.Sphere
 # One-point compactification of Euclidean space is homeomorphic to the sphere.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

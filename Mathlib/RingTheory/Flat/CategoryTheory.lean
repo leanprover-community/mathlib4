@@ -29,6 +29,7 @@ In this file we prove that tensoring with a flat module is an exact functor.
 - Relate flatness with `Tor`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

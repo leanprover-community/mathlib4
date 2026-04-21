@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if and only if
 `a` and `p` are not coprime.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

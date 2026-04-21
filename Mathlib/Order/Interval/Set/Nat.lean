@@ -14,6 +14,7 @@ import Mathlib.Order.Interval.Finset.Nat
 
 This file calculates the cardinality of intervals of natural numbers as sets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -60,6 +60,7 @@ If the space is also an ordered additive group with an order closed topology and
 - `setToFun_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f`
 - `setToFun_mono (hfg : f ≤ᵐ[μ] g) : setToFun μ T hT f ≤ setToFun μ T hT g`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

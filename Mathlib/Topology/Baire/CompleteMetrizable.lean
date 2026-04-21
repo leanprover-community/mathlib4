@@ -14,6 +14,7 @@ public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 In this file we prove that a completely pseudometrizable topological space is a Baire space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

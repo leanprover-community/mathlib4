@@ -13,6 +13,7 @@ public import Mathlib.Tactic.ArithMult.Init
 We define the `arith_mult` tactic using aesop
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

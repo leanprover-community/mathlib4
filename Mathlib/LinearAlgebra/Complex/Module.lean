@@ -44,6 +44,7 @@ element of a `StarModule` over `ℂ`.
 * `ℜ` and `ℑ` for the `realPart` and `imaginaryPart`, respectively, in the locale
   `ComplexStarModule`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

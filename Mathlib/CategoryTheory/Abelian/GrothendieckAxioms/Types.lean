@@ -14,6 +14,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 This is of course just the well-known fact that filtered colimits commute with finite limits in
 the category of types.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ We prove two extension theorems:
   for all `x`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

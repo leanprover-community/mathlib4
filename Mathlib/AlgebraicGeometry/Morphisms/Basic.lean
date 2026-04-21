@@ -96,6 +96,7 @@ The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined
 for the respective local property of morphism properties defined generally for categories equipped
 with a `Precoverage`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

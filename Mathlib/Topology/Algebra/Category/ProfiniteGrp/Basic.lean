@@ -29,6 +29,7 @@ disconnected.
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

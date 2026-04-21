@@ -23,6 +23,7 @@ Any non-unital star subalgebra of a non-unital topological star algebra is itsel
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,8 @@ and its faces (numbered from `0` to `2`) are respectively `mk₁ g`,
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 namespace CategoryTheory
 
 namespace ComposableArrows

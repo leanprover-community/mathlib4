@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 Here we prove general results of the form "the Mellin transform of a power series in exp (-t) is
 a Dirichlet series".
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

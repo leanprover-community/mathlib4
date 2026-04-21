@@ -21,6 +21,7 @@ That is, it defines the functor `CondensedMod.LocallyConstant.functor` which tak
 the condensed `R`-modules given by locally constant maps to it, and proves that this functor is
 naturally isomorphic to the constant sheaf functor (and the analogues for light condensed modules).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

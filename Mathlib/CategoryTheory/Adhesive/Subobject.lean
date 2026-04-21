@@ -17,6 +17,7 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 - Subobjects in adhesive categories have binary coproducts
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

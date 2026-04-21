@@ -47,6 +47,7 @@ This requires:
 
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

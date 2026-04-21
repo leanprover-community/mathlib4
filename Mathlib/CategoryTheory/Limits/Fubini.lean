@@ -35,6 +35,7 @@ in terms of the uncurried functor.
 
 All statements have their counterpart for colimits.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

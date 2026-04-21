@@ -22,6 +22,7 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castAddMonoidHom`: `cast` bundled as an `AddMonoidHom`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

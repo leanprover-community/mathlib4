@@ -12,6 +12,7 @@ public import Mathlib.Topology.Clopen
 /-!
 # Continuity of indicator functions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

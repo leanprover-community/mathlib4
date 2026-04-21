@@ -37,6 +37,7 @@ TODO:
   inside a `namespace X`, it would be better to remove the `X` prefix from them;
 * preserve formatting of existing command?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

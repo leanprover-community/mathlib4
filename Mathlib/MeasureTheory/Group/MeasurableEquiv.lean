@@ -35,6 +35,7 @@ We also deduce that the corresponding maps are measurable embeddings.
 
 measurable, equivalence, group action
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

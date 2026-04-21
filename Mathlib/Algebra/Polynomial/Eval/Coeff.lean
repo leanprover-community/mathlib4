@@ -13,6 +13,7 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.coeff`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

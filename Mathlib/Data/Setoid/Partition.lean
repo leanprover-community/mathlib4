@@ -33,6 +33,7 @@ usable.
 
 setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalence class
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

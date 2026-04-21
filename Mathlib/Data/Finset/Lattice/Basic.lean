@@ -32,6 +32,7 @@ All the theorems and instances expect `DecidableEq` instance for `α`
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

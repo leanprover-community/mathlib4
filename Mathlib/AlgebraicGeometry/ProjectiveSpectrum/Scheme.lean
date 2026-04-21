@@ -90,6 +90,7 @@ Finally,
 ## Reference
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

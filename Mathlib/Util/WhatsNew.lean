@@ -16,6 +16,7 @@ whatsnew in
 theorem foo : 42 = 6 * 7 := rfl
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

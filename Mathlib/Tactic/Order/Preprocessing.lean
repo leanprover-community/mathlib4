@@ -14,6 +14,7 @@ public meta import Mathlib.Util.AtomM
 In this file we implement the preprocessing procedure for the `order` tactic.
 See `Mathlib/Tactic/Order.lean` for details of preprocessing.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

@@ -20,6 +20,7 @@ by the trivial valuation which sends all non-zero elements to `1`.
 A trivial valuative relation is equivalent to the value group being isomorphic to `WithZero Unit`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

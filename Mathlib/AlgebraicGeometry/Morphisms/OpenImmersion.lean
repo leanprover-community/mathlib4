@@ -18,6 +18,7 @@ Most of the theories are developed in `AlgebraicGeometry/OpenImmersion`, and we 
 remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

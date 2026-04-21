@@ -16,6 +16,7 @@ In this file we define `Ideal.closure` to be the topological closure of an ideal
 ring. We also define a `TopologicalSpace` structure on the quotient of a topological ring by an
 ideal and prove that the quotient is a topological ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 
 /-! # Zero-related `•` instances on group-like morphisms -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -25,6 +25,7 @@ If `f : Module.Dual R V` and `Algebra R A`, then
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

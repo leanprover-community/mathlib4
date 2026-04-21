@@ -39,6 +39,7 @@ a function from `M` to its tangent bundle through a coercion, as in:
 `MDifferentiableWithinAt I I.tangent (fun y ↦ (V y : TangentBundle I M)) s x`
 (or `MDiffAt[s] (T% V) x`, for short).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

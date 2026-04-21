@@ -30,6 +30,7 @@ Additionally, we define such constructions as the (forward) orbit, a
 semiconjugacy between flows, a factor of a flow, the restriction of a
 flow onto an invariant subset, and the time-reversal of a flow by a group.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Lean.Meta.Coe
 
 Likely these already exist somewhere. Pointers welcome.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

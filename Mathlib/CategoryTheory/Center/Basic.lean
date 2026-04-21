@@ -18,6 +18,7 @@ type of endomorphisms of the identity functor of `C`.
 * https://ncatlab.org/nlab/show/center+of+a+category
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe v u

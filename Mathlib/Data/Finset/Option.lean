@@ -25,6 +25,7 @@ Then we prove some basic lemmas about these definitions.
 
 finset, option
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

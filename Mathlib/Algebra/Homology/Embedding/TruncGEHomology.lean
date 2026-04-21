@@ -21,6 +21,7 @@ quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 `K.truncGE e` is exact in degrees that are not in the image of `e.f`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

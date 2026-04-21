@@ -22,6 +22,7 @@ vertices to not be distance 1 apart as [hong2014] does.
 * `UnitDistEmbedding.copy`, `UnitDistEmbedding.embed`, `UnitDistEmbedding.iso`: transfer a
   unit-distance embedding down a `Copy`, graph embedding or graph isomorphism respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

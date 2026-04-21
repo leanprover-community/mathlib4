@@ -42,6 +42,7 @@ theorems.
   L¹ to `g`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

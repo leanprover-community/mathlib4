@@ -33,6 +33,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
   `f` is constant.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

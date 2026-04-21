@@ -52,6 +52,7 @@ We use only the definition of the topological entropy using covers; the simplest
 ## Tags
 entropy, semiconjugacy
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

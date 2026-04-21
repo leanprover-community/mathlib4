@@ -30,6 +30,7 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
   with respect to `ν`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public import Mathlib.Data.Finset.Powerset
 In this file we prove theorems about products and sums over a `Finset.powerset`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

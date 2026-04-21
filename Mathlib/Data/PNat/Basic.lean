@@ -18,6 +18,7 @@ This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers tha
 It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

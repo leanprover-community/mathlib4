@@ -30,6 +30,7 @@ TODO: Show that the character is continuous.
   depend on the measure chosen is `modularCharacterFun_eq_haarScalarFactor`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacterFun`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

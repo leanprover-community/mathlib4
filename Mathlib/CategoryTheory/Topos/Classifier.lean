@@ -1,3 +1,5 @@
 module -- shake: keep-all
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
+
+set_option backward.defeqAttrib.useBackward true
 deprecated_module (since := "2026-03-03")

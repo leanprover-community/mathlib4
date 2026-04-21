@@ -42,6 +42,7 @@ independent. The fact that it spans is proved directly in
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

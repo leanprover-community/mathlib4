@@ -14,6 +14,7 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 This file proves more lemmas about the `NoZeroSMulDivisors` class, which is deprecated in favor of
 `Module.IsTorsionFree`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

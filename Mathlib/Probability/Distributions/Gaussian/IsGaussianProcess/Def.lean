@@ -21,6 +21,7 @@ distributions are Gaussian.
 
 Gaussian process
 -/
+set_option backward.defeqAttrib.useBackward true
 
 open MeasureTheory
 

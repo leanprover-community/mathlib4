@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

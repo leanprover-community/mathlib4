@@ -25,6 +25,7 @@ These constructions are not made instances in order to avoid instance loops,
 you should bring them as local instances if you intend to use them.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

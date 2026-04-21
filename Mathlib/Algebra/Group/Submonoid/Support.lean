@@ -27,6 +27,7 @@ The names for these concepts are taken from the theory of convex cones.
 * `AddSubmonoid.IsSpanning`: typeclass for submonoids generating the whole group.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

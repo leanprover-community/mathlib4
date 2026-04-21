@@ -24,6 +24,7 @@ keep the basic file of definitions as short as possible.
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

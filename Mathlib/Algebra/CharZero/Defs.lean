@@ -26,6 +26,7 @@ from the natural numbers into it is injective.
 
 * Unify with `CharP` (possibly using an out-parameter)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

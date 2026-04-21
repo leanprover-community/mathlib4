@@ -19,6 +19,7 @@ objects in an abelian category `C` indexed by the category `ι`.
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

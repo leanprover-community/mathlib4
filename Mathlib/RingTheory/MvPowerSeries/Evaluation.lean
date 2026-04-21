@@ -41,6 +41,7 @@ Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properti
 * `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

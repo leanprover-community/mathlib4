@@ -11,6 +11,7 @@ public meta import Mathlib.Tactic.ToDual
 /-!
 # The `tauto_set` tactic
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

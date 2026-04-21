@@ -21,6 +21,7 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -18,6 +18,7 @@ The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

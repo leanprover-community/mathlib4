@@ -36,6 +36,7 @@ morphism of schemes is a constructible set (and this is *not* true at the level 
   partitionable along an open cover such that each of its parts is constructible in the
   respective open subspace.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

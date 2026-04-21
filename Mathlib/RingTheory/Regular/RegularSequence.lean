@@ -24,6 +24,7 @@ TODO: Koszul regular sequences, `H_1`-regular sequences, quasi-regular sequences
 
 module, regular element, regular sequence, commutative algebra
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

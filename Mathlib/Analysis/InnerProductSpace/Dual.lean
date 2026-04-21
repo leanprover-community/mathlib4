@@ -36,6 +36,7 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 
 dual, Fréchet-Riesz
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

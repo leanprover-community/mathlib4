@@ -15,6 +15,7 @@ public import Mathlib.Topology.ContinuousMap.CompactlySupported
 This file contains definitions and lemmas related to integrals of compactly supported continuous
 functions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

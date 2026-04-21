@@ -41,6 +41,7 @@ conformal
 The definition of conformality in this file does NOT require the maps to be orientation-preserving.
 Maps such as the complex conjugate are considered to be conformal.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

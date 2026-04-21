@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

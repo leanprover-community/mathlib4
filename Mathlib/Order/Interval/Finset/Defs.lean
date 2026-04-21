@@ -96,6 +96,7 @@ Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : �
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
 as `Icc (-1) 1` is infinite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

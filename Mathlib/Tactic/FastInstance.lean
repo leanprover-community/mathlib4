@@ -10,6 +10,7 @@ public import Mathlib.Init
 /-!
 # The `fast_instance%` and `inferInstanceAs%` term elaborators
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

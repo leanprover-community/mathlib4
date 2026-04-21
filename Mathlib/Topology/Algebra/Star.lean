@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Star.Basic
 This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, `Prod`,
 `MulOpposite`, and `Units`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

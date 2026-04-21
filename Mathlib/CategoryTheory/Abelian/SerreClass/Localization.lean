@@ -22,6 +22,7 @@ We also show that a functor `G : D ⥤ E` to an abelian category is exact iff
 the composition `L ⋙ G` is.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

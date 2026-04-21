@@ -29,6 +29,7 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
   if `f` fixes a point (resp., semiconjugates unary/binary operations), then so does `f^[n]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -52,6 +52,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   4. `F` preserves both finite limits and finite colimits.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

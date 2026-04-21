@@ -22,6 +22,7 @@ wrap the result in an `Option` type instead:
 - `Nat.psub`: a partial subtraction operation
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

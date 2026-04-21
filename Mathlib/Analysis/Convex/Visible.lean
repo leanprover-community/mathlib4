@@ -24,6 +24,7 @@ elements of a set a point sees in terms of the dimension of that set.
 The art gallery problem can be stated using the visibility predicate: A set `A` (the art gallery) is
 guarded by a finite set `G` (the guards) iff `∀ a ∈ A, ∃ g ∈ G, IsVisible ℝ sᶜ a g`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -27,6 +27,7 @@ Nontrivial nonarchimedean norms correspond to rank one valuations.
 
 norm, nonarchimedean, nontrivial, valuation, rank one
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

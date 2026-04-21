@@ -18,6 +18,7 @@ We prove some results relating characteristic and cardinality of finite rings
 ## Tags
 characteristic, cardinality, ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

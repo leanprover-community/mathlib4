@@ -54,6 +54,7 @@ an arbitrary `FintypeCat.{w}`.
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

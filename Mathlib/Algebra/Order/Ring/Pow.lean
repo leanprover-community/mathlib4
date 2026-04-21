@@ -18,6 +18,7 @@ which can be regarded as Bernoulli's inequality for `b / a` multiplied by `a ^ n
 
 Also, we prove versions for different typeclass assumptions on the (semi)ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

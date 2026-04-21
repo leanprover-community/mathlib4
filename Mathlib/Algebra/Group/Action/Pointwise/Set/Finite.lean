@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.Finite.Basic
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

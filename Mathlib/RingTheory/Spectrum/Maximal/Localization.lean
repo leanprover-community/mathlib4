@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 Localization results.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -21,6 +21,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 * `equivalent_weighted_sum_squares`: in finite dimensions, any quadratic form is equivalent to a
   parametrization of `QuadraticForm.weightedSumSquares`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

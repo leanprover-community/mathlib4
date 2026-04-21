@@ -21,6 +21,7 @@ diagram of all coproducts of finite subsets of `α`.
 
 We also deduce the dual statement by invoking the original statement in `Cᵒᵖ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

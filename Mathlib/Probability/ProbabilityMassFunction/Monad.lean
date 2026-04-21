@@ -19,6 +19,7 @@ and then sampling from `pb a : PMF β` to get a final result `b : β`.
 so that the second argument only needs to be defined on the support of the first argument.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

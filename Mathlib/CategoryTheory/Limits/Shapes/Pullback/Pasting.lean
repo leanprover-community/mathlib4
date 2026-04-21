@@ -30,6 +30,7 @@ pullback.
   `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

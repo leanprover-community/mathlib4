@@ -36,6 +36,7 @@ In lemma names,
 * `⋃₀`: `Set.sUnion`
 * `⋂₀`: `Set.sInter`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

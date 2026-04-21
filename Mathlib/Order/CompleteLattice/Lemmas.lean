@@ -33,6 +33,7 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

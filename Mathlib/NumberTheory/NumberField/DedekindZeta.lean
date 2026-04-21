@@ -27,6 +27,7 @@ In this file, we define and prove results about the Dedekind zeta function of a 
 
 Generalize the construction of the Dedekind zeta function.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

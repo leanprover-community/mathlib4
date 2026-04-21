@@ -22,6 +22,7 @@ subset of the complex plane.
 * `TendstoLocallyUniformlyOn.deriv`: Locally uniform convergence implies locally uniform
   convergence of the derivatives to the derivative of the limit.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public import Mathlib.Topology.ContinuousMap.Star
 # Star structures on bounded continuous functions
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

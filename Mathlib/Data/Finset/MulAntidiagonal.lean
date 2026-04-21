@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
 given that `s` and `t` are well-ordered. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

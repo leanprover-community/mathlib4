@@ -13,5 +13,6 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 
 # Condensed sets form a Cartesian closed category
 -/
+set_option backward.defeqAttrib.useBackward true
 
 deprecated_module (since := "2026-04-08")

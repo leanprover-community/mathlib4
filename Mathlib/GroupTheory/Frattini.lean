@@ -17,6 +17,7 @@ We give the definition of the Frattini subgroup of a group, and three elementary
   the Frattini subgroup consists of the non-generating elements of the group.
 * The Frattini subgroup of a finite group is nilpotent.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

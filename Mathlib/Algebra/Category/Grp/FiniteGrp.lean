@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Category.Grp.Basic
 * `FiniteGrp` is the category of finite groups.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -38,6 +38,7 @@ general, the constructions of fiber bundles we will make will be of this form.
 ## References
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

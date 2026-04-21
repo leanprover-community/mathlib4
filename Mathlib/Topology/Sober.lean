@@ -24,6 +24,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 * `genericPoints` : The set of generic points of irreducible components.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

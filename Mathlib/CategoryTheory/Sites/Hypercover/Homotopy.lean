@@ -27,6 +27,7 @@ In this file we define the category of `1`-hypercovers up to homotopy. This is t
 - `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
   category of `1`-hypercovers up to homotopy is cofiltered if `C` has pullbacks.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

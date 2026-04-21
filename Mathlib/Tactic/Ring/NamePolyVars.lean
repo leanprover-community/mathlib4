@@ -22,6 +22,7 @@ name_poly_vars X, Y, Z over R
 #check Y -- Y : MvPolynomial (Fin 3) R
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

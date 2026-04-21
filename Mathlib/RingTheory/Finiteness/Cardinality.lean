@@ -18,6 +18,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 This file relates `Module.Finite` and `_root_.Finite`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

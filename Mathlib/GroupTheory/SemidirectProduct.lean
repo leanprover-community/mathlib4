@@ -29,6 +29,7 @@ This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N 
 ## Tags
 group, semidirect product
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ This file defines an absolute value and sign function on `EReal` and uses them t
 Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which leads to a
 `DivInvMonoid` instance and division.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -17,6 +17,7 @@ Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least 
 elements.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

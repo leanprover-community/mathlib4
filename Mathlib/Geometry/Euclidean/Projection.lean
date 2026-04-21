@@ -24,6 +24,7 @@ and reflection of a point in an affine subspace.
   affine subspace.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

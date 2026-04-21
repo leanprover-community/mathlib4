@@ -15,6 +15,7 @@ A short complex `S : ShortComplex C` is short exact (`S.ShortExact`) when it is 
 `S.f` is a mono and `S.g` is an epi.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

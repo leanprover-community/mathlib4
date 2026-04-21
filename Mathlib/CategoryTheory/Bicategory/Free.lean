@@ -21,6 +21,7 @@ axioms of a bicategory.
 * `FreeBicategory.lift F`: the pseudofunctor from `FreeBicategory B` to `C` associated with a
   prefunctor `F` from `B` to `C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

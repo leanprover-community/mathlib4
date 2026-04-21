@@ -28,6 +28,7 @@ The following instances are provided in mathlib:
 TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondition R]`.
 See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe u v

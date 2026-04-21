@@ -11,6 +11,7 @@ public import Mathlib.Topology.MetricSpace.Ultra.Basic
 /-!
 # Ultrametric structure on continuous maps
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

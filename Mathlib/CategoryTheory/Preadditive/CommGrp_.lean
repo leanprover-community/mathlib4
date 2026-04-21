@@ -16,6 +16,7 @@ We construct an inverse of the forgetful functor `CommGrp C ⥤ C` if `C` is an 
 This looks slightly strange because the additive structure of `C` maps to the multiplicative
 structure of the commutative group objects.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

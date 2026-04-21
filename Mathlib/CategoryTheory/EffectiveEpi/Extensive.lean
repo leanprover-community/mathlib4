@@ -16,6 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 We prove that a functor between `FinitaryPreExtensive` categories preserves (resp. reflects) finite
 effective epi families if it preserves (resp. reflects) effective epis.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

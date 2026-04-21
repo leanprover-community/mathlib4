@@ -50,6 +50,7 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Exponential equivalence to `Circle`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

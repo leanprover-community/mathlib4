@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 Further results for torsors, that are not in `Mathlib/Algebra/AddTorsor/Defs.lean` to avoid
 increasing imports there.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

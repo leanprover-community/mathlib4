@@ -38,6 +38,7 @@ Given a `IsCompletely(Pseudo)MetrizableSpace X` instance, one may want to endow 
 which will endow `X` with an `UpgradedIsCompletely(Pseudo)MetrizableSpace X` instance. This class
 is a convenience class and no instance should be registered for it.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

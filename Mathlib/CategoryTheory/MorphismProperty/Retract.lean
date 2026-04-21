@@ -15,6 +15,7 @@ Given `P : MorphismProperty C`, we introduce a typeclass `P.IsStableUnderRetract
 is the property that `P` is stable under retracts.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -55,6 +55,7 @@ need this assumption.
 central algebra, center, simple ring, central simple algebra
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

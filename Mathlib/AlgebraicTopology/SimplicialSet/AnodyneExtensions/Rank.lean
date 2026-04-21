@@ -28,6 +28,7 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -13,6 +13,7 @@ public meta import Mathlib.Tactic.Linter.Header  --shake: keep
 /-!
 # `#parse` -- a command to parse text and log outputs
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

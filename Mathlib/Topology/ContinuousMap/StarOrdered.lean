@@ -33,6 +33,7 @@ for a generic C⋆-algebra, we'll get a non-defeq diamond for the case `R := ℂ
 be a problem since the only purpose is to obtain the instance `StarOrderedRing C(α, R)`, which is a
 `Prop`, but we note it for future reference.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

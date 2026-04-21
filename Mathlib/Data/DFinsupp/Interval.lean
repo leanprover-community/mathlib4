@@ -17,6 +17,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 This file provides the `LocallyFiniteOrder` instance for `Π₀ i, α i` when `α` itself is locally
 finite and calculates the cardinality of its finite intervals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

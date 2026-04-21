@@ -20,6 +20,7 @@ a presentation of `B` as a `A`-module (and some additional data).
   finitely presented as an `B`-module, then `M` is finitely presented as an `A`-module
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

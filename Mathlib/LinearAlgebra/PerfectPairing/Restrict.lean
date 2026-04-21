@@ -22,6 +22,7 @@ We provide API for restricting perfect pairings to submodules and for restrictin
   of a perfect pairing with coefficients in a field.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

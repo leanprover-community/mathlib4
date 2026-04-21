@@ -42,6 +42,7 @@ to `Ideal.IsHomogeneous.iff_exists` as quickly as possible.
 
 graded algebra, homogeneous
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

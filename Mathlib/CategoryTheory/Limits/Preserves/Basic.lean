@@ -33,6 +33,7 @@ diagram K if F sends every limit cone on K to a limit cone. This is
 vacuously satisfied when K does not admit a limit, which is consistent
 with the above definition of "preserves limits".
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

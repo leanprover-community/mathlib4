@@ -46,6 +46,7 @@ of monomials in this free commutative ring.
 
 free commutative ring, free ring
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

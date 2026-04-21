@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Notation.Support
 The lemmas in this file have been moved out of
 `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean` to reduce its imports.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

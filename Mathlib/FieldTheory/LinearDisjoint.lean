@@ -132,6 +132,7 @@ The following results are related to the equivalent characterizations in
 linearly disjoint, linearly independent, tensor product
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

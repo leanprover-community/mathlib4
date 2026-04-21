@@ -29,6 +29,7 @@ Basic usage:
 variable (C : Type*) [Category* C]
 ```
 -/
+set_option backward.defeqAttrib.useBackward true
 
 namespace Mathlib.Tactic.CategoryStar
 open Lean Meta Elab Term

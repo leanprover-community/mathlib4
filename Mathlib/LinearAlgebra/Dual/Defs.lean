@@ -39,6 +39,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

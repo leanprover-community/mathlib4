@@ -15,6 +15,7 @@ public import Mathlib.CategoryTheory.Sites.Limits
 In this file, we put a `CartesianMonoidalCategory` instance on `A`-valued sheaves for a
 `GrothendieckTopology` whenever `A` has a `CartesianMonoidalCategory` instance.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -32,6 +32,7 @@ For more details, see the documentation attached to the `syntax` declaration.
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
 reimplemented by Kim Morrison in Lean 4.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

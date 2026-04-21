@@ -24,6 +24,7 @@ This file defines topological field/(semi)ring structures on the
 It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

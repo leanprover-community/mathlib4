@@ -20,6 +20,7 @@ is actually a simplicial category. In particular, the category of simplicial
 sets is a simplicial category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

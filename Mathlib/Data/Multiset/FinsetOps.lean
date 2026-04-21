@@ -14,6 +14,7 @@ public import Mathlib.Data.List.Infix
 The operations here ignore multiplicities,
 and prepare for defining the corresponding operations on `Finset`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

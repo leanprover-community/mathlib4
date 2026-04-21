@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

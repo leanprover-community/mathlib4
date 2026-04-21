@@ -27,6 +27,7 @@ a convex set.
 * `StrictConvexOn 𝕜 s f`: The function `f` is strictly convex on `s` with scalars `𝕜`.
 * `StrictConcaveOn 𝕜 s f`: The function `f` is strictly concave on `s` with scalars `𝕜`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

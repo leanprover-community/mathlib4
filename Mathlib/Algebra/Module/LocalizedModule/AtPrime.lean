@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Ideal.Prime
 /-!
 # Localizations of modules at the complement of a prime ideal
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

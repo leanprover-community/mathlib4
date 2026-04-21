@@ -30,6 +30,7 @@ a kernel from `α` to `β × γ`.
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

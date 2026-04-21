@@ -20,6 +20,7 @@ This file defines prestructures and quotients of first-order structures.
 - The structure `FirstOrder.Language.quotientStructure s` is the resulting structure on
   `Quotient s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -32,6 +32,8 @@ The relations to these other notions are given as
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe w v u
 
 namespace CategoryTheory.Functor

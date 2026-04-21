@@ -41,6 +41,7 @@ measures `μ ≪ ν`. This also makes `klDiv μ ν` equal to an f-divergence: it
 `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν`, in which `klFun x = x * log x + 1 - x`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ This file defines the harmonic numbers.
 * `Mathlib/NumberTheory/Harmonic/Bounds.lean` provides basic log bounds.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

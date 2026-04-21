@@ -10,6 +10,7 @@ public import Mathlib.Init
 /-!
 # Helper definitions and instances for `Ordering`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

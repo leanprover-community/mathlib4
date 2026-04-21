@@ -17,6 +17,7 @@ TODO (Edison) : refactor `Rep` into a two-field structure (bundled `Representati
 all the `Iso`s in `Rep` using the equivs in this file.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

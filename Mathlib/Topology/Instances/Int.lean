@@ -18,6 +18,7 @@ public import Mathlib.Topology.Order.Bornology
 
 The structure of a metric space on `ℤ` is introduced in this file, induced from `ℝ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

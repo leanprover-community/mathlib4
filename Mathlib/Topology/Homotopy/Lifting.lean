@@ -25,6 +25,7 @@ public import Mathlib.Topology.UnitInterval
   locally path-connected space lifts uniquely through a covering map (given a lift of an
   arbitrary point).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

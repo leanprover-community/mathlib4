@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Defs
 # Finitely generated product (sub)modules
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

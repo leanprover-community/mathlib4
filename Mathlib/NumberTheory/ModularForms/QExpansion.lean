@@ -36,6 +36,7 @@ We also define the `q`-expansion of a modular form, either as a power series or 
 * `qExpansion_coeff_unique` shows that q-expansion coefficients are uniquely determined.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 
 @[expose] public noncomputable section

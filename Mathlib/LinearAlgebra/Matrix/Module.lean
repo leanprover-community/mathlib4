@@ -23,6 +23,7 @@ public import Mathlib.Data.Matrix.Basis
 ## Tags
 matrix, module
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

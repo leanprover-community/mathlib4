@@ -19,6 +19,7 @@ This file defines pairwise relations.
 * `Pairwise`: `Pairwise r` states that `r i j` for all `i ≠ j`.
 * `Set.Pairwise`: `s.Pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

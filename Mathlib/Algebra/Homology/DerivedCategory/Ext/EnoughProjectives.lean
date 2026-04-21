@@ -22,6 +22,7 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 So we must be very selective regarding `HasExt` instances.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

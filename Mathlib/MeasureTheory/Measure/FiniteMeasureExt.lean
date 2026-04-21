@@ -17,6 +17,7 @@ Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elem
 the integrals of all elements of `A` with respect to two finite measures `P, P'` coincide, then the
 measures coincide. In other words: If a subalgebra separates points, it separates finite measures.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

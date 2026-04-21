@@ -29,6 +29,7 @@ None.
 
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

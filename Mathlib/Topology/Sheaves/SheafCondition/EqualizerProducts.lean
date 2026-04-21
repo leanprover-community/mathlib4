@@ -21,6 +21,7 @@ We show that this sheaf condition is equivalent to the "pairwise intersections" 
 the presheaf is valued in a category with products, and thereby equivalent to the default sheaf
 condition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

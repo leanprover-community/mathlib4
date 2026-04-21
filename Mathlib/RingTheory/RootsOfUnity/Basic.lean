@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.RingTheory.IntegralDomain
+
+set_option backward.defeqAttrib.useBackward true
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!

@@ -15,6 +15,7 @@ There is at most one ordered ring homomorphism from a linear ordered field to an
 ordered field. Reciprocally, such an ordered ring homomorphism exists when the codomain is further
 conditionally complete.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

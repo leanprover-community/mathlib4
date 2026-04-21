@@ -15,6 +15,7 @@ public import Mathlib.GroupTheory.OreLocalization.Cardinality
 This file contains some results on cardinality of localizations.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

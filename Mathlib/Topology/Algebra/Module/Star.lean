@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.Star
 /-!
 # The star operation, bundled as a continuous star-linear equiv
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

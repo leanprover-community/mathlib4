@@ -24,6 +24,7 @@ public import Mathlib.Topology.Defs.Ultrafilter
   with a subbasis `S` and `s` is a subset of `X`, then `s` is compact if for any open cover of `s`
   with all elements taken from `S`, there is a finite subcover.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

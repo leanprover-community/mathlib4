@@ -47,6 +47,7 @@ separate variables constrained by certain relations.
 ## Reference
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

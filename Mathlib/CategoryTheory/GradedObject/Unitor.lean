@@ -20,6 +20,7 @@ the lemma `mapBifunctor_triangle` promotes a triangle identity involving functor
 to a triangle identity for the induced functors on graded objects.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

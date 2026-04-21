@@ -18,6 +18,7 @@ Given bicategories `B` and `C`, we define a bicategory structure on `Pseudofunct
 We scope this instance to the `CategoryTheory.Pseudofunctor.StrongTrans` namespace to avoid
 potential future conflicts with other bicategory instances on `Pseudofunctor B C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

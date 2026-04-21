@@ -15,6 +15,7 @@ This file gives a few properties of the weak operator topology that are specific
 Hilbert spaces. This mostly involves using the Fréchet-Riesz representation to convert between
 applications of elements of the dual and inner products with vectors in the space.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

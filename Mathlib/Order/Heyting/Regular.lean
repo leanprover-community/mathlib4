@@ -26,6 +26,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

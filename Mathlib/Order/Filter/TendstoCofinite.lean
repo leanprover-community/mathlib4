@@ -33,6 +33,7 @@ are precisely the valid index transformations for renaming variables in multivar
   a `TendstoCofinite` function preserves the `TendstoCofinite` property.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

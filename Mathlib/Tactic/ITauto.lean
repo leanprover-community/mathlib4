@@ -81,6 +81,7 @@ grammar if it matters.)
 
 propositional logic, intuitionistic logic, decision procedure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

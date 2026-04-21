@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Bialgebra.Equiv
 This file defines the bundled category `CommBialgCat R` of commutative bialgebras over a fixed
 commutative ring `R` along with the forgetful functor to `CommAlgCat`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

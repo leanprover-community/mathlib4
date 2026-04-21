@@ -16,6 +16,7 @@ public import Mathlib.Data.Fintype.Basic
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

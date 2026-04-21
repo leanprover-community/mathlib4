@@ -14,6 +14,7 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 In this file we show that the category of `k`-linear representations of a monoid `G` is
 equivalent to the category of modules over the monoid algebra `k[G]`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

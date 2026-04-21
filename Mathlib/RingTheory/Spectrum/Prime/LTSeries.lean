@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

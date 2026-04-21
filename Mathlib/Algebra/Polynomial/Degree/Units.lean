@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 /-!
 # Degree of polynomials that are units
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

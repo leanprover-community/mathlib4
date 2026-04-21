@@ -25,6 +25,7 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

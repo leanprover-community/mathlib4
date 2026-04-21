@@ -26,6 +26,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

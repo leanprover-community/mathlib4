@@ -12,6 +12,7 @@ public import Mathlib.Init
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

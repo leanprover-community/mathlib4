@@ -30,6 +30,7 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

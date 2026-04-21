@@ -21,6 +21,7 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 
 finite sets
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

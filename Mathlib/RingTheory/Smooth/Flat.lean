@@ -31,6 +31,7 @@ The proof proceeds in two steps:
 
 - [Conde-Lago, A short proof of smooth implies flat][condelago2016shortproofsmoothimplies]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

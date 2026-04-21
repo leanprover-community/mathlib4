@@ -24,6 +24,7 @@ In this file we prove
 
 For the latter lemma, we also prove various order dual versions.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

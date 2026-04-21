@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

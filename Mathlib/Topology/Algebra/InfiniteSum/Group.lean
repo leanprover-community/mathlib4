@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.Group.Pointwise
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

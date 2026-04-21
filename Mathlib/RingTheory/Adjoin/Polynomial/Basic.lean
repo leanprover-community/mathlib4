@@ -18,6 +18,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
   proving a fact about `a : adjoin R {x}` is the same as proving it for `aeval x p` where `p`
   is an arbitrary polynomial
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

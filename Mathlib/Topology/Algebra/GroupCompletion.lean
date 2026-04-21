@@ -27,6 +27,7 @@ the main constructions deal with continuous group morphisms.
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

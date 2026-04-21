@@ -22,6 +22,7 @@ public import Mathlib.Algebra.Polynomial.HasseDeriv
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

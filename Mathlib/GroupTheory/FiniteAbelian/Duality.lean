@@ -22,6 +22,7 @@ the main results in this file are:
 * `CommGroup.subgroupOrderIsoSubgroupMonoidHom`: the order reversing bijection that sends a
   subgroup of `G` to its dual subgroup in `G →* Mˣ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

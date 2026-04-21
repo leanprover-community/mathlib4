@@ -31,6 +31,7 @@ A few order isomorphisms are worthy of mention:
     the extended nonnegative real numbers and the unit interval. This is `orderIsoIicOneBirational`
     composed with the identity order isomorphism between `Iic (1 : ℝ≥0∞)` and `Icc (0 : ℝ) 1`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

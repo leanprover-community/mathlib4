@@ -21,6 +21,7 @@ the graph of an isomorphism `G ⧸ G' ≃ H ⧸ H'`.
 `G'` and `H'` can be explicitly constructed as `Subgroup.goursatFst I` and `Subgroup.goursatSnd I`
 respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

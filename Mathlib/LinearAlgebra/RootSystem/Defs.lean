@@ -58,6 +58,7 @@ coroots may not correspond. For this purpose, we define a map from `ι` to permu
 require that it is compatible with reflections and coreflections.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

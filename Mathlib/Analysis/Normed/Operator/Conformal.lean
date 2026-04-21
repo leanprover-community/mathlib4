@@ -37,6 +37,7 @@ conformal
 
 The definition of conformality in this file does NOT require the maps to be orientation-preserving.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

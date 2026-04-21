@@ -16,6 +16,7 @@ In this file, we show that any module over a division semiring is torsion-free.
 
 Note that more generally any reflexive module is torsion-free.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

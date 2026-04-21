@@ -26,6 +26,7 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 
 * `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

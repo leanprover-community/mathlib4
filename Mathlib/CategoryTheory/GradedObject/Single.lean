@@ -15,6 +15,7 @@ which sends an object `X : C` to the graded object which is `X` in degree `j` an
 the initial object of `C` in other degrees.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

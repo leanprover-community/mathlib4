@@ -30,6 +30,7 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
   isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -19,6 +19,8 @@ unnecessary. Otherwise the names here share the same names as their counterparts
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
 
 -/
+
+set_option backward.defeqAttrib.useBackward true
 @[expose] public section
 
 -- Guard against import creep

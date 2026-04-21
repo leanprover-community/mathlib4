@@ -54,6 +54,7 @@ not depend on the choice of the localization functors.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 universe v₁ v₂ u₁ u₂

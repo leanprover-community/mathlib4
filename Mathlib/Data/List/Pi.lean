@@ -14,6 +14,7 @@ public import Mathlib.Data.Multiset.Pi
 
 * `List.pi`: Cartesian product of lists indexed by a list.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

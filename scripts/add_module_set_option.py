@@ -185,7 +185,7 @@ def main():
         files = []
         for name in sorted(deps_set):
             info = dag.modules.get(name)
-            if info and info.filepath.startswith("Mathlib/"):
+            if info and str(info.filepath).startswith("Mathlib/"):
                 fp = dag.project_root / info.filepath
                 if fp.exists():
                     files.append(fp)

@@ -13,6 +13,7 @@ public import Mathlib.Data.Fintype.Basic
 
 This file provides some results on multiplicative and additive submonoids in the finite context.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

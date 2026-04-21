@@ -30,6 +30,7 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Relate to homogeneous (multivariate) polynomials of degree `n`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

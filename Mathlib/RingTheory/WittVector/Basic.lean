@@ -45,6 +45,7 @@ in this file.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

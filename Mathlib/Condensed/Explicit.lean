@@ -30,6 +30,7 @@ We also give variants for condensed objects in concrete categories whose forgetf
 reflects finite limits (resp. products), where it is enough to check the sheaf condition after
 postcomposing with the forgetful functor.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.Order.SuccPred.Basic
 * `IsPredArchimedean`: `PredOrder` where `pred` iterated to an element gives all the smaller
   ones.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

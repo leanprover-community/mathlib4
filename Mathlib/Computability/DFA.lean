@@ -46,6 +46,7 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

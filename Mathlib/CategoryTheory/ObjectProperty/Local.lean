@@ -23,6 +23,7 @@ part of a Galois connection, with "dual" construction
 We also introduce the dual notion `W.isColocal : ObjectProperty C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

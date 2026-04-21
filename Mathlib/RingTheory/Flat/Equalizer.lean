@@ -15,6 +15,7 @@ We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

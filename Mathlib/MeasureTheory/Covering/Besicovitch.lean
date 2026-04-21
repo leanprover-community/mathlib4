@@ -90,6 +90,7 @@ finite subfamily. Then one goes on again and again, covering at each step a posi
 the remaining points, while remaining disjoint from the already chosen balls. The union of all these
 balls is the desired almost everywhere covering.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

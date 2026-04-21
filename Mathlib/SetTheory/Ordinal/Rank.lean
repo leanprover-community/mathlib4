@@ -13,6 +13,7 @@ public import Mathlib.SetTheory.Ordinal.Family
 For `r` a well-founded relation, `IsWellFounded.rank r a` is recursively defined as the least
 ordinal greater than the ranks of all elements below `a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

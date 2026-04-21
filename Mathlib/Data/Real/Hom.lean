@@ -20,6 +20,7 @@ This file contains results about ring homomorphisms to `ℝ`.
   a monotone ring homomorphism `α →+*o ℝ`.
 * `Real.RingHom.unique`: There exists no nontrivial ring homomorphism `ℝ →+* ℝ`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

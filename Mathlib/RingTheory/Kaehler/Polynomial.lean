@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Polynomial.Derivation
 /-!
 # The Kähler differential module of polynomial algebras
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

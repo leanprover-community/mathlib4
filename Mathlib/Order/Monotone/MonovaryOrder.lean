@@ -14,6 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Order
 This file proves that monovarying functions to linear orders can be made simultaneously monotone by
 setting the correct order on their shared indexing type.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

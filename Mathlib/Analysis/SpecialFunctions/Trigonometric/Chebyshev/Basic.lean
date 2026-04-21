@@ -16,6 +16,7 @@ This file gives the trigonometric characterizations of Chebyshev polynomials, fo
 (`Real.cos`) and complex (`Complex.cos`) cosine and the real (`Real.cosh`) and complex
 (`Complex.cosh`) hyperbolic cosine.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -32,6 +32,7 @@ See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a
 
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

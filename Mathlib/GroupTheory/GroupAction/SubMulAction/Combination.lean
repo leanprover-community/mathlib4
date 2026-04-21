@@ -36,6 +36,7 @@ This induces a `MulAction G (powersetCard α n)` instance. Then:
   The obvious map from `α` to `powersetCard α 1`, as an equivariant map.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

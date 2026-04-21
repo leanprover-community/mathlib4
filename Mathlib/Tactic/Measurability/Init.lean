@@ -15,5 +15,6 @@ This module defines the `Measurable` Aesop rule set which is used by the
 `measurability` tactic. Aesop rule sets only become visible once the file in which
 they're declared is imported, so we must put this declaration into its own file.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 declare_aesop_rule_sets [Measurable]

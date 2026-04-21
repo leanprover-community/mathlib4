@@ -64,6 +64,7 @@ where `d` is the number of `n`th roots of unity in `L`.
 
 cyclotomic character
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

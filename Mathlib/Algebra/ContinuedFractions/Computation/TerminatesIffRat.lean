@@ -28,6 +28,7 @@ rational number, that is `↑v = q` for some `q : ℚ`.
 
 rational, continued fraction, termination
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -27,6 +27,7 @@ form of Lebesgue's density theorem.
   fixed.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

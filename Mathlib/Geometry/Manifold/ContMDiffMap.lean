@@ -14,6 +14,7 @@ public import Mathlib.Geometry.Manifold.Notation
 In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

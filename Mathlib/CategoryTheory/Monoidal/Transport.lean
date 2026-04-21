@@ -22,6 +22,7 @@ The comparison is analogous to the difference between `Equiv.monoid` and
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

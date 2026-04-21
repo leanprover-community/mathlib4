@@ -45,6 +45,7 @@ set of all minimal polynomials (not proved here).
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

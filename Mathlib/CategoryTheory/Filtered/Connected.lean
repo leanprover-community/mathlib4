@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.IsConnected
 /-!
 # Filtered categories are connected
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

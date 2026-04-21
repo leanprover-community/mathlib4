@@ -50,6 +50,7 @@ works, but makes the type check quite slow (and `to_additive` needs some  help..
 As the application(s) work with `ℝ`-valued height functions, we think that generalizing
 is not really worth the trouble.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -30,6 +30,7 @@ about simple and semisimple Lie algebras.
 
 lie algebra, radical, simple, semisimple
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

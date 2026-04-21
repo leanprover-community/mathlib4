@@ -27,6 +27,7 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

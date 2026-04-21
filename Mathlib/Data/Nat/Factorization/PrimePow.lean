@@ -15,6 +15,7 @@ public import Mathlib.NumberTheory.Divisors
 
 This file deals with factorizations of prime powers.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

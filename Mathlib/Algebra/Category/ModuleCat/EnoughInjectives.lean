@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Ring.Shrink
 We lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint functors
 `restrictScalars ⊣ coextendScalars`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

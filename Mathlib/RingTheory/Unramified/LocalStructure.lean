@@ -37,6 +37,7 @@ As a corollary, we also obtain results about the local structure of etale and sm
   over `R[x₁,...,xₙ]`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

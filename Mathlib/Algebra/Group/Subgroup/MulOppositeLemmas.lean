@@ -21,6 +21,7 @@ which might be organized and split up further.
 subgroup, subgroups
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -76,6 +76,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 
 spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

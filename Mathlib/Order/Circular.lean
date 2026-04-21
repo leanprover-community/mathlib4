@@ -90,6 +90,7 @@ and the circular order of months. Is `α →c β` a good notation?
 
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

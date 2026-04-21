@@ -25,6 +25,7 @@ In this file we define the complement of a subgroup.
 
 - `isComplement'_of_coprime` : Subgroups of coprime order are complements.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

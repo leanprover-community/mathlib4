@@ -19,6 +19,7 @@ The period of a point `a` by a group element `g` is the smallest `m` such that `
 If such an `m` does not exist,
 then by convention `MulAction.period` and `AddAction.period` return 0.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,6 +24,7 @@ Define the Exponential measure over the reals.
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

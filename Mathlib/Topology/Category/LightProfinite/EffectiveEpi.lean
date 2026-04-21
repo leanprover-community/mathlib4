@@ -16,6 +16,7 @@ As a consequence we deduce from the material in
 `Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `LightProfinite` is `Preregular`
 and `Precoherent`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ public meta import Lean.Elab.Command
 
 Throws an error if the given identifier uses sorryAx.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

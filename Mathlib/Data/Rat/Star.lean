@@ -17,6 +17,7 @@ public import Mathlib.Data.NNRat.Order
 This file shows that `ℚ` and `ℚ≥0` are `StarOrderedRing`s. In particular, this means that every
 nonnegative rational number is a sum of squares.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

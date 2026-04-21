@@ -24,6 +24,7 @@ bundle `TM` of some manifold `M`.
   `X` and `Y`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public noncomputable section
 

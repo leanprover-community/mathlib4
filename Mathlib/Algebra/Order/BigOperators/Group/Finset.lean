@@ -20,6 +20,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 This file contains the results concerning the interaction of finset big operators with ordered
 groups/monoids.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

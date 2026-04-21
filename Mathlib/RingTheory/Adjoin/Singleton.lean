@@ -17,6 +17,7 @@ This file contains basic results on `Algebra.adjoin`, specifically on adjoining 
 adjoin, algebra, ringhom
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -29,6 +29,7 @@ l|      |r
 by applying these results to the flipped square.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

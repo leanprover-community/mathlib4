@@ -25,6 +25,7 @@ Functions that help access different parts of a walk.
 ## Tags
 walks
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

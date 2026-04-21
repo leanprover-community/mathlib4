@@ -69,6 +69,7 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

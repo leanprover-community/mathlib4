@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

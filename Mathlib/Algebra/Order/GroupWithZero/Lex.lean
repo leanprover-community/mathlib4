@@ -27,6 +27,7 @@ the plain product `αˣ × βˣ` would not be linearly ordered.
 Create the "LinOrdCommGrpWithZero" category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

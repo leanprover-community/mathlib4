@@ -29,6 +29,7 @@ These definitions and properties can be summarised by saying that the bifunctor
 commutes with shifts by `ℤ`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -14,6 +14,7 @@ In this file, we construct the equivalence of categories
 `KaroubiKaroubi.equivalence C : Karoubi C ≌ Karoubi (Karoubi C)` for any category `C`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

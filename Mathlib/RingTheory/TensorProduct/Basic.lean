@@ -28,6 +28,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

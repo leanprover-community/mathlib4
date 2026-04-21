@@ -12,6 +12,7 @@ public import Mathlib.Data.Set.Card
 /-!
 # Cardinalities of pointwise operations on sets
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

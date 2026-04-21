@@ -23,6 +23,7 @@ The second result is `dirichletLSeries_eulerProduct` (with variants
 `dirichletLSeries_eulerProduct_hasProd` and `dirichletLSeries_eulerProduct_tprod`),
 which is the analogous statement for Dirichlet L-series.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

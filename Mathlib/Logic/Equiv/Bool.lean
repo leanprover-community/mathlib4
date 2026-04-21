@@ -13,6 +13,7 @@ public import Mathlib.Logic.Function.Basic
 
 This file shows that `not : Bool → Bool` is an equivalence and derives some consequences
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

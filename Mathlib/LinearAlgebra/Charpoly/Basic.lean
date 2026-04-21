@@ -23,6 +23,7 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 * `LinearMap.charpoly f` : the characteristic polynomial of `f : M →ₗ[R] M`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

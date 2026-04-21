@@ -15,6 +15,7 @@ This file exists to ensure we can define `Field` with minimal imports,
 so it contains some lemmas about powers of elements which need imports
 beyond those needed for the basic definition.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -24,6 +24,7 @@ This file provides lemmas about the interaction between infinite sums and multip
 * `Summable.tsum_pow_mul_one_sub`, `Summable.one_sub_mul_tsum_pow`: geometric series formula.
 * `tprod_one_add`: expanding `∏' i : ι, (1 + f i)` as infinite sum.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

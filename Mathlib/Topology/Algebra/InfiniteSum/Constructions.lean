@@ -16,6 +16,7 @@ Lemmas on the interaction of `tprod`, `tsum`, `HasProd`, `HasSum` etc. with prod
 types, `MulOpposite`, etc.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

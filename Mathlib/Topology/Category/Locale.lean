@@ -13,6 +13,7 @@ public import Mathlib.Topology.Category.CompHaus.Frm
 
 This file defines `Locale`, the category of locales. This is the opposite of the category of frames.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

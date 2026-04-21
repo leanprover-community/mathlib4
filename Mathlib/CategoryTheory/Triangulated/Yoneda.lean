@@ -19,6 +19,7 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 `preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrpCat` for `B : C` are homological functors.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

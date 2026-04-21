@@ -69,6 +69,7 @@ Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` t
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
 If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

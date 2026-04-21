@@ -18,6 +18,7 @@ relation is automatically transitive (we don't need to take the transitive closu
 `LinearOrder` structure on the quotient. In that case, the resulting order is sometimes called a
 **condensation**.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -24,6 +24,7 @@ import Mathlib.LinearAlgebra.Span.Basic
 We do not state the equivalent of `DistribMulAction G (MonoidAlgebra k G)` for `AddMonoidAlgebra`
 because mathlib does not have the notion of distributive actions of additive groups.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

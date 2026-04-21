@@ -26,6 +26,7 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 * [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
   fields*][matsuo1997]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

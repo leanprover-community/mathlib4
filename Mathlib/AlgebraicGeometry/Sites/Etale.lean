@@ -19,6 +19,7 @@ In this file we define the big étale site, i.e. the étale topology as a Grothe
 on the category of schemes.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

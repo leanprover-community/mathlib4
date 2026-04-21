@@ -17,6 +17,7 @@ In this file, we introduce the canonical t-structure on the
 derived category of an abelian category.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

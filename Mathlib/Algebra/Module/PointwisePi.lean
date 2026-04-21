@@ -19,6 +19,7 @@ This file contains lemmas about pointwise actions on sets in Pi types.
 set multiplication, set addition, pointwise addition, pointwise multiplication, pi
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

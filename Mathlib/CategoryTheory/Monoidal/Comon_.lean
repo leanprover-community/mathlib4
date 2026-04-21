@@ -26,6 +26,7 @@ That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ 
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

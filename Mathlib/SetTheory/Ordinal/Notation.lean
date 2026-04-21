@@ -25,6 +25,7 @@ The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form.
 Various operations (addition, subtraction, multiplication, exponentiation)
 are defined on `ONote` and `NONote`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

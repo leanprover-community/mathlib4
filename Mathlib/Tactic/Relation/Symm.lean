@@ -11,6 +11,7 @@ public meta import Lean.Meta.Tactic.Symm
 /-!
 # `relSidesIfSymm?`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

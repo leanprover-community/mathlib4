@@ -12,6 +12,7 @@ public import Lean.Meta.Tactic.Assert
 public import Lean.Meta.Tactic.Clear
 
 /-! ## Additional utilities in `Lean.MVarId` -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

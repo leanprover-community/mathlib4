@@ -108,6 +108,7 @@ dimension.
 
 Hausdorff measure, measure, metric measure
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

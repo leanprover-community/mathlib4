@@ -22,6 +22,7 @@ public import Mathlib.Util.CompileInductive
 This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several
 lemmas that do not immediately follow from the typeclass specifications.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

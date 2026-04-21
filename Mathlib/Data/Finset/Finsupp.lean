@@ -27,6 +27,7 @@ This file defines the finitely supported product of finsets as a `Finset (ι →
 We make heavy use of the fact that `0 : Finset α` is `{0}`. This scalar actions convention turns out
 to be precisely what we want here too.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

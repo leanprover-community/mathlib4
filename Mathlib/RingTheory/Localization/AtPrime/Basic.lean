@@ -34,6 +34,7 @@ See `RingTheory.Localization.Basic` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -22,6 +22,7 @@ the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

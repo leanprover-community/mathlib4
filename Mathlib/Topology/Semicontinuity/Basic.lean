@@ -57,6 +57,7 @@ ones for lower semicontinuous functions using `OrderDual`.
 + lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

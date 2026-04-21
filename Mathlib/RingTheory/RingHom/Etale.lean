@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Smooth.Flat
 
 We show the meta properties of étale morphisms.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

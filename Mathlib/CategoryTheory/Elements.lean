@@ -32,6 +32,7 @@ more convenient API. We prove the equivalence in
 ## Tags
 category of elements, Grothendieck construction, comma category
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

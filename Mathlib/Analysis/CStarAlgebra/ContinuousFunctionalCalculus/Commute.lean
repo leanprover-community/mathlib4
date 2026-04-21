@@ -27,6 +27,7 @@ can talk about topological star algebras. Instead, we avoid this to minimize the
 to call these lemmas, and give a straightforward proof by induction.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

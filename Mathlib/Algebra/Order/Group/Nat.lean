@@ -16,6 +16,7 @@ This file contains the linear ordered monoid instance on the natural numbers.
 
 See note [foundational algebra order theory].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

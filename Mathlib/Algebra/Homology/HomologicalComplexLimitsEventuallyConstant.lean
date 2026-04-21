@@ -19,6 +19,7 @@ we show that for suitable `j : J`, the map `(cF.π.app j).f q` is an
 isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

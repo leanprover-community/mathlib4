@@ -37,6 +37,7 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

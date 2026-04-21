@@ -38,6 +38,7 @@ this resolution to compute the group cohomology of representations of finite cyc
 * Use this to analyse the group homology of representations of finite cyclic groups.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

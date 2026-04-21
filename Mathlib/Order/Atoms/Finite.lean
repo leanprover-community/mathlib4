@@ -20,6 +20,7 @@ This module contains some results on atoms and simple lattices in the finite con
   are atomic resp. coatomic.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -28,6 +28,7 @@ is `AlgebraicGeometry.Scheme.Hom.normalization.hom_ext`.
 We also show that normalization commutes with disjoint unions and smooth base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

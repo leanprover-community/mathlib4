@@ -24,6 +24,7 @@ neighbourhood of `u₁`. Furthermore, `ψ` is $C^n$ at `u₁`.
 
 implicit function, inverse function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

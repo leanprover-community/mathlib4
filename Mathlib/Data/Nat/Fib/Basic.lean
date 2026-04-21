@@ -41,6 +41,7 @@ For efficiency purposes, the sequence is defined using `Stream.iterate`.
 
 Fibonacci numbers, Fibonacci sequence
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

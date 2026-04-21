@@ -23,6 +23,7 @@ and its faces (numbered from `0` to `4`) are respectively
 `mk₂ f₁ f₂ f₃`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

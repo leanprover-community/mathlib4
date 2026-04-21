@@ -43,6 +43,7 @@ This calls for a two-step definition of ZFA lists:
 * `Finsets α`: ZFA sets. Defined as `Lists` quotiented by `Lists.Equiv`, the extensional
   equivalence.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`
 
 Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

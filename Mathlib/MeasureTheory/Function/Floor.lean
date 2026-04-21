@@ -13,6 +13,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 In this file we prove that `Int.floor`, `Int.ceil`, `Int.fract`, `Nat.floor`, and `Nat.ceil` are
 measurable under some assumptions on the (semi)ring.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

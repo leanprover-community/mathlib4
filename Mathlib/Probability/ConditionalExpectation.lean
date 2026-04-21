@@ -22,6 +22,7 @@ the main conditional expectation file.
   `m₁`-measurable function, then `𝔼[f | m₂] = 𝔼[f]` almost everywhere.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

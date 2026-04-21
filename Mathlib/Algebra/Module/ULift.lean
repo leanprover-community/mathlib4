@@ -19,6 +19,7 @@ This file defines instances for `Module`, `MulAction` and related structures on 
 
 We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ In this file we prove that
   has the unique differentiability property;
 - `uniqueDiffOn_Ioc` etc: intervals on the real line have the unique differentiability property.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

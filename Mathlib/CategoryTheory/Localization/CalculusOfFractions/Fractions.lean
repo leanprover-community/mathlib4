@@ -31,6 +31,7 @@ of one. It is also very convenient to use dot notation.
 Many definitions have been made reducible so as to ease rewrites when this API is used.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

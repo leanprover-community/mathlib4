@@ -43,6 +43,7 @@ exist on other files:
 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public noncomputable section
 

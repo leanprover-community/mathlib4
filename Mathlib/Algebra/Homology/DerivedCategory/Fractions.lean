@@ -20,6 +20,7 @@ When strict bounds are known on `X` or `Y`, certain bounds may also be ensured
 on the auxiliary object appearing in the fraction.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

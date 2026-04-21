@@ -22,6 +22,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 * `GaloisInsertion`: A Galois insertion is a Galois connection where `l ∘ u = id`
 * `GaloisCoinsertion`: A Galois coinsertion is a Galois connection where `u ∘ l = id`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

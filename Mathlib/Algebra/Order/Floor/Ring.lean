@@ -26,6 +26,7 @@ fractional part operator.
 
 rounding, floor, ceil
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

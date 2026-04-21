@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Algebra.Equiv
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

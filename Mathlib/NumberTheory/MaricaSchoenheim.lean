@@ -19,6 +19,7 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

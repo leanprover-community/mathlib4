@@ -25,6 +25,7 @@ This file proves that:
 ## Tags
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

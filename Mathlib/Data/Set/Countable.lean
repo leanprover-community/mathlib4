@@ -24,6 +24,7 @@ For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_enc
 
 sets, countable set
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

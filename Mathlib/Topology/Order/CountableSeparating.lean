@@ -16,6 +16,7 @@ the points can be separated by countably many infinite intervals.
 We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

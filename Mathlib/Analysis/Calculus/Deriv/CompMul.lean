@@ -18,6 +18,7 @@ Since Mathlib uses `0` as the fallback value for the derivatives whenever they a
 the theorems in this file require neither differentiability of `f`,
 nor assumptions like `UniqueDiffWithinAt 𝕜 s x`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

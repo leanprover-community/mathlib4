@@ -110,6 +110,7 @@ can be several model spaces for a given topological space. For instance, a compl
 In the scope `Manifold`, we denote the composition of open partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

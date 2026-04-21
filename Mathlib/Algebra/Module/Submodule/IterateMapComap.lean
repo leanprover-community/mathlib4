@@ -31,6 +31,7 @@ The construction here is adapted from the proof in Djoković's paper
 *Epimorphisms of modules which must be isomorphisms* [djokovic1973].
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

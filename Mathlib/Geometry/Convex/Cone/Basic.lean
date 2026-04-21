@@ -37,6 +37,7 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 * [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

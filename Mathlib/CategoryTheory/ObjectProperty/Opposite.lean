@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Opposites
 # The opposite of a property of objects
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

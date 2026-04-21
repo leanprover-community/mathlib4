@@ -50,6 +50,7 @@ colimit, representable, presheaf, free cocompletion
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

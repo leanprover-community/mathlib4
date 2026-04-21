@@ -16,6 +16,7 @@ public import Mathlib.Data.Set.Card
 * `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
   components if it contains exactly one vertex from each component.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

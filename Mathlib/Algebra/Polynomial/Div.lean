@@ -18,6 +18,7 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

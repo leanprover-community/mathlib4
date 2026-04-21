@@ -40,6 +40,7 @@ universe issues with indexed families.
 * Show that `lineMap` agrees with `convexComboPair` where defined.
 * Show the usual associativity law for binary convex combinations follows from the `assoc` axiom.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -76,6 +76,7 @@ in analysis. In particular,
 Versions of these results are also given on the intervals `(-∞, a]` and `(-∞, +∞)`, as well as
 the corresponding versions of integration by parts.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

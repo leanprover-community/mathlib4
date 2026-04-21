@@ -48,6 +48,7 @@ such that
 
 smooth function, smooth bump function
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 noncomputable section

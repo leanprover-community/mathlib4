@@ -20,6 +20,7 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
   to functions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

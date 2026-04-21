@@ -19,6 +19,7 @@ into a separate file, not with the definition of `DomMulAct`.
 Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Group/Action/Hom.lean` and
 `SMulCommClass` instances saying that left and right actions commute.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

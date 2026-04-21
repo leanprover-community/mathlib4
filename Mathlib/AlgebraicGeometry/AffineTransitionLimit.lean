@@ -21,6 +21,7 @@ In this file, we develop API for inverse limits of schemes with affine transitio
 following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

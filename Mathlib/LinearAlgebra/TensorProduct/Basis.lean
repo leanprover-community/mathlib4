@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 This file defines various bases on the tensor product of modules,
 and shows that the tensor product of free modules is again free.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

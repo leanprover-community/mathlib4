@@ -25,6 +25,7 @@ bipointed types. Two-pointed types form a full subcategory of those.
 * [nLab, *Coalgebra of the real interval*]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

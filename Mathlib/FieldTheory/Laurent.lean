@@ -22,6 +22,7 @@ Implemented as the quotient of two Taylor expansions, over domains.
 An auxiliary definition is provided first to make the construction of the `AlgHom` easier,
   which works on `CommRing` which are not necessarily domains.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

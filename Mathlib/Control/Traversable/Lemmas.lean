@@ -20,6 +20,7 @@ This file proves basic properties of traversable and applicative functors and de
 
 Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

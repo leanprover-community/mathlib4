@@ -26,6 +26,7 @@ lemma.
 
 metric space, partition of unity, locally finite
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

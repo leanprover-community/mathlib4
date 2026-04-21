@@ -47,6 +47,7 @@ The main definitions are in the `AdjoinRoot` namespace.
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

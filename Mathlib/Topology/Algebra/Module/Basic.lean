@@ -19,6 +19,7 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 
 We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

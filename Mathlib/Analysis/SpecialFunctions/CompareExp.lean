@@ -27,6 +27,7 @@ finiteness theorem for limit cycles of polynomial ODEs with hyperbolic singulari
 stronger assumptions (e.g., `im z` is bounded from below and from above) are not available.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

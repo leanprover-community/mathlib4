@@ -21,6 +21,7 @@ finite-dimensional Hausdorff space over a complete nontrivially normed field.
 * `topDualPairing_isContPerfPair`: The `topDualPairing` is a continuous perfect pairing for
   finite-dimensional Hausdorff spaces over complete nontrivially normed fields.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

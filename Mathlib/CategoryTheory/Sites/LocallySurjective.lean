@@ -26,6 +26,7 @@ public import Mathlib.CategoryTheory.ShrinkYoneda
   surjective iff it is epi.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

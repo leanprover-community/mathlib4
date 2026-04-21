@@ -22,6 +22,7 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 - `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be a Hamiltonian cycle.
 - `SimpleGraph.IsHamiltonian`: Predicate for a graph to be Hamiltonian.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

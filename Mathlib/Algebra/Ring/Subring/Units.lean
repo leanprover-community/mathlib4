@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 # Unit subgroups of a ring
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

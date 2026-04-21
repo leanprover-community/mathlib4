@@ -13,6 +13,7 @@ public import Mathlib.Data.Finset.Density
 /-!
 # Theorems about the density of pointwise operations on finsets.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

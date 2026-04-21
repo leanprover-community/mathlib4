@@ -22,6 +22,7 @@ homotopy `SimplicialObject.Homotopy f g` (where the data involve
 a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin (n + 1)`.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

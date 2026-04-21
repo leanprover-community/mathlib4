@@ -24,6 +24,7 @@ For the prime case and involving `factorial` rather than `descFactorial`, see Wi
 * `Nat.prime_iff_fac_equiv_neg_one`
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

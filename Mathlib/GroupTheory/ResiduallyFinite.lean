@@ -18,6 +18,7 @@ In this file we define residually finite groups and prove some basic properties.
   finite index normal subgroups is trivial.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

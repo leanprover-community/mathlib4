@@ -60,6 +60,7 @@ instances reducible changes the behavior of `simp`).
 
 filter multiplication, filter addition, pointwise addition, pointwise multiplication,
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

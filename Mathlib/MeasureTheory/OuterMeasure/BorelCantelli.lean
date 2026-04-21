@@ -25,6 +25,7 @@ We prove several versions of this lemma:
 For the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
 see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

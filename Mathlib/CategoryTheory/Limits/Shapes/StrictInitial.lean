@@ -37,6 +37,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 ## References
 * https://ncatlab.org/nlab/show/strict+initial+object
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

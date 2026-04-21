@@ -39,6 +39,7 @@ TODO:
   precisely to allow the accumulation referred to in the previous item.
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 meta section
 

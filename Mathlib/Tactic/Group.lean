@@ -24,6 +24,7 @@ some `ring` invocations.
 
 group theory
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

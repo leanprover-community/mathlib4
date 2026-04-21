@@ -24,6 +24,7 @@ This file defines the subset sum of a finite subset of a commutative monoid.
 
 * [Melvyn B. Nathanson, *Inverse theorems for subset sums*][Nathanson1995]
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

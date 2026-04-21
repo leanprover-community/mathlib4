@@ -16,6 +16,7 @@ In this file, we promote the join construction to two pseudofunctors
 each variable.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

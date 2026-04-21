@@ -23,6 +23,7 @@ and related notions.
 * `ContMDiff.contMDiff_tangentMap` states that the bundled derivative
   of a `Cⁿ` function is `Cᵐ` when `m + 1 ≤ n`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

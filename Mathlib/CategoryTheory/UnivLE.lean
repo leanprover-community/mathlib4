@@ -14,6 +14,7 @@ public import Mathlib.Logic.UnivLE
 
 We show `UnivLE.{max u v, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

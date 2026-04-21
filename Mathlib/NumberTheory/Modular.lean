@@ -63,6 +63,7 @@ those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_r
 
 The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows Theorem VII.1 [serre1973].
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Algebraic.Basic
 This file lists some results on some elements in `MvPolynomial σ R` being transcendental
 over the base ring `R` and subrings `MvPolynomial.supported` of `MvPolynomial σ R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

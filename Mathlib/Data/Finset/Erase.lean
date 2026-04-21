@@ -20,6 +20,7 @@ public import Mathlib.Data.Multiset.Filter
 finite sets, finset
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

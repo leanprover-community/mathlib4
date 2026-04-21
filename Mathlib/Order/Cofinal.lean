@@ -24,6 +24,7 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 - Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

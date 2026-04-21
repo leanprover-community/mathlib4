@@ -127,6 +127,7 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

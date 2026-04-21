@@ -26,6 +26,7 @@ several basic results on it.
   The reason for using `1` as a default value instead of `0` is to have `multiplicity_eq_zero_iff`.
 * `FiniteMultiplicity a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

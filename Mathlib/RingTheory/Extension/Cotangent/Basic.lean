@@ -39,6 +39,8 @@ apply them to infinitesimal smooth (or versal) extensions later.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra

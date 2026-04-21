@@ -38,6 +38,7 @@ The concepts and laws are taken from
 
 traversable bitraversable iterator functor bifunctor applicative
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

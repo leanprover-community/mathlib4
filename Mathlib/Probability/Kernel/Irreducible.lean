@@ -35,6 +35,7 @@ that is, there is a positive probability of reaching any
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

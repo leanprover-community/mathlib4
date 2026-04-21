@@ -12,6 +12,7 @@ public import Mathlib.Data.PNat.Basic
 /-!
 # Equivalence between `ℕ+` and `nonZeroDivisors ℕ`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

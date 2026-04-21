@@ -15,6 +15,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.instNoZeroDivisors`: `R[X]` has no zero divisors if `R` does not
 * `Polynomial.instDomain`: `R[X]` is a domain if `R` is
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

@@ -14,6 +14,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 This file defines subrepresentations of a monoid representation.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

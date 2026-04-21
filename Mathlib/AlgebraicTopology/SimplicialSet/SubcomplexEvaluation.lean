@@ -17,6 +17,7 @@ when `X : SSet` and `j : SimplexCategoryᵒᵖ`. We use it to show that the func
 `Subcomplex.toSSetFunctor : X.Subcomplex ⥤ SSet` preserves filtered colimits.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

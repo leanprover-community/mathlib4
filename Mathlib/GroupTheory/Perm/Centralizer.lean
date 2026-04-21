@@ -97,6 +97,7 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
   compute this cardinality.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -18,6 +18,7 @@ In this file we give a sufficient criterion for a restriction of the functor
 `preadditiveCoyonedaObj G` to be full: this is the case if `C` is an abelian category and `G : C`
 is a projective separator such that every object in the relevant subcategory is a quotient of `G`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

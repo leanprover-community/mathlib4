@@ -47,6 +47,7 @@ which states that if `f` is sufficiently smooth, then
 
 Taylor polynomial, Taylor's theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

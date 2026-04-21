@@ -30,6 +30,7 @@ algebraic manipulation.
 * `Real.Wallis.W_le` and `Real.Wallis.le_W`: upper and lower bounds for `W n`.
 * `Real.tendsto_prod_pi_div_two`: the Wallis product formula.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

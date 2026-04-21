@@ -26,6 +26,7 @@ In this file we construct the transfer homomorphism.
 - `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

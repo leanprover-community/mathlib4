@@ -28,6 +28,7 @@ In this file we define a number of linear maps involving submodules of a module.
 
 submodule, subspace, linear map
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

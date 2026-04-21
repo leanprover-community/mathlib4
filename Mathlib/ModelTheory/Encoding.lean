@@ -33,6 +33,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   incompleteness
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

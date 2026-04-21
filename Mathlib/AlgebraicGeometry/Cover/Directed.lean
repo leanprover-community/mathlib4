@@ -23,6 +23,7 @@ be covered by a subcover of `𝒰`. In particular, if `𝒰` is a Zariski cover,
 Many natural covers are naturally directed, most importantly the cover of all affine
 opens of a scheme.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

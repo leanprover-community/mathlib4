@@ -50,6 +50,7 @@ Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

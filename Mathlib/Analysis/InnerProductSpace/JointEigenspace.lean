@@ -38,6 +38,7 @@ and a proof obligation that the basis vectors are eigenvectors.
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

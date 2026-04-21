@@ -19,6 +19,7 @@ multiplication is defined by `a • some b = some (a • b)` and `a • none = n
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

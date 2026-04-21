@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Group.Units.Defs
 /-!
 # Units in ordered monoids
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

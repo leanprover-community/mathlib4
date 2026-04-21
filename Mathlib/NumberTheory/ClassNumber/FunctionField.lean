@@ -20,6 +20,7 @@ on the class number.
 - `FunctionField.classNumber`: the class number of a function field is the (finite)
   cardinality of the class group of its ring of integers
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

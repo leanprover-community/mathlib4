@@ -24,6 +24,7 @@ the class of isomorphisms by `G`.
 (The dual statement is also obtained.)
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

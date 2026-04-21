@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.GroupTheory.Index
 
 /-! # Lemmas about units of ordered rings -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

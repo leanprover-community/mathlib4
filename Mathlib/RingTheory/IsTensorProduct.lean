@@ -32,6 +32,8 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 
 universe u v₁ v₂ v₃ v₄
 

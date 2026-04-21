@@ -46,6 +46,7 @@ in line with most presentations of forcing.
 ideal, cofinal, dense, countable, generic
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -37,6 +37,7 @@ Instead, we use weakest pre-existing typeclass that implies both
 
 ultrametric, nonarchimedean
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 open Metric NNReal

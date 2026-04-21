@@ -58,6 +58,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 We define a specific example of `AddContent`, called `AddContent.onIoc`, on the semiring of sets
 made of open-closed intervals, mapping `(a, b]` to `f b - f a`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

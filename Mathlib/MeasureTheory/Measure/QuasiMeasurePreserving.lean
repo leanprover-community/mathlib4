@@ -22,6 +22,7 @@ absolutely continuous with respect to `μb`).
   respect to `μa` and `μb`.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

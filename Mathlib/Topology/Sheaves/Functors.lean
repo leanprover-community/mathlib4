@@ -24,6 +24,7 @@ topological spaces X and Y.
   The adjunction between pullback and pushforward for sheaves on topological spaces.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

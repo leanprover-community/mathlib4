@@ -18,6 +18,7 @@ in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

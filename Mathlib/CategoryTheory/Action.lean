@@ -21,6 +21,7 @@ multiplication by `m`.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
 where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

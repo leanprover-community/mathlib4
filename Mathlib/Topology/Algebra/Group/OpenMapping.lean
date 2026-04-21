@@ -20,6 +20,7 @@ Note that a sigma-compactness assumption is necessary. Indeed, let `G` be the re
 the discrete topology, and `H` the real line with the usual topology. Both are locally compact
 groups, and the identity from `G` to `H` is continuous but not open.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

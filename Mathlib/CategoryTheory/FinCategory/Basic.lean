@@ -21,6 +21,7 @@ This does not seem to have had any practical payoff (i.e. making some definition
 so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

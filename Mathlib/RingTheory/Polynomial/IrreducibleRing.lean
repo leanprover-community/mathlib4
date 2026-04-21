@@ -26,6 +26,7 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 polynomial, irreducible ring, nilradical, prime ideal
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

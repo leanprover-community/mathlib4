@@ -50,6 +50,7 @@ of a regular `↑` coercion.
 
 matrix group, group, matrix inverse
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

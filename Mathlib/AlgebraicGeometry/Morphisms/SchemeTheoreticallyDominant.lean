@@ -23,6 +23,7 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
   quasicompact + scheme-theoretically dominant is stable under flat base change.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

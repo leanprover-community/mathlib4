@@ -61,6 +61,7 @@ to `bcf`.
 
 independence, bounded continuous functions
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

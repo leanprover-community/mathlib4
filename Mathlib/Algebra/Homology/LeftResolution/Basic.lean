@@ -22,6 +22,7 @@ This is used in order to construct a resolution functor
 This shall be used in order to construct functorial flat resolutions.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

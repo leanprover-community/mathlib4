@@ -30,6 +30,7 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

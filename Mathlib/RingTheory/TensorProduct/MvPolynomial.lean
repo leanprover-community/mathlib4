@@ -38,6 +38,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 * `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`
   are morphisms for the algebra structure by `MvPolynomial σ R`.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

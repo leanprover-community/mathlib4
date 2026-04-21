@@ -17,6 +17,7 @@ of presheaves of modules on `R` to the category of presheaves of
 modules on `F.op ⋙ R` is monoidal.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

@@ -26,6 +26,7 @@ We provide the multiplication versions in `Finset.prod_intervalGapsWithin_mul_pr
 Technically, we don't require pairwise disjointness or endpoints to be within `[a, b]` or even
 require that `a ≤ b`, but it makes the most sense if they are actually satisfied.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

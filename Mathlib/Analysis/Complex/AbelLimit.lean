@@ -29,6 +29,7 @@ left with angle less than `π`.
 * https://planetmath.org/proofofabelslimittheorem
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 

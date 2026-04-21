@@ -19,6 +19,7 @@ of them in one file for two reasons:
 - in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public meta section
 

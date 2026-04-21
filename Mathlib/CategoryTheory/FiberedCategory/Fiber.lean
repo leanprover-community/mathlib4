@@ -23,6 +23,8 @@ we define a functor `inducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 
 @[expose] public section
 
+set_option backward.defeqAttrib.useBackward true
+
 universe v₁ u₁ v₂ u₂ v₃ u₃
 
 namespace CategoryTheory

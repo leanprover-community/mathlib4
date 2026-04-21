@@ -15,6 +15,7 @@ In this file we use Zorn's lemma to prove that a partial order is atomic if ever
 `c`, `⊥ ∉ c`, has a lower bound not equal to `⊥`. We also prove the order dual version of this
 statement.
 -/
+set_option backward.defeqAttrib.useBackward true
 
 public section
 

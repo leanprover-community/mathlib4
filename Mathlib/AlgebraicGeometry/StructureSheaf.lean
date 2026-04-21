@@ -46,6 +46,7 @@ boundaries.
 
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 
 universe u

@@ -24,6 +24,7 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
   `Algebra.IsQuadraticExtension`, is normal.
 
 -/
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
