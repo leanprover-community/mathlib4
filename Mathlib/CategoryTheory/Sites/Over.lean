@@ -138,7 +138,7 @@ lemma overEquiv_preOneHypercover_sieve₁ {X : C} {Y : Over X} (E : PreOneHyperc
   rw [overEquiv_iff]
   refine ⟨fun ⟨k, b, hb₁, hb₂⟩ ↦ ⟨k, b.left, congr($(hb₁).left), congr($(hb₂).left)⟩, ?_⟩
   intro ⟨k, b, hb₁, hb₂⟩
-  refine ⟨k, Over.homMk b (by simpa using congr($(hb₁) ≫ (E.X i₁).hom).symm), ?_, ?_⟩ <;>
+  refine ⟨k, Over.homMk b (by simpa using congr($hb₁ ≫ (E.X i₁).hom).symm), ?_, ?_⟩ <;>
   · ext
     simpa
 
