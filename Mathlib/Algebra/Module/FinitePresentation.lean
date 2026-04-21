@@ -308,7 +308,7 @@ variable (R M) in
 theorem exists_exact_and_surjective [Module.FinitePresentation R M] :
     ∃ (n m : ℕ) (f : (Fin m → R) →ₗ[R] (Fin n → R)) (g : (Fin n → R) →ₗ[R] M),
       Function.Exact f g ∧ Function.Surjective g := by
-  obtain ⟨n, K, iso, S, hS⟩ := exists_fin R M
+  obtain ⟨n, K, e, S, hS⟩ := exists_fin R M
   let m := S.card
   let gens : Fin m → (Fin n → R) := Subtype.val ∘ (Finset.equivFin S).symm
   let f : (Fin m → R) →ₗ[R] (Fin n → R) := Fintype.linearCombination R gens
