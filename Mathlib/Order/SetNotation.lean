@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
+Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Yuyang Zhao
 -/
 module
 
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Notation3
 
 /-!
@@ -130,6 +131,56 @@ meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 
     | _ => pure stx
   return stx
 end delaborators
+
+section OrderSupSet
+
+variable [LE α]
+
+@[to_dual]
+theorem subset_upperBounds_lowerBounds (s : Set α) : s ⊆ upperBounds (lowerBounds s) :=
+  fun _ hx _ hy => hy hx
+
+@[to_dual]
+theorem IsGreatest.isLUB {s : Set α} {a : α} (h : IsGreatest s a) : IsLUB s a :=
+  ⟨h.2, fun _ hb => hb h.1⟩
+
+@[to_dual (attr := simp)]
+theorem isLUB_lowerBounds {s : Set α} {a : α} : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
+  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
+
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
+  protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
+
+@[to_dual existing]
+class OrderInfSet (α : Type*) [LE α] extends InfSet α where
+  protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)
+
+@[to_dual]
+theorem isLUB_sSup_of_isLUB [OrderSupSet α] {s : Set α} {a : α} :
+    IsLUB s a → IsLUB s (sSup s) :=
+  OrderSupSet.isLUB_sSup_of_isLUB _ _
+
+@[to_dual] protected alias IsLUB.isLUB_sSup := isLUB_sSup_of_isLUB
+
+@[to_dual]
+abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
+    OrderInfSet α where
+  sInf s := sSup (lowerBounds s)
+  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp (isLUB_sSup_of_isLUB h.isLUB)
+
+open Classical in
+@[to_dual]
+noncomputable abbrev OrderSupSet.choose (d : α) :
+    OrderSupSet α where
+  sSup s := if h : ∃ x, IsLUB s x then h.choose else d
+  isLUB_sSup_of_isLUB _ _ h := dif_pos (Exists.intro _ h) ▸ choose_spec _
+
+@[to_dual]
+theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
+    (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
+  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
+
+end OrderSupSet
 
 namespace Set
 

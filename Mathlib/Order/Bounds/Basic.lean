@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Upper / lower bounds
@@ -24,7 +24,7 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α β γ : Type*} {ι : Sort*}
 
 section
 
@@ -175,10 +175,6 @@ theorem IsLUB.mono (ha : IsLUB s a) (hb : IsLUB t b) (hst : s ⊆ t) : a ≤ b :
   IsLeast.mono hb ha <| upperBounds_mono_set hst
 
 @[to_dual]
-theorem subset_lowerBounds_upperBounds (s : Set α) : s ⊆ lowerBounds (upperBounds s) :=
-  fun _ hx _ hy => hy hx
-
-@[to_dual]
 theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBounds s) :=
   hs.mono (subset_upperBounds_lowerBounds s)
 
@@ -186,10 +182,6 @@ theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBou
 ### Conversions
 -/
 
-
-@[to_dual]
-theorem IsLeast.isGLB (h : IsLeast s a) : IsGLB s a :=
-  ⟨h.2, fun _ hb => hb h.1⟩
 
 @[to_dual]
 theorem IsLUB.upperBounds_eq (h : IsLUB s a) : upperBounds s = Ici a :=
@@ -615,15 +607,6 @@ theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
 theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b) :=
   isGreatest_singleton.insert _
 
-/-!
-#### Lower/upper bounds
--/
-
-
-@[to_dual (attr := simp)]
-theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
-  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
-
 end
 
 section Minimal
@@ -719,6 +702,58 @@ theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
 @[to_dual]
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
+
+@[to_dual]
+theorem IsLUB.sSup_eq [OrderSupSet α] {s : Set α} {a : α} (h : IsLUB s a) :
+    sSup s = a :=
+  h.isLUB_sSup.unique h
+
+@[to_dual]
+theorem IsLUB.iSup_eq [OrderSupSet α] {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
+    iSup f = a :=
+  h.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_singleton [OrderSupSet α] {a : α} : sSup {a} = a :=
+  isLUB_singleton.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_empty [OrderBot α] [OrderSupSet α] : sSup ∅ = (⊥ : α) :=
+  isLUB_empty.sSup_eq
+
+@[to_dual (attr := simp)]
+theorem sSup_univ [OrderTop α] [OrderSupSet α] : sSup univ = (⊤ : α) :=
+  isLUB_univ.sSup_eq
+
+@[to_dual]
+theorem sSup_pair {α} [SemilatticeSup α] [OrderSupSet α] {a b : α} : sSup {a, b} = a ⊔ b :=
+  isLUB_pair.sSup_eq
+
+@[to_dual iInf_of_isEmpty]
+theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
+  congr_arg sSup (range_eq_empty f)
+
+@[to_dual]
+theorem iSup_of_empty [OrderBot α] [OrderSupSet α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
+  (iSup_of_empty' f).trans sSup_empty
+
+@[to_dual]
+theorem iSup_const [OrderSupSet α] [Nonempty ι] : ⨆ _ : ι, a = a := by
+  rw [iSup, range_const, sSup_singleton]
+
+@[to_dual le_iInf_const]
+theorem iSup_const_le [OrderBot α] [OrderSupSet α] : ⨆ _ : ι, a ≤ a := by
+  obtain h | h := isEmpty_or_nonempty ι
+  · simp [iSup_of_empty]
+  · simp [iSup_const]
+
+@[to_dual]
+lemma iSup_unique [OrderSupSet α] [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+
+@[to_dual (attr := simp)]
+theorem iSup_bot [OrderBot α] [OrderSupSet α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
+  bot_unique iSup_const_le
 
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
     s.Subsingleton := fun _ hx _ hy =>
