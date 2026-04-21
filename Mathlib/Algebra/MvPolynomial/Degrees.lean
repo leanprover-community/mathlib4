@@ -26,6 +26,9 @@ monomial of $P$.
 * `MvPolynomial.degreeOf n p : ℕ` : the total degree of `p` with respect to the variable `n`.
   For example if `p = x⁴y+yz` then `degreeOf y p = 1`.
 
+* `MvPolynomial.leadingTermOf n p` : the polynomial given by the monomials of `p` whose degree with
+respect to the variable `n` is maximal.
+
 * `MvPolynomial.totalDegree p : ℕ` :
   the max of the sizes of the multisets `s` whose monomials `X^s` occur in `p`.
   For example if `p = x⁴y+yz` then `totalDegree p = 5`.
@@ -422,6 +425,120 @@ theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h 
   simp only [degreeOf, degrees_rename_of_injective h, Multiset.count_map_eq_count' f p.degrees h]
 
 end DegreeOf
+
+section LeadingTermOf
+
+/-! ### `leadingTermOf` -/
+
+/-- The sum of monomials with maximal power of `X n`. -/
+def leadingTermOf (n : σ) (p : MvPolynomial σ R) : MvPolynomial σ R :=
+    ∑ s ∈ p.support, ite (p.degreeOf n = s n) (monomial s (p.coeff s)) 0
+
+theorem leadingTermOf_def (n : σ) (p : MvPolynomial σ R) :
+    p.leadingTermOf n = ∑ s ∈ p.support, ite (p.degreeOf n = s n) (monomial s (p.coeff s)) 0 :=
+  rfl
+
+theorem leadingTermOf_zero (n : σ) :
+    (0 : MvPolynomial σ R).leadingTermOf n = 0 := by
+  simp [leadingTermOf_def]
+
+theorem leadingTermOf_one (n : σ) :
+    (1 : MvPolynomial σ R).leadingTermOf n = 1 := by
+  obtain (_ | _) := subsingleton_or_nontrivial R
+  · exact Subsingleton.eq_one (leadingTermOf n 1)
+  · simp [leadingTermOf_def]
+
+@[simp]
+theorem leadingTermOf_C (a : R) (n : σ) : (C a : MvPolynomial σ R).leadingTermOf n = C a := by
+  classical
+  by_cases h : a = 0 <;> simp [h, leadingTermOf_def, support_C]
+
+@[simp]
+theorem leadingTermOf_X (i j : σ) [Nontrivial R] :
+    (X j : MvPolynomial σ R).leadingTermOf i = X j := by
+  classical
+  by_cases h : i = j <;> simp [h, leadingTermOf_def, support_X, degreeOf_X, ← X_pow_eq_monomial]
+
+theorem degreeOf_leadingTermOf (n : σ) (p : MvPolynomial σ R) :
+    (p.leadingTermOf n).degreeOf n = p.degreeOf n := by
+  set d := p.degreeOf n with hd
+  rw [leadingTermOf_def, ← hd, degreeOf_eq_sup]
+  refine Nat.le_antisymm ?_ ?_
+  · simp only [Finset.sup_le_iff, mem_support_iff, coeff_sum]
+    intro b h
+    obtain ⟨k, h1, h2⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
+    have : d = k n := by
+      by_contra
+      simp [this] at h2
+    have hkb : k = b := by classical simp_all
+    rw [← hkb]
+    exact le_of_eq this.symm
+  · by_cases hp : p = 0; · simp [hp, hd]
+    obtain ⟨k ,h1, h2⟩ : ∃ k : σ →₀ ℕ, k ∈ p.support ∧ d = k n := by
+      rw [degreeOf_eq_sup] at hd
+      have := Finset.exists_mem_eq_sup p.support (support_nonempty.mpr hp) (fun m ↦ m n)
+      rwa [← hd] at this
+    have : k ∈ {s ∈ p.support | d = s n} := Finset.mem_filter.mpr ⟨h1, h2⟩
+    rw [h2] at this ⊢
+    by_cases hb : (⊥ : ℕ) < (k n)
+    · rw [Finset.le_sup_iff hb]
+      use k
+      simp only [mem_support_iff, coeff_sum, ne_eq, Std.le_refl, and_true]
+      rw [Finset.sum_eq_single k]
+      · classical
+        simp only [↓reduceIte, coeff_monomial]
+        exact mem_support_iff.mp h1
+      · intro b hbp hbk
+        by_cases h : k n = b n
+        · classical
+          simp [h, coeff_monomial, hbk]
+        · simp [h]
+      · intro hkp
+        classical
+        simpa [coeff_monomial] using hkp
+    · simp only [Nat.bot_eq_zero, not_lt, nonpos_iff_eq_zero] at hb
+      rw [hb]
+      exact Nat.zero_le _
+
+theorem leadingTermOf_mul_X (i j : σ) (f : MvPolynomial σ R) [Nontrivial R] :
+    (f * X j).leadingTermOf i  = f.leadingTermOf i * X j := by
+  rw [leadingTermOf_def, leadingTermOf_def, Finset.sum_mul]
+  apply Eq.symm
+  refine Finset.sum_of_injOn (fun a ↦ a + Finsupp.single j 1)
+    (add_left_injective (Finsupp.single j 1)).injOn (fun _ h ↦ by simpa using h) ?_ ?_
+  · intro a ha h
+    simp only [support_mul_X, Finset.mem_map, mem_support_iff, ne_eq, addRightEmbedding_apply] at ha
+    obtain ⟨b, hb⟩ := ha
+    simp only [mem_image, not_exists] at h
+    simpa [hb] using h b
+  · intro a ha
+    by_cases h : degreeOf i f = a i
+    · have : degreeOf i (f * X j) = (Finsupp.single j 1) i + a i := by
+        by_cases hij : i = j
+        · simp only [← hij, single_eq_same]
+          rw [← pow_one (X i), degreeOf_mul_X_self_pow_eq_add_of_ne_zero, h, add_comm]
+          contrapose! ha
+          simp [ha]
+        · rwa [single_eq_of_ne hij, degreeOf_mul_X_of_ne _ hij, zero_add]
+      ext b
+      simp [h, this, monomial_add_single, add_comm (a i)]
+    · by_cases hij : i = j
+      · simp only [← hij, h, ↓reduceIte, zero_mul, Finsupp.coe_add, Pi.add_apply, single_eq_same,
+        coeff_mul_X, right_eq_ite_iff]
+        have : degreeOf i (f * X i) ≠ a i + 1 := by
+          contrapose! h
+          rw [← pow_one (X i), degreeOf_mul_X_self_pow_eq_add_of_ne_zero] at h
+          · exact Nat.add_right_cancel h
+          · contrapose! ha
+            simp [ha]
+        exact fun h ↦ (not_neZero.mp fun a ↦ this h).symm
+      · have : degreeOf i (f * X j) ≠ a i := by
+          contrapose! h
+          rwa [← pow_one (X j), degreeOf_mul_X_pow_of_ne _ hij] at h
+        simp [h, single_eq_of_ne hij, this]
+
+end LeadingTermOf
+
 
 section TotalDegree
 

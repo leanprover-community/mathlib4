@@ -242,7 +242,10 @@ theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
   rw [binomCompLeft, coeff_apply_apply, LinearMap.smul_apply, binomialPow_smul_coeff _
     (compareOfLessAndEq_eq_lt.mp rfl)]
-  exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
+  refine finsum_congr fun m ↦ ?_
+  congr 2
+  simp [show (ofLex (m : Lex (ℤ × ℤ))).2 = m by rfl, show (ofLex (m : Lex (ℤ × ℤ))).1 = m by rfl]
+  abel_nf
 
 -- TODO : replace 2nd term on right with a version of Ring.choose that takes integer inputs.
 theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
@@ -293,7 +296,10 @@ theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
     HahnModule.of_symm_smul, HahnSeries.coeff_smul, binomialPow_smul_coeff _
     (compareOfLessAndEq_eq_lt.mp rfl), Int.cast_smul_eq_zsmul, Units.smul_def]
   congr 1
-  refine finsum_congr fun m ↦ by congr 2; simp; abel_nf
+  refine finsum_congr fun m ↦ ?_
+  congr 2
+  simp [show (ofLex (m : Lex (ℤ × ℤ))).2 = m by rfl, show (ofLex (m : Lex (ℤ × ℤ))).1 = m by rfl]
+  abel_nf
 
 end BinomComp
 
