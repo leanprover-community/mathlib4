@@ -201,7 +201,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor
-  · -- Note: in mathlib3 `contrapose` saw through `Function.Surjective`.
+  · -- Porting note: in mathlib3 `contrapose` saw through `Function.Surjective`.
     dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
@@ -213,7 +213,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU
-    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
+    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_setOf_isClopen.mem_nhds_iff.mp hUy
     classical
       let Z := of (ULift.{u} <| Fin 2)
       let g : Y ⟶ Z := CompHausLike.ofHom _

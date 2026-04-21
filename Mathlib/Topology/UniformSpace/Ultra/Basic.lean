@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.UniformSpace.Defs
-public import Mathlib.Topology.Bases
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces
@@ -206,18 +206,21 @@ lemma isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity (x : X) {V : SetRel X
 
 variable [IsUltraUniformity X]
 
-lemma nhds_basis_clopens (x : X) :
-    (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
+instance : ZeroDimensionalSpace X := by
+  refine ⟨.of_hasBasis_nhds fun x ↦ ?_⟩
   refine (nhds_basis_uniformity' (IsUltraUniformity.hasBasis)).to_hasBasis' ?_ ?_
-  · intro V ⟨hV, h_symm, h_trans⟩
-    exact ⟨ball x V, ⟨mem_ball_self _ hV,
-      isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity _ hV⟩, le_rfl⟩
-  · rintro u ⟨hx, hu⟩
+  · intro V ⟨hV, _, _⟩
+    exact ⟨_, ⟨isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity _ hV,
+      mem_ball_self _ hV⟩, le_rfl⟩
+  · rintro u ⟨hu, hx⟩
     simp [hu.right.mem_nhds_iff, hx]
 
-/-- A uniform space with a nonarchimedean uniformity is zero-dimensional. -/
-lemma _root_.TopologicalSpace.isTopologicalBasis_clopens :
-    TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s} :=
-  .of_hasBasis_nhds fun x ↦ by simpa [and_comm] using nhds_basis_clopens x
+@[deprecated inferInstance (since := "2026-03-31")]
+alias _root_.TopologicalSpace.isTopologicalBasis_clopens := UniformSpace.instZeroDimensionalSpace
+
+@[deprecated hasBasis_nhds_isClopen (since := "2026-03-31")]
+lemma nhds_basis_clopens (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
+  simp_rw [and_comm]
+  exact hasBasis_nhds_isClopen x
 
 end UniformSpace

@@ -19,63 +19,93 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X]
 
 section Profinite
 
-/-- A T0 space with a clopen basis is totally separated. -/
-theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
-    (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
+/-- A zero-dimensional topological space is one with a basis of clopen sets. These are the spaces of
+small inductive dimension ≤ 0. -/
+class ZeroDimensionalSpace (X : Type*) [TopologicalSpace X] where
+  isTopologicalBasis_setOf_isClopen : IsTopologicalBasis { s : Set X | IsClopen s }
+
+export ZeroDimensionalSpace (isTopologicalBasis_setOf_isClopen)
+
+theorem hasBasis_nhds_isClopen [ZeroDimensionalSpace X] (x : X) :
+    (𝓝 x).HasBasis (fun s ↦ IsClopen s ∧ x ∈ s) id :=
+  isTopologicalBasis_setOf_isClopen.nhds_hasBasis
+
+theorem exists_isClopen_mem_of_isOpen [ZeroDimensionalSpace X] {x : X} {U : Set X}
+    (hU : IsOpen U) (hx : x ∈ U) : ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
+  isTopologicalBasis_setOf_isClopen.mem_nhds_iff.1 (hU.mem_nhds hx)
+
+theorem ZeroDimensionalSpace.of_isOpen_of_nhds
+    (h : ∀ a (u : Set X), a ∈ u → IsOpen u → ∃ v, IsClopen v ∧ a ∈ v ∧ v ⊆ u) :
+    ZeroDimensionalSpace X :=
+  ⟨isTopologicalBasis_of_isOpen_of_nhds (fun _ ↦ IsClopen.isOpen) h⟩
+
+instance [DiscreteTopology X] : ZeroDimensionalSpace X := by
+  refine ⟨.of_hasBasis_nhds fun x ↦ ?_⟩
+  rw [nhds_discrete]
+  exact (Filter.hasBasis_pure x).to_hasBasis (fun _ _ ↦ ⟨{x}, by simp⟩) <| by simp
+
+instance [IndiscreteTopology X] : ZeroDimensionalSpace X := by
+  refine ⟨.of_hasBasis_nhds fun x ↦ ?_⟩
+  simp_rw [IndiscreteTopology.nhds_eq, IndiscreteTopology.isClopen_iff]
+  apply Filter.hasBasis_top.to_hasBasis <;> simp
+
+instance [T0Space X] [ZeroDimensionalSpace X] : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
   choose U hU using exists_isOpen_xor'_mem hxy
   obtain ⟨hU₀, hU₁⟩ := hU
   rcases hU₁ with hx | hy
-  · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
+  · choose V hV using isTopologicalBasis_setOf_isClopen.isOpen_iff.mp hU₀ x hx.1
     exact ⟨V, Vᶜ, hV.1.isOpen, hV.1.compl.isOpen, hV.2.1, notMem_subset hV.2.2 hx.2,
       (union_compl_self V).superset, disjoint_compl_right⟩
-  · choose V hV using h.isOpen_iff.mp hU₀ y hy.1
+  · choose V hV using isTopologicalBasis_setOf_isClopen.isOpen_iff.mp hU₀ y hy.1
     exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
       (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
 
+@[deprecated inferInstance (since := "2026-03-31")]
+alias totallySeparatedSpace_of_t0_of_basis_clopen :=
+  instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace
+
+instance [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X] : ZeroDimensionalSpace X := by
+  refine ⟨.of_hasBasis_nhds fun x ↦ ⟨fun U ↦ ⟨?_, ?_⟩⟩⟩
+  · have hx := totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
+    rw [connectedComponent_eq_iInter_isClopen] at hx
+    intro hU
+    let N := { s // IsClopen s ∧ x ∈ s }
+    rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
+    · exact ⟨s, ⟨hs, hs'⟩, hs''⟩
+    have : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
+    have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
+    have hdir : Directed Superset fun s : N => s.val := by
+      rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
+      exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
+    have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
+      rw [hx, mem_singleton_iff] at y_in
+      rwa [y_in]
+    exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
+  · rintro ⟨V, ⟨hV, hx⟩, hUV⟩
+    rw [mem_nhds_iff]
+    exact ⟨V, hUV, hV.isOpen, hx⟩
+
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 
-theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id :=
-  ⟨fun U => by
-    constructor
-    · have hx : connectedComponent x = {x} :=
-        totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
-      rw [connectedComponent_eq_iInter_isClopen] at hx
-      intro hU
-      let N := { s // IsClopen s ∧ x ∈ s }
-      rsuffices ⟨⟨s, hs, hs'⟩, hs''⟩ : ∃ s : N, s.val ⊆ U
-      · exact ⟨s, ⟨hs', hs⟩, hs''⟩
-      haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
-      have hNcl : ∀ s : N, IsClosed s.val := fun s => s.property.1.1
-      have hdir : Directed Superset fun s : N => s.val := by
-        rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
-        exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
-      have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
-        rw [hx, mem_singleton_iff] at y_in
-        rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
-    · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
-      rw [mem_nhds_iff]
-      exact ⟨V, hUV, V_op, hxV⟩⟩
+@[deprecated hasBasis_nhds_isClopen (since := "2026-03-31")]
+theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
+  simp_rw [and_comm]
+  exact hasBasis_nhds_isClopen x
 
-theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
-  intro x U hxU U_op
-  have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
-  rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
-  use V
-  tauto
+@[deprecated isTopologicalBasis_setOf_isClopen (since := "2026-03-31")]
+theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } :=
+  isTopologicalBasis_setOf_isClopen
 
-/-- Every member of an open set in a compact Hausdorff totally disconnected space
-  is contained in a clopen set contained in the open set. -/
+@[deprecated exists_isClopen_mem_of_isOpen (since := "2026-03-31")]
 theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
-  isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
+  exists_isClopen_mem_of_isOpen is_open memU
 
 end Profinite
 
@@ -83,16 +113,14 @@ section LocallyCompact
 
 variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 
-/-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
-theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
-    IsTopologicalBasis { s : Set H | IsClopen s } := by
-  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
+instance [TotallyDisconnectedSpace H] : ZeroDimensionalSpace H := by
+  refine .of_isOpen_of_nhds fun x U memU hU ↦ ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
-  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
+  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := exists_isClopen_mem_of_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
     refine ⟨comp.isClosed.isClosedEmbedding_subtypeVal.isClosed_iff_image_isClosed.1 VisClopen.1,
       ?_⟩
@@ -113,18 +141,18 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     apply f1.isOpenMap v f2
   use (↑) '' V, VisClopen', by simp [Vx], Subset.trans (by simp) sU
 
-/-- A locally compact Hausdorff space is totally disconnected
-  if and only if it is totally separated. -/
-theorem loc_compact_t2_tot_disc_iff_tot_sep :
-    TotallyDisconnectedSpace H ↔ TotallySeparatedSpace H := by
-  constructor
-  · intro h
-    exact totallySeparatedSpace_of_t0_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
-  apply TotallySeparatedSpace.totallyDisconnectedSpace
+@[deprecated inferInstance (since := "2026-03-31")]
+alias loc_compact_Haus_tot_disc_of_zero_dim :=
+  instZeroDimensionalSpaceOfTotallyDisconnectedSpace
 
-/-- A totally disconnected compact Hausdorff space is totally separated. -/
-instance (priority := 100) [TotallyDisconnectedSpace H] : TotallySeparatedSpace H :=
-  loc_compact_t2_tot_disc_iff_tot_sep.mp inferInstance
+/-- A locally compact Hausdorff space is totally disconnected
+if and only if it is totally separated. -/
+theorem totallyDisconnectedSpace_iff_totallySeparatedSpace :
+    TotallyDisconnectedSpace H ↔ TotallySeparatedSpace H :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2026-03-31")]
+alias loc_compact_t2_tot_disc_iff_tot_sep := totallyDisconnectedSpace_iff_totallySeparatedSpace
 
 /-- In a totally disconnected compact Hausdorff space `X`, if `Z ⊆ U` are subsets with `Z` closed
 and `U` open, there exists a clopen `C` with `Z ⊆ C ⊆ U`. -/
@@ -133,7 +161,7 @@ lemma exists_clopen_of_closed_subset_open {X : Type*}
     {Z U : Set X} (hZ : IsClosed Z) (hU : IsOpen U) (hZU : Z ⊆ U) :
     ∃ C : Set X, IsClopen C ∧ Z ⊆ C ∧ C ⊆ U := by
   -- every `z ∈ Z` has clopen neighborhood `V z ⊆ U`
-  choose V hV using fun (z : Z) ↦ compact_exists_isClopen_in_isOpen hU (hZU z.property)
+  choose V hV using fun (z : Z) ↦ exists_isClopen_mem_of_isOpen hU (hZU z.property)
   -- the `V z` cover `Z`
   have V_cover : Z ⊆ ⋃ z, V z := fun z hz ↦ mem_iUnion.mpr ⟨⟨z, hz⟩, (hV ⟨z, hz⟩).2.1⟩
   -- choose a finite subcover

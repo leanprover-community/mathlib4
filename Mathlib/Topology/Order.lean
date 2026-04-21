@@ -285,6 +285,10 @@ theorem IndiscreteTopology.isClosed_iff [IndiscreteTopology α] (C : Set α) :
     IsClosed C ↔ C = ∅ ∨ C = Set.univ := by
   simp [← isOpen_compl_iff, IndiscreteTopology.isOpen_iff, Or.comm]
 
+theorem IndiscreteTopology.isClopen_iff [IndiscreteTopology α] (C : Set α) :
+    IsClopen C ↔ C = ∅ ∨ C = Set.univ := by
+  rw [IsClopen, IndiscreteTopology.isClosed_iff, IndiscreteTopology.isOpen_iff, and_self]
+
 theorem dense_indiscrete [IndiscreteTopology α] {s : Set α} (h : s.Nonempty) : Dense s := by
   simp [dense_iff_inter_open, IndiscreteTopology.isOpen_iff, h]
 
@@ -689,7 +693,7 @@ theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
 
-
+@[simp]
 theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α] (a : α) :
     nhds a = ⊤ := by
   cases IndiscreteTopology.eq_top α

@@ -262,7 +262,7 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
 lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
     Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
   obtain (h | h) := isEmpty_or_nonempty ι
-  · simpa using .of_forall fun _ ↦ Subsingleton.elim ..
+  · simp
   refine nhds_top_basis.tendsto_right_iff.trans ?_
   rw [← Set.forall_mem_range (p := (∀ᶠ a in f, · < x a)), WithTop.range_coe]
   simp
@@ -270,7 +270,7 @@ lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) 
 lemma tendsto_coe_atTop [NoMaxOrder ι] :
     Tendsto ((↑) : ι → WithTop ι) atTop (𝓝 ⊤) := by
   obtain (h | h) := isEmpty_or_nonempty ι
-  · simpa using Subsingleton.elim ..
+  · simp
   rw [tendsto_nhds_top_iff]
   intro i
   filter_upwards [atTop_basis_Ioi.mem_of_mem (i := i) trivial]
