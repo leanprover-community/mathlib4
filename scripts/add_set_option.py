@@ -193,6 +193,7 @@ def make_process_module(
     options: list[str],
     timeout: int,
     traverser: DAGTraverser,
+    value: str = "false",
 ) -> Callable:
     """Create the per-module action callback."""
 
@@ -220,7 +221,7 @@ def make_process_module(
         while idx < len(lines):
             found = False
             for opt in options:
-                needle = set_option_line(opt).strip()
+                needle = set_option_line(opt, value).strip()
                 if needle in lines[idx]:
                     present.add(opt)
                     found = True
@@ -299,7 +300,7 @@ def make_process_module(
                 # Try each candidate combination of missing options
                 succeeded = False
                 for combo in candidates(missing):
-                    insert = [set_option_line(opt) for opt in combo]
+                    insert = [set_option_line(opt, value) for opt in combo]
                     new_lines = lines[:decl_start] + insert + lines[decl_start:]
                     filepath.write_text("".join(new_lines))
                     ok, try_output = traverser.lake_build(module_name, PROJECT_DIR, timeout)
@@ -400,6 +401,11 @@ def main():
         help="Only use this specific option (default: try all known options)",
     )
     parser.add_argument(
+        "--value",
+        default="false",
+        help="Value to set the option to (default: false)",
+    )
+    parser.add_argument(
         "--max-workers",
         type=int,
         default=None,
@@ -472,7 +478,7 @@ def main():
     # Traverse forward
     traverser = DAGTraverser()
     display = _AddDisplay(dag, open_on_failure=args.open)
-    action = make_process_module(options, args.timeout, traverser)
+    action = make_process_module(options, args.timeout, traverser, value=args.value)
 
     display.start(len(dag.modules))
     try:
