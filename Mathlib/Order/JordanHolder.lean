@@ -70,6 +70,8 @@ instances should not be a global instance.
 > See `JordanHolderModule.instJordanHolderLattice`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
