@@ -935,7 +935,6 @@ lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
   obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
@@ -953,7 +952,6 @@ lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
   obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
-  assumption
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :

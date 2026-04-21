@@ -310,7 +310,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
 @[simp] theorem trace_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W]
     [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)] [AlgEquivClass F K _ _]
     (f : F) (x : End K V) : (f x).trace K W = x.trace K V :=
-  have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
+  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ trace_conj' _ _
 
 @[simp] theorem _root_.Matrix.trace_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -318,7 +318,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).trace = x.trace := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.trace_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (f : Matrix m m K ≃ₐ[K] Matrix n n K)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 -- TODO: show `(f x).trace = x.trace` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
 -- (using Skolem-Noether)
