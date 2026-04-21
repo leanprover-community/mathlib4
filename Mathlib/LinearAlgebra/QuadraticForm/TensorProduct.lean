@@ -146,6 +146,7 @@ end QuadraticForm
 
 end InvertibleTwo
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.

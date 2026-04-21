@@ -111,6 +111,7 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by

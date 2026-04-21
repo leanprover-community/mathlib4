@@ -178,6 +178,7 @@ def swap : C × D ⥤ D × C where
   obj X := (X.2, X.1)
   map f := f.2 ×ₘ f.1
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Swapping the factors of a Cartesian product of categories twice is naturally isomorphic
 to the identity functor.
 -/
@@ -186,6 +187,7 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D) where
   hom := { app := fun X => 𝟙 X }
   inv := { app := fun X => 𝟙 X }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence, given by swapping factors, between `C × D` and `D × C`.
 -/
 @[simps]
@@ -238,6 +240,7 @@ def evaluationUncurried : C × (C ⥤ D) ⥤ D where
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The constant functor followed by the evaluation functor is just the identity. -/
 @[simps!]
 def Functor.constCompEvaluationObj (X : C) : Functor.const C ⋙ (evaluation C D).obj X ≅ 𝟭 D :=
@@ -264,11 +267,13 @@ def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
   obj a := (F.obj a, G.obj a)
   map f := F.map f ×ₘ G.map f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product `F.prod' G` followed by projection on the first component is isomorphic to `F` -/
 @[simps!]
 def prod'CompFst (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.fst B C ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product `F.prod' G` followed by projection on the second component is isomorphic to `G` -/
 @[simps!]
 def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.snd B C ≅ G :=
@@ -289,6 +294,7 @@ end Functor
 
 namespace NatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two natural transformations. -/
 @[simps! app_fst app_snd]
 def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I where
@@ -297,6 +303,7 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
 use instead `α.prod β` or `NatTrans.prod α β`. -/
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two natural transformations where both functors have the
 same source. -/
 @[simps! app_fst app_snd]
@@ -313,6 +320,7 @@ def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
 
 namespace NatIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two natural isomorphisms. -/
 @[simps]
 def prod {F F' : A ⥤ B} {G G' : C ⥤ D} (e₁ : F ≅ F') (e₂ : G ≅ G') :
@@ -324,6 +332,7 @@ end NatIso
 
 namespace Equivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
@@ -334,6 +343,7 @@ def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
 
 end Equivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
 @[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
@@ -342,6 +352,7 @@ def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj
 theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a = F.obj a :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `F` composed with evaluation is the same as evaluating `F.flip`. -/
 @[simps!]
 def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.flip.obj b :=
@@ -390,6 +401,7 @@ def functorProdToProdFunctor : (A ⥤ B × C) ⥤ (A ⥤ B) × (A ⥤ C) where
   obj F := ⟨F ⋙ CategoryTheory.Prod.fst B C, F ⋙ CategoryTheory.Prod.snd B C⟩
   map α := whiskerRight α _ ×ₘ whiskerRight α _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism for `functorProdFunctorEquiv` -/
 @[simps!]
 def functorProdFunctorEquivUnitIso :
@@ -398,12 +410,14 @@ def functorProdFunctorEquivUnitIso :
     Functor.prod'CompFst F.fst F.snd |>.prod (Functor.prod'CompSnd F.fst F.snd) |>.trans
       (prod.etaIso F) |>.symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism for `functorProdFunctorEquiv` -/
 @[simps!]
 def functorProdFunctorEquivCounitIso :
     functorProdToProdFunctor A B C ⋙ prodFunctorToFunctorProd A B C ≅ 𝟭 _ :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun X => prod.etaIso (F.obj X)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories between `(A ⥤ B) × (A ⥤ C)` and `A ⥤ (B × C)` -/
 @[simps]
 def functorProdFunctorEquiv : (A ⥤ B) × (A ⥤ C) ≌ A ⥤ B × C :=

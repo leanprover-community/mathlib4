@@ -269,6 +269,7 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     use (a + b)
     rw [map_add, ha, hb]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The forwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -280,11 +281,13 @@ noncomputable def baseChangeFromBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeFromBaseChange_apply (x : P.toExtension.baseChange.Ring) :
     dsimp% (P.baseChangeFromBaseChange T).toRingHom x = MvPolynomial.algebraTensorAlgEquiv R T x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (T) in
 set_option backward.isDefEq.respectTransparency false in
 /-- The backwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
@@ -296,6 +299,7 @@ noncomputable def baseChangeToBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
     dsimp% (P.baseChangeToBaseChange T).toRingHom x =
@@ -571,6 +575,7 @@ def toExtendScalars (P : Generators R T ι) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {P P'} in
 /-- Reinterpret a hom between generators as a hom between extensions. -/
@@ -582,10 +587,12 @@ def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S
   toRingHom_algebraMap x := by simp
   algebraMap_toRingHom x := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
@@ -602,6 +609,7 @@ lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
@@ -615,6 +623,7 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- FIXME: `simpNF` times out synthesizing
 -- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.

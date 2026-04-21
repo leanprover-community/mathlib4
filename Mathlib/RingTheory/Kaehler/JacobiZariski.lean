@@ -66,6 +66,7 @@ lemma Cotangent.surjective_map_ofComp :
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Extension.Cotangent in
 /--
@@ -351,6 +352,7 @@ def δ :
     (Cotangent.surjective_map_ofComp Q P)
     (CotangentSpace.map_toComp_injective Q P)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by

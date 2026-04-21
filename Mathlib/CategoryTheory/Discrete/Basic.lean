@@ -188,6 +188,7 @@ lemma functor_ext {I : Type u₁} {G F : Discrete I ⥤ C} (h : (i : I) → G.ob
   · intro I; rw [h]
   · intro ⟨X⟩ ⟨Y⟩ ⟨⟨p⟩⟩; simp only at p; induction p; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The discrete functor induced by a composition of maps can be written as a
 composition of two discrete functors.
 -/
@@ -304,6 +305,7 @@ lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
   rw [iff_iff_eq, discreteEquiv.exists_congr_left]
   simp [discreteEquiv]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
 @[simps]
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :

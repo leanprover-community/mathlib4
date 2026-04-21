@@ -64,6 +64,7 @@ noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
   map {_ _} := Fintype.equivFin _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed category (`AsType α`) is equivalent to `ObjAsType α`. -/
 noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α where

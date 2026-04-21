@@ -127,6 +127,7 @@ section Ring
 variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {R M}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isometry sending `(Q.prod <| -Q)` to `(QuadraticForm.dualProd R M)`.
 
 This is `σ` from Proposition 4.8, page 84 of

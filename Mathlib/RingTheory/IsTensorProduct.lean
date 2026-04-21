@@ -176,6 +176,7 @@ variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
  [Module R M₁₂] [Module S M₁₂] [IsScalarTower R S M₁₂]
  [Module R M₂₃] [Module S M₂₃] [IsScalarTower R S M₂₃]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation): Use the more linear `IsTensorProduct.assoc`. -/
 private noncomputable def assocAux
     (f : M₁ →ₗ[R] M₂ →ₗ[S] M₁₂) (hf : IsTensorProduct (f.restrictScalars₁₂ R R))
@@ -215,6 +216,7 @@ private lemma assocAux_tmul (x₁ : M₁) (x₂ : M₂) (x₃ : M₃) :
   have : hf.equiv.symm (f x₁ x₂) = x₁ ⊗ₜ x₂ := hf.equiv_symm_apply _ _
   simp [IsTensorProduct.assocAux, this]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 This is the canonical isomorphism `(M₁ ⊗[R] M₂) ⊗[S] M₃ ≃ₗ[T] M₁ ⊗[R] (M₂ ⊗[S] M₃)`.
 We state this for a general `M₁₂ = M₁ ⊗[R] M₂` and `M₂₃ = M₂ ⊗[R] M₃`.

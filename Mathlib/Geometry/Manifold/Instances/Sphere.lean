@@ -467,6 +467,7 @@ theorem contMDiff_neg_sphere {m : ℕ∞ω} {n : ℕ} [Fact (finrank ℝ E = n +
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     stereographic' n (-v) v = 0 := by

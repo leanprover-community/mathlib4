@@ -154,6 +154,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (decomposedTo J).Full where
   map_surjective := by

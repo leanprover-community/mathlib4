@@ -583,6 +583,7 @@ theorem LinearMap.associated_det_comp_equiv {N : Type*} [AddCommGroup N] [Module
 
 namespace Module.Basis
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The determinant of a family of vectors with respect to some basis, as an alternating
 multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where

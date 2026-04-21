@@ -564,6 +564,7 @@ namespace NatTrans
 
 variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
   (MorphismProperty.isomorphisms D).arrow_mk_iso_iff

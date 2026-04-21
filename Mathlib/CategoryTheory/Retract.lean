@@ -140,6 +140,7 @@ then `F.map f` is a retract of `F.map g` for any functor `F`. -/
 def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
   Retract.map h F.mapArrow
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[simps]
@@ -148,6 +149,7 @@ def op : RetractArrow f.op g.op where
   r := Arrow.homMk (h.i.right.op) (h.i.left.op) (by simp [← op_comp])
   retract := by ext <;> simp [← op_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` in the opposite category is a retract of `g`,
 then `f.unop` is a retract of `g.unop`. -/
@@ -170,6 +172,7 @@ def retract {X Y : C} (e : X ≅ Y) : Retract X Y where
 
 end Iso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
 the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
 @[simps]

@@ -40,6 +40,7 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
   obj X := ((X.1, X.2.1), X.2.2)
   map := @fun _ _ f => (f.1 ×ₘ f.2.1) ×ₘ f.2.2
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
 @[simps]

@@ -125,6 +125,7 @@ def projMap {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
   eqToHom (proj_eq a).symm ≫ (p.map φ) ≫ eqToHom (proj_eq b)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For any homomorphism `φ` in a fiber `Fib S`, its image under `ι S` lies over `𝟙 S`. -/
 instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((ι S).map φ) := by
   apply of_fac p _ _ (proj_eq a) (proj_eq b)

@@ -124,6 +124,7 @@ lemma mapEquivMonic_symm_map_algebraMap
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
   rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
@@ -148,6 +149,7 @@ lemma universalFactorizationMap_freeMonic :
   simp [universalFactorizationMap]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma universalFactorizationMap_comp_map :
     (universalFactorizationMap S n m k hn).toRingHom.comp (map (algebraMap R S)) =
     .comp (Algebra.TensorProduct.lift (S := R)

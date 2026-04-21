@@ -148,6 +148,7 @@ def inrCompInrCompInverseAssociator :
     inr_ D E ⋙ inr_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ inr_ (C ⊕ D) E :=
   isoWhiskerLeft (inr_ _ _) (inrCompInverseAssociator C D E) ≪≫ Functor.inrCompSum' _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of sums of categories.
 -/
 @[simps functor inverse]

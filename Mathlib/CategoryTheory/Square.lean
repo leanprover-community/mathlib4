@@ -158,6 +158,7 @@ def flip (sq : Square C) : Square C where
   f₃₄ := sq.f₂₄
   fac := sq.fac.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor which flips commutative squares. -/
 @[simps]
 def flipFunctor : Square C ⥤ Square C where
@@ -168,6 +169,7 @@ def flipFunctor : Square C ⥤ Square C where
       τ₃ := φ.τ₂
       τ₄ := φ.τ₄ }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping commutative squares is an auto-equivalence. -/
 @[simps]
 def flipEquivalence : Square C ≌ Square C where
@@ -176,6 +178,7 @@ def flipEquivalence : Square C ≌ Square C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
@@ -201,6 +204,7 @@ def fromArrowArrowFunctor : Arrow (Arrow C) ⥤ Square C where
       comm₂₄ := φ.right.w.symm
       comm₃₄ := Arrow.rightFunc.congr_map φ.w.symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Square C ≌ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the left morphism of `sq`
 to the right morphism of `sq`. -/
@@ -211,6 +215,7 @@ def arrowArrowEquivalence : Square C ≌ Arrow (Arrow C) where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `Square C ⥤ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/
@@ -236,6 +241,7 @@ def fromArrowArrowFunctor' : Arrow (Arrow C) ⥤ Square C where
       comm₂₄ := Arrow.rightFunc.congr_map φ.w.symm
       comm₃₄ := φ.right.w.symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Square C ≌ Arrow (Arrow C)` which sends a
 commutative square `sq` to the obvious arrow from the top morphism of `sq`
 to the bottom morphism of `sq`. -/
@@ -290,6 +296,7 @@ protected def unop (sq : Square Cᵒᵖ) : Square C where
   f₃₄ := sq.f₁₃.unop
   fac := Quiver.Hom.op_inj sq.fac
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(Square C)ᵒᵖ ⥤ Square Cᵒᵖ`. -/
 @[simps]
 def opFunctor : (Square C)ᵒᵖ ⥤ Square Cᵒᵖ where
@@ -304,6 +311,7 @@ def opFunctor : (Square C)ᵒᵖ ⥤ Square Cᵒᵖ where
       comm₂₄ := Quiver.Hom.unop_inj (by simp)
       comm₃₄ := Quiver.Hom.unop_inj (by simp) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor `(Square Cᵒᵖ)ᵒᵖ ⥤ Square Cᵒᵖ`. -/
 def unopFunctor : (Square Cᵒᵖ)ᵒᵖ ⥤ Square C where
   obj sq := sq.unop.unop
@@ -356,6 +364,7 @@ def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `F.mapSquare ⟶ G.mapSquare` induces
 by a natural transformation `F ⟶ G`. -/
 @[simps]

@@ -379,6 +379,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=

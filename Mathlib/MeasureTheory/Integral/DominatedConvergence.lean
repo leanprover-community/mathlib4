@@ -106,6 +106,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
       ‖∑ n ∈ s, F n a‖ ≤ ∑ n ∈ s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
       _ ≤ ∑' n, bound n a := has.sum_le_tsum _ (fun n _ => ha0 n)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by

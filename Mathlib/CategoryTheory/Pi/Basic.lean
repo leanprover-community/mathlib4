@@ -75,6 +75,7 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 
 variable (I)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
@@ -89,6 +90,7 @@ example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 variable {I}
 variable {K : Type w₂}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
@@ -103,6 +105,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
   { app := fun X b => 𝟙 (X (g (f b)))
     naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
@@ -235,6 +238,7 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
 -/
 @[simps!]
@@ -259,6 +263,7 @@ variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 variable {F G : ∀ i, C i ⥤ D i}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of natural isomorphisms into a single natural isomorphism.
 -/
 @[simps]
@@ -310,6 +315,7 @@ def Pi.eqToEquivalenceFunctorIso (f : J → I) {i' j' : J} (h : i' = j') :
 
 attribute [local simp] eqToHom_map
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Reindexing a family of categories gives equivalent `Pi` categories. -/
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
@@ -327,6 +333,7 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
     (leftUnitor _).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]
 def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (C' i)] :
@@ -346,6 +353,7 @@ namespace Equivalence
 variable {C}
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Assemble an `I`-indexed family of equivalences of categories
 into a single equivalence. -/
 @[simps]

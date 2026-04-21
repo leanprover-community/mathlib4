@@ -42,6 +42,7 @@ lemma of_le (P Q : MorphismProperty C) (F : C ⥤ D) (hQ : Q.IsInvertedBy F) (h 
     P.IsInvertedBy F :=
   fun _ _ _ hf => hQ _ (h _ hf)
 
+set_option backward.defeqAttrib.useBackward true in
 theorem of_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (hF : W.IsInvertedBy F) (G : C₂ ⥤ C₃) :
     W.IsInvertedBy (F ⋙ G) := fun X Y f hf => by
@@ -49,24 +50,28 @@ theorem of_comp {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Cate
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem op {W : MorphismProperty C} {L : C ⥤ D} (h : W.IsInvertedBy L) : W.op.IsInvertedBy L.op :=
   fun X Y f hf => by
   haveI := h f.unop hf
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem rightOp {W : MorphismProperty C} {L : Cᵒᵖ ⥤ D} (h : W.op.IsInvertedBy L) :
     W.IsInvertedBy L.rightOp := fun X Y f hf => by
   haveI := h f.op hf
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem leftOp {W : MorphismProperty C} {L : C ⥤ Dᵒᵖ} (h : W.IsInvertedBy L) :
     W.op.IsInvertedBy L.leftOp := fun X Y f hf => by
   haveI := h f.unop hf
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem unop {W : MorphismProperty C} {L : Cᵒᵖ ⥤ Dᵒᵖ} (h : W.op.IsInvertedBy L) :
     W.IsInvertedBy L.unop := fun X Y f hf => by
   haveI := h f.op hf

@@ -231,6 +231,7 @@ namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :
