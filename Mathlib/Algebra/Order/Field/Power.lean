@@ -62,7 +62,7 @@ alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
-@[simp]
+@[simp, push]
 theorem abs_zpow (a : α) (p : ℤ) : |a ^ p| = |a| ^ p := map_zpow₀ absHom a p
 
 theorem abs_neg_one_zpow (p : ℤ) : |(-1 : α) ^ p| = 1 := by simp
