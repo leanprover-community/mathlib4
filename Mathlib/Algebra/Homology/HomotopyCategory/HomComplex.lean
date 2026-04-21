@@ -728,7 +728,7 @@ def isKernel (hm : n + 1 = m) :
           #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
           this was just `cat_disch`. -/
           simp +instances only [HomComplex_X, map_add]
-          rfl})
+          rfl })
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
 
 end Cocycle

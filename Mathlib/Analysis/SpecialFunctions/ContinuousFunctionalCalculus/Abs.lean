@@ -147,7 +147,6 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :

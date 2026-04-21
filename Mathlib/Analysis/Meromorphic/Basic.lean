@@ -401,9 +401,7 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
   {x : 𝕜}
 
-/--
-The composition of a meromorphic and an analytic function is meromorphic.
--/
+/-- The composition of a meromorphic and an analytic function is meromorphic. -/
 @[fun_prop]
 lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
     (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) :
@@ -428,7 +426,7 @@ lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
 lemma meromorphicAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {f : 𝕜 → E}
     {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
     MeromorphicAt (f ∘ g) x ↔ MeromorphicAt f (g x) := by
-  refine ⟨fun hf ↦ ?_, (MeromorphicAt.comp_analyticAt · hg)⟩
+  refine ⟨fun hf ↦ ?_, by fun_prop⟩
   let r := hg.hasStrictDerivAt.localInverse _ _ _ hg'
   have hra : AnalyticAt 𝕜 r (g x) := hg.analyticAt_localInverse hg'
   have : r (g x) = x := HasStrictFDerivAt.localInverse_apply_image ..
@@ -655,7 +653,7 @@ theorem sum (h : ∀ σ ∈ s, Meromorphic (G σ)) :
 
 @[fun_prop]
 theorem finsum (h : ∀ σ, Meromorphic (F σ)) :
-    Meromorphic (∑ᶠ σ , F σ) := fun x ↦ MeromorphicAt.finsum (h · x)
+    Meromorphic (∑ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finsum (h · x)
 
 @[to_fun (attr := fun_prop)]
 lemma sub (hf : Meromorphic f) (hg : Meromorphic g) :
@@ -678,7 +676,7 @@ theorem prod (h : ∀ σ ∈ s, Meromorphic (F σ)) :
 
 @[fun_prop]
 theorem finprod (h : ∀ σ, Meromorphic (F σ)) :
-    Meromorphic (∏ᶠ σ , F σ) := fun x ↦ MeromorphicAt.finprod (h · x)
+    Meromorphic (∏ᶠ σ, F σ) := fun x ↦ MeromorphicAt.finprod (h · x)
 
 @[to_fun (attr := fun_prop)]
 lemma div {f g : 𝕜 → 𝕜'} (hf : Meromorphic f) (hg : Meromorphic g) :

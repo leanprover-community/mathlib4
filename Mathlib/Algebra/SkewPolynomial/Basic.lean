@@ -88,7 +88,7 @@ open Function Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
 endowed with a skewed convolution product. -/
-def SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
+abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
 
 namespace SkewPolynomial
 
@@ -109,23 +109,6 @@ lemma zero_def : (0 : SkewPolynomial R) = (0 : SkewMonoidAlgebra R (Multiplicati
 
 variable {S S₁ S₂ : Type*}
 
-instance [Semiring S] [Module S R] : Module S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instModule
-
-instance [Semiring S₁] [Semiring S₂] [Module S₁ R] [Module S₂ R]
-    [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulCommClass
-
-instance [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulZeroClass
-
-instance [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
-    [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instIsScalarTower
-
-instance [Subsingleton R] : Unique (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instUniqueOfSubsingleton
-
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.
 -/
@@ -140,7 +123,6 @@ lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
