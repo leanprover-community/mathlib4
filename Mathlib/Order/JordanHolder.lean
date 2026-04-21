@@ -288,17 +288,36 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
 set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
-    (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) :=
+    (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) := by
   let e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
     calc
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
-  ⟨e, fun i => by
-    refine Fin.lastCases ?_ ?_ i
-    · simpa [e, apply_last] using hlast
-    · intro i
-      simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
+  have he_last : e (Fin.last s₁.length) = Fin.last s₂.length := by
+    simp [e, finSuccEquivLast_last, Functor.mapEquiv_apply]
+  have he_castSucc (j : Fin s₁.length) :
+      e j.castSucc = (hequiv.choose j).castSucc := by
+    simp [e, finSuccEquivLast_castSucc, Functor.mapEquiv_apply]
+  refine ⟨e, fun i => ?_⟩
+  refine Fin.lastCases ?_ ?_ i
+  · show Iso ((snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).castSucc,
+        (snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).succ)
+      ((snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).castSucc,
+        (snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).succ)
+    rw [he_last]
+    simpa [apply_last] using hlast
+  · intro i
+    have hi : i.val < s₁.length := by simpa using i.isLt
+    let j : Fin s₁.length := ⟨i.val, hi⟩
+    have heq : i.castSucc = (j : Fin s₁.length).castSucc := by
+      apply Fin.ext; simp [j]
+    show Iso ((snoc s₁ x₁ hsat₁).toFun i.castSucc.castSucc,
+        (snoc s₁ x₁ hsat₁).toFun i.castSucc.succ)
+      ((snoc s₂ x₂ hsat₂).toFun (e i.castSucc).castSucc,
+        (snoc s₂ x₂ hsat₂).toFun (e i.castSucc).succ)
+    rw [heq, he_castSucc]
+    simpa [snoc_castSucc, ← Fin.castSucc_succ] using hequiv.choose_spec j
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
   simpa using Fintype.card_congr h.choose
