@@ -84,7 +84,7 @@ A category has all countable colimits if every functor `J ⥤ C` with a `Countab
 instance and `J : Type` has a colimit.
 -/
 class HasCountableColimits : Prop where
-  /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
+  /-- `C` has all colimits over any type `J` whose objects and morphisms lie in the same universe
   and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
@@ -135,7 +135,7 @@ attribute [local instance] IsFiltered.nonempty
 
 variable {C} [Preorder J] [IsFiltered J]
 
-/-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
+/-- The object part of the final functor `ℕ ⥤ J` -/
 noncomputable def sequentialFunctor_obj : ℕ → J := fun
   | .zero => (exists_surjective_nat _).choose 0
   | .succ n => (IsFilteredOrEmpty.cocone_objs ((exists_surjective_nat _).choose n)
@@ -147,8 +147,8 @@ theorem sequentialFunctor_map : Monotone (sequentialFunctor_obj J) :=
       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
 
 /--
-The initial functor `ℕᵒᵖ ⥤ J`, which allows us to turn cofiltered limits over countable preorders
-into sequential limits.
+The final functor `ℕ ⥤ J`, which allows us to turn filtered colimits over countable preorders
+into sequential colimits.
 -/
 noncomputable def sequentialFunctor : ℕ ⥤ J where
   obj n := sequentialFunctor_obj J n
