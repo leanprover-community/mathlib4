@@ -201,7 +201,7 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
 lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rcases eq_or_ne x 0 with rfl | hx
-  · simp [Set.singleton_zero, Ideal.span_zero, map_eq_zero_iff _ hv.hom_inj]
+  · simp [Set.singleton_zero, map_eq_zero_iff _ hv.hom_inj]
   ext
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
 
@@ -219,7 +219,7 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
   constructor <;> rintro ⟨x, hx⟩
   · refine ⟨(v ∘ algebraMap O F) x, ?_, ?_⟩
     · refine Set.mem_image_of_mem _ ?_
-      simp [hx, Ideal.mem_span_singleton_self]
+      simp [hx]
     · intro y hy
       simp only [Function.comp_apply, hx, Ideal.submodule_span_eq, Set.mem_image,
         SetLike.mem_coe, Ideal.mem_span_singleton] at hy

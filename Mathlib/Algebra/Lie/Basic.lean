@@ -362,16 +362,6 @@ instance : LinearMapClass (L₁ →ₗ⁅R⁆ L₂) R L₁ L₂ where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
 
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
-
 @[simp]
 theorem map_lie (f : L₁ →ₗ⁅R⁆ L₂) (x y : L₁) : f ⁅x, y⁆ = ⁅f x, f y⁆ :=
   LieHom.map_lie' f
@@ -715,16 +705,6 @@ theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M →
 instance : LinearMapClass (M →ₗ⁅R,L⁆ N) R M N where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
-
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
 
 @[simp]
 theorem map_lie (f : M →ₗ⁅R,L⁆ N) (x : L) (m : M) : f ⁅x, m⁆ = ⁅x, f m⁆ :=

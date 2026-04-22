@@ -255,7 +255,6 @@ theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι
   use {Classical.arbitrary ι}
   simp only [h, Finset.sup_singleton]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
@@ -367,7 +366,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 /-- A family of seminorms inducing a T₁ topology is separating. -/
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
-  have := ((t1Space_TFAE E).out 0 9).mp (inferInstanceAs <| T1Space E)
+  have := ((t1Space_TFAE E).out 0 9).mp (inferInstance : T1Space E)
   by_contra! h
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
@@ -423,7 +422,6 @@ section TopologicalSpace
 
 variable [t : TopologicalSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem SeminormFamily.withSeminorms_of_nhds [IsTopologicalAddGroup E] (p : SeminormFamily 𝕜 E ι)
     (h : 𝓝 (0 : E) = p.moduleFilterBasis.toFilterBasis.filter) : WithSeminorms p := by
   refine
@@ -604,7 +602,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
       have : c • p.ball 0 (‖c⁻¹‖) ⊆ c • s := by
         simpa [smul_ball_zero c_ne, ← norm_mul, c_ne] using hc
       rwa [smul_set_subset_smul_set_iff₀ c_ne] at this
-    apply Filter.mem_of_superset _ this
+    grw [← this]
     apply FilterBasis.mem_filter_of_mem
     change p.ball 0 (‖c⁻¹‖) ∈ SeminormFamily.basisSets (fun (i : Fin 1) ↦ p)
     apply SeminormFamily.basisSets_singleton_mem _ 0
@@ -614,7 +612,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     which contains `c • p.ball 0 1` for some nonzero `c`. The latter set is a neighborhood of zero
     for the topology thanks to the topological vector space assumption. -/
     rcases (FilterBasis.mem_filter_iff _).1 hs with ⟨t, ht, ts⟩
-    suffices t ∈ 𝓝 0 from Filter.mem_of_superset this ts
+    grw [← ts]
     rcases (SeminormFamily.basisSets_iff _).1 ht with ⟨w, r, r_pos, hw⟩
     rcases eq_or_ne w ∅ with rfl | w_ne
     · simp only [ball, Finset.sup_empty, sub_zero, coe_bot, Pi.zero_apply, r_pos, setOf_true] at hw
@@ -632,7 +630,7 @@ theorem withSeminorms_iff_mem_nhds_isVonNBounded [IsTopologicalAddGroup E]
     have : c • p.ball 0 1 ⊆ p.ball 0 r := by
       rw [smul_ball_zero c_ne]
       exact ball_mono (by simpa using hc.le)
-    apply Filter.mem_of_superset ?_ this
+    grw [← this]
     simpa using smul_mem_nhds_smul₀ c_ne h
 
 end NontriviallyNormedField
@@ -919,7 +917,6 @@ open LocallyConvexSpace
 variable [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E] [Module 𝕜 E] [Module ℝ E]
   [IsScalarTower ℝ 𝕜 E] [TopologicalSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     LocallyConvexSpace ℝ E := by
   have := hp.topologicalAddGroup

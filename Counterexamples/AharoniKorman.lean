@@ -892,7 +892,7 @@ lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) 
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
   rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
-  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} ?_ h
+  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} h
 
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of

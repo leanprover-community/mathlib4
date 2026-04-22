@@ -65,7 +65,6 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`. -/
 abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
-set_option backward.isDefEq.respectTransparency false in
 open LaurentPolynomial in
 /-- An Lie algebra isomorphism between the Loop algebra (with `A = ℤ`) and the tensor product with
 Laurent polynomials. -/
@@ -378,7 +377,6 @@ def residuePairing [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R R]
   map_add' x y := by ext; simp [sum_add]
   map_smul' r x := by ext; simp [-smul_eq_mul, smul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 open LieModule in
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. When `A = ℤ`, the alternating
 condition amounts to the fact that Res f df = 0. -/
@@ -409,7 +407,6 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
       (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm (residuePairing R A L Φ x y) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open LieModule in
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
 @[simps]

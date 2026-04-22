@@ -151,85 +151,61 @@ theorem TendstoUniformlyOnFilter.mul (hf : TendstoUniformlyOnFilter f g l l')
   fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
-attribute [to_additive existing] TendstoUniformlyOnFilter.fun_mul
-
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOnFilter.div (hf : TendstoUniformlyOnFilter f g l l')
     (hf' : TendstoUniformlyOnFilter f' g' l l') : TendstoUniformlyOnFilter (f / f') (g / g') l l' :=
   fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOnFilter (hf.prodMk hf')) u hu).diag_of_prod_left
 
-attribute [to_additive existing] TendstoUniformlyOnFilter.fun_div
-
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOnFilter.inv (hf : TendstoUniformlyOnFilter f g l l') :
     TendstoUniformlyOnFilter (f⁻¹) (g⁻¹) l l' :=
   fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformlyOnFilter hf u hu
-
-attribute [to_additive existing] TendstoUniformlyOnFilter.fun_inv
 
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOn.mul (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f * f') (g * g') l s := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
 
-attribute [to_additive existing] TendstoUniformlyOn.fun_mul
-
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOn.div (hf : TendstoUniformlyOn f g l s)
     (hf' : TendstoUniformlyOn f' g' l s) : TendstoUniformlyOn (f / f') (g / g') l s := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformlyOn (hf.prodMk hf')) u hu).diag_of_prod
-
-attribute [to_additive existing] TendstoUniformlyOn.fun_div
 
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformlyOn.inv (hf : TendstoUniformlyOn f g l s) :
     TendstoUniformlyOn (f⁻¹) (g⁻¹) l s :=
   fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformlyOn hf u hu
 
-attribute [to_additive existing] TendstoUniformlyOn.fun_inv
-
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformly.mul (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f * f') (g * g') l := fun u hu =>
   ((uniformContinuous_mul.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
-
-attribute [to_additive existing] TendstoUniformly.fun_mul
 
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformly.div (hf : TendstoUniformly f g l) (hf' : TendstoUniformly f' g' l) :
     TendstoUniformly (f / f') (g / g') l := fun u hu =>
   ((uniformContinuous_div.comp_tendstoUniformly (hf.prodMk hf')) u hu).diag_of_prod
 
-attribute [to_additive existing] TendstoUniformly.fun_div
-
 @[to_additive (attr := to_fun)]
 theorem TendstoUniformly.inv (hf : TendstoUniformly f g l) :
     TendstoUniformly (f⁻¹) (g⁻¹) l :=
   fun u hu ↦ uniformContinuous_inv.comp_tendstoUniformly hf u hu
-
-attribute [to_additive existing] TendstoUniformly.fun_inv
 
 @[to_additive (attr := to_fun)]
 theorem UniformCauchySeqOn.mul (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f * f') l s := fun u hu => by
   simpa using (uniformContinuous_mul.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 
-attribute [to_additive existing] UniformCauchySeqOn.fun_mul
-
 @[to_additive (attr := to_fun)]
 theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCauchySeqOn f' l s) :
     UniformCauchySeqOn (f / f') l s := fun u hu => by
   simpa using (uniformContinuous_div.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 
-attribute [to_additive existing] UniformCauchySeqOn.fun_div
-
 @[to_additive (attr := to_fun)]
 theorem UniformCauchySeqOn.inv (hf : UniformCauchySeqOn f l s) :
     UniformCauchySeqOn (f⁻¹) l s :=
   fun u hu ↦ by simpa using (uniformContinuous_inv.comp_uniformCauchySeqOn hf u hu)
-
-attribute [to_additive existing] UniformCauchySeqOn.fun_inv
 
 end UniformConvergence
 
@@ -244,22 +220,16 @@ theorem TendstoLocallyUniformlyOn.mul
     TendstoLocallyUniformlyOn (F * G) (f * g) l s :=
   uniformContinuous_mul.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
 
-attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_mul
-
 @[to_additive (attr := to_fun)]
 theorem TendstoLocallyUniformlyOn.div
     (hf : TendstoLocallyUniformlyOn F f l s) (hg : TendstoLocallyUniformlyOn G g l s) :
     TendstoLocallyUniformlyOn (F / G) (f / g) l s :=
   uniformContinuous_div.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
 
-attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_div
-
 @[to_additive (attr := to_fun)]
 theorem TendstoLocallyUniformlyOn.inv (hf : TendstoLocallyUniformlyOn F f l s) :
     TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
   uniformContinuous_inv.comp_tendstoLocallyUniformlyOn hf
-
-attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_inv
 
 @[to_additive (attr := to_fun)]
 theorem TendstoLocallyUniformly.mul
@@ -267,22 +237,16 @@ theorem TendstoLocallyUniformly.mul
     TendstoLocallyUniformly (F * G) (f * g) l :=
   uniformContinuous_mul.comp_tendstoLocallyUniformly (hf.prodMk hg)
 
-attribute [to_additive existing] TendstoLocallyUniformly.fun_mul
-
 @[to_additive (attr := to_fun)]
 theorem TendstoLocallyUniformly.div
     (hf : TendstoLocallyUniformly F f l) (hg : TendstoLocallyUniformly G g l) :
     TendstoLocallyUniformly (F / G) (f / g) l :=
   uniformContinuous_div.comp_tendstoLocallyUniformly (hf.prodMk hg)
 
-attribute [to_additive existing] TendstoLocallyUniformly.fun_div
-
 @[to_additive (attr := to_fun)]
 theorem TendstoLocallyUniformly.inv (hf : TendstoLocallyUniformly F f l) :
     TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
   uniformContinuous_inv.comp_tendstoLocallyUniformly hf
-
-attribute [to_additive existing] TendstoLocallyUniformly.fun_inv
 
 end LocalUniformConvergence
 
@@ -303,10 +267,6 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
-@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
-theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  inferInstance
-
 variable {G}
 
 @[to_additive]
@@ -318,7 +278,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
-  contrapose!
+  contrapose
   simp only [Set.mem_preimage]
   rintro (hyp : h' * h⁻¹ ∈ V)
   have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))

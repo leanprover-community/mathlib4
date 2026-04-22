@@ -63,6 +63,7 @@ variable [PartialOrder Γ] [CommRing R] [AddCommGroup V] [Module R V] [AddCommGr
 theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coefficients of a heterogeneous vertex operator, viewed as a linear map to formal power
 series with coefficients in linear maps. -/
 @[simps]
@@ -84,6 +85,7 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[
   ext v n
   exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
@@ -92,11 +94,6 @@ def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f 
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-
-@[deprecated (since := "2025-08-30")] alias coeff_add := map_add
-@[deprecated (since := "2025-08-30")] alias coeff_smul := map_smul
-
-@[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)

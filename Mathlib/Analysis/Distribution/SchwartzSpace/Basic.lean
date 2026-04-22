@@ -257,7 +257,8 @@ private theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).trans_le ?_
   rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
+  gcongr
+  exact f.le_seminormAux k n x
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
@@ -513,7 +514,6 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -530,7 +530,7 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
+  fast_instance% (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
@@ -678,7 +678,6 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
@@ -1329,7 +1328,7 @@ theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p
     ENNReal.toReal_ofReal (by positivity)]
 
 theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂ μ := by
+    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂μ := by
   simpa using norm_toLp' (p := 1) (by simp) (by simp)
 
 theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :

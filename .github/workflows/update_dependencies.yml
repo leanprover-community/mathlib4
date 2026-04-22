@@ -71,6 +71,27 @@ jobs:
           prNumber: ${{ steps.PR.outputs.number }}
           prUrl: ${{ steps.PR.outputs.pr_url }}
 
+      - name: Get latest mathlib-ci SHA
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: mathlib-ci-sha
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA=$(gh api repos/leanprover-community/mathlib-ci/commits/HEAD --jq '.sha')
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Update mathlib-ci ref in get-mathlib-ci action
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: update-mathlib-ci-ref
+        run: |
+          sed -i "s|^\( *default: \)[0-9a-f]\{40\}|\1${{ steps.mathlib-ci-sha.outputs.sha }}|" \
+            .github/actions/get-mathlib-ci/action.yml
+          if git diff --quiet .github/actions/get-mathlib-ci/action.yml; then
+            echo "modified=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "modified=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: lake update -v
@@ -115,6 +136,10 @@ jobs:
              ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
             create_pr=true
             echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
+          fi
+          if [ "${{ steps.update-mathlib-ci-ref.outputs.modified }}" == "true" ]; then
+            create_pr=true
+            echo "mathlib-ci ref was updated, need to run create-pull-request"
           fi
           # Otherwise, there's no reason to run create-pull-request
           echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"

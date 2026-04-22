@@ -22,7 +22,7 @@ Gluing two metric spaces along a common subset. Formally, we are given
   Y
 ```
 where `hΦ : Isometry Φ` and `hΨ : Isometry Ψ`.
-We want to complete the square by a space `GlueSpacescan hΦ hΨ` and two isometries
+We want to complete the square by a space `GlueSpace hΦ hΨ` and two isometries
 `toGlueL hΦ hΨ` and `toGlueR hΦ hΨ` that make the square commute.
 We start by defining a predistance on the disjoint union `X ⊕ Y`, for which
 points `Φ p` and `Ψ p` are at distance 0. The (quotient) metric space associated
@@ -438,7 +438,6 @@ open Topology
 
 open Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp

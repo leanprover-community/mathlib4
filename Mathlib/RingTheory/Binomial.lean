@@ -277,7 +277,6 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 attribute [local instance] IsAddTorsionFree.of_module_nnrat
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
@@ -464,8 +463,6 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   simp only [smul_add, ← descPochhammer_eq_factorial_smul_choose]
   rw [Nat.factorial_succ, mul_smul, ← descPochhammer_eq_factorial_smul_choose r,
     descPochhammer_succ_succ_smeval r k]
-
-@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
 
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by

@@ -842,7 +842,7 @@ def ofFinsupp (f : α →₀ R⟦Γ⟧) : SummableFamily Γ R α where
   finite_co_support' g := by
     refine f.support.finite_toSet.subset fun a ha => ?_
     simp only [mem_coe, Finsupp.mem_support_iff, Ne]
-    contrapose! ha
+    contrapose ha
     simp [ha]
 
 @[simp]
@@ -857,7 +857,7 @@ theorem hsum_ofFinsupp {f : α →₀ R⟦Γ⟧} : (ofFinsupp f).hsum = f.sum fu
   rw [map_sum, finsum_eq_sum_of_support_subset]
   intro x h
   simp only [mem_coe, Finsupp.mem_support_iff, Ne]
-  contrapose! h
+  contrapose h
   simp [h]
 
 end OfFinsupp

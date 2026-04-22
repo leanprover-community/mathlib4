@@ -719,23 +719,29 @@ lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
   grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
     upperCentralSeries_eq_top_iff_nilpotencyClass_le, eq_ge_of_eq_gt]
 
-lemma nilpotencyClass_le_of_upperCentralSeries_eq [IsNilpotent G] {a b : ℕ} (ab : a < b)
+lemma nilpotencyClass_le_of_upperCentralSeries_eq {a b : ℕ} (ab : a < b)
     (hn : upperCentralSeries G a = upperCentralSeries G b) :
     nilpotencyClass G ≤ a := by
-  grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, upperCentralSeries.eq_top,
-    upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  by_cases hG : IsNilpotent G
+  · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, upperCentralSeries.eq_top,
+      upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  · rw [nilpotencyClass_of_not_nilpotent hG]
+    apply Nat.zero_le
 
 variable (G) in
-lemma upperCentralSeries.StrictMonoOn [IsNilpotent G] :
+lemma upperCentralSeries.StrictMonoOn :
     StrictMonoOn (upperCentralSeries G) (Set.Iic (nilpotencyClass G)) := by
-  intros a ha b hb ab
-  simp only [Set.mem_Iic] at ha hb
-  apply lt_of_le_of_ne
-  · exact upperCentralSeries_mono _ ab.le
-  · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, eq_top,
-      upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  by_cases hG : IsNilpotent G
+  · intros a ha b hb ab
+    simp only [Set.mem_Iic] at ha hb
+    apply lt_of_le_of_ne
+    · exact upperCentralSeries_mono _ ab.le
+    · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, eq_top,
+        upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+  · rw [nilpotencyClass_of_not_nilpotent hG, ← Nat.bot_eq_zero, Set.Iic_bot]
+    apply Set.strictMonoOn_singleton
 
-lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass [IsNilpotent G] {a : ℕ}
+lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass {a : ℕ}
     (h2 : a ≤ nilpotencyClass G) :
     (upperCentralSeries G '' (Set.Iic a)).ncard = a + 1 := by
   refine Set.ncard_eq_of_bijective (fun _ => upperCentralSeries G ·) ?_ ?_ ?_
@@ -875,11 +881,11 @@ theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondi
   · intro G _ _ H _
     exact @Subsingleton.elim _ Unique.instSubsingleton _ _
   · intro G _ _ ih H hH
-    have hch : center G ≤ H := Subgroup.center_le_normalizer.trans (le_of_eq hH)
+    have hch : center G ≤ H := Subgroup.center_le_normalizer H |>.trans (le_of_eq hH)
     have hkh : (mk' (center G)).ker ≤ H := by simpa using hch
     have hsur : Function.Surjective (mk' (center G)) := Quot.mk_surjective
     let H' := H.map (mk' (center G))
-    have hH' : H'.normalizer = H' := by
+    have hH' : normalizer H' = H' := by
       apply comap_injective hsur
       rw [comap_normalizer_eq_of_surjective _ hsur, comap_map_eq_self hkh]
       exact hH

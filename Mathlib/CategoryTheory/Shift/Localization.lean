@@ -105,9 +105,6 @@ noncomputable instance MorphismProperty.commShift_Q :
     W.Q.CommShift A :=
   Functor.CommShift.localized W.Q W A
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
-this requires `allowUnsafeReducibility`. -/
-set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
@@ -122,9 +119,6 @@ noncomputable instance MorphismProperty.commShift_Q' :
     W.Q'.CommShift A :=
   Functor.CommShift.localized W.Q' W A
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
-this requires `allowUnsafeReducibility`. -/
-set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
 
 end
@@ -282,7 +276,6 @@ noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -293,7 +286,6 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
