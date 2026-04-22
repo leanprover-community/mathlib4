@@ -30,7 +30,7 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 ## TODO
 
 - Show that `‖x⋆ * x‖ = ‖x‖^2` is equivalent to `‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖`, which is used as the
-  definition of C*-algebras in some sources (e.g. Wikipedia).
+  definition of C⋆-algebras in some sources (e.g. Wikipedia).
 
 -/
 
@@ -83,7 +83,7 @@ instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedSta
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
 
-/-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
+/-- A C⋆-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
 `norm_star_mul_self` below. -/
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
@@ -111,7 +111,7 @@ lemma of_le_norm_mul_star_self
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
-/-- In a C*-ring, star preserves the norm. -/
+/-- In a C⋆-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
   norm_star_le x := by
     obtain (hx | hx) := eq_zero_or_norm_pos x⋆
@@ -255,9 +255,6 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ
   | zero => simp only [pow_zero, pow_one]
   | succ k hk =>
     rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnnorm_mul_self, hk, pow_mul']
-
-@[deprecated (since := "2025-10-07")]
-alias selfAdjoint.nnnorm_pow_two_pow := IsSelfAdjoint.nnnorm_pow_two_pow
 
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
