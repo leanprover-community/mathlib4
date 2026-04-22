@@ -9,8 +9,11 @@ example (a b c : G) : (b + -c) + c + (a + b) + (-b + -a) + c = b + c := by add_g
 
 example (a b c : G) : -c + (b + -c) + c + (a + b) + (-b + -a + -b) + c = 0 := by add_group
 
--- NB the Hall-Witt identity is here in the Group.lean test, but this involves commutators
--- which have no additive analogue, so this test was not additivised.
+-- The following is known as the Hall-Witt identity,
+-- see e.g.
+-- https://en.wikipedia.org/wiki/Three_subgroups_lemma#Proof_and_the_Hall%E2%80%93Witt_identity
+example (g h k : G) :
+    g + ⁅⁅-g, h⁆, k⁆ + -g + k + ⁅⁅-k, g⁆, h⁆ + -k + h + ⁅⁅-h, k⁆, g⁆ + -h = 0 := by add_group
 
 example (a : G) : 2 • a + a = 3 • a := by add_group
 
