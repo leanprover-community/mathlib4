@@ -13,8 +13,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # Preservations of limits for bifunctors
 
-Let `G : C₁ ⥤ C₂ ⥤ C` a functor. We introduce a class `PreservesLimit₂ K₁ K₂ G` that encodes
-the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limits of the diagram
+Let `G : C₁ ⥤ C₂ ⥤ C` be a functor. We introduce a class `PreservesLimit₂ K₁ K₂ G` that
+encodes the hypothesis that the associated uncurried functor `F : C₁ × C₂ ⥤ C` preserves
+limits of the diagram
 `K₁ × K₂ : J₁ × J₂ ⥤ C₁ × C₂`. We give a basic API to extract isomorphisms
 $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
@@ -67,9 +68,9 @@ def Functor.mapCone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ : 
 
 namespace Limits
 
-/-- A functor `PreservesColimit₂ K₁ K₂` if whenever `c₁` is a colimit cocone and `c₂` is a colimit
-cocone then `G.mapCocone₂ c₁ c₂` is a colimit cocone. This can be thought of as the data of an
-isomorphism
+/-- A functor `G` satisfies `PreservesColimit₂ K₁ K₂ G` if whenever `c₁` is a colimit cocone and
+`c₂` is a colimit cocone then `G.mapCocone₂ c₁ c₂` is a colimit cocone. This can be thought of as
+the data of an isomorphism
 $\mathrm{colim}_{(j_1,j_2)} G(K_1(j_1),K_2(j_2)) \simeq G(\mathrm{colim} K_1,\mathrm{colim} K_2)$.
 -/
 class PreservesColimit₂ (K₁ : J₁ ⥤ C₁) (K₂ : J₂ ⥤ C₂) (G : C₁ ⥤ C₂ ⥤ C) : Prop where
@@ -77,8 +78,8 @@ class PreservesColimit₂ (K₁ : J₁ ⥤ C₁) (K₂ : J₂ ⥤ C₂) (G : C�
       {c₂ : Cocone K₂} (hc₂ : IsColimit c₂) :
     Nonempty <| IsColimit <| G.mapCocone₂ c₁ c₂
 
-/-- A functor `PreservesLimit₂ K₁ K₂` if whenever `c₁` is a limit cone and `c₂` is a limit
-cone then `G.mapCone₂ c₁ c₂` is a limit cone. This can be thought of as the data of an
+/-- A functor `G` satisfies `PreservesLimit₂ K₁ K₂ G` if whenever `c₁` is a limit cone and `c₂`
+is a limit cone then `G.mapCone₂ c₁ c₂` is a limit cone. This can be thought of as the data of an
 isomorphism $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$.
 -/
 class PreservesLimit₂ (K₁ : J₁ ⥤ C₁) (K₂ : J₂ ⥤ C₂) (G : C₁ ⥤ C₂ ⥤ C) : Prop where
@@ -192,7 +193,7 @@ lemma ι_comp_isoColimitUncurryWhiskeringLeft₂_hom (j : J₁ × J₂) :
   ι_comp_isoObjConePointsOfIsColimit_inv G
     (colimit.isColimit _) (colimit.isColimit _) (colimit.isColimit _) j
 
-/-- Characterize the forward direction of the isomorphism
+/-- Characterize the inverse direction of the isomorphism
 `PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
 lemma map_ι_comp_isoColimitUncurryWhiskeringLeft₂_inv (j : J₁ × J₂) :
@@ -303,8 +304,8 @@ section
 variable (K₁) (K₂) [HasLimit K₁] [HasLimit K₂]
 
 /-- Extract the isomorphism between
-`colim (uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G))` and
-`(G.obj (colim K₁)).obj (colim K₂)` from a `PreservesLimit₂` instance, provided the relevant
+`limit (uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G))` and
+`(G.obj (limit K₁)).obj (limit K₂)` from a `PreservesLimit₂` instance, provided the relevant
 limits exist. -/
 noncomputable def isoLimitUncurryWhiskeringLeft₂ :
     limit (uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G)) ≅
@@ -335,7 +336,7 @@ lemma isoLimitUncurryWhiskeringLeft₂_hom_comp_map_π (j : J₁ × J₂) :
 end
 
 /-- If a bifunctor preserves separately limits of `K₁` in the first variable and limits
-of `K₂` in the second variable, then it preserves colimit of the pair of cones `K₁, K₂`. -/
+of `K₂` in the second variable, then it preserves limit of the pair `K₁, K₂`. -/
 instance of_preservesLimits_in_each_variable
     [∀ x : C₂, PreservesLimit K₁ (G.flip.obj x)] [∀ x : C₁, PreservesLimit K₂ (G.obj x)] :
     PreservesLimit₂ K₁ K₂ G where
