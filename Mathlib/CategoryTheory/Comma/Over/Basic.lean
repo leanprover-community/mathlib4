@@ -224,7 +224,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Over, Over.map, Comma.mapRight]
     simp
 
-/-- The natural isomorphism arising from `mapForget_eq`. -/
+/-- The natural isomorphism arising from `mapId_eq`. -/
 @[simps!]
 def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
@@ -498,7 +498,7 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
+/-- The induced functor to `Over X` from a functor `J ⥤ T` and natural maps `sᵢ : Dᵢ ⟶ X`.
 For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
 @[simps]
 protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
@@ -664,7 +664,7 @@ lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.
   ext
   simp
 
-/-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
+/-- Construct an isomorphism in the under category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
 def isoMk {f g : Under X} (hr : f.right ≅ g.right)
@@ -709,7 +709,7 @@ section
 
 variable (X)
 
-/-- The forgetful functor mapping an arrow to its domain. -/
+/-- The forgetful functor mapping an arrow to its codomain. -/
 def forget : Under X ⥤ T :=
   Comma.snd _ _
 
@@ -849,7 +849,7 @@ instance forget_faithful : (forget X).Faithful where
 
 -- TODO: Show the converse holds if `T` has binary coproducts.
 /-- If `k.right` is a monomorphism, then `k` is a monomorphism. In other words, `Under.forget X`
-reflects epimorphisms.
+reflects monomorphisms.
 The converse does not hold without additional assumptions on the underlying category, see
 `CategoryTheory.Under.mono_right_of_mono`.
 -/
@@ -876,7 +876,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
 preserves epimorphisms.
-The converse of `CategoryTheory.under.epi_of_epi_right`.
+The converse of `CategoryTheory.Under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
   refine ⟨fun {Y : T} l m a => ?_⟩
@@ -977,7 +977,7 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
-/-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
+/-- The induced functor to `Under X` from a functor `J ⥤ T` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
 @[simps]
 protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
     J ⥤ Under X where
@@ -1011,7 +1011,7 @@ end Under
 
 /--
 Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
-`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+`Under j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
 -/
 @[simps]
 def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
@@ -1200,7 +1200,7 @@ def ofCommaSndEquivalenceInverse (c : C) :
     (fun Y => Y.left.hom) (fun _ => by simp)
 
 /-- There is a canonical equivalence between the structured arrow category with domain `c` on
-the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
+the functor `Comma.fst F G : Comma F G ⥤ C` and the comma category over
 `Under.forget c ⋙ F : Under c ⥤ T` and `G`. -/
 @[simps]
 def ofCommaSndEquivalence (c : C) :
@@ -1248,7 +1248,7 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 /-- The canonical functor from the costructured arrow category on the diagonal functor
-`T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
+`T ⥤ T × T` to the costructured arrow category on `Over.forget`. -/
 @[simps!]
 def ofDiagEquivalence.functor (X : T × T) :
     CostructuredArrow (Functor.diag _) X ⥤ CostructuredArrow (Over.forget X.1) X.2 :=
@@ -1303,7 +1303,7 @@ def ofCommaFstEquivalenceInverse (c : C) :
     (fun Y => Y.left.hom) (fun _ => by simp)
 
 /-- There is a canonical equivalence between the costructured arrow category with codomain `c` on
-the functor `Comma.fst F G : Comma F G ⥤ F` and the comma category over
+the functor `Comma.fst F G : Comma F G ⥤ C` and the comma category over
 `Over.forget c ⋙ F : Over c ⥤ T` and `G`. -/
 @[simps]
 def ofCommaFstEquivalence (c : C) :
