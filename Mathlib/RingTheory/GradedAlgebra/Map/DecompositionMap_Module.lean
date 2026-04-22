@@ -216,6 +216,11 @@ variable {R A : Type*}
 variable [CommRing R] [Semiring A] [Algebra R A]
 variable (𝒜 : ι₁ → Submodule R A) [GradedAlgebra 𝒜]
 
+variable (M N : Submodule R A)
+#check M*N
+
+
+
 lemma one_le_induced_grad_zero : 1 ≤ Decomposition.map f 𝒜 0 := by
   rw [Submodule.one_le]
   exact Submodule.mem_iSup_of_mem ⟨0, AddMonoidHom.map_zero f⟩ (SetLike.GradedOne.one_mem)

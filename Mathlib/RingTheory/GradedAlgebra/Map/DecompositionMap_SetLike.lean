@@ -2,12 +2,18 @@ import Mathlib
 open DirectSum
 
 
-section DirectSum.of
-/- additional _of lemmas for isos already present in Mathlib -/
+/- A lemma that exists for `Submodule`s in Mathlib but not for `AddSubmonoid`s:
+--/
+open Pointwise in
+lemma AddSubmonoid.one_le {A : Type*} [AddMonoidWithOne A] {P : AddSubmonoid A} :
+  (1 : AddSubmonoid A) ≤ P ↔ (1 : A) ∈ P := by
+  rw [AddSubmonoid.one_eq_closure, AddSubmonoid.closure_le, Set.singleton_subset_iff]
+  rfl
 
-variable {ι : Type*} [DecidableEq ι]
-
+/-- An additional _of lemma for an iso already present in Mathlib
+-/
 @[simp] lemma DirectSum.sigmaCurry_of
+    {ι : Type*} [DecidableEq ι]
     {α : ι → Type*} [∀ i : ι, DecidableEq (α i)]
     {M : (i : ι) → α i → Type*} [∀ i : ι, ∀ j : α i, AddCommMonoid (M i j)]
     (ij : (i : ι) × α i) (m : M ij.fst ij.snd) :
@@ -16,13 +22,15 @@ variable {ι : Type*} [DecidableEq ι]
   := by
   exact DFinsupp.sigmaCurry_single ij m
 
+/-- An additional _of lemma for an iso already present in Mathlib
+-/
 @[simp] lemma DirectSum.equivCongrLeft_of
+    {ι : Type*} [DecidableEq ι]
     {M : ι → Type*} [(i : ι) → AddCommMonoid (M i)]
     {κ : Type*} [DecidableEq κ] (h : ι ≃ κ) (k : κ) (m : M (h.symm k)) :
     (equivCongrLeft h) ((of M (h.symm k)) m) = (of (fun k ↦ M (h.symm k)) k) m
   := by
   exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv k m
-end DirectSum.of
 
 
 section DirectSum.sigmaFiberAddEquiv
@@ -110,9 +118,16 @@ def SetLike.toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : σ) :=
    theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
      (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
 -/
-lemma SetLike.iSup_toAddSubmonoid  :
+omit [DecidableEq ι] in
+lemma SetLike.iSup_toAddSubmonoid :
   AddSubmonoid.ofClass (⨆ i, ℳ i : σ) = ⨆ i, AddSubmonoid.ofClass (ℳ i) := by
   sorry  -- this is really just an assumption I want to make
+
+omit [DecidableEq ι] in
+@[simp] lemma SetLike.mem_iSup_iff_mem_iSup_AddSubmonoid (m : M) :
+  m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, AddSubmonoid.ofClass (ℳ i)) := by
+  rw [← SetLike.iSup_toAddSubmonoid]
+  rfl
 
 lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ):= by
   intro ⟨y, hy'⟩
@@ -160,22 +175,6 @@ variable [AddSubmonoidClass σ M]
 variable [IsConcreteLE σ M] [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
-
-/- one option: definition as composable maps of sets -/
-/-
-abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toFun
-abbrev decomp := (decomposeAddEquiv ℳ).toFun -- now it's just a map of sets
-abbrev decomp' : M → (⨁ j, (Decomposition.map f ℳ) j) :=
-    (map (fun (j : ι₂)
-    ↦ SetLike.toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).toFun.comp
-    ((sigma f ℳ).comp (decomp ℳ))
-
-#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ) (M := M)).toFun
-#check decomp' f ℳ (M:=M)
-#check (decomp' f ℳ) ∘ (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ))
-#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ)) ∘ (decomp' f ℳ)
--/
-/- probably better option: definition as additive maps -/
 abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toAddMonoidHom
 abbrev decomp := (decomposeAddEquiv ℳ).toAddMonoidHom
 abbrev decomp' : M →+ (⨁ j, (Decomposition.map f ℳ) j) :=
@@ -228,44 +227,59 @@ instance DirectSum.Decomposition.map.decomposition :
       )
 end Decomposition
 
-section ModuleDecomposition
-/- MAIN PART:  Construction of induced decomposition -/
+
+section gradedAlgebra.map
 universe u
-variable {ι₁ ι₂ : Type u} [DecidableEq ι₁] [DecidableEq ι₂]
-variable (f : ι₁ → ι₂)
-variable {R M : Type*}
-variable [Semiring R] [AddCommMonoid M] [Module R M] (ℳ : ι₁ → Submodule R M)
-variable [DirectSum.Decomposition ℳ]
+variable {ι₁ ι₂ : Type u}
+variable [DecidableEq ι₁] [AddMonoid ι₁] [AddMonoid ι₂]
+variable (f : ι₁ →+ ι₂)
+variable {R : Type*} [CommSemiring R]
+variable {A : Type*} [Semiring A] [Algebra R A]
+variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [CompleteLattice σ] [IsConcreteLE σ A]
+variable (𝒜 : ι₁ → σ) [GradedRing 𝒜]
 
-/-
-abbrev Module.Dec' := ⨁ j, (Decomposition.map f ℳ) j
-abbrev Module.decomp := (decomposeLinearEquiv ℳ).toLinearMap
-abbrev Module.sigma := (DirectSum.sigmaFiberLinearEquiv R f (fun i ↦ ↥(ℳ i))).toLinearMap
+open Pointwise in
+lemma one_le_induced_grad_zero : 1 ≤ AddSubmonoid.ofClass (Decomposition.map f 𝒜 0) := by
+  unfold Decomposition.map
+  rw [AddSubmonoid.one_le,SetLike.iSup_toAddSubmonoid]
+  have h : 1 ∈ AddSubmonoid.ofClass (𝒜 0) := SetLike.GradedOne.one_mem
+  exact AddSubmonoid.mem_iSup_of_mem ⟨0, map_zero f⟩ h
 
+open Pointwise in
+lemma induced_grad_mul_le (i j : ι₂) :
+  (AddSubmonoid.ofClass ((Decomposition.map f 𝒜) i))
+  * (AddSubmonoid.ofClass ((Decomposition.map f 𝒜) j))
+  ≤ AddSubmonoid.ofClass ((Decomposition.map f 𝒜) (i + j))
+  := by
+  unfold Decomposition.map
+  repeat rw [SetLike.iSup_toAddSubmonoid]
+  simp_rw [AddSubmonoid.iSup_mul,AddSubmonoid.mul_iSup]
+  apply iSup_le
+  intro i'
+  apply iSup_le
+  intro j'
+  rw [AddSubmonoid.mul_le]
+  intro m hm n hn
+  have hsum : f (↑i' + ↑j') = i + j := by
+    simp only [map_add,i'.property,j'.property]
+  have h : m*n ∈ AddSubmonoid.ofClass (𝒜 (↑i' + ↑j')) := SetLike.GradedMul.mul_mem hm hn
+  exact (le_iSup (fun i : { i_ : ι₁ // f i_ = i + j}
+    ↦ (AddSubmonoid.ofClass (𝒜 i))) ⟨↑i' + ↑j', hsum⟩) h
 
-#check Dec'
---#check (sigma f ℳ) ∘ₗ (decomp ℳ)
+instance DirectSum.Decomposition.map.gradedMonoid
+  : SetLike.GradedMonoid (Decomposition.map f 𝒜) where
+  one_mem := by
+    unfold Decomposition.map
+    exact AddSubmonoid.one_le.mp (one_le_induced_grad_zero f 𝒜)
+  mul_mem i j a b ha hb := by
+    unfold Decomposition.map at *
+    exact AddSubmonoid.mul_le.mp (induced_grad_mul_le f 𝒜 _ _) a ha b hb
 
-variable (j : ι₂)
-#check @DirectSum.coeLinearMap.codRestrict R _ M _ _ { i : ι₁ // f i = j} (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i)) _
-#check DirectSum.coeLinearMap.codRestrict R (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i)))
-#check lmap (fun (j : ι₂) ↦
-             DirectSum.coeLinearMap.codRestrict R (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))
+variable [DecidableEq ι₂]
 
-abbrev decomp' : M →ₗ[R] (Dec' f ℳ) :=
-    lmap (fun (j : ι₂)
-    ↦ DirectSum.coeLinearMap.codRestrict R (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))
-    ∘ₗ (sigma f ℳ) ∘ₗ (decomp ℳ)
--/
-#check decomp' f ℳ
+instance DirectSum.Decomposition.map.gradedRing
+  : GradedRing (Decomposition.map f 𝒜) where
+  toGradedMonoid := DirectSum.Decomposition.map.gradedMonoid f 𝒜
+  toDecomposition := DirectSum.Decomposition.map.decomposition f 𝒜
 
-instance DirectSum.Module.Decomposition.map.decomposition :
-  (DirectSum.Decomposition (Decomposition.map f ℳ) )
-  :=
-  DirectSum.Decomposition.ofAddHom
-    (Decomposition.map f ℳ)
-    (decomp' f ℳ)
-    (by sorry)
-    (by sorry)
-
-end ModuleDecomposition
+end gradedAlgebra.map
