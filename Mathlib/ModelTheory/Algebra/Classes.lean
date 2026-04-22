@@ -251,7 +251,7 @@ theorem DefinableFun.natCast [ZeroConstant L] [OneConstant L] [AddFunction L] [A
   convert (n : Term L α).definableFun_realize.of_empty
   simp
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem DefinableFun.npow [OneConstant L] [MulFunction L] [Monoid M] [CompatibleOne L M]
     [CompatibleMul L M] {n : ℕ} (hf : A.DefinableFun L f) :
     A.DefinableFun L fun v => (f v) ^ n := by
