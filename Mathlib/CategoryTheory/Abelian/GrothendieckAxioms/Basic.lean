@@ -27,7 +27,7 @@ basic facts about them.
 
 ## Theorems
 
-- The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
+- The implication from `AB5` to `AB4` is established in `AB4.of_AB5`.
 - That `HasExactColimitsOfShape J C` is invariant under equivalences in both parameters is shown
   in `HasExactColimitsOfShape.of_domain_equivalence` and
   `HasExactColimitsOfShape.of_codomain_equivalence`.
@@ -275,7 +275,7 @@ instance (priority := 100) [HasCoproducts.{0} C] [AB4OfSize.{0} C] : CountableAB
   ⟨inferInstance⟩
 
 /--
-A category `C` which has countable coproducts is said to have countable `AB4Star` provided that
+A category `C` which has countable products is said to have countable `AB4Star` provided that
 countable products are exact.
 -/
 class CountableAB4Star [HasCountableProducts C] where
@@ -461,13 +461,13 @@ lemma hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op
     preservesFiniteColimits_of_natIso (ProductsFromFiniteCofiltered.liftToFinsetLimIso _ _)
 
 attribute [local instance] hasProducts_of_finite_and_cofiltered in
-/-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
+/-- A category with finite biproducts and finite colimits is AB4* if it is AB5*. -/
 lemma AB4Star.of_AB5Star [HasCofilteredLimitsOfSize.{w, w} C] [AB5StarOfSize.{w, w} C] :
     AB4StarOfSize.{w} C where
   ofShape _ := hasExactLimitsOfShape_discrete_of_hasExactLimitsOfShape_finset_discrete_op _ _
 
 /--
-A category with finite biproducts and finite limits has countable AB4* if sequential limits are
+A category with finite biproducts and finite colimits has countable AB4* if sequential limits are
 exact.
 -/
 lemma CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [HasExactLimitsOfShape ℕᵒᵖ C]
