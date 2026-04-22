@@ -327,6 +327,20 @@ theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [
   have ⟨f⟩ := h
   exact f.max_degree_le
 
+@[gcongr]
+lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.maxDegree ≤ H.maxDegree :=
+  IsContained.of_le hle |>.max_degree_le
+
+theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
+  cases isEmpty_or_nonempty W
+  · have := Function.isEmpty f
+    simp
+  refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
+  obtain ⟨v, rfl⟩ := hf w
+  grw [← f.degree_le, ← minDegree_le_degree]
+
 end IsContained
 
 section Free
