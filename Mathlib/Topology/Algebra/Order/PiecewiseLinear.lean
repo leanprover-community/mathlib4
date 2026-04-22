@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.LocallyFinite
+public import Mathlib.Topology.Order.AtTopBotIxx
 public import Mathlib.Topology.Order.OrderClosed
 
 /-!
@@ -32,8 +33,6 @@ For the value-based interpolant (slopes derived from consecutive values), use
 
 ## Main results
 
-* `locallyFinite_Icc_of_tendsto`: for arbitrary `f g : α → K` with `f` tending to `atTop`
-  and `g` tending to `atBot`, the family `n ↦ Icc (f n) (g n)` is locally finite.
 * `continuous_piecewiseLinear`: continuity under the step condition.
 * `continuous_piecewiseLinear_ofValues`: continuity of the value-based interpolant.
 * `hasDerivWithinAt_piecewiseLinear`: the right derivative on each cell is `c (gridIdx x t)`.
@@ -80,30 +79,11 @@ theorem gridIdx_mem_Ico [NoMaxOrder K] {x : ℤ → K}
 
 end GridIdx
 
-/-! ### Locally finite families of closed intervals -/
+/-! ### Continuity on a grid -/
 
 section Grid
 
 variable {K : Type*} [LinearOrder K] [TopologicalSpace K] [OrderTopology K]
-
-/-- If `f : α → K` tends to `atTop` at `atTop` and `g : α → K` tends to `atBot` at `atBot`,
-then the family `n ↦ Icc (f n) (g n)` is locally finite. -/
-theorem locallyFinite_Icc_of_tendsto {α : Type*} [NoMaxOrder K] [NoMinOrder K]
-    [TopologicalSpace α] [LinearOrder α] [LocallyFiniteOrder α]
-    {f g : α → K} (h_atTop : Tendsto f atTop atTop) (h_atBot : Tendsto g atBot atBot) :
-    LocallyFinite fun n : α => Icc (f n) (g n) := by
-  intro x
-  cases isEmpty_or_nonempty α
-  · exact ⟨univ, univ_mem, by simp [Subsingleton.elim _ (∅ : Set α)]⟩
-  obtain ⟨x_R, hx_R⟩ := exists_gt x
-  obtain ⟨x_L, hx_L⟩ := exists_lt x
-  obtain ⟨N₂, hN₂⟩ := eventually_atTop.mp (h_atTop.eventually (eventually_ge_atTop x_R))
-  obtain ⟨N₁, hN₁⟩ := eventually_atBot.mp (h_atBot.eventually (eventually_le_atBot x_L))
-  refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc N₁ N₂).subset ?_⟩
-  rintro n ⟨y, ⟨hf, hg⟩, ⟨hxL, hxR⟩⟩
-  refine ⟨?_, ?_⟩
-  · contrapose! hxL; exact hg.trans (hN₁ n hxL.le)
-  · contrapose! hxR; exact (hN₂ n hxR.le).trans hf
 
 /-- A function continuous on each cell `Icc (x n) (x (n + 1))` of a grid `x : ℤ → K`
 tending to `±∞` is continuous. -/
