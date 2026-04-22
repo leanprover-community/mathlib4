@@ -40,8 +40,8 @@ obtained by extending by zero the chain complex `R.complex` indexed by `ℕ`. -/
 noncomputable def cochainComplex : CochainComplex C ℤ :=
   R.complex.extend ComplexShape.embeddingDownNat
 
-/-- If `R : ProjectiveResolution X`, then `R.cochainComplex.X n` (with `n : ℕ`)
-is isomorphic to `R.complex.X k` (with `k : ℕ`) when `k = n`. -/
+/-- If `R : ProjectiveResolution X`, then `R.cochainComplex.X n` (with `n : ℤ`)
+is isomorphic to `R.complex.X k` (with `k : ℕ`) when `-k = n`. -/
 noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : -k = n := by lia) :
     R.cochainComplex.X n ≅ R.complex.X k :=
   HomologicalComplex.extendXIso _ _ h
