@@ -44,7 +44,7 @@ Z  ⟶ X₁
 ↓    ↓
 X₂ ⟶ ∐ X
 ```
-`Z` is initial.
+`Z` is initial, and each coprojection is mono.
 -/
 class CoproductDisjoint {ι : Type*} (X : ι → C) : Prop where
   nonempty_isInitial_of_ne {c : Cofan X} (hc : IsColimit c) {i j : ι} (_ : i ≠ j)
@@ -122,8 +122,8 @@ noncomputable def ofCoproductDisjointOfIsLimit
     IsInitial s.pt :=
   ofCoproductDisjointOfIsColimitOfIsLimit hij (colimit.isColimit _) hs
 
-/-- If `C` has strict initial objects and there is a commutative square `Xᵢ ← Z → Xⱼ`
-over `∐ X`, then `Z` is initial. -/
+/-- If `i ≠ j`, `C` has strict initial objects, and there is a commutative square `Xᵢ ← Z → Xⱼ`
+over a coproduct of the `Xᵢ`, then `Z` is initial. -/
 noncomputable def ofCoproductDisjointOfCommSq [HasStrictInitialObjects C]
     {c : Cofan X} (hc : IsColimit c) {Z : C} (fst : Z ⟶ X i) (snd : Z ⟶ X j)
     (h : fst ≫ c.inj i = snd ≫ c.inj j) [HasPullback (c.inj i) (c.inj j)] :
@@ -244,8 +244,8 @@ lemma BinaryCoproductsDisjoint.mk (H : ∀ (X Y : C), BinaryCoproductDisjoint X 
     convert H (X .left) (X .right) using 2
     casesm WalkingPair <;> simp
 
-/-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
-general that `C` has strict initial objects, for instance consider the category of types and
+/-- If `C` has disjoint binary coproducts, any morphism out of initial is mono. Note it isn't true
+in general that `C` has strict initial objects, for instance consider the category of types and
 partial functions. -/
 theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
     InitialMonoClass C where
