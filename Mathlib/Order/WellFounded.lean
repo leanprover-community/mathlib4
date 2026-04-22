@@ -138,7 +138,7 @@ theorem wellFoundedLT_iff_exists_minimal [Preorder α] :
 
 theorem isWellOrder_iff_exists_not_lt_and_eq_or_lt :
     IsWellOrder α r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m ∧ (m = x ∨ r m x) := by
-  refine ⟨fun h s hs ↦ ?_, fun h ↦ @IsWellOrder.mk α r ⟨?_⟩ ⟨fun a b ↦ ?_⟩⟩
+  refine ⟨fun h s hs ↦ ?_, fun h ↦ { wf := ?_, trichotomous a b := ?_ }⟩
   · grind [h.wf.has_min, trichotomous_of r]
   · grind [wellFounded_iff_has_min]
   · grind [h {a, b} <| by simp]
