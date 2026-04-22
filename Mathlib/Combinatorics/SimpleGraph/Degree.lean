@@ -272,6 +272,10 @@ theorem Copy.minEDegree_le {f : Copy G H} (hf : Function.Surjective f) :
   grw [← f.edegree_le, ← minEDegree_le_edegree]
 
 variable {G H} in
+theorem Hom.minEDegree_le {f : G →g H} (hf : Function.Bijective f) : G.minEDegree ≤ H.minEDegree :=
+  Copy.minEDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
+
+variable {G H} in
 @[gcongr]
 theorem Iso.maxEDegree_eq (f : G ≃g H) : G.maxEDegree = H.maxEDegree :=
   f.toEquiv.iSup_congr f.edegree_eq
@@ -289,7 +293,7 @@ theorem maxEDegree_mono (hle : G ≤ G') : G.maxEDegree ≤ G'.maxEDegree :=
 variable {G G'} in
 @[gcongr]
 theorem minEDegree_mono (hle : G ≤ G') : G.minEDegree ≤ G'.minEDegree :=
-  Copy.minEDegree_le (f := .ofLE G G' hle) Function.surjective_id
+  Hom.ofLE hle |>.minEDegree_le Function.bijective_id
 
 theorem maxEDegree_le_card : G.maxEDegree ≤ ENat.card V :=
   G.maxEDegree_le_of_forall_edegree_le G.edegree_le_card
