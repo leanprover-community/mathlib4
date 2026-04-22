@@ -43,8 +43,9 @@ working with.
   `factorThruCoimage f : coimage f ⟶ Y` is a monomorphism.
 * Factoring through the image and coimage is a strong epi-mono factorisation. This means that
   * every abelian category has images. We provide the isomorphism
-    `imageIsoImage : abelian.image f ≅ limits.image f`.
-  * the canonical morphism `coimageImageComparison : coimage f ⟶ image f`
+    `imageIsoImage : Abelian.image f ≅ Limits.image f`.
+  * the canonical morphism
+    `coimageImageComparison f : Abelian.coimage f ⟶ Abelian.image f`
     is an isomorphism.
 * We provide the alternate characterisation of an abelian category as a category with
   (co)kernels and finite products, and in which the canonical coimage-image comparison morphism
@@ -476,14 +477,14 @@ attribute [local instance] nonPreadditiveAbelian
 
 /-- In an abelian category, an epi is the cokernel of its kernel. More precisely:
     If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
-    of `fork.ι s`. -/
+    of `Fork.ι s`. -/
 def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
     IsColimit (CokernelCofork.ofπ f (KernelFork.condition s)) :=
   NonPreadditiveAbelian.epiIsCokernelOfKernel s h
 
 /-- In an abelian category, a mono is the kernel of its cokernel. More precisely:
     If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
-    of `cofork.π s`. -/
+    of `Cofork.π s`. -/
 def monoIsKernelOfCokernel [Mono f] (s : Cofork f 0) (h : IsColimit s) :
     IsLimit (KernelFork.ofι f (CokernelCofork.condition s)) :=
   NonPreadditiveAbelian.monoIsKernelOfCokernel s h
@@ -843,7 +844,7 @@ structure AbelianStruct {X Y : C} (f : X ⟶ Y) where
   isLimitKernelFork : IsLimit kernelFork
   /-- a colimit cokernel cofork of `f` -/
   cokernelCofork : CokernelCofork f
-  /-- the cokernel cofork is a a limit -/
+  /-- the cokernel cofork is a colimit -/
   isColimitCokernelCofork : IsColimit cokernelCofork
   /-- the image of `f` -/
   image : C
