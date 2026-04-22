@@ -42,7 +42,15 @@ syntax (name := dsimpPercent) "dsimp%" optConfig (discharger)? (&" only")?
   (" [" withoutPosition((simpErase <|> simpLemma),*,?) "]")? ppSpace term : term
 
 @[term_elab dsimpPercent, inherit_doc dsimpPercent]
-def dsimpPercentElaborator : TermElab := fun stx expectedType => do
+def dsimpPercentElaborator : TermElab := fun stx expectedType =>
+  -- Run with `backward.defeqAttrib.useBackward=true` so that the stored term
+  -- (visible to any later `rw`/`simp`/`dsimp` that reads this lemma's LHS/type)
+  -- is normalized under the permissive pre-stricter-inference rules. Without
+  -- this, the lemma's stored form depends on whether the defining file has
+  -- `useBackward=true` — which makes `set_option backward.defeqAttrib.useBackward true`
+  -- at the use site fail to restore pre-PR behavior when the lemma was elaborated
+  -- at a defining file without the option.
+  withOptions (fun opts => backward.defeqAttrib.useBackward.set opts true) do
   let fresh ← mkFreshExprMVar default
   let go : TacticM Expr := do
     let e ← Term.elabTerm stx[5] expectedType
