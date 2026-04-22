@@ -167,9 +167,8 @@ end TypeMax
 
 
 /-!
-The results in this section have a `UnivLE.{v, u}` hypothesis,
-but as they only use the constructions from the `CategoryTheory.Limits.Types.UnivLE` namespace
-in their definitions (rather than their statements),
+The results in this section use `UnivLE.{v, u}` only to obtain the needed limit instances,
+so their statements do not mention it explicitly, and
 we leave them in the main `CategoryTheory.Limits.Types` namespace.
 -/
 section UnivLE
@@ -191,7 +190,7 @@ instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w
 
 variable (F : J ⥤ Type u) [HasLimit F]
 
-/-- The equivalence between the abstract limit of `F` in `Type max v u`
+/-- The equivalence between the abstract limit of `F` in `Type u`
 and the "concrete" definition as the sections of `F`.
 -/
 noncomputable def limitEquivSections : limit F ≃ F.sections :=
@@ -207,7 +206,8 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 
-/-- The limit of a functor `F : J ⥤ Type _` is naturally isomorphic to `F.sections`. -/
+/-- The limit functor on `J ⥤ Type max u v` is naturally isomorphic to
+`Functor.sectionsFunctor J`. -/
 noncomputable def limNatIsoSectionsFunctor :
     (lim : (J ⥤ Type max u v) ⥤ _) ≅ Functor.sectionsFunctor _ :=
   NatIso.ofComponents (fun _ ↦ (limitEquivSections _).toIso)
