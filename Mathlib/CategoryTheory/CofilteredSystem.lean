@@ -34,8 +34,8 @@ Given a functor `F : J ⥤ Type v`:
 * `isMittagLeffler_of_exists_finite_range` shows that if `J` is cofiltered and for all `j`,
   there exists some `i` and `f : i ⟶ j` such that the range of `F.map f` is finite, then
   `F` is Mittag-Leffler.
-* `surjective_toEventualRanges` shows that if `F` is Mittag-Leffler, then `F.toEventualRanges`
-  has all morphisms `F.map f` surjective.
+* `surjective_toEventualRanges` shows that if `F` is Mittag-Leffler, then all morphisms of
+  `F.toEventualRanges` are surjective.
 
 ## TODO
 
@@ -100,8 +100,8 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
 /-- The inverse limit of nonempty finite types is nonempty.
 
 See `nonempty_sections_of_finite_cofiltered_system` for a generalization to cofiltered limits.
-That version applies in almost all cases, and the only difference is that this version
-allows `J` to be empty.
+That version applies in almost all cases; this theorem is just the specialization to inverse
+systems indexed by a directed preorder.
 
 This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
@@ -160,7 +160,8 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.m
     F.IsMittagLeffler :=
   fun j => ⟨j, 𝟙 j, fun k g => by rw [map_id, types_id, range_id, (h g).range_eq]⟩
 
-/-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
+/-- The subfunctor of `F` obtained by restricting to the preimages of a set
+`s : Set (F.obj i)`. -/
 @[simps]
 def toPreimages : J ⥤ Type v where
   obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
@@ -274,7 +275,7 @@ theorem surjective_toEventualRanges (h : F.IsMittagLeffler) ⦃i j⦄ (f : i ⟶
   obtain ⟨y, hy, rfl⟩ := h.subset_image_eventualRange F f hx
   exact ⟨⟨y, hy⟩, rfl⟩
 
-/-- If `F` is nonempty at each index and Mittag-Leffler, then so is `F.toEventualRanges`. -/
+/-- If `F` is nonempty at each index and Mittag-Leffler, then each eventual range is nonempty. -/
 theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (F.obj j)] (j : J) :
     Nonempty (F.toEventualRanges.obj j) := by
   let ⟨i, f, h⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
