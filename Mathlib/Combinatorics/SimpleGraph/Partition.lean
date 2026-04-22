@@ -5,7 +5,7 @@ Authors: Arthur Paulino, Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 
 /-!
 # Graph partitions
