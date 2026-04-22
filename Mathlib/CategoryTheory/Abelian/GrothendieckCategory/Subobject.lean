@@ -58,7 +58,7 @@ lemma mono_of_isColimit_monoOver : Mono f := by
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a filtered category `J`, the colimit of `F` (computed in `C`) gives
-a subobject of `F` which is a supremum of the subobjects corresponding to
+a subobject of `X` which is a supremum of the subobjects corresponding to
 the objects in the image of the functor `F`. -/
 lemma subobjectMk_of_isColimit_eq_iSup :
     haveI := mono_of_isColimit_monoOver F hc f hf
