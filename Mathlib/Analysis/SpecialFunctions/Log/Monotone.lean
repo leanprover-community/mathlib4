@@ -65,8 +65,8 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     rw [mem_setOf_eq]
     convert rpow_le_rpow _ hz (le_of_lt ha) using 1
     · simp only [← exp_mul, Real.exp_eq_exp, field]
-    · positivity
-  refine log_div_self_antitoneOn (hbound hex) (hbound (_root_.trans hex hxy)) ?_
+    positivity
+  refine log_div_self_antitoneOn (hbound hex) (hbound (hex.trans hxy)) ?_
   gcongr
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
