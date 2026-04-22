@@ -208,15 +208,11 @@ In comparison to other induction principles, the proofs of `q n k` are needed in
 the next element. -/
 
 
-/- A version of `Fin.elim0` using dependent types. -/
-def Fin.elim0'.{u} (α : ℕ → Sort u) : (i : Fin 0) → (α i)
-  | ⟨_, h⟩ => absurd h (Nat.not_lt_zero _)
-
-variable {β : ℕ → Type*} (q : ∀ n, (k : (i : Fin n) → β i) → Prop) (step0 : q 0 (Fin.elim0' _))
+variable {β : ℕ → Type*} (q : ∀ n, (k : (i : Fin n) → β i) → Prop) (step0 : q 0 Fin.rec0)
   (step : ∀ n (k : (i : Fin n) → β i) (_ : q n k), { a : β n // q (n + 1) (Fin.snoc k a)})
 
 def Nat.prefixInduction.aux : ∀ (n : Nat), { k : (i : Fin n) → β i // q n k }
-    | 0 => ⟨Fin.elim0' _, step0⟩
+    | 0 => ⟨Fin.rec0, step0⟩
     | n + 1 =>
       let ⟨k, hk⟩ := aux n
       let ⟨a, ha⟩ := step n k hk
@@ -327,7 +323,7 @@ lemma q_snoc_iff_iInter (hK : ∀ k : Fin n, K k ∈ L k) (y : Set α) :
     exact ⟨by simp [Fin.snoc]; grind, by grind⟩
 
 lemma step0 {L : ℕ → Finset (Set α)} (hL : ∀ N, (⋂ k < N, ⋃₀ (L k : Set (Set α))).Nonempty) :
-    q L 0 (Fin.elim0' (fun _ ↦ Set α)) :=
+    q L 0 Fin.rec0 :=
   ⟨by simp, by simpa using hL⟩
 
 lemma inter_sUnion_eq_empty (s : Set α) (L : Set (Set α)) :
