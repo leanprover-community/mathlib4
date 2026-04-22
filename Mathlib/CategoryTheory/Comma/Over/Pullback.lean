@@ -114,10 +114,10 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
 set_option backward.isDefEq.respectTransparency false in
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
-`post F : Over Y ⥤ Over (G Y)`.
+`post F : Over X ⥤ Over (F X)`.
 
-If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
-`(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
+If the right adjoint of `F` is `G`, then the right adjoint of `post F` sends
+`(Y ⟶ F X)` to the pullback over `X` of the cospan `G Y ⟶ G (F X) ← X`. -/
 @[simps!]
 def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
@@ -255,8 +255,8 @@ open pushout in
 /-- If `G` is a right adjoint and its source category has pushouts, then so is
 `post G : Under Y ⥤ Under (G Y)`.
 
-If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
-`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
+If the left adjoint of `G` is `F`, then the left adjoint of `post G` sends
+`(G Y ⟶ X)` to the pushout under `Y` of the span `Y ← F (G Y) ⟶ F X`. -/
 @[simps!]
 def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
