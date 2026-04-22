@@ -214,27 +214,27 @@ theorem eval₂_const_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R}
 set_option linter.deprecated false in
 @[deprecated eval₂_uniqueAlgEquiv_symm (since := "2026-04-15")]
 theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
-    ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f : MvPolynomial Unit R).eval₂ φ a =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a =
       f.eval₂ φ (a ()) :=
   eval₂_uniqueAlgEquiv_symm
 
 set_option linter.deprecated false in
 @[deprecated eval₂_const_uniqueAlgEquiv_symm (since := "2026-04-15")]
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
       f.eval₂ φ a :=
   eval₂_const_uniqueAlgEquiv_symm
 
 set_option linter.deprecated false in
 @[deprecated eval₂_uniqueAlgEquiv (since := "2026-04-15")]
 theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : PUnit → S} :
-    ((MvPolynomial.uniqueAlgEquiv R PUnit) f : Polynomial R).eval₂ φ (a default) = f.eval₂ φ a :=
+    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ (a default) = f.eval₂ φ a :=
   eval₂_uniqueAlgEquiv
 
 set_option linter.deprecated false in
 @[deprecated eval₂_const_uniqueAlgEquiv (since := "2026-04-15")]
 theorem eval₂_const_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.uniqueAlgEquiv R PUnit) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) :=
+    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) :=
   eval₂_const_uniqueAlgEquiv
 
 end Eval
