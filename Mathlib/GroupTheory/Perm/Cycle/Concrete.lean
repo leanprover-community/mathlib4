@@ -215,7 +215,7 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x)[n] = (p ^ n) x := by simp [toList]
+    (toList p x)[n] = (p ^ n) x := by simp [toList, equiv_simps]
 
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
