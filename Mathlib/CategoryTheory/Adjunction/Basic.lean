@@ -390,7 +390,7 @@ structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
       NatTrans.id (𝟭 C ⋙ F) := by
     cat_disch
   /-- Equality of the composition of the unit, associator, and counit with the identity
-  `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
+  `G ⟶ G (F G) ⟶ (G F) G ⟶ G = NatTrans.id G` -/
   right_triangle :
     whiskerLeft G unit ≫ (associator G F G).inv ≫ whiskerRight counit G =
       NatTrans.id (G ⋙ 𝟭 C) := by
@@ -478,7 +478,7 @@ def id : 𝟭 C ⊣ 𝟭 C where
 instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
   ⟨id⟩
 
-/-- If F and G are naturally isomorphic functors, establish an equivalence of hom-sets. -/
+/-- If `F` and `F'` are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
     (F.obj X ⟶ Y) ≃ (F'.obj X ⟶ Y) where
@@ -487,7 +487,7 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
   left_inv f := by simp
   right_inv g := by simp
 
-/-- If G and H are naturally isomorphic functors, establish an equivalence of hom-sets. -/
+/-- If `G` and `G'` are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
     (X ⟶ G.obj Y) ≃ (X ⟶ G'.obj Y) where
