@@ -252,7 +252,6 @@ open scoped Set.Notation in
 lemma QuasiSober.subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
     QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
 
-open Topology in
 lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
     (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
   refine QuasiSober.subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
