@@ -102,7 +102,7 @@ end IsMonoidalLeftDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
+/-- Notation for the canonical left distributivity isomorphism -/
 scoped notation "∂L" => leftDistrib
 
 end Distributive
@@ -159,7 +159,7 @@ end IsMonoidalRightDistrib
 
 namespace Distributive
 
-/-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
+/-- Notation for the canonical right distributivity isomorphism -/
 notation "∂R" => rightDistrib
 
 end Distributive
@@ -203,7 +203,7 @@ lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
 
-/-- In a symmetric monoidal category, the left distributivity is equal to
+/-- In a braided monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
 lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
@@ -225,8 +225,8 @@ lemma SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
       preservesBinaryCoproducts_tensorRight X :=
     preservesColimitsOfShape_of_natIso (BraidedCategory.tensorLeftIsoTensorRight X)
 
-/-- The right distributivity isomorphism of the a left distributive symmetric monoidal category
-is given by `(β_ (Y ⨿ Z) X).hom ≫ (∂L X Y Z).inv ≫ (coprod.map (β_ X Y).hom (β_ X Z).hom)`. -/
+/-- In a distributive symmetric monoidal category, the right distributivity isomorphism is given by
+`(coprod.mapIso (β_ Y X) (β_ Z X)) ≪≫ (∂L X Y Z) ≪≫ (β_ X (Y ⨿ Z))`. -/
 @[simp]
 lemma SymmetricCategory.rightDistrib_of_leftDistrib
     [SymmetricCategory C] [IsMonoidalDistrib C] {X Y Z : C} :
@@ -267,7 +267,7 @@ section MonoidalPreadditive
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts
   preservesBinaryCoproducts_of_preservesBinaryBiproducts
 
-/-- A preadditive monoidal category with binary biproducts is distributive. -/
+/-- A preadditive monoidal category with binary coproducts is distributive. -/
 instance IsMonoidalDistrib.of_MonoidalPreadditive_with_binary_coproducts [Preadditive C]
     [MonoidalPreadditive C] :
     IsMonoidalDistrib C where
