@@ -219,9 +219,9 @@ lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
   Topology.IsInducing.noetherianSpace (Topology.IsEmbedding.inclusion h).isInducing
 
 lemma NoetherianSpace.inter_of_left (W V : Set α) [NoetherianSpace W] :
-    NoetherianSpace (W ∩ V : Set α) := NoetherianSpace.subset Set.inter_subset_left
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_left
 
 lemma NoetherianSpace.inter_of_right (W V : Set α) [NoetherianSpace V] :
-    NoetherianSpace <| (W ∩ V : Set α) := NoetherianSpace.subset Set.inter_subset_right
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_right
 
 end TopologicalSpace
