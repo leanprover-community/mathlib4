@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 /-!
 # The diagonal object of a morphism.
 
-We provide various API and isomorphisms considering the diagonal object `Δ_{Y/X} := pullback f f`
+We provide various API and isomorphisms considering the diagonal object `Δ_{X/Y} := pullback f f`
 of a morphism `f : X ⟶ Y`.
 
 -/
@@ -108,7 +108,7 @@ theorem pullback_diagonal_map_snd_snd_fst :
 
 variable [HasPullback i₁ i₂]
 
-/-- The underlying map of `pullbackDiagonalIso` -/
+/-- The underlying map of `pullbackDiagonalMapIso` -/
 abbrev pullbackDiagonalMapIso.hom :
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
@@ -122,7 +122,7 @@ abbrev pullbackDiagonalMapIso.hom :
   · simp only [Category.assoc, condition])
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The underlying inverse of `pullbackDiagonalIso` -/
+/-- The underlying inverse of `pullbackDiagonalMapIso` -/
 abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
     pullback (diagonal f)
         (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
@@ -430,7 +430,7 @@ This iso witnesses the fact that
 ```
 
 is a pullback square. The diagonal map of this square is `pullback.map`.
-Also see `pullback_lift_map_is_pullback`.
+Also see `pullback_lift_map_isPullback`.
 -/
 @[simps]
 def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') (g' : Y' ⟶ S')
