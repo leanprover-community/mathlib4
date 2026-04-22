@@ -5,7 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -24,7 +26,73 @@ This can be thought of as an ordinal analog of `Nat.nth`.
 
 universe u
 
-open Order Set
+open Cardinal Order Ordinal Set
+
+variable {α : Type*}
+
+/-- A typeclass which expresses that the order type of a well-order equals (the initial ordinal of)
+its cofinality.
+
+If `α` is infinite, this implies that `α` is order isomorphic to `Iio c.ord` for some regular
+cardinal `c`. In the informal literature, one often says that `α` is a regular cardinal, by abuse
+of notation. -/
+class IsRegularCardinalOrder (α : Type*) [LinearOrder α] [WellFoundedLT α] where
+  type_le_ord_cof : typeLT α ≤ (cof α).ord
+
+instance : IsRegularCardinalOrder ℕ := ⟨by simp⟩
+
+instance (priority := low) [LinearOrder α] [WellFoundedLT α] [Subsingleton α] :
+    IsRegularCardinalOrder α where
+  type_le_ord_cof := by
+    cases isEmpty_or_nonempty α
+    · simpa
+    · cases nonempty_unique α
+      have := BoundedOrder.ofUnique α
+      simp
+
+instance : IsRegularCardinalOrder Ordinal where
+  type_le_ord_cof := by
+    rw [type_lt_ordinal, ← ord_univ, ord_le_ord, le_cof_iff]
+    intro s hs
+    contrapose! hs
+    rw [← Cardinal.lift_id (#s), ← small_iff_lift_mk_lt_univ] at hs
+    rw [not_isCofinal_iff_bddAbove]
+    exact Ordinal.bddAbove_of_small
+
+namespace Order
+variable [LinearOrder α] [WellFoundedLT α] [IsRegularCardinalOrder α]
+
+theorem ord_cof_eq_type_lt : (cof α).ord = typeLT α := by
+  apply IsRegularCardinalOrder.type_le_ord_cof.antisymm'
+  rw [ord_le, card_type]
+  exact cof_le_cardinalMk α
+
+@[simp]
+theorem cof_eq_card : cof α = #α := by
+  rw [← card_type LT.lt, ← ord_cof_eq_type_lt, card_ord]
+
+@[simp]
+theorem ord_cardinalMk : ord (#α) = typeLT α := by
+  rw [← ord_cof_eq_type_lt, cof_eq_card]
+
+@[simp]
+theorem cof_ordinal : cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
+  simp [← Cardinal.univ_id]
+
+theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
+  apply (RelEmbedding.ofMonotone Subtype.val (by simp)).ordinal_type_le.antisymm
+  rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_card]
+  exact cof_le hs
+
+/-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
+`Nat.nth`. -/
+@[no_expose]
+noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
+  .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
+
+end Order
+
+-- TODO: Everything below can be subsumed by `Order.enum`.
 
 namespace Ordinal
 
