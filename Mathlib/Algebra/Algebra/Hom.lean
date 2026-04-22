@@ -24,21 +24,37 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 @[expose] public section
 
-universe u v w u₁ v₁
+universe u v w x y z
+
+/-- Let `φ : R →+* S` be a ring homomorphism, let `A` be an `R`-algebra and let `B` be
+an `S`-algebra. Then `SemialgHom φ A B` or `A →ₛₐ[φ] B` is the ring homomorphisms `ψ : A →+* B`
+making lying above `φ` (i.e. such that `ψ (r • a) = φ r • ψ a`). -/
+structure SemialgHom {R S : Type*} [CommSemiring R] [CommSemiring S] (φ : R →+* S)
+    (A B : Type*)  [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+    extends A →ₛₗ[φ] B, RingHom A B
 
 /-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
-structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] extends RingHom A B where
-  commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
+structure AlgHom {R S : Type*} [CommSemiring R] [CommSemiring S] (φ : R →+* S)
+    (A B : Type*) [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+    extends RingHom A B, A →ₛₗ[φ] B
 
 /-- Reinterpret an `AlgHom` as a `RingHom` -/
 add_decl_doc AlgHom.toRingHom
 
-@[inherit_doc AlgHom]
-infixr:25 " →ₐ " => AlgHom _
+/-- Reinterpret an `AlgHom` as a `LinearMap` -/
+add_decl_doc AlgHom.toLinearMap
+
+@[inherit_doc SemialgHom]
+infixr:25 " →ₛₐ " => AlgHom _
 
 @[inherit_doc]
-notation:25 A " →ₐ[" R "] " B => AlgHom R A B
+notation:25 A " →ₛₐ[" φ:25 "] " B:0 => AlgHom φ A B
+
+@[inherit_doc AlgHom]
+infixr:25 " →ₐ " => AlgHom (RingHom.id _)
+
+@[inherit_doc]
+notation:25 A " →ₐ[" R "] " B => AlgHom (RingHom.id R) A B
 
 /-- The algebra morphism underlying `algebraMap` -/
 def Algebra.algHom (R A B : Type*)
@@ -46,30 +62,67 @@ def Algebra.algHom (R A B : Type*)
     [Algebra A B] [IsScalarTower R A B] :
     A →ₐ[R] B where
   toRingHom := algebraMap A B
-  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : A) (1 : B)
+  map_smul' r x := by simp [algebraMap_eq_smul_one, smul_assoc]
+
+class SemialgHomClass (F : Type*) {R S : outParam Type*}
+  [CommSemiring R] [CommSemiring S] (φ : outParam (R →+* S)) (A B : outParam Type*)
+  [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+  [FunLike F A B] extends SemilinearMapClass F φ A B, RingHomClass F A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
-class AlgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
-    extends RingHomClass F A B where
-  commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
+abbrev AlgHomClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] [FunLike F A B] : Prop :=
+  SemialgHomClass F (RingHom.id R) A B
+
+protected lemma AlgHomClass.map_smul {F : Type*} {R A B : outParam Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) (r : R) (x : A) : f (r • x) = r • f x := by rw [map_smul]
+
+protected lemma AlgHomClass.commutes {F : Type*} {R A B : outParam Type*} [CommSemiring R]
+    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) (r : R) : f (algebraMap R A r) = algebraMap R B r := by
+  simp [Algebra.algebraMap_eq_smul_one]
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
 -- The file `Mathlib/NumberTheory/NumberField/CanonicalEmbedding/FundamentalCone.lean` slows down by
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
+namespace SemialgHomClass
+
+variable (F : Type*) {R S : outParam Type*}
+  [CommSemiring R] [CommSemiring S] (φ : R →+* S) (A B : Type*)
+  [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+  [FunLike F A B] [SemialgHomClass F φ A B]
+
+variable {F} {A B} {φ} (f : F)
+
+@[coe]
+def semialgHom : A →ₛₐ[φ] B where
+  toFun := f
+  map_add' := map_add f
+  map_one' := map_one f
+  map_mul' := map_mul f
+  map_zero' := map_zero f
+  map_smul' := map_smulₛₗ f
+
+/-- Reinterpret an element of a type of semialgebra maps as a semialgebra map. -/
+instance : CoeTC F (A →ₛₐ[φ] B) where
+  coe f := semialgHom f
+
+end SemialgHomClass
+
 namespace AlgHomClass
 
 variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [FunLike F A B]
 
--- see Note [lower instance priority]
-instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
-  { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
-      simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
+-- -- see Note [lower instance priority]
+-- instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
+--   { ‹AlgHomClass F R A B› with
+--     map_smulₛₗ := fun f r x => by
+--       simp only [Algebra.smul_def, map_mul, RingHom.id_apply] }
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
@@ -77,7 +130,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
   __ := (f : A →+* B)
   toFun := f
-  commutes' := AlgHomClass.commutes f
+  map_smul' := AlgHomClass.map_smul f
 
 instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -86,26 +139,34 @@ end AlgHomClass
 
 namespace AlgHom
 
-variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁} {D : Type v₁}
+variable {R : Type u} {S : Type v} {A : Type w} {B : Type x} {C : Type y} {D : Type z}
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
-variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
+variable [CommSemiring R] [CommSemiring S][Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable {φ : R →+* S}
+variable [Algebra R A] [Algebra S B] [Algebra S D]
 
-instance funLike : FunLike (A →ₐ[R] B) A B where
+instance instFunLike : FunLike (A →ₛₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
-    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
-    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩
+    rcases g
     congr
 
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+instance semialgHomClas : SemialgHomClass (A →ₛₐ[φ] B) φ A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
   map_one f := f.map_one'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul'
+
+-- instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+--   map_add f := f.map_add'
+--   map_zero f := f.map_zero'
+--   map_mul f := f.map_mul'
+--   map_one f := f.map_one'
+--   map_smulₛₗ f := f.map_smul'
 
 lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring A] [Semiring B]
     [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] (x : A) :
@@ -116,120 +177,122 @@ lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring
     (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
-    [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
+def Simps.apply {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
+    {φ : R →+* S} {α : Type w} {β : Type x}
+    [Semiring α] [Semiring β] [Algebra R α] [Algebra S β] (f : α →ₛₐ[φ] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐ[R] B) = f :=
+protected theorem coe_coe {F : Type*} [FunLike F A B] [SemialgHomClass F φ A B] (f : F) :
+    ⇑(f : A →ₛₐ[φ] B) = f :=
   rfl
 
 @[simp]
-theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
+theorem toFun_eq_coe (f : A →ₛₐ[φ] B) : f.toFun = f :=
   rfl
 
 /-- Turn an algebra homomorphism into the corresponding multiplicative monoid homomorphism. -/
 @[coe]
-def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
+def toMonoidHom' (f : A →ₛₐ[φ] B) : A →* B := (f : A →+* B)
 
-instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
+instance coeOutMonoidHom : CoeOut (A →ₛₐ[φ] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
 /-- Turn an algebra homomorphism into the corresponding additive monoid homomorphism. -/
 @[coe]
-def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
+def toAddMonoidHom' (f : A →ₛₐ[φ] B) : A →+ B := (f : A →+* B)
 
-instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
+instance coeOutAddMonoidHom : CoeOut (A →ₛₐ[φ] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
 @[simp]
-theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
+theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₛₐ[φ] B) : A → B) = f :=
   rfl
 
 @[norm_cast]
-theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem coe_mks {f : A → B} (h₁) (h₂) (h₃) (h₄) (h₅) :
+    ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₛₐ[φ] B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
+theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₛₐ[φ] B) : A →+* B) = f :=
   rfl
 
 -- make the coercion the simp-normal form
 @[simp]
-theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
+theorem toRingHom_eq_coe (f : A →ₛₐ[φ] B) : f.toRingHom = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toRingHom (f : A →ₐ[R] B) : ⇑(f : A →+* B) = f :=
+theorem coe_toRingHom (f : A →ₛₐ[φ] B) : ⇑(f : A →+* B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
+theorem coe_toMonoidHom (f : A →ₛₐ[φ] B) : ⇑(f : A →* B) = f :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
+theorem coe_toAddMonoidHom (f : A →ₛₐ[φ] B) : ⇑(f : A →+ B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+theorem toRingHom_toMonoidHom (f : A →ₛₐ[φ] B) : ((f : A →+* B) : A →* B) = f :=
   rfl
 
 @[simp]
-theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
+theorem toRingHom_toAddMonoidHom (f : A →ₛₐ[φ] B) : ((f : A →+* B) : A →+ B) = f :=
   rfl
 
-variable (φ : A →ₐ[R] B)
+variable (f : A →ₛₐ[φ] B)
 
-theorem coe_fn_injective : @Function.Injective (A →ₐ[R] B) (A → B) (↑) :=
+theorem coe_fn_injective : @Function.Injective (A →ₛₐ[φ] B) (A → B) (↑) :=
   DFunLike.coe_injective
 
-theorem coe_fn_inj {φ₁ φ₂ : A →ₐ[R] B} : (φ₁ : A → B) = φ₂ ↔ φ₁ = φ₂ :=
+theorem coe_fn_inj {f₁ f₂ : A →ₛₐ[φ] B} : (f₁ : A → B) = f₂ ↔ f₁ = f₂ :=
   DFunLike.coe_fn_eq
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+* B) := fun φ₁ φ₂ H =>
-  coe_fn_injective <| show ((φ₁ : A →+* B) : A → B) = ((φ₂ : A →+* B) : A → B) from congr_arg _ H
+theorem coe_ringHom_injective : Function.Injective ((↑) : (A →ₛₐ[φ] B) → A →+* B) := fun f₁ f₂ H =>
+  coe_fn_injective <| show ((f₁ : A →+* B) : A → B) = ((f₂ : A →+* B) : A → B) from congr_arg _ H
 
-theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →* B) :=
+theorem coe_monoidHom_injective : Function.Injective ((↑) : (A →ₛₐ[φ] B) → A →* B) :=
   RingHom.coe_monoidHom_injective.comp coe_ringHom_injective
 
-theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₐ[R] B) → A →+ B) :=
+theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (A →ₛₐ[φ] B) → A →+ B) :=
   RingHom.coe_addMonoidHom_injective.comp coe_ringHom_injective
 
-protected theorem congr_fun {φ₁ φ₂ : A →ₐ[R] B} (H : φ₁ = φ₂) (x : A) : φ₁ x = φ₂ x :=
+protected theorem congr_fun {f₁ f₂ : A →ₛₐ[φ] B} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
   DFunLike.congr_fun H x
 
-protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = φ y :=
-  DFunLike.congr_arg φ h
+protected theorem congr_arg (f : A →ₛₐ[φ] B) {x y : A} (h : x = y) : f x = f y :=
+  DFunLike.congr_arg f h
 
 @[ext]
-theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
+theorem ext {f₁ f₂ : A →ₛₐ[φ] B} (H : ∀ x, f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ H
 
 @[simp]
-theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
+theorem mk_coe {f : A →ₛₐ[φ] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₛₐ[φ] B) = f :=
   rfl
 
-@[simp] lemma addHomMk_coe (f : A →ₐ[R] B) : AddHom.mk f (map_add f) = f := rfl
+@[simp] lemma addHomMk_coe (f : A →ₛₐ[φ] B) : AddHom.mk f (map_add f) = f := rfl
 
 @[simp]
-theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
-  φ.commutes' r
+theorem commutes (r : R) : f (algebraMap R A r) = algebraMap S B (φ r) := by
+  simp [Algebra.algebraMap_eq_smul_one, map_smulₛₗ]
 
-theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
-  RingHom.ext <| φ.commutes
+theorem comp_algebraMap : (f : A →+* B).comp (algebraMap R A) = (algebraMap S B).comp φ :=
+  RingHom.ext <| f.commutes
 
-/-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
-def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
+/-- If a `RingHom : A →+* B` that factors through `algebraMap R A`, then it is an `AlgHom`. -/
+def mk' (f : A →+* B) (h : ∀ (c : R), f (algebraMap R A c) = algebraMap S B (φ c)) : A →ₛₐ[φ] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    map_smul' _ _  := by simp [Algebra.smul_def, h] }
 
 @[simp]
-theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
-  rfl
+theorem coe_mk' (f : A →+* B) (h : ∀ (c : R), f (algebraMap R A c) = algebraMap S B (φ c)) :
+    ⇑(mk' f h) = f := rfl
 
 section
 
@@ -237,7 +300,7 @@ variable (R A)
 
 /-- Identity map as an `AlgHom`. -/
 protected def id : A →ₐ[R] A :=
-  { RingHom.id A with commutes' := fun _ => rfl }
+  { RingHom.id A with map_smul' _ _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
@@ -252,86 +315,91 @@ end
 theorem id_apply (p : A) : AlgHom.id R A p = p :=
   rfl
 
+variable {T : Type*} [CommSemiring T] [Algebra T C] {ψ : S →+* T} {ρ : R →+* T}
+    [RingHomCompTriple φ ψ ρ]
+
 /-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
 domain of `φ₁` equal to the codomain of `φ₂`, then
 `φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`.
 -/
-def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
-  { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+def comp (f : B →ₛₐ[ψ] C) (g : A →ₛₐ[φ] B) : A →ₛₐ[ρ] C where
+  toRingHom := f.toRingHom.comp g
+  map_smul' _ _ := by simp [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
 @[simp]
-theorem coe_comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
+theorem coe_comp (f : B →ₛₐ[ψ] C) (g : A →ₛₐ[φ] B) : ⇑(f.comp g) = f ∘ g :=
   rfl
 
-theorem comp_apply (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) (p : A) : φ₁.comp φ₂ p = φ₁ (φ₂ p) :=
+theorem comp_apply (f : B →ₛₐ[ψ] C) (g : A →ₛₐ[φ] B) (p : A) : f.comp g p = f (g p) :=
   rfl
 
-theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
-    (φ₁.comp φ₂ : A →+* C) = (φ₁ : B →+* C).comp ↑φ₂ :=
-  rfl
-
-@[simp]
-theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
+theorem comp_toRingHom (f : B →ₛₐ[ψ] C) (g : A →ₛₐ[φ] B) :
+    (f.comp g : A →+* C) = (f : B →+* C).comp ↑g :=
   rfl
 
 @[simp]
-theorem id_comp : (AlgHom.id R B).comp φ = φ :=
-  rfl
-
-theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A →ₐ[R] B) :
-    (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  rfl
-
-instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
-    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
-
-/-- R-Alg ⥤ R-Mod -/
-def toLinearMap : A →ₗ[R] B where
-  toFun := φ
-  map_add' := map_add _
-  map_smul' := map_smul _
-
-@[simp]
-theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
+theorem comp_id : f.comp (AlgHom.id R A) = f :=
   rfl
 
 @[simp]
-lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
+theorem id_comp : (AlgHom.id S B).comp f = f :=
+  rfl
+
+theorem comp_assoc {U : Type*} [CommSemiring U] [Algebra U D] {ν : T →+* U} {η : S →+* U} {ω : R →+* U}
+    [RingHomCompTriple ψ ν η] [RingHomCompTriple ρ ν ω] [RingHomCompTriple φ η ω]
+    (f : A →ₛₐ[φ] B) (g : B →ₛₐ[ψ] C) (h : C →ₛₐ[ν] D) :
+    ((h.comp g : B →ₛₐ[η] D).comp f : A →ₛₐ[ω] D) = h.comp (g.comp f) :=
+  rfl
+
+-- instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
+--     RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
+
+-- /-- R-Alg ⥤ R-Mod -/
+-- def toLinearMap : A →ₗ[R] B where
+--   toFun := φ
+--   map_add' := map_add _
+--   map_smul' := map_smul _
+
+@[simp]
+theorem toLinearMap_apply (p : A) : f.toLinearMap p = f p :=
+  rfl
+
+@[simp]
+lemma coe_toLinearMap : ⇑f.toLinearMap = f := rfl
 
 theorem toLinearMap_injective :
-    Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
+    Function.Injective (toLinearMap : _ → A →ₛₗ[φ] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
 
 @[simp]
-theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
-    (g.comp f).toLinearMap = g.toLinearMap.comp f.toLinearMap :=
+theorem comp_toLinearMap (f : A →ₛₐ[φ] B) (g : B →ₛₐ[ψ] C) :
+    (g.comp f) = g.toLinearMap.comp f.toLinearMap :=
   rfl
 
 @[simp]
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
   rfl
 
-@[simp] lemma linearMapMk_toAddHom (f : A →ₐ[R] B) : LinearMap.mk f (map_smul f) = f.toLinearMap :=
+@[simp] lemma linearMapMk_toAddHom (f : A →ₛₐ[φ] B) :
+    LinearMap.mk f (map_smulₛₗ f) = f.toLinearMap :=
   rfl
 
 /-- Promote a `LinearMap` to an `AlgHom` by supplying proofs about the behavior on `1` and `*`. -/
-@[simps]
-def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x * y) = f x * f y) :
-    A →ₐ[R] B :=
-  { f.toAddMonoidHom with
-    toFun := f
-    map_one' := map_one
-    map_mul' := map_mul
-    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+@[simps!]
+def ofLinearMap (f : A →ₛₗ[φ] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x * y) = f x * f y) :
+    A →ₛₐ[φ] B where
+  __ := f
+  map_one' := map_one
+  map_mul' := map_mul
+  map_zero' := by simp
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
-    ofLinearMap φ.toLinearMap map_one map_mul = φ :=
+    ofLinearMap f.toLinearMap map_one map_mul = f :=
   rfl
 
 @[simp]
-theorem toLinearMap_ofLinearMap (f : A →ₗ[R] B) (map_one) (map_mul) :
+theorem toLinearMap_ofLinearMap (f : A →ₛₗ[φ] B) (map_one) (map_mul) :
     toLinearMap (ofLinearMap f map_one map_mul) = f :=
   rfl
 
@@ -340,9 +408,10 @@ theorem ofLinearMap_id (map_one) (map_mul) :
     ofLinearMap LinearMap.id map_one map_mul = AlgHom.id R A :=
   rfl
 
-theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
-    (x : A) : φ (r • x) = r • φ x :=
-  φ.toLinearMap.map_smul_of_tower r x
+theorem map_smul_of_tower [Algebra R B] {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R]
+    {f : A →ₐ[R] B} (r : R')
+    (x : A) : f (r • x) = r • f x :=
+  f.toLinearMap.map_smul_of_tower r x
 
 @[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
@@ -363,15 +432,15 @@ theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
 @[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
-theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
-    algebraMap R B y = f x :=
+theorem algebraMap_eq_apply (f : A →ₛₐ[φ] B) {y : R} {x : A} (h : algebraMap R A y = x) :
+    algebraMap S B (φ y) = f x :=
   h ▸ (f.commutes _).symm
 
-lemma cancel_right {g₁ g₂ : B →ₐ[R] C} {f : A →ₐ[R] B} (hf : Function.Surjective f) :
+lemma cancel_right {g₁ g₂ : B →ₛₐ[ψ] C} {f : A →ₛₐ[φ] B} (hf : Function.Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| hf.forall.2 (AlgHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 
-lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function.Injective f) :
+lemma cancel_left {g₁ g₂ : A →ₛₐ[φ] B} {f : B →ₛₐ[ψ] C} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
   ⟨fun h => AlgHom.ext <| fun _ ↦ hf.eq_iff.mp <| AlgHom.ext_iff.mp h _, fun h => h ▸ rfl⟩
 
@@ -401,7 +470,7 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    map_smul' _ _ := by simp }
 
 @[simp]
 lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
@@ -412,7 +481,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with map_smul' _ _ := by simp }
 
 @[simp]
 lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
@@ -434,7 +503,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
-  { algebraMap R A with commutes' := fun _ => rfl }
+  { algebraMap R A with map_smul' _ _ := by simp [Algebra.smul_def] }
 
 variable {R}
 
@@ -448,7 +517,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
-  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+  ⟨fun f g => AlgHom.ext fun _ ↦ by simpa using (f.commutes _).trans (g.commutes _).symm⟩
 
 /-- This ext lemma closes trivial subgoals created when chaining heterobasic ext lemmas. -/
 @[ext high]
@@ -479,12 +548,12 @@ lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
   ext x
   constructor
   · rintro ⟨a, ⟨r, hr, rfl⟩, rfl⟩
-    simp only [AlgHom.commutes]
+    simp only [AlgHom.commutes, RingHom.id_apply]
     use r
   · rintro ⟨r, hr, rfl⟩
     simp only [Submonoid.mem_map]
     use (algebraMap R A r)
-    simp only [AlgHom.commutes, and_true]
+    simp only [AlgHom.commutes, RingHom.id_apply, and_true]
     use r
 
 lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
@@ -507,7 +576,7 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
     toFun := fun a => m • a
-    commutes' := smul_algebraMap _ }
+    map_smul' := by simp [Algebra.smul_def] }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
@@ -529,3 +598,144 @@ lemma AlgHom.default_apply (x : S) : (default : S →ₐ[R] T) x = 0 :=
   rfl
 
 end
+
+-- section semialghom
+
+-- /-- Let `φ : R →+* S` be a ring homomorphism, let `A` be an `R`-algebra and let `B` be
+-- an `S`-algebra. Then `SemialgHom φ A B` or `A →ₛₐ[φ] B` is the ring homomorphisms `ψ : A →+* B`
+-- making lying above `φ` (i.e. such that `ψ (r • a) = φ r • ψ a`). -/
+-- structure SemialgHom {R S : Type*} [CommSemiring R] [CommSemiring S] (φ : R →+* S)
+--     (A B : Type*)  [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+--     extends A →ₛₗ[φ] B, RingHom A B
+
+-- @[inherit_doc SemialgHom]
+-- infixr:25 " →ₛₐ " => SemialgHom _
+
+-- @[inherit_doc]
+-- notation:25 A " →ₛₐ[" φ:25 "] " B:0 => SemialgHom φ A B
+
+-- variable {R S : Type*} [CommSemiring R] [CommSemiring S] (φ : R →+* S)
+--     (A B : Type*) [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+
+-- instance instFunLike : FunLike (A →ₛₐ[φ] B) A B where
+--   coe f := f.toFun
+--   coe_injective' f g h := by
+--     cases f
+--     cases g
+--     congr
+--     exact DFunLike.coe_injective' h
+
+-- variable {φ} {A} {B} in
+-- lemma SemialgHom.map_smul (ψ : A →ₛₐ[φ] B) (m : R) (x : A) : ψ (m • x) = φ m • ψ x :=
+--   LinearMap.map_smul' ψ.toLinearMap m x
+
+-- @[simp]
+-- theorem coe_mk (f : A →ₛₗ[φ] B) (h₁ h₂ h₃) : ((⟨f, h₁, h₂, h₃⟩ : A →ₛₐ[φ] B) : A → B) = f :=
+--   rfl
+
+-- end semialghom
+
+-- section semialghomclass
+
+-- class SemialgHomClass (F : Type*) {R S : outParam Type*}
+--   [CommSemiring R] [CommSemiring S] (φ : outParam (R →+* S)) (A B : outParam Type*)
+--   [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+--   [FunLike F A B] extends SemilinearMapClass F φ A B, RingHomClass F A B
+
+-- variable (F : Type*) {R S : Type*}
+--   [CommSemiring R] [CommSemiring S] (φ : R →+* S) (A B : outParam Type*)
+--   [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+--   [FunLike F A B] [SemialgHomClass F φ A B]
+
+-- instance SemialgHomClass.instSemialgHom : SemialgHomClass (A →ₛₐ[φ] B) φ A B where
+--   map_add ψ := ψ.map_add
+--   map_smulₛₗ ψ := ψ.map_smulₛₗ
+--   map_mul ψ := ψ.map_mul
+--   map_one ψ := ψ.map_one
+--   map_zero ψ := ψ.map_zero
+
+-- variable {F} {φ} {A} {B} in
+-- /-- Turn an element of `F` which satisfies `SemialgHomClass F φ A B` to a `SemialgHom`. -/
+-- def SemialgHomClass.toSemialgHom (f : F) : A →ₛₐ[φ] B :=
+--   { (f : A →ₛₗ[φ] B), (f : A →+* B) with }
+
+-- instance : CoeTC F (A →ₛₐ[φ] B) :=
+--   ⟨SemialgHomClass.toSemialgHom⟩
+
+-- @[simp]
+-- theorem SemialgHom.coe_coe (f : F) : ⇑(f : A →ₛₐ[φ] B) = f :=
+--   rfl
+
+-- end semialghomclass
+
+-- section semialghom
+
+-- variable {R S : Type*} [CommSemiring R] [CommSemiring S] {φ : R →+* S}
+--     {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+
+-- lemma SemialgHom.commutes (ψ : A →ₛₐ[φ] B) (r : R) :
+--     ψ (algebraMap R A r) = algebraMap S B (φ r) := by
+--   have := ψ.map_smul r 1
+--   rw [Algebra.smul_def, mul_one, map_one] at this
+--   rw [this, Algebra.smul_def, mul_one]
+
+-- theorem SemialgHom.toLinearMap_eq_coe (f : A →ₛₐ[φ] B) : f.toLinearMap = f :=
+--   rfl
+
+-- theorem SemialgHom.toRingHom_eq_coe (f : A →ₛₐ[φ] B) : f.toRingHom = f :=
+--   rfl
+
+-- theorem SemialgHom.algebraMap_apply {A B : Type*} [CommSemiring A] [CommSemiring B]
+--     [Algebra R A] [Algebra S B] (f : A →ₛₐ[φ] B) (a : A) :
+--     letI := f.toAlgebra
+--     algebraMap A B a = f a := rfl
+
+-- /-- The composition of two semi-algebra maps. -/
+-- def SemialgHom.comp {T : Type*} [CommSemiring T] {C : Type*} [Semiring C]
+--     [Algebra T C] {ψ : S →+* T} {ξ : R →+* T} [RingHomCompTriple φ ψ ξ]
+--     (g : B →ₛₐ[ψ] C) (f : A →ₛₐ[φ] B) :
+--     A →ₛₐ[ξ] C where
+--   __ := LinearMap.comp (SemialgHom.toLinearMap g) (SemialgHom.toLinearMap f)
+--   __ := RingHom.comp g.toRingHom f.toRingHom
+
+-- /-- An algebra map defines a semi-algebra map using `RingHom.id` -/
+-- def AlgHom.toSemialgHom {R : Type*} [CommSemiring R] {A B : Type*} [Semiring A] [Semiring B]
+--     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
+--     A →ₛₐ[RingHom.id R] B where
+--   __ := f
+--   map_smul' _ _ := by simp
+
+-- /-- The composition `(B →ₛₐ[ψ] C) ∘ (A →ₐ[S] B) → `A →ₛₐ[ψ] C` of a semi-algebra map with an
+-- algebra map to give a semi-algebra map. -/
+-- def SemialgHom.compAlgHom {T : Type*} [CommSemiring T] {C : Type*} [Semiring C]
+--     [Algebra T C] {ψ : S →+* T} [Algebra S A] (g : B →ₛₐ[ψ] C) (f : A →ₐ[S] B) :
+--     A →ₛₐ[ψ] C :=
+--   g.comp f.toSemialgHom
+
+-- -- /-- The product of two semi-algebra maps on the same domain. -/
+-- -- def SemialgHom.prod {C : Type*} [Semiring C] [Algebra S C] (f : A →ₛₐ[φ] B)
+-- --     (g : A →ₛₐ[φ] C) :
+-- --     A →ₛₐ[φ] B × C where
+-- --   __ := RingHom.prod f.toRingHom g.toRingHom
+-- --   map_smul' r x := by simp
+
+-- -- /-- The product of two semi-algebra maps on separate domains. -/
+-- -- def SemialgHom.prodMap {C D : Type*} [Semiring C] [Semiring D]
+-- --     [Algebra S C] [Algebra S D] [Algebra R B] (f : A →ₛₐ[φ] C) (g : B →ₛₐ[φ] D) :
+-- --     A × B →ₛₐ[φ] C × D :=
+-- --   (f.compAlgHom (AlgHom.fst R A B)).prod (g.compAlgHom (AlgHom.snd R A B))
+
+-- /-- Restrict the scalars of semialgebra map `f : A →ₛₐ[ψ] B` where `ψ : R' →ₛₐ[φ] S'`, to
+-- `φ : R →+* S`. -/
+-- @[simps!]
+-- def SemialgHom.restrictScalars {R S R' S' : Type*} [CommSemiring R] [CommSemiring S]
+--     [CommSemiring R'] [CommSemiring S'] [Algebra R R'] [Algebra S S'] {φ : R →+* S}
+--     (ψ : R' →ₛₐ[φ] S') {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
+--     [Algebra R' A] [Algebra S' B] [IsScalarTower R R' A] [IsScalarTower S S' B]
+--     (f : A →ₛₐ[ψ.toRingHom] B) : A →ₛₐ[φ] B where
+--   __ := f.toRingHom
+--   map_smul' r a := by
+--     have := f.map_smul (algebraMap R R' r) a
+--     simp_all [SemialgHom.toLinearMap_eq_coe, Algebra.algebraMap_eq_smul_one, ψ.map_smul]
+
+-- end semialghom

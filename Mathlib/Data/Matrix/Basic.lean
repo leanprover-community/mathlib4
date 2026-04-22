@@ -248,18 +248,14 @@ theorem map_algebraMap (r : R) (f : α → β) (hf : f 0 = 0)
 variable (R)
 
 /-- `Matrix.diagonal` as an `AlgHom`. -/
-@[simps]
+@[simps!]
 def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
-  { diagonalRingHom n α with
-    toFun := diagonal
-    commutes' := fun r => (algebraMap_eq_diagonal r).symm }
+  .mk' (diagonalRingHom n α) fun r ↦ (algebraMap_eq_diagonal r).symm
 
 variable (n)
 
 /-- `Matrix.scalar` as an `AlgHom`. -/
-def scalarAlgHom : α →ₐ[R] Matrix n n α where
-  toRingHom := scalar n
-  commutes' _ := rfl
+def scalarAlgHom : α →ₐ[R] Matrix n n α := .mk' (scalar n) fun _ ↦ rfl
 
 @[simp] theorem scalarAlgHom_apply (a : α) : scalarAlgHom n R a = scalar n a := rfl
 
@@ -674,11 +670,9 @@ variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
 /-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
 coefficients. This is `Matrix.map` as an `AlgHom`. -/
-@[simps]
+@[simps!]
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
-  { f.toRingHom.mapMatrix with
-    toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
+  .mk' (f.toRingHom.mapMatrix) fun r ↦ Matrix.map_algebraMap r f (map_zero _) (f.commutes r)
 
 @[simp]
 theorem mapMatrix_id : (AlgHom.id R α).mapMatrix = AlgHom.id R (Matrix m m α) :=
@@ -725,8 +719,7 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
 we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
-  commutes' _ := MulOpposite.unop_injective <| by
-    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
+  map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 
 end AlgEquiv
 
@@ -840,7 +833,7 @@ variable {ι : Type*} {β : ι → Type*}
 @[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
     [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+  map_smul' _ _ := rfl
 
 end Pi
 
@@ -919,7 +912,7 @@ variable (R m α)
 def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
-  commutes' r := by simp [algebraMap_eq_diagonal]
+  map_smul' := by simp
 
 end Transpose
 

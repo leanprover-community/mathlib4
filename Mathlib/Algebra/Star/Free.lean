@@ -53,7 +53,8 @@ instance : StarRing (FreeAlgebra R X) where
     let y := lift R (X := X) (MulOpposite.op ∘ ι R)
     refine induction (motive := fun x ↦ (y (y x).unop).unop = x) _ _ ?_ ?_ ?_ ?_ x
     · intros
-      simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
+      simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op,
+        RingHom.id_apply]
     · intros
       simp only [y, lift_ι_apply, Function.comp_apply, MulOpposite.unop_op]
     · intros
@@ -72,6 +73,6 @@ theorem star_algebraMap (r : R) : star (algebraMap R (FreeAlgebra R X) r) = alge
 
 /-- `star` as an `AlgEquiv` -/
 def starHom : FreeAlgebra R X ≃ₐ[R] (FreeAlgebra R X)ᵐᵒᵖ :=
-  { starRingEquiv with commutes' := fun r => by simp [star_algebraMap] }
+  { starRingEquiv with map_smul' := fun r x => by simp [Algebra.smul_def, star_algebraMap] }
 
 end FreeAlgebra

@@ -295,9 +295,9 @@ variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
   isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) where
   __ := quotientEquiv P Q (RingEquivClass.toRingEquiv σ) h
-  commutes' := by
-    rintro ⟨x⟩
-    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
+  map_smul' := by
+    rintro ⟨r⟩ ⟨x⟩
+    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.map_smul σ r x)
 
 @[simp]
 theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=

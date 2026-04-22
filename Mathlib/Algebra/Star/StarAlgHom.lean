@@ -286,7 +286,7 @@ section Unital
 /-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
 structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-  [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
+  [Semiring B] [Algebra R B] [Star B] extends AlgHom (RingHom.id R) A B where
   /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ x : A, toFun (star x) = star (toFun x)
 
@@ -332,7 +332,7 @@ instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
-  commutes f := f.commutes'
+  map_smulₛₗ f := f.map_smul'
 
 instance : StarHomClass (A →⋆ₐ[R] B) A B where
   map_star f := f.map_star'
@@ -361,7 +361,7 @@ protected def copy (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : A →⋆
   map_mul' := h.symm ▸ map_mul f
   map_zero' := h.symm ▸ map_zero f
   map_add' := h.symm ▸ map_add f
-  commutes' := h.symm ▸ AlgHomClass.commutes f
+  map_smul' := h.symm ▸ map_smul f
   map_star' := h.symm ▸ map_star f
 
 @[simp]
@@ -535,7 +535,7 @@ def _root_.Pi.evalStarAlgHom (R : Type*) (A : ι → Type*) (j : ι) [CommSemiri
     [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] [∀ i, Star (A i)] :
     (∀ i, A i) →⋆ₐ[R] A j :=
   { Pi.evalNonUnitalStarAlgHom R A j, Pi.evalRingHom A j with
-    commutes' _ := rfl }
+    map_smul' _ _ := rfl }
 
 end Pi
 
@@ -657,7 +657,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
-  { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+  { map_smulₛₗ := fun f r => by simp }
 
 namespace StarAlgEquivClass
 
@@ -828,7 +828,7 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 /-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
 def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
   toRingEquiv := f.toRingEquiv
-  commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one', map_smul']; simp
+  map_smul' _ r := by simp_rw [map_smul']; simp
 
 @[simp]
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl

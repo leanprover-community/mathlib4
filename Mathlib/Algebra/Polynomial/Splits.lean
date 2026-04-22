@@ -210,7 +210,8 @@ theorem Splits.comp_X_add_C {f : R[X]} (hf : f.Splits) (a : R) : (f.comp (X + C 
 theorem Splits.of_algHom {f : R[X]} {A B : Type*} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (hf : Splits (f.map (algebraMap R A))) (e : A →ₐ[R] B) :
     Splits (f.map (algebraMap R B)) := by
-  rw [← e.comp_algebraMap, ← map_map]
+  have := RingHom.comp_id _ ▸ e.comp_algebraMap
+  rw [← this, ← map_map]
   apply hf.map
 
 theorem Splits.of_isScalarTower {f : R[X]} {A : Type*} (B : Type*) [CommSemiring A] [Semiring B]
@@ -406,7 +407,7 @@ theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Spl
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
+    ← hf.roots_map, map_map, g.comp_algebraMap, RingHom.comp_id, ← rootSet]
 
 omit [IsDomain R] in
 theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
@@ -422,7 +423,7 @@ theorem Splits.image_rootSet_of_map_ne_zero (hf : (f.map (algebraMap R A)).Split
   replace hφ : (f.map (algebraMap R A)).map (φ : A →+* B) ≠ 0 := by
     rwa [map_map, φ.comp_algebraMap]
   replace hf := hf.roots_map_of_ne_zero hφ
-  rw [map_map, φ.comp_algebraMap] at hf
+  rw [map_map, φ.comp_algebraMap, RingHom.comp_id] at hf
   simp [rootSet, aroots, hf, Multiset.toFinset_map]
 
 theorem Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots (hf : Splits f) :

@@ -190,7 +190,7 @@ def subtype : S →⋆ₐ[R] A where
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
   map_star' _ := rfl
 
 @[simp]
@@ -212,7 +212,7 @@ def inclusion {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) : S₁ →⋆
   map_mul' _ _ := rfl
   map_zero' := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
   map_star' _ := rfl
 
 theorem inclusion_injective {S₁ S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂) :

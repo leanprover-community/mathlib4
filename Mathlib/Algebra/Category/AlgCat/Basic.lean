@@ -208,8 +208,8 @@ variable {X₁ X₂ : Type u}
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgCat.of R X₁ ≅ AlgCat.of R X₂ where
-  hom := AlgCat.ofHom (e : X₁ →ₐ[R] X₂)
-  inv := AlgCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
+  hom := AlgCat.ofHom e.toAlgHom
+  inv := AlgCat.ofHom e.symm.toAlgHom
 
 namespace CategoryTheory.Iso
 

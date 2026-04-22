@@ -260,7 +260,7 @@ def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemir
   { (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A) with
     toFun := AddMonoidAlgebra.toDirectSum
     invFun := DirectSum.toAddMonoidAlgebra
-    commutes' := fun _r => AddMonoidAlgebra.toDirectSum_single _ _ }
+    map_smul' := by simp [Algebra.smul_def, DirectSum.algebraMap_apply] }
 
 @[simp]
 theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]

@@ -285,7 +285,7 @@ section coeFn
 @[simps!] def coeFnAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
     LocallyConstant X Y →ₐ[R] X → Y where
   toRingHom := coeFnRingHom
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end coeFn
 
@@ -345,7 +345,7 @@ def comapRingHom [Semiring Z] (f : C(X, Y)) :
 def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
     (f : C(X, Y)) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y))
     (hfs : Function.Surjective f) :
@@ -409,7 +409,7 @@ def mapRingHom [Semiring Y] [Semiring Z] (f : Y →+* Z) :
 def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
     (f : Y →ₐ[R] Z) : LocallyConstant X Y →ₐ[R] LocallyConstant X Z where
   toRingHom := mapRingHom f
-  commutes' _ := by aesop
+  map_smul' _ _ := by aesop
 
 /-- `LocallyConstant.congrRight` as a linear equivalence. -/
 @[simps!]
@@ -451,7 +451,7 @@ def constₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y] :
 def constₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
     Y →ₐ[R] LocallyConstant X Y where
   toRingHom := constRingHom
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end Const
 

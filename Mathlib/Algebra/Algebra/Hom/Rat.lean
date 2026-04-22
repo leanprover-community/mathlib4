@@ -23,7 +23,7 @@ variable {R S : Type*}
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
-  { f with commutes' := f.map_rat_algebraMap }
+  { f with map_smul' _ _ := by simp [Algebra.smul_def, f.map_rat_algebraMap] }
 
 @[simp]
 theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) :

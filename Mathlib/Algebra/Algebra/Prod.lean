@@ -61,11 +61,11 @@ variable (R A B)
 
 /-- First projection as `AlgHom`. -/
 def fst : A × B →ₐ[R] A :=
-  { RingHom.fst A B with commutes' := fun _r => rfl }
+  { RingHom.fst A B with map_smul' := fun _ _  => rfl }
 
 /-- Second projection as `AlgHom`. -/
 def snd : A × B →ₐ[R] B :=
-  { RingHom.snd A B with commutes' := fun _r => rfl }
+  { RingHom.snd A B with map_smul' := fun _ _ => rfl }
 
 variable {A B}
 
@@ -81,9 +81,8 @@ variable {R}
 @[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
   { f.toRingHom.prod g.toRingHom with
-    commutes' := fun r => by
-      simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
-        commutes, Prod.algebraMap_apply] }
+    map_smul' := fun r x => by
+      simp [toRingHom_eq_coe, RingHom.prod_apply, map_smul] }
 
 theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
@@ -112,7 +111,7 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) wher
 def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     A × C →ₐ[R] B × D :=
   { toRingHom := f.toRingHom.prodMap g.toRingHom
-    commutes' := fun r => by simp [commutes] }
+    map_smul' r x := by ext <;> simp [map_smul] }
 
 end AlgHom
 
@@ -147,7 +146,7 @@ def prodUnique [Unique B] : (A × B) ≃ₐ[R] A where
   toFun := Prod.fst
   invFun x := (x, 0)
   __ := (RingEquiv.prodZeroRing A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Multiplying by the trivial algebra from the left does not change the structure.
 This is the `AlgEquiv` version of `LinearEquiv.uniqueProd` and `RingEquiv.zeroRingProd.symm`.
@@ -157,6 +156,6 @@ def uniqueProd [Unique B] : (B × A) ≃ₐ[R] A where
   toFun := Prod.snd
   invFun x := (0, x)
   __ := (RingEquiv.zeroRingProd A B).symm
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end AlgEquiv

@@ -294,7 +294,8 @@ theorem algHom_commutes (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x :
     algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
   obtain ⟨r, s, hs, rfl⟩ := IsFractionRing.div_surjective A x
   simp_rw [map_div₀, AlgHom.commutes, ← IsScalarTower.algebraMap_apply,
-    IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
+    IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, RingHom.id_apply,
+    ← IsScalarTower.algebraMap_apply]
 
 theorem algEquiv_commutes (e : K₁ ≃ₐ[A] K₂) (f : L₁ ≃ₐ[B] L₂) (x : K₁) :
     algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
@@ -479,9 +480,10 @@ variable {A B C D : Type*}
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
 noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
   __ := IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv
-  commutes' x := by
+  map_smul' x _ := by
     obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective A x
-    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
+    simp_rw [Algebra.smul_def, RingHom.id_apply, map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]
 
 lemma restrictScalars_fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) :

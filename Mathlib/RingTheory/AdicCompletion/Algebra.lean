@@ -392,8 +392,8 @@ def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
     A →ₐ[R] AdicCompletion I S where
   __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; exact congr($(hf hle) x)
-  commutes' r := ext_evalₐ fun n ↦ by
-    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
+  map_smul' r x := ext_evalₐ fun n ↦ by
+    simp [Algebra.smul_def, evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
 
 variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n),
@@ -420,7 +420,7 @@ its `I`-adic completion is an `S`-algebra isomorphism.
 noncomputable def ofAlgEquiv : S ≃ₐ[S] AdicCompletion I S where
   __ := ofLinearEquiv I S
   map_mul' _ _ := by ext; simp
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem ofAlgEquiv_apply (x : S) : ofAlgEquiv I x = of I S x := by
@@ -444,9 +444,7 @@ theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
 @[simp]
 theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
-  simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
-  rw [← mk_smul_top_ofAlgEquiv_symm I n x]
-  simp
+  simp [evalₐ, -coe_eval, ← mk_smul_top_ofAlgEquiv_symm I n x]
 
 @[simp]
 lemma mk_ofAlgEquiv_symm_eq_evalOneₐ (x : AdicCompletion I S) :

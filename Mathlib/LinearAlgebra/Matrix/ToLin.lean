@@ -503,7 +503,7 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
 def LinearMap.toMatrixAlgEquiv' : ((n → R) →ₗ[R] n → R) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_one LinearMap.toMatrix'_mul
+  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_mul
 
 /-- A `Matrix n n R` is algebra equivalent to a linear map `(n → R) →ₗ[R] (n → R)`. -/
 def Matrix.toLinAlgEquiv' : Matrix n n R ≃ₐ[R] (n → R) →ₗ[R] n → R :=
@@ -804,7 +804,7 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
 equivalence between linear maps `M₁ →ₗ M₁` and square matrices over `R` indexed by the basis. -/
 def LinearMap.toMatrixAlgEquiv : (M₁ →ₗ[R] M₁) ≃ₐ[R] Matrix n n R :=
   AlgEquiv.ofLinearEquiv
-    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_one v₁) (LinearMap.toMatrix_mul v₁)
+    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_mul v₁)
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
 equivalence between square matrices over `R` indexed by the basis and linear maps `M₁ →ₗ M₁`. -/
@@ -858,7 +858,7 @@ theorem Matrix.toLinAlgEquiv_self (M : Matrix n n R) (i : n) :
   Matrix.toLin_self _ _ _ _
 
 theorem LinearMap.toMatrixAlgEquiv_id : LinearMap.toMatrixAlgEquiv v₁ id = 1 := by
-  simp_rw [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, LinearMap.toMatrix_id]
+  simp [LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply, toMatrix_id]
 
 theorem Matrix.toLinAlgEquiv_one : Matrix.toLinAlgEquiv v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrixAlgEquiv_id v₁, Matrix.toLinAlgEquiv_toMatrixAlgEquiv]
@@ -954,10 +954,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
     rw [map_add, map_add]
   map_mul' x y := by
     rw [map_mul, LinearMap.toMatrix_mul]
-  commutes' r := by
-    ext
-    rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.algebraMap_self_apply]
+  map_smul' r x := by ext; simp
 
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl
@@ -1165,13 +1162,7 @@ See also `LinearMap.toMatrix'`
 def endVecAlgEquivMatrixEnd :
     Module.End A (ι → M) ≃ₐ[R] Matrix ι ι (Module.End A M) where
   __ := endVecRingEquivMatrixEnd ι A M
-  commutes' r := by
-    ext
-    simp only [endVecRingEquivMatrixEnd, RingEquiv.toEquiv_eq_coe, Module.algebraMap_end_eq_smul_id,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, Equiv.coe_fn_mk,
-      LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero,
-      LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
-    split_ifs <;> rfl
+  map_smul' r x := by ext; simp
 
 variable {A ι}
 

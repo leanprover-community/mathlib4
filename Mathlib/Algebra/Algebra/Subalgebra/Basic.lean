@@ -391,7 +391,7 @@ def val : S →ₐ[R] A :=
     map_one' := rfl
     map_add' := fun _ _ ↦ rfl
     map_mul' := fun _ _ ↦ rfl
-    commutes' := fun _ ↦ rfl }
+    map_smul' := fun _ ↦ by simp }
 
 @[simp]
 theorem coe_val : (S.val : S → A) = ((↑) : S → A) := rfl
@@ -490,7 +490,7 @@ lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
 def val (s : S) : s →ₐ[R] A :=
   { SubsemiringClass.subtype s, SMulMemClass.subtype s with
     toFun := (↑)
-    commutes' := fun _ ↦ rfl }
+    map_smul' := fun _ ↦ by simp }
 
 @[simp]
 theorem coe_val : (val s : s → A) = ((↑) : s → A) :=
@@ -563,7 +563,7 @@ theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f)
 
 /-- Restrict the codomain of an algebra homomorphism. -/
 def codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₐ[R] S :=
-  { RingHom.codRestrict (f : A →+* B) S hf with commutes' := fun r => Subtype.ext <| f.commutes r }
+  { RingHom.codRestrict (f : A →+* B) S hf with map_smul' _ _ := Subtype.ext <| f.map_smul .. }
 
 @[simp]
 theorem val_comp_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
@@ -648,7 +648,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+    map_smul' _ _ := by ext; exact e.map_smul .. }
 
 end AlgEquiv
 
@@ -675,7 +675,7 @@ def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   map_zero' := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 variable {S T U} (h : S ≤ T)
 
@@ -740,7 +740,7 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :

@@ -26,7 +26,9 @@ theorem isLocalizedModule_iff_isLocalization :
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
   rw [isLocalizedModule_iff, isLocalization_iff]
   refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
-  · simp_rw [← (Algebra.lmul R Aₛ).commutes, Algebra.lmul_isUnit_iff, Subtype.forall,
+  · have := (Algebra.lmul R Aₛ).commutes
+    simp only [RingHom.id_apply] at this
+    simp_rw [← this, Algebra.lmul_isUnit_iff, Subtype.forall,
       Algebra.algebraMapSubmonoid, ← SetLike.mem_coe, Submonoid.coe_map,
       Set.forall_mem_image, ← IsScalarTower.algebraMap_apply]
   · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]

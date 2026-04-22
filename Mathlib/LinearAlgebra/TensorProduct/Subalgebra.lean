@@ -228,7 +228,7 @@ theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
 theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
   rfl
 
-theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm R B A) := by
+theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm R B A).toAlgHom := by
   ext <;> simp
 
 theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by

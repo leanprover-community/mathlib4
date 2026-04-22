@@ -55,7 +55,7 @@ variable {ι} (R)
 @[simps!]
 def algHom {B : Type*} [Semiring B] [Algebra R B] (g : ∀ i, B →ₐ[R] A i) : B →ₐ[R] Π i, A i where
   __ := Pi.ringHom fun i ↦ (g i).toRingHom
-  commutes' r := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
@@ -63,7 +63,7 @@ etc. -/
 def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
     toFun := fun f ↦ f i
-    commutes' := fun _ ↦ rfl }
+    map_smul' _ _ := rfl }
 
 @[simp]
 theorem algHom_evalAlgHom : algHom R A (evalAlgHom R A) = AlgHom.id R (Π i, A i) := rfl
@@ -90,7 +90,7 @@ etc. -/
 def constAlgHom : B →ₐ[R] A → B :=
   { Pi.constRingHom A B with
     toFun := Function.const _
-    commutes' := fun _ ↦ rfl }
+    map_smul' _ _ := rfl }
 
 /-- When `R` is commutative and permits an `algebraMap`, `Pi.constRingHom` is equal to that
 map. -/
@@ -122,9 +122,9 @@ variable [Algebra R A] [Algebra R B]
 protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] ι → B :=
   { f.toRingHom.compLeft ι with
     toFun := fun h ↦ f ∘ h
-    commutes' := fun c ↦ by
+    map_smul' _ _ := by
       ext
-      exact f.commutes' c }
+      exact f.map_smul .. }
 
 end AlgHom
 
@@ -145,9 +145,7 @@ def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R]
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
     toFun := fun x j ↦ e j (x j)
     invFun := fun x j ↦ (e j).symm (x j)
-    commutes' := fun r ↦ by
-      ext i
-      simp }
+    map_smul' _ _ := by ext; simp }
 
 @[simp]
 theorem piCongrRight_refl :
@@ -169,7 +167,7 @@ variable (R A₁) in
 algebras. -/
 def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
   __ := RingEquiv.piMulOpposite A₁
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 variable (R A₁) in
 /--
@@ -179,7 +177,7 @@ This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) where
   __ := RingEquiv.piCongrLeft' A₁ e
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]

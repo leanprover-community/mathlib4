@@ -660,7 +660,7 @@ def fstHom : Unitization R A →ₐ[R] R where
   map_mul' := fst_mul
   map_zero' := fst_zero (A := A)
   map_add' := fst_add
-  commutes' := fst_inl A
+  map_smul' _ _ := rfl
 
 end Algebra
 
@@ -752,9 +752,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  commutes' := fun r => by
-    simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
-
+  map_smul' _ _ := by simp [Algebra.smul_def, algebraMap_eq_inl, fst_inl, snd_inl, mul_add]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to

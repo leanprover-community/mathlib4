@@ -87,7 +87,7 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
         eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
   map_mul' _ _ := eval₂_mul _ _
   map_add' _ _ := eval₂_add _ _
-  commutes' _ := eval₂_C _ _ _
+  map_smul' _ _ := by simp [Algebra.smul_def, eval₂_C _ _ _]
 
 theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
     MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
@@ -303,12 +303,11 @@ with coefficients in multivariable polynomials in the other type.
 @[simps!]
 def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
-    commutes' := by
-      intro r
+    map_smul' r x := by
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) :) := rfl
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
-        Equiv.coe_fn_mk, B, sumToIter_C, A] }
+      simp only [Algebra.smul_def, sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
+        Equiv.coe_fn_mk, B, RingHom.id_apply, map_mul, sumToIter_C, A] }
 
 lemma sumAlgEquiv_comp_rename_inr :
     (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R
@@ -422,9 +421,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial S₁ R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
-        convert Polynomial.map_C (eval s)
-        exact (eval_C _).symm }
+      map_smul' _ _ := by simp [Algebra.smul_def] }
   change
     aeval (fun x ↦ Option.elim x y s) f =
       (Polynomial.aeval y).comp (φ.comp (optionEquivLeft _ _).toAlgHom) f
@@ -604,9 +601,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
-        convert Polynomial.map_C (eval s)
-        exact (eval_C _).symm }
+      map_smul' := by simp [Algebra.smul_def] }
   change
     aeval (Fin.cons y s : Fin (n + 1) → R) f =
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
@@ -788,14 +783,14 @@ lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X
 
 lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
     toMvPolynomial (R := R) i =
-      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm := by
+      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm.toAlgHom := by
   ext
   simp
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
-  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.injective_comp]
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.toAlgHom_eq_coe,
+    AlgHom.coe_coe, EquivLike.injective_comp]
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 
 @[simp]

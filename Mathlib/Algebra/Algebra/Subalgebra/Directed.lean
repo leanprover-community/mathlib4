@@ -51,7 +51,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
     intro i j x hxi hxj
     rcases dir i j with ⟨k, hik, hjk⟩
     simp [hf i k hik, hf j k hjk]
-  let liftSup : ((iSup K : Subalgebra R A)) →ₐ[R] B :=
+  let liftSupRingHom : ((iSup K : Subalgebra R A)) →+* B :=
     { toFun :=
         Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x) compat
           ((iSup K : Subalgebra R A) : Set A)
@@ -70,12 +70,13 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
         dsimp
         apply Set.iUnionLift_binary (coe_iSup_of_directed (K := K) dir) dir _ (fun _ => (· + ·))
         all_goals simp
-      commutes' := fun r => by
-        dsimp
-        exact
-          Set.iUnionLift_const _ (fun i : ι => algebraMap R (K i) r) (fun _ => rfl) _ (by simp) }
+    }
+  let liftSup : (iSup K : Subalgebra R A) →ₐ[R] B :=
+    .mk' liftSupRingHom fun r => by
+      dsimp [liftSupRingHom]
+      exact
+        Set.iUnionLift_const _ (fun i : ι => algebraMap R (K i) r) (fun _ => rfl) _ (by simp)
   exact liftSup.comp (inclusion hT)
-
 
 @[simp]
 theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}

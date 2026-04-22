@@ -115,7 +115,7 @@ map that reindexes a matrix's rows and columns with equivalent types,
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A where
   __ := reindexLinearEquiv A A e e
   map_mul' a b := reindexLinearEquiv_mul A A e e e a b |>.symm
-  commutes' _ := by simp [algebraMap, Algebra.algebraMap]
+  map_smul' := by simp
 
 @[simp]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :

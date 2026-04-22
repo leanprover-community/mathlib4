@@ -882,7 +882,7 @@ as an algebra homomorphism.
 -/
 def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
   { (PowerSeries.map (algebraMap R A)).comp coeToPowerSeries.ringHom with
-    commutes' := fun r => by simp [PowerSeries.algebraMap_apply] }
+    map_smul' := by simp [Algebra.smul_def, PowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToPowerSeries.algHom_apply :

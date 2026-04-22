@@ -116,7 +116,7 @@ instance algebra : Algebra R A[M] where
 /-- `AddMonoidAlgebra.single 0` as an `AlgHom` -/]
 def singleOneAlgHom : A →ₐ[R] A[M] where
   __ := singleOneRingHom
-  commutes' r := by ext; simp; rfl
+  map_smul' _ _ := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma coe_algebraMap : ⇑(algebraMap R A[M]) = single 1 ∘ algebraMap R A := rfl
@@ -142,7 +142,7 @@ variable (R M) in
 /-- The trivial monoid algebra is the base ring. -/]
 def uniqueAlgEquiv [Unique M] : A[M] ≃ₐ[R] A where
   toRingEquiv := uniqueRingEquiv _
-  commutes' r := by simp [Unique.eq_default]
+  map_smul' _ _ := by simp
 
 variable (R M) in
 @[to_additive (attr := simp)]
@@ -163,10 +163,9 @@ variable (R) in
 /-- A product monoid algebra is a nested monoid algebra. -/]
 def curryAlgEquiv : A[M × N] ≃ₐ[R] A[N][M] where
   toRingEquiv := curryRingEquiv
-  commutes' r := by
+  map_smul' _ _ := by
     ext
-    simp [MonoidAlgebra, algebraMap, Algebra.algebraMap, singleOneRingHom, curryRingEquiv,
-      EquivLike.toEquiv, singleAddHom, curryAddEquiv]
+    simp [MonoidAlgebra, curryRingEquiv, EquivLike.toEquiv, curryAddEquiv]
 
 @[to_additive (attr := simp)]
 lemma curryAlgEquiv_single (m : M) (n : N) (a : A) :
@@ -206,8 +205,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
-  { liftNCRingHom (f : A →+* B) g h_comm with
-    commutes' := by simp [liftNCRingHom] }
+  .mk' (liftNCRingHom f g h_comm) (by simp [liftNCRingHom])
 
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : M →* B) (h_comm) :
     ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
@@ -282,9 +280,7 @@ homomorphism between their monoid algebras. -/
 @[to_additive (dont_translate := R A) (attr := simps! apply)
 /-- If `f : M → N` is an additive monoid homomorphism, then `MonoidAlgebra.mapDomain f` is an
 algebra homomorphism between their additive monoid algebras. -/]
-def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] where
-  toRingHom := mapDomainRingHom A f
-  commutes' := by simp
+def mapDomainAlgHom (f : M →* N) : A[M] →ₐ[R] A[N] := .mk' (mapDomainRingHom A f) (by simp)
 
 @[to_additive (attr := simp)]
 lemma mapDomainAlgHom_id : mapDomainAlgHom R A (.id M) = .id R A[M] := by
@@ -298,12 +294,12 @@ lemma mapDomainAlgHom_comp (f : M →* N) (g : N →* O) :
 variable (R A) in
 /-- If `e : M ≃* N` is a multiplicative equivalence between two monoids, then
 `MonoidAlgebra.domCongr e` is an algebra equivalence between their monoid algebras. -/
-@[to_additive (dont_translate := A)
+@[to_additive (dont_translate := R A)
 /-- If `e : M ≃+ N` is an additive equivalence between two additive monoids, then
 `AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
 def domCongr (e : M ≃* N) : A[M] ≃ₐ[R] A[N] where
   toRingEquiv := mapDomainRingEquiv A e
-  commutes' _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma domCongr_apply (e : M ≃* N) (x : A[M]) (n : N) : domCongr R A e x n = x (e.symm n) := by
@@ -387,12 +383,12 @@ alias mapRangeRingHom_comp_algebraMap := mapRingHom_comp_algebraMap
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
-@[to_additive
+@[to_additive (dont_translate := R A)
 /-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
 algebras. -/]
 noncomputable def mapAlgHom (f : A →ₐ[R] B) : A[M] →ₐ[R] B[M] where
   __ := mapRingHom M f
-  commutes' := by simp
+  map_smul' _ _ := by simp [Algebra.smul_def]
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgHom := mapAlgHom
 
@@ -429,14 +425,14 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
 
 variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
-@[to_additive (attr := simps apply)
+@[to_additive (dont_translate := R A) (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
 noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   __ := mapAlgHom M e
   invFun := mapAlgHom M (e.symm : B →ₐ[R] A)
-  left_inv _ := by aesop
-  right_inv _ := by aesop
+  left_inv _ := by aesop (add simp [mapAlgHom])
+  right_inv _ := by aesop (add simp [mapAlgHom])
 
 @[deprecated (since := "2026-03-20")] alias mapRangeAlgEquiv := mapAlgEquiv
 
@@ -575,8 +571,7 @@ variable [CommSemiring R] [AddMonoid M] [Semiring A] [Algebra R A] [Semiring B] 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[M] →ₐ[R] B :=
-  { liftNCRingHom (f : A →+* B) g h_comm with
-    commutes' := by simp [liftNCRingHom] }
+  .mk' (liftNCRingHom f g h_comm) (by simp [liftNCRingHom])
 
 @[simp] lemma coe_liftNCAlgHom (f : A →ₐ[R] B) (g : Multiplicative M →* B) (h_comm) :
     ⇑(liftNCAlgHom f g h_comm) = liftNC f g := rfl
@@ -681,14 +676,12 @@ variable (A M) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [AddMonoid M] :
-    AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) where
-  toRingEquiv := AddMonoidAlgebra.toMultiplicative A M
-  commutes' r := by simp [AddMonoidAlgebra.toMultiplicative]
+    AddMonoidAlgebra A M ≃ₐ[R] MonoidAlgebra A (Multiplicative M) :=
+  .mk' (AddMonoidAlgebra.toMultiplicative A M) (by simp [AddMonoidAlgebra.toMultiplicative])
 
 variable (A M) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Monoid M] :
-    MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) where
-  toRingEquiv := MonoidAlgebra.toAdditive A M
-  commutes' r := by simp [MonoidAlgebra.toAdditive]
+    MonoidAlgebra A M ≃ₐ[R] AddMonoidAlgebra A (Additive M) :=
+  .mk' (MonoidAlgebra.toAdditive A M) (by simp [MonoidAlgebra.toAdditive])

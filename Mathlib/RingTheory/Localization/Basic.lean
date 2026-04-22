@@ -169,8 +169,8 @@ variable (M S Q)
 there is an isomorphism of localizations `S ≃ₐ[R] Q`. -/
 @[simps!]
 noncomputable def algEquiv : S ≃ₐ[R] Q :=
-  { ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id with
-    commutes' := ringEquivOfRingEquiv_eq _ }
+  .mk' (ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id) (ringEquivOfRingEquiv_eq _)
+
 
 end
 
@@ -199,10 +199,9 @@ variable {A : Type*} [CommSemiring A]
 include hf
 
 /-- `AlgHom` version of `IsLocalization.lift`. -/
-noncomputable def liftAlgHom : S →ₐ[A] P where
-  __ := lift hf
-  commutes' r := show lift hf (algebraMap A S r) = _ by
-    simp [IsScalarTower.algebraMap_apply A R S]
+noncomputable def liftAlgHom : S →ₐ[A] P :=
+  .mk' (lift hf) (fun r ↦ show lift hf (algebraMap A S r) = _ by
+    simp [IsScalarTower.algebraMap_apply A R S])
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
@@ -230,7 +229,7 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
   __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
-  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+  map_smul' _ _ := by dsimp; simp [Algebra.smul_def, IsScalarTower.algebraMap_apply A R S, map_eq,
     RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
@@ -313,9 +312,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     simp only [map_mul, h.apply_symm_apply, h.commutes] at e
     exact ⟨⟨x, s⟩, e⟩
   · intro x y
-    rw [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S, ← h.symm.commutes, ←
-      h.symm.commutes]
-    exact id
+    simp [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S]
 
 variable {M} in
 protected theorem self (H : M ≤ IsUnit.submonoid R) : IsLocalization M R :=
@@ -329,7 +326,7 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
     IsLocalization M S ↔
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
-  isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+  isLocalization_iff_of_algEquiv M { h with map_smul' _ _ := by simp [Algebra.smul_def]; rfl }
 
 variable (S) in
 /-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra

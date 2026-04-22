@@ -783,9 +783,10 @@ theorem algebraMap_apply {r : R} :
 def mapAlgHom (φ : A →ₐ[R] B) :
     MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
   toRingHom := MvPowerSeries.map φ
-  commutes' r := by
+  map_smul' _ _ := by
     simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
+      MonoidHom.coe_coe, Algebra.smul_def, MvPowerSeries.algebraMap_apply, map_mul, map_C,
+      RingHom.coe_coe, AlgHom.commutes]
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : MvPowerSeries σ A) :
     mapAlgHom (σ := σ) φ f = MvPowerSeries.map φ f := rfl
@@ -937,7 +938,7 @@ as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
-    commutes' := fun r => by simp [MvPowerSeries.algebraMap_apply] }
+    map_smul' _ _ := by simp [Algebra.smul_def, MvPowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :
