@@ -22,20 +22,25 @@ assert_not_exists IsOrderedMonoid
 
 variable {α : Type*}
 
+/-- A typeclass that asserts `Nat.cast : ℕ → α` is monotone. -/
+class IsMonotoneNatCast (α) [AddMonoidWithOne α] [Preorder α] where
+  natCast_mono : Monotone (Nat.cast : ℕ → α)
+
+instance [AddMonoidWithOne α] [Preorder α] [AddLeftMono α] [ZeroLEOneClass α] :
+    IsMonotoneNatCast α where
+  natCast_mono := monotone_nat_of_le_succ fun n ↦
+    Nat.cast_succ (R := α) n ▸ le_add_of_nonneg_right zero_le_one
+
+
 namespace Nat
 
-section OrderedSemiring
-/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
-we use a generic collection of instances so that it applies in other settings (e.g., in a
-`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
+section
 
-variable [AddMonoidWithOne α] [PartialOrder α]
-variable [AddLeftMono α] [ZeroLEOneClass α]
+variable [AddMonoidWithOne α] [Preorder α] [IsMonotoneNatCast α]
 
 @[gcongr, mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
-  monotone_nat_of_le_succ fun n ↦ by
-    rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
+  IsMonotoneNatCast.natCast_mono
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -46,20 +51,27 @@ theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
 @[simp low]
 theorem ofNat_nonneg' (n : ℕ) [n.AtLeastTwo] : 0 ≤ (ofNat(n) : α) := cast_nonneg' n
 
-section Nontrivial
+instance : ZeroLEOneClass α where
+  zero_le_one := by simpa only [cast_one] using cast_nonneg' 1
+
+end
+
+
+variable [AddMonoidWithOne α] [PartialOrder α] [IsMonotoneNatCast α]
+
+section
 
 variable [NeZero (1 : α)]
 
-theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
-  apply zero_lt_one.trans_le
-  convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
-  <;> simp
+theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
+  zero_lt_one.trans_le (by simpa using mono_cast (le_add_left 1 n : 1 ≤ n + 1))
 
 /-- See also `Nat.cast_pos`, specialised for an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
 
-end Nontrivial
+end
+
 
 variable [CharZero α] {m n : ℕ}
 
@@ -152,8 +164,6 @@ theorem ofNat_le :
 theorem ofNat_lt :
     (ofNat(m) : α) < (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
   cast_lt
-
-end OrderedSemiring
 
 end Nat
 
