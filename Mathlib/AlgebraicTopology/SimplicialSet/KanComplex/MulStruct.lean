@@ -27,35 +27,40 @@ universe u
 
 open HomotopicalAlgebra CategoryTheory Simplicial Limits
 
+namespace Fin
+
+noncomputable def orderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j) :
+    Fin n ≃o ({i, j}ᶜ : Finset _) where
+  toEquiv := by
+    refine Equiv.ofBijective
+      (fun k ↦ ⟨j.succAbove ((i.castPred (Fin.ne_last_of_lt h)).succAbove k), ?_⟩)
+        ⟨fun _ _ hk ↦ ?_, fun ⟨l, hl⟩ ↦ ?_⟩
+    · simp
+      grind [Fin.succAbove, Fin.castPred]
+    · exact ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+        (Fin.succAboveOrderEmb j)).injective (by rwa [Subtype.ext_iff] at hk)
+    · obtain ⟨m, rfl⟩ : l ∈ Set.range j.succAbove := by
+        simp [range_succAbove] at hl ⊢
+        tauto
+      obtain ⟨k, hk⟩ : m ∈ Set.range (i.castPred (Fin.ne_last_of_lt h)).succAbove := by
+        simp only [range_succAbove, Set.mem_compl_iff, Set.mem_singleton_iff]
+        rintro rfl
+        simp [j.succAbove_of_castSucc_lt (i.castPred (Fin.ne_last_of_lt h)) (by simpa)] at hl
+      exact ⟨k, by simp [hk]⟩
+  map_rel_iff' :=
+    ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+      (Fin.succAboveOrderEmb j)).map_rel_iff
+
+noncomputable def orderIsoPairCompl_apply
+    {n : ℕ} (i j : Fin (n + 2)) (h : i < j) (k : Fin n) :
+    (orderIsoPairCompl i j h k).val =
+    j.succAbove ((i.castPred (Fin.ne_last_of_lt h)).succAbove k) := rfl
+
+end Fin
+
 namespace SSet
 
 namespace stdSimplex
-
-@[simps! apply]
-noncomputable def _root_.Finset.orderIsoOfOrderEmbedding
-    {α β : Type*} [Preorder α] [Preorder β] [DecidableEq β] [Fintype α]
-    (f : α ↪o β) (S : Finset β) (hS : Finset.image f ⊤ = S) : α ≃o S where
-  toEquiv := Equiv.ofBijective (f := fun a ↦ ⟨f a, by simp [← hS]⟩)
-    ⟨fun _ _ _ ↦ by aesop, fun _ ↦ by aesop⟩
-  map_rel_iff' := by simp
-
-noncomputable def _root_.Fin.orderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j) :
-    Fin n ≃o ({i, j}ᶜ : Finset _) :=
-  let φ := (Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
-    (Fin.succAboveOrderEmb j)
-  Finset.orderIsoOfOrderEmbedding φ _ (by
-    refine Finset.eq_of_subset_of_card_le (fun k hk ↦ ?_) ?_
-    · simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at hk
-      obtain ⟨k, rfl⟩ := hk
-      obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
-      dsimp [φ]
-      simp only [Finset.compl_insert, Finset.mem_erase, ne_eq, Finset.mem_compl,
-        Finset.mem_singleton, Fin.succAbove_ne, not_false_eq_true, and_true]
-      grind [Fin.succAbove]
-    · rw [Finset.card_image_of_injective _ φ.injective,
-        Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
-        ← Nat.add_le_add_iff_right (n := Finset.card {i, j}),
-        Finset.card_compl_add_card, Finset.card_pair h.ne, Fintype.card_fin])
 
 noncomputable def facePairComplIso {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
     Δ[n] ≅ (face {i, j}ᶜ : SSet.{u}) :=
