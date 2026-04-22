@@ -27,11 +27,11 @@ which is obtained as the `i`th iteration of `δ 0`: it sends `j : Fin (n + 1)` t
 def δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     ⦋n⦌ ⟶ ⦋m⦌ :=
   Hom.mk
-    { toFun j := ⟨j.val + i, by dsimp; grind [j.isLt]⟩
+    { toFun j := ⟨j.val + i, by grind ⟩
       monotone' _ _ := by grind }
 
 lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
-    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by dsimp; grind [j.isLt]⟩ := rfl
+    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by grind⟩ := rfl
 
 @[simp]
 lemma δ₀Iter_zero (n : ℕ) :
