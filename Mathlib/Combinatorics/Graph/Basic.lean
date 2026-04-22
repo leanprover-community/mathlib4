@@ -423,31 +423,31 @@ theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x 
 /-! ### Set of vertices incident to an edge -/
 
 /-- `G.endPoint e` is the set of vertices incident to the edge `e`. -/
-@[expose] def endPoints (G : Graph α β) (e : β) : Set α := {x | G.Inc e x}
+@[expose] def endpoints (G : Graph α β) (e : β) : Set α := {x | G.Inc e x}
 
 @[simp, grind =]
-lemma mem_endPoints_iff (G : Graph α β) (e : β) (x : α) : x ∈ G.endPoints e ↔ G.Inc e x := Iff.rfl
+lemma mem_endpoints_iff (G : Graph α β) (e : β) (x : α) : x ∈ G.endpoints e ↔ G.Inc e x := Iff.rfl
 
-lemma IsLink.endPoints_eq (h : G.IsLink e x y) : G.endPoints e = {x, y} := by
+lemma IsLink.endpoints_eq (h : G.IsLink e x y) : G.endpoints e = {x, y} := by
   ext a
   grind [IsLink.inc_left, IsLink.inc_right, Inc.eq_or_eq_of_isLink]
 
 @[grind →]
-lemma IsLoopAt.endPoints_eq (h : G.IsLoopAt e x) : G.endPoints e = {x} := by
-  rw [IsLink.endPoints_eq h, pair_eq_singleton]
+lemma IsLoopAt.endpoints_eq (h : G.IsLoopAt e x) : G.endpoints e = {x} := by
+  rw [IsLink.endpoints_eq h, pair_eq_singleton]
 
 @[simp, grind →]
-lemma endPoints_eq_of_notMem (he : e ∉ E(G)) : G.endPoints e = ∅ := by
-  simp only [endPoints, eq_empty_iff_forall_notMem, mem_setOf_eq]
+lemma endpoints_eq_of_notMem (he : e ∉ E(G)) : G.endpoints e = ∅ := by
+  simp only [endpoints, eq_empty_iff_forall_notMem, mem_setOf_eq]
   exact fun _ hx ↦ he hx.edge_mem
 
 @[simp, grind! .]
-lemma endPoints_encard_le_two (G : Graph α β) (e : β) : (G.endPoints e).encard ≤ 2 := by
+lemma endpoints_encard_le_two (G : Graph α β) (e : β) : (G.endpoints e).encard ≤ 2 := by
   by_cases heE : e ∈ E(G)
   · obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet heE
-    rw [h.endPoints_eq]
+    rw [h.endpoints_eq]
     by_cases hxy : x = y <;> simp [hxy, encard_pair]
-  simp [endPoints_eq_of_notMem heE]
+  simp [endpoints_eq_of_notMem heE]
 
 @[simp]
 lemma subsingleton_setOf_isLink (G : Graph α β) (e : β) (x : α) :
@@ -456,10 +456,10 @@ lemma subsingleton_setOf_isLink (G : Graph α β) (e : β) (x : α) :
   exact fun y hy z hz ↦ hy.right_unique hz
 
 @[simp]
-lemma endPoints_finite (G : Graph α β) (e : β) : (G.endPoints e).Finite :=
-  finite_of_encard_le_coe <| G.endPoints_encard_le_two e
+lemma endpoints_finite (G : Graph α β) (e : β) : (G.endpoints e).Finite :=
+  finite_of_encard_le_coe <| G.endpoints_encard_le_two e
 
-lemma endPoints_subset (G : Graph α β) (e : β) : G.endPoints e ⊆ V(G) := fun _ hx ↦ hx.vertex_mem
+lemma endpoints_subset (G : Graph α β) (e : β) : G.endpoints e ⊆ V(G) := fun _ hx ↦ hx.vertex_mem
 
 /-- An alternative constructor for `Graph` given an `endpoints` function. -/
 @[expose, simps]
@@ -474,9 +474,9 @@ def mkEndpoints (vertexSet : Set α) (endPoint : β → Set α) (hmem : ∀ e, e
 @[simp]
 lemma mkEndpoints_endpoints {vertexSet : Set α} {endPoint : β → Set α}
     (hcard : ∀ e, (endPoint e).encard ≤ 2) (hmem : ∀ e, endPoint e ⊆ vertexSet) (e : β) :
-    (mkEndpoints vertexSet endPoint hmem).endPoints e = endPoint e := by
+    (mkEndpoints vertexSet endPoint hmem).endpoints e = endPoint e := by
   ext x
-  simp only [mem_endPoints_iff, Inc, mkEndpoints_isLink]
+  simp only [mem_endpoints_iff, Inc, mkEndpoints_isLink]
   refine ⟨by grind, fun h ↦ ?_⟩
   have h : (endPoint e \ {x}).encard ≤ 1 := by simpa [encard_diff_singleton_of_mem h] using hcard e
   obtain h | ⟨y, h⟩ := encard_le_one_iff_eq.mp h
@@ -484,15 +484,15 @@ lemma mkEndpoints_endpoints {vertexSet : Set α} {endPoint : β → Set α}
   use y, by grind
 
 @[simp]
-lemma endPoints_mkEndpoints : mkEndpoints V(G) G.endPoints G.endPoints_subset = G := by
+lemma endpoints_mkEndpoints : mkEndpoints V(G) G.endpoints G.endpoints_subset = G := by
   refine Graph.ext rfl fun e x y ↦ ?_
   wlog he : e ∈ E(G)
   · simp [he, Set.ext_iff]; tauto
   obtain ⟨u, v, huv⟩ := exists_isLink_of_mem_edgeSet he
-  simp [mkEndpoints_isLink, huv.endPoints_eq, pair_eq_pair_iff, huv.isLink_iff]
+  simp [mkEndpoints_isLink, huv.endpoints_eq, pair_eq_pair_iff, huv.isLink_iff]
 
-lemma ext_endpoints (hV : V(G) = V(H)) (h : G.endPoints = H.endPoints) : G = H := by
-  refine endPoints_mkEndpoints.symm.trans ?_ |>.trans endPoints_mkEndpoints
+lemma ext_endpoints (hV : V(G) = V(H)) (h : G.endpoints = H.endpoints) : G = H := by
+  refine endpoints_mkEndpoints.symm.trans ?_ |>.trans endpoints_mkEndpoints
   congr 1
 
 /-!
