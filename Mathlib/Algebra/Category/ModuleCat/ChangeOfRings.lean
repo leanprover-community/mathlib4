@@ -912,6 +912,7 @@ lemma extendRestrictScalarsAdj_unit_app_apply
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extendRestrictScalarsAdj_counit_app_apply_one_tmul (M : ModuleCat S) (m : M) :
     dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
