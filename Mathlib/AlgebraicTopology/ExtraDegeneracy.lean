@@ -98,9 +98,21 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    simpa [w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
+    have h1 := (point.mapIso e).inv_hom_id
+    dsimp [point] at h1
+    have h2 : e.hom.left.app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
+        X.hom.app (op ⦋0⦌) ≫ e.hom.right := w₀ e.hom
+    simp only [Category.assoc]
+    erw [h2, ed.s'_comp_ε_assoc]
+    exact h1
   s₀_comp_δ₁ := by
-    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
+    dsimp
+    rw [Category.assoc, Category.assoc, ← SimplicialObject.δ_naturality,
+      ← Category.assoc (ed.s 0)]
+    erw [ed.s₀_comp_δ₁]
+    rw [Category.assoc]
+    erw [w₀_assoc e.inv]
+    simp [Category.assoc]
   s_comp_δ₀ n := by
     simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)
