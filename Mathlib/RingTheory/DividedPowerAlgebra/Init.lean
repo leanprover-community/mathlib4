@@ -92,7 +92,6 @@ open MvPolynomial
 
 variable {R M}
 
--- keep?
 lemma mkAlgHom_surjective : Function.Surjective (mkAlgHom R (Rel R M)) :=
   RingQuot.mkAlgHom_surjective _ _
 
