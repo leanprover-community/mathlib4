@@ -21,7 +21,7 @@ asserting the existence of a right Kan extension is satisfied.
 the context of abelian categories.)
 
 Given `LF : D ⥤ H` and `α : L ⋙ LF ⟶ F`, we also introduce a type class
-`F.IsLeftDerivedFunctor α W` saying that `α` is a right Kan extension of `F`
+`LF.IsLeftDerivedFunctor α W` saying that `α` is a right Kan extension of `F`
 along the localization functor `L`.
 
 (This file was obtained by dualizing the results in the file
@@ -187,7 +187,7 @@ section
 
 variable (F) [F.HasLeftDerivedFunctor W] (L W)
 
-/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : C ⥤ D` for `W`,
 this is the left derived functor `D ⥤ H` of `F`, i.e. the right Kan extension
 of `F` along `L`. -/
 noncomputable def totalLeftDerived : D ⥤ H :=
