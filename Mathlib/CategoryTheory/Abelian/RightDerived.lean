@@ -66,9 +66,9 @@ noncomputable def Functor.rightDerivedToHomotopyCategory (F : C ⥤ D) [F.Additi
     C ⥤ HomotopyCategory D (ComplexShape.up ℕ) :=
   injectiveResolutions C ⋙ F.mapHomotopyCategory _
 
-/-- If `I : InjectiveResolution Z` and `F : C ⥤ D` is an additive functor, this is
-an isomorphism between `F.rightDerivedToHomotopyCategory.obj X` and the complex
-obtained by applying `F` to `I.cocomplex`. -/
+/-- If `I : InjectiveResolution X` and `F : C ⥤ D` is an additive functor, this is
+an isomorphism between `F.rightDerivedToHomotopyCategory.obj X` and the image in the
+homotopy category of the complex obtained by applying `F` to `I.cocomplex`. -/
 noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : C}
     (I : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     F.rightDerivedToHomotopyCategory.obj X ≅
