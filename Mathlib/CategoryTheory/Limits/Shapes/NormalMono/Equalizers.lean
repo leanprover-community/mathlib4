@@ -158,7 +158,7 @@ variable [HasZeroObject C]
 
 open ZeroObject
 
-/-- If `f ≫ g = 0` implies `g = 0` for all `g`, then `g` is a monomorphism. -/
+/-- If `f ≫ g = 0` implies `g = 0` for all `g`, then `f` is an epimorphism. -/
 theorem epi_of_zero_cancel {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Y ⟶ Z) (_ : f ≫ g = 0), g = 0) : Epi f :=
   epi_of_zero_cokernel f 0 <| zeroCokernelOfZeroCancel f hf
