@@ -1,9 +1,10 @@
 module
 import Mathlib.Tactic.AddGroup
+public import Mathlib.Algebra.Group.Commutator
 
 variable {G : Type} [AddGroup G]
 
-open scoped addCommutatorElement in
+attribute [instance] addCommutatorElement
 
 example (a b c : G) : c + (a + b) + (-b + -a) + c = c + c := by add_group
 
