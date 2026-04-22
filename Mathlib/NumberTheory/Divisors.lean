@@ -647,13 +647,10 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
       simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
 @[simp, grind =]
-theorem mem_divisors : ∀ {z} {x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
-  | 0, _ => by simp [divisors]
-  | -[n+1], -[x+1]
-  | -[n+1], (x : ℕ)
-  | (n + 1 : ℕ), (x : ℕ)
-  | (n + 1 : ℕ), -[x+1] => by
-    simpa [divisors, -Nat.cast_add, -natCast_add] using ofNat_dvd.symm
+theorem mem_divisors : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := calc
+  _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by simp [← exists_or, ← and_or_left, divisors]
+  _ ↔ ∃ y ∈ z.natAbs.divisors, y = x.natAbs := congr(∃ y ∈ _, $(by grind))
+  _ ↔ x ∣ z ∧ z ≠ 0 := by simp
 
 theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
 
@@ -683,7 +680,7 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
   mem_divisors.mpr ⟨dvd_rfl, hz⟩
 
 @[simp] theorem divisors_neg : divisors (-z) = divisors z := by
-  ext x
+  ext
   simp
 
 @[simp]
@@ -727,11 +724,11 @@ lemma mem_divisorsAntidiag :
     simp +contextual [eq_comm]
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
-  ext x
+  ext
   simp [Eq.comm, dvd_def]
 
 theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
-  ext x
+  ext
   simp [Eq.comm, mul_comm, dvd_def]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
