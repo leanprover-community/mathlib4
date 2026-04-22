@@ -86,7 +86,7 @@ theorem IsMatching.mem_coe_toEdge (h : M.IsMatching) {v : V} (hv : v ∈ M.verts
     v ∈ (h.toEdge ⟨v, hv⟩ : Sym2 V) :=
   ⟨h hv |>.choose, rfl⟩
 
-theorem IsMatching.toEdge_preimage (h : M.IsMatching) (huv : M.Adj u v) :
+theorem IsMatching.toEdge_preimage_singleton (h : M.IsMatching) (huv : M.Adj u v) :
     h.toEdge ⁻¹' {⟨s(u, v), huv⟩} = {⟨u, huv.fst_mem⟩, ⟨v, huv.snd_mem⟩} := by
   refine Set.ext fun w ↦ ⟨fun hw ↦ ?_, fun hw ↦ ?_⟩
   · grind [h.mem_coe_toEdge w.property]
