@@ -107,7 +107,7 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
 
 variable (J) in
 /-- `Arrow (WalkingParallelFamily J)` identifies to the type obtained
-by adding two elements to `T`. -/
+by adding two elements to `J`. -/
 def WalkingParallelFamily.arrowEquiv :
     Arrow (WalkingParallelFamily J) ≃ Option (Option J) where
   toFun f := match f.left, f.right, f.hom with
@@ -175,20 +175,20 @@ def walkingParallelFamilyEquivWalkingParallelPair :
 abbrev Trident :=
   Cone (parallelFamily f)
 
-/-- A cotrident on `f` and `g` is just a `Cocone (parallelFamily f)`. -/
+/-- A cotrident on `f` is just a `Cocone (parallelFamily f)`. -/
 abbrev Cotrident :=
   Cocone (parallelFamily f)
 
 variable {f}
 
 /-- A trident `t` on the parallel family `f : J → (X ⟶ Y)` consists of two morphisms
-    `t.π.app zero : t.X ⟶ X` and `t.π.app one : t.X ⟶ Y`. Of these, only the first one is
+    `t.π.app zero : t.pt ⟶ X` and `t.π.app one : t.pt ⟶ Y`. Of these, only the first one is
     interesting, and we give it the shorter name `Trident.ι t`. -/
 abbrev Trident.ι (t : Trident f) :=
   t.π.app zero
 
 /-- A cotrident `t` on the parallel family `f : J → (X ⟶ Y)` consists of two morphisms
-    `t.ι.app zero : X ⟶ t.X` and `t.ι.app one : Y ⟶ t.X`. Of these, only the second one is
+    `t.ι.app zero : X ⟶ t.pt` and `t.ι.app one : Y ⟶ t.pt`. Of these, only the second one is
     interesting, and we give it the shorter name `Cotrident.π t`. -/
 abbrev Cotrident.π (t : Cotrident f) :=
   t.ι.app one
@@ -280,14 +280,14 @@ theorem Cotrident.IsColimit.hom_ext [Nonempty J] {s : Cotrident f} (hs : IsColim
   hs.hom_ext <| Cotrident.coequalizer_ext _ h
 
 /-- If `s` is a limit trident over `f`, then a morphism `k : W ⟶ X` satisfying
-    `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` induces a morphism `l : W ⟶ s.X` such that
+    `∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂` induces a morphism `l : W ⟶ s.pt` such that
     `l ≫ Trident.ι s = k`. -/
 def Trident.IsLimit.lift' [Nonempty J] {s : Trident f} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) : { l : W ⟶ s.pt // l ≫ Trident.ι s = k } :=
   ⟨hs.lift <| Trident.ofι _ h, hs.fac _ _⟩
 
 /-- If `s` is a colimit cotrident over `f`, then a morphism `k : Y ⟶ W` satisfying
-    `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` induces a morphism `l : s.X ⟶ W` such that
+    `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` induces a morphism `l : s.pt ⟶ W` such that
     `Cotrident.π s ≫ l = k`. -/
 def Cotrident.IsColimit.desc' [Nonempty J] {s : Cotrident f} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) : { l : s.pt ⟶ W // Cotrident.π s ≫ l = k } :=
@@ -345,7 +345,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Given a limit cone for the family `f : J → (X ⟶ Y)`, for any `Z`, morphisms from `Z` to its point
 are in bijection with morphisms `h : Z ⟶ X` such that `∀ j₁ j₂, h ≫ f j₁ = h ≫ f j₂`.
-Further, this bijection is natural in `Z`: see `Trident.Limits.homIso_natural`.
+Further, this bijection is natural in `Z`: see `Trident.IsLimit.homIso_natural`.
 -/
 @[simps]
 def Trident.IsLimit.homIso [Nonempty J] {t : Trident f} (ht : IsLimit t) (Z : C) :
@@ -364,7 +364,7 @@ theorem Trident.IsLimit.homIso_natural [Nonempty J] {t : Trident f} (ht : IsLimi
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a colimit cocone for the family `f : J → (X ⟶ Y)`, for any `Z`, morphisms from the cocone
-point to `Z` are in bijection with morphisms `h : Z ⟶ X` such that
+point to `Z` are in bijection with morphisms `h : Y ⟶ Z` such that
 `∀ j₁ j₂, f j₁ ≫ h = f j₂ ≫ h`.  Further, this bijection is natural in `Z`: see
 `Cotrident.IsColimit.homIso_natural`.
 -/
@@ -400,7 +400,7 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
       naturality := fun j j' g => by cases g <;> cat_disch }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- This is a helper construction that can be useful when verifying that a category has all
+/-- This is a helper construction that can be useful when verifying that a category has certain wide
     coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (fun j ↦ F.map (line j))`, and a cotrident on `fun j ↦ F.map (line j)` we get a
     cocone on `F`.
@@ -437,7 +437,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
+    `parallelFamily (fun j ↦ F.map (line j))` and a cocone on `F`, we get a cotrident on
     `fun j ↦ F.map (line j)`. -/
 def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
     Cotrident fun j => F.map (line j) where
@@ -644,7 +644,7 @@ theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
   simp
 
 /-- Any morphism `k : Y ⟶ W` satisfying `∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k` induces a morphism
-    `l : wideCoequalizer f ⟶ W` satisfying `wideCoequalizer.π ≫ g = l`. -/
+    `l : wideCoequalizer f ⟶ W` satisfying `wideCoequalizer.π f ≫ l = k`. -/
 def wideCoequalizer.desc' [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     { l : wideCoequalizer f ⟶ W // wideCoequalizer.π f ≫ l = k } :=
   ⟨wideCoequalizer.desc k h, wideCoequalizer.π_desc _ _⟩
