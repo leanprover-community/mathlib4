@@ -321,7 +321,7 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
     Cone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
-/-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
+/-- Every `BinaryCofan` is isomorphic to an application of `BinaryCofan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
     Cocone.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
@@ -547,7 +547,7 @@ noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
     (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⨯ Y :=
   limit.lift _ (BinaryFan.mk f g)
 
-/-- diagonal arrow of the binary product in the category `fam I` -/
+/-- The diagonal arrow of a binary product. -/
 noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
 
@@ -598,7 +598,7 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
   epi_of_epi_fac <| coprod.inr_desc _ _
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
+induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ prod.fst = f` and `l ≫ prod.snd = g`. -/
 noncomputable def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
@@ -617,7 +617,7 @@ noncomputable def prod.map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduc
   limMap (mapPair f g)
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
-`g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
+`g : X ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
 noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
   colimMap (mapPair f g)
@@ -798,7 +798,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
     coprod.map (𝟙 W) (f ≫ g) = coprod.map (𝟙 W) f ≫ coprod.map (𝟙 W) g := by simp
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-`g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
+`g : X ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where
@@ -1406,8 +1406,8 @@ end braiding
 section assoc
 variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 
-/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
-if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
+/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s : BinaryFan sXY.pt Z`,
+if `sYZ` is a limit cone we can construct a binary fan `BinaryFan X sYZ.pt`.
 
 This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
@@ -1421,8 +1421,8 @@ lemma BinaryFan.assoc_fst (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
     (assoc Q s).snd = Q.lift (mk (s.fst ≫ sXY.snd) s.snd) := rfl
 
-/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
-if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
+/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s : BinaryFan X sYZ.pt`,
+if `sXY` is a limit cone we can construct a binary fan `BinaryFan sXY.pt Z`.
 
 This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
