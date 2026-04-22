@@ -562,8 +562,7 @@ lemma specializes_primeSpectrum_iff_specializes_spec (R : CommRingCat) (a b : Pr
     a ⤳ b ↔ @Specializes (Spec R) _ a b := by rfl
 
 lemma le_primeSpectrum_iff_le_spec (R : CommRingCat) (a b : PrimeSpectrum R) :
-    @LE.le _ PrimeSpectrum.instPartialOrder.toLE a b ↔
-    @LE.le (Spec R) _ b a := by
+    a ≤ b ↔ @LE.le (Spec R) _ b a := by
   simp [PrimeSpectrum.le_iff_specializes,
     Scheme.le_iff_specializes (X := Spec R) (a := (b : Spec R)) (b := (a : Spec R)),
     specializes_primeSpectrum_iff_specializes_spec]
