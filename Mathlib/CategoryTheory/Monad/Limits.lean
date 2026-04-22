@@ -25,6 +25,8 @@ and `T` preserves.
 This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 

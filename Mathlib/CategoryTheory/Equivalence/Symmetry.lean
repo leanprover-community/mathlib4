@@ -25,6 +25,8 @@ and provides the definition of the functor that takes an equivalence to its inve
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory

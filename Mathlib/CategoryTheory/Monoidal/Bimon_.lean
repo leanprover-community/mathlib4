@@ -25,6 +25,8 @@ We verify that this is equivalent to the monoid objects in the category of comon
   `C` is monoidally equivalent to the modules over that bimonoid.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 noncomputable section

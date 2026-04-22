@@ -20,6 +20,8 @@ category `V`.
 * Define the bicategory of enriched ordinary categories.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 

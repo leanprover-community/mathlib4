@@ -28,6 +28,8 @@ The definition `isLimitConeFunctorEnrichedHom` shows that
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄

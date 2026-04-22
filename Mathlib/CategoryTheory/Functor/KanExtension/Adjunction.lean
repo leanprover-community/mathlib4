@@ -24,6 +24,8 @@ right Kan extension along `L`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory

@@ -19,6 +19,8 @@ This file proves that, given a monoidal localization functor `L : C ⥤ D`, and 
 then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe u
