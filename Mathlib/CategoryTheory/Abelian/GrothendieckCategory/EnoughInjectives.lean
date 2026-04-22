@@ -285,7 +285,7 @@ noncomputable def transfiniteCompositionOfShapeOfEqTop
 variable (f)
 
 /-- Let `C` be a Grothendieck abelian category. Assume that `G : C` is a generator
-of `C`. Then, any morphism in `C` is a transfinite composition of pushouts
+of `C`. Then, any monomorphism in `C` is a transfinite composition of pushouts
 of monomorphisms in the family `generatingMonomorphisms G` which consists
 of the inclusions of the subobjects of `G`. -/
 lemma exists_transfiniteCompositionOfShape :
