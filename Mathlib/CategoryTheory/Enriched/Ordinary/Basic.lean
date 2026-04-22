@@ -19,7 +19,7 @@ typeclass `EnrichedOrdinaryCategory V C`.
 
 In particular, if `C` is a `V`-enriched category, it is shown that
 the "underlying" category `ForgetEnrichment V C` is equipped with a
-`EnrichedOrdinaryCategory V C` instance.
+`EnrichedOrdinaryCategory V (ForgetEnrichment V C)` instance.
 
 Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.Basic`
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
