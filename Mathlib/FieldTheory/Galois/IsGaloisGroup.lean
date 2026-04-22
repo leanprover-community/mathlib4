@@ -404,10 +404,12 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
     OrderIso.symm_apply_apply]
 
 include K in
+/-- If `H` acts as a Galois group on `R → L` and `G` acts as a Galois group on `K → L`,
+then the fixing subgroup of `algebraMap R L` inside `G` equals `H`. -/
 theorem fixingSubgroup_range_algebraMap [Finite G] (R : Type*) [CommSemiring R] [Algebra R L]
     [IsGaloisGroup H R L] :
     fixingSubgroup G (Set.range (algebraMap R L)) = H := by
-  suffices  Set.range (algebraMap R L) =
+  suffices Set.range (algebraMap R L) =
       ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) by
     rw [this, fixingSubgroup_fixedPoints]
   ext
