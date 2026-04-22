@@ -18,7 +18,7 @@ Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we assoc
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
-  morphism in `𝒮` and `h : F(f)(a) ⟶ b`
+  morphism in `𝒮` and `h : F(f)(b) ⟶ a`
 
 The category `∫ F` is equipped with a projection functor `∫ F ⥤ 𝒮`,
 given by projecting to the first factors, i.e.
@@ -91,7 +91,7 @@ a morphism in a fiber `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`. -/
 structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
-  /-- The morphism in the fiber over the domain. -/
+  /-- The morphism in the fiber over the codomain. -/
   fiber : (F.map base.toLoc).toFunctor.obj X.fiber ⟶ Y.fiber
 
 @[simps! id_base id_fiber comp_base comp_fiber]
