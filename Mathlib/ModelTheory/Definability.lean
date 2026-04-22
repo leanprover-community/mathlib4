@@ -123,41 +123,43 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   ext
   rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
 
-theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
-    (s : Finset ι) : A.Definable L (s.inf f) := by
+theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (s : Finset ι)
+    (hf : ∀ i ∈ s, A.Definable L (f i)) : A.Definable L (s.inf f) := by
   classical
-    refine Finset.induction definable_univ (fun i s _ h => ?_) s
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s _ ih =>
     rw [Finset.inf_insert]
-    exact (hf i).inter h
+    exact (hf i (by simp)).inter (ih (by grind))
 
-theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
-    (s : Finset ι) : A.Definable L (s.sup f) := by
+theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (s : Finset ι)
+    (hf : ∀ i ∈ s, A.Definable L (f i)) : A.Definable L (s.sup f) := by
   classical
-    refine Finset.induction definable_empty (fun i s _ h => ?_) s
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s _ ih =>
     rw [Finset.sup_insert]
-    exact (hf i).union h
+    exact (hf i (by simp)).union (ih (by grind))
 
-theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
-    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
+theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)} (s : Finset ι)
+    (hf : ∀ i ∈ s, A.Definable L (f i)) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
-  exact definable_finset_inf hf s
+  exact definable_finset_inf s hf
 
-theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
-    (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
+theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)} (s : Finset ι)
+    (hf : ∀ i ∈ s, A.Definable L (f i)) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
-  exact definable_finset_sup hf s
+  exact definable_finset_sup s hf
 
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
   haveI := Fintype.ofFinite ι
-  convert definable_finset_inf hf Finset.univ using 1
-  simp
+  simpa using definable_finset_inf Finset.univ fun i _ => hf i
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
   haveI := Fintype.ofFinite ι
-  convert definable_finset_sup hf Finset.univ using 1
-  simp
+  simpa using definable_finset_sup Finset.univ fun i _ => hf i
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
@@ -256,7 +258,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
-      refine (congr rfl (ext ?_)).mp (definable_biInter_finset h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_iInter_of_finite h')
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
@@ -436,32 +438,112 @@ end Language
 
 end FirstOrder
 
-section
+namespace Set
 
 open FirstOrder FirstOrder.Language Set Function
 
-variable {M : Type*} (L : Language) [L.Structure M]
-variable {α β : Type*} (A : Set M)
+variable {M : Type*} {A : Set M} {L : Language} [L.Structure M]
+  {α β : Type*} {f g : (α → M) → M} {p q : (α → M) → Prop}
 
-namespace Set
+variable (A L) in
+/-- The predicate version of `Set.Definable`, to allow `fun_prop`. -/
+@[fun_prop]
+def DefinablePred (p : (α → M) → Prop) : Prop :=
+  A.Definable L (setOf p)
 
+def DefinablePred.of_definable (h : A.Definable L (setOf p)) : A.DefinablePred L p := h
+
+def Definable.of_definablePred {s : Set (α → M)} (h : A.DefinablePred L (· ∈ s)) :
+    A.Definable L s := h
+
+@[fun_prop]
+theorem DefinablePred.const {h : Prop} : A.DefinablePred L fun _ : α → M => h := by
+  rcases Classical.prop_complete h with rfl | rfl
+  · exact definable_univ
+  · exact definable_empty
+
+@[fun_prop]
+theorem DefinablePred.not (hp : A.DefinablePred L p) : A.DefinablePred L fun v => ¬ p v :=
+  hp.compl
+
+@[fun_prop]
+theorem DefinablePred.and (hp : A.DefinablePred L p) (hq : A.DefinablePred L q) :
+    A.DefinablePred L fun v => p v ∧ q v :=
+  hp.inter hq
+
+@[fun_prop]
+theorem DefinablePred.or (hp : A.DefinablePred L p) (hq : A.DefinablePred L q) :
+    A.DefinablePred L fun v => p v ∨ q v :=
+  hp.union hq
+
+@[fun_prop]
+theorem DefinablePred.imp (hp : A.DefinablePred L p) (hq : A.DefinablePred L q) :
+    A.DefinablePred L fun v => p v → q v :=
+  hp.himp hq
+
+@[fun_prop]
+theorem DefinablePred.iff (hp : A.DefinablePred L p) (hq : A.DefinablePred L q) :
+    A.DefinablePred L fun v => p v ↔ q v := by
+  simp_rw [iff_iff_implies_and_implies]
+  fun_prop
+
+@[fun_prop]
+theorem DefinablePred.forall_finite [Finite β] {p : β → (α → M) → Prop}
+    (hp : ∀ i, A.DefinablePred L fun v => p i v) :
+    A.DefinablePred L fun v => ∀ i, p i v :=
+  .of_definable (by convert definable_iInter_of_finite hp; ext; simp)
+
+@[fun_prop]
+theorem DefinablePred.exists_finite [Finite β] {p : β → (α → M) → Prop}
+    (hp : ∀ i, A.DefinablePred L fun v => p i v) :
+    A.DefinablePred L fun v => ∃ i, p i v :=
+  .of_definable (by convert definable_iUnion_of_finite hp; ext; simp)
+
+@[fun_prop]
+theorem DefinablePred.forall_pi [Finite β] {p : (β → M) → (α → M) → Prop}
+    (hp : A.DefinablePred L fun v : α ⊕ β → M => p (v ∘ Sum.inr) (v ∘ Sum.inl)) :
+    A.DefinablePred L fun v => ∀ w, p w v :=
+  hp.forall_of_finite
+
+@[fun_prop]
+theorem DefinablePred.exists_pi [Finite β] {p : (β → M) → (α → M) → Prop}
+    (hp : A.DefinablePred L fun v : α ⊕ β → M => p (v ∘ Sum.inr) (v ∘ Sum.inl)) :
+    A.DefinablePred L fun v => ∃ w, p w v :=
+  hp.exists_of_finite
+
+@[fun_prop]
+theorem DefinablePred.forall {p : M → (α → M) → Prop}
+    (hp : A.DefinablePred L fun v : Option α → M => p (v none) (v ∘ some)) :
+    A.DefinablePred L fun v => ∀ x, p x v := by
+  simp_rw [(Equiv.funUnique Unit M).symm.forall_congr_left]
+  exact (hp.preimage_comp (Equiv.optionEquivSumPUnit.{0} α)).forall_of_finite
+
+@[fun_prop]
+theorem DefinablePred.exists {p : M → (α → M) → Prop}
+    (hp : A.DefinablePred L fun v : Option α → M => p (v none) (v ∘ some)) :
+    A.DefinablePred L fun v => ∃ x, p x v := by
+  simp_rw [(Equiv.funUnique Unit M).symm.exists_congr_left]
+  exact (hp.preimage_comp (Equiv.optionEquivSumPUnit.{0} α)).exists_of_finite
+
+theorem DefinablePred.rel {n} (r : L.Relations n) : A.DefinablePred L (Structure.RelMap r) :=
+  .of_definable (by rw [definable_iff_exists_formula_sum]; exists (r.formula (Term.var ∘ Sum.inr)))
+
+variable (A L) in
 /-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
 @[fun_prop]
 def DefinableFun (f : (α → M) → M) : Prop :=
   A.Definable L f.tupleGraph
 
+variable (A L) in
 /-- A family of functions is definable when each coordinate is definable. -/
-def DefinableMap (F : (α → M) → (β → M)) : Prop :=
+abbrev DefinableMap (F : (α → M) → (β → M)) : Prop :=
   ∀ i : β, A.DefinableFun L (fun x => F x i)
 
-variable {L A} {f : (α → M) → M}
-
-@[fun_prop, gcongr]
+@[gcongr]
 theorem DefinableFun.mono {B : Set M} (hAs : A.DefinableFun L f) (hAB : A ⊆ B) :
     B.DefinableFun L f :=
   Set.Definable.mono hAs hAB
 
-@[fun_prop]
 theorem DefinableFun.of_empty (hAs : (∅ : Set M).DefinableFun L f) :
     A.DefinableFun L f := Set.Definable.mono hAs (empty_subset A)
 
@@ -475,7 +557,6 @@ theorem definableFun_iff_empty_definableFun_with_params :
   empty_definable_iff.symm
 
 /-- A term is a definable function. -/
-@[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
     (∅ : Set M).DefinableFun L (t.realize) := by
   rw [empty_definableFun_iff]
@@ -484,15 +565,12 @@ theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
   simp [tupleGraph]
 
 /-- A function symbol is a definable function. -/
-@[fun_prop]
 theorem DefinableFun.fun_symbol {n : ℕ} (f : L.Functions n) :
     (∅ : Set M).DefinableFun L (Structure.funMap f) :=
   (Term.func f Term.var).definableFun_realize
 
-variable (L)
-
+variable (L) in
 /-- A coordinate projection is a definable function. -/
-@[fun_prop]
 theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
     (∅ : Set M).DefinableFun L (fun v => v i) :=
   (Term.var i).definableFun_realize
@@ -501,18 +579,20 @@ theorem _root_.FirstOrder.Language.definableFun_var (i : α) :
 theorem DefinableFun.proj {i : α} : A.DefinableFun L fun v => v i :=
   of_empty <| L.definableFun_var i
 
+variable (L) in
 /-- A constant function is a definable function. -/
-@[fun_prop]
 theorem _root_.FirstOrder.Language.definableFun_const {A : Set M} {a : M}
     (γ : Type*) (ha : a ∈ A) :
     A.DefinableFun L (fun _ : γ → M => a) := by
   rw [definableFun_iff_empty_definableFun_with_params]
   exact ((L.con (⟨a,ha⟩ : ↑A)).term).definableFun_realize
 
-variable {L}
+@[fun_prop]
+theorem DefinableFun.const {a : M} : univ.DefinableFun L fun _ : α → M => a :=
+  definableFun_const _ _ (mem_univ _)
 
 /-- The preimage of a definable set under a definable map is definable. -/
-lemma _root_.Set.Definable.preimage_map
+lemma Definable.preimage_map
     {α β : Type*} [Finite β] {F : (α → M) → (β → M)} (hF : A.DefinableMap L F)
     {S : Set (β → M)} (hS : A.Definable L S) :
     A.Definable L (F ⁻¹' S) := by
@@ -545,9 +625,9 @@ theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
   simpa [DefinableFun, G, tupleGraph] using hf.preimage_map hG
 
 @[fun_prop]
-theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
-    (hp : A.Definable L (setOf p)) (hf : DefinableFun L A f) (hg : DefinableFun L A g) :
-    DefinableFun L A fun v => if p v then f v else g v := by
+theorem DefinableFun.ite [DecidablePred p] (hp : A.DefinablePred L p) (hf : A.DefinableFun L f)
+    (hg : A.DefinableFun L g) :
+    A.DefinableFun L fun v => if p v then f v else g v := by
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
   simp only [DefinableFun]
@@ -556,21 +636,31 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
   by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 
 /-- The set where two definable functions agree is definable. -/
-lemma DefinableFun.setOf_eq {f g : (α → M) → M}
-    (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
-    A.Definable L {v : α → M | f v = g v} := by
-  have hF : A.DefinableMap L (fun v => ![f v, g v]) := by
-    simp [DefinableMap, *]
-  exact (Definable.diagonal L A).preimage_map hF
+lemma DefinableFun.setOf_eq (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
+    A.Definable L {v : α → M | f v = g v} :=
+  (Definable.diagonal L A).preimage_map (F := fun v => ![f v, g v]) (by simp [*])
 
 /-- The preimage of a constant under a definable function is definable. -/
 lemma DefinableFun.setOf_eq_const {f : (α → M) → M} (hf : A.DefinableFun L f) {a : M} (ha : a ∈ A) :
     A.Definable L {v : α → M | f v = a} :=
   hf.setOf_eq (L.definableFun_const α ha)
 
-end Set
+@[fun_prop]
+theorem DefinablePred.eq (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
+    A.DefinablePred L fun v => f v = g v :=
+  hf.setOf_eq hg
 
-end
+@[fun_prop]
+theorem DefinablePred.eq_const {a : M} (hf : Set.univ.DefinableFun L f) :
+    Set.univ.DefinablePred L fun v => f v = a :=
+  .eq hf .const
+
+@[fun_prop]
+theorem DefinablePred.const_eq {a : M} (hf : Set.univ.DefinableFun L f) :
+    Set.univ.DefinablePred L fun v => a = f v :=
+  .eq .const hf
+
+end Set
 
 namespace Set
 

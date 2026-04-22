@@ -233,7 +233,7 @@ theorem DefinableFun.mul [MulFunction L] [Mul M] [CompatibleMul L M]
     (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
     A.DefinableFun L fun v => f v * g v := by
   apply comp (g := fun v => ![f v, g v]) (f := fun v => v 0 * v 1)
-  · simp [DefinableMap, *]
+  · simp [*]
   · convert (DefinableFun.fun_symbol (L := L) Functions.mul).of_empty
     simp
 
@@ -241,7 +241,7 @@ theorem DefinableFun.mul [MulFunction L] [Mul M] [CompatibleMul L M]
 theorem DefinableFun.inv [InvFunction L] [Inv M] [CompatibleInv L M] (hf : A.DefinableFun L f) :
     A.DefinableFun L fun v => (f v)⁻¹ := by
   apply comp (g := fun v => ![f v]) (f := fun v => (v 0)⁻¹)
-  · simp [DefinableMap, *]
+  · simp [*]
   · convert (DefinableFun.fun_symbol (L := L) Functions.inv).of_empty
     simp
 
@@ -257,9 +257,21 @@ theorem DefinableFun.npow [OneConstant L] [MulFunction L] [Monoid M] [Compatible
     [CompatibleMul L M] {n : ℕ} (hf : A.DefinableFun L f) :
     A.DefinableFun L fun v => (f v) ^ n := by
   apply comp (g := fun v => ![f v]) (f := fun v => v 0 ^ n)
-  · simp [DefinableMap, *]
+  · simp [*]
   · convert (Term.var 0 ^ n : Term L (Fin 1)).definableFun_realize.of_empty
     simp only [Fin.isValue, realize_npow, Term.realize_var]
+
+@[fun_prop]
+theorem DefinableFun.nat_mul [ZeroConstant L] [AddFunction L] [NonAssocSemiring M]
+    [CompatibleZero L M] [CompatibleAdd L M] {n : ℕ} (hf : A.DefinableFun L f) :
+    A.DefinableFun L fun v => n * f v := by
+  simpa only [nsmul_eq_mul] using hf.nsmul
+
+@[fun_prop]
+theorem DefinableFun.mul_nat [ZeroConstant L] [AddFunction L] [NonAssocSemiring M]
+    [CompatibleZero L M] [CompatibleAdd L M] {n : ℕ} (hf : A.DefinableFun L f) :
+    A.DefinableFun L fun v => f v * n := by
+  simpa only [nsmul_eq_mul'] using hf.nsmul
 
 @[to_additive (attr := fun_prop)]
 theorem DefinableFun.finsetProd [OneConstant L] [MulFunction L] [CommMonoid M] [CompatibleOne L M]
@@ -268,7 +280,7 @@ theorem DefinableFun.finsetProd [OneConstant L] [MulFunction L] [CommMonoid M] [
     A.DefinableFun L fun v => ∏ i ∈ s, f i v := by
   conv in Finset.prod _ _ => rw [← Finset.prod_coe_sort]
   apply comp
-  · simp [DefinableMap, *]
+  · simpa
   · convert (Term.prod .univ (L := L) fun i : s => Term.var i).definableFun_realize.of_empty
     simp
 

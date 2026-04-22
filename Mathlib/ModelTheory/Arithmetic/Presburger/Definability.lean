@@ -45,32 +45,18 @@ open Set FirstOrder Language
 theorem IsLinearSet.definable [Finite α] (hs : IsLinearSet s) : A.Definable presburger s := by
   rw [isLinearSet_iff] at hs
   rcases hs with ⟨v, t, rfl⟩
-  refine ⟨Formula.iExs t (Formula.iInf fun i : α =>
-    (Term.var (Sum.inl i)).equal
-      (Term.varsToConstants
-        ((v i : presburger.Term _) + Term.sum Finset.univ fun x : t =>
-          x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
-  ext x
-  simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
-    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_setOf_eq, Formula.realize_iExs,
-    Formula.realize_iInf, Formula.realize_equal, Term.realize_var, Sum.elim_inl,
-    Term.realize_varsToConstants, coe_con, Structure.realize_add, Structure.realize_natCast,
-    Nat.cast_id, Structure.realize_sum, Structure.realize_nsmul, Sum.elim_inr, smul_eq_mul]
-  congr! with a
-  simp_rw [Eq.comm (b := x), fun x : t => mul_comm (a x : α → ℕ) x, funext_iff]
-  congr! 1 with i
-  simp
+  apply Definable.of_definablePred
+  simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', nsmul_eq_mul,
+    funext_iff, Finset.sum_apply, Pi.mul_apply, Pi.natCast_apply, Nat.cast_id, vadd_eq_add,
+    Pi.add_apply]
+  fun_prop
 
 theorem IsSemilinearSet.definable [Finite α] (hs : IsSemilinearSet s) :
     A.Definable presburger s := by
   rw [isSemilinearSet_iff] at hs
   rcases hs with ⟨S, hS, rfl⟩
-  choose φ hφ using fun s : S => (hS s.1 s.2).definable
-  refine ⟨Formula.iSup φ, ?_⟩
-  ext x
-  have := fun s hs x => Set.ext_iff.1 (hφ ⟨s, hs⟩).symm x
-  simp only [mem_setOf_eq] at this
-  simp [this]
+  simp_rw [sUnion_eq_biUnion, SetLike.mem_coe]
+  exact definable_biUnion_finset _ (fun s hs => (hS s hs).definable)
 
 namespace FirstOrder.Language.presburger
 
