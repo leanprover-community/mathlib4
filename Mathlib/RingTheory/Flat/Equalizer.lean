@@ -310,8 +310,6 @@ lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
     AlgHom.tensorEqualizerEquiv S T f g x = AlgHom.tensorEqualizer S T f g x :=
   rfl
 
-#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
-set_option maxHeartbeats 400000 in -- see note
 variable (R A) in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /--
