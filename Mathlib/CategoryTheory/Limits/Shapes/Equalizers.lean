@@ -516,7 +516,7 @@ def Cofork.IsColimit.mk (t : Cofork f g) (desc : ∀ s : Cofork f g, t.pt ⟶ s.
       WalkingParallelPair.casesOn j (by simp_all) (fac s)
     uniq := by aesop }
 
-/-- This is another convenient method to verify that a fork is a limit cone. It
+/-- This is another convenient method to verify that a cofork is a colimit cocone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the
 same `s` for all parts. -/
 def Cofork.IsColimit.mk' {X Y : C} {f g : X ⟶ Y} (t : Cofork f g)
@@ -675,13 +675,13 @@ def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' 
     Fork.ofι ι w ≅ Fork.ofι ι' w' :=
   Fork.ext (Iso.refl _) (by simp [h])
 
-/-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
+/-- Every fork is isomorphic to one of the form `Fork.ofι _ _`. -/
 @[simps!]
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (Iso.refl _)
 
 /--
-If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
+If `f, g : X ⟶ Y` and `f', g' : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
 `X ≅ X'` and `Y ≅ Y'`, the categories of forks are equivalent.
 -/
 def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
@@ -1071,7 +1071,7 @@ theorem coequalizer.π_colimMap_desc {X' Y' Z : C} (f' g' : X' ⟶ Y') [HasCoequ
   rw [ι_colimMap_assoc, parallelPairHom_app_one, coequalizer.π_desc]
 
 /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` induces a morphism
-`l : coequalizer f g ⟶ W` satisfying `coequalizer.π ≫ g = l`. -/
+`l : coequalizer f g ⟶ W` satisfying `coequalizer.π f g ≫ l = k`. -/
 noncomputable def coequalizer.desc' {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     { l : coequalizer f g ⟶ W // coequalizer.π f g ≫ l = k } :=
   ⟨coequalizer.desc k h, coequalizer.π_desc _ _⟩
@@ -1344,7 +1344,7 @@ noncomputable def isSplitEpiCoequalizes {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] :
 
 end
 
-/-- We show that the converse to `isSplitEpiEqualizes` is true:
+/-- We show that the converse to `isSplitEpiCoequalizes` is true:
 Whenever `f` coequalizes `(f ≫ s)` and `(𝟙 X)`, then `s` is a section of `f`. -/
 def splitEpiOfCoequalizer {X Y : C} {f : X ⟶ Y} {s : Y ⟶ X} (hs : f ≫ s ≫ f = f)
     (h :
