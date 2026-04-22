@@ -67,7 +67,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 open Finset
 
-/-- The Schnirelmann density is defined as the infimum of |A ∩ {1, ..., n}| / n as n ranges over
+/-- The Schnirelmann density is defined as the infimum of $|A ∩ {1, ..., n}| / n$ as n ranges over
 the positive naturals. -/
 noncomputable def schnirelmannDensity (A : Set ℕ) [DecidablePred (· ∈ A)] : ℝ :=
   ⨅ n : {n : ℕ // 0 < n}, #{a ∈ Ioc 0 n | a ∈ A} / n
