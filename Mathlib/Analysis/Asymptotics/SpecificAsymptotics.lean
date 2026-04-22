@@ -55,7 +55,7 @@ theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
     rw [tendsto_atTop] at key
     exact mem_map.mp (key c⁻¹)
   · rw [← inv_mul_le_iff₀ cpos]
-    exact mul_le_mul_of_nonneg_right my (by positivity)
+    gcongr; exact my
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
     (· ^ p) =O[cobounded R] (· ^ q) := by
