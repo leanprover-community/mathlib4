@@ -19,12 +19,12 @@ ordinary category, provided `C` has suitable limits.
 
 We first define the `V`-enriched structure on `J ⥤ C` by saying
 that if `F₁` and `F₂` are in `J ⥤ C`, then `enrichedHom V F₁ F₂ : V`
-is a suitable limit involving `F₁.obj j ⟶[V] F₂.obj j` for all `j : C`.
+is a suitable limit involving `F₁.obj j ⟶[V] F₂.obj j` for all `j : J`.
 The `J ⥤ V` object of morphisms `functorEnrichedHom V F₁ F₂ : J ⥤ V`
 is defined by sending `j : J` to the previously defined `enrichedHom`
 for the "restriction" of `F₁` and `F₂` to the category `Under j`.
 The definition `isLimitConeFunctorEnrichedHom` shows that
-`enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
+`enrichedHom V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
 
 -/
 
@@ -44,7 +44,7 @@ variable (F₁ F₂ F₃ F₄ : J ⥤ C)
 
 /-- Given two functors `F₁` and `F₂` from a category `J` to a `V`-enriched
 ordinary category `C`, this is the diagram `Jᵒᵖ ⥤ J ⥤ V` whose end shall be
-the `V`-morphisms in `J ⥤ V` from `F₁` to `F₂`. -/
+the `V`-morphisms in `J ⥤ C` from `F₁` to `F₂`. -/
 @[simps!]
 def diagram : Jᵒᵖ ⥤ J ⥤ V := F₁.op ⋙ eHomFunctor V C ⋙ (whiskeringLeft J C V).obj F₂
 
@@ -339,7 +339,7 @@ namespace isLimitConeFunctorEnrichedHom
 variable {V F₁ F₂} (s : Cone (functorEnrichedHom V F₁ F₂))
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Auxiliary definition for `Enriched.FunctorCategory.isLimitConeFunctorEnrichedHom`. -/
+/-- Auxiliary definition for `isLimitConeFunctorEnrichedHom`. -/
 noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
     dsimp
@@ -435,7 +435,7 @@ lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnric
 
 variable (J C) in
 /-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
-then `J ⥤ C` is also a `J ⥤ V`-enriched ordinary category. -/
+then `J ⥤ C` is also a `J ⥤ V`-enriched category. -/
 @[instance_reducible]
 noncomputable def functorEnrichedCategory
     [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂] :
