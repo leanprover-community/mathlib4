@@ -52,7 +52,7 @@ structure LiftableCone (K : J ⥤ C) (F : C ⥤ D) (c : Cone (K ⋙ F)) where
 `K` which is a lift of `c`, i.e. the image of it under `F` is (iso) to `c`.
 
 We will then use this as part of the definition of creation of colimits:
-every limit cocone has a lift.
+every colimit cocone has a lift.
 
 Note this definition is really only useful when `c` is a colimit already.
 -/
@@ -96,15 +96,15 @@ abbrev CreatesLimits (F : C ⥤ D) :=
   CreatesLimitsOfSize.{v₂, v₂} F
 
 /-- Dual of definition 3.3.1 of [Riehl].
-We say that `F` creates colimits of `K` if, given any limit cocone `c` for
+We say that `F` creates colimits of `K` if, given any colimit cocone `c` for
 `K ⋙ F` (i.e. below) we can lift it to a cocone "above", and further that `F`
-reflects limits for `K`.
+reflects colimits for `K`.
 
 If `F` reflects isomorphisms, it suffices to show only that the lifted cocone is
-a limit - see `createsColimitOfReflectsIso`.
+a colimit - see `createsColimitOfReflectsIso`.
 -/
 class CreatesColimit (K : J ⥤ C) (F : C ⥤ D) extends ReflectsColimit K F where
-  /-- any limit cocone can be lifted to a cocone above -/
+  /-- any colimit cocone can be lifted to a cocone above -/
   lifts : ∀ c, IsColimit c → LiftableCocone K F c
 
 /-- `F` creates colimits of shape `J` if `F` creates the colimit of any diagram
@@ -114,7 +114,7 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
   CreatesColimit : ∀ {K : J ⥤ C}, CreatesColimit K F := by infer_instance
 
 -- This should be used with explicit universe variables.
-/-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
+/-- `F` creates colimits if it creates colimits of shape `J` for any `J`. -/
 @[univ_out_params, nolint checkUnivs, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
@@ -197,7 +197,7 @@ def liftedColimitIsColimit {K : J ⥤ C} {F : C ⥤ D} [CreatesColimit K F] {c :
     (t : IsColimit c) : IsColimit (liftColimit t) :=
   isColimitOfReflects _ (IsColimit.ofIsoColimit t (liftedColimitMapsToOriginal t).symm)
 
-/-- If `F` creates the limit of `K` and `K ⋙ F` has a limit, then `K` has a limit. -/
+/-- If `F` creates the colimit of `K` and `K ⋙ F` has a colimit, then `K` has a colimit. -/
 theorem hasColimit_of_created (K : J ⥤ C) (F : C ⥤ D) [HasColimit (K ⋙ F)] [CreatesColimit K F] :
     HasColimit K :=
   HasColimit.mk
@@ -240,8 +240,8 @@ structure LiftsToLimit (K : J ⥤ C) (F : C ⥤ D) (c : Cone (K ⋙ F)) (t : IsL
   makesLimit : IsLimit liftedCone
 
 /-- A helper to show a functor creates colimits. In particular, if we can show
-that for any limit cocone `c` for `K ⋙ F`, there is a lift of it which is
-a limit and `F` reflects isomorphisms, then `F` creates colimits.
+that for any colimit cocone `c` for `K ⋙ F`, there is a lift of it which is
+a colimit and `F` reflects isomorphisms, then `F` creates colimits.
 Usually, `F` creating colimits says that _any_ lift of `c` is a colimit, but
 here we only need to show that our particular lift of `c` is a colimit.
 -/
@@ -397,7 +397,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphi
         exact IsColimit.ofIsoColimit hd' (asIso f)⟩ }
 
 /-- If `F` reflects isomorphisms and we can lift a single colimit cocone to a colimit cocone, then
-`F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
+`F` creates colimits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
 necessary to know that `K ⋙ F` actually has a colimit. -/
 @[implicit_reducible]
 def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
@@ -489,7 +489,7 @@ instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and
     PreservesColimitsOfShape J F where
 
 -- see Note [lower instance priority]
-/-- `F` preserves limits if it creates limits and `D` has limits. -/
+/-- `F` preserves colimits if it creates colimits and `D` has colimits. -/
 instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
@@ -600,7 +600,7 @@ def createsColimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J 
       toReflectsColimit := have := reflectsColimitsOfShape_of_equiv e F; inferInstance }
 
 -- For the inhabited linter later.
-/-- If F creates the limit of K, any cone lifts to a limit. -/
+/-- If `F` creates the limit of `K`, any limit cone lifts to a limit. -/
 def liftsToLimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Cone (K ⋙ F))
     (t : IsLimit c) : LiftsToLimit K F c t where
   liftedCone := liftLimit t
@@ -608,7 +608,7 @@ def liftsToLimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Co
   makesLimit := liftedLimitIsLimit t
 
 -- For the inhabited linter later.
-/-- If F creates the colimit of K, any cocone lifts to a colimit. -/
+/-- If `F` creates the colimit of `K`, any colimit cocone lifts to a colimit. -/
 def liftsToColimitOfCreates (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c : Cocone (K ⋙ F))
     (t : IsColimit c) : LiftsToColimit K F c t where
   liftedCocone := liftColimit t
