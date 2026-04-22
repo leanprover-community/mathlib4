@@ -52,7 +52,7 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
 abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} :=
-  @TopPair.of (TopCat.of A) X ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
+  TopPair.of (A := (TopCat.of A)) (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
@@ -200,7 +200,7 @@ def Homotopic (f g : X ⟶ Y) := Nonempty (Homotopy f g)
 namespace Homotopic
 
 /-- Two maps of topological pairs being homotopic defines an equivalence relation. -/
-theorem equivalence : Equivalence (@Homotopic X Y) :=
+theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
