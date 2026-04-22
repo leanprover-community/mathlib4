@@ -9,13 +9,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
-# Preserving binary products
+# Preserving binary products and coproducts
 
-Constructions to relate the notions of preserving binary products and reflecting binary products
-to concrete binary fans.
+Constructions to relate the notions of preserving and reflecting binary products and coproducts
+to concrete binary fans and cofans.
 
-In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
-the product of `X` and `Y`.
+In particular, we show that `prodComparison G X Y` is an isomorphism iff `G` preserves
+the product of `X` and `Y`, and that `coprodComparison G X Y` is an isomorphism iff `G`
+preserves the coproduct of `X` and `Y`.
 -/
 
 @[expose] public section
@@ -38,7 +39,8 @@ section
 variable {P X Y Z : C} (f : P ⟶ X) (g : P ⟶ Y)
 
 /--
-The map of a binary fan is a limit iff the fork consisting of the mapped morphisms is a limit. This
+The map of a binary fan is a limit iff the binary fan consisting of the mapped morphisms is a
+limit. This
 essentially lets us commute `BinaryFan.mk` with `Functor.mapCone`.
 -/
 def isLimitMapConeBinaryFanEquiv :
@@ -61,8 +63,8 @@ def isLimitOfReflectsOfMapIsLimit [ReflectsLimit (pair X Y) G]
 variable (X Y)
 variable [HasBinaryProduct X Y]
 
-/-- If `G` preserves binary products and `C` has them, then the binary fan constructed of the mapped
-morphisms of the binary product cone is a limit.
+/-- If `G` preserves the product of `X` and `Y` and `C` has it, then the binary fan constructed of
+the mapped morphisms of the binary product cone is a limit.
 -/
 def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
@@ -131,7 +133,7 @@ section
 variable {P X Y Z : C} (f : X ⟶ P) (g : Y ⟶ P)
 
 /-- The map of a binary cofan is a colimit iff
-the cofork consisting of the mapped morphisms is a colimit.
+the binary cofan consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `BinaryCofan.mk` with `Functor.mapCocone`.
 -/
 def isColimitMapCoconeBinaryCofanEquiv :
@@ -156,8 +158,8 @@ variable (X Y)
 variable [HasBinaryCoproduct X Y]
 
 /--
-If `G` preserves binary coproducts and `C` has them, then the binary cofan constructed of the mapped
-morphisms of the binary product cocone is a colimit.
+If `G` preserves the coproduct of `X` and `Y` and `C` has it, then the binary cofan constructed of
+the mapped morphisms of the binary coproduct cocone is a colimit.
 -/
 def isColimitOfHasBinaryCoproductOfPreservesColimit [PreservesColimit (pair X Y) G] :
     IsColimit (BinaryCofan.mk (G.map (Limits.coprod.inl : X ⟶ X ⨿ Y)) (G.map Limits.coprod.inr)) :=
