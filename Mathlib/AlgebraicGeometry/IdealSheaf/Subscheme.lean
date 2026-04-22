@@ -759,7 +759,6 @@ lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
   rintro _ ⟨U, hU, rfl⟩
   exact f.toImage_app_injective ⟨U, hU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
 @[simps]
