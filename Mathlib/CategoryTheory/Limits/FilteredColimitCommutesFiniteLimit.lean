@@ -28,6 +28,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 -- Various pieces of algebra that have previously been spuriously imported here:

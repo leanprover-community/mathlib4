@@ -40,6 +40,8 @@ quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 category_theory, preradical, colon, pullback, torsion theory
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory.Abelian

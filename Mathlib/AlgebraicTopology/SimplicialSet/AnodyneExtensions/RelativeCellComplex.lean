@@ -25,6 +25,8 @@ cell complex with basic cells given by horn inclusions.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v u

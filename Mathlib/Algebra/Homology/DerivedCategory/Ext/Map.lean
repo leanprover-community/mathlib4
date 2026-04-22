@@ -35,6 +35,8 @@ where `F` is an exact functor between abelian categories.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe t t' w w' u u' v v'
