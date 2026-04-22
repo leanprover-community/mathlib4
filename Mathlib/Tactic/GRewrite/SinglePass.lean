@@ -41,7 +41,8 @@ def GRewriteLemma.getValue (lem : GRewriteLemma) : MetaM Expr := do
 def GRewriteLemma.metaTelescope (lem : GRewriteLemma) : MetaM (Array Expr × Expr × Expr) := do
   let proof ← lem.getValue
   let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof) lem.numHyps?
-  return (mvars, rel, mkAppN proof mvars)
+  -- Use `Expr.beta` to get nicer looking proof terms.
+  return (mvars, rel, proof.beta mvars)
 
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
   if let some rel := rel? then
@@ -225,7 +226,7 @@ def elabGRewriteLemma (stx : Syntax) (symm : Bool) (config : Config) :
   let some (relName, lhs, rhs) := getRel (← whnf rel) |
     let valueDescr := if (← Meta.isProp rel) then "a proof of" else "a value of type"
     throwError m!"Invalid grewrite argument: Expected a relation or definition name, \
-      but{inlineExpr (mkAppN e mvars)}is {valueDescr}{indentExpr rel}"
+      but{inlineExpr (e.beta mvars)}is {valueDescr}{indentExpr rel}"
   -- Just like in `rw`, The head index and number of arguments determine where we try to rewrite.
   let (headIdx, headNumArgs) :=
     if symm then (rhs.toHeadIndex, rhs.headNumArgs) else (lhs.toHeadIndex, lhs.headNumArgs)
@@ -235,7 +236,7 @@ def elabGRewriteLemma (stx : Syntax) (symm : Bool) (config : Config) :
   let (levelParams, proof) ←
     if e.hasMVar then
       let r ← abstractMVars e
-      pure (r.paramNames, r.expr.eta)
+      pure (r.paramNames, r.expr)
     else
       pure (#[], e)
   return { symm, levelParams, proof, numHyps?, headIdx, headNumArgs, relName }
