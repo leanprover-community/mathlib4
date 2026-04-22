@@ -91,6 +91,7 @@ lemma pullHom_id ⦃X₁ X₂ : C⦄ ⦃M₁ : F.obj (.mk (op X₁))⦄ ⦃M₂ 
   simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app,
     ← reassoc_of% Cat.Hom₂.comp_app, Iso.inv_hom_id]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma pullHom_pullHom
