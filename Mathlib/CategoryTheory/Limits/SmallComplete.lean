@@ -42,7 +42,7 @@ variable {C : Type u} [SmallCategory C] [HasProducts.{u} C]
 set_option backward.isDefEq.respectTransparency false in
 /-- A small category with products is a thin category.
 
-in Lean, a preorder category is one where the morphisms are in Prop, which is weaker than the usual
+in Lean, a preorder category is one where the morphisms are in Prop, which is stronger than the usual
 notion of a preorder/thin category which says that each homset is subsingleton; we show the latter
 rather than providing a `Preorder C` instance.
 -/
