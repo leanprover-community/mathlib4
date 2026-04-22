@@ -243,7 +243,7 @@ end BooleanRing
 open BooleanRing
 
 instance : BooleanAlgebra (AsBoolAlg α) :=
-  @BooleanRing.toBooleanAlgebra α _
+  fast_instance% @BooleanRing.toBooleanAlgebra α _
 
 @[simp]
 theorem ofBoolAlg_top : ofBoolAlg (⊤ : AsBoolAlg α) = 1 :=
@@ -368,7 +368,7 @@ theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a
   Iff.rfl
 
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
-  ‹Inhabited α›
+  ⟨default (α := α)⟩
 
 -- See note [reducible non-instances]
 /-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
@@ -424,7 +424,7 @@ scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
 
 instance : BooleanRing (AsBoolRing α) :=
-  @BooleanAlgebra.toBooleanRing α _
+  fast_instance% @BooleanAlgebra.toBooleanRing α _
 
 @[simp]
 theorem ofBoolRing_zero : ofBoolRing (0 : AsBoolRing α) = ⊥ :=

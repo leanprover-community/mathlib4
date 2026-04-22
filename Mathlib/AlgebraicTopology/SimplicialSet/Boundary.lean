@@ -52,6 +52,11 @@ instance {n : ℕ} : HasDimensionLT (boundary n) n := by
   intro i
   exact stdSimplex.hasDimensionLT_face _ _ (by simp [Finset.card_compl])
 
+lemma mem_boundary_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) :
+    s ∈ (boundary n).obj _ ↔ ∃ (j : Fin (n + 1)), j ∉ Set.range s := by
+  rw [boundary_eq_iSup]
+  simp
+
 lemma face_singleton_compl_le_boundary {n : ℕ} (i : Fin (n + 1)) :
     stdSimplex.face.{u} {i}ᶜ ≤ boundary n := by
   rw [boundary_eq_iSup]
@@ -91,6 +96,17 @@ lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   intro x
   fin_cases x
   exact ⟨0, by subsingleton⟩
+
+lemma op_boundary (n : ℕ) :
+    ∂Δ[n].op.preimage (stdSimplex.opIso.{u} ⦋n⦌).inv = ∂Δ[n] := by
+  ext ⟨⟨d⟩⟩ j
+  simp only [Subcomplex.preimage_obj, Set.mem_preimage, stdSimplex.opIso_inv_app_hom_apply,
+    Subcomplex.mem_op_obj_iff, mem_boundary_iff_notMem_range, Set.mem_range,
+    stdSimplex.opObjEquiv_opObjEquiv_symm_apply, not_exists]
+  constructor
+  all_goals
+  · rintro ⟨k, hk⟩
+    exact ⟨k.rev, fun l _ ↦ hk l.rev (by aesop)⟩
 
 namespace stdSimplex
 

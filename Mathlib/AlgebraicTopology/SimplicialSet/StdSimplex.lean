@@ -673,6 +673,38 @@ lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_i
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
     (nonDegenerateEquiv.2 (.refl _)) n)
 
+/-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
+`n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/
+protected def opObjEquiv {n : SimplexCategory} {d : SimplexCategoryᵒᵖ} :
+    (stdSimplex.{u}.obj n).op.obj d ≃ (stdSimplex.obj n).obj d :=
+  SSet.opObjEquiv.trans (objEquiv.trans
+    (SimplexCategory.revEquivalence.fullyFaithfulFunctor.homEquiv.trans objEquiv.symm))
+
+protected lemma opObjEquiv_apply {d n : ℕ} (f : Δ[n].op _⦋d⦌) (i : Fin (d + 1)) :
+    stdSimplex.opObjEquiv.{u} f i = (opObjEquiv f i.rev).rev := rfl
+
+lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
+    SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
+  rfl
+
+lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
+    dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
+      g (f i.rev).rev := rfl
+
+/-- The opposite of `Δ[n]` is isomorphic to `Δ[n]`. -/
+@[simps! hom_app_hom_apply inv_app_hom_apply]
+def opIso (n : SimplexCategory) :
+    (stdSimplex.{u}.obj n).op ≅ stdSimplex.obj n :=
+  NatIso.ofComponents (fun d ↦ stdSimplex.opObjEquiv.toIso) (fun {d d'} f ↦ by
+    ext g
+    refine stdSimplex.ext _ _ (fun i ↦ ?_)
+    dsimp
+    rw [stdSimplex.opObjEquiv_apply, op_map]
+    erw [Equiv.apply_symm_apply]
+    dsimp
+    rw [map_rev_map_op_apply]
+    aesop)
+
 end stdSimplex
 
 section Examples

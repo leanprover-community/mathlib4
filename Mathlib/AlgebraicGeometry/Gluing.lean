@@ -403,12 +403,8 @@ theorem isOpenMap_fromGlued : IsOpenMap 𝒰.fromGlued := by
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
 
-@[deprecated (since := "2025-10-07")] alias fromGlued_open_map := isOpenMap_fromGlued
-
 theorem isOpenEmbedding_fromGlued : IsOpenEmbedding 𝒰.fromGlued :=
   .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.isOpenMap_fromGlued
-
-@[deprecated (since := "2025-10-07")] alias fromGlued_isOpenEmbedding := isOpenEmbedding_fromGlued
 
 instance : Epi 𝒰.fromGlued.base := by
   rw [TopCat.epi_iff_surjective]
