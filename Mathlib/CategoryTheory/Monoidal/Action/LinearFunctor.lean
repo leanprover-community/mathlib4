@@ -41,7 +41,7 @@ section leftAction
 
 open MonoidalLeftAction
 
-/-- `F.LaxLinear C` equips `F : D ⥤ D'` with a family of morphisms
+/-- `F.LaxLeftLinear C` equips `F : D ⥤ D'` with a family of morphisms
 `μₗ F : ∀ (c : C) (d : D), c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
@@ -94,8 +94,8 @@ lemma μₗ_unitality_inv (d : D) :
 
 end LaxLeftLinear
 
-/-- `F.OplaxLinear C` equips `F : D ⥤ D'` with a family of morphisms
-`δₗ F : ∀ (c : C) (d : D), c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`
+/-- `F.OplaxLeftLinear C` equips `F : D ⥤ D'` with a family of morphisms
+`δₗ F : ∀ (c : C) (d : D), F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d`
 that is natural in each variable and coherent with respect to left actions
 of `C` on `D` and `D'`. -/
 class OplaxLeftLinear
@@ -203,9 +203,9 @@ section rightAction
 
 open MonoidalRightAction
 
-/-- `F.LaxLinear C` equips `F : D ⥤ D'` with a family of morphisms
-`μₗ F : ∀ (c : C) (d : D), c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`
-that is natural in each variable and coherent with respect to left actions
+/-- `F.LaxRightLinear C` equips `F : D ⥤ D'` with a family of morphisms
+`μᵣ F : ∀ (d : D) (c : C), F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)`
+that is natural in each variable and coherent with respect to right actions
 of `C` on `D` and `D'`. -/
 class LaxRightLinear
     (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
@@ -256,9 +256,9 @@ lemma μᵣ_unitality_inv (d : D) :
 
 end LaxRightLinear
 
-/-- `F.OplaxLinear C` equips `F : D ⥤ D'` with a family of morphisms
-`δₗ F : ∀ (c : C) (d : D), c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`
-that is natural in each variable and coherent with respect to left actions
+/-- `F.OplaxRightLinear C` equips `F : D ⥤ D'` with a family of morphisms
+`δᵣ F : ∀ (d : D) (c : C), F.obj (d ⊙ᵣ c) ⟶ F.obj d ⊙ᵣ c`
+that is natural in each variable and coherent with respect to right actions
 of `C` on `D` and `D'`. -/
 class OplaxRightLinear
     (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
@@ -313,7 +313,7 @@ lemma δᵣ_unitality_hom (d : D) :
 
 end OplaxRightLinear
 
-/-- `F.RightLinear C` asserts that `F` is both lax and oplax left-linear,
+/-- `F.RightLinear C` asserts that `F` is both lax and oplax right-linear,
 in a compatible way, i.e that `μᵣ` is inverse to `δᵣ`. -/
 class RightLinear
     (F : D ⥤ D') (C : Type*) [Category* C] [MonoidalCategory C]
