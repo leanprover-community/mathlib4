@@ -134,8 +134,8 @@ noncomputable def eval₂ : PowerSeries R → S :=
 
 @[simp]
 theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
-  rw [← (MvPolynomial.pUnitAlgEquiv R).apply_symm_apply f]
-  simp only [PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
+  rw [← (MvPolynomial.uniqueAlgEquiv R Unit).apply_symm_apply f]
+  simp only [PowerSeries.eval₂, MvPolynomial.eval₂_const_uniqueAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 @[simp]
@@ -193,7 +193,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
     (h : ∀ p : Polynomial R, ε p = Polynomial.eval₂ φ a p) :
     ε = eval₂ φ a := by
   refine MvPowerSeries.eval₂_unique hφ (hasEval ha) hε (fun p ↦ ?_)
-  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv]
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_uniqueAlgEquiv]
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
