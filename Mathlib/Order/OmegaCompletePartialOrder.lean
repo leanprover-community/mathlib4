@@ -807,6 +807,24 @@ open Function
 def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
   ⟨fun n => f^[n] x, f.monotone.monotone_iterate_of_le_map h⟩
 
+/-- **Scott induction** from a seed `x ≤ f x`: if `p` holds at `x`, is preserved by the monotone
+function `f`, and is closed under `ωSup` of chains, then `p` holds at the supremum of the iterate
+chain `x, f x, f (f x), …`. The textbook Scott induction is the special case `x := ⊥`, see
+`ContinuousHom.lfp_induction`. -/
+theorem ωSup_iterate_induction {f : α →o α} {x : α} (h : x ≤ f x) {p : α → Prop}
+    (h_x : p x) (h_step : ∀ a, p a → p (f a))
+    (h_sup : ∀ c : Chain α, (∀ n, p (c n)) → p (ωSup c)) :
+    p (ωSup (iterateChain f x h)) := by
+  apply h_sup
+  intro n
+  induction n with
+  | zero => exact h_x
+  | succ k ih =>
+    have : iterateChain f x h (k + 1) = f (iterateChain f x h k) :=
+      Function.iterate_succ_apply' ..
+    rw [this]
+    exact h_step _ ih
+
 variable (f : α →𝒄 α) (x : α)
 
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
@@ -884,17 +902,8 @@ theorem isLeast_lfp : IsLeast (fixedPoints f) (lfp f) :=
 /-- **Scott induction** for `lfp`: to prove a predicate `p` of `lfp f`, it suffices to show
 `p ⊥`, that `p` is preserved by `f`, and that `p` is closed under ωSup of chains. -/
 theorem lfp_induction {p : α → Prop} (h_bot : p ⊥) (h_step : ∀ a, p a → p (f a))
-    (h_sup : ∀ c : Chain α, (∀ n, p (c n)) → p (ωSup c)) : p (lfp f) := by
-  apply h_sup
-  intro n
-  induction n with
-  | zero => exact h_bot
-  | succ k ih =>
-    have hstep : iterateChain f.toOrderHom ⊥ bot_le (k + 1) =
-        f (iterateChain f.toOrderHom ⊥ bot_le k) :=
-      Function.iterate_succ_apply' ..
-    rw [hstep]
-    exact h_step _ ih
+    (h_sup : ∀ c : Chain α, (∀ n, p (c n)) → p (ωSup c)) : p (lfp f) :=
+  ωSup_iterate_induction bot_le h_bot h_step h_sup
 
 end ContinuousHom
 
