@@ -117,9 +117,9 @@ This structure encodes the data required for a family of morphisms to be effecti
 structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) where
   /--
-  For every `W` with a family of morphisms `e a : Y a ⟶ W` that coequalizes every pair of morphisms
-  `g₁ : Z ⟶ Y a₁`, `g₂ : Z ⟶ Y a₂` which the family `π` coequalizes, `desc e h` is a morphism
-  `X ⟶ W`...
+  For every `W` with a family of morphisms `e a : X a ⟶ W` that coequalizes every pair of morphisms
+  `g₁ : Z ⟶ X a₁`, `g₂ : Z ⟶ X a₂` which the family `π` coequalizes, `desc e h` is a morphism
+  `B ⟶ W`...
   -/
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
       (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
@@ -138,7 +138,7 @@ structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
 /--
 A family of morphisms `π a : X a ⟶ B` indexed by `α` is effective epimorphic
 provided that the `π a` exhibit `B` as a colimit of the diagram of all "relations"
-`R → X a₁`, `R ⟶ X a₂` for all `a₁ a₂ : α`.
+`R ⟶ X a₁`, `R ⟶ X a₂` for all `a₁ a₂ : α`.
 -/
 class EffectiveEpiFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) : Prop where
   /-- `π` is an effective epimorphic family if there exists an `EffectiveEpiFamilyStruct` for `π` -/
