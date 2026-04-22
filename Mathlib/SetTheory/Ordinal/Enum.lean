@@ -90,11 +90,21 @@ theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s =
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
 
-theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ha : a ∈ s)
-    (H : ∀ b < o, enum s hs b < a) : enum s hs o ≤ a := by
-  rw [← Subtype.coe_mk a ha, Subtype.coe_le_coe, ← OrderIso.le_symm_apply]
+theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ho : o ∈ s)
+    (H : ∀ b < a, enum s hs b < o) : enum s hs a ≤ o := by
+  rw [← Subtype.coe_mk o ho, Subtype.coe_le_coe, ← OrderIso.le_symm_apply]
   apply le_of_forall_lt
   simpa [OrderIso.lt_symm_apply]
+
+theorem enum_succ_le_of_lt [SuccOrder α] {a o : α} {s : Set α} {hs : IsCofinal s} (ha : o ∈ s)
+    (H : enum s hs a < o) : enum s hs (succ a) ≤ o := by
+  refine enum_le_of_forall_lt ha fun b hb ↦ H.trans_le' ?_
+  simpa using le_of_lt_succ hb
+
+@[simp]
+theorem enum_univ (x : α) : enum univ .univ x = ⟨x, mem_univ x⟩ := by
+  rw [← Subsingleton.allEq OrderIso.Set.univ.symm (enum univ .univ)]
+  rfl
 
 end Order
 
