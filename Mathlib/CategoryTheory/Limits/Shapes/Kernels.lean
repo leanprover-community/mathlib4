@@ -23,14 +23,14 @@ The basic definitions are
 ## Main statements
 
 Besides the definition and lifts, we prove
-* `kernel.ιZeroIsIso`: a kernel map of a zero morphism is an isomorphism
+* `kernel.ι_zero_isIso`: a kernel map of a zero morphism is an isomorphism
 * `kernel.eq_zero_of_epi_kernel`: if `kernel.ι f` is an epimorphism, then `f = 0`
 * `kernel.ofMono`: the kernel of a monomorphism is the zero object
-* `kernel.liftMono`: the lift of a monomorphism `k : W ⟶ X` such that `k ≫ f = 0`
+* `kernel.lift_mono`: the lift of a monomorphism `k : W ⟶ X` such that `k ≫ f = 0`
   is still a monomorphism
 * `kernel.isLimitConeZeroCone`: if our category has a zero object, then the map from the zero
   object is a kernel map of any monomorphism
-* `kernel.ιOfZero`: `kernel.ι (0 : X ⟶ Y)` is an isomorphism
+* `kernel.ι_of_zero`: `kernel.ι (0 : X ⟶ Y)` is an isomorphism
 
 and the corresponding dual statements.
 
@@ -101,11 +101,11 @@ section
 
 attribute [local aesop safe cases] WalkingParallelPair WalkingParallelPairHom
 
-/-- Every kernel fork `s` is isomorphic (actually, equal) to `fork.ofι (fork.ι s) _`. -/
+/-- Every kernel fork `s` is isomorphic (actually, equal) to `Fork.ofι (Fork.ι s) _`. -/
 def isoOfι (s : Fork f 0) : s ≅ Fork.ofι (Fork.ι s) (Fork.condition s) :=
   Cone.ext (Iso.refl _) <| by aesop
 
-/-- If `ι = ι'`, then `fork.ofι ι _` and `fork.ofι ι' _` are isomorphic. -/
+/-- If `ι = ι'`, then `Fork.ofι ι _` and `Fork.ofι ι' _` are isomorphic. -/
 def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
     KernelFork.ofι ι w ≅ KernelFork.ofι ι' (by rw [← h, w]) :=
   Cone.ext (Iso.refl _)
@@ -124,7 +124,7 @@ def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D)
 end
 
 /-- If `s` is a limit kernel fork and `k : W ⟶ X` satisfies `k ≫ f = 0`, then there is some
-`l : W ⟶ s.X` such that `l ≫ fork.ι s = k`. -/
+`l : W ⟶ s.pt` such that `l ≫ Fork.ι s = k`. -/
 def KernelFork.IsLimit.lift' {s : KernelFork f} (hs : IsLimit s) {W : C} (k : W ⟶ X)
     (h : k ≫ f = 0) : { l : W ⟶ s.pt // l ≫ Fork.ι s = k } :=
   ⟨hs.lift <| KernelFork.ofι _ h, hs.fac _ _⟩
@@ -603,17 +603,17 @@ theorem CokernelCofork.π_ofπ {X Y P : C} (f : X ⟶ Y) (π : Y ⟶ P) (w : f �
     Cofork.π (CokernelCofork.ofπ π w) = π :=
   rfl
 
-/-- Every cokernel cofork `s` is isomorphic (actually, equal) to `cofork.ofπ (cofork.π s) _`. -/
+/-- Every cokernel cofork `s` is isomorphic (actually, equal) to `Cofork.ofπ (Cofork.π s) _`. -/
 def isoOfπ (s : Cofork f 0) : s ≅ Cofork.ofπ (Cofork.π s) (Cofork.condition s) :=
   Cocone.ext (Iso.refl _) fun j => by cases j <;> cat_disch
 
-/-- If `π = π'`, then `CokernelCofork.of_π π _` and `CokernelCofork.of_π π' _` are isomorphic. -/
+/-- If `π = π'`, then `CokernelCofork.ofπ π _` and `CokernelCofork.ofπ π' _` are isomorphic. -/
 def ofπCongr {P : C} {π π' : Y ⟶ P} {w : f ≫ π = 0} (h : π = π') :
     CokernelCofork.ofπ π w ≅ CokernelCofork.ofπ π' (by rw [← h, w]) :=
   Cocone.ext (Iso.refl _) fun j => by cases j <;> cat_disch
 
 /-- If `s` is a colimit cokernel cofork, then every `k : Y ⟶ W` satisfying `f ≫ k = 0` induces
-`l : s.X ⟶ W` such that `cofork.π s ≫ l = k`. -/
+`l : s.pt ⟶ W` such that `Cofork.π s ≫ l = k`. -/
 def CokernelCofork.IsColimit.desc' {s : CokernelCofork f} (hs : IsColimit s) {W : C} (k : Y ⟶ W)
     (h : f ≫ k = 0) : { l : s.pt ⟶ W // Cofork.π s ≫ l = k } :=
   ⟨hs.desc <| CokernelCofork.ofπ _ h, hs.fac _ _⟩
@@ -632,7 +632,7 @@ def isColimitAux (t : CokernelCofork f) (desc : ∀ s : CokernelCofork f, t.pt �
     uniq := fun s m w => uniq s m (w Limits.WalkingParallelPair.one) }
 
 /-- This is a more convenient formulation to show that a `CokernelCofork` constructed using
-`CokernelCofork.ofπ` is a limit cone.
+`CokernelCofork.ofπ` is a colimit cocone.
 -/
 def CokernelCofork.IsColimit.ofπ {Z : C} (g : Y ⟶ Z) (eq : f ≫ g = 0)
     (desc : ∀ {Z' : C} (g' : Y ⟶ Z') (_ : f ≫ g' = 0), Z ⟶ Z')
@@ -704,7 +704,7 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
   isIso_colimit_cocone_parallelPair_of_eq hf hc
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y' ≅ Y` and `f' : X' ⟶ Y'` is a
 morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
 morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0`. -/
 def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
@@ -754,7 +754,7 @@ lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : Coker
   hf.fac _ _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The isomorphism between points of limit cokernel coforks induced by an isomorphism
+/-- The isomorphism between points of colimit cokernel coforks induced by an isomorphism
 in the category of arrows. -/
 @[simps]
 def mapIsoOfIsColimit {cc : CokernelCofork f} {cc' : CokernelCofork f'}
