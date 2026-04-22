@@ -23,20 +23,20 @@ component'.
 We give some equivalent definitions:
 - A nonempty category for which every functor to a discrete category is
   constant on objects.
-  See `any_functor_const_on_obj` and `Connected.of_any_functor_const_on_obj`.
+  See `any_functor_const_on_obj` and `IsConnected.of_any_functor_const_on_obj`.
 - A nonempty category for which every function `F` for which the presence of a
   morphism `f : j₁ ⟶ j₂` implies `F j₁ = F j₂` must be constant everywhere.
-  See `constant_of_preserves_morphisms` and `Connected.of_constant_of_preserves_morphisms`.
-- A nonempty category for which any subset of its elements containing the
-  default and closed under morphisms is everything.
-  See `induct_on_objects` and `Connected.of_induct`.
+  See `constant_of_preserves_morphisms` and `IsConnected.of_constant_of_preserves_morphisms`.
+- A nonempty category for which any subset of its elements containing some
+  object and closed under morphisms is everything.
+  See `induct_on_objects` and `IsConnected.of_induct`.
 - A nonempty category for which every object is related under the reflexive
   transitive closure of the relation "there is a morphism in some direction
   from `j₁` to `j₂`".
-  See `connected_zigzag` and `zigzag_connected`.
+  See `isPreconnected_zigzag` and `zigzag_isConnected`.
 - A nonempty category for which for any two objects there is a sequence of
   morphisms (some reversed) from one to the other.
-  See `exists_zigzag'` and `connected_of_zigzag`.
+  See `exists_zigzag'` and `isConnected_of_zigzag`.
 
 We also prove the result that the functor given by `(X × -)` preserves any
 connected limit. That is, any limit of shape `J` where `J` is a connected
@@ -56,7 +56,8 @@ open Opposite
 
 namespace CategoryTheory
 
-/-- A possibly empty category for which every functor to a discrete category is constant.
+/-- A possibly empty category for which every functor to a discrete category is isomorphic to a
+constant functor.
 -/
 class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
   iso_constant :
@@ -65,7 +66,7 @@ class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
 attribute [inherit_doc IsPreconnected] IsPreconnected.iso_constant
 
 /-- We define a connected category as a _nonempty_ category for which every
-functor to a discrete category is constant.
+functor to a discrete category is isomorphic to a constant functor.
 
 NB. Some authors include the empty category as connected, we do not.
 We instead are interested in categories with exactly one 'connected
@@ -101,7 +102,7 @@ end IsPreconnected.IsoConstantAux
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
+/-- If `J` is preconnected, any functor `F : J ⥤ Discrete α` is isomorphic to
 the constant functor with value `F.obj j` (for any choice of `j`).
 -/
 def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j : J) :
@@ -110,14 +111,14 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
     ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by simp)
 
-/-- If `J` is connected, any functor to a discrete category is constant on objects.
-The converse is given in `IsConnected.of_any_functor_const_on_obj`.
+/-- If `J` is preconnected, any functor to a discrete category is constant on objects.
+The converse is given in `IsPreconnected.of_any_functor_const_on_obj`.
 -/
 theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
     F.obj j = F.obj j' := by
   ext; exact ((isoConstant F j').hom.app j).down.1
 
-/-- If any functor to a discrete category is constant on objects, J is connected.
+/-- If any functor to a discrete category is constant on objects, `J` is preconnected.
 The converse of `any_functor_const_on_obj`.
 -/
 theorem IsPreconnected.of_any_functor_const_on_obj
@@ -139,11 +140,11 @@ theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
   { IsPreconnected.of_any_functor_const_on_obj h with }
 
-/-- If `J` is connected, then given any function `F` such that the presence of a
+/-- If `J` is preconnected, then given any function `F` such that the presence of a
 morphism `j₁ ⟶ j₂` implies `F j₁ = F j₂`, we have that `F` is constant.
 This can be thought of as a local-to-global property.
 
-The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
+The converse is shown in `IsPreconnected.of_constant_of_preserves_morphisms`
 -/
 theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
     (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
@@ -166,7 +167,7 @@ theorem constant_of_preserves_morphisms' [IsConnected J] {α : Type u₂} (F : J
     ∃ (a : α), ∀ (j : J), F j = a :=
   ⟨F (Classical.arbitrary _), fun _ ↦ constant_of_preserves_morphisms _ h _ _⟩
 
-/-- `J` is connected if: given any function `F : J → α` which is constant for any
+/-- `J` is preconnected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
 
@@ -191,11 +192,11 @@ theorem IsConnected.of_constant_of_preserves_morphisms [Nonempty J]
     IsConnected J :=
   { IsPreconnected.of_constant_of_preserves_morphisms h with }
 
-/-- An inductive-like property for the objects of a connected category.
+/-- An inductive-like property for the objects of a preconnected category.
 If the set `p` is nonempty, and `p` is closed under morphisms of `J`,
 then `p` contains all of `J`.
 
-The converse is given in `IsConnected.of_induct`.
+In the nonempty case, the converse is given in `IsConnected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
@@ -399,7 +400,7 @@ theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j�
     Zag j₁ j₂ :=
   Or.imp (Nonempty.map F.preimage) (Nonempty.map F.preimage) h
 
-/-- Any equivalence relation containing (⟶) holds for all pairs of a connected category. -/
+/-- Any equivalence relation containing `(⟶)` holds for all pairs of a preconnected category. -/
 theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Equivalence r)
     (h : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ := by
   intro j₁ j₂
@@ -408,7 +409,7 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
       fun f => ⟨fun t => hr.3 t (h f), fun t => hr.3 t (hr.2 (h f))⟩
   exact z j₂
 
-/-- In a connected category, any two objects are related by `Zigzag`. -/
+/-- In a preconnected category, any two objects are related by `Zigzag`. -/
 theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
     (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
@@ -434,10 +435,10 @@ theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
     ∃ l, List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
   List.exists_isChain_cons_of_relationReflTransGen (isPreconnected_zigzag _ _)
 
-/-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
-morphisms, then J is connected.
+/-- If any two objects are linked by a sequence of (potentially reversed) morphisms,
+then `J` is preconnected.
 
-The converse of `exists_zigzag'`.
+In the nonempty case, see `isConnected_of_zigzag`.
 -/
 theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
     List.IsChain Zag (j₁ :: l) ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
@@ -467,7 +468,7 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
 
 variable {C : Type w₂} [Category.{w₁} C]
 
-/-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
+/-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a preconnected
 category must be constant.
 This is the key property of connected categories which we use to establish properties about limits.
 -/
