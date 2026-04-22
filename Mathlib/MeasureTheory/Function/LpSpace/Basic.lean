@@ -763,18 +763,14 @@ theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
   ext1
   grw [Lp.coeFn_add, coeFn_compLp']
-  refine
-    EventuallyEq.trans ?_ (EventuallyEq.fun_add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
-  filter_upwards with x
-  rw [coe_add', Pi.add_def]
+  rfl
 
 theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
   grw [Lp.coeFn_smul, coeFn_compLp']
-  refine (L.coeFn_compLp' f).mono fun x hx => ?_
-  rw [Pi.smul_apply, hx, coe_smul', Pi.smul_def]
+  rfl
 
 theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
   LipschitzWith.norm_compLp_le _ _ _

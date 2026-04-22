@@ -228,6 +228,7 @@ theorem thickenedIndicator_subset {δ : ℝ} (δ_pos : 0 < δ) {E₁ E₂ : Set 
   (toNNReal_le_toNNReal (by finiteness) (by finiteness)).mpr
     (thickenedIndicatorAux_subset δ subset x)
 
+set_option linter.gcongr.grw false in
 @[gcongr]
 lemma thickenedIndicator_mono_infEDist {δ : ℝ} (δ_pos : 0 < δ) {E : Set α} {x y : α}
     (h : infEDist x E ≤ infEDist y E) :

@@ -164,14 +164,14 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
   have : -1 < n := by
     replace h := h.ge
     contrapose! h
-    grw [h, neg_smul, one_smul, angle_le_pi, ← angle_nonneg, ← angle_nonneg]
+    grw [h, neg_smul, one_smul, angle_le_pi, ← angle_nonneg]
     linear_combination Real.pi_pos
   have : n < 1 := by
     replace h := h.le
     by_contra! hn
     grw [← hn, one_smul, ← angle_nonneg x y, zero_add, two_mul] at h
     have h' := h.trans_eq (add_comm _ _)
-    grw [angle_le_pi] at h' h
+    nth_grw 1 [angle_le_pi] at h' h
     rw [add_le_add_iff_left, (angle_le_pi _ _).ge_iff_eq, angle_comm, angle_eq_pi_iff] at h' h
     obtain ⟨hxy, r₁, r₁_pos, hr₁⟩ := h'
     obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
