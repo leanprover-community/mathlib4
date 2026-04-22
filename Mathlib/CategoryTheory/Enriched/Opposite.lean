@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 # The opposite category of an enriched category
 
 When a monoidal category `V` is braided, we may define the opposite `V`-category of a
-`V`-category. The symmetry map is required to define the composition morphism.
+`V`-category. The braiding morphism is required to define the composition morphism.
 
 This file constructs the opposite `V`-category as an instance on the type `Cᵒᵖ` and constructs an
 equivalence between
