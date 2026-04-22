@@ -58,8 +58,11 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-def run : ContT r m α → (α → m r) → m r :=
-  id
+/-- Built a `ContT` from a function taking a continuation callback. -/
+def mk (f : (α → m r) → m r) : ContT r m α := f
+
+/-- Run a `ContT` with a provided callback. -/
+def run (x : ContT r m α) : (α → m r) → m r := x
 
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
@@ -82,8 +85,10 @@ instance : Monad (ContT r m) where
   bind x f g := x fun i => f i g
 
 @[simp]
-theorem run_pure (a : α) (k : α → m r) :
-    (pure a : ContT r m α).run k = k a := rfl
+theorem run_mk (f : (α → m r) → m r) (k : α → m r) : (.mk f : ContT r m α).run k = f k := rfl
+
+@[simp]
+theorem run_pure (a : α) (k : α → m r) : (pure a : ContT r m α).run k = k a := rfl
 
 @[simp]
 theorem run_bind (x : ContT r m α) (f : α → ContT r m β) (k : β → m r) :
