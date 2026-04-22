@@ -76,7 +76,7 @@ variable (C)
 -- output parameters. See Note [universe output parameters and typeclass caching].
 @[univ_out_params, pp_with_univ]
 class HasCofilteredLimitsOfSize : Prop where
-  /-- For all filtered types of size `w`, we have limits -/
+  /-- For all cofiltered types of size `w`, we have limits -/
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 
 /-- Class for having all filtered colimits of a given size. -/
