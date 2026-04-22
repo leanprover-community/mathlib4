@@ -195,14 +195,9 @@ section
 variable {R S : 𝒮} {a : 𝒳} {b b' : Fib p R} (f : R ⟶ S) (ψ : (ι R).obj b' ⟶ a)
     [IsCartesian p f ψ] (φ : (ι R).obj b ⟶ a) [IsHomLift p f φ]
 
-/-- Given a fibered category p, b' b in Fib R, and a pullback ψ : b ⟶ a in 𝒳, i.e.
-```
-b'       b --ψ--> a
-|        |        |
-v        v        v
-R ====== R --f--> S
-```
-Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
+/-- Given `b b' : Fib p R`, a Cartesian morphism `ψ : (ι R).obj b' ⟶ a` over `f`, and a
+morphism `φ : (ι R).obj b ⟶ a` over `f`, the induced map in `𝒳` from `(ι R).obj b` to
+`(ι R).obj b'` lifts to a morphism `b ⟶ b'` in the fiber over `R`. -/
 noncomputable def inducedMap : b ⟶ b' :=
   Fib.homMk (IsCartesian.map p f ψ φ)
 
