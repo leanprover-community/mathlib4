@@ -286,6 +286,7 @@ lemma pseudofunctor_right_unitality :
     congr_arg Iso.hom (SheafOfModules.pullback_comp_id.{u} f.toRingCatSheafHom)
   simp [← this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] pseudofunctor_associativity pseudofunctor_left_unitality
   pseudofunctor_right_unitality Bicategory.toNatTrans_conjugateEquiv
@@ -313,6 +314,7 @@ noncomputable section Restriction
 
 variable [IsOpenImmersion f]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction of an `𝒪ₓ`-module along an open immersion.
 This is isomorphic to the pullback functor (see `restrictFunctorIsoPullback`)
 but has better defeqs. -/
@@ -372,6 +374,7 @@ lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
 def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=
   (restrictAdjunction f).leftAdjointUniq (pullbackPushforwardAdjunction f)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the identity is isomorphic to the identity. -/
 def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents (fun _ ↦ eqToIso (by simp))) ≪≫
@@ -389,6 +392,7 @@ lemma restrictFunctorId_inv_app_app :
     (restrictFunctorId.inv.app M).app U =
       M.presheaf.map (eqToHom (show 𝟙 X ''ᵁ U = U by simp)).op := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
 def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
@@ -407,6 +411,7 @@ lemma restrictFunctorComp_hom_app_app [IsOpenImmersion g] (M : Z.Modules) :
 lemma restrictFunctorComp_inv_app_app [IsOpenImmersion g] (M : Z.Modules) :
     ((restrictFunctorComp f g).inv.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Restriction along equal morphisms are isomorphic. -/
 def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor f ≅ restrictFunctor g :=
@@ -442,6 +447,7 @@ lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
     (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma germ_restrictStalkNatIso_inv_app (f : X ⟶ Y) [IsOpenImmersion f]

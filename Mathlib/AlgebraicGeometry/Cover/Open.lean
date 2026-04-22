@@ -165,6 +165,7 @@ def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCo
     pullbackSymmetry _ _ ≪≫ asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _)
       (by simp [Cover.pullbackHom]) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
@@ -286,6 +287,7 @@ theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
     X.affineBasisCover.X i = Spec (X.affineBasisCoverRing i) :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
