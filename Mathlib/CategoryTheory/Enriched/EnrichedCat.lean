@@ -91,6 +91,7 @@ def associator (F : EnrichedFunctor V C D) (G : EnrichedFunctor V D E)
     Functor.isoWhiskerLeft _ (G.forgetComp H).symm ≪≫
     (F.forgetComp _).symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_whiskerRight {F G H : EnrichedFunctor V C D} (α : F ⟶ G)
     (β : G ⟶ H) (I : EnrichedFunctor V D E) :
     whiskerRight ⟨α.out ≫ β.out⟩ I = whiskerRight α I ≫ whiskerRight β I := by

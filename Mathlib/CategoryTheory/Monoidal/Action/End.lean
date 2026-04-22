@@ -59,6 +59,7 @@ lemma curriedActionMop_map_unmop_app {c c' : C} (f : c ⟶ c') (d : D) :
     ((curriedActionMop C D).map f).unmop.app d = f ⊵ₗ d :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open MonoidalOpposite in
 /-- When `C` acts on the left on `D`, the functor
@@ -156,6 +157,7 @@ namespace MonoidalRightAction
 
 variable {C D}
 
+set_option backward.defeqAttrib.useBackward true in
 open MonoidalOpposite in
 /-- When `C` acts on the right on `D`, the functor `curriedAction : C ⥤ (D ⥤ D)`
 is monoidal, where `D ⥤ D` has the composition monoidal structure. -/

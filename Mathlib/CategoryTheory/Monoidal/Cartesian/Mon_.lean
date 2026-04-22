@@ -29,6 +29,7 @@ section SemiCartesianMonoidalCategory
 
 variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive (attr := simps)]
 instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.hom := toUnit A.X
@@ -341,6 +342,7 @@ lemma MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy :
     ofRepresentableBy M _ (yonedaMonObjRepresentableBy M) = ‹_› := by
   ext; change lift (fst M M) (snd M M) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon C` is fully faithful. -/
 @[to_additive /-- The yoneda embedding for `AddMon C` is fully faithful. -/]
