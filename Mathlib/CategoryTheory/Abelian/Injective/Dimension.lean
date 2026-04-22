@@ -38,7 +38,7 @@ open Abelian Limits ZeroObject
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- An object `X` in an abelian category has Injective dimension `< n` if
-all `Ext X Y i` vanish when `n ≤ i`. See also `HasInjectiveDimensionLE`.
+all `Ext Y X i` vanish when `n ≤ i`. See also `HasInjectiveDimensionLE`.
 (Do not use the `subsingleton'` field directly. Use the constructor
 `HasInjectiveDimensionLT.mk`, and the lemmas `hasInjectiveDimensionLT_iff` and
 `Ext.eq_zero_of_hasInjectiveDimensionLT`.) -/
@@ -48,7 +48,7 @@ class HasInjectiveDimensionLT (X : C) (n : ℕ) : Prop where mk' ::
     Subsingleton (Ext.{max u v} Y X i)
 
 /-- An object `X` in an abelian category has Injective dimension `≤ n` if
-all `Ext X Y i` vanish when `n + 1 ≤ i` -/
+all `Ext Y X i` vanish when `n + 1 ≤ i` -/
 abbrev HasInjectiveDimensionLE (X : C) (n : ℕ) : Prop :=
   HasInjectiveDimensionLT X (n + 1)
 
