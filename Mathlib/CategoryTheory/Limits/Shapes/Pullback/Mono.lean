@@ -19,7 +19,8 @@ the dual statements between pushouts and epimorphisms.
   API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
-  as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
+  using the `PullbackCone` API as `isLimitOfFactors` and `isLimitOfCompMono`, and using the
+  `pullback` API as `pullbackIsPullbackOfCompMono`.
 
 * Monomorphisms admit kernel pairs, this is `has_kernel_pair_of_mono`.
 
@@ -62,7 +63,7 @@ theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
 
 /--
 The pullback cone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a limit if `f` is a mono. The converse is
-shown in `mono_of_pullback_is_id`.
+shown in `mono_of_isLimitMkIdId`.
 -/
 def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f) :=
   IsLimit.mk _ (fun s => s.fst) (fun _ => Category.comp_id _)
@@ -71,7 +72,7 @@ def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : P
 
 /--
 `f` is a mono if the pullback cone `(𝟙 X, 𝟙 X)` is a limit for the pair `(f, f)`. The converse is
-given in `PullbackCone.is_id_of_mono`.
+given in `PullbackCone.isLimitMkIdId`.
 -/
 theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
     Mono f :=
@@ -101,7 +102,8 @@ def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X �
           symm
         exacts [hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right]⟩⟩
 
-/-- If `W` is the pullback of `f, g`, it is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
+/-- If `s` is a limit cone over `f, g`, it is also a limit cone over `f ≫ i, g ≫ i` for any mono
+`i`. -/
 def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : PullbackCone f g)
     (H : IsLimit s) :
     IsLimit
@@ -238,15 +240,15 @@ theorem epi_inl_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) 
   ⟨fun {W} h k i => IsColimit.hom_ext ht i (by simp [← cancel_epi g, ← t.condition_assoc, i])⟩
 
 /--
-The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
-shown in `epi_of_isColimit_mk_id_id`.
+The pushout cocone `(𝟙 Y, 𝟙 Y)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
+shown in `epi_of_isColimitMkIdId`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
   IsColimit.mk _ (fun s => s.inl) (fun _ => Category.id_comp _)
     (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
-/-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
+/-- `f` is an epi if the pushout cocone `(𝟙 Y, 𝟙 Y)` is a colimit for the pair `(f, f)`.
 The converse is given in `PushoutCocone.isColimitMkIdId`.
 -/
 theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
@@ -281,8 +283,8 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
           symm
           exact hs.fac _ WalkingSpan.right⟩⟩
 
-/-- If `W` is the pushout of `f, g`,
-it is also the pushout of `h ≫ f, h ≫ g` for any epi `h`. -/
+/-- If `s` is a colimit cocone over `f, g`, it is also a colimit cocone over `h ≫ f, h ≫ g` for
+any epi `h`. -/
 def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : PushoutCocone f g)
     (H : IsColimit s) :
     IsColimit
@@ -320,7 +322,7 @@ instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ 
     · simpa using congrArg (fun f => coprod.inl ≫ f) h
     · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
 
-/-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
+/-- The pushout of `f, g` is also the pushout of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
     [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr f g)
     (show (h ≫ f) ≫ pushout.inl f g = (h ≫ g) ≫ pushout.inr f g from by
