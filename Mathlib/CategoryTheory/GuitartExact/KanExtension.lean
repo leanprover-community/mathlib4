@@ -21,9 +21,9 @@ L |     | R
      B
 ```
 we show that an extension `F' : C₄ ⥤ D` of `F : C₂ ⥤ D` along `R`
-is a pointwise left Kan extension at `B.obj X₃` iff
-the composition `T ⋙ F'` is a pointwise left Kan extension at `X₃`
-of `B ⋙ F'`.
+is a pointwise left Kan extension of `F` along `R` at `B.obj X₃` iff
+the composition `B ⋙ F'` is a pointwise left Kan extension of `T ⋙ F`
+along `L` at `X₃`.
 
 When suitable (pointwise) left Kan extensions exist, we also show that
 the natural transformation of functors `(C₂ ⥤ D) ⥤ C₃ ⥤ D`
@@ -61,7 +61,7 @@ abbrev compTwoSquare (w : TwoSquare T L R B) : L.LeftExtension (T ⋙ F) :=
     (whiskerLeft _ E.hom ≫ (associator _ _ _).inv ≫
       whiskerRight w.natTrans _ ≫ (associator _ _ _).hom)
 
-/-- If `w : TwoSquare T L R B` is a Guitart exact square, and `E` is a left extension
+/-- If `w.costructuredArrowRightwards X₃` is final, and `E` is a left extension
 of `F` along `R`, then `E` is a pointwise left Kan extension of `F` along `R` at
 `B.obj X₃` iff `E.compTwoSquare w` is a pointwise left Kan extension
 of `T ⋙ F` along `L` at `X₃`. -/
