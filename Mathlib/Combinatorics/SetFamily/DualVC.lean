@@ -144,7 +144,9 @@ theorem exists_shatters_of_dualFamily_shatters
       simp only [b₀] at this
       exact hne (beq_iff_eq.mp this).symm
     exact h2 (hjk ▸ h1)
-  -- Assemble `T := image x`.
+  -- Assemble `T := image x`. The three bullets discharge `T ⊆ X`,
+  -- `#T = d + 1` (by injectivity of `x`), and `𝒜.Shatters T` (decode
+  -- each `t ⊆ T` as a bit-pattern, then apply `hx_embed`).
   refine ⟨Finset.univ.image x, ?_, ?_, ?_⟩
   · rintro y hy
     obtain ⟨k, _, rfl⟩ := mem_image.mp hy
