@@ -178,14 +178,13 @@ theorem iSupIndep_primaryComponent :
   simp only [primaryComponent_mem] at hmem
   choose! f hmem using hmem
   let m := s.sup f
-  have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
   have hSupIndep : iSupIndep fun i : HeightOneSpectrum A ↦ torsionBySet A M ↑(i.asIdeal ^ m) := by
     rw [iSupIndep_iff_supIndep]
     exact fun _ ↦ supIndep_torsionBySet_ideal
       fun _ _ _ _ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
   rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero] at hSupIndep
   apply hSupIndep _ _ ?_ hsum
-  exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (hmem P hP)
+  exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (Finset.le_sup hP) _ (hmem P hP)
 
 end IsDedekindDomain
 
