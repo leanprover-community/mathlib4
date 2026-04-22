@@ -114,6 +114,11 @@ end Ordinal
 
 namespace Cardinal
 
+@[simp]
+theorem mk_ordinal : #Ordinal = univ.{u, u + 1} :=
+  (lift_id _).symm
+
+@[deprecated mk_ordinal (since := "2026-04-22")]
 theorem univ_id : univ.{u, u + 1} = #Ordinal :=
   lift_id _
 
@@ -164,7 +169,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
   ⟨fun h => by
     let ⟨a, h', e⟩ := lt_lift_iff.1 h
-    rw [← univ_id] at h'
+    rw [mk_ordinal] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩
     exact ⟨c', by simp only [e.symm, lift_lift]⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ' _⟩
 
