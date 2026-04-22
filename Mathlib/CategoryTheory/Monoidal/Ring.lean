@@ -22,9 +22,52 @@ namespace CategoryTheory
 open MonoidalCategory CartesianMonoidalCategory
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-  [BraidedCategory C]
 
 open scoped MonObj AddMonObj
+
+lemma mul_add_iff (R : C) [MonObj R] [AddMonObj R] :
+    R ◁ σ ≫ μ = lift ((R ◁ fst _ _) ≫ μ) ((R ◁ snd _ _) ≫ μ) ≫ σ ↔
+      ∀ ⦃X : C⦄ (a b c : X ⟶ R), a * (b + c) = a * b + a * c := by
+  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
+  · have := lift a (lift b c) ≫= h
+    simp only [lift_whiskerLeft_assoc] at this
+    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
+    congr 1
+    cat_disch
+  · replace h := h (fst R (R ⊗ R)) (snd _ _ ≫ fst _ _) (snd _ _ ≫ snd _ _)
+    simp only [Hom.mul_def, Hom.add_def] at h
+    convert h using 2
+    · cat_disch
+    · ext
+      · simp only [lift_fst]
+        congr 1
+        cat_disch
+      · simp only [lift_snd]
+        congr 1
+        cat_disch
+
+lemma add_mul_iff (R : C) [MonObj R] [AddMonObj R] :
+    σ ▷ R ≫ μ = lift (fst _ _ ▷ _ ≫ μ) (snd _ _ ▷ _ ≫ μ) ≫ σ ↔
+      ∀ ⦃X : C⦄ (a b c : X ⟶ R), (a + b) * c = a * c + b * c := by
+  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
+  · have := lift (lift a b) c ≫= h
+    simp only [lift_whiskerRight_assoc] at this
+    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
+    congr 1
+    cat_disch
+  · replace h := h (fst (R ⊗ R) R ≫ fst _ _) (fst _ _ ≫ snd _ _) (snd _ _)
+    simp only [Hom.mul_def, Hom.add_def] at h
+    convert h using 2
+    · cat_disch
+    · ext
+      · simp only [lift_fst]
+        congr 1
+        cat_disch
+      · simp only [lift_snd]
+        congr 1
+        cat_disch
+
+variable [BraidedCategory C]
 
 /-- A ring object in a cartesian monoidal category is an object that is equipped
 with an additive group structure and a (multiplicative) monoid structure that
@@ -38,18 +81,14 @@ section
 variable {R : C} [RingObj R] {X : C}
 
 lemma Hom.mul_add (a b c : X ⟶ R) : a * (b + c) = a * b + a * c := by
-  have := lift a (lift b c) ≫= RingObj.mul_add R
-  simp only [lift_whiskerLeft_assoc] at this
-  simp only [add_def, mul_def, this, ← Category.assoc]
-  congr 1
-  cat_disch
+  revert X a b c
+  rw [← mul_add_iff]
+  apply RingObj.mul_add
 
 lemma Hom.add_mul (a b c : X ⟶ R) : (a + b) * c = a * c + b * c := by
-  have := lift (lift a b) c ≫= RingObj.add_mul R
-  simp only [lift_whiskerRight_assoc] at this
-  simp only [add_def, mul_def, this, ← Category.assoc]
-  congr 1
-  cat_disch
+  revert X a b c
+  rw [← add_mul_iff]
+  apply RingObj.add_mul
 
 /-- If `G` is a ring object, then `Hom(X, G)` has a ring structure. -/
 abbrev Hom.ring {X : C} : Ring (X ⟶ R) where
