@@ -106,12 +106,10 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
-@[zify_simps] lemma natCast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
-@[zify_simps] lemma natCast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
-@[zify_simps] lemma natCast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
+attribute [zify_simps← ] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
+
 @[zify_simps] lemma natCast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
   not_congr Int.ofNat_inj.symm
-@[zify_simps] lemma natCast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
 
