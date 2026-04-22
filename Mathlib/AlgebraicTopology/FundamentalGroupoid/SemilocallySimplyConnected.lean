@@ -65,7 +65,7 @@ def SemilocallySimplyConnectedAt (x : X) : Prop :=
 /-- Simply connected spaces are semilocally simply connected at every point. -/
 theorem SemilocallySimplyConnectedAt.of_simplyConnected [SimplyConnectedSpace X] (x : X) :
     SemilocallySimplyConnectedAt x :=
-  ⟨univ, univ_mem, fun base => by
+  ⟨univ, univ_mem, fun base ↦ by
     simp only [MonoidHom.range_eq_bot_iff]
     ext
     exact Subsingleton.elim (α := Path.Homotopic.Quotient base.val base.val) _ _⟩
@@ -82,7 +82,7 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
     refine ⟨V, hV_open, hx_in_V, ?_⟩
     intro u γ hγ_range
     -- Since range γ ⊆ V ⊆ U, γ takes values in U
-    have hγ_mem : ∀ t, γ t ∈ U := fun t => hVU (hγ_range ⟨t, rfl⟩)
+    have hγ_mem : ∀ t, γ t ∈ U := fun t ↦ hVU (hγ_range ⟨t, rfl⟩)
     -- Restrict γ to a path in the subspace U
     let γ_U : Path (⟨u, γ.source ▸ hγ_mem 0⟩ : U) ⟨u, γ.target ▸ hγ_mem 1⟩ := γ.codRestrict hγ_mem
     -- The basepoint u' : U
@@ -130,7 +130,7 @@ theorem semilocallySimplyConnectedAt_iff_paths {x : X} :
     have hloop : range (γ.trans γ'.symm) ⊆ U := by
       intro y hy
       simp only [Path.trans_range, Path.symm_range] at hy
-      exact hy.elim (fun h => hγ h) (fun h => hγ' h)
+      exact hy.elim (fun h ↦ hγ h) (fun h ↦ hγ' h)
     have hnull := hU_loops (γ.trans γ'.symm) hloop
     exact Path.Homotopic.of_trans_symm hnull
   · intro ⟨U, hU_open, hx_in_U, hU_paths⟩
@@ -156,21 +156,21 @@ theorem SemilocallySimplyConnectedOn.at (h : SemilocallySimplyConnectedOn s) (hx
 
 theorem SemilocallySimplyConnectedOn.mono (h : SemilocallySimplyConnectedOn t) (hst : s ⊆ t) :
     SemilocallySimplyConnectedOn s :=
-  fun x hx => h x (hst hx)
+  fun x hx ↦ h x (hst hx)
 
 theorem semilocallySimplyConnectedOn_iff :
     SemilocallySimplyConnectedOn s ↔
     ∀ x ∈ s, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u : X} (γ : Path u u) (_ : range γ ⊆ U),
         Path.Homotopic γ (Path.refl u) :=
-  forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff
+  forall₂_congr fun _ _ ↦ semilocallySimplyConnectedAt_iff
 
 theorem semilocallySimplyConnectedOn_iff_paths :
     SemilocallySimplyConnectedOn s ↔
     ∀ x ∈ s, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
-  forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff_paths
+  forall₂_congr fun _ _ ↦ semilocallySimplyConnectedAt_iff_paths
 
 /-! ### SemilocallySimplyConnectedSpace -/
 
@@ -186,11 +186,11 @@ theorem SemilocallySimplyConnectedAt.of_semilocallySimplyConnectedSpace
 
 theorem SemilocallySimplyConnectedOn.of_semilocallySimplyConnectedSpace
     [SemilocallySimplyConnectedSpace X] (s : Set X) : SemilocallySimplyConnectedOn s :=
-  fun x _ => .of_semilocallySimplyConnectedSpace x
+  fun x _ ↦ .of_semilocallySimplyConnectedSpace x
 
 theorem semilocallySimplyConnectedOn_univ :
     SemilocallySimplyConnectedOn (univ : Set X) ↔ SemilocallySimplyConnectedSpace X :=
-  ⟨fun h => ⟨fun x => h x (mem_univ x)⟩, fun ⟨h⟩ x _ => h x⟩
+  ⟨fun h ↦ ⟨fun x ↦ h x (mem_univ x)⟩, fun ⟨h⟩ x _ ↦ h x⟩
 
 /-- Simply connected spaces are semilocally simply connected. -/
 instance SemilocallySimplyConnectedSpace.of_simplyConnected [SimplyConnectedSpace X] :
@@ -202,16 +202,16 @@ theorem semilocallySimplyConnectedSpace_iff :
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u : X} (γ : Path u u) (_ : range γ ⊆ U),
         Path.Homotopic γ (Path.refl u) :=
-  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff.mp (h x),
-    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff.mpr (h x)⟩⟩
+  ⟨fun ⟨h⟩ x ↦ semilocallySimplyConnectedAt_iff.mp (h x),
+    fun h ↦ ⟨fun x ↦ semilocallySimplyConnectedAt_iff.mpr (h x)⟩⟩
 
 theorem semilocallySimplyConnectedSpace_iff_paths :
     SemilocallySimplyConnectedSpace X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
-  ⟨fun ⟨h⟩ x => semilocallySimplyConnectedAt_iff_paths.mp (h x),
-    fun h => ⟨fun x => semilocallySimplyConnectedAt_iff_paths.mpr (h x)⟩⟩
+  ⟨fun ⟨h⟩ x ↦ semilocallySimplyConnectedAt_iff_paths.mp (h x),
+    fun h ↦ ⟨fun x ↦ semilocallySimplyConnectedAt_iff_paths.mpr (h x)⟩⟩
 
 /-! ### Helper lemmas for discreteness of path homotopy quotients -/
 
@@ -387,7 +387,7 @@ theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedS
   -- Apply the generic partition lemma with the property:
   -- "U is path-connected and paths in U with same endpoints are homotopic"
   obtain ⟨n, t, h_mono, h_start, h_end, h_partition⟩ := γ.exists_partition_with_property
-    (fun U => IsPathConnected U ∧
+    (fun U ↦ IsPathConnected U ∧
       ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
         Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
     (by
@@ -454,12 +454,12 @@ theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedS
     U := U
     V := V
     h_U_open := hU_open
-    h_U_pathConn := fun i => (hU_prop i).1
-    h_U_slsc := fun i => (hU_prop i).2
+    h_U_pathConn := fun i ↦ (hU_prop i).1
+    h_U_slsc := fun i ↦ (hU_prop i).2
     h_V_open := hV_open
     h_V_pathConn := hV_pathConn
-    h_V_left_subset := fun i => hV_left i.castSucc i rfl
-    h_V_right_subset := fun i => hV_right i.succ i rfl
+    h_V_left_subset := fun i ↦ hV_left i.castSucc i rfl
+    h_V_right_subset := fun i ↦ hV_right i.succ i rfl
   }
   -- Prove PathInTube
   refine ⟨n, part, T, ?_⟩
@@ -505,7 +505,7 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
       {γ' : Path x y | Set.MapsTo γ' K_i (T.U i)} := by
       ext γ'
       simp only [Set.mem_setOf_eq, Set.MapsTo, K_i, Set.mem_Icc]
-      refine forall_congr' fun s => ?_
+      refine forall_congr' fun s ↦ ?_
       constructor
       · intro h hs; exact h hs
       · intro h hs; exact h hs
@@ -647,7 +647,7 @@ theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
     exact ⟨α_j, hα_range⟩
   choose α hα_range using rung_exists
   -- Prove the range conditions using the subset properties
-  refine ⟨α, fun i => ?_⟩
+  refine ⟨α, fun i ↦ ?_⟩
   constructor
   · calc Set.range (α i.castSucc) ⊆ T.V i.castSucc := hα_range i.castSucc
       _ ⊆ T.U i := T.h_V_left_subset i
@@ -714,7 +714,7 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
   open Path.Homotopic.Quotient in
   -- Define intermediate paths: γ_aux i follows γ up to t_i, crosses via α_i, then follows γ'
-  let γ_aux : (i : Fin (n + 1)) → Path x y' := fun i =>
+  let γ_aux : (i : Fin (n + 1)) → Path x y' := fun i ↦
     (((γ.subpathOn (part.t 0) (part.t i)).trans (α i)).trans
       (γ'.subpathOn (part.t i) (part.t (Fin.last n)))).cast
       (by rw [part.h_start, γ.source])
@@ -740,7 +740,7 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
     -- `0`/`1` inside the dependent `subpathOn` application.
     have hsub : B = Path.Homotopic.Quotient.mk γ' := by
       dsimp [B]
-      convert congrArg (fun q => q.cast γ'.source.symm γ'.target.symm)
+      convert congrArg (fun q ↦ q.cast γ'.source.symm γ'.target.symm)
         (Path.Homotopic.Quotient.subpathOn_zero_one γ')
       · simp [part.h_start]
       · simp
@@ -750,7 +750,7 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
           (show x = γ (part.t 0) by rw [part.h_start, γ.source])).trans A).trans B
           = A.trans B := by simp [A]
       _ = A.trans (Path.Homotopic.Quotient.mk γ') := by
-        exact congrArg (fun q => A.trans q) hsub
+        exact congrArg (fun q ↦ A.trans q) hsub
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
   have h_final : Path.Homotopic (γ_aux (Fin.last n))
@@ -773,7 +773,7 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
     -- `0`/`1` inside the dependent `subpathOn` application.
     have hsub : B = Path.Homotopic.Quotient.mk γ := by
       dsimp [B]
-      convert congrArg (fun q => q.cast γ.source.symm γ.target.symm)
+      convert congrArg (fun q ↦ q.cast γ.source.symm γ.target.symm)
         (Path.Homotopic.Quotient.subpathOn_zero_one γ)
       · simp [part.h_start]
       · simp
@@ -784,7 +784,7 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
             (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
           = B.trans A := by simp [A, B]
       _ = (Path.Homotopic.Quotient.mk γ).trans A := by
-        exact congrArg (fun q => q.trans A) hsub
+        exact congrArg (fun q ↦ q.trans A) hsub
   -- Lift h_rectangles to the quotient with an arbitrary suffix
   -- This allows simp to apply the rectangle homotopy in context
   have rectangle_with_suffix : ∀ (i : Fin n) {w : X}
@@ -944,7 +944,7 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
         ((α i.castSucc).trans (γ'.subpathOn (part.t i.castSucc) (part.t i.succ))) := by
     intro i
     apply segment_rung_homotopy (T.U i)
-      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
+      (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
     · -- γ.subpathOn has range in U_i
       exact hγ.subpathOn_range_subset i
     · -- γ'.subpathOn has range in U_i
@@ -981,10 +981,10 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
     apply Path.Homotopic.symm
     refine paste_segment_homotopies_slsc γ γ' part α h_rectangles
       (T.U i_first)
-      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i_first hp_a hp_d p q hp_range hq_range)
+      (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_first hp_a hp_d p q hp_range hq_range)
       h_α₀_range
       (T.U i_last)
-      (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
+      (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
       h_αₙ_range
 
 /--
@@ -1074,7 +1074,7 @@ theorem Path.Homotopic.Quotient.discreteTopology
     have heq :
         (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
           {p' : Path x y | Path.Homotopic p' p} :=
-      Set.ext fun _ => Path.Homotopic.Quotient.eq
+      Set.ext fun _ ↦ Path.Homotopic.Quotient.eq
     rw [heq]
     exact isOpen_setOf_homotopic p
 

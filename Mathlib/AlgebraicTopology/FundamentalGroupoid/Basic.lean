@@ -99,7 +99,7 @@ theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
-      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
+      p.reparam (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
@@ -108,7 +108,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
-  ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
+  ((Homotopy.reparam p (fun t ↦ ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
           (by fun_prop) (Subtype.ext transReflReparamAux_zero)
           (Subtype.ext transReflReparamAux_one)).cast
       rfl (trans_refl_reparam p).symm).symm
@@ -144,7 +144,7 @@ theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     (p.trans q).trans r =
       (p.trans (q.trans r)).reparam
-        (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+        (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, Path.coe_reparam]
@@ -158,7 +158,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
-          (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
+          (fun t ↦ ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
           (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one)).cast
       rfl (trans_assoc_reparam p q r).symm).symm
 
@@ -214,7 +214,7 @@ in `U` are nullhomotopic. This is useful for characterizing semilocally simply c
 theorem paths_homotopic_iff_loops_nullhomotopic {X : Type*} [TopologicalSpace X] (U : Set X) :
     (∀ {u v : X} (γ γ' : Path u v), Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ') ↔
     (∀ {u : X} (γ : Path u u), Set.range γ ⊆ U → γ.Homotopic (Path.refl u)) := by
-  refine ⟨fun hpaths u γ hγ => ?_, fun hloops u v γ γ' hγ hγ' => ?_⟩
+  refine ⟨fun hpaths u γ hγ ↦ ?_, fun hloops u v γ γ' hγ hγ' ↦ ?_⟩
   · have hrefl : Set.range (Path.refl u) ⊆ U := by
       simp only [Path.refl_range, Set.singleton_subset_iff]
       exact hγ ⟨0, γ.source⟩
