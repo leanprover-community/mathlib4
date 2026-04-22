@@ -92,7 +92,7 @@ abbrev IsDiscrete (X : ContAction V G) : Prop :=
 
 variable (V) {H : Type*} [Monoid H] [TopologicalSpace H]
 
-/-- The "restriction" functor along a monoid homomorphism `f : G →* H`,
+/-- The "restriction" functor along a continuous monoid homomorphism `f : G →ₜ* H`,
 taking actions of `H` to actions of `G`. This is the analogue of
 `Action.res` in the continuous setting. -/
 @[simps! obj_obj map]
