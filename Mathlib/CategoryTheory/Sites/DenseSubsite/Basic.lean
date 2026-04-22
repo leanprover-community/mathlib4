@@ -190,6 +190,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
@@ -305,6 +306,7 @@ open Types
 
 variable [G.IsCoverDense K] [G.IsLocallyFull K] {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
@@ -382,6 +384,7 @@ we may obtain a natural isomorphism between presheaves.
 noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.obj ≅ G.op ⋙ ℱ'.obj) : ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`. -/
 theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
@@ -408,6 +411,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
       (coyoneda.obj (op ((G.op ⋙ ℱ).obj X))) ℱ'.property⟩)
     (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -502,6 +506,7 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by
@@ -585,6 +590,7 @@ lemma equalizer_mem {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
 
 variable {J} (F : Sheaf J A)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_eq_of_eq {X Y : C} (f₁ f₂ : X ⟶ Y)
     (h : G.map f₁ = G.map f₂) :
     F.obj.map f₁.op = F.obj.map f₂.op :=

@@ -187,6 +187,7 @@ noncomputable def mapFree : F.obj (free I) ≅ free (R := S) I :=
   (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
     (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ η).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ιFree_mapFree_inv :
