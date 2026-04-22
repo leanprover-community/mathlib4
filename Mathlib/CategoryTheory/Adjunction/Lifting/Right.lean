@@ -219,7 +219,7 @@ variable [Category.{v₄} D]
 ```
 
 where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
-each component of the counit is a regular mono.
+each component of the unit is a regular mono.
 Then `Q` has a right adjoint if `L` has a right adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
@@ -241,7 +241,7 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
       L
 ```
 
-where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.
+where `U` has a right adjoint, `A` has coreflexive equalizers and `V` is comonadic.
 Then `Q` has a right adjoint if `L` has a right adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
