@@ -279,6 +279,7 @@ section Adhesion
 
 /-- Given a tree decomposition (𝓧, T), the adhesion set is the intersection of bags along some edge
   in T. -/
+@[nolint unusedArguments]
 def TreeDecomp.adhesion [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (_ : t.T.Adj x y)
     : Finset V := (t.𝓧 x) ∩ (t.𝓧 y)
 
