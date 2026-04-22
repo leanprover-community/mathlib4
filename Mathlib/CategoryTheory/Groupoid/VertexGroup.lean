@@ -55,7 +55,7 @@ theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory
   Groupoid.inv_eq_inv γ
 
 /-- An arrow in the groupoid defines, by conjugation, an isomorphism of groups between
-its endpoints.
+the vertex groups at its endpoints.
 -/
 @[simps]
 def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) where
@@ -70,7 +70,8 @@ def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) wher
   map_mul' γ₁ γ₂ := by
     simp only [vertexGroup_mul, inv_eq_inv, Category.assoc, IsIso.hom_inv_id_assoc]
 
-/-- A path in the groupoid defines an isomorphism between its endpoints.
+/-- A path in the groupoid defines an isomorphism of groups between the vertex groups at
+its endpoints.
 -/
 def vertexGroupIsomOfPath {c d : C} (p : Quiver.Path c d) : (c ⟶ c) ≃* (d ⟶ d) :=
   vertexGroupIsomOfMap (composePath p)
