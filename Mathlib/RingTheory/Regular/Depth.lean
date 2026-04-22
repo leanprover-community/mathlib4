@@ -103,7 +103,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       simp [eq0]
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N
-    contrapose! f_ne0
+    contrapose f_ne0
     exact (Module.FinitePresentation.linearEquivMapExtendScalars
       p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 

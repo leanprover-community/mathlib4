@@ -626,7 +626,7 @@ lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
     · grind [verts_bot]
     · exact ⟨(hdisj hsub₀ hsub₁ <| M'.edge_vert · :), False.elim⟩
   · intro hdisj S h₀ h₁ v hvS
-    let M' : Subgraph G := {verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp}
+    let M' : Subgraph G := { verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp }
     have hle {M : Subgraph G} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
     exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton v
 
@@ -1123,7 +1123,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_mk, Sym2.eq]
-    contrapose!
+    contrapose
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
     exact h' _ hs rfl
@@ -1186,7 +1186,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]` -/
+  rw [induce_eq_coe_induce_top]
+  exact (Subgraph.spanningCoe_coe _).symm
 
 section Induce
 

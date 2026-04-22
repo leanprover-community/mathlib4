@@ -86,7 +86,7 @@ instance : LieModule.IsIrreducible R L L := by
   suffices Nontrivial (LieIdeal R L) from ⟨IsSimple.eq_bot_or_eq_top⟩
   rw [LieSubmodule.nontrivial_iff, ← not_subsingleton_iff_nontrivial]
   have _i : ¬ IsLieAbelian L := IsSimple.non_abelian R
-  contrapose! _i
+  contrapose _i
   infer_instance
 
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
@@ -185,7 +185,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       exact x.2
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.
-    contrapose! hJ
+    contrapose hJ
     rw [eq_top_iff]
     rintro ⟨x, hx⟩ -
     rw [← hJ] at hx
@@ -260,7 +260,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
-  · contrapose! hJI
+  · contrapose hJI
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left
@@ -279,7 +279,6 @@ noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
   (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]

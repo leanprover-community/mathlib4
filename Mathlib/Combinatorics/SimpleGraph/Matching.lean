@@ -314,7 +314,9 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
-  simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  have := (hM.induce_connectedComponent_isMatching c).even_card
+  simp only [Subgraph.induce_verts, Set.toFinset_card] at this
+  exact this
 
 set_option backward.isDefEq.respectTransparency false in
 lemma odd_matches_node_outside [Finite V] {u : Set V}

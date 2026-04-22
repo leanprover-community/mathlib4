@@ -101,7 +101,7 @@ open IntermediateField
 theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
     Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
-  contrapose! hx
+  contrapose hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)

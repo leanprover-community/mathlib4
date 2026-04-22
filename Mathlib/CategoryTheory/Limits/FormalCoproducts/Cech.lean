@@ -173,10 +173,10 @@ set_option backward.isDefEq.respectTransparency false in
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
 @[simps]
 noncomputable def powerBifunctor [HasProducts.{t} C] :
-    (Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
+    Type tᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
   obj α := powerFunctor α.unop
   map f := { app _ := mapPower _ f.unop }
-  map_comp _ _ := by ext : 2; dsimp; apply mapPower_comp
+  map_comp _ _ := by ext : 2; simp [types_comp]
 
 variable [HasFiniteProducts C]
 
