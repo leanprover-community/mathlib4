@@ -179,6 +179,9 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
   (I : Type u) [PreservesColimitsOfShape (Discrete I) F]
 
+/-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
+If `F` preserves coproducts, a morphism `η : F.obj (unit R) ⟶ unit S` induces a morphism
+from `F.obj (free I)` to `free (R := S) I`. This is the non-iso version of `mapFreeIso`. -/
 noncomputable def mapFree (η : F.obj (unit R) ⟶ unit S) : F.obj (free I) ⟶ free (R := S) I :=
   (isColimitOfPreserves F (isColimitFreeCofan I)).map (freeCofan I) (Discrete.natTrans fun _ ↦ η)
 
