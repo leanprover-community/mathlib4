@@ -183,6 +183,7 @@ lemma ofPoint_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
 
 end Triplet
 
+set_option backward.defeqAttrib.useBackward true in
 lemma residueFieldCongr_inv_residueFieldMap_ofPoint (t : ↑(pullback f g)) :
     ((S.residueFieldCongr (Triplet.ofPoint t).hx).inv ≫ f.residueFieldMap (Triplet.ofPoint t).x) ≫
       (pullback.fst f g).residueFieldMap t = ((S.residueFieldCongr (Triplet.ofPoint t).hy).inv ≫

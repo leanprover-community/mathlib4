@@ -322,6 +322,7 @@ def glueData : Scheme.GlueData where
         rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι]
   f_open i j := inferInstance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 /-- (Implementation) The map from `Spec(𝒪ₓ/I)` to `X`. See `IdealSheafData.subschemeι` instead. -/
 private noncomputable
@@ -334,6 +335,7 @@ private lemma ι_gluedTo (U : X.affineOpens) :
     I.glueData.ι U ≫ I.gluedTo = I.glueDataObjι U ≫ U.1.ι :=
   Multicoequalizer.π_desc _ _ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
     I.glueDataObjMap h ≫ I.glueData.ι V = I.glueData.ι U := by
@@ -350,6 +352,7 @@ private lemma glueDataObjMap_ι (U V : X.affineOpens) (h : U ≤ V) :
   rw [← cancel_mono (glueDataObjι _ _)]
   simp [pullback_inv_fst_snd_of_right_isIso_assoc, H]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private lemma gluedTo_injective :
     Function.Injective I.gluedTo := by
@@ -493,6 +496,7 @@ instance : QuasiCompact I.subschemeι := by
 lemma range_subschemeι : Set.range I.subschemeι = I.support := by
   simp [← range_gluedTo, I.subschemeι_def, Set.range_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
   ext1
@@ -603,6 +607,7 @@ lemma glueDataObjHom_comp {I J K : IdealSheafData X} (hIJ : I ≤ J) (hJK : J �
   rw [← cancel_mono (I.glueDataObjι U)]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of ideal sheaf induces an inclusion of subschemes -/
 noncomputable
@@ -626,6 +631,7 @@ lemma inclusion_subschemeι {I J : IdealSheafData X} (h : I ≤ J) :
     inclusion h ≫ I.subschemeι = J.subschemeι :=
   J.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma inclusion_id (I : IdealSheafData X) :
     inclusion le_rfl = 𝟙 I.subscheme :=
@@ -637,6 +643,7 @@ lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking an ideal sheaf to its associated subscheme. -/
 @[simps]
 noncomputable
@@ -677,6 +684,7 @@ lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
   refine (IdealSheafData.ideal_ofIdeals_le _ _).trans_eq
     (RingHom.ker_equiv_comp _ e.commRingCatIsoToRingEquiv).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private noncomputable
@@ -689,6 +697,7 @@ def Hom.toImageAux : X ⟶ f.image :=
     simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc,
       ← pullback.condition, ← pullback.condition_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma Hom.toImageAux_spec :
@@ -759,6 +768,7 @@ lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
   rintro _ ⟨U, hU, rfl⟩
   exact f.toImage_app_injective ⟨U, hU⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open IdealSheafData in
 /-- The adjunction between `Y.IdealSheafData` and `(Over Y)ᵒᵖ` given by taking kernels. -/
@@ -770,6 +780,7 @@ def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunct
   counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
   left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (IdealSheafData.subschemeFunctor Y).Full :=
   have : IsIso Y.kerAdjunction.rightOp.counit := by
     simp [NatTrans.isIso_iff_isIso_app, CategoryTheory.instIsIsoEqToHom]

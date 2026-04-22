@@ -131,6 +131,7 @@ in `Γ(X, f ⁻¹ U)` where `U` ranges over all affine opens. -/
 def normalizationOpenCover : f.normalization.OpenCover :=
   f.normalizationGlueData.cover
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The dominant morphism into the relative normalization. -/
 def toNormalization : X ⟶ f.normalization :=
@@ -154,6 +155,7 @@ def toNormalization : X ⟶ f.normalization :=
   rw [← Spec.map_comp_assoc]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_toNormalization (U : Y.affineOpens) :
     letI := (f.app U.1).hom.toAlgebra
@@ -276,6 +278,7 @@ lemma normalizationObjIso_hom_val {U : Y.Opens} (hU : IsAffineOpen U) :
   simp [← Functor.map_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[stacks 03GP]
 instance [IsIntegralHom f] : IsIso f.toNormalization := by
@@ -337,6 +340,7 @@ instance : IsDominant f.toNormalization := by
   rw [IdealSheafData.support_bot, Scheme.Hom.support_ker, TopologicalSpace.Closeds.coe_top] at this
   exact ⟨dense_iff_closure_eq.mpr this⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[stacks 0AXN]
 instance [IsReduced X] : IsReduced f.normalization :=
   have (i : _) : IsReduced ((normalizationOpenCover f).X i) := by
@@ -359,6 +363,7 @@ section UniversalProperty
 
 variable {T : Scheme.{u}} (f₁ : X ⟶ T) (f₂ : T ⟶ Y) [IsIntegralHom f₂]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an qcqs morphism `f : X ⟶ Y`, which factors into `X ⟶ T ⟶ Y` with `T ⟶ Y` integral,
 the map `X ⟶ T` factors through `f.normalization` uniquely.
@@ -387,6 +392,7 @@ def normalizationDesc (H : f = f₁ ≫ f₂) : f.normalization ⟶ T := by
     dsimp [normalizationDiagram]
     simp only [← CommRingCat.comp_apply, appLE_map, map_appLE]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toNormalization_normalizationDesc (H : f = f₁ ≫ f₂) :
@@ -401,6 +407,7 @@ lemma toNormalization_normalizationDesc (H : f = f₁ ≫ f₂) :
     (U.2.preimage f₂).fromSpec = (f ⁻¹ᵁ U.1).ι ≫ f₁
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma normalizationDesc_comp (H : f = f₁ ≫ f₂) :
@@ -591,6 +598,7 @@ lemma toNormalization_normalizationPullback_fst :
       pullback.fst _ _ ≫ f.toNormalization := by
   simp [normalizationPullback]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 /-- Normalization commutes with smooth base change. -/

@@ -168,6 +168,7 @@ theorem IsAffineOpen.isQuasiSeparated {U : X.Opens} (hU : IsAffineOpen U) :
 instance [QuasiSeparatedSpace X] : QuasiSeparated X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem Scheme.quasiSeparatedSpace_of_isOpenCover
     {I : Type*} (U : I → X.Opens) (hU : IsOpenCover U)
@@ -205,6 +206,7 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
   constructor
   simpa using QuasiCompact.isCompact_preimage (f := equalizer.ι f g) _ isOpen_univ isCompact_univ
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem QuasiSeparated.of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by

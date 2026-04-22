@@ -90,6 +90,7 @@ noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
 instance : IsOpenImmersion (toGlued hf i) :=
   inferInstanceAs (IsOpenImmersion ((glueData hf).ι i))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
@@ -134,6 +135,7 @@ instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
       (yonedaGluedToSheaf hf).hom = Sigma.desc f by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
     a ≫ toGlued hf i = b ≫ toGlued hf j := by

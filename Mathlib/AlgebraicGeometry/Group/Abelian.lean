@@ -35,6 +35,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (G : Over (Spec (.of K))) [GrpObj G] : IsClosedImmersion η[G].left :=
   isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgClosed K]
     (G : Over (Spec (.of K))) [IsProper G.hom] [IsIntegral (G ⊗ G).left] [GrpObj G] :
@@ -125,6 +126,7 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A proper geometrically integral group scheme over a field is commutative. -/
 @[stacks 0BFD]

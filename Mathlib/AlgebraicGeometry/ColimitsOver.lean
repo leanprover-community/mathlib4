@@ -85,6 +85,7 @@ lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
       d.transitionMap hij = (d.trans hij).app a ≫ (d.cocone j).ι.app a := by
   simp [transitionMap, ← Functor.mapCocone_ι_app, transitionCocone]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma transitionMap_id (i : 𝒰.I₀) :
@@ -94,6 +95,7 @@ lemma transitionMap_id (i : 𝒰.I₀) :
   ext
   simp [cocone_ι_transitionMap]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
@@ -114,6 +116,7 @@ noncomputable def functor : 𝒰.I₀ ⥤ Scheme where
 
 variable [∀ {i j} (hij : i ⟶ j), PreservesColimitsOfShape J (Over.pullback P ⊤ (𝒰.trans hij))]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
     IsPullback (d.transitionMap hij).left (d.cocone i).pt.hom
@@ -173,18 +176,21 @@ def pullbackGluedIso (i : 𝒰.I₀) :
     (MorphismProperty.Over.pullback P ⊤ (𝒰.f i)).obj d.glued ≅ (d.cocone i).pt :=
   Over.isoMk (d.relativeGluingData.isPullback_natTrans_ι_toBase i).flip.isoPullback.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackGluedIso_inv_fst (i : 𝒰.I₀) : (d.pullbackGluedIso i).inv.left ≫ pullback.fst _ _ =
     colimit.ι d.relativeGluingData.functor i := by
   simp [pullbackGluedIso, glued]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullbackGluedIso_inv_snd (i : 𝒰.I₀) :
     (d.pullbackGluedIso i).inv.left ≫ pullback.snd _ _ = (d.cocone i).pt.hom := by
   simp [pullbackGluedIso, glued]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cocone glued from the `colim Dᵢ`. -/
 @[simps pt]
@@ -223,6 +229,7 @@ lemma fst_gluedCocone_ι (a : J) (i : 𝒰.I₀) :
   let 𝒱 : (D.obj a).left.OpenCover := 𝒰.pullback₁ (D.obj a).hom
   apply 𝒱.map_glueMorphismsOverOfLocallyDirected_left _ h1 h2
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The glued cocone is colimiting. -/
 noncomputable
