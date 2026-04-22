@@ -46,7 +46,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 /-- A functor preserves zero morphisms if it sends zero morphisms to zero morphisms. -/
 class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
-  /-- For any pair objects `F (0: X ⟶ Y) = (0 : F X ⟶ F Y)` -/
+  /-- For any pair of objects, `F.map (0 : X ⟶ Y) = (0 : F.obj X ⟶ F.obj Y)`. -/
   map_zero : ∀ X Y : C, F.map (0 : X ⟶ Y) = 0 := by aesop
 
 @[simp]
@@ -180,7 +180,7 @@ lemma preservesTerminalObject_of_preservesZeroMorphisms [PreservesZeroMorphisms 
   preservesTerminal_of_iso F <|
     F.mapIso HasZeroObject.zeroIsoTerminal.symm ≪≫ mapZeroObject F ≪≫ HasZeroObject.zeroIsoTerminal
 
-/-- Preserving zero morphisms implies preserving terminal objects. -/
+/-- Preserving zero morphisms implies preserving initial objects. -/
 lemma preservesInitialObject_of_preservesZeroMorphisms [PreservesZeroMorphisms F] :
     PreservesColimit (Functor.empty.{0} C) F :=
   preservesInitial_of_iso F <|
