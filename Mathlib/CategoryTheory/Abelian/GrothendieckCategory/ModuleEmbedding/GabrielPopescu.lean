@@ -111,8 +111,7 @@ end GabrielPopescuAux
 open GabrielPopescuAux
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Faithfulness follows because `G` is a separator, see
-`isSeparator_iff_faithful_preadditiveCoyonedaObj`. -/
+/-- Fullness of `preadditiveCoyonedaObj G` when `G` is a separator. -/
 theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
   map_surjective {A B} f := by
     have := (isSeparator_iff_epi G).1 hG A
