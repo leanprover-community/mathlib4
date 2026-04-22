@@ -280,7 +280,7 @@ abbrev HasCoend := HasMulticoequalizer (multispanIndexCoend F)
 
 variable [HasCoend F]
 
-/-- The end of a functor `F : Jᵒᵖ ⥤ J ⥤ C`. -/
+/-- The coend of a functor `F : Jᵒᵖ ⥤ J ⥤ C`. -/
 noncomputable def coend : C := multicoequalizer (multispanIndexCoend F)
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the inclusion `(F.obj (op j)).obj j ⟶ coend F`
@@ -305,7 +305,7 @@ section
 variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), (F.map g.op).app i ≫ f i = (F.obj (op j)).map g ≫ f j)
 
-/-- Constructor for morphisms to the coend of a functor. -/
+/-- Constructor for morphisms from the coend of a functor. -/
 noncomputable def coend.desc : coend F ⟶ X :=
   Cowedge.IsColimit.desc (colimit.isColimit _) f hf
 
