@@ -183,8 +183,8 @@ namespace ProductsFromFiniteCofiltered
 variable [HasFiniteProducts C]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
-`Finset (Discrete α) ⥤ C` by taking coproducts. -/
+/-- If `C` has finite products, a functor `Discrete α ⥤ C` lifts to a functor
+`(Finset (Discrete α))ᵒᵖ ⥤ C` by taking products. -/
 @[simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
   obj s := ∏ᶜ (fun x : s.unop => F.obj x)
@@ -193,8 +193,8 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C
 
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
-taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
+/-- If `C` has finite products and cofiltered limits, we can construct arbitrary products by
+taking the limit of the diagram formed by the products of finite sets over the indexing type. -/
 @[simps!]
 def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     (F : Discrete α ⥤ C) : LimitCone F where
@@ -247,15 +247,15 @@ def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discr
 variable (C) (α)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
-coproducts. -/
+/-- The functor taking a functor `Discrete α ⥤ C` to a functor `(Finset (Discrete α))ᵒᵖ ⥤ C` by
+taking products. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
+/-- The `liftToFinset` functor, precomposed with forming a limit, is a product on the original
 functor. -/
 def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasLimitsOfShape (Discrete α) C] : liftToFinset C α ⋙ lim ≅ lim :=
@@ -268,7 +268,7 @@ def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
-with `colim`. -/
+with `lim`. -/
 def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
