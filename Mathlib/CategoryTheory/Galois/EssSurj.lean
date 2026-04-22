@@ -24,14 +24,16 @@ the `Aut F` action is continuous.
 - `exists_lift_of_quotient_openSubgroup`: If `U` is an open subgroup of `Aut F`, then
   there exists an object `X` such that `F.obj X` is isomorphic to `Aut F ⧸ U` as
   `Aut F`-sets.
-- `exists_lift_of_continuous`: If `X` is a finite, discrete `Aut F`-set, then
+- `exists_lift_of_continuous`: If `X` is a finite, discrete `Aut F`-set with continuous
+  `Aut F`-action, then
   there exists an object `A` such that `F.obj A` is isomorphic to `X` as
   `Aut F`-sets.
 
 ## Strategy
 
-We first show that every finite, discrete `Aut F`-set `Y` has a decomposition into connected
-components and each connected component is of the form `Aut F ⧸ U` for an open subgroup `U`.
+We first show that every finite, discrete `Aut F`-set `Y` with continuous `Aut F`-action has a
+decomposition into connected components and each connected component is of the form `Aut F ⧸ U`
+for an open subgroup `U`.
 Since `H` preserves finite coproducts, it hence suffices to treat the case `Y = Aut F ⧸ U`.
 For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
 
@@ -70,8 +72,8 @@ private local instance fintypeQuotientStabilizer {X : Type*} [MulAction G X]
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- If `X` is a finite discrete `G`-set, it can be written as the finite disjoint union
-of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
+/-- If `X` is a finite discrete `G`-set with continuous `G`-action, it can be written as the
+finite disjoint union of quotients of the form `G ⧸ Uᵢ` for open subgroups `(Uᵢ)`. Note that this
 is simply the decomposition into orbits. -/
 lemma has_decomp_quotients (X : Action FintypeCat G)
     [TopologicalSpace X.V] [DiscreteTopology X.V] [ContinuousSMul G X.V] :
