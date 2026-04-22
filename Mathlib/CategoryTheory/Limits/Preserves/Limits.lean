@@ -11,9 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 # Isomorphisms about functors which preserve (co)limits
 
 If `G` preserves limits, and `C` and `D` have limits, then for any diagram `F : J ⥤ C` we have a
-canonical isomorphism `preservesLimitsIso : G.obj (Limit F) ≅ Limit (F ⋙ G)`.
+canonical isomorphism `preservesLimitIso : G.obj (limit F) ≅ limit (F ⋙ G)`.
 We also show that we can commute `IsLimit.lift` of a preserved limit with `Functor.mapCone`:
-`(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
+`(isLimitOfPreserves G t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
 the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
@@ -77,7 +77,7 @@ instance : IsIso (limit.post F G) :=
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
+/-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitIso` is
 functorial w.r.t. `F`. -/
 @[simps!]
 def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
