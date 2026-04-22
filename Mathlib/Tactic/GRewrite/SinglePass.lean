@@ -123,7 +123,6 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       | .none => return false
       | .undef => pure ()
     unsolvedSideGoals := unsolvedSideGoals.push mvarId
-    pushNewGoal mvarId
   -- Then, recursively rewrite in the main subgoals
   let mut anyProgress := false
   for (g, isContra) in mainGoals do
@@ -143,9 +142,7 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       let some inst ← synthInstance? type | return false
       mvarId.assign inst
     else
-      let mctx ← getMCtx
-      try GCongr.gcongrDischarger (← mvarId.intros).2
-      catch _ => setMCtx mctx
+      dischargeSide mvarId
   return true
 
 partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv : Bool)
@@ -187,8 +184,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
     goal.checkNotAssigned `grewrite
     if let (some (eNew, impProof), newGoals) ←
       grewriteCore `_Implies none e (!forwardImp) config |>.run lem |>.run' {} |>.run then
-      let mvarIds ← newGoals.toList.filterM (not <$> ·.isAssigned)
-      return { eNew, impProof, mvarIds }
+      return { eNew, impProof, mvarIds := newGoals.toList }
     else
       let (_, rel, _) ← lem.metaTelescope
       let some (_, lhs, rhs) := getRel (← whnf rel) | unreachable!
