@@ -302,12 +302,6 @@ theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u +
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
   simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
 
-@[simp]
-theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
-  rw [← preAleph.cof_congr, Order.cof_ordinal]
-
-instance : IsRegularCardinalOrder Cardinal := ⟨by simp⟩
-
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
 
