@@ -92,6 +92,7 @@ lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁
   subst h₀₂ h₁₃ hf
   simp [mapComp_assoc_right_hom, Strict.associator_eqToIso, mapComp']
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
@@ -155,6 +156,7 @@ lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
   rw [← cancel_epi (F.mapComp' f₀₂ f₂₃ f).hom, Iso.hom_inv_id]
   simp [mapComp'₀₂₃_hom _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).inv ≫ (F.mapComp' f₀₁ f₁₃ f).hom =
