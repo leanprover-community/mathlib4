@@ -62,7 +62,7 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
-/-- Built a `ContT` from a function taking a continuation callback. -/
+/-- Build a `ContT` from a function taking a continuation callback. -/
 def mk (f : (α → m r) → m r) : ContT r m α := f
 
 /-- Run a `ContT` with a provided callback. -/
