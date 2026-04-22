@@ -22,7 +22,7 @@ For results about biproducts in preadditive categories see
 
 In a category with zero morphisms, we model the (binary) biproduct of `P Q : C`
 using a `BinaryBicone`, which has a cone point `X`,
-and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : X ⟶ Q`,
+and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : Q ⟶ X`,
 such that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`.
 Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone is a colimit
 cocone.
@@ -101,8 +101,8 @@ theorem BinaryBiconeMorphism.ext {P Q : C} {c c' : BinaryBicone P Q}
 
 namespace BinaryBicones
 
-/-- To give an isomorphism between cocones, it suffices to give an
-  isomorphism between their vertices which commutes with the cocone
+/-- To give an isomorphism between binary bicones, it suffices to give an
+  isomorphism between their vertices which commutes with the cone and cocone
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
@@ -121,7 +121,7 @@ def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
 variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
 
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
-to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
+to binary bicones for `F.obj P` and `F.obj Q` functorially. -/
 @[simps]
 def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
@@ -289,7 +289,7 @@ def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 
 end Bicone
 
-/-- Structure witnessing that a binary bicone is a limit cone and a limit cocone. -/
+/-- Structure witnessing that a binary bicone is a limit cone and a colimit cocone. -/
 structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
   isLimit : IsLimit b.toCone
   isColimit : IsColimit b.toCocone
@@ -333,7 +333,8 @@ theorem HasBinaryBiproduct.mk {P Q : C} (d : BinaryBiproductData P Q) : HasBinar
   ⟨Nonempty.intro d⟩
 
 /--
-Use the axiom of choice to extract explicit `BinaryBiproductData F` from `HasBinaryBiproduct F`.
+Use the axiom of choice to extract explicit `BinaryBiproductData P Q` from
+`HasBinaryBiproduct P Q`.
 -/
 def getBinaryBiproductData (P Q : C) [HasBinaryBiproduct P Q] : BinaryBiproductData P Q :=
   Classical.choice HasBinaryBiproduct.exists_binary_biproduct
@@ -342,7 +343,7 @@ def getBinaryBiproductData (P Q : C) [HasBinaryBiproduct P Q] : BinaryBiproductD
 def BinaryBiproduct.bicone (P Q : C) [HasBinaryBiproduct P Q] : BinaryBicone P Q :=
   (getBinaryBiproductData P Q).bicone
 
-/-- `BinaryBiproduct.bicone P Q` is a limit bicone. -/
+/-- `BinaryBiproduct.bicone P Q` is a bilimit bicone. -/
 def BinaryBiproduct.isBilimit (P Q : C) [HasBinaryBiproduct P Q] :
     (BinaryBiproduct.bicone P Q).IsBilimit :=
   (getBinaryBiproductData P Q).isBilimit
@@ -809,7 +810,7 @@ def biprod.inlCokernelCofork : CokernelCofork (biprod.inl : X ⟶ X ⊞ Y) :=
 theorem biprod.inlCokernelCofork_π : Cofork.π (biprod.inlCokernelCofork X Y) = biprod.snd :=
   rfl
 
-/-- The cofork `biprod.inlCokernelFork` is indeed a colimit. -/
+/-- The cofork `biprod.inlCokernelCofork` is indeed a colimit. -/
 def biprod.isCokernelInlCokernelFork : IsColimit (biprod.inlCokernelCofork X Y) :=
   BinaryBicone.isColimitInlCokernelCofork (BinaryBiproduct.isColimit _ _)
 
@@ -822,7 +823,7 @@ def biprod.inrCokernelCofork : CokernelCofork (biprod.inr : Y ⟶ X ⊞ Y) :=
 theorem biprod.inrCokernelCofork_π : Cofork.π (biprod.inrCokernelCofork X Y) = biprod.fst :=
   rfl
 
-/-- The cofork `biprod.inrCokernelFork` is indeed a colimit. -/
+/-- The cofork `biprod.inrCokernelCofork` is indeed a colimit. -/
 def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
   BinaryBicone.isColimitInrCokernelCofork (BinaryBiproduct.isColimit _ _)
 
