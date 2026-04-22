@@ -18,8 +18,8 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
 
 ## Main results
 
-* `SingleObj.Types.limitEquivFixedPoints`: The limit of `J : SingleObj G ⥤ Type u` is the fixed
-  points of `J.obj (SingleObj.star G)` under the induced action.
+* `SingleObj.Types.limitEquivFixedPoints`: The limit of `J : SingleObj M ⥤ Type u` is the fixed
+  points of `J.obj (SingleObj.star M)` under the induced action.
 
 * `SingleObj.Types.colimitEquivQuotient`: The colimit of `J : SingleObj G ⥤ Type u` is the
   quotient of `J.obj (SingleObj.star G)` by the induced action.
@@ -40,7 +40,7 @@ namespace SingleObj
 
 variable {M G : Type v} [Monoid M] [Group G]
 
-/-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
+/-- The induced `M`-action on the target of `J : SingleObj M ⥤ Type u`. -/
 instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
