@@ -52,7 +52,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Let `F` and `G` be two diagrams indexed by a connected `I`, and `X` and `Y` be two cocones over
 `F` and `G` respectively, with maps `α : F ⟶ G` and `f : X ⟶ Y` that commutes with the cocone maps.
-Suppose `Y = X ⨿[F i] G i` for all `i` and `Y = colim G`, then `X = colim F`.
+Suppose `Y = X ⨿[F i] G i` for all `i` and `X = colim F`, then `Y = colim G`.
 -/
 noncomputable
 def isColimitOfIsPushoutOfIsConnected
