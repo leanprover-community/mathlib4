@@ -353,8 +353,8 @@ variable (X : C)
 
 variable [HasCoproduct (P.coproductFromFamily X)]
 
-/-- Given `P : ObjectProperty C` and `X : C`, this is the coproduct of
-all the morphisms `Y ⟶ X` such that `P Y` holds. -/
+/-- Given `P : ObjectProperty C` and `X : C`, this is the canonical morphism from the coproduct
+of the family of objects appearing in morphisms `Y ⟶ X` such that `P Y` holds, to `X`. -/
 noncomputable abbrev coproductFrom : ∐ (P.coproductFromFamily X) ⟶ X :=
   Sigma.desc (fun i ↦ i.hom)
 
@@ -384,7 +384,7 @@ theorem isSeparating_iff_epi
 section
 
 /-- Given `P : ObjectProperty C` and `X : C`, this is the map which
-sends `i : StructuredArrow P.ι X` to `i.right.obj : C`. The product
+sends `i : StructuredArrow X P.ι` to `i.right.obj : C`. The product
 of this family is the target of the morphism `P.productTo X`. -/
 abbrev productToFamily (X : C) (i : StructuredArrow X P.ι) : C := i.right.obj
 
@@ -392,8 +392,8 @@ variable (X : C)
 
 variable [HasProduct (P.productToFamily X)]
 
-/-- Given `P : ObjectProperty C` and `X : C`, this is the product of
-all the morphisms `X ⟶ Y` such that `P Y` holds. -/
+/-- Given `P : ObjectProperty C` and `X : C`, this is the canonical morphism from `X` to the
+product of the family of objects appearing in morphisms `X ⟶ Y` such that `P Y` holds. -/
 noncomputable abbrev productTo : X ⟶ ∏ᶜ (P.productToFamily X) :=
   Pi.lift (fun i ↦ i.hom)
 
