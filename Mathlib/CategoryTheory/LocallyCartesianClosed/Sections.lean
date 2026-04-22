@@ -36,7 +36,7 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
 variable (I : C) [Closed I]
 
-/-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
+/-- The first leg of a cospan used to define the object part of `sections` as a pullback in `C`. -/
 abbrev curryRightUnitorHom : 𝟙_ C ⟶ (I ⟶[C] I) :=
   curry <| (ρ_ _).hom
 
@@ -59,11 +59,11 @@ by the following pullback diagram. The functor's mapping of morphisms is induced
 that is by the universal property of chosen pullbacks.
 
 ```
- sections X -->  I ⟹ X
-   |               |
-   |               |
-   v               v
-  𝟙_ C   ----->  I ⟹ I
+ (sections I).obj X -->  I ⟹ X.left
+        |                    |
+        |                    |
+        v                    v
+       𝟙_ C   ------->     I ⟹ I
 ```
 -/
 @[simps]
@@ -79,7 +79,7 @@ open ChosenPullbacksAlong
 variable [BraidedCategory C]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The currying operation `Hom ((toOver I).obj A) X → Hom A (I ⟹ X.left)`. -/
+/-- The currying operation `Hom ((toOver I).obj A) X → Hom A ((sections I).obj X)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
   ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
@@ -89,7 +89,7 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     simp [braiding_hom_snd])
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The uncurrying operation `Hom A (section X) → Hom ((toOver I).obj A) X`. -/
+/-- The uncurrying operation `Hom A ((sections I).obj X) → Hom ((toOver I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X :=
   letI v₂ : A ⟶ (I ⟶[C] X.left) := v ≫ fst (ihom I |>.map X.hom) (curryRightUnitorHom I)
@@ -122,8 +122,8 @@ open Adjunction
 variable (I)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- An auxiliary definition which is used to define the adjunction between the star functor
-and the sections functor. See `starSectionsAdjunction`. -/
+/-- An auxiliary definition used to define the adjunction between the `toOver` functor
+and the `sections` functor. See `toOverSectionsAdj`. -/
 @[simps homEquiv]
 def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv A X :=
