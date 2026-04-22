@@ -950,6 +950,40 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
 
 end Fubini
 
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∏ᶜ f`. -/
+@[simps]
+noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∏ᶜ f
+  map {f g} t := Pi.map t
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `∏ᶜ` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∏ᶜ X`. -/
+@[simps!]
+noncomputable def Pi.constCompPiIsoConst [HasProductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Pi.functor α ≅
+      (Functor.const _).obj (∏ᶜ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∐ f`. -/
+@[simps]
+noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∐ f
+  map {f g} t := Sigma.map t
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The `∐` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∐ X`. -/
+@[simps!]
+noncomputable def Sigma.constCompSigmaIsoConst [HasCoproductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Sigma.functor α ≅
+      (Functor.const _).obj (∐ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
 /-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
 the product of copies of `X` indexed by `α`. -/
 @[simps]

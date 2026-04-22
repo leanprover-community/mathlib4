@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Christian Merten
 -/
 module
 
@@ -14,17 +14,28 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 /-!
 # The IPC property
 
-Given a family of categories `I i` (`i : α`) and a family of functors `F i : I i ⥤ C`, we construct
-the natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
+Given a family of categories `I i` (`i : α`) and a family of functors `F i : I i ⥤ C`, we consider
+the diagram `pointwiseProduct F : Π i, I i ⥤ C` defined by `(Xᵢ)ᵢ ↦ ∏ᶜ Xᵢ`. Given a cocone
+`cᵢ` on `Fᵢ` for each `i`, there is a natural cocone on `pointwiseProduct F` with point `∏ᶜ cᵢ`.
 
 Similarly to the study of finite limits commuting with filtered colimits, we then study sufficient
-conditions for this morphism to be an isomorphism. We say that `C` satisfies the `w`-IPC property if
-the morphism is an isomorphism as long as `α` is `w`-small and `I i` is `w`-small and filtered for
-all `i`.
+conditions for this cocone to be colimiting if all the `cᵢ` are colimiting. We say that `C`
+satisfies the `w`-IPC property if the morphism is an isomorphism as long as `α` is `w`-small and
+`I i` is `w`-small and filtered for all `i`.
 
-We show that
-* the category `Type u` satisfies the `u`-IPC property and
-* if `C` satisfies the `w`-IPC property, then `D ⥤ C` satisfies the `w`-IPC property.
+## Main definitions
+
+- `CategoryTheory.Limits.IsIPCOfShape`: `C` satisfies `w`-IPC of shape `α` if `w`-sized filtered
+  colimits commute products of shape `α`, i.e. if the joint cocone from above is colimiting if the
+  components are.
+- `CategoryTheory.Limits.IsIPC`: `C` satisfies the `w`-IPC property if it satisfies `w`-IPC for
+  every `α : Type w`.
+
+## Main results
+
+- The category `Type u` satisfies the `u`-IPC property (available by `inferInstance`).
+- If `C` satisfies the `w`-IPC property, then `D ⥤ C` satisfies the `w`-IPC property
+  (available by `inferInstance`).
 
 These results will be used to show that if a category `C` has products indexed by `α`, then so
 does the category of Ind-objects of `C`.
@@ -43,40 +54,22 @@ open ConcreteCategory
 
 section
 
-variable {C : Type u} [Category.{v} C] {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
-  [HasProductsOfShape α C]
-  (F : ∀ i, I i ⥤ C)
-
-variable (α) in
-@[simps]
-noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
-  obj f := ∏ᶜ f
-  map {f g} t := Pi.map t
-
-@[simps!]
-noncomputable
-def Pi.functorCompIso {D : Type*} [Category* D] (F : C ⥤ D) [PreservesLimitsOfShape (Discrete α) F]
-    [HasProductsOfShape α C] [HasProductsOfShape α D] :
-    Pi.functor α ⋙ F ≅ Functor.pi (fun _ ↦ F) ⋙ Pi.functor α :=
-  NatIso.ofComponents (fun a ↦ PreservesProduct.iso F a) fun {a b} f ↦ by
-    apply Pi.hom_ext
-    intro i
-    suffices h : F.map (map f) ≫ F.map (π b i) = F.map (π a i) ≫ F.map (f i) by simpa [Functor.pi]
-    rw [← F.map_comp, Pi.map_π]
-    simp
+variable {C : Type u} [Category.{v} C] {α : Type*} {I : α → Type*} [∀ i, Category* (I i)]
+  [HasProductsOfShape α C] (F : ∀ i, I i ⥤ C)
 
 /-- Given a family of functors `I i ⥤ C` for `i : α`, we obtain a functor `(∀ i, I i) ⥤ C` which
 maps `k : ∀ i, I i` to `∏ᶜ fun (s : α) => (F s).obj (k s)`. -/
--- @[deprecated "Use `Functor.pi F ⋙ Pi.functor α` instead." (since := "2026-04-21")]
 noncomputable abbrev pointwiseProduct : (∀ i, I i) ⥤ C :=
   Functor.pi F ⋙ Pi.functor α
 
 set_option backward.isDefEq.respectTransparency false in
-@[simps!]
-noncomputable def Pi.constCompPiIsoConst (X : α → C) :
-    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙
-      Pi.functor α ≅ (Functor.const _).obj (∏ᶜ X) :=
-  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+/-- `pointwiseProduct` is invariant under re-indexing. -/
+noncomputable
+def Pi.equivalenceOfEquivCompPointwiseProduct {β : Type*} (f : β ≃ α) [HasProductsOfShape β C] :
+    (Pi.equivalenceOfEquiv I f).inverse ⋙ pointwiseProduct (fun i ↦ F (f i)) ≅
+      pointwiseProduct F :=
+  (NatIso.ofComponents
+    fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm).symm
 
 variable {F} in
 /-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
@@ -87,19 +80,22 @@ noncomputable def coconePointwiseProduct (c : ∀ i, Cocone (F i)) :
   pt := ∏ᶜ fun i ↦ (c i).pt
   ι := Functor.whiskerRight (NatTrans.pi fun i ↦ (c i).ι) _ ≫ (Pi.constCompPiIsoConst _).hom
 
-@[reassoc (attr := simp)]
+-- TODO: remove after bump
+@[reassoc (attr := simp high)]
 lemma Pi.mapIso_hom_π {β : Type w} {C : Type u} [Category.{v, u} C] {f g : β → C}
     [HasProductsOfShape β C] (p : (b : β) → f b ≅ g b) (i : β) :
     (Pi.mapIso p).hom ≫ Pi.π g i = Pi.π f i ≫ (p i).hom :=
   Limits.limMap_π _ _
 
+-- TODO: remove after bump
 set_option allowUnsafeReducibility true in
 attribute [local irreducible] Pi.mapIso
 
-noncomputable
-def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c' i) :
+/-- `coconePointwiseProduct` is invariant under isomorphisms of cocones. -/
+noncomputable def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c' i) :
     coconePointwiseProduct c ≅ coconePointwiseProduct c' :=
   Cocone.ext (Pi.mapIso fun i ↦ (Cocone.forget _).mapIso (e i)) fun i ↦ by
+    -- TODO: fix after bump
     dsimp
     ext
     simp only [Category.assoc]
@@ -109,14 +105,14 @@ def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c
     simp
 
 /-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
-We will say that a category has the `IPC` property if this morphism is an isomorphism as long
+A category has the `IPC` property of shape `α` if this morphism is an isomorphism as long
 as the indexing categories are filtered. -/
 noncomputable def colimitPointwiseProductToProductColimit [∀ i, HasColimit (F i)]
     [HasColimit (Functor.pi F ⋙ Pi.functor α)] :
     colimit (pointwiseProduct F) ⟶ ∏ᶜ fun (s : α) => colimit (F s) :=
   colimit.desc _ (coconePointwiseProduct _)
 
-variable [∀ i, HasColimit (F i)] [HasColimit (Functor.pi F ⋙ Pi.functor α)]
+variable [∀ i, HasColimit (F i)] [HasColimit (pointwiseProduct F)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -130,8 +126,8 @@ end
 
 section functorCategory
 
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
-  {α : Type w} {I : α → Type u₂} [∀ i, Category (I i)]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
+  {α : Type*} {I : α → Type*} [∀ i, Category (I i)]
   [HasLimitsOfShape (Discrete α) C]
   (F : ∀ i, I i ⥤ D ⥤ C)
 
@@ -144,8 +140,8 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
   NatIso.ofComponents (fun k => piObjIso _ _)
     (fun f => Pi.hom_ext _ _ (by simp [Functor.pi, ← NatTrans.comp_app]))
 
-noncomputable
-def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone (F i)) :
+/-- In a functor category, `coconePointwiseProduct` commutes with evaluation. -/
+noncomputable def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone (F i)) :
     ((evaluation D C).obj X).mapCocone (coconePointwiseProduct c) ≅
       (Cocone.precompose <| (pointwiseProductCompEvaluation F X).hom).obj
         (coconePointwiseProduct fun i ↦ ((evaluation D C).obj X).mapCocone (c i)) :=
@@ -174,19 +170,11 @@ end functorCategory
 
 section
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category* C]
+variable {ι : Type*} [HasProductsOfShape ι C]
 
-variable {ι : Type*} [HasProductsOfShape ι C] {J : ι → Type*} [∀ i, Category* (J i)]
-
-set_option backward.isDefEq.respectTransparency false in
-noncomputable
-def Pi.equivalenceOfEquivCompPiFunctorIso (F : ∀ i, J i ⥤ C) {ι' : Type*} (f : ι' ≃ ι)
-    [HasProductsOfShape ι' C] :
-    (Pi.equivalenceOfEquiv (fun j ↦ J j) f).inverse ⋙ Functor.pi (fun j ↦ F (f j)) ⋙ Pi.functor ι' ≅
-      Functor.pi F ⋙ Pi.functor ι :=
-  (NatIso.ofComponents
-    fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm).symm
-
+/-- A category `C` has the `w`-IPC property for shape `ι` if `w`-sized filtered colimits commute
+with products of shape `ι`. -/
 class IsIPCOfShape (ι : Type*) (C : Type*) [Category* C] [HasProductsOfShape ι C] : Prop where
   nonempty_isColimit ⦃J : ι → Type w⦄ [∀ i, SmallCategory (J i)]
     [∀ i, IsFiltered (J i)] ⦃F : ∀ i, J i ⥤ C⦄ ⦃c : ∀ i, Cocone (F i)⦄ :
@@ -204,7 +192,7 @@ lemma IsIPCOfShape.of_forall_exists
       coconePointwiseProductIso _ fun i ↦ (hc i).uniqueUpToIso (hc' i)
     rwa [(IsColimit.equivIsoColimit e).nonempty_congr]
 
-lemma IsIPCOfShape.of_isIso (ι : Type*) [HasProductsOfShape ι C]
+lemma IsIPCOfShape.of_isIso
     (H : ∀ (J : ι → Type w) [∀ i, SmallCategory (J i)] [∀ i, IsFiltered (J i)]
       (F : ∀ i, J i ⥤ C) [∀ (i : ι), HasColimit (F i)],
       ∃ (_ : HasColimit (Functor.pi F ⋙ Pi.functor ι)),
@@ -223,20 +211,17 @@ lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfSha
     constructor
     apply IsColimit.equivOfNatIsoOfIso _ _ _ _ <|
         h.whiskerEquivalence (Pi.equivalenceOfEquiv J e).symm
-    · exact (Pi.equivalenceOfEquivCompPiFunctorIso F e)
-    · -- Without the double `symm`, one runs into (hard) DTT hell
+    · exact (Pi.equivalenceOfEquivCompPointwiseProduct F e)
+    · -- Without the double `symm`, one runs into DTT hell
       symm
       refine Cocone.ext ?_ ?_
       · exact (Pi.whiskerEquiv e fun _ ↦ Iso.refl _).symm
       · intro a
         apply Pi.hom_ext
-        simp [Pi.equivalenceOfEquivCompPiFunctorIso, Pi.equivalenceOfEquiv, Functor.pi]
-
+        simp [Pi.equivalenceOfEquivCompPointwiseProduct, Pi.equivalenceOfEquiv, Functor.pi]
 
 variable (C) in
-/-- A category `C` has the `w`-IPC property if the natural morphism
-`colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)` is an isomorphism for any
-family of functors `F i : I i ⥤ C` with `I i` `w`-small and filtered for all `i`. -/
+/-- A category `C` has the `w`-IPC property it satisfies the IPC-property for every `ι : Type w`. -/
 class IsIPC [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w} C] : Prop where
   isIPCOfShape (ι : Type w) : IsIPCOfShape.{w} ι C := by infer_instance
 
@@ -296,8 +281,7 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
 
 instance : IsIPC.{u} (Type u) where
   isIPCOfShape _ :=
-    .of_isIso _ fun _ _ _ _ _ ↦
-      ⟨inferInstance, Types.isIso_colimitPointwiseProductToProductColimit _⟩
+    .of_isIso fun _ _ _ _ _ ↦ ⟨inferInstance, Types.isIso_colimitPointwiseProductToProductColimit _⟩
 
 end types
 
