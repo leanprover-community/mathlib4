@@ -359,7 +359,7 @@ def pullFunctorCompIso
         rfl (by simp [w', reassoc_of% hf₁, reassoc_of% hf₂]) (by
           simp [reassoc_of% w', reassoc_of% hf₁, hr])]
       dsimp
-      simp only [Category.assoc]
+      simp only [Category.assoc, eqToHom_refl, Category.id_comp, Category.comp_id]
       rw [mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc _ _ _ _ _ _ _
         (by grind) rfl rfl, mapComp'₀₂₃_hom_app _ _ _ _ _ _ _ _ rfl rfl]))
 
