@@ -135,7 +135,7 @@ theorem coprod_eq_sup [SemilatticeSup α] [OrderBot α] (x y : α) : Limits.copr
     _ = x ⊔ y := by rw [sup_bot_eq]
 
 /-- The pullback in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum
-over the objects.
+of the two objects mapping to the pullback object.
 -/
 @[simp]
 theorem pullback_eq_inf [SemilatticeInf α] [OrderTop α] {x y z : α} (f : x ⟶ z) (g : y ⟶ z) :
@@ -148,7 +148,7 @@ theorem pullback_eq_inf [SemilatticeInf α] [OrderTop α] {x y z : α} (f : x �
     _ = x ⊓ y := inf_eq_right.mpr (inf_le_of_left_le f.le)
 
 /-- The pushout in the category of a `SemilatticeSup` with `OrderBot` is the same as the supremum
-over the objects.
+of the two objects receiving maps from the pushout object.
 -/
 @[simp]
 theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶ x) (g : z ⟶ y) :
