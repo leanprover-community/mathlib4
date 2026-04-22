@@ -12,7 +12,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 /-!
 # Equalizers in Type
 
-The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
+The equalizer of a pair of maps `(g, h)` from `Y` to `Z` is the subtype `{x : Y // g x = h x}`.
 
 -/
 
@@ -43,7 +43,7 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
       funext i
       exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).2 _ (congr_fun hm i)
 
-/-- The converse of `type_equalizer_of_unique`. -/
+/-- The converse of `typeEqualizerOfUnique`. -/
 theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y = h y) :
     ∃! x : X, f x = y := by
   let y' : PUnit ⟶ Y := fun _ => y
