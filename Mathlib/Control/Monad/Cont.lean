@@ -81,6 +81,30 @@ instance : Monad (ContT r m) where
   pure x f := f x
   bind x f g := x fun i => f i g
 
+@[simp]
+theorem run_pure (a : α) (k : α → m r) :
+    (pure a : ContT r m α).run k = k a := rfl
+
+@[simp]
+theorem run_bind (x : ContT r m α) (f : α → ContT r m β) (k : β → m r) :
+    (x >>= f).run k = x.run fun x => (f x).run k := rfl
+
+@[simp]
+theorem run_map (f : α → β) (x : ContT r m α) (k : β → m r) :
+    (f <$> x).run k = x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seq (f : ContT r m (α → β)) (x : ContT r m α) (k : β → m r) :
+    (f <*> x).run k = f.run fun f => x.run (k ∘ f) := rfl
+
+@[simp]
+theorem run_seqLeft (x : ContT r m α) (y : ContT r m β) (k : α → m r) :
+    (x <* y).run k = x.run fun x => y.run fun _ => k x := rfl
+
+@[simp]
+theorem run_seqRight (x : ContT r m α) (y : ContT r m β) (k : β → m r) :
+    (x *> y).run k = x.run fun _ => y.run k := rfl
+
 instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
   (pure_bind := by intros; ext; rfl)
