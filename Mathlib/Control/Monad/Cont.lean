@@ -115,16 +115,17 @@ instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (pure_bind := by intros; ext; rfl)
   (bind_assoc := by intros; ext; rfl)
 
-def monadLift [Monad m] {α} : m α → ContT r m α := fun x f => x >>= f
-
 instance [Monad m] : MonadLift m (ContT r m) where
-  monadLift := ContT.monadLift
+  monadLift x := .mk fun k => x >>= k
+
+@[simp]
+theorem run_monadLift [Monad m] {α} (x : m α) (k : α → m r) :
+    (monadLift x : ContT r m α).run k = x >>= k := rfl
 
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
-    ContT.monadLift]
+  simp only [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
 
 instance : MonadCont (ContT r m) where
   callCC f g := f ⟨fun x _ => g x⟩ g
@@ -150,8 +151,8 @@ See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 for further discussion.
 -/
 instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
-  throw e _ := throw e
-  tryCatch act h f := tryCatch (act.run f) fun e => (h e).run f
+  throw e := .mk fun _ => throw e
+  tryCatch act h := .mk fun k => tryCatch (act.run k) fun e => (h e).run k
 
 @[simp]
 theorem run_throw {ε} [MonadExceptOf ε m]
