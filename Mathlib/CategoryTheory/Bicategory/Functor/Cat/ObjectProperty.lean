@@ -61,7 +61,7 @@ class IsClosedUnderMapObj (P : F.ObjectProperty) : Prop where
 export IsClosedUnderMapObj (map_obj)
 
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`, this is the
-condition that all `P.prop : ObjectProperty (F.obj X)` for `X : B` are closed
+condition that all `P.prop X : ObjectProperty (F.obj X)` for `X : B` are closed
 under isomorphisms. -/
 class IsClosedUnderIsomorphisms : Prop where
   isClosedUnderIsomorphisms (X : B) : (P.prop X).IsClosedUnderIsomorphisms
@@ -72,17 +72,19 @@ section
 
 variable [P.IsClosedUnderMapObj]
 
-/-- Given a property `P` of objects for `F : Pseudofunctor B Cat` and a morphism `f : X ⟶ Y`
-in `B`, this is the functor `P.Obj X ⥤ P.Obj Y` that is induced by `F.map f`. -/
+/-- Assuming `P.IsClosedUnderMapObj`, given a property `P` of objects for
+`F : Pseudofunctor B Cat` and a morphism `f : X ⟶ Y` in `B`, this is the functor
+`P.Obj X ⥤ P.Obj Y` that is induced by `F.map f`. -/
 @[simps!]
 def map {X Y : B} (f : X ⟶ Y) :
     P.Obj X ⥤ P.Obj Y :=
   (P.prop Y).lift (ObjectProperty.ι _ ⋙ (F.map f).toFunctor)
     (fun M ↦ P.map_obj M.2 f)
 
-/-- Given a property `P` of objects for `F : Pseudofunctor B Cat` and
-a `2`-morphism in `B`, this is the induced natural transformation between
-the induced functors on the fullsubcategories of objects satisfying `P`. -/
+/-- Assuming `P.IsClosedUnderMapObj`, given a property `P` of objects for
+`F : Pseudofunctor B Cat` and a `2`-morphism in `B`, this is the induced natural
+transformation between the induced functors on the full subcategories of objects
+satisfying `P`. -/
 @[simps!]
 def map₂ {X Y : B} {f g : X ⟶ Y} (α : f ⟶ g) :
     P.map f ⟶ P.map g :=
@@ -122,9 +124,9 @@ lemma mapComp_inv_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
       ((F.mapComp f g).inv.toNatTrans.app M.obj) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
-the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj X`
-consisting of objects satisfying `P`. -/
+/-- Assuming `P.IsClosedUnderMapObj`, given a property of objects `P` for a
+pseudofunctor `F` from `B` to `Cat`, this is the induced pseudofunctor which sends
+`X : B` to the full subcategory of `F.obj X` consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
   obj X := Cat.of (P.Obj X)
