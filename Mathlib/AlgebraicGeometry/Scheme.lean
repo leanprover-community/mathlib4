@@ -558,14 +558,20 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
-lemma specializes_primeSpectrum_iff_specializes_spec (R : CommRingCat) (a b : PrimeSpectrum R) :
-    a ⤳ b ↔ @Specializes (Spec R) _ a b := by rfl
+/-- `Spec R` with the specialization order is order isomorphic to the dual of the prime
+spectrum of `R`. -/
+@[simps]
+def specOrderIsoPrimeSpectrum (R : CommRingCat) : Spec R ≃o (PrimeSpectrum R)ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := PrimeSpectrum.le_iff_specializes b a
 
-lemma le_primeSpectrum_iff_le_spec (R : CommRingCat) (a b : PrimeSpectrum R) :
-    a ≤ b ↔ @LE.le (Spec R) _ b a := by
-  simp [PrimeSpectrum.le_iff_specializes,
-    Scheme.le_iff_specializes (X := Spec R) (a := (b : Spec R)) (b := (a : Spec R)),
-    specializes_primeSpectrum_iff_specializes_spec]
+/-- `PrimeSpectrum R` with the inclusion order is order isomorphic to the dual of `Spec R`. -/
+@[simps]
+def primeSpectrumOrderIsoSpec (R : Type u) [CommRing R] : PrimeSpectrum R ≃o (Spec (.of R))ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := (PrimeSpectrum.le_iff_specializes a b).symm
 
 section
 
