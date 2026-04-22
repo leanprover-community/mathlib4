@@ -28,7 +28,7 @@ variable {J : Type*} [Category* J]
 
 /--
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the
-set of `F.obj` containing `x` is (co)directed.
+collection of elements of the various `F.obj i` mapping to `x` is (co)directed.
 That is, for each diagram
 ```
       x ∈ Fₖ
