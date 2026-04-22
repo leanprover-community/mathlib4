@@ -425,7 +425,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
-    mul_right_inj' (primesOver_ncard_ne_zero p S),
+    mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero p S),
     mul_right_inj' (ramificationIdxIn_ne_zero G hp),
     inertiaDegIn_eq_inertiaDeg p P G] at h
   rw [one_eq_top]

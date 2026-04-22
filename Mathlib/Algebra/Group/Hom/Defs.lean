@@ -938,9 +938,11 @@ protected def End := M →* M
 namespace End
 
 @[to_additive]
-instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
+
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
+  inferInstanceAs <| MonoidHomClass (M →* M) M M
 
 @[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _

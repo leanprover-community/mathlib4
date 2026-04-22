@@ -224,7 +224,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
-    rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
+    rw [range_eq_Ico, range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     rw [← tsub_le_iff_right]
     calc
       q - 1 ≤ q - 1 + p'.natDegree := le_self_add
