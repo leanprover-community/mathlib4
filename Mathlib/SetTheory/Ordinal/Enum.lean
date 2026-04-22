@@ -22,7 +22,7 @@ If `s` is a cofinal subset of a regular cardinal order `α`, there exists a uniq
 function of the set. Note that if `α = ℕ`, then this definition matches `Nat.nth`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -86,7 +86,6 @@ theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s =
 
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
 `Nat.nth`. -/
-@[no_expose]
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
 
@@ -118,7 +117,6 @@ variable {o a b : Ordinal.{u}}
 
 The definition is an implementation detail; this function is entirely characterized by being an
 order isomorphism. See `enumOrdOrderIso`. -/
-@[no_expose]
 noncomputable def enumOrd (s : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b })
 termination_by o
@@ -234,6 +232,7 @@ theorem enumOrd_univ : enumOrd Set.univ = id := by
 @[simp] lemma enumOrd_zero : enumOrd s 0 = sInf s := by rw [enumOrd]; simp
 
 /-- An order isomorphism between an unbounded set of ordinals and the ordinals. -/
+@[expose]
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
   StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
