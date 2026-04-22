@@ -649,10 +649,10 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
 @[simp, grind =]
 theorem mem_divisors : ∀ {z} {x}, x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0
   | 0, _ => by simp [divisors]
-  | -[n +1], -[x +1]
-  | -[n +1], (x : ℕ)
+  | -[n+1], -[x+1]
+  | -[n+1], (x : ℕ)
   | (n + 1 : ℕ), (x : ℕ)
-  | (n + 1 : ℕ), -[x +1] => by
+  | (n + 1 : ℕ), -[x+1] => by
     simpa [divisors, -Nat.cast_add, -natCast_add] using ofNat_dvd.symm
 
 theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
