@@ -38,8 +38,8 @@ noncomputable def forgetCreatesLimitOfClosed
       ObjectProperty.prop_limit (P.commaObj L R) _
         fun j ↦ (D.obj j).prop⟩) (Iso.refl _)
 
-/-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
-`J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
+/-- If `Comma L R` has limits of shape `J` and `P` is closed under limits of shape
+`J` in `Comma L R`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
 @[implicit_reducible]
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
     [ObjectProperty.IsClosedUnderLimitsOfShape (P.commaObj L R) J] :
@@ -70,8 +70,8 @@ noncomputable def forgetCreatesColimitOfClosed
       (P.commaObj L R).prop_colimit _ (fun j ↦ (D.obj j).prop)⟩) (Iso.refl _)
 
 variable (J) in
-/-- If `Comma L R` has colimits of shape `J` and `Comma L R` is closed under colimits of shape
-`J`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
+/-- If `Comma L R` has colimits of shape `J` and `P` is closed under colimits of shape
+`J` in `Comma L R`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
 @[implicit_reducible]
 noncomputable def forgetCreatesColimitsOfShapeOfClosed [HasColimitsOfShape J (Comma L R)]
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
