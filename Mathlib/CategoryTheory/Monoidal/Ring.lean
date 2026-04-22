@@ -90,13 +90,11 @@ variable {R : C} [RingObj R] {X : C}
 
 lemma Hom.mul_add (a b c : X ⟶ R) : a * (b + c) = a * b + a * c := by
   revert X a b c
-  rw [← mul_add_iff]
-  apply RingObj.mul_add
+  rw [← mul_add_iff, RingObj.mul_add R]
 
 lemma Hom.add_mul (a b c : X ⟶ R) : (a + b) * c = a * c + b * c := by
   revert X a b c
-  rw [← add_mul_iff]
-  apply RingObj.add_mul
+  rw [← add_mul_iff, RingObj.add_mul R]
 
 /-- If `G` is a ring object, then `Hom(X, G)` has a ring structure. -/
 abbrev Hom.ring {X : C} : Ring (X ⟶ R) where
@@ -118,7 +116,7 @@ class CommRingObj (R : C) extends RingObj R, IsCommMonObj R where
 /-- If `G` is a commutative ring object, then `Hom(X, G)` has a commutative ring structure. -/
 abbrev Hom.commRing {R : C} {X : C} [CommRingObj R] : CommRing (X ⟶ R) where
 
-scoped[CategoryTheory.MonObj] attribute [instance] Hom.commRing
+scoped[CategoryTheory.CommRingObj] attribute [instance] Hom.commRing
 
 /-- The property that a morphism between ring objects is a ring morphism. -/
 class IsRingHom {R₁ R₂ : C} [RingObj R₁] [RingObj R₂] (f : R₁ ⟶ R₂)
