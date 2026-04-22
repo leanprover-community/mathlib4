@@ -35,8 +35,7 @@ open CategoryTheory Option
 universe u
 
 /-- The category of types equipped with partial functions. -/
-def PartialFun : Type _ :=
-  Type*
+def PartialFun : Type (u + 1) := Type u
 
 namespace PartialFun
 
@@ -47,16 +46,14 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
-instance : Inhabited PartialFun :=
-  ⟨Type*⟩
+instance : Inhabited PartialFun.{u} :=
+  ⟨PartialFun.of PUnit⟩
 
+-- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 instance largeCategory : LargeCategory.{u} PartialFun where
-  Hom := PFun
-  id := PFun.id
+  Hom X Y := PFun X Y
+  id X := PFun.id X
   comp f g := g.comp f
-  id_comp := @PFun.comp_id
-  comp_id := @PFun.id_comp
-  assoc _ _ _ := (PFun.comp_assoc _ _ _).symm
 
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps]
@@ -75,18 +72,21 @@ end PartialFun
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj := id
-  map := @PFun.lift
+  map f := PFun.lift (f : _ → _)
   map_comp _ _ := PFun.coe_comp _ _
 
 instance : typeToPartialFun.Faithful where
-  map_injective {_ _} := PFun.lift_injective
+  map_injective h := by
+    ext x
+    exact congrFun (PFun.lift_injective h) x
 
 -- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
-  obj X := { x : X // x ≠ X.point }
+  obj X := PartialFun.of { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
   map_id _ :=
     PFun.ext fun _ b =>
@@ -94,8 +94,8 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   map_comp {X Y Z} f g := by
     refine PFun.ext fun ⟨a, ha⟩ ⟨c, hc⟩ =>
       (PFun.mem_toSubtype_iff.trans ?_).trans Part.mem_bind_iff.symm
-    suffices c = g.toFun (f.toFun a) → ¬Y.point = f.toFun a ∧ ¬Z.point = g.toFun (f.toFun a) by
-      aesop
+    suffices c = g.toFun (f.toFun a) → ¬Y.point = f.toFun a ∧ ¬Z.point = g.toFun (f.toFun a) from
+      ⟨by aesop, by simp; grind⟩
     rintro rfl
     refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
 
@@ -107,7 +107,7 @@ be computable because `= Option.none` is decidable while the domain of a general
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
   exact
-    { obj := fun X => ⟨Option X, none⟩
+    { obj := fun X => ⟨(Option X), none⟩
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
       map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
@@ -135,18 +135,22 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, Subtype.mk.injEq,
-              some.injEq, exists_eq_right', elim'_some]
+          · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, elim'_some]
             classical
-            refine Part.mem_toOption.symm.trans ?_
-            exact eq_comm
+            refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, rfl⟩⟩
+            rw [Subtype.ext_iff] at h
+            dsimp at h
+            rw [h]
+            rw [← Part.mem_toOption, mem_def] at hw
+            exact hw.symm
   counitIso :=
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
       fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
-        simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
+        simp_all [Equiv.optionSubtypeNe, Equiv.optionSubtype,
+          Option.casesOn'_eq_elim, Part.elim_toOption]
   functor_unitIso_comp X := by
     ext (_ | x)
     · rfl

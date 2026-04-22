@@ -10,7 +10,7 @@ public import Mathlib.Data.List.Monad
 public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
-public import Batteries.Data.List
+public import Batteries.Data.List.Lemmas
 public import Batteries.Tactic.Lint.Simp
 public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
@@ -94,6 +94,10 @@ theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
 theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h t, l = h :: t
   | [], H => absurd H.symm <| succ_ne_zero n
   | h :: t, _ => ⟨h, t, rfl⟩
+
+theorem length_eq_succ_iff {n} {l : List α} :
+    l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by
+  grind [cases List]
 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
@@ -591,7 +595,7 @@ theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ 
 theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dropLast) :
     l.idxOf (l.getLast hl) = l.length - 1 :=
   Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
-    contrapose! hl'
+    contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
 end IndexOf
