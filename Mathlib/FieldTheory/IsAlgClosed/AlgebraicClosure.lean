@@ -138,11 +138,7 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance instCommRing : CommRing (AlgebraicClosure k) :=
-  inferInstanceAs <| CommRing (MvPolynomial (Vars k) k ⧸ maxIdeal k)
-
-instance : Inhabited (AlgebraicClosure k) :=
-  inferInstanceAs <| Inhabited (MvPolynomial (Vars k) k ⧸ maxIdeal k)
+deriving instance CommRing, Inhabited for AlgebraicClosure
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   inferInstanceAs <| SMul S (MvPolynomial (Vars k) k ⧸ maxIdeal k)
