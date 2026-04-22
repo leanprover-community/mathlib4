@@ -6889,10 +6889,6 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
-<<<<<<< HEAD
-public import Mathlib.SetTheory.Cardinal.Cofinality
-=======
->>>>>>> move
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
