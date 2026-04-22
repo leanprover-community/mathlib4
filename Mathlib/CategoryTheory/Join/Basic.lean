@@ -538,8 +538,8 @@ def mapIsoWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : F�
     (mapPairLeft H Fᵣ ≪≫ isoWhiskerRight (Iso.refl H) (inclLeft _ _) ≪≫ (mapPairLeft H Gᵣ).symm)
     (mapPairRight H Fᵣ ≪≫ isoWhiskerRight α (inclRight E E') ≪≫ (mapPairRight H Gᵣ).symm)
 
-/-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
-  `mapPair Fₗ H ≅ mapPair Gₗ H` for every `H : C ⥤ E`. -/
+/-- A natural isomorphism `Fₗ ≅ Gₗ` induces a natural isomorphism
+  `mapPair Fₗ H ≅ mapPair Gₗ H` for every `H : D ⥤ E'`. -/
 @[simps!]
 def mapIsoWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     mapPair Fₗ H ≅ mapPair Gₗ H :=
