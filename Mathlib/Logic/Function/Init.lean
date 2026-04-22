@@ -6,7 +6,6 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Init
-import Batteries.Tactic.Alias
 
 /-!
 # Dependent composition, pairing, and diagonal for functions
@@ -238,12 +237,3 @@ theorem prodMap_eq_prod_map : f.prodMap g = Prod.map f g := rfl
 end
 
 end Function
-
-@[deprecated (since := "2026-04-21")]
-alias Pi.prod := Function.prod
-
-@[deprecated (since := "2026-04-21")]
-alias Pi.prod_fst_snd := Function.fst_prod_snd
-
-@[deprecated (since := "2026-04-21")]
-alias Pi.prod_snd_fst := Function.snd_prod_fst
