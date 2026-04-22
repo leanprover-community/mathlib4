@@ -38,7 +38,13 @@ universal object for each type of algebraic structure; the same type `DirectLimi
 works for all of them. This file is therefore more general than the `Module` and `Ring`
 files in terms of the variety of algebraic structures supported.
 
-So far we only show that `DirectLimit` is the colimit in the categories of modules and rings,
+So far we only show that `DirectLimit` is the colimit in the following categories:
+
+* modules
+* non-unital semirings
+* rings
+* (non-unital) star rings
+
 but for the other algebraic structures the constructions and proofs will be easy following
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
