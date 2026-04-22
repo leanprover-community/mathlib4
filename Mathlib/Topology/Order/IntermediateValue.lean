@@ -564,6 +564,19 @@ theorem intermediate_value_uIcc {a b : α} {f : α → δ} (hf : ContinuousOn f 
     [[f a, f b]] ⊆ f '' uIcc a b := by
   cases le_total (f a) (f b) <;> simp [*, isPreconnected_uIcc.intermediate_value]
 
+/-- **Bolzano's theorem** for continuous functions on unordered closed intervals:
+if `0` lies between `f a` and `f b`, then `f` has a root on `[[a, b]]`. -/
+theorem exists_mem_uIcc_eq_zero {a b : α} {f : α → δ} [Zero δ]
+    (hf : ContinuousOn f [[a, b]]) (h0 : (0 : δ) ∈ [[f a, f b]]) : ∃ c ∈ [[a, b]], f c = 0 :=
+  intermediate_value_uIcc hf h0
+
+/-- **Bolzano's theorem** for continuous functions on closed intervals:
+if `0` lies between `f a` and `f b`, then `f` has a root on `[a, b]`. -/
+theorem exists_mem_Icc_eq_zero {a b : α} {f : α → δ} [Zero δ] (hab : a ≤ b)
+    (hf : ContinuousOn f (Icc a b)) (h0 : (0 : δ) ∈ [[f a, f b]]) : ∃ c ∈ Icc a b, f c = 0 := by
+  have := exists_mem_uIcc_eq_zero (by simpa [uIcc_of_le hab] using hf) h0
+  simpa [uIcc_of_le hab]
+
 /-- If `f : α → α` is continuous on `[[a, b]]`, `a ≤ f a`, and `f b ≤ b`,
 then `f` has a fixed point on `[[a, b]]`. -/
 theorem exists_mem_uIcc_isFixedPt {a b : α} {f : α → α} (hf : ContinuousOn f (uIcc a b))
