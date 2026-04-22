@@ -20,7 +20,7 @@ a bifunctor, along with structure natural isomorphisms
 
 We also define right actions, for these, the notation for the action of `c`
 on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
-`- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
+`- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ᵣ 𝟙_ C ≅ -`.
 
 
 ## References
@@ -60,7 +60,7 @@ class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
   this is `(Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
   actionHomRight (c : C) {d d' : D} (f : d ⟶ d') :
     actionObj c d ⟶ actionObj c d'
-  /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
+  /-- The action of a pair of maps `f : c ⟶ c'` and `g : d ⟶ d'`. By default,
   this is defined in terms of `actionHomLeft` and `actionHomRight`. -/
   actionHom {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
     actionObj c d ⟶ actionObj c' d' := actionHomLeft f d ≫ actionHomRight c' g
@@ -81,10 +81,10 @@ export MonoidalLeftActionStruct
 /-- Notation for `actionObj`, the action of `C` on `D`. -/
 scoped infixr:70 " ⊙ₗ " => MonoidalLeftActionStruct.actionObj
 
-/-- Notation for `actionHomLeft`, the action of `C` on morphisms in `D`. -/
+/-- Notation for `actionHomLeft`, the action of morphisms in `C` on `D`. -/
 scoped infixr:81 " ⊵ₗ " => MonoidalLeftActionStruct.actionHomLeft
 
-/-- Notation for `actionHomRight`, the action of morphism in `C` on `D`. -/
+/-- Notation for `actionHomRight`, the action of `C` on morphisms in `D`. -/
 scoped infixr:81 " ⊴ₗ " => MonoidalLeftActionStruct.actionHomRight
 
 /-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
@@ -111,7 +111,7 @@ open scoped MonoidalLeftAction in
 - For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
   `c ⊴ₗ f : c ⊙ₗ d ⟶ c ⊙ₗ d'`.
 - For every pair of morphisms `f : (c : C) ⟶ c'` and
-  `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
+  `g : (d : D) ⟶ d'`, a morphism `f ⊙ₗₘ g : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
 
@@ -373,7 +373,7 @@ class MonoidalRightActionStruct [MonoidalCategoryStruct C] where
   this is `(Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
   actionHomLeft {d d' : D} (f : d ⟶ d') (c : C) :
     actionObj d c ⟶ actionObj d' c
-  /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
+  /-- The action of a pair of maps `f : d ⟶ d'` and `g : c ⟶ c'`. By default,
   this is defined in terms of `actionHomLeft` and `actionHomRight`. -/
   actionHom {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :
     actionObj d c ⟶ actionObj d' c' := actionHomLeft f c ≫ actionHomRight d' g
@@ -394,14 +394,14 @@ export MonoidalRightActionStruct
 /-- Notation for `actionObj`, the action of `C` on `D`. -/
 scoped infixr:70 " ⊙ᵣ " => MonoidalRightActionStruct.actionObj
 
-/-- Notation for `actionHomLeft`, the action of `D` on morphisms in `C`. -/
+/-- Notation for `actionHomLeft`, the action of morphisms in `D` on `C`. -/
 scoped infixr:81 " ⊵ᵣ " => MonoidalRightActionStruct.actionHomLeft
 
-/-- Notation for `actionHomRight`, the action of morphism in `D` on `C`. -/
+/-- Notation for `actionHomRight`, the action of `D` on morphisms in `C`. -/
 scoped infixr:81 " ⊴ᵣ " => MonoidalRightActionStruct.actionHomRight
 
 /-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
-`D` on `- ⊙ -`. -/
+`D` on `- ⊙ᵣ -`. -/
 scoped infixr:70 " ⊙ᵣₘ " => MonoidalRightActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
@@ -418,15 +418,15 @@ end MonoidalRightAction
 
 open scoped MonoidalRightAction in
 /-- A `MonoidalRightAction C D` is the data of:
-- For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
-- For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
-  `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
+- For every object `d : D` and `c : C`, an object `d ⊙ᵣ c` of `D`.
 - For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
-  `c ⊴ᵣ f : c ⊙ᵣ d ⟶ c ⊙ᵣ d'`.
-- For every pair of morphisms `f : (c : C) ⟶ c'` and
-  `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
-- A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
-- A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
+  `f ⊵ᵣ c : d ⊙ᵣ c ⟶ d' ⊙ᵣ c`.
+- For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
+  `d ⊴ᵣ f : d ⊙ᵣ c ⟶ d ⊙ᵣ c'`.
+- For every pair of morphisms `f : (d : D) ⟶ d'` and
+  `g : (c : C) ⟶ c'`, a morphism `f ⊙ᵣₘ g : d ⊙ᵣ c ⟶ d' ⊙ᵣ c'`.
+- A structure isomorphism `αᵣ d c c' : d ⊙ᵣ (c ⊗ c') ≅ (d ⊙ᵣ c) ⊙ᵣ c'`.
+- A structure isomorphism `ρᵣ d : d ⊙ᵣ (𝟙_ C) ≅ d`.
 
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
 ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
