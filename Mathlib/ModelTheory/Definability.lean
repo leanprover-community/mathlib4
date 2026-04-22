@@ -451,9 +451,9 @@ variable (A L) in
 def DefinablePred (p : (α → M) → Prop) : Prop :=
   A.Definable L (setOf p)
 
-def DefinablePred.of_definable (h : A.Definable L (setOf p)) : A.DefinablePred L p := h
+theorem DefinablePred.of_definable (h : A.Definable L (setOf p)) : A.DefinablePred L p := h
 
-def Definable.of_definablePred {s : Set (α → M)} (h : A.DefinablePred L (· ∈ s)) :
+theorem Definable.of_definablePred {s : Set (α → M)} (h : A.DefinablePred L (· ∈ s)) :
     A.Definable L s := h
 
 @[fun_prop]
