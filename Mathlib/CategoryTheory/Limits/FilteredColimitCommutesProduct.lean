@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # The IPC property
@@ -43,38 +44,87 @@ open ConcreteCategory
 section
 
 variable {C : Type u} [Category.{v} C] {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
-  [HasLimitsOfShape (Discrete α) C]
+  [HasProductsOfShape α C]
   (F : ∀ i, I i ⥤ C)
+
+variable (α) in
+@[simps]
+noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∏ᶜ f
+  map {f g} t := Pi.map t
+
+@[simps!]
+noncomputable
+def Pi.functorCompIso {D : Type*} [Category* D] (F : C ⥤ D) [PreservesLimitsOfShape (Discrete α) F]
+    [HasProductsOfShape α C] [HasProductsOfShape α D] :
+    Pi.functor α ⋙ F ≅ Functor.pi (fun _ ↦ F) ⋙ Pi.functor α :=
+  NatIso.ofComponents (fun a ↦ PreservesProduct.iso F a) fun {a b} f ↦ by
+    apply Pi.hom_ext
+    intro i
+    suffices h : F.map (map f) ≫ F.map (π b i) = F.map (π a i) ≫ F.map (f i) by simpa [Functor.pi]
+    rw [← F.map_comp, Pi.map_π]
+    simp
 
 /-- Given a family of functors `I i ⥤ C` for `i : α`, we obtain a functor `(∀ i, I i) ⥤ C` which
 maps `k : ∀ i, I i` to `∏ᶜ fun (s : α) => (F s).obj (k s)`. -/
-@[simps]
-noncomputable def pointwiseProduct : (∀ i, I i) ⥤ C where
-  obj k := ∏ᶜ fun (s : α) => (F s).obj (k s)
-  map f := Pi.map (fun s => (F s).map (f s))
+-- @[deprecated "Use `Functor.pi F ⋙ Pi.functor α` instead." (since := "2026-04-21")]
+noncomputable abbrev pointwiseProduct : (∀ i, I i) ⥤ C :=
+  Functor.pi F ⋙ Pi.functor α
 
-variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
+set_option backward.isDefEq.respectTransparency false in
+@[simps!]
+noncomputable def Pi.constCompPiIsoConst (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙
+      Pi.functor α ≅ (Functor.const _).obj (∏ᶜ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+variable {F} in
 /-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
 cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
 @[simps]
-noncomputable def coconePointwiseProduct : Cocone (pointwiseProduct F) where
-  pt := ∏ᶜ fun (s : α) => colimit (F s)
-  ι := { app := fun k => Pi.map fun s => colimit.ι _ _ }
+noncomputable def coconePointwiseProduct (c : ∀ i, Cocone (F i)) :
+    Cocone (pointwiseProduct F) where
+  pt := ∏ᶜ fun i ↦ (c i).pt
+  ι := Functor.whiskerRight (NatTrans.pi fun i ↦ (c i).ι) _ ≫ (Pi.constCompPiIsoConst _).hom
+
+@[reassoc (attr := simp)]
+lemma Pi.mapIso_hom_π {β : Type w} {C : Type u} [Category.{v, u} C] {f g : β → C}
+    [HasProductsOfShape β C] (p : (b : β) → f b ≅ g b) (i : β) :
+    (Pi.mapIso p).hom ≫ Pi.π g i = Pi.π f i ≫ (p i).hom :=
+  Limits.limMap_π _ _
+
+set_option allowUnsafeReducibility true in
+attribute [local irreducible] Pi.mapIso
+
+noncomputable
+def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c' i) :
+    coconePointwiseProduct c ≅ coconePointwiseProduct c' :=
+  Cocone.ext (Pi.mapIso fun i ↦ (Cocone.forget _).mapIso (e i)) fun i ↦ by
+    dsimp
+    ext
+    simp only [Category.assoc]
+    simp only [Functor.pi, Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Pi.map_π,
+      NatTrans.pi_app]
+    rw [Pi.mapIso_hom_π]
+    simp
 
 /-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
 We will say that a category has the `IPC` property if this morphism is an isomorphism as long
 as the indexing categories are filtered. -/
-noncomputable def colimitPointwiseProductToProductColimit :
+noncomputable def colimitPointwiseProductToProductColimit [∀ i, HasColimit (F i)]
+    [HasColimit (Functor.pi F ⋙ Pi.functor α)] :
     colimit (pointwiseProduct F) ⟶ ∏ᶜ fun (s : α) => colimit (F s) :=
-  colimit.desc (pointwiseProduct F) (coconePointwiseProduct F)
+  colimit.desc _ (coconePointwiseProduct _)
+
+variable [∀ i, HasColimit (F i)] [HasColimit (Functor.pi F ⋙ Pi.functor α)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) :
-    colimit.ι (pointwiseProduct F) k ≫ colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
+    colimit.ι (pointwiseProduct F) k ≫
+      colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
       Pi.π _ s ≫ colimit.ι (F s) (k s) := by
-  simp [colimitPointwiseProductToProductColimit]
+  simp [colimitPointwiseProductToProductColimit, Functor.pi]
 
 end
 
@@ -92,7 +142,17 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
     pointwiseProduct F ⋙ (evaluation D C).obj d ≅
       pointwiseProduct (fun s => F s ⋙ (evaluation _ _).obj d) :=
   NatIso.ofComponents (fun k => piObjIso _ _)
-    (fun f => Pi.hom_ext _ _ (by simp [← NatTrans.comp_app]))
+    (fun f => Pi.hom_ext _ _ (by simp [Functor.pi, ← NatTrans.comp_app]))
+
+noncomputable
+def evaluationCoconePointwiseProductIso (X : D) (c : ∀ i, Cocone (F i)) :
+    ((evaluation D C).obj X).mapCocone (coconePointwiseProduct c) ≅
+      (Cocone.precompose <| (pointwiseProductCompEvaluation F X).hom).obj
+        (coconePointwiseProduct fun i ↦ ((evaluation D C).obj X).mapCocone (c i)) :=
+  Cocone.ext (piObjIso (fun i ↦ (c i).pt) X) fun j ↦ by
+    dsimp
+    ext
+    simp [Functor.pi, NatTrans.pi, ← NatTrans.comp_app]
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
@@ -108,23 +168,83 @@ theorem colimitPointwiseProductToProductColimit_app (d : D) :
   simp only [← Category.assoc]
   rw [Iso.eq_comp_inv]
   refine Pi.hom_ext _ _ (fun s => colimit.hom_ext (fun k => ?_))
-  simp [← NatTrans.comp_app]
+  simp [← NatTrans.comp_app, Functor.pi]
 
 end functorCategory
 
 section
 
-variable (C : Type u) [Category.{v} C]
+variable {C : Type u} [Category.{v} C]
 
+variable {ι : Type*} [HasProductsOfShape ι C] {J : ι → Type*} [∀ i, Category* (J i)]
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable
+def Pi.equivalenceOfEquivCompPiFunctorIso (F : ∀ i, J i ⥤ C) {ι' : Type*} (f : ι' ≃ ι)
+    [HasProductsOfShape ι' C] :
+    (Pi.equivalenceOfEquiv (fun j ↦ J j) f).inverse ⋙ Functor.pi (fun j ↦ F (f j)) ⋙ Pi.functor ι' ≅
+      Functor.pi F ⋙ Pi.functor ι :=
+  (NatIso.ofComponents
+    fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm).symm
+
+class IsIPCOfShape (ι : Type*) (C : Type*) [Category* C] [HasProductsOfShape ι C] : Prop where
+  nonempty_isColimit ⦃J : ι → Type w⦄ [∀ i, SmallCategory (J i)]
+    [∀ i, IsFiltered (J i)] ⦃F : ∀ i, J i ⥤ C⦄ ⦃c : ∀ i, Cocone (F i)⦄ :
+    (∀ i, IsColimit (c i)) → Nonempty (IsColimit (coconePointwiseProduct c))
+
+lemma IsIPCOfShape.of_forall_exists
+    (H : ∀ ⦃J : ι → Type w⦄ [∀ i, SmallCategory (J i)]
+      [∀ i, IsFiltered (J i)] (F : ∀ i, J i ⥤ C) [∀ i, HasColimit (F i)], ∃ (c : ∀ i, Cocone (F i))
+      (_ : ∀ i, IsColimit (c i)), Nonempty (IsColimit (coconePointwiseProduct c))) :
+    IsIPCOfShape.{w} ι C where
+  nonempty_isColimit J _ _ F c hc := by
+    have (i : ι) : HasColimit (F i) := ⟨_, hc i⟩
+    obtain ⟨c', hc', _⟩ := H F
+    let e : coconePointwiseProduct c ≅ coconePointwiseProduct c' :=
+      coconePointwiseProductIso _ fun i ↦ (hc i).uniqueUpToIso (hc' i)
+    rwa [(IsColimit.equivIsoColimit e).nonempty_congr]
+
+lemma IsIPCOfShape.of_isIso (ι : Type*) [HasProductsOfShape ι C]
+    (H : ∀ (J : ι → Type w) [∀ i, SmallCategory (J i)] [∀ i, IsFiltered (J i)]
+      (F : ∀ i, J i ⥤ C) [∀ (i : ι), HasColimit (F i)],
+      ∃ (_ : HasColimit (Functor.pi F ⋙ Pi.functor ι)),
+        IsIso (colimitPointwiseProductToProductColimit F)) :
+    IsIPCOfShape.{w} ι C := by
+  refine .of_forall_exists fun J _ _ F _ ↦ ?_
+  refine ⟨fun i ↦ colimit.cocone _, fun i ↦ colimit.isColimit _, ?_⟩
+  obtain ⟨_, h⟩ := H J F
+  rwa [IsColimit.nonempty_isColimit_iff_isIso_desc (colimit.isColimit _)]
+
+lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfShape.{w} ι C]
+    (e : ι ≃ ι') :
+    IsIPCOfShape.{w} ι' C where
+  nonempty_isColimit J _ _ F c hc := by
+    obtain ⟨h⟩ := nonempty_isColimit fun i : ι ↦ hc (e i)
+    constructor
+    apply IsColimit.equivOfNatIsoOfIso _ _ _ _ <|
+        h.whiskerEquivalence (Pi.equivalenceOfEquiv J e).symm
+    · exact (Pi.equivalenceOfEquivCompPiFunctorIso F e)
+    · -- Without the double `symm`, one runs into (hard) DTT hell
+      symm
+      refine Cocone.ext ?_ ?_
+      · exact (Pi.whiskerEquiv e fun _ ↦ Iso.refl _).symm
+      · intro a
+        apply Pi.hom_ext
+        simp [Pi.equivalenceOfEquivCompPiFunctorIso, Pi.equivalenceOfEquiv, Functor.pi]
+
+
+variable (C) in
 /-- A category `C` has the `w`-IPC property if the natural morphism
 `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)` is an isomorphism for any
 family of functors `F i : I i ⥤ C` with `I i` `w`-small and filtered for all `i`. -/
 class IsIPC [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w} C] : Prop where
-  /-- `colimitPointwiseProductToProductColimit F` is always an isomorphism. -/
-  isIso : ∀ (α : Type w) (I : α → Type w) [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
-    (F : ∀ i, I i ⥤ C), IsIso (colimitPointwiseProductToProductColimit F)
+  isIPCOfShape (ι : Type w) : IsIPCOfShape.{w} ι C := by infer_instance
 
-attribute [instance] IsIPC.isIso
+instance [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w} C] [IsIPC.{w} C] (ι : Type*)
+    [Small.{w} ι] [HasProductsOfShape ι C] :
+    IsIPCOfShape.{w} ι C := by
+  suffices IsIPCOfShape (Shrink.{w} ι) C from .of_equiv (equivShrink ι).symm
+  apply IsIPC.isIPCOfShape
 
 end
 
@@ -141,14 +261,14 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     obtain ⟨ky', yk₀', hyk₀'⟩ := Types.jointly_surjective' y'
     let k := IsFiltered.max ky ky'
     let yk : (pointwiseProduct F).obj k :=
-      (pointwiseProduct F).map (IsFiltered.leftToMax ky ky') yk₀
+      (Functor.pi F ⋙ Pi.functor α).map (IsFiltered.leftToMax ky ky') yk₀
     let yk' : (pointwiseProduct F).obj k :=
-      (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
+      (Functor.pi F ⋙ Pi.functor α).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
       simp only [k, yk, colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
       simp only [k, yk', colimit.w_apply, hyk₀']
-    dsimp only [pointwiseProduct_obj] at yk yk'
+    dsimp at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =
           (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk') := by
@@ -160,10 +280,11 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
       obtain ⟨i₀, f₀, g₀, h₀⟩ := hy₂
       refine ⟨IsFiltered.coeq f₀ g₀, f₀ ≫ IsFiltered.coeqHom f₀ g₀, ?_⟩
       conv_rhs => rw [IsFiltered.coeq_condition]
+      dsimp [Functor.pi] at h₀
       simp [h₀]
     choose k' f hk' using hch
     apply Types.colimit_sound' f f
-    exact Types.limit_ext' _ _ _ (fun ⟨s⟩ => by simpa [Pi.map_π_apply] using hk' s)
+    exact Types.limit_ext' _ _ _ (fun ⟨s⟩ => by simpa [Functor.pi, Pi.map_π_apply] using hk' s)
   · have hch : ∀ (s : α), ∃ (i : I s) (xi : (F s).obj i), colimit.ι (F s) i xi =
         Pi.π (fun s => colimit (F s)) s x := fun s => Types.jointly_surjective' _
     choose k p hk using hch
@@ -171,10 +292,12 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     refine Types.limit_ext' _ _ _ (fun ⟨s⟩ => ?_)
     have := congr_hom (ι_colimitPointwiseProductToProductColimit_π F k s)
       ((Types.productIso _).inv p)
-    exact this.trans (by simpa using hk _)
+    exact this.trans (by simpa [Functor.pi] using hk _)
 
 instance : IsIPC.{u} (Type u) where
-  isIso _ _ := Types.isIso_colimitPointwiseProductToProductColimit
+  isIPCOfShape _ :=
+    .of_isIso _ fun _ _ _ _ _ ↦
+      ⟨inferInstance, Types.isIso_colimitPointwiseProductToProductColimit _⟩
 
 end types
 
@@ -182,12 +305,17 @@ section functorCategory
 
 variable {C : Type u} [Category.{v} C]
 
+instance (ι : Type*) [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C]
+    [HasFilteredColimitsOfSize.{w, w} C] {D : Type u₁}
+    [Category.{v₁} D] : IsIPCOfShape.{w} ι (D ⥤ C) where
+  nonempty_isColimit J _ _ F c hc := by
+    refine ⟨evaluationJointlyReflectsColimits _ fun X ↦ ?_⟩
+    exact IsColimit.equivOfNatIsoOfIso (pointwiseProductCompEvaluation F X).symm _ _
+      (evaluationCoconePointwiseProductIso F X c).symm
+      (IsIPCOfShape.nonempty_isColimit fun i ↦ isColimitOfPreserves _ (hc i)).some
+
 instance [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w} C] [IsIPC.{w} C] {D : Type u₁}
-    [Category.{v₁} D] : IsIPC.{w} (D ⥤ C) := by
-  refine ⟨fun β I _ _ F => ?_⟩
-  suffices ∀ d, IsIso ((colimitPointwiseProductToProductColimit F).app d) from
-    NatIso.isIso_of_isIso_app _
-  exact fun d => colimitPointwiseProductToProductColimit_app F d ▸ inferInstance
+    [Category.{v₁} D] : IsIPC.{w} (D ⥤ C) where
 
 end functorCategory
 
