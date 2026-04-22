@@ -93,7 +93,7 @@ end
 /-- We say that a functor creates finite products if it creates all limits of shape `Discrete J`
 where `J : Type` is finite. -/
 class CreatesFiniteProducts (F : C ⥤ D) where
-  /-- `F` creates all finite limits. -/
+  /-- `F` creates all finite products. -/
   creates :
     ∀ (J : Type) [Fintype J], CreatesLimitsOfShape (Discrete J) F := by infer_instance
 
@@ -183,10 +183,10 @@ instance (priority := 100) preservesFiniteColimits_of_createsFiniteColimits_and_
 
 end
 
-/-- We say that a functor creates finite limits if it creates all limits of shape `J` where
-`J : Type` is a finite category. -/
+/-- We say that a functor creates finite coproducts if it creates all colimits of shape
+`Discrete J` where `J : Type` is finite. -/
 class CreatesFiniteCoproducts (F : C ⥤ D) where
-  /-- `F` creates all finite limits. -/
+  /-- `F` creates all finite coproducts. -/
   creates :
     ∀ (J : Type) [Fintype J], CreatesColimitsOfShape (Discrete J) F := by infer_instance
 
@@ -203,7 +203,7 @@ instance compCreatesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E) [CreatesFiniteC
     [CreatesFiniteCoproducts G] : CreatesFiniteCoproducts (F ⋙ G) where
   creates _ _ := compCreatesColimitsOfShape _ _
 
-/-- Transfer creation of finite limits along a natural isomorphism in the functor. -/
+/-- Transfer creation of finite coproducts along a natural isomorphism in the functor. -/
 @[implicit_reducible]
 def createsFiniteCoproductsOfNatIso {F G : C ⥤ D} {h : F ≅ G} [CreatesFiniteCoproducts F] :
     CreatesFiniteCoproducts G where
