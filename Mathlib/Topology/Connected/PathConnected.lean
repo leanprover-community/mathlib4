@@ -133,6 +133,9 @@ lemma sound {x y : X} (p : Path x y) : mk x = mk y :=
 instance : TopologicalSpace <| ZerothHomotopy X :=
   inferInstanceAs <| TopologicalSpace <| Quotient _
 
+lemma isQuotientMap_mk : IsQuotientMap (ZerothHomotopy.mk (X := X)) :=
+  isQuotientMap_quotient_mk'
+
 instance inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
