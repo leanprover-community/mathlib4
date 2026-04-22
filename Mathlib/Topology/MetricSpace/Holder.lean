@@ -183,7 +183,7 @@ lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
     HolderOnWith (C * D ^ (r : ℝ)) 0 f A := by
   intro x hx y hy
   simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
-  grw [hf x hx y hy, hA x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
+  grw' [hf x hx y hy, hA x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
 
 /-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder when `s ≤ r`. -/
 lemma of_le {C D s : ℝ≥0} {A : Set X}

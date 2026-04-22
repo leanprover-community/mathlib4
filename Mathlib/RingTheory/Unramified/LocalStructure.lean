@@ -176,7 +176,7 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   let q := minpoly R x ^ (p.natDegree + 2) + p
   refine ⟨q, ?_, by simpa [q], ?_⟩
   · refine ((minpoly.monic hRx).pow _).add_of_left (degree_lt_degree ?_)
-    grw [natDegree_pow' (by simp [minpoly.monic hRx]),
+    grw' [natDegree_pow' (by simp [minpoly.monic hRx]),
       ← Nat.le_mul_of_pos_right _ (minpoly.natDegree_pos hRx)]; lia
   -- To show that `q'(x) ∉ Q`, we first show that `m` still divides `q` only once in `κ(P)[X]`.
   have ⟨w, h₁, h₂⟩ : ∃ w, q.map (algebraMap R _) = p.map (algebraMap R _) * w ∧ ¬ m ∣ w := by
