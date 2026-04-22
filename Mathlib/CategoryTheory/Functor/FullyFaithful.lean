@@ -196,8 +196,8 @@ instance : Subsingleton F.FullyFaithful where
     apply F.map_injective
     rw [hf₁, hf₂]
 
-/-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
-when `hF : F.FullyFaithful`. -/
+/-- The unique isomorphism `X ≅ Y` whose image under `F.mapIso` is the given
+isomorphism `e : F.obj X ≅ F.obj Y`, when `hF : F.FullyFaithful`. -/
 @[simps]
 def preimageIso {X Y : C} (e : F.obj X ≅ F.obj Y) : X ≅ Y where
   hom := hF.preimage e.hom
@@ -357,7 +357,7 @@ instance Full.comp [Full F] [Full G] : Full (F ⋙ G) where
 lemma Full.of_comp_faithful [Full <| F ⋙ G] [G.Faithful] : Full F where
   map_surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).map_preimage _)⟩
 
-/-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
+/-- If `F ⋙ G` is naturally isomorphic to some full `H` and `G` is faithful, then `F` is full. -/
 lemma Full.of_comp_faithful_iso {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} [Full H] [G.Faithful]
     (h : F ⋙ G ≅ H) : Full F := by
   have := Full.of_iso h.symm
