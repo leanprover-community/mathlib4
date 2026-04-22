@@ -689,7 +689,7 @@ instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
+/-- An auxiliary cone used in the lemma `pointwiseRightKanExtension_lift_app` -/
 @[simps]
 def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
     Cone (StructuredArrow.proj Y L ⋙ F) where
