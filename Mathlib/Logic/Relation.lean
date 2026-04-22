@@ -766,6 +766,24 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
+lemma map {α β : Type*} (f : α → β) (r : β → β → Prop) (x y : α)
+    (h : EqvGen (fun x y ↦ r (f x) (f y)) x y) : EqvGen r (f x) (f y) := by
+  induction h with
+  | rel => apply EqvGen.rel; assumption
+  | refl => exact EqvGen.refl _
+  | symm => apply EqvGen.symm; assumption
+  | trans => apply EqvGen.trans <;> assumption
+
+@[simp]
+lemma idempotent {α : Type*} (r : α → α → Prop) : EqvGen (EqvGen r) = EqvGen r := by
+  ext x y
+  refine ⟨fun h ↦ ?_, fun h ↦ EqvGen.rel _ _ h⟩
+  induction h with
+  | rel => assumption
+  | refl => exact EqvGen.refl _
+  | symm => apply EqvGen.symm; assumption
+  | trans => apply EqvGen.trans <;> assumption
+
 end EqvGen
 
 /-- The join of a relation on a single type is a new relation for which
