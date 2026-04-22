@@ -24,11 +24,12 @@ In this file, we combine the description of limits in `Types` and the API about
 the preservation of products and pullbacks in order to describe these limits in a
 concrete category `C`.
 
-If `F : J → C` is a family of objects in `C`, we define a bijection
+If `F : J → C` has a product in `C` and `forget C` preserves it, we define a bijection
 `Limits.Concrete.productEquiv F : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j)`.
 
 Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the elements
-in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`
+in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`, assuming
+the pullback exists and is preserved by `forget C`,
 to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
@@ -52,8 +53,8 @@ variable {FC : C → C → Type*} {CC : C → Type max w v} [∀ X Y, FunLike (F
 variable [ConcreteCategory.{max w v} C FC] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
-/-- The equivalence `ToType (∏ᶜ F) ≃ ∀ j, ToType (F j)` if `F : J → C` is a family of objects
-in a concrete category `C`. -/
+/-- The equivalence `ToType (∏ᶜ F) ≃ ∀ j, ToType (F j)` for a family `F : J → C`
+in a concrete category `C`, assuming `F` has a product and `forget C` preserves it. -/
 noncomputable def productEquiv : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j) :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j => ToType (F j))).toEquiv
 
@@ -119,7 +120,8 @@ noncomputable def terminalIffUnique [PreservesLimit (Functor.empty.{0} C) (forge
 variable (C)
 variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 
-/-- The equivalence `ToType (⊤_ C) ≃ PUnit` when `C` is a concrete category. -/
+/-- The equivalence `ToType (⊤_ C) ≃ PUnit` for a concrete category `C`,
+assuming `C` has a terminal object and `forget C` preserves it. -/
 noncomputable def terminalEquiv : ToType (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
@@ -162,8 +164,9 @@ variable {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y)
 variable [ConcreteCategory.{w} C FC] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
   [PreservesLimit (pair X₁ X₂) (forget C)]
 
-/-- The equivalence `ToType (X₁ ⨯ X₂) ≃ (ToType X₁) × (ToType X₂)`
-if `X₁` and `X₂` are objects in a concrete category `C`. -/
+/-- The equivalence `ToType (X₁ ⨯ X₂) ≃ (ToType X₁) × (ToType X₂)` for objects
+`X₁` and `X₂` in a concrete category `C`, assuming their binary product exists and
+`forget C` preserves it. -/
 noncomputable def prodEquiv : ToType (X₁ ⨯ X₂) ≃ ToType X₁ × ToType X₂ :=
   (PreservesLimitPair.iso (forget C) X₁ X₂ ≪≫ Types.binaryProductIso _ _).toEquiv
 
@@ -198,9 +201,9 @@ variable [ConcreteCategory.{v} C FC]
 variable {X₁ X₂ S : C} (f₁ : X₁ ⟶ S) (f₂ : X₂ ⟶ S)
     [HasPullback f₁ f₂] [PreservesLimit (cospan f₁ f₂) (forget C)]
 
-/-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`,
-the elements in `pullback f₁ f₂` can be identified to compatible tuples of
-elements in `X₁` and `X₂`. -/
+/-- In a concrete category `C`, given two morphisms `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S`
+whose pullback exists and is preserved by `forget C`, the elements in
+`pullback f₁ f₂` can be identified to compatible tuples of elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
@@ -309,8 +312,8 @@ def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex 
     ext i
     rfl
 
-/-- The equivalence between the noncomputable multiequalizer and
-the concrete multiequalizer. -/
+/-- The equivalence between `ToType (multiequalizer I)` and the corresponding concrete
+multiequalizer, assuming `I` has a multiequalizer and `forget C` preserves it. -/
 noncomputable def multiequalizerEquiv {J : MulticospanShape.{w, w'}}
     (I : MulticospanIndex J C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
