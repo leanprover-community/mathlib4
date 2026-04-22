@@ -20,6 +20,13 @@ Notable examples:
 * `ScottContinuous` functions between `DirectedCompletePartialOrder`s.
 * A `CompletePartialOrder` is exactly a DCPO which is also `OrderBot`.
 
+DCPOs are useful for the formalisation of the semantics of programming languages. Their
+`MonoidalClosed` structure with respect to `ScottContinuous` functions helps define the meaning of
+concurrent procedures and coinductive data structures.
+
+DCPOs essentially generalise `OmegaCompletePartialOrder`s to arbitrary cardinalities [Recursive
+Domain Equations, Fact 1.a][smyth_plotkin1982].
+
 For *pointed* directed complete partial orders, see `CompletePartialOrder`, which removes the
 nonemptiness constraint.
 
