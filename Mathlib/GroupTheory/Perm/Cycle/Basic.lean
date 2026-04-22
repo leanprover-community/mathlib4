@@ -518,7 +518,7 @@ theorem IsCycle.support_pow_eq_iff (hf : IsCycle f) {n : ℕ} :
   · intro H
     apply le_antisymm (support_pow_le _ n) _
     intro x hx
-    contrapose! H
+    contrapose H
     ext z
     by_cases hz : f z = z
     · rw [pow_apply_eq_self_of_apply_eq_self hz, one_apply]
@@ -1018,7 +1018,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         subtypePerm_apply_zpow_of_mem] at hix
       exact hix.symm
     · rw [notMem_support.mp hx, eq_comm, ← notMem_support]
-      contrapose! hx
+      contrapose hx
       exact (hc' x).mp hx
 
 /-- A permutation `g` commutes with a cycle `c` if and only if

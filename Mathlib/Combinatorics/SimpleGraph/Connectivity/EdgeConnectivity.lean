@@ -157,7 +157,7 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     simp only [Walk.getVert_tail, Nat.reduceAdd] at this
     simpa using hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne hne) |>.mp this.symm
   · refine Walk.reachable <| Walk.cons (deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
-    contrapose! h'
+    contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
 
@@ -173,7 +173,7 @@ variable {w : G.Walk u v}
 private lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two_aux (hw : w.IsTrail)
     (huv : G.IsEdgeReachable 2 u v) (huy : x ∈ w.support) : G.IsEdgeReachable 2 u x := by
   classical
-  contrapose! huy
+  contrapose huy
   obtain ⟨e, he⟩ := by simpa [isEdgeReachable_two] using huy
   have he' : ¬ (G.deleteEdges {e}).Reachable v x := fun hvy ↦
     he <| (isEdgeReachable_two.1 huv _).trans hvy
