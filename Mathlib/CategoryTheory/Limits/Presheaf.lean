@@ -25,15 +25,15 @@ the co-Yoneda lemma and the Ninja Yoneda lemma. Three formulations are given:
   in `Type (max w v₁)`;
 
 In this file, we also study the left Kan extensions of functors `A : C ⥤ ℰ`
-along the Yoneda embedding `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`
+along the Yoneda embedding `uliftYoneda`
 (when `Category.{v₂} ℰ` and `w` is an auxiliary universe). In particular,
 the definition `uliftYonedaAdjunction` shows that such a pointwise left Kan
 extension (which exists when `ℰ` has colimits) is a left adjoint to the
-functor `restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₁ v₂)`.
+functor `restrictedULiftYoneda`.
 
 In the lemma `isLeftKanExtension_along_uliftYoneda_iff`, we show that
 if `L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ` and `α : A ⟶ uliftYoneda ⋙ L`, then
-`α` makes `L` the left Kan extension of `L` along yoneda if and only if
+`α` makes `L` the left Kan extension of `A` along `uliftYoneda` if and only if
 `α` is an isomorphism (i.e. `L` extends `A`) and `L` preserves colimits.
 `uniqueExtensionAlongULiftYoneda` shows `uliftYoneda.leftKanExtension A` is
 unique amongst functors preserving colimits with this property, establishing the
@@ -68,7 +68,7 @@ variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 /--
 Given a functor `A : C ⥤ ℰ` (with `Category.{v₂} ℰ`) and an auxiliary universe `w`,
 this is the functor `ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂)` which sends `(E : ℰ) (c : Cᵒᵖ)`
-to the homset `A.obj C ⟶ E` (considered in the higher universe `max w v₂`).
+to the homset `A.obj c.unop ⟶ E` (considered in the higher universe `max w v₂`).
 Under the existence of a suitable pointwise left Kan extension, it is shown in
 `uliftYonedaAdjunction` that this functor has a left adjoint.
 
@@ -237,7 +237,7 @@ noncomputable def isExtensionAlongULiftYoneda :
 end
 
 /-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
-of the category of elements of `X` which sends an element in `P.obj (op X)` to the
+of the category of elements of `P` which sends an element in `P.obj (op X)` to the
 presheaf represented by `X`. The definition `coconeOfRepresentable`
 gives a cocone for this functor which is a colimit and has point `P`.
 -/
@@ -617,8 +617,8 @@ noncomputable instance (Φ : StructuredArrow (F ⋙ uliftYoneda.{max w v₁})
   default := compULiftYonedaIsoULiftYonedaCompLan.extensionHom Φ
   uniq _ := compULiftYonedaIsoULiftYonedaCompLan.hom_ext _ _
 
-/-- Given a functor `F : C ⥤ D`, `F.op.lan : (Cᵒᵖ ⥤ Type v₁) ⥤ Dᵒᵖ ⥤ Type v₁` is the
-left Kan extension of `F ⋙ yoneda : C ⥤ Dᵒᵖ ⥤ Type v₁` along `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`. -/
+/-- Given a functor `F : C ⥤ D`, `F.op.lan` is the left Kan extension of
+`F ⋙ uliftYoneda` along `uliftYoneda`. -/
 instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom :=
   ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
 
