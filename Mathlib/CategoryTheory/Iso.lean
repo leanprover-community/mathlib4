@@ -20,7 +20,7 @@ This file defines isomorphisms between objects of a category.
   Of course, this inverse is unique, so it doesn't cost us much to use choice to retrieve it.
 - `inv f`, for the inverse of a morphism with `[IsIso f]`
 - `asIso` : convert from `IsIso` to `Iso` (noncomputable);
-- `of_iso` : convert from `Iso` to `IsIso`;
+- `Iso.isIso_hom` : convert from `Iso` to `IsIso`;
 - standard operations on isomorphisms (composition, inverse etc)
 
 ## Notation
@@ -273,7 +273,7 @@ instance Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
 open IsIso
 
 /-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `X ≅ Y`. -/
-@[to_dual asIso' /-- Reinterpret a morphism `f : X ⟶ Y` with an `IsIso f` instance as `Y ≅ X`. -/]
+@[to_dual asIso' /-- Reinterpret a morphism `f : Y ⟶ X` with an `IsIso f` instance as `X ≅ Y`. -/]
 noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 
