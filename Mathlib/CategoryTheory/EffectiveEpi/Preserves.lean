@@ -202,8 +202,8 @@ A class describing the property of reflecting effective epimorphisms.
 -/
 class ReflectsEffectiveEpis (F : C ⥤ D) : Prop where
   /--
-  A functor reflects effective epimorphisms if morphisms that are mapped to epimorphisms are
-  themselves effective epimorphisms.
+  A functor reflects effective epimorphisms if morphisms that are mapped to effective
+  epimorphisms are themselves effective epimorphisms.
   -/
   reflects : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi (F.map f) → EffectiveEpi f
 
