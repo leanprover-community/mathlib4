@@ -100,6 +100,7 @@ structure LocalPredicate extends PrelocalPredicate T where
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V ↦ f (i x : U)), pred f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=

@@ -183,6 +183,7 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
 lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
     ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism gives a natural isomorphism between the pushforward functors. -/
 @[simps]
 noncomputable def pushforwardNatIso (α : F ≅ G) :
@@ -263,12 +264,14 @@ open CategoryTheory Limits
 variable {C : Type u'} [Category.{v'} C] [HasBinaryProducts C] {J : GrothendieckTopology C}
   {R : Sheaf J RingCat.{u}}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
 def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
   ⟨{app U := R.obj.map Limits.prod.snd.op
     naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
 def overPushforwardOverAdj (x : C) :

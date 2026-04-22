@@ -75,6 +75,7 @@ private noncomputable def preimageDiagram (X : C) (y : (F.obj ⟨0⟩).obj.obj �
 
 variable [HasLimitsOfShape ℕᵒᵖ C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).obj.obj ⟨X⟩) : Cone F where
   pt := ((coherentTopology C).yoneda).obj (limit (preimageDiagram hF X y))

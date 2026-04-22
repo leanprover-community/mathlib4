@@ -39,6 +39,7 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 variable (F G : Cᵒᵖ ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two presheaves `F` and `G` on a category `C` with values in a category `A`,
 this `presheafHom F G` is the presheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
@@ -76,6 +77,7 @@ lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
 
 variable (F G)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
 def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=

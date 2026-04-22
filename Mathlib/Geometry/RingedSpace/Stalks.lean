@@ -115,6 +115,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   ext
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z) (x : X) :
@@ -183,6 +184,7 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}

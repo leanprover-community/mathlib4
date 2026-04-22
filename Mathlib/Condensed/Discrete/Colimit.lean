@@ -37,6 +37,7 @@ variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u
 abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u + 1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u + 1}.obj X
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The functor `locallyConstantPresheaf` takes cofiltered limits of finite sets with surjective
 projection maps to colimits.
@@ -245,6 +246,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
 
 attribute [local simp] toProfinite_obj
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
@@ -270,6 +272,7 @@ def isoLocallyConstantOfIsColimit
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts X]
@@ -320,6 +323,7 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 abbrev locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
@@ -532,6 +536,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Fin
 
 attribute [local simp] toLightProfinite_obj
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
@@ -558,6 +563,7 @@ def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
       lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u)
     [PreservesFiniteProducts X] (hX : ∀ S : LightProfinite.{u}, (IsColimit <|
