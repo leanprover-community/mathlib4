@@ -95,8 +95,8 @@ def relationsOfIsCokernelFree {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
     (kernel (generatorsOfIsCokernelFree f g H H').π).GeneratingSections where
   I := ι
-  s := (kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv <|
-    kernel.lift (generatorsOfIsCokernelFree f g H H').π f (by simp [H])
+  s := (kernel (generatorsOfIsCokernelFree f g H H').π).freeHomEquiv <| kernel.lift
+    (generatorsOfIsCokernelFree f g H H').π f (by simp [H])
   epi := by
     let h : cokernel f ≅ M := (H'.coconePointUniqueUpToIso (colimit.isColimit _)).symm
     let h' : Abelian.image f ≅ kernel (generatorsOfIsCokernelFree f g H H').π :=
