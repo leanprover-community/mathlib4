@@ -32,6 +32,8 @@ that are part of `J`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 universe t t' v' v u' u
 
 namespace CategoryTheory
@@ -112,10 +114,10 @@ lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
 
 namespace sieve
 
-set_option backward.defeqAttrib.useBackward true in
 variable {i : ι} {Z : C} {q : Z ⟶ X i}
   (hq : sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 X i)))
 
+set_option backward.defeqAttrib.useBackward true in
 include hq in
 lemma exists_fac : ∃ (j : ι') (a : Z ⟶ X' j), a ≫ f' j = q ≫ f i := by
   obtain ⟨_, q, _, ⟨j⟩, fac⟩ := hq
