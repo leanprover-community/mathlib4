@@ -241,6 +241,7 @@ Q225973:
 
 Q226014:
   title: Poincaré recurrence theorem
+  decl: MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 Q230848:
   title: Lamé’s theorem
@@ -261,7 +262,8 @@ Q245098:
 
 Q245098X:
   title: Bolzano's theorem
-  # variant of the intermediate value theorem above, TODO should exist in mathlib, add decl
+  decl: intermediate_value_Icc
+  comment: variant of the intermediate value theorem above
 
 Q245902:
   title: Riesz–Thorin theorem
@@ -365,6 +367,7 @@ Q332465:
 
 Q338886:
   title: Divergence theorem
+  decl: MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable
 
 Q339495:
   title: Symphonic theorem
@@ -676,7 +679,7 @@ Q656176:
 
 Q656198:
   title: Maschke's theorem
-  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
+  decl: MonoidAlgebra.Submodule.exists_isCompl
 
 Q656645:
   title: Hilbert's basis theorem
@@ -1390,6 +1393,7 @@ Q1139524:
 
 Q1140119:
   title: Morera's theorem
+  decl: Complex.isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 
 Q1140200:
   title: PCP theorem
@@ -1568,9 +1572,6 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
-  authors: Chris Henson, Maximiliano Onofre Martínez
-  url: https://github.com/leanprover/cslib/
-  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1675,8 +1676,8 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellFoundedLT
-  authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
+  decl: exists_wellOrder
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
   date: 2017
 
 Q1471282:
@@ -1719,7 +1720,7 @@ Q1542114:
   title: Bézout's theorem
 
 Q1543149:
-  title: Sokhotski–Plemelj theorem
+  title: Sokhatsky–Weierstrass theorem
 
 Q1547975:
   title: Mermin–Wagner theorem
@@ -1802,7 +1803,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
+  authors: Fox Thomson
   date: 2020
 
 Q1694565:
@@ -2075,7 +2076,7 @@ Q2226803:
   title: Tennenbaum's theorem
 
 Q2226807:
-  title: Vantieghem's theorem
+  title: Vantieghems theorem
 
 Q2226855:
   title: Sharkovskii's theorem
@@ -2235,6 +2236,9 @@ Q2621667:
 
 Q2631152:
   title: Carathéodory's extension theorem
+  decls:
+    - MeasureTheory.AddContent.measure
+    - MeasureTheory.AddContent.measure_eq
 
 Q2635326:
   title: Structured program theorem
@@ -2471,7 +2475,7 @@ Q3527162:
 
 Q3527166:
   title: Steinhaus theorem
-  # not difficult, but seemingly missing
+  decl: MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 
 Q3527171:
   title: Synge's theorem
@@ -3803,6 +3807,7 @@ Q7601243:
 
 Q7606897:
   title: Steinitz theorem
+  decl: Field.exists_primitive_element_iff_finite_intermediateField
 
 Q7606940:
   title: Stein–Strömberg theorem
@@ -4144,6 +4149,7 @@ Q20278711:
 
 Q20971632:
   title: Lie's theorem
+  decl: LieModule.exists_nontrivial_weightSpace_of_isSolvable
 
 Q22952648:
   title: Uncountability of the continuum
