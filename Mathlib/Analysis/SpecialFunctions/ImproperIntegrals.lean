@@ -5,12 +5,10 @@ Authors: David Loeffler, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.MeanValue
 
 /-!
 # Evaluation of specific improper integrals
@@ -294,17 +292,15 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E
          {a b c : ℝ} {L R : E}
 
 omit [CompleteSpace E] in
-lemma intervalIntegrable_inv_smul (hf : ContinuousOn f (Ioi 0)) {p q : ℝ}
-    (hp : 0 < p) (hq : 0 < q) :
-    IntervalIntegrable (fun x ↦ x⁻¹ • f x) volume p q := by
+lemma intervalIntegrable_inv_smul (hf : ContinuousOn f (Ioi 0)) {p q : ℝ} (hp : 0 < p)
+    (hq : 0 < q) : IntervalIntegrable (fun x ↦ x⁻¹ • f x) volume p q := by
   apply ContinuousOn.intervalIntegrable
   have hsub : uIcc p q ⊆ Ioi 0 := by simp [uIcc, Icc_subset_Ioi_iff, hp, hq]
   exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).smul (hf.mono hsub)
 
 omit [CompleteSpace E] in
-lemma intervalIntegrable_inv_smul_comp_mul (hf : ContinuousOn f (Ioi 0))
-    {p q : ℝ} (hp : 0 < p) (hq : 0 < q) (hc : 0 < c) :
-    IntervalIntegrable (fun x ↦ x⁻¹ • f (c * x)) volume p q := by
+lemma intervalIntegrable_inv_smul_comp_mul (hf : ContinuousOn f (Ioi 0)) {p q : ℝ} (hp : 0 < p)
+    (hq : 0 < q) (hc : 0 < c) : IntervalIntegrable (fun x ↦ x⁻¹ • f (c * x)) volume p q := by
   apply ContinuousOn.intervalIntegrable
   have hsub : uIcc p q ⊆ Ioi 0 := by simp [uIcc, Icc_subset_Ioi_iff, hp, hq]
   exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).smul
@@ -322,182 +318,126 @@ lemma integral_comp_mul_inv_smul {ε r : ℝ} (hc : 0 < c) :
     field_simp
   rw [key, intervalIntegral.integral_smul, smul_integral_comp_mul_left]
 
-/-- If `f → L` as `x → 0⁺` and `f` is continuous on `(0, ∞)`, then the weighted integral
-`∫ x in a*ε..b*ε, x⁻¹ • f x` converges to `log(b/a) • L` as `ε → 0⁺`. -/
-lemma tendsto_integral_inv_smul_nhdsWithin
-    (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a) (hb : 0 < b)
-    (hL : Tendsto f (𝓝[>] 0) (𝓝 L)) :
-    Tendsto (fun ε ↦ ∫ x in (a * ε)..(b * ε), x⁻¹ • f x) (𝓝[>] 0)
-      (𝓝 (log (b / a) • L)) := by
+lemma norm_integral_inv_smul_sub_le (hf : ContinuousOn f (Ioi 0)) {p q : ℝ} (hp : 0 < p)
+    (hq : 0 < q) {V : E} {δ : ℝ} (hδ : 0 ≤ δ) (h : ∀ x ∈ uIoc p q, ‖f x - V‖ ≤ δ) :
+    ‖(∫ x in p..q, x⁻¹ • f x) - log (q / p) • V‖ ≤ δ * |log (q / p)| := by
+  have hsub : uIcc p q ⊆ Ioi 0 := by simp [uIcc, Icc_subset_Ioi_iff, hp, hq]
+  have hint_f : IntervalIntegrable (fun x ↦ x⁻¹ • f x) volume p q :=
+    intervalIntegrable_inv_smul hf hp hq
+  have hint_V : IntervalIntegrable (fun x ↦ x⁻¹ • V) volume p q := by
+    apply ContinuousOn.intervalIntegrable
+    exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).smul continuousOn_const
+  have hint_inv : IntervalIntegrable (fun x : ℝ ↦ x⁻¹ * δ) volume p q := by
+    apply ContinuousOn.intervalIntegrable
+    exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).mul continuousOn_const
+  calc
+    _ = ‖∫ x in p..q, x⁻¹ • (f x - V)‖ := by
+        congr 1
+        have : log (q / p) • V = ∫ x in p..q, x⁻¹ • V := by
+          rw [intervalIntegral.integral_smul_const (f := fun x ↦ (x⁻¹ : ℝ)) (c := V),
+            integral_inv_of_pos hp hq]
+        rw [this, ← integral_sub hint_f hint_V]
+        congr 1
+        funext x
+        exact (smul_sub _ _ _).symm
+    _ ≤ |∫ x in p..q, x⁻¹ * δ| := by
+        apply norm_integral_le_abs_of_norm_le
+        · exact (ae_restrict_mem measurableSet_uIoc).mono fun x hx ↦ by
+            have hx_pos : 0 < x :=
+              lt_of_lt_of_le (lt_min hp hq) (uIoc_subset_uIcc hx).1
+            rw [norm_smul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hx_pos)]
+            exact mul_le_mul_of_nonneg_left (h x hx) (inv_nonneg.2 hx_pos.le)
+        · exact hint_inv
+    _ = δ * |log (q / p)| := by
+        have heq : (fun x : ℝ ↦ x⁻¹ * δ) = fun x ↦ δ * x⁻¹ := by
+          funext x
+          ring
+        rw [heq, intervalIntegral.integral_const_mul, integral_inv_of_pos hp hq]
+        exact (abs_mul δ (log (q / p))).trans (by rw [abs_of_nonneg hδ])
+
+lemma tendsto_integral_inv_smul_of_tendsto_uniform (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a)
+    (hb : 0 < b) {F : Filter ℝ} (hpos : ∀ᶠ t in F, 0 < t) {V : E}
+    (huni : ∀ δ > 0, ∀ᶠ t in F, ∀ x ∈ uIoc (a * t) (b * t), ‖f x - V‖ ≤ δ) :
+    Tendsto (fun t ↦ ∫ x in (a * t)..(b * t), x⁻¹ • f x) F (𝓝 (log (b / a) • V)) := by
   rw [Metric.tendsto_nhds]
   intro δ hδ
-  by_cases hlog : log (b / a) = 0
-  · have hab : a = b := by
-      have hba : (0 : ℝ) < b / a := div_pos hb ha
-      rcases log_eq_zero.1 hlog with h | h | h
-      all_goals grind
-    filter_upwards [self_mem_nhdsWithin] with ε _
-    rw [hab, integral_same, div_self (ne_of_gt hb), log_one, zero_smul, dist_self]
-    exact hδ
-  · set C := |log (b / a)| with hC_def
-    have hC : 0 < C := abs_pos.2 hlog
-    set δ' := δ / (C + 1)
-    have hδ' : 0 < δ' := div_pos hδ (by positivity)
-    have hev : ∀ᶠ x in 𝓝[>] (0 : ℝ), dist (f x) L < δ' :=
-      hL.eventually (ball_mem_nhds L hδ')
-    rw [Filter.Eventually, mem_nhdsWithin_iff] at hev
-    obtain ⟨η, hη, hη_sub⟩ := hev
-    set M := max a b with hM_def
-    have hM : 0 < M := lt_max_of_lt_left ha
-    filter_upwards [self_mem_nhdsWithin,
-      nhdsWithin_le_nhds (Iio_mem_nhds (div_pos hη hM))] with ε hε_pos hε_bound
-    have hε_pos : 0 < ε := hε_pos
-    have haε : 0 < a * ε := mul_pos ha hε_pos
-    have hbε : 0 < b * ε := mul_pos hb hε_pos
-    have hfL : ∀ x ∈ uIoc (a * ε) (b * ε), ‖f x - L‖ ≤ δ' := by
-      intro x hx
-      have hx_pos : 0 < x :=
-        lt_of_lt_of_le (lt_min haε hbε) (uIoc_subset_uIcc hx).1
-      have hx_lt_η : dist x 0 < η := by
-        rw [Real.dist_eq, sub_zero, abs_of_pos hx_pos]
+  set C := |log (b / a)| with hC_def
+  set δ' := δ / (C + 1)
+  have hδ' : 0 < δ' := div_pos hδ (by positivity)
+  filter_upwards [hpos, huni δ' hδ'] with t ht_pos hbound
+  have haε : 0 < a * t := mul_pos ha ht_pos
+  have hbε : 0 < b * t := mul_pos hb ht_pos
+  have hlog_eq : log (b * t / (a * t)) = log (b / a) := by
+    rw [mul_div_mul_right b a (ne_of_gt ht_pos)]
+  calc
+    _ = ‖(∫ x in a * t..b * t, x⁻¹ • f x) - log (b / a) • V‖ := dist_eq_norm _ _
+    _ = ‖(∫ x in a * t..b * t, x⁻¹ • f x) - log (b * t / (a * t)) • V‖ := by rw [hlog_eq]
+    _ ≤ δ' * |log (b * t / (a * t))| :=
+        norm_integral_inv_smul_sub_le hf haε hbε hδ'.le hbound
+    _ = δ' * C := by rw [hlog_eq]
+    _ < δ := by
         calc
-          _ ≤ max (a * ε) (b * ε) := (uIoc_subset_uIcc hx).2
-          _ = M * ε := by rw [hM_def, max_mul_of_nonneg _ _ hε_pos.le]
-          _ < M * (η / M) := mul_lt_mul_of_pos_left hε_bound hM
-          _ = η := mul_div_cancel₀ η (ne_of_gt hM)
-      have := hη_sub ⟨mem_ball.2 hx_lt_η, hx_pos⟩
-      rw [mem_setOf_eq, dist_eq_norm] at this
-      exact le_of_lt this
-    have hint_f : IntervalIntegrable (fun x ↦ x⁻¹ • f x) volume (a * ε) (b * ε) :=
-      intervalIntegrable_inv_smul hf haε hbε
-    have hint_L : IntervalIntegrable (fun x ↦ x⁻¹ • L) volume (a * ε) (b * ε) := by
-      apply ContinuousOn.intervalIntegrable
-      have hsub : uIcc (a * ε) (b * ε) ⊆ Ioi 0 := by
-        simp [uIcc, Icc_subset_Ioi_iff, haε, hbε]
-      exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).smul continuousOn_const
-    have hint_inv : IntervalIntegrable (fun x : ℝ ↦ x⁻¹ * δ') volume (a * ε) (b * ε) := by
-      apply ContinuousOn.intervalIntegrable
-      have hsub : uIcc (a * ε) (b * ε) ⊆ Ioi 0 := by
-        simp [uIcc, Icc_subset_Ioi_iff, haε, hbε]
-      exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).mul continuousOn_const
+          _ = δ * (C / (C + 1)) := by ring
+          _ < δ * 1 :=
+            mul_lt_mul_of_pos_left ((div_lt_one (by positivity)).2 (lt_add_one C)) hδ
+          _ = δ := mul_one δ
+
+lemma tendsto_integral_inv_smul_nhdsWithin (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a) (hb : 0 < b)
+    (hL : Tendsto f (𝓝[>] 0) (𝓝 L)) :
+    Tendsto (fun ε ↦ ∫ x in (a * ε)..(b * ε), x⁻¹ • f x) (𝓝[>] 0) (𝓝 (log (b / a) • L)) := by
+  apply tendsto_integral_inv_smul_of_tendsto_uniform hf ha hb self_mem_nhdsWithin
+  intro δ hδ
+  have hev : ∀ᶠ x in 𝓝[>] (0 : ℝ), dist (f x) L < δ :=
+    hL.eventually (ball_mem_nhds L hδ)
+  rw [Filter.Eventually, mem_nhdsWithin_iff] at hev
+  obtain ⟨η, hη, hη_sub⟩ := hev
+  set M := max a b with hM_def
+  have hM : 0 < M := lt_max_of_lt_left ha
+  filter_upwards [self_mem_nhdsWithin,
+    nhdsWithin_le_nhds (Iio_mem_nhds (div_pos hη hM))] with t ht_pos ht_bound
+  intro x hx
+  have haε : 0 < a * t := mul_pos ha ht_pos
+  have hbε : 0 < b * t := mul_pos hb ht_pos
+  have hx_pos : 0 < x := lt_of_lt_of_le (lt_min haε hbε) (uIoc_subset_uIcc hx).1
+  have hx_lt_η : dist x 0 < η := by
+    rw [Real.dist_eq, sub_zero, abs_of_pos hx_pos]
     calc
-      _ = ‖(∫ x in a * ε..b * ε, x⁻¹ • f x) - log (b / a) • L‖ := dist_eq_norm _ _
-      _ = ‖∫ x in a * ε..b * ε, x⁻¹ • (f x - L)‖ := by
-          congr 1
-          have : log (b / a) • L = ∫ x in a * ε..b * ε, x⁻¹ • L := by
-            rw [intervalIntegral.integral_smul_const (f := fun x ↦ (x⁻¹ : ℝ)) (c := L),
-              integral_inv_of_pos haε hbε, mul_div_mul_right b a (ne_of_gt hε_pos)]
-          rw [this, ← integral_sub hint_f hint_L]
-          congr 1
-          funext x
-          exact (smul_sub _ _ _).symm
-      _ ≤ |∫ x in a * ε..b * ε, x⁻¹ * δ'| := by
-          apply norm_integral_le_abs_of_norm_le
-          · exact (ae_restrict_mem measurableSet_uIoc).mono fun x hx ↦ by
-              rw [norm_smul, Real.norm_eq_abs, abs_of_pos
-                (inv_pos.2 (lt_of_lt_of_le (lt_min haε hbε) (uIoc_subset_uIcc hx).1))]
-              exact mul_le_mul_of_nonneg_left (hfL x hx)
-                (inv_nonneg.2 (le_of_lt (lt_of_lt_of_le (lt_min haε hbε)
-                  (uIoc_subset_uIcc hx).1)))
-          · exact hint_inv
-      _ = δ' * C := by
-          have heq : (fun x : ℝ ↦ x⁻¹ * δ') = fun x ↦ δ' * x⁻¹ := by
-            funext x
-            ring
-          rw [heq, intervalIntegral.integral_const_mul, integral_inv_of_pos haε hbε,
-            mul_div_mul_right b a (ne_of_gt hε_pos)]
-          exact (abs_mul δ' (log (b / a))).trans (by rw [abs_of_pos hδ'])
-      _ < δ := by
-          calc
-            _ = δ * (C / (C + 1)) := by ring
-            _ < δ * 1 := by
-              exact mul_lt_mul_of_pos_left ((div_lt_one (by positivity)).2 (lt_add_one C)) hδ
-            _ = δ := mul_one δ
+      _ ≤ max (a * t) (b * t) := (uIoc_subset_uIcc hx).2
+      _ = M * t := by rw [hM_def, max_mul_of_nonneg _ _ ht_pos.le]
+      _ < M * (η / M) := mul_lt_mul_of_pos_left ht_bound hM
+      _ = η := mul_div_cancel₀ η (ne_of_gt hM)
+  have := hη_sub ⟨mem_ball.2 hx_lt_η, hx_pos⟩
+  rw [mem_setOf_eq, dist_eq_norm] at this
+  exact le_of_lt this
 
 /-- If `f → R` as `x → +∞` and `f` is continuous on `(0, ∞)`, then the weighted integral
 `∫ x in a*r..b*r, x⁻¹ • f x` converges to `log(b/a) • R` as `r → +∞`. -/
-lemma tendsto_integral_inv_smul_atTop
-    (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a) (hb : 0 < b) (hR : Tendsto f atTop (𝓝 R)) :
+lemma tendsto_integral_inv_smul_atTop (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a) (hb : 0 < b)
+    (hR : Tendsto f atTop (𝓝 R)) :
     Tendsto (fun r ↦ ∫ x in (a * r)..(b * r), x⁻¹ • f x) atTop (𝓝 (log (b / a) • R)) := by
-  rw [Metric.tendsto_nhds]
+  apply tendsto_integral_inv_smul_of_tendsto_uniform hf ha hb
+    (eventually_atTop.2 ⟨1, fun r hr ↦ zero_lt_one.trans_le hr⟩)
   intro δ hδ
-  by_cases hlog : log (b / a) = 0
-  · have hab : a = b := by
-      have hba : (0 : ℝ) < b / a := div_pos hb ha
-      rcases log_eq_zero.1 hlog with h | h | h
-      all_goals grind
-    filter_upwards [eventually_atTop.2 ⟨1, fun r _ ↦ trivial⟩] with r _
-    rw [hab, integral_same, div_self (ne_of_gt hb), log_one, zero_smul, dist_self]
-    exact hδ
-  · set C := |log (b / a)| with hC_def
-    have hC : 0 < C := abs_pos.2 hlog
-    set δ' := δ / (C + 1)
-    have hδ' : 0 < δ' := div_pos hδ (by positivity)
-    have hev : ∀ᶠ x in atTop, dist (f x) R < δ' :=
-      hR.eventually (ball_mem_nhds R hδ')
-    rw [Filter.eventually_atTop] at hev
-    obtain ⟨N, hN⟩ := hev
-    have hm : 0 < min a b := lt_min ha hb
-    filter_upwards [eventually_atTop.2 ⟨max 1 (N / min a b), fun r hr ↦ hr⟩] with r hr
-    have hr_pos : 0 < r := lt_of_lt_of_le one_pos ((le_max_left 1 _).trans hr)
-    have haε : 0 < a * r := mul_pos ha hr_pos
-    have hbε : 0 < b * r := mul_pos hb hr_pos
-    have hfR : ∀ x ∈ uIoc (a * r) (b * r), ‖f x - R‖ ≤ δ' := by
-      intro x hx
-      have hNx : N ≤ x :=
-        calc
-          _ = min a b * (N / min a b) := by field_simp
-          _ ≤ min a b * r :=
-            mul_le_mul_of_nonneg_left ((le_max_right _ _).trans hr) hm.le
-          _ = min (a * r) (b * r) := by rw [min_mul_of_nonneg _ _ hr_pos.le]
-          _ ≤ x := (uIoc_subset_uIcc hx).1
-      have hdist := hN x hNx
-      rw [dist_eq_norm] at hdist
-      exact le_of_lt hdist
-    have hint_f := intervalIntegrable_inv_smul hf haε hbε
-    have hint_R : IntervalIntegrable (fun x ↦ x⁻¹ • R) volume (a * r) (b * r) := by
-      apply ContinuousOn.intervalIntegrable
-      have hsub : uIcc (a * r) (b * r) ⊆ Ioi 0 := by
-        simp [uIcc, Icc_subset_Ioi_iff, haε, hbε]
-      exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).smul continuousOn_const
-    have hint_inv : IntervalIntegrable (fun x : ℝ ↦ x⁻¹ * δ') volume (a * r) (b * r) := by
-      apply ContinuousOn.intervalIntegrable
-      have hsub : uIcc (a * r) (b * r) ⊆ Ioi 0 := by
-        simp [uIcc, Icc_subset_Ioi_iff, haε, hbε]
-      exact (continuousOn_inv₀.mono (fun x hx ↦ ne_of_gt (hsub hx))).mul continuousOn_const
+  have hev : ∀ᶠ x in atTop, dist (f x) R < δ :=
+    hR.eventually (ball_mem_nhds R hδ)
+  rw [Filter.eventually_atTop] at hev
+  obtain ⟨N, hN⟩ := hev
+  have hm : 0 < min a b := lt_min ha hb
+  filter_upwards [eventually_atTop.2 ⟨max 1 (N / min a b), fun r hr ↦ hr⟩] with t ht
+  intro x hx
+  have ht_pos : 0 < t := lt_of_lt_of_le one_pos ((le_max_left 1 _).trans ht)
+  have haε : 0 < a * t := mul_pos ha ht_pos
+  have hbε : 0 < b * t := mul_pos hb ht_pos
+  have hNx : N ≤ x :=
     calc
-      _ = ‖(∫ x in a * r..b * r, x⁻¹ • f x) - log (b / a) • R‖ := dist_eq_norm _ _
-      _ = ‖∫ x in a * r..b * r, x⁻¹ • (f x - R)‖ := by
-          congr 1
-          have : log (b / a) • R = ∫ x in a * r..b * r, x⁻¹ • R := by
-            rw [intervalIntegral.integral_smul_const (f := fun x ↦ (x⁻¹ : ℝ)) (c := R),
-              integral_inv_of_pos haε hbε, mul_div_mul_right b a (ne_of_gt hr_pos)]
-          rw [this, ← integral_sub hint_f hint_R]
-          congr 1
-          funext x
-          exact (smul_sub _ _ _).symm
-      _ ≤ |∫ x in a * r..b * r, x⁻¹ * δ'| := by
-          apply norm_integral_le_abs_of_norm_le
-          · exact (ae_restrict_mem measurableSet_uIoc).mono fun x hx ↦ by
-              rw [norm_smul, Real.norm_eq_abs, abs_of_pos
-                (inv_pos.2 (lt_of_lt_of_le (lt_min haε hbε) (uIoc_subset_uIcc hx).1))]
-              exact mul_le_mul_of_nonneg_left (hfR x hx)
-                (inv_nonneg.2 (le_of_lt (lt_of_lt_of_le (lt_min haε hbε)
-                  (uIoc_subset_uIcc hx).1)))
-          · exact hint_inv
-      _ = δ' * C := by
-          have heq : (fun x : ℝ ↦ x⁻¹ * δ') = fun x ↦ δ' * x⁻¹ := by
-            funext x
-            ring
-          rw [heq, intervalIntegral.integral_const_mul, integral_inv_of_pos haε hbε,
-            mul_div_mul_right b a (ne_of_gt hr_pos)]
-          exact (abs_mul δ' (log (b / a))).trans (by rw [abs_of_pos hδ'])
-      _ < δ := by
-          calc
-            _ = δ * (C / (C + 1)) := by ring
-            _ < δ * 1 := by
-              exact mul_lt_mul_of_pos_left ((div_lt_one (by positivity)).2 (lt_add_one C)) hδ
-            _ = δ := mul_one δ
+      _ = min a b * (N / min a b) := by field_simp
+      _ ≤ min a b * t :=
+        mul_le_mul_of_nonneg_left ((le_max_right _ _).trans ht) hm.le
+      _ = min (a * t) (b * t) := by rw [min_mul_of_nonneg _ _ ht_pos.le]
+      _ ≤ x := (uIoc_subset_uIcc hx).1
+  have hdist := hN x hNx
+  rw [dist_eq_norm] at hdist
+  exact le_of_lt hdist
 
 /-- **Frullani's integral**, limit form, for functions valued in a complete normed space.
 If `f` is continuous on `(0, ∞)` with `f x → L` as `x → 0⁺` and `f x → R` as `x → +∞`,
@@ -531,8 +471,8 @@ theorem tendsto_intervalIntegral (hf : ContinuousOn f (Ioi 0)) (ha : 0 < a) (hb 
     exact hsplit hε hr
   rw [tendsto_congr' h_ev, show log (b / a) • (L - R) =
     log (b / a) • L - log (b / a) • R from smul_sub _ _ _]
-  exact (tendsto_integral_inv_smul_nhdsWithin hf ha hb hL |>.comp tendsto_fst).sub
-    (tendsto_integral_inv_smul_atTop hf ha hb hR |>.comp tendsto_snd)
+  exact ((tendsto_integral_inv_smul_nhdsWithin hf ha hb hL).comp tendsto_fst).sub
+    ((tendsto_integral_inv_smul_atTop hf ha hb hR).comp tendsto_snd)
 
 /-- **Frullani's integral** for functions valued in a complete normed space.
 If `f` is continuous on `(0, ∞)` with `f x → L` as `x → 0⁺` and `f x → R` as `x → +∞`,
