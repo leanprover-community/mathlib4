@@ -24,6 +24,9 @@ namespace functionField
 
 open Multiplicative WithZero
 
+/--
+A principal divisor on a locally noetherian integral scheme is locally finite (and hence a divisor).
+-/
 lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X]
     (f : X.functionField) (hf : f ≠ 0) (z : X) : ∃ t ∈ 𝓝 z,
     (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
@@ -45,9 +48,9 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X]
   intro x ⟨hxW, hxsup⟩
   simp only [Function.mem_support, ne_eq, dite_eq_right_iff, toAdd_eq_zero, not_forall] at hxsup
   obtain ⟨hx1, hxne⟩ := hxsup
-  have hord : Scheme.ord x hx1 f ≠ 1 := fun h =>
-    hxne <| coe_inj.mp <| by rw [coe_one, coe_unzero]; exact h
-  exact ⟨⟨hxW, Scheme.not_mem_of_ord_neq_one f hu hgf hord⟩, hx1⟩
+  have : Scheme.ord x hx1 f ≠ 1 := fun h =>
+    hxne <| coe_inj.mp <| by rw [coe_one, coe_unzero, h]
+  exact ⟨⟨hxW, Scheme.not_mem_of_ord_neq_one f hu hgf this⟩, hx1⟩
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,

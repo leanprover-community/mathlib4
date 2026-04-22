@@ -14,39 +14,47 @@ grading and should be in
 
 @[expose] public section
 
-open Order
-
-namespace AlgebraicGeometry
+open Order AlgebraicGeometry
 
 universe u
 variable {X : Scheme.{u}}
-
-def IsWeilDivisor {R : Type*} [Zero R] (α : AlgebraicCycle X R) :
-    Prop := ∀ x : X, x ∈ α.support → coheight x = 1
-
+#check Function.locallyFinsuppWithin
 
 /-
-The following is probably a better design for this library (and similar for the bundled version)
+I think this homogeneous cycles nonsense can be avoided by simply defining algebriac cycles in terms
+of Function.locallyFinsuppWithin. Then, we will get the relevant ext lemma for free
 -/
-def IsHomogeneous {R N : Type*} [Zero R] (α : AlgebraicCycle X R) (w : X → N) (n : N) : Prop :=
+def AlgebraicCycle.IsHomogeneous
+    {R N : Type*} [Zero R] (α : AlgebraicCycle X R) (w : X → N) (n : N) : Prop :=
     ∀ x : X, x ∈ α.support → w x = n
 
-abbrev IsWeilDivisor' {R : Type*} [Zero R] (α : AlgebraicCycle X R) := IsHomogeneous α coheight 1
+def AlgebraicCycle.SupportedWithin {R : Type*} [Zero R] (α : AlgebraicCycle X R) (s : Set X) :=
+    α.support ⊆ s
 
+variable (X) in
+structure HomogeneousCycle (R : Type*) {N : Type*} [Zero R] (w : X → N) (n : N) where
+    cycle : AlgebraicCycle X R
+    homogeneous : cycle.IsHomogeneous w n
 
+abbrev IsWeilDivisor {R : Type*} [Zero R] (α : AlgebraicCycle X R) := α.IsHomogeneous coheight 1
+
+variable (X) in
+abbrev WeilDivisor (R : Type*) [Zero R] := HomogeneousCycle X R coheight 1
 
 namespace IsWeilDivisor
 
 lemma not_mem_support_of_coheight_ne_one {R : Type*} [Zero R] {α : AlgebraicCycle X R}
-    (hα : IsWeilDivisor α) {x : X} (hx : coheight x ≠ 1) :
+    {N : Type*}
+    (w : X → N) (n : N)
+    (hα : α.IsHomogeneous w n) {x : X} (hx : w x ≠ n) :
     x ∉ α.support := fun h ↦ hx <| hα x h
 
 end IsWeilDivisor
 
-variable (X) in
+/-variable (X) in
 structure WeilDivisor (R : Type*) [Zero R] where
   cycle : AlgebraicCycle X R
-  is_weilDivior : IsWeilDivisor cycle
+  isWeilDivior : IsWeilDivisor cycle-/
 
 instance {R : Type*} [Zero R] : FunLike (WeilDivisor X R) X R where
   coe D := D.cycle
@@ -73,5 +81,3 @@ lemma ext {R : Type*} [Zero R] {D₁ D₂ : WeilDivisor X R}
   DFunLike.ext _ _ h'
 
 end WeilDivisor
-
-end AlgebraicGeometry
