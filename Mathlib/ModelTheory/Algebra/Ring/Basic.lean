@@ -5,9 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Syntax
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.ModelTheory.Algebra.Classes
 
 /-!
 # First-Order Language of Rings
@@ -64,7 +63,7 @@ def Language.ring : Language :=
 
 namespace Ring
 
-open ringFunc Language
+open Language
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
@@ -75,68 +74,27 @@ example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Relations n) := inferInstance
 
-/-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
-of `RingFunc 2` -/
-abbrev addFunc : Language.ring.Functions 2 := add
+instance : ZeroConstant ring := ⟨ringFunc.zero⟩
+instance : OneConstant ring := ⟨ringFunc.one⟩
+instance : AddFunction ring := ⟨ringFunc.add⟩
+instance : MulFunction ring := ⟨ringFunc.mul⟩
+instance : NegFunction ring := ⟨ringFunc.neg⟩
 
-/-- `RingFunc.mul`, but with the defeq type `Language.ring.Functions 2` instead
-of `RingFunc 2` -/
-abbrev mulFunc : Language.ring.Functions 2 := mul
+@[simp] theorem zero_def : ringFunc.zero = Constants.zero (L := ring) := rfl
+@[simp] theorem one_def : ringFunc.one = Constants.one (L := ring) := rfl
+@[simp] theorem add_def : ringFunc.add = Functions.add (L := ring) := rfl
+@[simp] theorem mul_def : ringFunc.mul = Functions.mul (L := ring) := rfl
+@[simp] theorem neg_def : ringFunc.neg = Functions.neg (L := ring) := rfl
 
-/-- `RingFunc.neg`, but with the defeq type `Language.ring.Functions 1` instead
-of `RingFunc 1` -/
-abbrev negFunc : Language.ring.Functions 1 := neg
-
-/-- `RingFunc.zero`, but with the defeq type `Language.ring.Functions 0` instead
-of `RingFunc 0` -/
-abbrev zeroFunc : Language.ring.Functions 0 := zero
-
-/-- `RingFunc.one`, but with the defeq type `Language.ring.Functions 0` instead
-of `RingFunc 0` -/
-abbrev oneFunc : Language.ring.Functions 0 := one
-
-instance (α : Type*) : Zero (Language.ring.Term α) :=
-{ zero := Constants.term zeroFunc }
-
-theorem zero_def (α : Type*) : (0 : Language.ring.Term α) = Constants.term zeroFunc := rfl
-
-instance (α : Type*) : One (Language.ring.Term α) :=
-{ one := Constants.term oneFunc }
-
-theorem one_def (α : Type*) : (1 : Language.ring.Term α) = Constants.term oneFunc := rfl
-
-instance (α : Type*) : Add (Language.ring.Term α) :=
-{ add := addFunc.apply₂ }
-
-theorem add_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
-    t₁ + t₂ = addFunc.apply₂ t₁ t₂ := rfl
-
-instance (α : Type*) : Mul (Language.ring.Term α) :=
-{ mul := mulFunc.apply₂ }
-
-theorem mul_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
-    t₁ * t₂ = mulFunc.apply₂ t₁ t₂ := rfl
-
-instance (α : Type*) : Neg (Language.ring.Term α) :=
-{ neg := negFunc.apply₁ }
-
-theorem neg_def (α : Type*) (t : Language.ring.Term α) :
-    -t = negFunc.apply₁ t := rfl
-
-set_option backward.isDefEq.respectTransparency false in
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
        Sum.inl ⟨2, .mul⟩,
        Sum.inl ⟨1, .neg⟩,
-       Sum.inl ⟨0, .zero⟩,
-       Sum.inl ⟨0, .one⟩], by
-    dsimp [Language.Symbols]; decide⟩, by
-    intro x
-    dsimp [Language.Symbols]
-    rcases x with ⟨_, f⟩ | ⟨_, f⟩
-    · cases f <;> decide
-    · cases f ⟩
+       Sum.inl ⟨0, Constants.zero⟩,
+       Sum.inl ⟨0, Constants.one⟩], by
+    simp [← zero_def, ← one_def, ← add_def, ← mul_def]⟩, by
+    rintro (⟨_, f⟩ | ⟨_, f⟩) <;> cases f <;> simp⟩
 
 @[simp]
 theorem card_ring : card Language.ring = 5 := by
@@ -155,55 +113,8 @@ requires a type to have be both a `Ring` (or `Field` etc.) and a
 combination with a `Ring`, or `Field` instance without having multiple different
 `Add` structures on the Type. -/
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
-    extends Language.ring.Structure R where
-  /-- Addition in the `Language.ring.Structure` is the same as the addition given by the
-  `Add` instance -/
-  funMap_add : ∀ x, funMap addFunc x = x 0 + x 1
-  /-- Multiplication in the `Language.ring.Structure` is the same as the multiplication given by the
-  `Mul` instance -/
-  funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1
-  /-- Negation in the `Language.ring.Structure` is the same as the negation given by the
-  `Neg` instance -/
-  funMap_neg : ∀ x, funMap negFunc x = -x 0
-  /-- The constant `0` in the `Language.ring.Structure` is the same as the constant given by the
-  `Zero` instance -/
-  funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0
-  /-- The constant `1` in the `Language.ring.Structure` is the same as the constant given by the
-  `One` instance -/
-  funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1
-
-open CompatibleRing
-
-attribute [simp] funMap_add funMap_mul funMap_neg funMap_zero funMap_one
-
-section
-
-variable {R : Type*} [Add R] [Mul R] [Neg R] [One R] [Zero R] [CompatibleRing R]
-
-@[simp]
-theorem realize_add (x y : ring.Term α) (v : α → R) :
-    Term.realize v (x + y) = Term.realize v x + Term.realize v y := by
-  simp [add_def, funMap_add]
-
-@[simp]
-theorem realize_mul (x y : ring.Term α) (v : α → R) :
-    Term.realize v (x * y) = Term.realize v x * Term.realize v y := by
-  simp [mul_def, funMap_mul]
-
-@[simp]
-theorem realize_neg (x : ring.Term α) (v : α → R) :
-    Term.realize v (-x) = -Term.realize v x := by
-  simp [neg_def, funMap_neg]
-
-@[simp]
-theorem realize_zero (v : α → R) : Term.realize v (0 : ring.Term α) = 0 := by
-  simp [zero_def, funMap_zero, constantMap]
-
-@[simp]
-theorem realize_one (v : α → R) : Term.realize v (1 : ring.Term α) = 1 := by
-  simp [one_def, funMap_one, constantMap]
-
-end
+    extends ring.Structure R, CompatibleAdd ring R, CompatibleMul ring R, CompatibleNeg ring R,
+      CompatibleOne ring R, CompatibleZero ring R
 
 /-- Given a Type `R` with instances for each of the `Ring` operations, make a
 `Language.ring.Structure R` instance, along with a proof that the operations given
@@ -243,17 +154,12 @@ def languageEquivEquivRingEquiv {R S : Type*}
     (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
   { toFun f :=
     { f with
-      map_add' := by
-        intro x y
-        simpa using f.map_fun addFunc ![x, y]
-      map_mul' := by
-        intro x y
-        simpa using f.map_fun mulFunc ![x, y] }
+      map_add' x y := by simpa using f.map_fun .add ![x, y]
+      map_mul' x y := by simpa using f.map_fun .mul ![x, y] }
     invFun f :=
     { f with
-      map_fun' := fun {n} f => by
-        cases f <;> simp
-      map_rel' := fun {n} f => by cases f } }
+      map_fun' f := by cases f <;> simp
+      map_rel' f := by cases f } }
 
 variable (R : Type*) [Language.ring.Structure R]
 
@@ -262,35 +168,35 @@ variable (R : Type*) [Language.ring.Structure R]
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev addOfRingStructure : Add R :=
-  { add := fun x y => funMap addFunc ![x, y] }
+  { add := fun x y => funMap (L := ring) .add ![x, y] }
 
 /-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev mulOfRingStructure : Mul R :=
-  { mul := fun x y => funMap mulFunc ![x, y] }
+  { mul := fun x y => funMap (L := ring) .mul ![x, y] }
 
 /-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev negOfRingStructure : Neg R :=
-  { neg := fun x => funMap negFunc ![x] }
+  { neg := fun x => funMap (L := ring) .neg ![x] }
 
 /-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev zeroOfRingStructure : Zero R :=
-  { zero := funMap zeroFunc ![] }
+  { zero := funMap (L := ring) .zero ![] }
 
 /-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
 abbrev oneOfRingStructure : One R :=
-  { one := funMap oneFunc ![] }
+  { one := funMap (L := ring) .one ![] }
 
 attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStructure
   zeroOfRingStructure oneOfRingStructure

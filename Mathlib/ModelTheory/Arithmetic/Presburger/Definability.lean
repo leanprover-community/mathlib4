@@ -48,14 +48,14 @@ theorem IsLinearSet.definable [Finite α] (hs : IsLinearSet s) : A.Definable pre
   refine ⟨Formula.iExs t (Formula.iInf fun i : α =>
     (Term.var (Sum.inl i)).equal
       (Term.varsToConstants
-        ((v i : presburger.Term _) + presburger.sum Finset.univ fun x : t =>
+        ((v i : presburger.Term _) + Term.sum Finset.univ fun x : t =>
           x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
   simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
     nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_setOf_eq, Formula.realize_iExs,
     Formula.realize_iInf, Formula.realize_equal, Term.realize_var, Sum.elim_inl,
-    Term.realize_varsToConstants, coe_con, presburger.realize_add, presburger.realize_natCast,
-    Nat.cast_id, presburger.realize_sum, presburger.realize_nsmul, Sum.elim_inr, smul_eq_mul]
+    Term.realize_varsToConstants, coe_con, Structure.realize_add, Structure.realize_natCast,
+    Nat.cast_id, Structure.realize_sum, Structure.realize_nsmul, Sum.elim_inr, smul_eq_mul]
   congr! with a
   simp_rw [Eq.comm (b := x), fun x : t => mul_comm (a x : α → ℕ) x, funext_iff]
   congr! 1 with i
