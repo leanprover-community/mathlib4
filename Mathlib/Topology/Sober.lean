@@ -254,7 +254,7 @@ lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓�
 
 lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
     (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
-  refine QuasiSober.subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
+  refine QuasiSober.of_subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
   rw [Subtype.preimage_coe_self_inter W V]
   exact IsClosed.preimage_val hV
 
