@@ -380,6 +380,7 @@ end GoodProducts
 
 namespace Products
 
+set_option backward.defeqAttrib.useBackward true in
 theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _

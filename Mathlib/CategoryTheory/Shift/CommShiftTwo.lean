@@ -57,6 +57,7 @@ structure CommShift₂Setup (M : Type*) [AddCommMonoid M] [HasShift D M] extends
   ε (m n : M) : (CatCenter D)ˣ
   hε (m n : M) : ε m n = (z (0, n) (m, 0))⁻¹ * z (m, 0) (0, n) := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The standard setup for the commutation of bifunctors with shifts by `ℤ`. -/
 @[simps]
 noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
@@ -111,6 +112,7 @@ namespace CommShift₂
 attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.inferInstanceAs.wrap.data false in
 set_option backward.isDefEq.respectTransparency false in
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
@@ -129,6 +131,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     rw [NatTrans.shift_app (G.map ((F.commShiftIso m).hom.app X₁')) n X₂]
     simp [this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.inferInstanceAs.wrap false in
 instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₂' M]
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
@@ -174,12 +177,14 @@ namespace CommShift₂
 
 attribute [instance] commShift_app commShift_flipApp
 
+set_option backward.defeqAttrib.useBackward true in
 instance : CommShift₂ (𝟙 G₁) h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
     simp only [flipApp, flipFunctor_obj, Functor.map_id, id_app]
     infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance [CommShift₂ τ h] [CommShift₂ τ' h] : CommShift₂ (τ ≫ τ') h where
   commShift_app _ := by dsimp; infer_instance
   commShift_flipApp _ := by
