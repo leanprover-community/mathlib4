@@ -201,13 +201,28 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x�
 
 /-- If `γ.trans γ'.symm` is nullhomotopic, then `γ` and `γ'` are homotopic.
 This is the path-homotopy analogue of `a * b⁻¹ = 1 → a = b`. -/
-theorem eq_of_trans_symm {γ γ' : Path x₀ x₁}
+theorem of_trans_symm {γ γ' : Path x₀ x₁}
     (h : (γ.trans γ'.symm).Homotopic (Path.refl x₀)) : γ.Homotopic γ' :=
   (trans_refl γ).symm |>.trans <|
   (hcomp (.refl γ) (symm_trans γ').symm) |>.trans <|
   (trans_assoc γ γ'.symm γ').symm |>.trans <|
   (hcomp h (.refl γ')) |>.trans <|
   refl_trans γ'
+
+/-- All pairs of paths between the same endpoints with ranges in `U` are homotopic iff all loops
+in `U` are nullhomotopic. This is useful for characterizing semilocally simply connected spaces. -/
+theorem paths_homotopic_iff_loops_nullhomotopic {X : Type*} [TopologicalSpace X] (U : Set X) :
+    (∀ {u v : X} (γ γ' : Path u v), Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ') ↔
+    (∀ {u : X} (γ : Path u u), Set.range γ ⊆ U → γ.Homotopic (Path.refl u)) := by
+  refine ⟨fun hpaths u γ hγ => ?_, fun hloops u v γ γ' hγ hγ' => ?_⟩
+  · have hrefl : Set.range (Path.refl u) ⊆ U := by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact hγ ⟨0, γ.source⟩
+    exact hpaths γ (Path.refl u) hγ hrefl
+  · have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
+      simp only [Path.trans_range, Path.symm_range, Set.union_subset_iff]
+      exact ⟨hγ, hγ'⟩
+    exact of_trans_symm (hloops (γ.trans γ'.symm) hloop)
 
 namespace Quotient
 
@@ -264,12 +279,12 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
 
 /-- If `trans γ (symm γ') = refl`, then `γ = γ'`.
 This is the quotient analogue of `a * b⁻¹ = 1 → a = b`. -/
-theorem eq_of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
+theorem of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
     (h : trans γ (symm γ') = refl x₀) : γ = γ' := by
   induction γ using Quotient.ind with | mk γ =>
   induction γ' using Quotient.ind with | mk γ' =>
   simp only [← mk_trans, ← mk_symm, ← mk_refl] at h
-  exact Quotient.sound (Homotopic.eq_of_trans_symm (Quotient.exact h))
+  exact Quotient.sound (Homotopic.of_trans_symm (Quotient.exact h))
 
 end Quotient
 

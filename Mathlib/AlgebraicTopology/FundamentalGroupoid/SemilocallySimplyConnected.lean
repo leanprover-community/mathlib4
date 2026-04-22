@@ -21,6 +21,12 @@ public import Mathlib.Topology.UnitInterval
 A topological space is semilocally simply connected if every point has a neighborhood
 such that loops in that neighborhood are nullhomotopic in the whole space.
 
+The definition adopted here coincides with Brazas' *unbased semilocally simply connected*
+(Definition 2.2 in https://arxiv.org/abs/1102.0993). It is strictly stronger than the
+classical definition (Brazas, Definition 2.1) which requires the vanishing only at a fixed
+basepoint, but the two coincide on locally path-connected spaces, which is the setting
+relevant for covering space theory.
+
 ## Main definitions
 
 * `SemilocallySimplyConnectedAt x` - The property at a single point: `x` has a neighborhood with
@@ -126,7 +132,7 @@ theorem semilocallySimplyConnectedAt_iff_paths {x : X} :
       simp only [Path.trans_range, Path.symm_range] at hy
       exact hy.elim (fun h => hγ h) (fun h => hγ' h)
     have hnull := hU_loops (γ.trans γ'.symm) hloop
-    exact Path.Homotopic.eq_of_trans_symm hnull
+    exact Path.Homotopic.of_trans_symm hnull
   · intro ⟨U, hU_open, hx_in_U, hU_paths⟩
     refine ⟨U, hU_open, hx_in_U, ?_⟩
     intro u γ hγ

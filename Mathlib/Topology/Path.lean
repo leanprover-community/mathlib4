@@ -334,6 +334,11 @@ theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
   norm_num [image_mul_left_Ici, image_mul_left_Iic,
     image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
+theorem range_trans_subset {a b c : X} {γ₁ : Path a b} {γ₂ : Path b c} {s : Set X}
+    (h₁ : range γ₁ ⊆ s) (h₂ : range γ₂ ⊆ s) : range (γ₁.trans γ₂) ⊆ s := by
+  rw [trans_range]
+  exact union_subset h₁ h₂
+
 /-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
 def map' (γ : Path x y) {f : X → Y} (h : ContinuousOn f (range γ)) : Path (f x) (f y) where
   toFun := f ∘ γ
