@@ -232,7 +232,7 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by cat_disch
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
-  `Discrete.functor (F.obj)`. -/
+  `Discrete.functor (F.obj ∘ Discrete.mk)`. -/
 @[simps!]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
