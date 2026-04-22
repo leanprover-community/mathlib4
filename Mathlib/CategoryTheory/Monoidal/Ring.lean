@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Basic
 /-!
 # Ring objects
 
-If `C` is a cartesian monoidal category and `X : C`, we introduce typeclasses `RingObj X`
+If `C` is a cartesian monoidal category and `X : C`, we introduce a typeclass `RingObj X`
 which says that `X` is a ring object: it has a commutative additive group structure and
 a multiplicative monoid structure that is distributive over the additive structure.
 We also introduce `CommRingObj X` by requiring that the multiplicative law is commutative.
