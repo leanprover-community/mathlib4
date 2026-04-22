@@ -352,7 +352,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
     · dsimp
     · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
         categoryStruct_comp_fiber, Cat.Hom.comp_toFunctor, map_comp, naturality_comp_hom_app, assoc,
-        eqToHom_refl, comp_id]
+        eqToHom_refl, comp_id, id_comp]
       slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
         ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
       simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
