@@ -98,8 +98,8 @@ class PreservesColimitsOfSize (F : C ⥤ D) : Prop where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
 
-/-- We say that `F` preserves (small) limits if it sends small
-limit cones over any diagram to limit cones. -/
+/-- We say that `F` preserves (small) colimits if it sends small
+colimit cocones over any diagram to colimit cocones. -/
 abbrev PreservesColimits (F : C ⥤ D) :=
   PreservesColimitsOfSize.{v₂, v₂} F
 
@@ -566,7 +566,7 @@ lemma reflectsSmallestLimits_of_reflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSi
   reflectsLimitsOfSize_shrink F
 
 /-- If the limit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the limit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsColimit` in
+reflects the limit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsLimit` in
 the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
 for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
@@ -671,7 +671,7 @@ lemma reflectsSmallestColimits_of_reflectsColimits (F : C ⥤ D) [ReflectsColimi
   reflectsColimitsOfSize_shrink F
 
 /-- If the colimit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
-reflects the colimit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsLimit` in
+reflects the colimit of `F` (see also `JointlyReflectIsomorphisms.jointlyReflectsColimit` in
 the file `CategoryTheory/Functor/ReflectsIso/Limits.lean` for the corresponding result
 for a family of functors which joinly reflect isomorphisms).
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
