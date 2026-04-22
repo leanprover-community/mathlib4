@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Sets.Closeds
 public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Order.KrullDimension
 
 /-!
@@ -332,6 +333,27 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one {p : Set α}
   simp only [Subtype.preorder, Preorder.lift, specializationPreorder]
   ext a b
   exact (subtype_specializes_iff b a).symm
+
+open Order in
+/--
+In a quasi-sober, irreducible, T0 space `α`, a Noetherian quasi-sober subspace `p` whose closure
+is not all of `α` contains only finitely many points of coheight `1` (in the specialization order
+of `α`).
+-/
+lemma TopologicalSpace.NoetherianSpace.finite_coheight_one_of_closure_ne_univ
+    [QuasiSober α] [IrreducibleSpace α] [T0Space α] {p : Set α}
+    [NoetherianSpace p] [QuasiSober p] (hp : closure p ≠ univ) :
+    {x | x ∈ p ∧ coheight x = 1}.Finite := by
+  have h0 : {x : p | coheight x = 0}.Finite := by
+    have := (Equiv.finite_iff
+      (coheightZeroSetOrderIsoIrreducibleComponents (α := p)).toEquiv).mpr
+      NoetherianSpace.finite_irreducibleComponents
+    simp only [finite_coe_iff] at this
+    convert this
+    ext a b
+    exact (subtype_specializes_iff b a).symm
+  exact (h0.image Subtype.val).subset
+    (QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one hp)
 
 end Sober
 

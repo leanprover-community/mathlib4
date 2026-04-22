@@ -24,116 +24,30 @@ namespace functionField
 
 open Multiplicative WithZero
 
-open Set in
-/--
-TODO: Move this lemma
--/
-lemma ne_univ_of_sdiff_nonempty {α : Type*} {s u : Set α} (hu : u.Nonempty) : s \ u ≠ univ := by
-  rw [ne_univ_iff_exists_notMem]
-  use hu.some
-  simp [hu.some_mem]
-
-lemma div_locally_finite [IsIntegral X] [nt : IsLocallyNoetherian X]
-  (f : X.functionField) (hf : f ≠ 0) (z : X) : ∃ t ∈ 𝓝 z,
-  (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
-                                    then Multiplicative.toAdd <|
-                                         WithZero.unzero (Scheme.ord_ne_zero h hf)
-                                    else 0).Finite := by
-    -- Take `U` to be an open on which `f ∈ 𝒪(U)ˣ`
-    obtain ⟨U, f', hU, hf'⟩ := Scheme.exists_isUnit_germ_eq f hf
-    by_cases h : z ∈ U
-    · /-
-      By assumption, the order of vanishing at every point of `U` is trivial.
-      Hence, if `z ∈ U`, we can take our neighbourhood to be `U`, where the support will be empty
-      and hence clearly finite.
-
-      Note: This proof should be trivial, so we should make it so.
-      -/
-      --use U
-      refine ⟨U, IsOpen.mem_nhds U.2 h, ?_⟩
-
-      convert finite_empty
-      ext a
-      simp only [mem_inter_iff, SetLike.mem_coe, Function.mem_support, ne_eq, dite_eq_right_iff,
-        toAdd_eq_zero, not_forall, mem_empty_iff_false, iff_false, not_and, not_exists,
-        Decidable.not_not]
-      intro ha ha'
-      suffices Scheme.ord a ha' f = 1 by aesop
-      rw [← hf'.1]
-      exact AlgebraicGeometry.Scheme.ord_of_isUnit hf'.2 ha' ha
-
-    · let XU := (univ : Set X) \ U
-      have properClosed : XU ≠ univ ∧ IsClosed XU :=
-        ⟨ne_univ_of_sdiff_nonempty ((Scheme.Opens.nonempty_iff _).mp hU),
-          IsClosed.sdiff isClosed_univ (Opens.isOpen U)⟩
-
-      /-
-      All points where `f` has nontrivial vanishing must lie outside `U` (i.e. inside `XU`).
-
-      !! Should be its own lemma !!
-      -/
-      have imp (y : X) (h : Order.coheight y = 1)
-          (hy : Scheme.ord y h f ≠ 1) : y ∈ XU := by
-        simp only [mem_diff, mem_univ, SetLike.mem_coe, true_and, XU]
-        exact fun a ↦ hy (hf'.1 ▸ AlgebraicGeometry.Scheme.ord_of_isUnit hf'.2 h a)
-
-      obtain ⟨W, hW⟩ := AlgebraicGeometry.exists_isAffineOpen_mem_and_subset
-        (x := z) (U := ⊤) (by simp)
-      refine ⟨W, ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2.1, ?_⟩⟩
-
-      /-
-      Our strategy is to show that the points intersecting `W` of codimension `1` are just the
-      irreducible components of `WXU`. Then, we show `WXU` is Noetherian and hence has finitely
-      many irreducible components.
-      -/
-      let WXU := W.1 ∩ XU
-
-      -- This should probably be an instance
-      /-
-      I.e. an affine subset of a locally noetherian space is a notherian space
-
-      !! Should be its own lemma !!
-      -/
-      have ntW : NoetherianSpace W :=
-        have : IsAffine W := hW.1
-        have : IsNoetherianRing ↑Γ(↑W, ⊤) :=
-          have := nt.1 ⟨W, hW.1⟩
-          isNoetherianRing_of_ringEquiv Γ(X, W) W.topIso.commRingCatIsoToRingEquiv.symm
-        AlgebraicGeometry.noetherianSpace_of_isAffine
-
-
-      suffices {z ∈ WXU | coheight z = 1}.Finite by
-          apply Finite.subset (by exact this : (WXU ∩ {z : X | coheight z = 1}).Finite)
-          simp_all only [ne_eq, Opens.carrier_eq_coe, Opens.coe_top,
-            subset_univ, and_true, subset_inter_iff]
-          constructor
-          · simp only [subset_def, mem_inter_iff, SetLike.mem_coe, Function.mem_support, ne_eq,
-            dite_eq_right_iff, toAdd_eq_zero, not_forall, and_imp, forall_exists_index, WXU]
-            intro a ha ha' _
-            have : ¬(Scheme.ord a ha') f = 1 := by
-              rwa [← coe_unzero (Scheme.ord_ne_zero ha' hf), ← coe_one, coe_inj]
-            exact ⟨ha, imp a ha' this⟩
-          · simp only [subset_def, mem_inter_iff, SetLike.mem_coe, Function.mem_support, ne_eq,
-            dite_eq_right_iff, toAdd_eq_zero, not_forall, mem_setOf_eq, and_imp,
-            forall_exists_index]
-            exact fun _ _ c _ ↦ c
-
-      have : closure WXU ≠ univ := by
-        have ans : closure WXU ⊆ closure XU := closure_mono <| by simp [WXU]
-        aesop
-      refine Finite.subset (Finite.image Subtype.val ?_)
-        (QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one this)
-      have qsW : QuasiSober W := instQuasiSoberCarrierCarrierCommRingCat W
-      have : QuasiSober ↑WXU :=
-          @quasiSober_of_quasisober_inter_isClosed_right _ _ XU W.1 qsW properClosed.2
-      have : NoetherianSpace WXU := @NoetherianSpace.noetherian_inter_left _ _ W.1 XU ntW
-      have := (Equiv.finite_iff
-        (coheightZeroSetOrderIsoIrreducibleComponents (α := WXU)).toEquiv).mpr
-        TopologicalSpace.NoetherianSpace.finite_irreducibleComponents
-      simp only [finite_coe_iff] at this
-      convert this
-      ext a b
-      exact (subtype_specializes_iff b a).symm
+lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X]
+    (f : X.functionField) (hf : f ≠ 0) (z : X) : ∃ t ∈ 𝓝 z,
+    (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
+      then toAdd <| WithZero.unzero (Scheme.ord_ne_zero h hf) else 0).Finite := by
+  obtain ⟨U, f', (hUne : Nonempty U), hgf, hu⟩ := Scheme.exists_isUnit_germ_eq f hf
+  obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
+  have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
+  have : NoetherianSpace W.1 := noetherianSpace_of_isAffineOpen W hWa
+  have : QuasiSober W.1 := W.isOpenEmbedding'.quasiSober
+  have : QuasiSober (W.1 ∩ (U : Set X)ᶜ : Set X) :=
+    quasiSober_of_quasisober_inter_isClosed_right W.1 U.2.isClosed_compl
+  have : NoetherianSpace (W.1 ∩ (U : Set X)ᶜ : Set X) :=
+    NoetherianSpace.noetherian_inter_left W.1 _
+  have hne : closure (W.1 ∩ (U : Set X)ᶜ) ≠ univ := fun h =>
+    compl_ne_univ.mpr ((Scheme.Opens.nonempty_iff _).mp hUne) <| univ_subset_iff.mp <|
+      h ▸ (closure_mono inter_subset_right).trans U.2.isClosed_compl.closure_eq.le
+  refine ⟨W, W.2.mem_nhds hzW,
+    (NoetherianSpace.finite_coheight_one_of_closure_ne_univ hne).subset ?_⟩
+  intro x ⟨hxW, hxsup⟩
+  simp only [Function.mem_support, ne_eq, dite_eq_right_iff, toAdd_eq_zero, not_forall] at hxsup
+  obtain ⟨hx1, hxne⟩ := hxsup
+  have hord : Scheme.ord x hx1 f ≠ 1 := fun h =>
+    hxne <| coe_inj.mp <| by rw [coe_one, coe_unzero]; exact h
+  exact ⟨⟨hxW, Scheme.not_mem_of_ord_neq_one f hu hgf hord⟩, hx1⟩
 
 /--
 On an locally Noetherian integral scheme, given `f : X.functionField` and `hf : x ≠ 0`,
