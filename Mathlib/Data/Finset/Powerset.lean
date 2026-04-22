@@ -102,6 +102,27 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
   grind
 
+/-- The subsets of `t` containing `s` are exactly the subsets of `t \ s`, unioned with `s`. -/
+theorem powerset_filter_sdiff [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
+    t.powerset.filter (s ⊆ ·) = (t \ s).powerset.image (· ∪ s) := by
+  ext x
+  simp only [mem_filter, mem_powerset, mem_image]
+  constructor
+  · intro ⟨hxt, hsx⟩
+    exact ⟨x \ s, fun y hy => mem_sdiff.mpr ⟨hxt (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩,
+           sdiff_union_of_subset hsx⟩
+  · rintro ⟨y, hyt, rfl⟩
+    exact ⟨union_subset (hyt.trans sdiff_subset) hst, subset_union_right⟩
+
+theorem card_powerset_filter [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
+    (t.powerset.filter (s ⊆ ·)).card = 2 ^ (t.card - s.card) := by
+  have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb (hab : a ∪ s = b ∪ s) => by
+    have ha' := disjoint_of_subset_left (mem_powerset.mp ha) disjoint_sdiff_self_left
+    have hb' := disjoint_of_subset_left (mem_powerset.mp hb) disjoint_sdiff_self_left
+    rw [← union_sdiff_cancel_right ha', hab, union_sdiff_cancel_right hb']
+  simp only [powerset_filter_sdiff s t hst, card_image_of_injOn hinj,
+             card_powerset, card_sdiff_of_subset hst]
+
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
   simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
@@ -201,25 +222,35 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
     card (powersetCard n s) = Nat.choose (card s) n :=
   (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
 
+/-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
+subsets of `t \ s`, unioned with `s`. -/
+theorem powersetCard_filter_sdiff [DecidableEq α] (s t : Finset α) (n : ℕ)
+    (hst : s ⊆ t) (hsn : s.card ≤ n) :
+    (t.powersetCard n).filter (s ⊆ ·) = ((t \ s).powersetCard (n - s.card)).image (· ∪ s) := by
+  ext x
+  simp only [mem_filter, mem_powersetCard, mem_image]
+  constructor
+  · intro ⟨⟨hxt, hxn⟩, hsx⟩
+    exact ⟨x \ s, ⟨fun y hy => mem_sdiff.mpr ⟨hxt (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩,
+           by rw [card_sdiff_of_subset hsx, hxn]⟩, sdiff_union_of_subset hsx⟩
+  · rintro ⟨y, ⟨hyt, hyn⟩, rfl⟩
+    refine ⟨⟨union_subset (hyt.trans sdiff_subset) hst, ?_⟩, subset_union_right⟩
+    rw [card_union_of_disjoint (disjoint_of_subset_left hyt disjoint_sdiff_self_left), hyn]
+    omega
+
 /-- The number of `n`-element subsets of `t` containing `s` equals
 `Nat.choose (t.card - s.card) (n - s.card)`. -/
 lemma card_powersetCard_filter [DecidableEq α] (s t : Finset α) (n : ℕ)
     (hst : s ⊆ t) (hsn : s.card ≤ n) :
     ((t.powersetCard n).filter (s ⊆ ·)).card =
     Nat.choose (t.card - s.card) (n - s.card) := by
-  rw [← card_sdiff_of_subset hst, ← card_powersetCard]
-  refine card_nbij' (· \ s) (· ∪ s) ?_ ?_ ?_ ?_ <;>
-    intro x hx <;>
-    simp only [mem_coe, mem_filter, mem_powersetCard] at hx ⊢
-  · refine ⟨fun y hy => mem_sdiff.mpr ⟨hx.1.1 (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩, ?_⟩
-    rw [card_sdiff_of_subset hx.2, hx.1.2]
-  · refine ⟨⟨?_, ?_⟩, ?_⟩
-    · exact union_subset (hx.1.trans sdiff_subset) hst
-    · rw [card_union_of_disjoint (disjoint_of_subset_left hx.1 disjoint_sdiff_self_left), hx.2]
-      omega
-    · exact subset_union_right
-  · exact sdiff_union_of_subset hx.2
-  · exact union_sdiff_cancel_right (disjoint_of_subset_left hx.1 disjoint_sdiff_self_left)
+  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - s.card)) :=
+      fun a ha b hb (hab : a ∪ s = b ∪ s) => by
+    have ha' := disjoint_of_subset_left (mem_powersetCard.mp ha).1 disjoint_sdiff_self_left
+    have hb' := disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left
+    rw [← union_sdiff_cancel_right ha', hab, union_sdiff_cancel_right hb']
+  simp only [powersetCard_filter_sdiff s t n hst hsn, card_image_of_injOn hinj,
+             card_powersetCard, card_sdiff_of_subset hst]
 
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
