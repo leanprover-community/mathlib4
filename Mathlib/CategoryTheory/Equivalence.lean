@@ -48,7 +48,7 @@ if it is full, faithful and essentially surjective.
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
   `F` is an equivalence iff `G` is.
-* `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
+* `Functor.asEquivalence`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
 
@@ -591,7 +591,7 @@ theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := b
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
     (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
-/-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
+/-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.inverse ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
 @[simps!]
 def changeInverse (e : C ≌ D) {G : D ⥤ C} (iso : e.inverse ≅ G) : C ≌ D where
@@ -756,13 +756,15 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
-construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
+construct an isomorphism `G.inverse ≅ G'.inverse` from an isomorphism
+`G.functor ≅ G'.functor`. -/
 @[simps!]
 def isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) : G.inverse ≅ G'.inverse :=
   isoCompInverse ((isoWhiskerLeft G.inverse i).symm ≪≫ G.counitIso) ≪≫ leftUnitor G'.inverse
 
 /-- As a special case, given two equivalences `G` and `G'` between the same categories,
-construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
+construct an isomorphism `G.functor ≅ G'.functor` from an isomorphism
+`G.inverse ≅ G'.inverse`. -/
 @[simps!]
 def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.functor ≅ G'.functor :=
   isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
