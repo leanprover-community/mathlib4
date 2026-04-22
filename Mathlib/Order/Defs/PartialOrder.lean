@@ -113,15 +113,15 @@ lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
 @[to_dual self]
 lemma lt_iff_lt_iff : (a < b ↔ b < a) ↔ (a ≤ b ↔ b ≤ a) := by
-  grind [lt_iff_le_not_ge]
+  grind [= lt_iff_le_not_ge]
 
 @[to_dual self]
 lemma lt_iff_le_iff : (a < b ↔ a ≤ b) ↔ (b < a ↔ b ≤ a) := by
-  grind [lt_iff_le_not_ge]
+  grind [= lt_iff_le_not_ge]
 
 @[to_dual self]
 lemma lt_iff_le_iff' : (a < b ↔ b ≤ a) ↔ (b < a ↔ a ≤ b) := by
-  grind [lt_iff_le_not_ge]
+  grind [= lt_iff_le_not_ge]
 
 instance instTransLE : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
 instance instTransLT : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
