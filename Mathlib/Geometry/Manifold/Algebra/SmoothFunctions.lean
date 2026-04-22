@@ -28,7 +28,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   {I' : ModelWithCorners 𝕜 E' H'} {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
   {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {N' : Type*} [TopologicalSpace N'] [ChartedSpace H'' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 namespace ContMDiffMap
 
@@ -57,11 +57,7 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
     ⇑(1 : C^n⟮I, N; I', G⟯) = 1 :=
   rfl
 
-instance instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
-    [ContMDiffAdd I' n G] : SMul ℕ C^n⟮I, N; I', G⟯ where
-  smul n f := ⟨n • (f : N → G), (contMDiff_nsmul n).comp f.contMDiff⟩
-
-@[to_additive existing]
+@[to_additive]
 instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] :
     Pow C^n⟮I, N; I', G⟯ ℕ where

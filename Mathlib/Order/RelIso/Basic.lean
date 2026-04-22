@@ -201,6 +201,7 @@ theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (h
 namespace RelEmbedding
 
 /-- A relation embedding is also a relation homomorphism -/
+@[reducible]
 def toRelHom (f : r ↪r s) : r →r s where
   toFun := f.toEmbedding.toFun
   map_rel' := (map_rel_iff' f).mpr
@@ -227,7 +228,6 @@ instance : EmbeddingLike (r ↪r s) α β where
 theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
@@ -392,8 +392,8 @@ def Quotient.mkRelHom {_ : Setoid α} {r : α → α → Prop}
 @[simps!]
 noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
-  ⟨Embedding.quotientOut α, by
-    refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
+  ⟨Embedding.quotientOut α, fun {x y} ↦ by
+    induction x, y using Quotient.inductionOn₂
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
 @[simp]
@@ -549,6 +549,7 @@ namespace RelIso
 /-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
+@[reducible]
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
   ⟨f.toEquiv.toEmbedding, f.map_rel_iff'⟩
 
@@ -572,11 +573,9 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
-@[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
   rfl
 
-@[simp]
 theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
   rfl
 
@@ -763,7 +762,7 @@ noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
 /-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
 
 This is `Equiv.arrowCongr` for `RelHom`. -/
-@[simps]
+@[simps apply symm_apply]
 def relHomCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
     (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
@@ -772,6 +771,38 @@ def relHomCongr {α₁ β₁ α₂ β₂}
   invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
   left_inv f₁ := by ext; simp
   right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relHomCongr
+
+/-- Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.embeddingCongr` for `RelEmbedding`. -/
+@[simps apply symm_apply]
+def relEmbeddingCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ↪r s₁) ≃ (r₂ ↪r s₂) where
+  toFun f₁ := (e₁.symm.toRelEmbedding.trans f₁).trans e₂.toRelEmbedding
+  invFun f₂ := (e₁.toRelEmbedding.trans f₂).trans e₂.symm.toRelEmbedding
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
+
+/-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.equivCongr` for `RelIso`. -/
+@[simps apply symm_apply]
+def relIsoCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ ≃r s₁) ≃ (r₂ ≃r s₂) where
+  toFun f₁ := (e₁.symm.trans f₁).trans e₂
+  invFun f₂ := (e₁.trans f₂).trans e₂.symm
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
+
+attribute [simps! -isSimp apply_apply symm_apply_apply] relIsoCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.

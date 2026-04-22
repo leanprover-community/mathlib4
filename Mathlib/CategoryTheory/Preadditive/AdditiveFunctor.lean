@@ -144,6 +144,25 @@ lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
 instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
   .of_isZero (isZero_zero _)
 
+omit [Preadditive C] in
+instance (F : D ⥤ E) [F.Additive] : ((Functor.whiskeringRight C D E).obj F).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance : (Functor.whiskeringRight C D E).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
+
+omit [Preadditive D] in
+instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
+    [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
+  dsimp [Functor.postcompose₂]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+universe w in
+instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
+
 end
 
 section InducedCategory
@@ -226,7 +245,7 @@ section
 
 variable (C D : Type*) [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
-/-- The additiveness of a functor, as a property of objects in `C ⥤ D`. -/
+/-- The additivity of a functor, as a property of objects in `C ⥤ D`. -/
 def additiveFunctor : ObjectProperty (C ⥤ D) := fun F ↦ F.Additive
 
 variable {C D} in

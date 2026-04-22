@@ -155,7 +155,6 @@ theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
   MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
   In particular we can map `I` across this map, to get `I'` and a new map `R' → R'[x] → R'[x]/I`.
@@ -228,8 +227,7 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
   apply induction_on f
   · intro r
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
-      RingHom.comp_apply]
+    simp
   · intro p q hp hq
     simp only [map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢

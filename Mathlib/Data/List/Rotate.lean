@@ -396,6 +396,7 @@ theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
 
 /-- The relation `List.IsRotated l l'` forms a `Setoid` of cycles. -/
+@[implicit_reducible]
 def IsRotated.setoid (α : Type*) : Setoid (List α) where
   r := IsRotated
   iseqv := IsRotated.eqv
@@ -492,9 +493,11 @@ This implies that under certain conditions, there are duplicates in `List.cyclic
 The `n`th entry is equal to `l.rotate n`, proven in `List.get_cyclicPermutations`.
 The proof that every cyclic permutant of `l` is in the list is `List.mem_cyclicPermutations_iff`.
 
+```
      cyclicPermutations [1, 2, 3, 2, 4] =
        [[1, 2, 3, 2, 4], [2, 3, 2, 4, 1], [3, 2, 4, 1, 2],
-        [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]] -/
+        [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]]
+``` -/
 def cyclicPermutations : List α → List (List α)
   | [] => [[]]
   | l@(_ :: _) => dropLast (zipWith (· ++ ·) (tails l) (inits l))

@@ -83,12 +83,11 @@ theorem mono {T : Set (Set α)} (hT : IsCompactSystem T) (hST : S ⊆ T) :
 /-- Inserting `∅` into a compact system gives a compact system. -/
 lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := by
   intro s h' hd
-  by_cases g : ∃ n, s n = ∅
+  by_cases! g : ∃ n, s n = ∅
   · use g.choose
     rw [← subset_empty_iff] at hd ⊢
     exact (dissipate_subset le_rfl).trans g.choose_spec.le
-  · push_neg at g
-    exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
+  · exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
 
 /-- Inserting `univ` into a compact system gives a compact system. -/
 lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := by
@@ -96,13 +95,12 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   · simp
   rw [IsCompactSystem.iff_nonempty_iInter] at h ⊢
   intro s h' hd
-  by_cases h₀ : ∀ n, s n ∉ S
+  by_cases! h₀ : ∀ n, s n ∉ S
   · simp_all
-  push_neg at h₀
   classical
   let n := Nat.find h₀
   let s' := fun i ↦ if s i ∈ S then s i else s n
-  have h₁ : ∀ i, s' i ∈ S := by simp [s']; grind
+  have h₁ : ∀ i, s' i ∈ S := by grind
   have h₂ : ⋂ i, s i = ⋂ i, s' i := by ext; simp; grind
   apply h₂ ▸ h s' h₁
   by_contra! ⟨j, hj⟩
@@ -165,7 +163,7 @@ theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
     ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
   rw [isCompactSystem_iff_of_directed hpi]
-  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> rw [← not_imp_not] <;> push_neg
+  refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> contrapose!
   · exact h1 C h3 h4
   · exact h1 C h3 s
 
