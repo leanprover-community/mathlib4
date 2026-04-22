@@ -58,11 +58,7 @@ def colimit.smul (r : (R ⋙ forget _).ColimitType) (m : (M ⋙ forget _).Colimi
     refine Functor.ιColimitType_eq_of_map_eq_map _ _ _ α β ?_
     simp [*, ← R.map_comp_apply, ← M.map_comp_apply, -Functor.map_comp]
 
-#adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here,
-and as of nightly-2026-02-23, we also need `backward.whnf.reducibleClassField`
-to avoid needing even more. (The maxHeartbeats limit was also bumped up a little 2026-03-22 because
-the meaning of maxHeartbeats changed -- level metavariables started allocating some more memory in
-general.) -/
+#adaptation_note /-- As of nightly-2026-02-10, we need to increase the maxHeartbeats limits here. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 700000 in --
 set_option synthInstance.maxHeartbeats 40000 in

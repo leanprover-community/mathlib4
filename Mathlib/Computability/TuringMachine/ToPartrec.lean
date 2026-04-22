@@ -215,11 +215,18 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
-set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
-  induction a generalizing b <;> cases b <;> first
-    | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
+  induction a generalizing b <;> cases b
+  case move.move p k₁ k₂ q _ p' k₁' k₂' q' =>
+    exact decidable_of_iff' (p = p' ∧ k₁ = k₁' ∧ k₂ = k₂' ∧ q = q') (by simp)
+  case clear.clear p k q _ p' k' q' => exact decidable_of_iff' (p = p' ∧ k = k' ∧ q = q') (by simp)
+  case copy.copy q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case push.push k s q _ k' s' q' => exact decidable_of_iff' (k = k' ∧ s = s' ∧ q = q') (by simp)
+  case read.read f _ f' => exact decidable_of_iff' (∀ a, f a = f' a) (by simp [funext_iff])
+  case succ.succ q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case pred.pred q₁ q₂ _ _ q₁' q₂' => exact decidable_of_iff' (q₁ = q₁' ∧ q₂ = q₂') (by simp)
+  case ret.ret k k' => exact decidable_of_iff' (k = k') (by simp)
+  all_goals exact .isFalse (by rintro ⟨⟨⟩⟩)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
