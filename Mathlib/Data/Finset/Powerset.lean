@@ -103,7 +103,7 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   grind
 
 /-- The subsets of `t` containing `s` are exactly the subsets of `t \ s`, unioned with `s`. -/
-theorem powerset_filter_sdiff [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
+theorem filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
     t.powerset.filter (s ⊆ ·) = (t \ s).powerset.image (· ∪ s) := by
   ext x
   simp only [mem_filter, mem_powerset, mem_image]
@@ -114,13 +114,13 @@ theorem powerset_filter_sdiff [DecidableEq α] (s t : Finset α) (hst : s ⊆ t)
   · rintro ⟨y, hyt, rfl⟩
     exact ⟨union_subset (hyt.trans sdiff_subset) hst, subset_union_right⟩
 
-theorem card_powerset_filter [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
+theorem card_filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
     (t.powerset.filter (s ⊆ ·)).card = 2 ^ (t.card - s.card) := by
   have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb hab =>
     (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp ha))).symm.trans
     ((congrArg (· \ s) hab).trans
       (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp hb))))
-  simp only [powerset_filter_sdiff s t hst, card_image_of_injOn hinj,
+  simp only [filter_powerset_subset s t hst, card_image_of_injOn hinj,
              card_powerset, card_sdiff_of_subset hst]
 
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
@@ -224,7 +224,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 
 /-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
 subsets of `t \ s`, unioned with `s`. -/
-theorem powersetCard_filter_sdiff [DecidableEq α] (s t : Finset α) (n : ℕ)
+theorem filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
     (hst : s ⊆ t) (hsn : s.card ≤ n) :
     (t.powersetCard n).filter (s ⊆ ·) = ((t \ s).powersetCard (n - s.card)).image (· ∪ s) := by
   ext x
@@ -240,7 +240,7 @@ theorem powersetCard_filter_sdiff [DecidableEq α] (s t : Finset α) (n : ℕ)
 
 /-- The number of `n`-element subsets of `t` containing `s` equals
 `Nat.choose (t.card - s.card) (n - s.card)`. -/
-lemma card_powersetCard_filter [DecidableEq α] (s t : Finset α) (n : ℕ)
+lemma card_filter_powersetCard_subset [DecidableEq α] (s t : Finset α) (n : ℕ)
     (hst : s ⊆ t) (hsn : s.card ≤ n) :
     ((t.powersetCard n).filter (s ⊆ ·)).card =
     Nat.choose (t.card - s.card) (n - s.card) := by
@@ -250,7 +250,7 @@ lemma card_powersetCard_filter [DecidableEq α] (s t : Finset α) (n : ℕ)
     ((congrArg (· \ s) hab).trans
       (union_sdiff_cancel_right
         (disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left)))
-  simp only [powersetCard_filter_sdiff s t n hst hsn, card_image_of_injOn hinj,
+  simp only [filter_powersetCard_subset s t n hst hsn, card_image_of_injOn hinj,
              card_powersetCard, card_sdiff_of_subset hst]
 
 @[simp]
