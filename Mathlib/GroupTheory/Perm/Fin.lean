@@ -29,7 +29,7 @@ def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_refl {n : ℕ} (p : Fin (n + 1)) :
     Equiv.Perm.decomposeFin.symm (p, Equiv.refl _) = swap 0 p := by
-  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def]
+  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def, equiv_simps]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
