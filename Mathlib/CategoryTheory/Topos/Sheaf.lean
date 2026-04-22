@@ -59,6 +59,7 @@ def Presheaf.truth : (Functor.const _).obj PUnit ⟶ Functor.sieves C where
 
 variable {F G : Cᵒᵖ ⥤ Type (max u v)}
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The characteristic map of an inclusion of presheaves.
 Given a monomorphism of sheaves `m : F ⟶ G`, an object X of the site, map an element `x : G(X)`
@@ -78,6 +79,7 @@ lemma Presheaf.comp_χ_eq (m : F ⟶ G) : m ≫ Presheaf.χ m =
   apply Sieve.ext
   simp [← NatTrans.naturality_apply]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Presheaf.isPullback_χ_truth (m : F ⟶ G) [Mono m] :
     IsPullback m ((Functor.isTerminalConst _ Types.isTerminalPUnit).from F) (χ m) (truth C) := by
@@ -91,6 +93,7 @@ lemma Presheaf.isPullback_χ_truth (m : F ⟶ G) [Mono m] :
     intro p hp
     simpa [eq_comm] using congr($(hp).arrows (𝟙 _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
     (hχ' : IsPullback m ((Functor.isTerminalConst _ Types.isTerminalPUnit).from _) χ' (truth C)) :
@@ -184,6 +187,7 @@ def χ (m : F ⟶ G) [Mono m] : G ⟶ Sheaf.Ω J where
       ((isSheaf_iff_isSheaf_of_type _ _).mp F.property)
       ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated _)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isPullback_χ_truth (m : F ⟶ G) [Mono m] :
     IsPullback m ((isTerminalTerminal J _).from F) (Sheaf.χ m) (Sheaf.truth J) := by
   apply IsPullback.of_map (sheafToPresheaf J _)
