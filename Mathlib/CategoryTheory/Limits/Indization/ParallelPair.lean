@@ -32,8 +32,8 @@ open Limits Functor
 variable {C : Type u₁} [Category.{v₁} C]
 
 /-- Structure containing data exhibiting two parallel natural transformations `f` and `g` between
-presheaves `A` and `B` as induced by a natural transformation in a functor category exhibiting
-`A` and `B` as ind-objects. -/
+presheaves `A` and `B` as induced by parallel natural transformations in a functor category
+exhibiting `A` and `B` as ind-objects. -/
 structure IndParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (f g : A ⟶ B) where
   /-- The indexing category. -/
   I : Type v₁
