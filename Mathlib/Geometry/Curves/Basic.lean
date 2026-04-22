@@ -120,8 +120,10 @@ def isArcLengthParametrized3 (α : ParametrizedDifferentiableCurve3) : Prop :=
   ∀ t ∈ Set.Ioo α.a α.b, ‖deriv α.toFun t‖ = 1
 
 /-- The **curvature** `κ(t) = ‖α''(t)‖` of a curve `α` parametrized by arc length. -/
-noncomputable def Curvature3 (α : ParametrizedDifferentiableCurve3) (t : ℝ) : ℝ :=
-  ‖deriv (deriv α.toFun) t‖
+noncomputable def Curvature3
+  (α : ParametrizedDifferentiableCurve3)
+  (_h : isArcLengthParametrized3 α) (t : ℝ) : ℝ :=
+    ‖deriv (deriv α.toFun) t‖
 
 /-- The **unit tangent vector** `T(t) = α'(t)` of a curve `α` parametrized by arc length. -/
 noncomputable def curveTangent3 (α : ParametrizedDifferentiableCurve3)
@@ -132,7 +134,7 @@ noncomputable def curveTangent3 (α : ParametrizedDifferentiableCurve3)
   `α` parametrized by arc length. -/
 noncomputable def curveNormal3 (α : ParametrizedDifferentiableCurve3)
     (_h : isArcLengthParametrized3 α) (t : ℝ) : ℝ^3 :=
-  (1 / Curvature3 α t) • deriv (deriv α.toFun) t
+  (1 / Curvature3 α _h t) • deriv (deriv α.toFun) t
 
 /-- The **binormal vector** `B(t) = T(t) × N(t)` of a curve `α` parametrized by arc length. -/
 noncomputable def curveBinormal3 (α : ParametrizedDifferentiableCurve3)
@@ -175,12 +177,12 @@ For a curve `α` parametrized by arc length, the derivatives of the Frenet trihe
 /-- **Frenet formula for T**: the derivative of the unit tangent is `κ(t) • N(t)`. -/
 theorem derivTangent (α : ParametrizedDifferentiableCurve3)
     (h : isArcLengthParametrized3 α)
-    (t : ℝ) (hκ : Curvature3 α t ≠ 0) :
-    deriv (curveTangent3 α h) t = (Curvature3 α) t • (curveNormal3 α h) t := by
+    (t : ℝ) (hκ : Curvature3 α h t ≠ 0) :
+    deriv (curveTangent3 α h) t = (Curvature3 α h) t • (curveNormal3 α h) t := by
   -- T'(s) = d/ds(α'(s)) = α''(s) by definition of curveTangent
   have lhs : deriv (curveTangent3 α h) t = deriv (deriv α.toFun) t := rfl
   -- κ(s) · N(s) = ‖α''(s)‖ · (1/‖α''(s)‖ · α''(s)) = α''(s)
-  have rhs : Curvature3 α t • curveNormal3 α h t = deriv (deriv α.toFun) t := by
+  have rhs : Curvature3 α h t • curveNormal3 α h t = deriv (deriv α.toFun) t := by
     simp only [curveNormal3, Curvature3] at hκ ⊢
     simp only [smul_smul, mul_one_div_cancel hκ, one_smul]
   rw [lhs, rhs]
@@ -307,7 +309,7 @@ theorem derivBinormal (α : ParametrizedDifferentiableCurve3)
 the derivative of the principal normal is `-κ(t) • T(t) + τ(t) • B(t)`. -/
 theorem deriv_normal (α : ParametrizedDifferentiableCurve3)
     (h : isArcLengthParametrized3 α) (t : ℝ) (ht : t ∈ Set.Ioo α.a α.b)
-    (hκ : Curvature3 α t ≠ 0)
+    (hκ : Curvature3 α h t ≠ 0)
     (hcross : curveNormal3 α h t =
       (1 / Torsion3 α h t) •
         (let e := EuclideanSpace.equiv (Fin 3) ℝ
@@ -317,7 +319,7 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve3)
         -(e.symm (crossProduct (e (curveTangent3 α h t)) (e (deriv (curveNormal3 α h) t))))))
     (hτ : Torsion3 α h t ≠ 0) :
     deriv (curveNormal3 α h) t =
-      -(Curvature3 α t) • curveTangent3 α h t + Torsion3 α h t • curveBinormal3 α h t := by
+      -(Curvature3 α h t) • curveTangent3 α h t + Torsion3 α h t • curveBinormal3 α h t := by
   set e := EuclideanSpace.equiv (Fin 3) ℝ
   have hn : curveNormal3 α h t =
   e.symm (crossProduct (e (curveBinormal3 α h t)) (e (curveTangent3 α h t))) :=
@@ -447,10 +449,10 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve3)
   rw [hn', derivTangent α h t hκ, hB]
   -- Push smul through e (CLE) and crossProduct (bilinear LinearMap).
   rw [map_smul e (-(Torsion3 α h t)) (curveNormal3 α h t),
-      map_smul e (Curvature3 α t) (curveNormal3 α h t),
+      map_smul e (Curvature3 α h t) (curveNormal3 α h t),
       LinearMap.map_smul₂ crossProduct (-(Torsion3 α h t))
         (e (curveNormal3 α h t)) (e (curveTangent3 α h t)),
-      LinearMap.map_smul (crossProduct (e (curveBinormal3 α h t))) (Curvature3 α t)
+      LinearMap.map_smul (crossProduct (e (curveBinormal3 α h t))) (Curvature3 α h t)
         (e (curveNormal3 α h t))]
   -- Compute the cross-product identities `e N × e T = -e B` and `e B × e N = -e T`.
   have heB_def : e (curveBinormal3 α h t) =
@@ -467,12 +469,12 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve3)
   have hTN_dot : e (curveTangent3 α h t) ⬝ᵥ e (curveNormal3 α h t) = 0 :=
     (dot_e_eq _ _).trans (orthogonality_tangent_normal α h t ht)
   have hN_norm : ‖curveNormal3 α h t‖ = 1 := by
-    have hκ_pos : (0 : ℝ) < Curvature3 α t :=
+    have hκ_pos : (0 : ℝ) < Curvature3 α h t :=
       lt_of_le_of_ne (norm_nonneg _) (Ne.symm hκ)
-    change ‖(1 / Curvature3 α t) • deriv (deriv α.toFun) t‖ = 1
+    change ‖(1 / Curvature3 α h t) • deriv (deriv α.toFun) t‖ = 1
     rw [norm_smul, Real.norm_of_nonneg (le_of_lt (one_div_pos.mpr hκ_pos))]
-    change 1 / Curvature3 α t * ‖deriv (deriv α.toFun) t‖ = 1
-    rw [show ‖deriv (deriv α.toFun) t‖ = Curvature3 α t from rfl]
+    change 1 / Curvature3 α h t * ‖deriv (deriv α.toFun) t‖ = 1
+    rw [show ‖deriv (deriv α.toFun) t‖ = Curvature3 α h t from rfl]
     field_simp
   have hNN_dot : e (curveNormal3 α h t) ⬝ᵥ e (curveNormal3 α h t) = 1 := by
     rw [dot_e_eq, real_inner_self_eq_norm_sq, hN_norm]; norm_num
@@ -484,7 +486,7 @@ theorem deriv_normal (α : ParametrizedDifferentiableCurve3)
   -- (-τ) • -(e B) = τ • e B   and   κ • -(e T) = -(κ • e T)
   rw [show -(Torsion3 α h t) • -(e (curveBinormal3 α h t)) =
         (Torsion3 α h t) • e (curveBinormal3 α h t) from neg_smul_neg _ _,
-      smul_neg (Curvature3 α t) (e (curveTangent3 α h t))]
+      smul_neg (Curvature3 α h t) (e (curveTangent3 α h t))]
   -- Push e.symm through add/neg/smul, then reduce e.symm ∘ e.
   rw [map_add e.symm, map_neg e.symm, map_smul e.symm, map_smul e.symm,
       e.symm_apply_apply, e.symm_apply_apply]
