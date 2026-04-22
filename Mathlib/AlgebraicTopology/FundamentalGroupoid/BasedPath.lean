@@ -745,97 +745,66 @@ theorem toPath_homotopic_of_joinedIn_slsc
     exact hv_cont_real.comp (by fun_prop)
   -- The rectangle homotopy.
   let K_fn : I × I → X := fun ts ↦ (F (u_fn ts)).1 (v_fn ts)
+  have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (u_fn ts)).1 (v_fn ts) := fun _ ↦ rfl
+  -- Coordinate reductions of `u_fn`/`v_fn` at the four corners/edges. These are the forms
+  -- that appear after `K_fn_apply` unfolds `K_fn`.
+  have u_fn_zero_left : ∀ s : I, (u_fn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := fun _ ↦ by
+    simp [u_fn, u_real]
+  have u_fn_one_left : ∀ s : I, u_fn (1, s) = 1 :=
+    fun _ ↦ Subtype.ext (by simp [u_fn, u_real])
+  have u_fn_one_right : ∀ t : I, u_fn (t, 1) = 1 :=
+    fun _ ↦ Subtype.ext (by simp [u_fn, u_real]; ring)
+  have v_fn_left : ∀ t s : I, (v_fn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := fun _ _ ↦ by
+    simp [v_fn, v_real]
+  have v_fn_zero_right : ∀ t : I, v_fn (t, 0) = 0 :=
+    fun _ ↦ Subtype.ext (by simp [v_fn, v_real])
+  have v_fn_one_right : ∀ t : I, v_fn (t, 1) = 1 :=
+    fun _ ↦ Subtype.ext (by simp [v_fn, v_real])
   have hK_cont : Continuous K_fn :=
     hFv_cont.comp (hu_fn_cont.prodMk hv_fn_cont)
   -- Auxiliary identities evaluating K at corners/edges.
   have hK_zero : ∀ s : I, K_fn (0, s) = (α'.trans L) s := by
     intro s
-    change (F (u_fn (0, s))).1 (v_fn (0, s)) = (α'.trans L) s
-    have hu_eq : (u_fn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := by
-      simp [u_fn, u_real]
-    have hv_eq : (v_fn (0, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
-      simp [v_fn, v_real]
-    rw [Path.trans_apply]
+    rw [K_fn_apply, Path.trans_apply]
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
       have h2s : 2 * (s : ℝ) - 1 ≤ 0 := by linarith
-      have hu_val : (u_fn (0, s) : ℝ) = 0 := by
-        rw [hu_eq, max_eq_left h2s]
-      have hv_val : (v_fn (0, s) : ℝ) = 2 * (s : ℝ) := by
-        rw [hv_eq, min_eq_left (by linarith)]
-      have hu_subt : u_fn (0, s) = (0 : I) := Subtype.ext (by simpa using hu_val)
+      have hu_subt : u_fn (0, s) = (0 : I) :=
+        Subtype.ext (by rw [u_fn_zero_left, max_eq_left h2s]; rfl)
       have hv_subt : v_fn (0, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by simpa using hv_val)
-      rw [hu_subt, hv_subt]
-      change (F 0).1 ⟨2 * (s : ℝ), _⟩ = α' ⟨2 * (s : ℝ), _⟩
-      rw [hF0_eq]
+        Subtype.ext (by rw [v_fn_left, min_eq_left (by linarith)])
+      rw [hu_subt, hv_subt, hF0_eq]
       rfl
     · rw [dif_neg hs]
       have h2s : 0 ≤ 2 * (s : ℝ) - 1 := by linarith [not_le.mp hs]
-      have hu_val : (u_fn (0, s) : ℝ) = 2 * (s : ℝ) - 1 := by
-        rw [hu_eq, max_eq_right h2s]
-      have hv_val : (v_fn (0, s) : ℝ) = 1 := by
-        rw [hv_eq, min_eq_right (by linarith)]
       have hu_subt : u_fn (0, s) =
           ⟨2 * (s : ℝ) - 1,
             unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.mp hs).le, s.2.2⟩⟩ :=
-        Subtype.ext (by simpa using hu_val)
-      have hv_subt : v_fn (0, s) = (1 : I) := Subtype.ext (by simpa using hv_val)
+        Subtype.ext (by rw [u_fn_zero_left, max_eq_right h2s])
+      have hv_subt : v_fn (0, s) = (1 : I) :=
+        Subtype.ext (by rw [v_fn_left, min_eq_right (by linarith)]; rfl)
       rw [hu_subt, hv_subt]
       rfl
   have hK_one : ∀ s : I, K_fn (1, s) = (β.toPath.trans (Path.refl v)) s := by
     intro s
-    change (F (u_fn (1, s))).1 (v_fn (1, s)) = (β.toPath.trans (Path.refl v)) s
-    have hu_val : (u_fn (1, s) : ℝ) = 1 := by simp [u_fn, u_real]
-    have hv_eq : (v_fn (1, s) : ℝ) = min (2 * (s : ℝ)) 1 := by simp [v_fn, v_real]
-    have hu_subt : u_fn (1, s) = (1 : I) := Subtype.ext (by simpa using hu_val)
-    rw [Path.trans_apply]
+    rw [K_fn_apply, Path.trans_apply, u_fn_one_left]
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
-      have hv_val : (v_fn (1, s) : ℝ) = 2 * (s : ℝ) := by
-        rw [hv_eq, min_eq_left (by linarith)]
       have hv_subt : v_fn (1, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by simpa using hv_val)
-      rw [hu_subt, hv_subt]
-      change (F 1).1 ⟨2 * (s : ℝ), _⟩ = β.toPath ⟨2 * (s : ℝ), _⟩
-      rw [hF1_eq]
+        Subtype.ext (by rw [v_fn_left, min_eq_left (by linarith)])
+      rw [hv_subt, hF1_eq]
       rfl
     · rw [dif_neg hs]
-      have hv_val : (v_fn (1, s) : ℝ) = 1 := by
-        rw [hv_eq, min_eq_right (by linarith [not_le.mp hs])]
-      have hv_subt : v_fn (1, s) = (1 : I) := Subtype.ext (by simpa using hv_val)
-      rw [hu_subt, hv_subt]
-      change (F 1).1 1 = (Path.refl v) _
-      rw [hF1_eq]; rfl
-  have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := by
-    intro t
-    change (F (u_fn (t, 0))).1 (v_fn (t, 0)) = x₀
-    have hv_val : (v_fn (t, 0) : ℝ) = 0 := by
-      simp [v_fn, v_real]
-    have hv_subt : v_fn (t, 0) = (0 : I) := Subtype.ext (by simpa using hv_val)
-    rw [hv_subt]
-    exact (F (u_fn (t, 0))).2
-  have hK_at_one : ∀ t : I, K_fn (t, 1) = v := by
-    intro t
-    change (F (u_fn (t, 1))).1 (v_fn (t, 1)) = v
-    have hu_val : (u_fn (t, 1) : ℝ) = 1 := by
-      change (t : ℝ) + max 0 (2 * ((1 : I) : ℝ) - 1) * (1 - (t : ℝ)) = 1
-      have h1I : ((1 : I) : ℝ) = 1 := by norm_num
-      rw [h1I]
-      have h1 : max 0 (2 * (1 : ℝ) - 1) = 1 := by
-        rw [show (2 * (1 : ℝ) - 1) = 1 from by ring, max_eq_right zero_le_one]
-      rw [h1]; ring
-    have hv_val : (v_fn (t, 1) : ℝ) = 1 := by
-      change min (2 * ((1 : I) : ℝ)) 1 = 1
-      have h1I : ((1 : I) : ℝ) = 1 := by norm_num
-      rw [h1I, show (2 * (1 : ℝ)) = 2 from by ring, min_eq_right one_le_two]
-    have hu_subt : u_fn (t, 1) = (1 : I) := Subtype.ext (by simpa using hu_val)
-    have hv_subt : v_fn (t, 1) = (1 : I) := Subtype.ext (by simpa using hv_val)
-    rw [hu_subt, hv_subt]
-    change (F 1).1 1 = v
-    rw [hF1_eq]; rfl
+      have hv_subt : v_fn (1, s) = (1 : I) :=
+        Subtype.ext (by rw [v_fn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
+      rw [hv_subt, hF1_eq]
+      rfl
+  have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := fun t ↦ by
+    rw [K_fn_apply, v_fn_zero_right]; exact (F (u_fn (t, 0))).2
+  have hK_at_one : ∀ t : I, K_fn (t, 1) = v := fun t ↦ by
+    rw [K_fn_apply, u_fn_one_right, v_fn_one_right, hF1_eq]; rfl
   let K : Path.Homotopy (α'.trans L) (β.toPath.trans (Path.refl v)) :=
     { toFun := K_fn
       continuous_toFun := hK_cont
