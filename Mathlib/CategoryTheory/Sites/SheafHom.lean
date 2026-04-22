@@ -68,6 +68,7 @@ lemma presheafHom_map_app {X Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X) (h : Z ⟶ X) 
   subst w
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
     (α : (presheafHom F G).obj (op X)) :
@@ -102,6 +103,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
@@ -131,6 +133,7 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
@@ -168,6 +171,7 @@ end PresheafHom.IsSheafFor
 
 variable (F G S)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hG in
 open PresheafHom.IsSheafFor in
@@ -249,6 +253,7 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
-    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := rfl
+    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := by
+  with_unfolding_all rfl
 
 end CategoryTheory
