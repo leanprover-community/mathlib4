@@ -31,7 +31,7 @@ variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C�
   [Category* C₅] [Category* C₆]
 
 /-- `CatCommSq T L R B` expresses that there is a 2-commutative square of functors, where
-the functors `T`, `L`, `R` and `B` are respectively the left, top, right and bottom functors
+the functors `T`, `L`, `R` and `B` are respectively the top, left, right and bottom functors
 of the square. -/
 @[ext]
 class CatCommSq (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄) where
