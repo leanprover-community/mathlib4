@@ -181,6 +181,6 @@ theorem vcDim_dualFamily_le (𝒜 : Finset (Finset α)) (X : Finset α)
   obtain ⟨T, _, hT_card, hT_shat⟩ :=
     exists_shatters_of_dualFamily_shatters 𝒜 X (mem_shatterer.mp hS_mem) hS_card
   have : d + 1 ≤ 𝒜.vcDim := hT_card ▸ hT_shat.card_le_vcDim
-  omega
+  lia
 
 end Finset
