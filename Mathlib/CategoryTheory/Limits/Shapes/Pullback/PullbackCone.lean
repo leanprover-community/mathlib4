@@ -28,18 +28,20 @@ This file provides API for interacting with cones (resp. cocones) in the case of
   The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
   results about cones are also available for `PullbackCone f g`.
 
-* `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
+* `PushoutCocone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term
+  `t : PushoutCocone f g`
   provides the data of a cocone pictured as follows
   ```
     X -----f------> Y
     |               |
-    g               t.inr
+    g               t.inl
     |               |
     v               v
-    Z ---t.inl---> t.pt
+    Z ---t.inr---> t.pt
   ```
-  Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
-  `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
+  Similar to `PullbackCone`, `PushoutCocone f g` is implemented as an abbreviation for
+  `Cocone (span f g)`, so general results about cocones are also available for
+  `PushoutCocone f g`.
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
@@ -53,7 +55,7 @@ Various ways of constructing pullback cones:
 Interaction with `IsLimit`:
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
-* `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
+* `PullbackCone.IsLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
   using `PullbackCone.mk` is a limit cone.
 * `PullbackCone.IsLimit.lift` and `PullbackCone.IsLimit.lift'` provides convenient ways for
   constructing the morphisms to the point of a limit `PullbackCone` from the universal property.
@@ -327,7 +329,7 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
   dsimp at w; simpa using w.symm
 
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
-that `f ≫ inl = g ↠ inr`. -/
+that `f ≫ inl = g ≫ inr`. -/
 @[simps]
 def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : PushoutCocone f g where
   pt := W
