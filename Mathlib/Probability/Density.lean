@@ -139,14 +139,14 @@ theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Mea
 
 theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
     (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
-  contrapose! h
+  contrapose h
   exact pdf_of_not_aemeasurable h
 
 theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
     (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
   refine ⟨?_, ?_, hac⟩
   · exact aemeasurable_of_pdf_ne_zero X hpdf
-  · contrapose! hpdf
+  · contrapose hpdf
     have := pdf_of_not_haveLebesgueDecomposition hpdf
     filter_upwards using congrFun this
 
