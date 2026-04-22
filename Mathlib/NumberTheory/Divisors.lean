@@ -625,15 +625,10 @@ local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
 /-- `divisors z` is the `Finset` of divisors of `z`. By convention, we set `divisors 0 = ∅`. -/
-def divisors : (z : ℤ) -> Finset ℤ
-  | (n : ℕ) =>
-    let s := n.divisors
-    (s.map natCast).disjUnion (s.map negNatCast) <| by
-      simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
-  | -[n +1] =>
-    let s := (n + 1).divisors
-    (s.map natCast).disjUnion (s.map negNatCast) <| by
-      simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
+def divisors (z : ℤ) : Finset ℤ :=
+  let s := z.natAbs.divisors
+  (s.map natCast).disjUnion (s.map negNatCast) <| by
+    simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
 
 /-- Pairs of divisors of an integer as a finset.
 
@@ -733,11 +728,11 @@ lemma mem_divisorsAntidiag :
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
   ext x
-  simp [Eq.comm, Dvd.dvd]
+  simp [Eq.comm, dvd_def]
 
 theorem image_snd_divisorsAntidiag : z.divisorsAntidiag.image Prod.snd = z.divisors := by
   ext x
-  simp [Eq.comm, mul_comm, Dvd.dvd]
+  simp [Eq.comm, mul_comm, dvd_def]
 
 @[simp] lemma divisorsAntidiag_zero : divisorsAntidiag 0 = ∅ := rfl
 
