@@ -157,14 +157,14 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
-  (mapIsoFree F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
-    F.map (kernel.ι _) ≫ (mapIsoFree F P.generators.I η).inv
+  (mapFreeIso F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
 def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapIsoFree F P.generators.I η).hom ≫ F.map (P.generators.π)
+  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
@@ -180,13 +180,13 @@ def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
     refine IsColimit.equivOfNatIsoOfIso
-      (parallelPairIsoMk (mapIsoFree F _ η).symm (mapIsoFree F _ η).symm
+      (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
         (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
       <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F η).generators.π = (mapIsoFree F _ η).hom ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end

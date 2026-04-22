@@ -180,7 +180,7 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
 Then a morphism `η : unit S ⟶ F.obj (unit R)` induces a morphism from `free (R := S) I` to
-`F.obj (free I)`. See also `mapIsoFree` for the iso version. -/
+`F.obj (free I)`. See also `mapFreeIso` for the iso version. -/
 noncomputable def mapFree (η : unit S ⟶ F.obj (unit R)) : free (R := S) I ⟶ F.obj (free I) :=
   (isColimitFreeCofan I).map (F.mapCocone (freeCofan I)) (Discrete.natTrans fun _ ↦ η)
 
@@ -197,20 +197,20 @@ variable [PreservesColimitsOfShape (Discrete I) F]
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
 If `F` preserves coproducts and `unit S ≅ F.obj (unit R)`, then `F` preserves free sheaves of
 modules. -/
-noncomputable def mapIsoFree (η : unit S ≅ F.obj (unit R)) : free (R := S) I ≅ F.obj (free I) :=
+noncomputable def mapFreeIso (η : unit S ≅ F.obj (unit R)) : free (R := S) I ≅ F.obj (free I) :=
   (isColimitFreeCofan I).coconePointsIsoOfNatIso (isColimitOfPreserves F (isColimitFreeCofan I))
     (Discrete.natIso fun _ ↦ η)
 
-lemma mapIsoFree_hom (η : unit S ≅ F.obj (unit R)) :
-    (mapIsoFree F I η).hom = mapFree F I η.hom := rfl
+lemma mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) :
+    (mapFreeIso F I η).hom = mapFree F I η.hom := rfl
 
 @[reassoc (attr := simp)]
-lemma map_ιFree_mapIsoFree_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
-    F.map (ιFree i) ≫ (mapIsoFree F I η).inv = η.inv ≫ ιFree i :=
+lemma map_ιFree_mapFreeIso_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
+    F.map (ιFree i) ≫ (mapFreeIso F I η).inv = η.inv ≫ ιFree i :=
   IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
     (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
 
-@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapIsoFree_inv
+@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapFreeIso_inv
 
 end
 
