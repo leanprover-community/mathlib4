@@ -46,7 +46,7 @@ Furthermore, we give special support for two diagram categories: The `bowtie` an
 This is because these shapes show up in the proofs that forgetful functors of algebraic categories
 (e.g. `MonCat`, `CommRingCat`, ...) preserve filtered colimits.
 
-All of the above API, except for the `bowtie` and the `tulip`, is also provided for cofiltered
+All of the above API, except for the `tulip`, is also provided for cofiltered
 categories.
 
 ## See also
@@ -131,19 +131,19 @@ variable {C}
 variable [IsFilteredOrEmpty C]
 
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def max (j j' : C) : C :=
   (IsFilteredOrEmpty.cocone_objs j j').choose
 
 /-- `leftToMax j j'` is an arbitrary choice of morphism from `j` to `max j j'`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def leftToMax (j j' : C) : j ⟶ max j j' :=
   (IsFilteredOrEmpty.cocone_objs j j').choose_spec.choose
 
 /-- `rightToMax j j'` is an arbitrary choice of morphism from `j'` to `max j j'`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def rightToMax (j j' : C) : j' ⟶ max j j' :=
   (IsFilteredOrEmpty.cocone_objs j j').choose_spec.choose_spec.choose
@@ -151,7 +151,7 @@ noncomputable def rightToMax (j j' : C) : j' ⟶ max j j' :=
 /-- `coeq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
 which admits a morphism `coeqHom f f' : j' ⟶ coeq f f'` such that
 `coeq_condition : f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
-Its existence is ensured by `IsFiltered`.
+Its existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def coeq {j j' : C} (f f' : j ⟶ j') : C :=
   (IsFilteredOrEmpty.cocone_maps f f').choose
@@ -159,7 +159,7 @@ noncomputable def coeq {j j' : C} (f f' : j ⟶ j') : C :=
 /-- `coeqHom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
 `coeqHom f f' : j' ⟶ coeq f f'` such that
 `coeq_condition : f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
-Its existence is ensured by `IsFiltered`.
+Its existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
@@ -378,25 +378,25 @@ variable {C}
 variable [IsFilteredOrEmpty C]
 
 /-- `max₃ j₁ j₂ j₃` is an arbitrary choice of object to the right of `j₁`, `j₂` and `j₃`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def max₃ (j₁ j₂ j₃ : C) : C :=
   max (max j₁ j₂) j₃
 
 /-- `firstToMax₃ j₁ j₂ j₃` is an arbitrary choice of morphism from `j₁` to `max₃ j₁ j₂ j₃`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def firstToMax₃ (j₁ j₂ j₃ : C) : j₁ ⟶ max₃ j₁ j₂ j₃ :=
   leftToMax j₁ j₂ ≫ leftToMax (max j₁ j₂) j₃
 
 /-- `secondToMax₃ j₁ j₂ j₃` is an arbitrary choice of morphism from `j₂` to `max₃ j₁ j₂ j₃`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def secondToMax₃ (j₁ j₂ j₃ : C) : j₂ ⟶ max₃ j₁ j₂ j₃ :=
   rightToMax j₁ j₂ ≫ leftToMax (max j₁ j₂) j₃
 
 /-- `thirdToMax₃ j₁ j₂ j₃` is an arbitrary choice of morphism from `j₃` to `max₃ j₁ j₂ j₃`,
-whose existence is ensured by `IsFiltered`.
+whose existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def thirdToMax₃ (j₁ j₂ j₃ : C) : j₃ ⟶ max₃ j₁ j₂ j₃ :=
   rightToMax (max j₁ j₂) j₃
@@ -404,7 +404,7 @@ noncomputable def thirdToMax₃ (j₁ j₂ j₃ : C) : j₃ ⟶ max₃ j₁ j₂
 /-- `coeq₃ f g h`, for morphisms `f g h : j₁ ⟶ j₂`, is an arbitrary choice of object
 which admits a morphism `coeq₃Hom f g h : j₂ ⟶ coeq₃ f g h` such that
 `coeq₃_condition₁`, `coeq₃_condition₂` and `coeq₃_condition₃` are satisfied.
-Its existence is ensured by `IsFiltered`.
+Its existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def coeq₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : C :=
   coeq (coeqHom f g ≫ leftToMax (coeq f g) (coeq g h))
@@ -412,7 +412,7 @@ noncomputable def coeq₃ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : C :=
 
 /-- `coeq₃Hom f g h`, for morphisms `f g h : j₁ ⟶ j₂`, is an arbitrary choice of morphism
 `j₂ ⟶ coeq₃ f g h` such that `coeq₃_condition₁`, `coeq₃_condition₂` and `coeq₃_condition₃`
-are satisfied. Its existence is ensured by `IsFiltered`.
+are satisfied. Its existence is ensured by `IsFilteredOrEmpty`.
 -/
 noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ coeq₃ f g h :=
   coeqHom f g ≫
@@ -454,7 +454,8 @@ theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
  vv  vv
  k₁  k₂
 ```
-in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+assuming `IsFilteredOrEmpty C`, we can construct an object `s` and two morphisms from `k₁` and `k₂`
+to `s`,
 making the resulting squares commute.
 -/
 theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁) (g₂ : j₂ ⟶ k₂) :
@@ -476,7 +477,8 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
    vvv    vvv
     k₁    k₂
 ```
-in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+assuming `IsFilteredOrEmpty C`, we can construct an object `s` and two morphisms from `k₁` and `k₂`
+to `s`,
 making the resulting squares commute.
 -/
 theorem crown
@@ -505,7 +507,8 @@ theorem crown
    vvv    vvv
     k₁    k₂
 ```
-in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+assuming `IsFilteredOrEmpty C`, we can construct an object `s` and two morphisms from `k₁` and `k₂`
+to `s`,
 making the resulting squares commute.
 -/
 theorem crown₃
@@ -541,7 +544,8 @@ theorem crown₄
       v v
        l
 ```
-in a filtered category, we can construct an object `s` and three morphisms from `k₁`, `k₂` and `l`
+assuming `IsFilteredOrEmpty C`, we can construct an object `s` and three morphisms from `k₁`, `k₂`
+and `l`
 to `s`, making the resulting squares commute.
 -/
 theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j₂ ⟶ k₁) (f₃ : j₂ ⟶ k₂) (f₄ : j₃ ⟶ k₂)
@@ -631,19 +635,19 @@ variable {C}
 variable [IsCofilteredOrEmpty C]
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,
-whose existence is ensured by `IsCofiltered`.
+whose existence is ensured by `IsCofilteredOrEmpty`.
 -/
 noncomputable def min (j j' : C) : C :=
   (IsCofilteredOrEmpty.cone_objs j j').choose
 
 /-- `minToLeft j j'` is an arbitrary choice of morphism from `min j j'` to `j`,
-whose existence is ensured by `IsCofiltered`.
+whose existence is ensured by `IsCofilteredOrEmpty`.
 -/
 noncomputable def minToLeft (j j' : C) : min j j' ⟶ j :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose
 
 /-- `minToRight j j'` is an arbitrary choice of morphism from `min j j'` to `j'`,
-whose existence is ensured by `IsCofiltered`.
+whose existence is ensured by `IsCofilteredOrEmpty`.
 -/
 noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
   (IsCofilteredOrEmpty.cone_objs j j').choose_spec.choose_spec.choose
@@ -651,7 +655,7 @@ noncomputable def minToRight (j j' : C) : min j j' ⟶ j' :=
 /-- `eq f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of object
 which admits a morphism `eqHom f f' : eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
-Its existence is ensured by `IsCofiltered`.
+Its existence is ensured by `IsCofilteredOrEmpty`.
 -/
 noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
   (IsCofilteredOrEmpty.cone_maps f f').choose
@@ -659,7 +663,7 @@ noncomputable def eq {j j' : C} (f f' : j ⟶ j') : C :=
 /-- `eqHom f f'`, for morphisms `f f' : j ⟶ j'`, is an arbitrary choice of morphism
 `eqHom f f' : eq f f' ⟶ j` such that
 `eq_condition : eqHom f f' ≫ f = eqHom f f' ≫ f'`.
-Its existence is ensured by `IsCofiltered`.
+Its existence is ensured by `IsCofilteredOrEmpty`.
 -/
 noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
@@ -694,7 +698,7 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
  vv  vv
  j₁  j₂
 ```
-in a cofiltered category, we can construct an object `s` and two morphisms
+assuming `IsCofilteredOrEmpty C`, we can construct an object `s` and two morphisms
 from `s` to `k₁` and `k₂`, making the resulting squares commute.
 -/
 theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : k₁ ⟶ j₁) (g₁ : k₂ ⟶ j₁) (f₂ : k₁ ⟶ j₂) (g₂ : k₂ ⟶ j₂) :
@@ -908,8 +912,8 @@ theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
 
-/-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
-in `w` admits a cocone. -/
+/-- For every universe `w`, `C` is cofiltered if and only if every finite diagram in `C` with
+shape in `w` admits a cone. -/
 theorem iff_cone_nonempty : IsCofiltered C ↔
     ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C), Nonempty (Cone F) :=
   ⟨fun _ _ _ _ F => cone_nonempty F, of_cone_nonempty C⟩
