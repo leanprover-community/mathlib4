@@ -133,6 +133,17 @@ public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.IntervalArithmetic.Definitions
+public import Mathlib.Tactic.IntervalArithmetic.Environment
+public import Mathlib.Tactic.IntervalArithmetic.Environment'
+public import Mathlib.Tactic.IntervalArithmetic.EnvironmentTest
+public import Mathlib.Tactic.IntervalArithmetic.EnvironmentTest'
+public import Mathlib.Tactic.IntervalArithmetic.Expr
+public import Mathlib.Tactic.IntervalArithmetic.ExprToCertificate
+public import Mathlib.Tactic.IntervalArithmetic.Interval'
+public import Mathlib.Tactic.IntervalArithmetic.IntervalArithmetic
+public import Mathlib.Tactic.IntervalArithmetic.IntervalTest
+public import Mathlib.Tactic.IntervalArithmetic.Preprocessor
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
@@ -212,6 +223,7 @@ public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Irrational
 public import Mathlib.Tactic.NormNum.IsCoprime
 public import Mathlib.Tactic.NormNum.IsSquare
+public import Mathlib.Tactic.NormNum.Learn
 public import Mathlib.Tactic.NormNum.LegendreSymbol
 public import Mathlib.Tactic.NormNum.ModEq
 public import Mathlib.Tactic.NormNum.NatFactorial
