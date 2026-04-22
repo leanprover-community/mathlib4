@@ -28,7 +28,7 @@ Given a type `C` and a category instance on `C`:
   `CategoryTheory.FreeGroupoid.lift_unique`:
   the proofs that, respectively, `CategoryTheory.FreeGroupoid.lift` indeed is a lifting
   and is the unique one.
-- `CategoryTheory.Grpd.free`: the free functor from `Grpd` to `Cat`
+- `CategoryTheory.Grpd.free`: the free functor from `Cat` to `Grpd`
 - `CategoryTheory.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
   `Grpd.forgetToCat`.
 
@@ -51,8 +51,8 @@ universe v u v₁ u₁ v₂ u₂
 variable (C : Type u) [Category.{v} C]
 
 open Quiver in
-/-- The relation on the free groupoid on the underlying *quiver* of C that
-promotes the prefunctor `C ⥤q FreeGroupoid C` into a functor
+/-- The relation on the free groupoid on the underlying *quiver* of `C` that
+promotes the prefunctor `C ⥤q Quiver.FreeGroupoid C` into a functor
 `C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
 inductive FreeGroupoid.homRel : HomRel (Quiver.FreeGroupoid C) where
 | map_id (X : C) : homRel ((FreeGroupoid.of C).map (𝟙 X)) (𝟙 ((FreeGroupoid.of C).obj X))
@@ -61,7 +61,7 @@ inductive FreeGroupoid.homRel : HomRel (Quiver.FreeGroupoid C) where
 
 /-- The underlying type of the free groupoid on a category,
 defined by quotienting the free groupoid on the underlying quiver of `C`
-by the relation that promotes the prefunctor `C ⥤q FreeGroupoid C` into a functor
+by the relation that promotes the prefunctor `C ⥤q Quiver.FreeGroupoid C` into a functor
 `C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
 def FreeGroupoid := Quotient (FreeGroupoid.homRel C)
 
@@ -154,8 +154,9 @@ attribute [local instance] Localization.groupoid
 instance : (of C).IsLocalization ⊤ :=
   .mk' _ _ strictUniversalPropertyFixedTarget strictUniversalPropertyFixedTarget
 
-/-- In order to define a natural isomorphism `F ≅ G` with `F G : FreeGroupoid ⥤ D`,
-it suffices to do so after precomposing with `FreeGroupoid.of C`. -/
+/-- In order to define a natural isomorphism `F₁ ≅ F₂` with
+`F₁ F₂ : FreeGroupoid C ⥤ G`, it suffices to do so after precomposing with
+`FreeGroupoid.of C`. -/
 def liftNatIso (F₁ F₂ : FreeGroupoid C ⥤ G) (τ : of C ⋙ F₁ ≅ of C ⋙ F₂) : F₁ ≅ F₂ :=
   Localization.liftNatIso (of C) ⊤ (of C ⋙ F₁) (of C ⋙ F₂) _ _ τ
 
