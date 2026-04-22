@@ -57,6 +57,17 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
+@[expose] public section Dependencies
+
+set_option warn.sorry false
+set_option linter.style.longLine false
+set_option linter.missingDocs false
+
+/-- #35628 -/
+@[simps] def SimpleGraph.Hom.map {V W : Type*} (f : V → W) (G : SimpleGraph V) (h : ∀ {u v}, G.Adj u v → f u ≠ f v) : G →g G.map f := ⟨f, sorry⟩
+
+end Dependencies
+
 @[expose] public section
 
 assert_not_exists Field
@@ -283,6 +294,35 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
 theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n : ℕ}
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
+
+/-- Given an `ℕ`-coloring where only colors below `n` are used, convert it to an `n`-coloring -/
+@[simps!]
+def Coloring.natToFin {n : ℕ} (C : G.Coloring ℕ) (h : ∀ v, C v < n) : G.Coloring <| Fin n :=
+  .mk (fun v ↦ ⟨C v, h v⟩) <| by grind [C.valid]
+
+/-- Given a `k`-coloring where only colors below `n` are used, convert it to an `n`-coloring -/
+@[simps!]
+def Coloring.castLT {k n : ℕ} (C : G.Coloring <| Fin k) (h : ∀ v, C v < n) : G.Coloring <| Fin n :=
+  .mk (fun v ↦ C v |>.castLT <| h v) <| by grind [Fin.castLT, C.valid]
+
+/-- Given an `α`-coloring `C`, convert it to a coloring where the only available colors are from the
+range of `C`, possibly producing a coloring with fewer colors -/
+@[simps!]
+def Coloring.attach (C : G.Coloring α) : G.Coloring <| Set.range C :=
+  .mk (Set.rangeFactorization C) <| by grind [Set.rangeFactorization, C.valid]
+
+variable (G) in
+/-- Color a graph using an embedding of its vertices to colors -/
+@[simps!]
+def coloringOfEmbedding {α : Type*} (f : V ↪ α) : G.Coloring α :=
+  G.recolorOfEmbedding f G.selfColoring
+
+/-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
+This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
+the original graph `G` and considering every color class (independent set) as a single vertex. -/
+@[simps!]
+def Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
+  .map f G f.map_adj
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
