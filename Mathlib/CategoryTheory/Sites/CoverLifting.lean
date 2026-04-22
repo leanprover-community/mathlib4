@@ -146,6 +146,7 @@ variable {R : Dᵒᵖ ⥤ A} (α : G.op ⋙ R ⟶ F)
 variable (hR : (Functor.RightExtension.mk _ α).IsPointwiseRightKanExtension)
 variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `lift`. -/
 def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
@@ -163,6 +164,7 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
           r.w := by simpa using G.congr_map w =≫ f
           .. })
 
+set_option backward.defeqAttrib.useBackward true in
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
     liftAux hF α s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ :=
@@ -197,6 +199,7 @@ lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
 
 variable {α}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `isLimitMultifork` -/
 def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
@@ -209,6 +212,7 @@ lemma fac' (j : StructuredArrow (op X) G.op) :
     lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF α s j.hom.unop := by
   apply IsLimit.fac
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   apply (hR (op i.Y)).hom_ext
@@ -219,6 +223,7 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hR hF in
 variable (K) in
@@ -315,6 +320,7 @@ lemma sheafAdjunctionCocontinuous_unit_app_hom (F : Sheaf K A) :
 alias sheafAdjunctionCocontinuous_unit_app_val :=
   sheafAdjunctionCocontinuous_unit_app_hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
     ((G.sheafAdjunctionCocontinuous A J K).counit.app F).hom =
@@ -329,6 +335,7 @@ lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
 alias sheafAdjunctionCocontinuous_counit_app_val :=
   sheafAdjunctionCocontinuous_counit_app_hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
