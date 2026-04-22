@@ -89,7 +89,7 @@ def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h 
 
 /-- The second leg of a pullback cone is a normal monomorphism if the right component is too.
 
-See also `pullback.sndOfMono` for the basic monomorphism version, and
+See also `pullback.snd_of_mono` for the basic monomorphism version, and
 `normalOfIsPullbackFstOfNormal` for the flipped version.
 -/
 @[implicit_reducible]
@@ -109,7 +109,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
 
 /-- The first leg of a pullback cone is a normal monomorphism if the left component is too.
 
-See also `pullback.fstOfMono` for the basic monomorphism version, and
+See also `pullback.fst_of_mono` for the basic monomorphism version, and
 `normalOfIsPullbackSndOfNormal` for the flipped version.
 -/
 @[implicit_reducible]
@@ -208,7 +208,7 @@ def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h :
 
 /-- The second leg of a pushout cocone is a normal epimorphism if the right component is too.
 
-See also `pushout.sndOfEpi` for the basic epimorphism version, and
+See also `pushout.inl_of_epi` for the basic epimorphism version, and
 `normalOfIsPushoutFstOfNormal` for the flipped version.
 -/
 @[implicit_reducible]
@@ -228,7 +228,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
 
 /-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.
 
-See also `pushout.fstOfEpi` for the basic epimorphism version, and
+See also `pushout.inr_of_epi` for the basic epimorphism version, and
 `normalOfIsPushoutSndOfNormal` for the flipped version.
 -/
 @[implicit_reducible]
@@ -312,7 +312,7 @@ attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
 end
 
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
-a kernel. This is not an instance because it would create an instance loop. -/
+a cokernel. This is not an instance because it would create an instance loop. -/
 @[implicit_reducible]
 def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
   (IsNormalEpiCategory.normalEpiOfEpi _).some
