@@ -113,6 +113,7 @@ lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
       congr 1
       exact functorMap_commSq_aux f (by lia) (by lia)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower

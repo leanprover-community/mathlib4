@@ -68,6 +68,7 @@ lemma Quot.addMonoidHom_ext [DecidableEq J] {α : Type*} [AddMonoid α] {f g : Q
 
 variable (c : Cocone F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
 assuming that `Quot F` lives in the correct universe. -/
@@ -82,6 +83,7 @@ def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
   rw [c.ι.naturality]
   simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
@@ -101,6 +103,7 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The obvious additive map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
@@ -127,6 +130,7 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
     AddMonoidHom.coe_coe, Function.comp_apply]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The obvious additive map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
@@ -169,6 +173,7 @@ def quotQuotUliftAddEquiv [DecidableEq J] : Quot F ≃+ Quot (F ⋙ uliftFunctor
     rfl
   map_add' _ _ := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
     (Quot.desc (F ⋙ uliftFunctor.{u'}) (uliftFunctor.{u'}.mapCocone c)).comp
@@ -181,6 +186,7 @@ lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
   erw [Quot.ι_desc]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (implementation detail) A morphism of commutative additive groups `Quot F →+ A`
 induces a cocone on `F` as long as the universes work out.
 -/
@@ -189,6 +195,7 @@ def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) :
   pt := AddCommGrpCat.of A
   ι.app j := ofHom <| f.comp (Quot.ι F j)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) : (hc.desc (toCocone F f)).hom.comp (Quot.desc F c) = f := by
@@ -198,12 +205,14 @@ lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f :
   rw [hc.fac]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Quot.desc_toCocone_desc_app [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
     (hc : IsColimit c) (x : Quot F) : hc.desc (toCocone F f) (Quot.desc F c x) = f x := by
   conv_rhs => rw [← Quot.desc_toCocone_desc F c f hc]
   dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
@@ -228,6 +237,7 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
       rw [← eq]; rfl
     exact Quot.addMonoidHom_ext F (by simp [← hm])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (internal implementation) The colimit cocone of a functor `F`, implemented as a quotient of
 `DFinsupp (fun j ↦ F.obj j)`, under the assumption that said quotient is small.
@@ -291,6 +301,7 @@ namespace AddCommGrpCat
 
 open QuotientAddGroup
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The categorical cokernel of a morphism in `AddCommGrpCat`
 agrees with the usual group-theoretical quotient.
 -/

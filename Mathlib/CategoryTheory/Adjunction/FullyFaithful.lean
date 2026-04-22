@@ -58,6 +58,7 @@ instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) wher
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
@@ -81,6 +82,7 @@ instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) wh
   left_cancellation {Y} f g hfg :=
     R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism. -/
 noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
@@ -123,6 +125,7 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
   map_injective {X Y f g} hfg := by
@@ -145,6 +148,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
   preimage {_ Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If each component of the counit is an epimorphism, then the right adjoint is faithful. -/
 lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where
   map_injective {X Y f g} hfg := by
@@ -274,6 +278,7 @@ instance [R.IsEquivalence] : IsIso h.counit := by
   have := h.isEquivalence_left_of_isEquivalence_right
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
     {T : C ⥤ E} {S : E ⥤ D} {X : C} (adj2 : T ⊣ S ⋙ R) [R.Faithful] [R.Full] :

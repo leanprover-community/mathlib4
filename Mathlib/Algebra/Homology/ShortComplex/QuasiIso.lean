@@ -139,12 +139,14 @@ lemma quasiIso_iff_isIso_homologyMap' (φ : S₁ ⟶ S₂)
     QuasiIso φ ↔ IsIso (homologyMap' φ h₁ h₂) :=
   quasiIso_iff_isIso_leftHomologyMap' _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     QuasiIso φ := by
   rw [((LeftHomologyMapData.ofEpiOfIsIsoOfMono φ) S₁.leftHomologyData).quasiIso_iff]
   dsimp
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma quasiIso_opMap_iff (φ : S₁ ⟶ S₂) :
     QuasiIso (opMap φ) ↔ QuasiIso φ := by
   have γ : HomologyMapData φ S₁.homologyData S₂.homologyData := default
@@ -168,6 +170,7 @@ lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S�
   change QuasiIso φ
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
     (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
@@ -178,6 +181,7 @@ lemma quasiIso_iff_isIso_liftCycles (φ : S₁ ⟶ S₂)
       φH := S₂.liftCycles φ.τ₂ (by rw [φ.comm₂₃, hg₁, zero_comp]) }
   exact H.quasiIso_iff
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_isIso_descOpcycles (φ : S₁ ⟶ S₂)
     (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :

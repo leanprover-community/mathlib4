@@ -146,6 +146,7 @@ def free : C ⥤ Algebra T where
 instance [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
@@ -204,6 +205,7 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
       assoc := by simp [A.assoc] }
   map f := { f := f.f }
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
@@ -211,6 +213,7 @@ The identity monad morphism induces the identity functor from the category of al
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A composition of monad morphisms gives the composition of corresponding functors.
 -/
 @[simps (rhsMd := .default)]
@@ -228,6 +231,7 @@ def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : 
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
 categories over `C`, that is, we have `algebraEquivOfIsoMonads h ⋙ forget = forget`.
 -/

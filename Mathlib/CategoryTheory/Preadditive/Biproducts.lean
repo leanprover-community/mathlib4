@@ -147,11 +147,13 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
       cases j
       simp [sum_comp, t.ι_π, comp_dite]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
   isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cone.ext (Iso.refl _) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
 bicone. -/
@@ -163,6 +165,7 @@ def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone
       simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
       simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
     (ht : IsColimit t) : (Bicone.ofColimitCocone ht).IsBilimit :=
@@ -299,6 +302,7 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
         biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
         h]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
 
@@ -351,10 +355,12 @@ def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
   inl := ht.lift (BinaryFan.mk (𝟙 X) 0)
   inr := ht.lift (BinaryFan.mk 0 (𝟙 Y))
 
+set_option backward.defeqAttrib.useBackward true in
 theorem inl_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inl = ht.lift (BinaryFan.mk (𝟙 X) 0) := by
   apply ht.uniq (BinaryFan.mk (𝟙 X) 0); rintro ⟨⟨⟩⟩ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inr = ht.lift (BinaryFan.mk 0 (𝟙 Y)) := by
   apply ht.uniq (BinaryFan.mk 0 (𝟙 Y)); rintro ⟨⟨⟩⟩ <;> simp
@@ -394,16 +400,19 @@ def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColim
   inl := t.ι.app ⟨WalkingPair.left⟩
   inr := t.ι.app ⟨WalkingPair.right⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem fst_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.fst = ht.desc (BinaryCofan.mk (𝟙 X) 0) := by
   apply ht.uniq (BinaryCofan.mk (𝟙 X) 0)
   rintro ⟨⟨⟩⟩ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.snd = ht.desc (BinaryCofan.mk 0 (𝟙 Y)) := by
   apply ht.uniq (BinaryCofan.mk 0 (𝟙 Y))
   rintro ⟨⟨⟩⟩ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In a preadditive category, any binary bicone which is a colimit cocone is in fact a
 bilimit bicone. -/
 def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit t.toCocone) :
@@ -411,6 +420,7 @@ def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit 
   isBinaryBilimitOfTotal _ <| by
     refine BinaryCofan.IsColimit.hom_ext ht ?_ ?_ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- We can turn any colimit cocone over a pair into a bilimit bicone. -/
 def binaryBiconeIsBilimitOfColimitCoconeOfIsColimit {X Y : C} {t : Cocone (pair X Y)}
     (ht : IsColimit t) : (BinaryBicone.ofColimitCocone ht).IsBilimit :=
@@ -512,6 +522,7 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
     apply Category.id_comp
   inr_snd := by apply SplitEpi.id
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bicone constructed in `binaryBiconeOfSplitMonoOfCokernel` is a bilimit.
 This is a version of the splitting lemma that holds in all preadditive categories. -/
@@ -864,6 +875,7 @@ section Finite
 
 variable {J : Type*} [Finite J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
 preserves finite products. -/
 lemma preservesProduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
@@ -887,6 +899,7 @@ lemma preservesProductsOfShape_of_preservesBiproductsOfShape [PreservesBiproduct
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite products
 preserves finite biproducts. -/
 lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Discrete.functor f) F] :
@@ -935,6 +948,7 @@ lemma preservesBiproductsOfShape_of_preservesProductsOfShape
     PreservesBiproductsOfShape J F where
   preserves {_} := preservesBiproduct_of_preservesProduct F
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
 preserves finite coproducts. -/
 lemma preservesCoproduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
@@ -958,6 +972,7 @@ lemma preservesCoproductsOfShape_of_preservesBiproductsOfShape [PreservesBiprodu
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite coproducts
 preserves finite biproducts. -/
 lemma preservesBiproduct_of_preservesCoproduct {f : J → C}
@@ -980,6 +995,7 @@ lemma preservesBiproductsOfShape_of_preservesCoproductsOfShape
 
 end Finite
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
 preserves binary products. -/
 lemma preservesBinaryProduct_of_preservesBinaryBiproduct {X Y : C}
@@ -1003,6 +1019,7 @@ lemma preservesBinaryProducts_of_preservesBinaryBiproducts [PreservesBinaryBipro
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary products
 preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLimit (pair X Y) F] :
@@ -1046,6 +1063,7 @@ lemma preservesBinaryBiproducts_of_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) F] : PreservesBinaryBiproducts F where
   preserves {_} {_} := preservesBinaryBiproduct_of_preservesBinaryProduct F
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
 preserves binary coproducts. -/
 lemma preservesBinaryCoproduct_of_preservesBinaryBiproduct {X Y : C}
@@ -1071,6 +1089,7 @@ lemma preservesBinaryCoproducts_of_preservesBinaryBiproducts [PreservesBinaryBip
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
 preserves binary biproducts. -/
 lemma preservesBinaryBiproduct_of_preservesBinaryCoproduct {X Y : C}

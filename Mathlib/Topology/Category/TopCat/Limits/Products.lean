@@ -39,6 +39,7 @@ abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (�
 def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
   Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v, u} α)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed fan is indeed a limit -/
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where

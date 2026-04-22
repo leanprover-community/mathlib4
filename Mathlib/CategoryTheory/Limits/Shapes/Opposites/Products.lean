@@ -102,6 +102,7 @@ instance : HasProduct (op <| Z ·) := hasLimit_of_iso
 @[simp]
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If a `Cofan` is colimit, then its opposite is limit. -/
 -- noncomputability is just for performance (compilation takes a while)
 noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
@@ -181,6 +182,7 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
@@ -211,6 +213,7 @@ instance : HasCoproduct (op <| Z ·) := hasColimit_of_iso
 @[simp]
 def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If a `Fan` is limit, then its opposite is colimit. -/
 -- noncomputability is just for performance (compilation takes a while)
 noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
@@ -277,6 +280,7 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   erw [← Category.assoc, proj_comp_opProductIsoCoproduct'_hom, IsColimit.fac]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
   convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)

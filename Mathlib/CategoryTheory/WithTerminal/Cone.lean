@@ -29,6 +29,7 @@ variable {J : Type w} [Category.{w'} J]
 namespace CategoryTheory.WithTerminal
 variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors

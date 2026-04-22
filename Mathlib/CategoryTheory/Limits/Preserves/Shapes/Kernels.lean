@@ -294,6 +294,7 @@ end Cokernels
 
 variable (X Y : C) (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance preservesKernel_zero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
@@ -303,6 +304,7 @@ instance preservesKernel_zero :
     refine IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) ?_
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))⟩
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance preservesCokernel_zero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := ⟨by
@@ -338,6 +340,7 @@ def mapZeroKernelFork :
     (kernel.zeroKernelFork f).map G ≅ (kernel.zeroKernelFork (G.map f)) :=
   Fork.ext G.mapZeroObject
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a `zeroCokernelCofork` of `f : X ⟶ Y` along a functor `G` that preserves zero morphisms
 is isomorphic to the `zeroCokernelCofork` of `G.map f`. -/
 def mapZeroCokernelCofork :

@@ -307,6 +307,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
@@ -354,6 +355,7 @@ def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C)
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     (additiveObjIsoBiproduct F M).hom ≫ biproduct.π _ i =
@@ -363,6 +365,7 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -414,9 +417,11 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     · subst h; simp
     · simp [h]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
 def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F ≅ F :=
@@ -425,6 +430,7 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/

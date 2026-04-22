@@ -40,6 +40,7 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app _ := TypeCat.ofHom (fun _ ↦ by cat_disch) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -75,6 +76,7 @@ section
 
 variable {J : Type w} [Category.{t} J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
@@ -123,6 +125,7 @@ noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]

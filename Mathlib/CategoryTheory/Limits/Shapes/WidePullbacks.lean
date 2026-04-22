@@ -114,11 +114,13 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
     · apply 𝟙 _
     · exact arrows j
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
   NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cone over a wide cospan. -/
 @[simps]
 def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : ∀ j, X ⟶ F.obj (some j))
@@ -242,11 +244,13 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     · cases g
       simp only [hom_id, Category.comp_id]; congr
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
 def diagramIsoWideSpan (F : WidePushoutShape J ⥤ C) :
     F ≅ wideSpan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.init j) :=
   NatIso.ofComponents fun j => eqToIso <| by cases j; repeat rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct a cocone over a wide span. -/
 @[simps]
 def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι : ∀ j, F.obj (some j) ⟶ X)
@@ -386,6 +390,7 @@ def π (s : WidePullbackCone f) (i : ι) : s.pt ⟶ Y i :=
 def base (s : WidePullbackCone f) : s.pt ⟶ X :=
   (Cone.π s).app none
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma condition (s : WidePullbackCone f) (i : ι) : s.π i ≫ f i = s.base := by
   simpa using ((Cone.π s).naturality (.term i)).symm
@@ -473,6 +478,7 @@ lemma reindex_π {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X} (s :
     {ι' : Type*} (e : ι' ≃ ι) (i : ι') :
     (s.reindex e).π i = s.π (e i) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing a pullback cone preserves being limiting. -/
 def reindexIsLimitEquiv {ι : Type*} {X : C} {Y : ι → C} {f : ∀ i, Y i ⟶ X}

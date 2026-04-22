@@ -444,6 +444,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =

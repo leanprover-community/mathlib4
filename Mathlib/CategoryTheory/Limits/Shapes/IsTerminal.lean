@@ -74,6 +74,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     dsimp [Function.RightInverse, Function.LeftInverse]
     subsingleton
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
 def IsTerminal.ofUnique (Y : C) [h : ∀ X : C, Unique (X ⟶ Y)] : IsTerminal Y where
@@ -119,6 +120,7 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     #adaptation_note /-- 19-07-2025 grind stopped working -/
     intro x; dsimp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
 def IsInitial.ofUnique (X : C) [h : ∀ Y : C, Unique (X ⟶ Y)] : IsInitial X where
@@ -336,6 +338,7 @@ theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerm
 
 variable {J : Type u} [Category.{v} J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.
 In `limitOfDiagramInitial` we show it is a limit cone. -/
 @[simps]
@@ -347,6 +350,7 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `coneOfDiagramInitial` is a limit. -/
 def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
@@ -357,6 +361,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
@@ -373,12 +378,14 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coneOfDiagramTerminal` is a limit. -/
 def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsLimit (coneOfDiagramTerminal hX F) where
   lift S := S.π.app _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cocone for `J`.
 In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/
 @[simps]
@@ -390,6 +397,7 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
 `coconeOfDiagramTerminal` is a colimit. -/
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
@@ -403,6 +411,7 @@ lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : Is
   change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cocone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
@@ -419,6 +428,7 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coconeOfDiagramInitial` is a colimit. -/
 def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
@@ -473,6 +483,7 @@ namespace Functor
 open Limits
 variable (C : Type*) [Category* C] {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The constant functor returning a specific terminal object is indeed terminal. -/
 def isTerminalConst {X : D} (hX : IsTerminal X) :
     IsTerminal ((Functor.const C).obj X) :=
@@ -482,6 +493,7 @@ def isTerminalConst {X : D} (hX : IsTerminal X) :
 lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
     (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The constant functor returning a specific initial object is indeed initial. -/
 def isInitialConst {X : D} (hX : IsInitial X) :
     IsInitial ((Functor.const C).obj X) :=

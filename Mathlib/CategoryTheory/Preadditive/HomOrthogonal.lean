@@ -112,6 +112,7 @@ section
 
 variable [Preadditive C] [HasFiniteBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
 @[simps!]
@@ -169,6 +170,7 @@ section
 
 variable {R : Type*} [Semiring R] [Linear R C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]

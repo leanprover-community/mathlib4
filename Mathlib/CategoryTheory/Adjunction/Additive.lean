@@ -45,6 +45,7 @@ lemma left_adjoint_additive [G.Additive] : F.Additive where
 
 variable [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
 and if `F` is additive, then the hom set equivalence upgrades to an `AddEquiv`.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and

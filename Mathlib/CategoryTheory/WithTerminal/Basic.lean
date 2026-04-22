@@ -135,6 +135,7 @@ def map {D : Type*} [Category* D] (F : C ⥤ D) : WithTerminal C ⥤ WithTermina
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`. -/
 @[simps!]
 def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
@@ -142,6 +143,7 @@ def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) :=
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
 def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) :
@@ -180,6 +182,7 @@ def prelaxfunctor : PrelaxFunctor Cat Cat where
     ext X
     cases X <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
@@ -330,6 +333,7 @@ section
 
 variable {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithTerminal C ⥤ D` can be seen as an element of the comma category
 `Comma (𝟭 (C ⥤ D)) (const C)`. -/
 @[simps!]
@@ -343,6 +347,7 @@ def mkCommaObject (F : WithTerminal C ⥤ D) : Comma (𝟭 (C ⥤ D)) (Functor.c
         rw [Category.comp_id, ← F.map_comp]
         congr 1 }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithTerminal C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
@@ -350,6 +355,7 @@ def mkCommaMorphism {F G : WithTerminal C ⥤ D} (η : F ⟶ G) : mkCommaObject 
   right := η.app .star
   left := Functor.whiskerLeft incl η
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An element of the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)` can be seen as a
 functor `WithTerminal C ⥤ D`. -/
@@ -357,6 +363,7 @@ functor `WithTerminal C ⥤ D`. -/
 def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal C ⥤ D :=
   lift (Z := c.right) c.left (fun x ↦ c.hom.app x) (fun x y f ↦ by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
 functors `WithTerminal C ⥤ D`. -/
 @[simps!]
@@ -372,6 +379,7 @@ def ofCommaMorphism {c c' : Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c �
     | of a, star, _ => by simp; simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithTerminal C ⥤ D` is equivalent to the category
 `Comma (𝟭 (C ⥤ D)) (const C) `. -/
@@ -540,6 +548,7 @@ def map {D : Type*} [Category* D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial 
     | star, of _, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`. -/
 @[simps!]
 def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
@@ -547,6 +556,7 @@ def mapId (C : Type*) [Category* C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) :=
     | of _ => Iso.refl _
     | star => Iso.refl _) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism between the functor `map (F ⋙ G) ` and `map F ⋙ map G `. -/
 @[simps!]
 def mapComp {D E : Type*} [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E) :
@@ -584,6 +594,7 @@ def prelaxfunctor : PrelaxFunctor Cat Cat where
     ext X
     cases X <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
@@ -669,6 +680,7 @@ def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z �
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (x : C) :
     (liftStar F M hM).hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
@@ -734,6 +746,7 @@ section
 
 variable {D : Type*} [Category* D]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functor `WithInitial C ⥤ D` can be seen as an element of the comma category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
 @[simps!]
@@ -747,6 +760,7 @@ def mkCommaObject (F : WithInitial C ⥤ D) : Comma (Functor.const C) (𝟭 (C �
         rw [Category.id_comp, ← F.map_comp]
         congr 1 }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism of functors `WithInitial C ⥤ D` gives a morphism between the associated comma
 objects. -/
 @[simps!]
@@ -754,6 +768,7 @@ def mkCommaMorphism {F G : WithInitial C ⥤ D} (η : F ⟶ G) : mkCommaObject F
   left := η.app .star
   right := Functor.whiskerLeft incl η
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An element of the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))` can be seen as a
 functor `WithInitial C ⥤ D`. -/
 @[simps!]
@@ -761,6 +776,7 @@ def ofCommaObject (c : Comma (Functor.const C) (𝟭 (C ⥤ D))) : WithInitial C
   lift (Z := c.left) c.right (fun x ↦ c.hom.app x)
     (fun x y f ↦ by simpa using (c.hom.naturality f).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
 functors `WithInitial C ⥤ D`. -/
 @[simps!]
@@ -776,6 +792,7 @@ def ofCommaMorphism {c c' : Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c �
     | star, of a, _ => by simpa [-CommaMorphism.w] using (congrArg (fun f ↦ f.app a) φ.w).symm
     | star, star, _ => by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `WithInitial C ⥤ D` is equivalent to the category
 `Comma (const C) (𝟭 (C ⥤ D))`. -/
@@ -811,6 +828,7 @@ end
 
 end WithInitial
 
+set_option backward.defeqAttrib.useBackward true in
 open Opposite in
 /-- The opposite category of `WithTerminal C` is equivalent to `WithInitial Cᵒᵖ`. -/
 @[simps!]
@@ -873,6 +891,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
         rfl
     | .star => rfl
 
+set_option backward.defeqAttrib.useBackward true in
 open Opposite in
 /-- The opposite category of `WithInitial C` is equivalent to `WithTerminal Cᵒᵖ`. -/
 @[simps!]

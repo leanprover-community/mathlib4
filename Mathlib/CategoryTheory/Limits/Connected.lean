@@ -63,6 +63,7 @@ def constCocone : Cocone ((Functor.const J).obj X) where
 
 variable [IsConnected J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the limit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
 def isLimitConstCone : IsLimit (constCone J X) where
@@ -74,6 +75,7 @@ def isLimitConstCone : IsLimit (constCone J X) where
       (fun _ _ f ↦ by simpa using s.w f) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the colimit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
 def isColimitConstCocone : IsColimit (constCocone J X) where
@@ -192,10 +194,12 @@ variable {J : Type v₂} [SmallCategory J]
 
 namespace ProdPreservesConnectedLimits
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to K. -/
 @[simps]
 def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app _ := Limits.prod.snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to X -/
 @[simps]
 def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where
