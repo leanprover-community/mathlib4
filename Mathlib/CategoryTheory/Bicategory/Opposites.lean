@@ -14,8 +14,8 @@ public import Mathlib.CategoryTheory.Opposites
 We construct the 1-cell opposite of a bicategory `B`, called `Bᵒᵖ`. It is defined as follows
 * The objects of `Bᵒᵖ` correspond to objects of `B`.
 * The morphisms `X ⟶ Y` in `Bᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
-* The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
-  directions of the 2-morphisms are preserved.
+* The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f.unop ⟶ g.unop` in `B`. In other
+  words, the directions of the 2-morphisms are preserved.
 
 ## Remarks
 There are multiple notions of opposite categories for bicategories.
@@ -96,7 +96,7 @@ theorem op2_id_unbop {a b : Bᵒᵖ} {f : a ⟶ b} : op2 (𝟙 f.unop) = 𝟙 f 
   rfl
 
 /-- The natural functor from the hom-category `a ⟶ b` in `B` to its bicategorical opposite
-`bop b ⟶ bop a`. -/
+`op b ⟶ op a`. -/
 @[simps]
 def opFunctor (a b : B) : (a ⟶ b) ⥤ (op b ⟶ op a) where
   obj f := f.op
@@ -152,8 +152,8 @@ variable {B : Type u} [Bicategory.{w, v} B]
 It is defined as follows.
 * The objects of `Bᵒᵖ` correspond to objects of `B`.
 * The morphisms `X ⟶ Y` in `Bᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
-* The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
-  directions of the 2-morphisms are preserved.
+* The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f.unop ⟶ g.unop` in `B`. In other
+  words, the directions of the 2-morphisms are preserved.
 -/
 @[simps! homCategory_id_unop2 homCategory_comp_unop2 whiskerLeft_unop2 whiskerRight_unop2
   associator_hom_unop2 associator_inv_unop2 leftUnitor_hom_unop2 leftUnitor_inv_unop2
