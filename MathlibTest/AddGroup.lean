@@ -3,6 +3,8 @@ import Mathlib.Tactic.AddGroup
 
 variable {G : Type} [AddGroup G]
 
+open scoped addCommutatorElement in
+
 example (a b c : G) : c + (a + b) + (-b + -a) + c = c + c := by add_group
 
 example (a b c : G) : (b + -c) + c + (a + b) + (-b + -a) + c = b + c := by add_group
