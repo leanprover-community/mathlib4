@@ -54,7 +54,7 @@ lemma isLink_iff_pair (e : cell C 1) (x y : cell C 0) :
 
 lemma exists_isLoopAt_iff (e : cell C 1) : (∃ x : cell C 0, (OneSkeletonGraph C).IsLoopAt e x) ↔
       ∃ x : cell C 0, cellFrontier 1 e = closedCell 0 x := by
-  refine exists_congr fun x ↦ isLink_self_iff.symm.trans ?_
+  refine exists_congr fun x ↦ ?_
   change cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 x ↔ _
   rw [union_self]
 
@@ -73,7 +73,7 @@ lemma not_exists_isLoopAt_iff_nontrivial (e : cell C 1) :
 
 @[simp]
 lemma adj_iff (x y : cell C 0) : (OneSkeletonGraph C).Adj x y ↔
-    ∃ e : cell C 1, cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y := Graph.adj_iff
+    ∃ e : cell C 1, cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y := Iff.rfl
 
 end CWComplex.OneSkeletonGraph
 

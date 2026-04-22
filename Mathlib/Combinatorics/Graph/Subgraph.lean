@@ -137,12 +137,13 @@ lemma IsSubgraph.inc_eqOn (hHG : H ≤ G) : EqOn H.Inc G.Inc E(H) := by
   ext x
   exact hHG.inc_congr he
 
-lemma IsLoopAt.mono (hHG : H ≤ G) (h : H.IsLoopAt e x) : G.IsLoopAt e x := by
-  simp_all [← isLink_self_iff, IsLink.mono hHG]
+lemma IsLoopAt.mono (hHG : H ≤ G) (h : H.IsLoopAt e x) : G.IsLoopAt e x :=
+  IsLink.mono hHG h
 
 lemma IsSubgraph.isLoopAt_congr (hHG : H ≤ G) (he : e ∈ E(H)) :
     H.IsLoopAt e x ↔ G.IsLoopAt e x := by
-  simp_rw [← isLink_self_iff, hHG.isLink_iff he]
+  unfold Graph.IsLoopAt
+  rw [hHG.isLink_iff he]
 
 lemma IsSubgraph.isLoopAt_eqOn (hHG : H ≤ G) : EqOn H.IsLoopAt G.IsLoopAt E(H) := by
   rintro e he
@@ -164,7 +165,7 @@ lemma IsSubgraph.isNonloopAt_eqOn (hHG : H ≤ G) : EqOn H.IsNonloopAt G.IsNonlo
 
 @[gcongr]
 lemma Adj.mono (hHG : H ≤ G) (h : H.Adj x y) : G.Adj x y :=
-  (h.exists.choose_spec.mono hHG).adj
+  (h.choose_spec.mono hHG).adj
 
 lemma le_iff_compatible_subset_subset : G ≤ H ↔ Compatible G H ∧ V(G) ⊆ V(H) ∧ E(G) ⊆ E(H) :=
   ⟨fun h ↦ ⟨.of_le h, h.1, h.edgeSet_mono⟩, fun ⟨h, hV, hE⟩ ↦
@@ -266,7 +267,7 @@ lemma isLink_congr (hx : x ∈ V(H)) (hy : y ∈ V(H)) (h : H ≤i G) :
   ⟨(·.mono h.le), fun hxy ↦ h.isLink_of_mem_mem hxy hx hy⟩
 
 lemma adj_congr (hx : x ∈ V(H)) (hy : y ∈ V(H)) (h : H ≤i G) : H.Adj x y ↔ G.Adj x y :=
-  ⟨(·.mono h.le), fun hxy ↦ (h.isLink_of_mem_mem hxy.exists.choose_spec hx hy).adj⟩
+  ⟨(·.mono h.le), fun ⟨_, hxy⟩ ↦ (h.isLink_of_mem_mem hxy hx hy).adj⟩
 
 lemma anti_right (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤i G) : H ≤i K where
   le := hHK
@@ -342,10 +343,10 @@ lemma mem_tfae_of_isLink (he : G.IsLink e x y) (hHG : H ≤c G) :
   tfae_finish
 
 lemma adj_congr (hx : x ∈ V(H)) (hHG : H ≤c G) : H.Adj x y ↔ G.Adj x y :=
-  ⟨(·.mono hHG.le), fun hxy ↦ (hHG.isLink_congr hx |>.mpr hxy.exists.choose_spec).adj⟩
+  ⟨(·.mono hHG.le), fun ⟨_, hxy⟩ ↦ (hHG.isLink_congr hx |>.mpr hxy).adj⟩
 
 lemma mem_iff_of_adj (hxy : G.Adj x y) (hHG : H ≤c G) : x ∈ V(H) ↔ y ∈ V(H) :=
-  hHG.mem_iff_of_isLink hxy.exists.choose_spec
+  hHG.mem_iff_of_isLink hxy.choose_spec
 
 lemma anti_right (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) (hHG : H ≤c G) : H ≤c G₁ :=
   mk' hHG₁ fun _ _ he hx ↦ hHG.inc_congr hx |>.mpr (he.mono hG₁) |>.edge_mem
@@ -356,12 +357,13 @@ lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_adj (hHG : H ≤i G) :
     ¬ H ≤c G ↔ ∃ x y, G.Adj x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
   contrapose!; symm
   exact ⟨fun hncl ↦ ⟨hHG, fun e x ⟨y, hexy⟩ hxH =>
-    hHG.isLink_of_mem_mem hexy hxH (hncl x y (adj_iff.mpr ⟨e, hexy⟩) hxH) |>.edge_mem⟩,
+    hHG.isLink_of_mem_mem hexy hxH (hncl x y ⟨e, hexy⟩ hxH) |>.edge_mem⟩,
     fun hcl _ _ hexy ↦ (hcl.mem_iff_of_adj hexy).mp⟩
 
 lemma IsInducedSubgraph.not_isClosedSubgraph_iff_exists_isLink (hHG : H ≤i G) :
     ¬ H ≤c G ↔ ∃ e x y, G.IsLink e x y ∧ x ∈ V(H) ∧ y ∉ V(H) := by
-  simp_rw [hHG.not_isClosedSubgraph_iff_exists_adj, adj_iff]
+  rw [hHG.not_isClosedSubgraph_iff_exists_adj]
+  unfold Adj
   tauto
 
 end ClosedSubgraph
