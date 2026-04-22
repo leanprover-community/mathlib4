@@ -12,15 +12,15 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 Given morphisms `f₁ : i₀ ⟶ i₁`, `f₂ : i₁ ⟶ i₂`, `f₃ : i₂ ⟶ i₃`, `f₄ : i₃ ⟶ i₄`,
 and their compositions `f₁₂ : i₀ ⟶ i₂`, `f₂₃ : i₁ ⟶ i₃` and `f₃₄ : i₂ ⟶ i₄`,
-we define maps `ComposableArrows.fourδ₄Toδ₃ : mk₃ f₁ f₂ f₃ ⟶ mk₂ f₁ f₂ f₃₄`,
-`fourδ₃Toδ₂ : mk₃ f₁ f₂ f₃₄ ⟶ mk₂ f₁ f₂₃ f₄`,
-`fourδ₂Toδ₁ : mk₃ f₁ f₂₃ f₄ ⟶ mk₂ f₁₂ f₃ f₄`, and
-`fourδ₁Toδ₀ : mk₃ f₁₂ f₃ f₄ ⟶ mk₂ f₂ f₃ f₄`.
-The names are justified by the fact that `ComposableArrow.mk₄ f₁ f₂ f₃ f₄`
+we define maps `ComposableArrows.fourδ₄Toδ₃ : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄`,
+`fourδ₃Toδ₂ : mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄`,
+`fourδ₂Toδ₁ : mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄`, and
+`fourδ₁Toδ₀ : mk₃ f₁₂ f₃ f₄ ⟶ mk₃ f₂ f₃ f₄`.
+The names are justified by the fact that `ComposableArrows.mk₄ f₁ f₂ f₃ f₄`
 can be thought of as a `4`-simplex in the simplicial set `nerve C`,
 and its faces (numbered from `0` to `4`) are respectively
-`mk₂ f₂ f₃ f₄`, `mk₂ f₁₂ f₃ f₄`, `mk₂ f₁ f₂₃ f₄`, `mk₂ f₁ f₂ f₃₄` and
-`mk₂ f₁ f₂ f₃`.
+`mk₃ f₂ f₃ f₄`, `mk₃ f₁₂ f₃ f₄`, `mk₃ f₁ f₂₃ f₄`, `mk₃ f₁ f₂ f₃₄` and
+`mk₃ f₁ f₂ f₃`.
 
 -/
 
@@ -37,19 +37,19 @@ variable {C : Type*} [Category* C]
   (f₁₂ : i₀ ⟶ i₂) (f₂₃ : i₁ ⟶ i₃) (f₃₄ : i₂ ⟶ i₄)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The morphism `mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄` when `f₃ ≫ f₃ = f₃₄`. -/
+/-- The morphism `mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄` when `f₃ ≫ f₄ = f₃₄`. -/
 def fourδ₄Toδ₃ (h₃₄ : f₃ ≫ f₄ = f₃₄ := by cat_disch) :
     mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁ f₂ f₃₄ :=
   homMk₃ (𝟙 _) (𝟙 _) (𝟙 _) f₄
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The morphism `mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄` when `f₂ ≫ f₂ = f₂₃` and `f₃ ≫ f₃ = f₃₄`. -/
+/-- The morphism `mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄` when `f₂ ≫ f₃ = f₂₃` and `f₃ ≫ f₄ = f₃₄`. -/
 def fourδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) (h₃₄ : f₃ ≫ f₄ = f₃₄ := by cat_disch) :
     mk₃ f₁ f₂ f₃₄ ⟶ mk₃ f₁ f₂₃ f₄ :=
   homMk₃ (𝟙 _) (𝟙 _) f₃ (𝟙 _)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The morphism `mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄` when `f₁ ≫ f₂ = f₁₂` and `f₂ ≫ f₂ = f₂₃`. -/
+/-- The morphism `mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄` when `f₁ ≫ f₂ = f₁₂` and `f₂ ≫ f₃ = f₂₃`. -/
 def fourδ₂Toδ₁ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₃ f₁ f₂₃ f₄ ⟶ mk₃ f₁₂ f₃ f₄ :=
   homMk₃ (𝟙 _) f₂ (𝟙 _) (𝟙 _)
