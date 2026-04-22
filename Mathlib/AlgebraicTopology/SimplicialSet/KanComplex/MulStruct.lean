@@ -444,6 +444,7 @@ lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j h
 
 end assocAux
 
+@[simps]
 def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
     (hφ : ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
       stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h j hj) :
