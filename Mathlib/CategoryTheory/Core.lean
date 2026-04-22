@@ -212,7 +212,7 @@ lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ 
     functorToCore (H ⋙ F) = functorToCore H ⋙ F.core :=
   Functor.ext_of_iso (functorToCoreCompRightIso H F) (by cat_disch)
 
-/-- The functor `functorToCore (𝟭 G)` is a section of `inclusion G`. -/
+/-- The functor `functorToCore (𝟭 G)` is a right inverse to `inclusion G`. -/
 def inclusionCompFunctorToCoreIso : inclusion G ⋙ functorToCore (𝟭 G) ≅ 𝟭 (Core G) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
