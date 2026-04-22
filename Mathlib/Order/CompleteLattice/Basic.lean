@@ -1000,7 +1000,7 @@ namespace Equiv
 variable (e : α ≃ β)
 
 /-- Transfer `CompleteLattice` across an `Equiv`. -/
-protected abbrev completeLattice (e : α ≃ β) [CompleteLattice β] : CompleteLattice α := by
+protected abbrev completeLattice [CompleteLattice β] : CompleteLattice α := by
   let top := e.top
   let bot := e.bot
   let supSet := e.supSet
