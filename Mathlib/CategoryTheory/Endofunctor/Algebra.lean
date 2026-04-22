@@ -183,7 +183,7 @@ def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
 
 /-- Naturally isomorphic endofunctors give equivalent categories of algebras.
 Furthermore, they are equivalent as categories over `C`, that is,
-we have `equiv_of_nat_iso h ⋙ forget = forget`.
+we have `equivOfNatIso α ⋙ forget = forget`.
 -/
 @[simps]
 def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
@@ -260,13 +260,13 @@ attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
 
-/-- The identity morphism of an algebra of endofunctor `F` -/
+/-- The identity morphism of a coalgebra of endofunctor `F` -/
 def id : Hom V V where f := 𝟙 _
 
 instance : Inhabited (Hom V V) :=
   ⟨{ f := 𝟙 _ }⟩
 
-/-- The composition of morphisms between algebras of endofunctor `F` -/
+/-- The composition of morphisms between coalgebras of endofunctor `F` -/
 def comp (f : Hom V₀ V₁) (g : Hom V₁ V₂) : Hom V₀ V₂ where f := f.1 ≫ g.1
 
 end Hom
@@ -331,11 +331,11 @@ instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects :=
 
 instance forget_faithful : (forget F).Faithful := { }
 
-/-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
+/-- A coalgebra morphism with an underlying epimorphism hom in `C` is a coalgebra epimorphism. -/
 theorem epi_of_epi {X Y : Coalgebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
   (forget F).epi_of_epi_map h
 
-/-- An algebra morphism with an underlying monomorphism hom in `C` is an algebra monomorphism. -/
+/-- A coalgebra morphism with an underlying monomorphism hom in `C` is a coalgebra monomorphism. -/
 theorem mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
   (forget F).mono_of_mono_map h
 
@@ -374,7 +374,7 @@ def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
 
 /-- Naturally isomorphic endofunctors give equivalent categories of coalgebras.
 Furthermore, they are equivalent as categories over `C`, that is,
-we have `equiv_of_nat_iso h ⋙ forget = forget`.
+we have `equivOfNatIso α ⋙ forget = forget`.
 -/
 @[simps]
 def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G where
