@@ -28,8 +28,12 @@ universe u v w u₀ u₁ v₀ v₁
 structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) where
   apply : α → m β
 
-def MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
+abbrev MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
+
+@[simp]
+theorem MonadCont.goto_mk {α β} {m : Type u → Type v} (f : α → m β) (a : α) :
+    goto ⟨f⟩ a = f a := rfl
 
 class MonadCont (m : Type u → Type v) where
   callCC : ∀ {α β}, (MonadCont.Label α m β → m α) → m α
@@ -128,7 +132,11 @@ theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → 
   simp only [bind_assoc, run_bind, run_monadLift, Function.comp_apply]
 
 instance : MonadCont (ContT r m) where
-  callCC f g := f ⟨fun x _ => g x⟩ g
+  callCC f := .mk fun k => f ⟨fun x => .mk fun _ => k x⟩ k
+
+@[simp]
+theorem run_callCC (f : Label α (ContT r m) β → ContT r m α) (k : α → m r) :
+    (callCC f).run k = (f ⟨fun x => .mk fun _ => k x⟩).run k := rfl
 
 instance : LawfulMonadCont (ContT r m) where
   callCC_bind_right := by intros; ext; rfl
