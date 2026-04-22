@@ -5753,7 +5753,6 @@ public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Circular
 public import Mathlib.Order.Circular.ZMod
 public import Mathlib.Order.Closure
-public import Mathlib.Order.Club
 public import Mathlib.Order.Cofinal
 public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.CompactlyGenerated.Intervals
@@ -6846,6 +6845,7 @@ public import Mathlib.RingTheory.ZariskisMainTheorem
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Club
 public import Mathlib.SetTheory.Cardinal.Cofinality
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
