@@ -258,7 +258,6 @@ lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) 
   rw [Subtype.preimage_coe_self_inter W V]
   exact IsClosed.preimage_val hV
 
-open Topology in
 lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
     (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
   rw [inter_comm]
