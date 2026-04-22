@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!
-# Domain of definition of the partial left adjoint
+# Domains of definition of the partial left and right adjoints
 
 Given a functor `F : D ⥤ C`, we define a functor
 `F.partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D` which is
@@ -28,8 +28,11 @@ objects `X : C`, then `F` has a left adjoint.
 When colimits indexed by a category `J` exist in `D`, we show that
 the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J`.
 
-## TODO
-* consider dualizing the results to right adjoints
+Dually, given a functor `F : C ⥤ D`, we define a functor
+`F.partialRightAdjoint : F.PartialRightAdjointSource ⥤ C` on the full subcategory
+of `D` consisting of those objects `Y : D` such that `F.op ⋙ yoneda.obj Y`
+is representable. When limits indexed by a category `J` exist in `C`, we show that
+the predicate `F.rightAdjointObjIsDefined` is stable under limits indexed by `J`.
 
 -/
 
@@ -203,7 +206,7 @@ section partialRightAdjoint
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 
-/-- Given a functor `F : C ⥤ D`, this is a predicate on objects `X : D` corresponding
+/-- Given a functor `F : C ⥤ D`, this is a predicate on objects `Y : D` corresponding
 to the domain of definition of the (partial) right adjoint of `F`. -/
 def rightAdjointObjIsDefined : ObjectProperty D :=
   fun Y ↦ IsRepresentable (F.op ⋙ yoneda.obj Y)
@@ -223,8 +226,8 @@ instance (Y : F.PartialRightAdjointSource) :
     IsRepresentable (F.op ⋙ yoneda.obj Y.obj) := Y.property
 
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on objects: it sends
-`X : D` such that `F.rightAdjointObjIsDefined X` holds to an object of `C`
-which represents the functor `F.op ⋙ yoneda.obj X.obj`. -/
+`Y : D` such that `F.rightAdjointObjIsDefined Y` holds to an object of `C`
+which represents the functor `F.op ⋙ yoneda.obj Y.obj`. -/
 noncomputable def partialRightAdjointObj (Y : F.PartialRightAdjointSource) : C :=
   (F.op ⋙ yoneda.obj Y.obj).reprX
 
