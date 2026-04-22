@@ -16,13 +16,19 @@ living in the `Function` namespace so that dot notation is available.
 ## Main definitions
 
 * `Function.dcomp` (notation `∘'`): dependent composition of functions.
-* `Function.prod` (notation `▽`): given `f : ∀ i, α i` and `g : ∀ i, β i`, the pointwise pair
+* `Function.prod` (notation `⋏`): given `f : ∀ i, α i` and `g : ∀ i, β i`, the pointwise pair
   `fun i ↦ (f i, g i)`.
 * `Function.fstComp`, `Function.sndComp`: the two components of a function `h : ∀ i, α i × β i`,
   inverse to `Function.prod`.
-* `Function.diag` (notation `⟋`): the diagonal `a ↦ (a, a)`, i.e. `id ▽ id`.
+* `Function.diag` (notation `△`): the diagonal `a ↦ (a, a)`, i.e. `id ⋏ id`.
 * `Function.prodMap`: `Prod.map` re-exposed under `Function` so that `f.prodMap g` works via dot
   notation.
+
+## Notation
+
+The infix `⋏` for `Function.prod` mirrors `∧`: pairing is the propositions-as-types conjunction
+(`f ⋏ g` reads as "both `f` and `g`"). The prefix `△` for `Function.diag` depicts the fan-out
+shape of `a ↦ (a, a)`: apex-up for one-to-two.
 
 This file should not depend on anything defined in Mathlib (other than notation), so that it can
 be upstreamed to Batteries or the Lean standard library easily.
@@ -66,10 +72,10 @@ theorem dcomp_assoc {κ : Sort*} (h : κ → ι) : f ∘' g ∘' h = (f ∘' g) 
 
 end
 
-/-- Product of functions: `(f ▽ g) i = (f i, g i)`, where the types of `f i` and `g i`
+/-- Product of functions: `(f ⋏ g) i = (f i, g i)`, where the types of `f i` and `g i`
 may depend on `i`. -/
-@[inline] def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    α i × β i := ⟨f i, g i⟩
+@[inline] def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) :
+    (i : ι) → α i × β i := fun i => Prod.mk (f i) (g i)
 
 /-- The first component of a map into a product. -/
 @[inline] def fstComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) (i : ι) :
@@ -79,28 +85,28 @@ may depend on `i`. -/
 @[inline] def sndComp {ι} {α β : ι → Type*} (h : (i : ι) → α i × β i) (i : ι) :
     β i := (h i).2
 
-@[inherit_doc] infixr:95 " ▽ " => prod
+@[inherit_doc] infixr:95 " ⋏ " => prod
 
 section
 
 variable {ι κ} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i) (h : ∀ i, α i × β i)
   (i : ι)
 
-@[simp, grind =] theorem prod_apply : (f ▽ g) i = (f i, g i) := rfl
+@[simp, grind =] theorem prod_apply : (f ⋏ g) i = (f i, g i) := rfl
 @[simp, grind =] theorem fstComp_apply : fstComp h i = (h i).1 := rfl
 @[simp, grind =] theorem sndComp_apply : sndComp h i = (h i).2 := rfl
 
-theorem prod_def : f ▽ g = fun i => (f i, g i) := rfl
+theorem prod_def : f ⋏ g = fun i => (f i, g i) := rfl
 
 theorem fst_dcomp : Prod.fst ∘' h = fstComp h := rfl
 theorem snd_dcomp : Prod.snd ∘' h = sndComp h := rfl
 
 @[simp, grind! .] theorem fstComp_prod {f : ∀ i, α i} {g : ∀ i, β i} :
-    fstComp (f ▽ g) = f := rfl
+    fstComp (f ⋏ g) = f := rfl
 @[simp, grind! .] theorem sndComp_prod {f : ∀ i, α i} {g : ∀ i, β i} :
-    sndComp (f ▽ g) = g := rfl
+    sndComp (f ⋏ g) = g := rfl
 @[simp, grind! .] theorem fstComp_prod_sndComp {h : ∀ i, α i × β i} :
-  fstComp h ▽ sndComp h = h := rfl
+  fstComp h ⋏ sndComp h = h := rfl
 
 theorem fstComp_sndComp_ext {h h' : ∀ i, α i × β i} (H₁ : fstComp h = fstComp h')
     (H₂ : sndComp h = sndComp h') : h = h' := by grind
@@ -108,29 +114,29 @@ theorem fstComp_sndComp_ext {h h' : ∀ i, α i × β i} (H₁ : fstComp h = fst
 theorem fstComp_sndComp_ext_iff {h h' : ∀ i, α i × β i} :
     h = h' ↔ fstComp h = fstComp h' ∧ sndComp h = sndComp h' := by grind
 
-theorem left_eq_of_prod_eq (H : f ▽ g = f' ▽ g') : f = f' := by grind
-theorem right_eq_of_prod_eq (H : f ▽ g = f' ▽ g') : g = g' := by grind
+theorem left_eq_of_prod_eq (H : f ⋏ g = f' ⋏ g') : f = f' := by grind
+theorem right_eq_of_prod_eq (H : f ⋏ g = f' ⋏ g') : g = g' := by grind
 
 @[simp] theorem prod_inj {f f' : ∀ i, α i} {g g' : ∀ i, β i} :
-    f ▽ g = f' ▽ g' ↔ f = f' ∧ g = g' := by grind
+    f ⋏ g = f' ⋏ g' ↔ f = f' ∧ g = g' := by grind
 
-theorem exists_pair_prod : ∃ f g, f ▽ g = h :=
+theorem exists_pair_prod : ∃ f g, f ⋏ g = h :=
   ⟨fstComp h, sndComp h, fstComp_prod_sndComp⟩
 theorem exists_fstComp [Nonempty (∀ i, β i)] : ∃ h : ∀ i, α i × β i, fstComp h = f :=
-  ⟨f ▽ Classical.ofNonempty, fstComp_prod⟩
+  ⟨f ⋏ Classical.ofNonempty, fstComp_prod⟩
 theorem exists_sndComp [Nonempty (∀ i, α i)] : ∃ h : ∀ i, α i × β i, sndComp h = g :=
-  ⟨Classical.ofNonempty ▽ g, sndComp_prod⟩
+  ⟨Classical.ofNonempty ⋏ g, sndComp_prod⟩
 
-theorem prod_eq_iff : f ▽ g = h ↔ f = fstComp h ∧ g = sndComp h := by grind
-theorem eq_prod_iff : h = f ▽ g ↔ fstComp h = f ∧ sndComp h = g := by grind
+theorem prod_eq_iff : f ⋏ g = h ↔ f = fstComp h ∧ g = sndComp h := by grind
+theorem eq_prod_iff : h = f ⋏ g ↔ fstComp h = f ∧ sndComp h = g := by grind
 
-theorem prod_dcomp (h : κ → ι) : (f ▽ g) ∘' h = (f ∘' h) ▽ (g ∘' h) := rfl
+theorem prod_dcomp (h : κ → ι) : (f ⋏ g) ∘' h = (f ∘' h) ⋏ (g ∘' h) := rfl
 
 theorem dcomp_prod_dcomp {γ : ∀ {i : ι}, α i → Type*} {δ : ∀ {i : ι}, β i → Type*}
     (h : ∀ {i : ι}, (a : α i) → γ a) (k : ∀ {i : ι}, (b : β i) → δ b) :
-    (h ∘' f) ▽ (k ∘' g) = (h ∘' Prod.fst) ▽ (k ∘' Prod.snd) ∘' f ▽ g := rfl
+    (h ∘' f) ⋏ (k ∘' g) = (h ∘' Prod.fst) ⋏ (k ∘' Prod.snd) ∘' f ⋏ g := rfl
 
-@[simp] theorem swap_dcomp_prod : Prod.swap ∘' (f ▽ g) = g ▽ f := rfl
+@[simp] theorem swap_dcomp_prod : Prod.swap ∘' (f ⋏ g) = g ⋏ f := rfl
 
 end
 
@@ -139,11 +145,11 @@ section
 variable {ι : Type*} {α β : ι → Type*}
 
 theorem leftInverse_uncurry_prod_fstComp_prod_sndComp :
-    LeftInverse prod.uncurry (fstComp (α := α) ▽ sndComp (β := β)) := by
+    LeftInverse prod.uncurry (fstComp (α := α) ⋏ sndComp (β := β)) := by
   simp [LeftInverse]
 
 theorem rightInverse_uncurry_prod_fstComp_prod_sndComp :
-    RightInverse prod.uncurry (fstComp (α := α) ▽ sndComp (β := β)) := by
+    RightInverse prod.uncurry (fstComp (α := α) ⋏ sndComp (β := β)) := by
   simp [RightInverse, LeftInverse]
 
 theorem uncurry_prod_injective : (prod (α := α) (β := β)).uncurry.Injective :=
@@ -168,47 +174,47 @@ theorem snd_comp (h : ι → α × β) : Prod.snd ∘ h = sndComp h := rfl
 @[simp] theorem fstComp_mk_flip : fstComp ((Prod.mk · b) : α → α × β) = id := rfl
 @[simp] theorem sndComp_mk_flip : sndComp ((Prod.mk · b) : α → α × β) = const α b := rfl
 
-@[simp] theorem fst_prod_snd : (Prod.fst : _ → α) ▽ (Prod.snd : _ → β) = id := rfl
-@[simp] theorem snd_prod_fst : (Prod.snd : _ → β) ▽ (Prod.fst : _ → α) = .swap := rfl
+@[simp] theorem fst_prod_snd : (Prod.fst : _ → α) ⋏ (Prod.snd : _ → β) = id := rfl
+@[simp] theorem snd_prod_fst : (Prod.snd : _ → β) ⋏ (Prod.fst : _ → α) = .swap := rfl
 
-@[simp] theorem const_prod_const : const ι a ▽ const ι b = const ι (a, b) := rfl
+@[simp] theorem const_prod_const : const ι a ⋏ const ι b = const ι (a, b) := rfl
 
-theorem const_of_prod : const ι p = (const ι p.1) ▽ (const ι p.2) := rfl
+theorem const_of_prod : const ι p = (const ι p.1) ⋏ (const ι p.2) := rfl
 
-theorem prod_comp (h : κ → ι) : (f ▽ g) ∘ h = (f ∘ h) ▽ (g ∘ h) := rfl
+theorem prod_comp (h : κ → ι) : (f ⋏ g) ∘ h = (f ∘ h) ⋏ (g ∘ h) := rfl
 
 theorem comp_prod_comp (h : α → γ) (k : β → δ) :
-    (h ∘ f) ▽ (k ∘ g) = (h ∘ Prod.fst) ▽ (k ∘ Prod.snd) ∘ f ▽ g := rfl
+    (h ∘ f) ⋏ (k ∘ g) = (h ∘ Prod.fst) ⋏ (k ∘ Prod.snd) ∘ f ⋏ g := rfl
 
 theorem map_comp_prod (h : α → γ) (k : β → δ) :
-    Prod.map h k ∘ f ▽ g = (h ∘ f) ▽ (k ∘ g) := rfl
+    Prod.map h k ∘ f ⋏ g = (h ∘ f) ⋏ (k ∘ g) := rfl
 
-@[simp] theorem swap_comp_prod : Prod.swap ∘ (f ▽ g) = g ▽ f := rfl
+@[simp] theorem swap_comp_prod : Prod.swap ∘ (f ⋏ g) = g ⋏ f := rfl
 
 end
 
 /-- The diagonal map into `Prod`. -/
-@[inline] def diag {α} : α → α × α := id ▽ id
+@[inline] def diag {α} : α → α × α := id ⋏ id
 
-@[inherit_doc] prefix:max "⟋" => diag
+@[inherit_doc] prefix:max "△" => diag
 
 section
 
 variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 
-@[simp, grind =] theorem diag_apply : ⟋a = (a, a) := rfl
+@[simp, grind =] theorem diag_apply : △a = (a, a) := rfl
 
-@[simp] theorem id_prod_id : id ▽ id = diag (α := α) := rfl
+@[simp] theorem id_prod_id : id ⋏ id = diag (α := α) := rfl
 @[simp] theorem fstComp_diag : fstComp (diag (α := α)) = id := rfl
 @[simp] theorem sndComp_diag : sndComp (diag (α := α)) = id := rfl
 
-@[simp] theorem diag_comp : diag ∘ f = f ▽ f := rfl
+@[simp] theorem diag_comp : diag ∘ f = f ⋏ f := rfl
 
-@[simp] theorem map_comp_diag : Prod.map f g ∘ diag = f ▽ g := rfl
+@[simp] theorem map_comp_diag : Prod.map f g ∘ diag = f ⋏ g := rfl
 
 theorem injective_diag : Injective (α := α) diag := fun _ _ => congrArg Prod.fst
 
-theorem exists_diag_apply_iff (p : α × α) : (∃ a, ⟋a = p) ↔ p.1 = p.2 := by
+theorem exists_diag_apply_iff (p : α × α) : (∃ a, △a = p) ↔ p.1 = p.2 := by
   simp [Prod.ext_iff]
 
 @[simp] theorem swap_comp_diag : Prod.swap ∘ diag = diag (α := α) := rfl
@@ -218,7 +224,7 @@ end
 /-- Dot-notation alias for `Prod.map`. Collapses to `Prod.map` under `simp` via
 `prodMap_eq_prod_map`, so existing `Prod.map` API applies unchanged. -/
 @[inline] def prodMap {α₁ α₂ β₁ β₂} (f : α₁ → α₂) (g : β₁ → β₂) : α₁ × β₁ → α₂ × β₂ :=
-  (f ∘ Prod.fst) ▽ (g ∘ Prod.snd)
+  (f ∘ Prod.fst) ⋏ (g ∘ Prod.snd)
 
 section
 
