@@ -22,7 +22,7 @@ public import Mathlib.CategoryTheory.Limits.Yoneda
   pointwise, so pointwise preservation implies general preservation.
 * Show that `F ⋙ -` preserves limits if the target category has limits.
 * Show that `F : C ⥤ D` preserves limits of a certain shape
-  if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.
+  if `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves such limits.
 
 ## References
 
@@ -234,7 +234,7 @@ lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category* D] {E : Type*} 
     PreservesFiniteLimits F :=
   ⟨fun J _ _ => preservesLimitsOfShape_of_evaluation F J fun k => (h k).preservesFiniteLimits _⟩
 
-/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
+/-- `F : C ⥤ D ⥤ E` preserves finite colimits if it does for each `d : D`. -/
 lemma preservesFiniteColimits_of_evaluation {D : Type*} [Category* D] {E : Type*} [Category* E]
     (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
     PreservesFiniteColimits F :=
