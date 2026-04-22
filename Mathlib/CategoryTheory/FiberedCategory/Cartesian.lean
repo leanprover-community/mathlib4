@@ -71,7 +71,8 @@ a'        a --φ--> b
 v         v        v
 R' --g--> R --f--> S
 ```
-such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
+such that `φ'` lifts `g ≫ f`, there exists a unique lift `χ` of `g` such that
+`φ' = χ ≫ φ`. -/
 @[stacks 02XK]
 class IsStronglyCartesian : Prop where
   [toIsHomLift : IsHomLift p f φ]
@@ -104,7 +105,7 @@ lemma fac : IsCartesian.map p f φ φ' ≫ φ = φ' :=
 
 /-- Given a Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
 `φ' : a' ⟶ b` which also lifts `f`. Then any morphism `ψ : a' ⟶ a` lifting `𝟙 R` such that
-`g ≫ ψ = φ'` must equal the map induced from the universal property of `φ`. -/
+`ψ ≫ φ = φ'` must equal the map induced from the universal property of `φ`. -/
 lemma map_uniq (ψ : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] (hψ : ψ ≫ φ = φ') :
     ψ = IsCartesian.map p f φ φ' :=
   (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
@@ -136,7 +137,7 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     simp only [assoc, hτ₂]
 
 /-- The canonical isomorphism between the domains of two Cartesian arrows
-lying over the same object. -/
+lying over the same morphism. -/
 @[simps]
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
   hom := IsCartesian.map p f φ φ'
@@ -237,7 +238,7 @@ v         v        v
 R' --g--> R --f--> S
 ```
 such that `φ` is strongly Cartesian, and morphisms `ψ ψ' : a' ⟶ a` such that
-`g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
+`ψ ≫ φ = ψ' ≫ φ`. Then we have that `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R)
     {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ] [IsHomLift p g ψ'] (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
   rw [map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ rfl, map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ' h.symm]
@@ -372,7 +373,7 @@ section
 variable {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S} {g : R' ≅ R}
 
 /-- The canonical isomorphism between the domains of two strongly Cartesian morphisms lying over
-isomorphic objects. -/
+base morphisms whose domains are isomorphic. -/
 @[simps]
 noncomputable def domainIsoOfBaseIso (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b)
     [IsStronglyCartesian p f φ] [IsStronglyCartesian p f' φ'] : a' ≅ a where
