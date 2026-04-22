@@ -17,7 +17,7 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Simplicial
 
 namespace SimplexCategory
 
