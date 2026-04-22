@@ -603,7 +603,7 @@ theorem of_top' {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ :
       IsPushout h₂₁ v₂₁ (t.desc v₁₃ (v₂₁ ≫ h₃₁) (by rw [s.w, Category.assoc])) h₃₁ :=
   of_top ((t.inl_desc _ _ _).symm ▸ s) (t.inr_desc _ _ _) t
 
-/-- Variant of `IsPushout.of_right` where `h₂₂` is induced from a morphism `h₂₃ : X₂₁ ⟶ X₂₃`, and
+/-- Variant of `IsPushout.of_left` where `h₂₂` is induced from a morphism `h₂₃ : X₂₁ ⟶ X₂₃`, and
 the universal property of the left square.
 
 The objects in the statement fit into the following diagram:
@@ -642,7 +642,7 @@ lemma of_id_fst : IsPushout (𝟙 _) f f (𝟙 _) := IsPushout.of_horiz_isIso �
 
 lemma of_id_snd : IsPushout f (𝟙 _) (𝟙 _) f := IsPushout.of_vert_isIso ⟨by simp⟩
 
-/-- The following diagram is a pullback
+/-- The following diagram is a pushout
 ```
 X --f--> Z
 |        |
@@ -654,7 +654,7 @@ X --f--> Z
 lemma id_vert (f : X ⟶ Z) : IsPushout f (𝟙 X) (𝟙 Z) f :=
   of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
-/-- The following diagram is a pullback
+/-- The following diagram is a pushout
 ```
 X --id--> X
 |         |
