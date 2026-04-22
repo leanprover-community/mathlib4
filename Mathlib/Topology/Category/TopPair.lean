@@ -23,40 +23,42 @@ homotopies between them.
 
 @[expose] public section
 
+universe u
+
 open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
 /-- A pair of topological spaces consists of an embedding `f : A ⟶ X` in `TopCat`. -/
 abbrev TopPair :=
-  MorphismProperty.Arrow (fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) ⊤ ⊤
+  MorphismProperty.Arrow (fun (A X : TopCat.{u}) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) ⊤ ⊤
 
 namespace TopPair
 
-variable {X Y : TopPair}
+variable {X Y : TopPair.{u}}
 
 /-- The first space of the pair -/
-abbrev fst : TopCat := X.right
+abbrev fst : TopCat.{u} := X.right
 
 /-- The second space of the pair -/
-abbrev snd : TopCat := X.left
+abbrev snd : TopCat.{u} := X.left
 
 /-- The embedding of the second into the first space -/
 abbrev map : X.snd ⟶ X.fst := X.hom
 
-lemma isEmbedding_map (X : TopPair) : Topology.IsEmbedding X.map := X.prop
+lemma isEmbedding_map (X : TopPair.{u}) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
-abbrev of {A X : TopCat} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair :=
-  MorphismProperty.Arrow.mk (P := fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) f h
+abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair.{u} :=
+  MorphismProperty.Arrow.mk (P := fun (A X : TopCat.{u}) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat} (A : Set X) : TopPair :=
+abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} :=
   @TopPair.of (TopCat.of A) X ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
   MorphismProperty.Arrow.homMk g f w
 
-variable {X Y Z : TopPair}
+variable {X Y Z : TopPair.{u}}
 
 /-- The map between the first spaces -/
 abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
@@ -65,7 +67,7 @@ abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
 abbrev Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
 
 @[reassoc, elementwise]
-lemma Hom.w {X Y : TopPair} (f : X ⟶ Y) :
+lemma Hom.w {X Y : TopPair.{u}} (f : X ⟶ Y) :
     Hom.snd f ≫ Y.map = X.map ≫ Hom.fst f :=
   f.hom.w
 
@@ -73,24 +75,24 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair ⥤ TopCat :=
+abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair ⥤ TopCat :=
+abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
 @[simps]
-def incl : TopCat ⥤ TopPair where
+def incl : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat ⥤ TopPair where
+abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
@@ -108,7 +110,7 @@ def proj₁AdjDiag : proj₁ ⊣ diag where
   counit.app X := 𝟙 X
 
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/
-abbrev j (X : TopPair) : TopPair.incl.obj X.fst ⟶ X :=
+abbrev j (X : TopPair.{u}) : TopPair.incl.obj X.fst ⟶ X :=
   TopPair.ofHom (𝟙 _) (TopCat.isInitialPEmpty.to _)
 
 /-- A homotopy of maps between topological pairs is a homotopy on the first space and a homotopy on
