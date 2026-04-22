@@ -19,16 +19,16 @@ comonadicity theorem:
 
 `F` is a comonadic left adjoint if it has a right adjoint, and:
 
-* `C` has, `F` preserves and reflects `F`-split equalizers, see
-  `CategoryTheory.Monad.comonadicOfHasPreservesReflectsFSplitEqualizers`
-* `F` creates `F`-split coequalizers, see
-  `CategoryTheory.Monad.comonadicOfCreatesFSplitEqualizers`
+* `C` has, `F` preserves and reflects equalizers of `F`-cosplit pairs, see
+  `CategoryTheory.Comonad.comonadicOfHasPreservesReflectsFSplitEqualizers`
+* `F` creates equalizers of `F`-cosplit pairs, see
+  `CategoryTheory.Comonad.comonadicOfCreatesFSplitEqualizers`
   (The converse of this is also shown, see
-  `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
-* `C` has and `F` preserves `F`-split equalizers, and `F` reflects isomorphisms, see
-  `CategoryTheory.Monad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
+  `CategoryTheory.Comonad.createsFSplitEqualizersOfComonadic`)
+* `C` has and `F` preserves equalizers of `F`-cosplit pairs, and `F` reflects isomorphisms, see
+  `CategoryTheory.Comonad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see
-  `CategoryTheory.Monad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
+  `CategoryTheory.Comonad.comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms`
 
 This file has been adapted from `Mathlib/CategoryTheory/Monad/Monadicity.lean`.
 Please try to keep them in sync.
@@ -60,7 +60,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
-coreflexive pair, and will be used to construct the left adjoint to the comparison functor and show
+coreflexive pair, and will be used to construct the right adjoint to the comparison functor and show
 it is an equivalence.
 -/
 instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
@@ -72,7 +72,7 @@ instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
     rfl
 
 /-- The "main pair" for a coalgebra `(A, α)` is the pair of morphisms `(G α, η_GA)`. It is always a
-`G`-cosplit pair, and will be used to construct the right adjoint to the comparison functor and show
+`F`-cosplit pair, and will be used to construct the right adjoint to the comparison functor and show
 it is an equivalence.
 -/
 instance main_pair_F_cosplit (A : adj.toComonad.Coalgebra) :
@@ -112,7 +112,7 @@ def comparisonRightAdjointHomEquiv (A : adj.toComonad.Coalgebra) (B : C)
       right_inv f := by apply equalizer.hom_ext; simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Construct the adjunction to the comparison functor.
+/-- Construct the right adjoint to the comparison functor.
 -/
 def rightAdjointComparison
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a)
@@ -188,7 +188,7 @@ def counitLimitOfPreservesEqualizer (A : adj.toComonad.Coalgebra)
     IsLimit (counitFork (G := G) A) :=
   isLimitOfHasEqualizerOfPreservesLimit F _ _
 
-/-- The unit fork is a limit provided `F` coreflects it. -/
+/-- The unit fork is a limit provided `F` reflects it. -/
 def unitEqualizerOfCoreflectsEqualizer (B : C)
     [ReflectsLimit (parallelPair (G.map (F.map (adj.unit.app B)))
       (adj.unit.app (G.obj (F.obj B)))) F] :
@@ -273,8 +273,8 @@ instance [ReflectsLimitOfIsCosplitPair F] : ∀ (A : Coalgebra adj.toComonad),
       (NatTrans.app adj.unit (G.obj A.A))) F :=
   fun _ => ReflectsLimitOfIsCosplitPair.out _ _
 
-/-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects `F`-split
-equalizers, and `C` has them.
+/-- To show `F` is a comonadic left adjoint, we can show it preserves and reflects equalizers of
+`F`-cosplit pairs, and `C` has them.
 -/
 @[implicit_reducible]
 def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair F]
