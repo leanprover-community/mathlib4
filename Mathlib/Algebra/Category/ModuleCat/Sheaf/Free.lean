@@ -176,40 +176,41 @@ section
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
-  (I : Type u) [PreservesColimitsOfShape (Discrete I) F]
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) (I : Type u)
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
-If `F` preserves coproducts, a morphism `η : F.obj (unit R) ⟶ unit S` induces a morphism
-from `F.obj (free I)` to `free (R := S) I`. This is the non-iso version of `mapFreeIso`. -/
-noncomputable def mapFree (η : F.obj (unit R) ⟶ unit S) : F.obj (free I) ⟶ free (R := S) I :=
-  (isColimitOfPreserves F (isColimitFreeCofan I)).map (freeCofan I) (Discrete.natTrans fun _ ↦ η)
+Then a morphism `η : F.obj (unit R) ⟶ unit S` induces a morphism from `F.obj (free I)` to
+`free (R := S) I`. This is the non-iso version of `mapIsoFree`. -/
+noncomputable def mapFree (η : unit S ⟶ F.obj (unit R)) : free (R := S) I ⟶ F.obj (free I) :=
+  (isColimitFreeCofan I).map (F.mapCocone (freeCofan I)) (Discrete.natTrans fun _ ↦ η)
 
 @[reassoc (attr := simp)]
-lemma map_ιFree_mapFree (η : F.obj (unit R) ⟶ unit S) (i : I) :
-    F.map (ιFree i) ≫ mapFree F I η = η ≫ ιFree i :=
-  IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
+lemma ιFree_mapFree (η : unit S ⟶ F.obj (unit R)) (i : I) :
+    ιFree i ≫ mapFree F I η = η ≫ F.map (ιFree i) :=
+  IsColimit.ι_map (isColimitFreeCofan I) (F.mapCocone (freeCofan I))
     (Discrete.natTrans fun _ ↦ η) (Discrete.mk i)
 
-@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapFree
+@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFree
+
+variable [PreservesColimitsOfShape (Discrete I) F]
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
-If `F` preserves coproducts and `F.obj (unit R) ≅ unit S`, then `F` preserves free sheaves of
+If `F` preserves coproducts and `unit S ≅ F.obj (unit R)`, then `F` preserves free sheaves of
 modules. -/
-noncomputable def mapFreeIso (η : F.obj (unit R) ≅ unit S) : F.obj (free I) ≅ free (R := S) I :=
-  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfNatIso
-    (isColimitFreeCofan I) (Discrete.natIso fun _ ↦ η)
+noncomputable def mapIsoFree (η : unit S ≅ F.obj (unit R)) : free (R := S) I ≅ F.obj (free I) :=
+  (isColimitFreeCofan I).coconePointsIsoOfNatIso (isColimitOfPreserves F (isColimitFreeCofan I))
+    (Discrete.natIso fun _ ↦ η)
 
-lemma mapFreeIso_hom (η : F.obj (unit R) ≅ unit S) :
-    (mapFreeIso F I η).hom = mapFree F I η.hom := rfl
+lemma mapIsoFree_hom (η : unit S ≅ F.obj (unit R)) :
+    (mapIsoFree F I η).hom = mapFree F I η.hom := rfl
 
 @[reassoc (attr := simp)]
-lemma ιFree_mapFreeIso_inv (η : F.obj (unit R) ≅ unit S) (i : I) :
-    ιFree i ≫ (mapFreeIso F I η).inv = η.inv ≫ F.map (ιFree i) :=
-  IsColimit.ι_map (isColimitFreeCofan I) (F.mapCocone (freeCofan I))
+lemma map_ιFree_mapIsoFree_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
+    F.map (ιFree i) ≫ (mapIsoFree F I η).inv = η.inv ≫ ιFree i :=
+  IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
     (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
 
-@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_inv
+@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapIsoFree_inv
 
 end
 
