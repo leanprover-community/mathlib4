@@ -18,7 +18,7 @@ about `colimit F` when objects and morphisms in `C` have some algebraic structur
 ## Main results
 - `CategoryTheory.Limits.Concrete.colimit_rep_eq_zero`: Let `C` be a category where its objects have
   zero elements and morphisms preserve zero. If `x : Fⱼ` is mapped to `0` in the colimit, then
-  there exists a `i ⟶ j` such that `x` restricted to `i` is already `0`.
+  there exists a `j ⟶ j'` such that the image of `x` in `F.obj j'` is already `0`.
 
 - `CategoryTheory.Limits.Concrete.colimit_no_zero_smul_divisor`: Let `C` be a category where its
   objects are `R`-modules and morphisms `R`-linear maps. Let `r : R` be an element without zero
