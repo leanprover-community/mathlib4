@@ -198,8 +198,8 @@ lemma of_hom {i : Fin (n + 2)} (g : (Λ[n + 1, i] : SSet) ⟶ X) :
 
 @[reassoc]
 lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (Δ[n + 1] : SSet) ⟶ X}
-    (hf : horn.IsCompatible f)
-    (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k) :
+    (hf : horn.IsCompatible f) (j k : Fin (n + 3))
+    (hj : j ≠ i := by grind) (hk : k ≠ i := by grind) (hjk : j < k := by grind) :
     stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
     stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk :=
   hf j k hj hk hjk
@@ -220,7 +220,7 @@ def multicofork (hf : horn.IsCompatible f) :
       dsimp
       rw [homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred_assoc _ _ hab,
         homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred_assoc _ _ hab,
-        hf.δ_pred_comp _ _ _ _ hab])
+        hf.δ_pred_comp ..])
 
 lemma exists_desc (hf : horn.IsCompatible f) :
     ∃ (φ : (Λ[n + 1, i] : SSet) ⟶ X),
