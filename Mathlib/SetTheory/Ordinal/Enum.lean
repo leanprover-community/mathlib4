@@ -16,7 +16,7 @@ generalize the properties of intervals `Iio c.ord`, wherever `c` is a regular ca
 instances of this typeclass include `ℕ`, `Ordinal`, and `Cardinal`.
 
 If `s` is a cofinal subset of a regular cardinal order `α`, there exists a unique order isomorphism
-`α ≃o s`, which we call `Order.enum`. When `α = Ordinal`, this is often called the enumerator
+`α ≃o s`, which we call `Order.enum`. When `α = Ordinal`, this is referred to as the enumerator
 function of the set. Note that if `α = ℕ`, then this definition matches `Nat.nth`.
 -/
 
