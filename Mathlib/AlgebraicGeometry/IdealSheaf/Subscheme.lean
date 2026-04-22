@@ -551,7 +551,8 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   simp_rw [← Category.assoc, ← IsIso.comp_inv_eq] at this
   simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
     ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
-    Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
+    Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
+      Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
   convert (Category.comp_id _).symm

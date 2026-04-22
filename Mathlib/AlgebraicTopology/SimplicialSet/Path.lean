@@ -304,7 +304,7 @@ lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
   · ext
     simp [spine, Path.vertex, Truncated.Path.vertex,
       Truncated.spine, Path.interval, Truncated.Path.interval,
-      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const, - SimplicialObject.δ_def]
+      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const]
     rfl
   · ext i
     dsimp

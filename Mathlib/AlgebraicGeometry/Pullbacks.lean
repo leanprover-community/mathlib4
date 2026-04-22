@@ -592,7 +592,8 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_f]
   ext : 1 <;>
-  · simp only [limit.lift_π, PullbackCone.mk_π_app, Equiv.trans_apply, Category.assoc, limit.lift_π_assoc, cospan_left, Category.comp_id,
+  · simp only [limit.lift_π, PullbackCone.mk_π_app, Equiv.trans_apply, Category.assoc,
+    limit.lift_π_assoc, cospan_left, Category.comp_id,
       limit.isoLimitCone_inv_π_assoc, PullbackCone.π_app_left, IsPullback.cone_fst,
       pullbackSymmetry_hom_comp_snd_assoc, limit.isoLimitCone_inv_π,
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]

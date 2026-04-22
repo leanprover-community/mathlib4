@@ -485,7 +485,8 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]
       rintro (_ | _ | _) <;> symm
-      · simp only [limit.cone_x, cospan_one, Functor.mapCone_π_app, PullbackCone.condition_one, forget_map,
+      · simp only [limit.cone_x, cospan_one, Functor.mapCone_π_app, PullbackCone.condition_one,
+        forget_map,
           comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl, cospan_map_inr,
           diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
         tauto

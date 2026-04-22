@@ -132,8 +132,10 @@ abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
       (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (pullback.snd _ _) (Category.id_comp _).symm
         (Category.id_comp _).symm) (by
         ext
-        · simp only [Category.assoc, diagonal_fst, Category.comp_id, limit.lift_π, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
-        · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id, limit.lift_π, PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
+        · simp only [Category.assoc, diagonal_fst, Category.comp_id, limit.lift_π,
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_left]
+        · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id, limit.lift_π,
+          PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This iso witnesses the fact that

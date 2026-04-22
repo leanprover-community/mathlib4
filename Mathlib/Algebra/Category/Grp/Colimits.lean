@@ -126,7 +126,8 @@ lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
   dsimp [quotToQuotUlift, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
-  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, Function.comp_apply]
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
+    Function.comp_apply]
   rfl
 
 set_option backward.defeqAttrib.useBackward true in

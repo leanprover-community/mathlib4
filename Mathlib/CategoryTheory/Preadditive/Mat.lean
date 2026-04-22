@@ -385,7 +385,8 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
   classical
   ext i : 1
-  simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom, biproduct.lift_π, biproduct.matrix_π,
+  simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
+    biproduct.lift_π, biproduct.matrix_π,
     ← cancel_epi (additiveObjIsoBiproduct F M).inv, Iso.inv_hom_id_assoc]
   ext j : 1
   simp only [ι_additiveObjIsoBiproduct_inv_assoc, isoBiproductEmbedding_inv,

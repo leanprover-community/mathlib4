@@ -288,7 +288,8 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
 set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
-    (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) := by
+    (hlast : Iso (s₁.last, x₁) (s₂.last,
+      x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) := by
   let e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
     calc
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
@@ -301,7 +302,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     simp [e, finSuccEquivLast_castSucc, Functor.mapEquiv_apply]
   refine ⟨e, fun i => ?_⟩
   refine Fin.lastCases ?_ ?_ i
-  · show Iso ((snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).castSucc,
+  · change Iso ((snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).castSucc,
         (snoc s₁ x₁ hsat₁).toFun (Fin.last s₁.length).succ)
       ((snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).castSucc,
         (snoc s₂ x₂ hsat₂).toFun (e (Fin.last s₁.length)).succ)
@@ -312,7 +313,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     let j : Fin s₁.length := ⟨i.val, hi⟩
     have heq : i.castSucc = (j : Fin s₁.length).castSucc := by
       apply Fin.ext; simp [j]
-    show Iso ((snoc s₁ x₁ hsat₁).toFun i.castSucc.castSucc,
+    change Iso ((snoc s₁ x₁ hsat₁).toFun i.castSucc.castSucc,
         (snoc s₁ x₁ hsat₁).toFun i.castSucc.succ)
       ((snoc s₂ x₂ hsat₂).toFun (e i.castSucc).castSucc,
         (snoc s₂ x₂ hsat₂).toFun (e i.castSucc).succ)
