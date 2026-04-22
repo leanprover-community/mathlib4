@@ -313,14 +313,6 @@ end Pi
 
 section Subsingleton
 
-/-- A type with a single element is a bounded order. -/
-@[implicit_reducible]
-def BoundedOrder.ofUnique (α : Type*) [Preorder α] [Unique α] : BoundedOrder α where
-  bot := default
-  top := default
-  le_top := by simp
-  bot_le := by simp
-
 variable [PartialOrder α] [BoundedOrder α]
 
 @[to_dual]

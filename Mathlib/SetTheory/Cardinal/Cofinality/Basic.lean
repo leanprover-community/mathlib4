@@ -9,7 +9,7 @@ public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
-# Cofinality
+# Cofinality of an order
 
 This file contains the definition of the cofinality `Order.cof α` of an order. This is the smallest
 cardinality of a cofinal subset.

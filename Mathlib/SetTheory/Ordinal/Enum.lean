@@ -5,9 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.Family
-public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Enumerating a cofinal set
