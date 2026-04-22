@@ -218,32 +218,30 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
 instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense x y h := by
-    have this (x : α ×ₗ β) : ∃ a t, x = toLex (a, t) := ⟨x.1 , x.2, rfl⟩
-    rcases this x with ⟨a, t, rfl⟩
-    rcases this y with ⟨b, u, rfl⟩
+    cases x with | h x =>
+    cases y with | h y =>
     simp only [Prod.Lex.toLex_lt_toLex] at h
     rcases h with (h | h)
-    · obtain ⟨v, hv⟩ := exists_lt u
-      use toLex (b, v)
+    · obtain ⟨v, hv⟩ := exists_lt y.2
+      use toLex (y.1, v)
       simp [Prod.Lex.toLex_lt_toLex, h, hv]
-    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense t u h.2
-      use toLex (a, v)
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
       simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
 
 @[to_dual existing]
 instance [Preorder α] [Preorder β] [NoMaxOrder β] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense x y h := by
-    have this (x : α ×ₗ β) : ∃ a t, x = toLex (a, t) := ⟨x.1 , x.2, rfl⟩
-    rcases this x with ⟨a, t, rfl⟩
-    rcases this y with ⟨b, u, rfl⟩
+    cases x with | h x =>
+    cases y with | h y =>
     simp only [Prod.Lex.toLex_lt_toLex] at h
     rcases h with (h | h)
-    · obtain ⟨v, hv⟩ := exists_gt t
-      use toLex (a, v)
+    · obtain ⟨v, hv⟩ := exists_gt x.2
+      use toLex (x.1, v)
       simp [Prod.Lex.toLex_lt_toLex, h, hv]
-    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense t u h.2
-      use toLex (a, v)
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
       simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
 
 @[to_dual]
