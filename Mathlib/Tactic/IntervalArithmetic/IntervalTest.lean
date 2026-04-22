@@ -26,6 +26,14 @@ def rat_const (q : ℚ) : Interval ℚ := ⟨some ⟨true, q⟩, some ⟨true,q�
 def rat_const_inclusion (q : ℚ) : ↑q ∈ (rat_const q).toSet rat_to_real := by
   simp [Interval.mem_toSet, LowerBound.Bounds, UpperBound.Bounds, rat_const, rat_to_real]
 
+def rat_of_scientific_const (m : ℕ) (s : Bool) (e : ℕ) : Interval ℚ :=
+  rat_const (Rat.ofScientific m s e)
+
+@[exact_interval_op RatReal]
+def rat_of_scientific_inclusion (m : ℕ) (s : Bool) (e : ℕ) :
+  (OfScientific.ofScientific (α := ℝ) m s e)
+  ∈ (rat_of_scientific_const m s e).toSet rat_to_real := by sorry
+
 def nat_const (n : ℕ) : Interval ℚ := ⟨some ⟨true, n⟩, some ⟨true, n⟩⟩
 
 @[exact_interval_op RatReal]
@@ -262,7 +270,7 @@ example {r : ℝ} (h0 : 0 ≤ r) (h1 : r ≤ 1) : 0 ≤ r := by
 example {r : ℝ} (h0 : 0 ≤ r) (h1 : r ≤ 1) : r + 1 ≤ 2 := by
   interval RatReal 10
 
-example {r s : ℝ} (hr : 0 < r) (hs : 0 < s) : 0 < r + s := by
+example {r s : ℝ} (hr : 0 < r) (hs : 0 ≤ s) : 0 < r + s := by
   interval RatReal 10
 
 example {r : ℝ} (h0 : 0 < r) (h1 : r ≤ 1) : 0 < r := by
@@ -274,5 +282,19 @@ example {r : ℝ} (h0 : 0 ≤ r) (h1 : r < 1) : r < 1 := by
 example {r : ℝ} (h0 : -1 ≤ r) (h1 : r ≤ 2) : r + 1 ≤ 3 := by
   interval RatReal 10
 
+/- # MORE EXAMPLES -/
+
+example : 0 ≤ ((0.34 : ℚ) : ℝ) := by
+  interval RatReal 10
+
+example (x : ℝ) (hx₁ : 1 ≤ x) (hx₂ : x ≤ 2) :
+    0 ≤ x - 1 := by
+  interval RatReal 10
+
+example : Real.sqrt 2 ≤ 2 := by
+  interval RatReal 10
+
+example (x : ℝ) (hx : 1 ≤ x) (hx : x ≤ 2) : 0 ≤ x - x + 1 := by
+  interval RatReal 10
 
 end IntervalArithmetic

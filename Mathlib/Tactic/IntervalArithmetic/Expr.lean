@@ -41,7 +41,6 @@ def _root_.Lean.Expr.getExplicitAppArgs (e : Expr) : MetaM (Array Expr) := do
 /-- Given `Expr`s `r, x, φ`, forms the `Expr`: `r ∈ x.toSet φ`. -/
 def mkMemInterval (r x φ : Expr) : MetaM Expr := do
   return ← mkAppM ``Membership.mem #[(← mkAppM ``IntervalArithmetic.Interval.toSet #[φ, x]), r]
-
 end Lean.Expr
 
 namespace IntervalArithmetic

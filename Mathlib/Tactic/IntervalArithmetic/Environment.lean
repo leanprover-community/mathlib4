@@ -33,6 +33,7 @@ initialize intervalArithmeticDeclsExt : IntervalArithmeticDeclsExt ←
       {d with decls := d.decls.insert e.name e}
   }
 
+
 def getIntervalArithmeticDecl? (declName : Name) : MetaM (Option IntervalArithmeticDecl) := do
   let s := intervalArithmeticDeclsExt.getState (← getEnv)
   return s.decls.find? declName
