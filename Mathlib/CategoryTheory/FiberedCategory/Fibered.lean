@@ -15,7 +15,7 @@ This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fib
 
 ## Main definitions
 
-- `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+- `IsPreFibered p` expresses `𝒳` is prefibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
   This means that any morphism in the base `𝒮` can be lifted to a Cartesian morphism in `𝒳`.
 
 - `IsFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
@@ -24,8 +24,8 @@ This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fib
 
 In the literature one often sees the notion of a fibered category defined as the existence of
 strongly Cartesian morphisms lying over any given morphism in the base. This is equivalent to the
-notion above, and we give an alternate constructor `IsFibered.of_exists_isCartesian'` for
-constructing a fibered category this way.
+notion above, and we give an alternate constructor `Functor.IsFibered.of_exists_isStronglyCartesian`
+for constructing a fibered category this way.
 
 ## Implementation
 
@@ -74,13 +74,15 @@ namespace Functor.IsPreFibered
 
 variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
 
-/-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, a morphism `f : R ⟶ S` and an object `a` lying over `S`,
+/-- Given a prefibered category `p : 𝒳 ⥤ 𝒮`, a morphism `f : R ⟶ S`
+and an object `a` lying over `S`,
 then `pullbackObj` is the domain of some choice of a Cartesian morphism lying over `f` with
 codomain `a`. -/
 noncomputable def pullbackObj : 𝒳 :=
   Classical.choose (IsPreFibered.exists_isCartesian p ha f)
 
-/-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, a morphism `f : R ⟶ S` and an object `a` lying over `S`,
+/-- Given a prefibered category `p : 𝒳 ⥤ 𝒮`, a morphism `f : R ⟶ S`
+and an object `a` lying over `S`,
 then `pullbackMap` is a choice of a Cartesian morphism lying over `f` with codomain `a`. -/
 noncomputable def pullbackMap : pullbackObj ha f ⟶ a :=
   Classical.choose (Classical.choose_spec (IsPreFibered.exists_isCartesian p ha f))
@@ -144,7 +146,7 @@ lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a 
   apply IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ'
   simp [hπ_comp, Φ]
 
-/-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
+/-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒮` is fibered if any diagram of the
 form
 ```
           a
