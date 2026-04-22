@@ -66,7 +66,7 @@ lemma comp_obj {X Y Z : ReflQuiv} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 lemma comp_map {X Y Z : ReflQuiv} (f : X ⟶ Y) (g : Y ⟶ Z) {x y : X} (a : x ⟶ y) :
     (f ≫ g).map a = g.map (f.map a) := rfl
 
-/-- The forgetful functor from categories to quivers. -/
+/-- The forgetful functor from categories to reflexive quivers. -/
 @[simps]
 def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
   obj C := ReflQuiv.of C
@@ -79,7 +79,7 @@ theorem forget_faithful {C D : Cat.{v, u}} (F G : C ⥤ D)
 instance forget.Faithful : Functor.Faithful (forget) where
   map_injective := fun hyp ↦ Cat.Hom.ext <| forget_faithful _ _ hyp
 
-/-- The forgetful functor from categories to quivers. -/
+/-- The forgetful functor from reflexive quivers to quivers. -/
 @[simps]
 def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
   obj V := Quiv.of V
@@ -321,7 +321,7 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
 end FreeRefl
 
 /-- Given a refl quiver `V`, this is the refl functor `V ⥤rq FreeRefl V` which
-is the counit of the adjunction between reflexive quivers and categories. -/
+is the unit of the adjunction between reflexive quivers and categories. -/
 @[simps]
 def toFreeRefl : V ⥤rq FreeRefl V where
   obj := .mk
@@ -329,7 +329,7 @@ def toFreeRefl : V ⥤rq FreeRefl V where
 
 attribute [local simp] Functor.toReflPrefunctor in
 variable {V} in
-/-- Constructor for functors from `FreeRefl`. -/
+/-- The functor `Cat.FreeRefl.lift F` restricts along `Cat.toFreeRefl V` to `F`. -/
 lemma FreeRefl.lift_spec {D : Type*} [Category* D] (F : V ⥤rq D) :
     Cat.toFreeRefl V ⋙rq (Cat.FreeRefl.lift F).toReflPrefunctor = F :=
   ReflPrefunctor.ext (fun v ↦ by simp) (by simp)
