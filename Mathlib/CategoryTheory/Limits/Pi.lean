@@ -133,11 +133,14 @@ As an example, we can use this to construct particular shapes of limits
 in a category of indexed families.
 
 With the addition of
-`import CategoryTheory.Limits.Types.Products`
+`import Mathlib.CategoryTheory.Limits.Types.Products`
 we can use:
 ```
-attribute [local instance] hasLimit_of_hasLimit_comp_eval
-example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩
+example {I : Type} : HasBinaryProducts (I → Type) := by
+  letI {X Y : I → Type} : HasLimit (pair X Y) :=
+    CategoryTheory.pi.hasLimit_of_hasLimit_comp_eval (I := I) (C := fun _ => Type)
+      (J := Discrete WalkingPair) (F := pair X Y)
+  exact hasBinaryProducts_of_hasLimit_pair (I → Type)
 ```
 -/
 
