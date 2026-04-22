@@ -124,7 +124,7 @@ lemma exactFunctor_le_rightExactFunctor :
 abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)
 
-/-- Turn an exact functor into a left exact functor. -/
+/-- Turn an exact functor into a right exact functor. -/
 abbrev RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_rightExactFunctor C D)
 
