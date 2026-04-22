@@ -244,20 +244,20 @@ def isColimitEquivIsLimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
       ((IsColimit.precomposeHomEquiv _ _).invFun ((IsColimit.whiskerEquivalenceEquiv _).toFun h.op))
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The canonical isomorphism between `(Cofork.ofπ π w).op` and `Fork.ofι π.op w'`. -/
+/-- The canonical isomorphism between `(Cofork.ofπ π w).op` and `Fork.ofι π'.op w'`. -/
 def ofπOpIsoOfι {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
     (Cofork.ofπ π w).op ≅ Fork.ofι π'.op w' :=
   Fork.ext (Iso.refl _) (by simp [Cofork.op_ι, h])
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The canonical isomorphism between `(Cofork.ofπ π w).unop` and `Fork.ofι π.unop w'`. -/
+/-- The canonical isomorphism between `(Cofork.ofπ π w).unop` and `Fork.ofι π'.unop w'`. -/
 def ofπUnopIsoOfι {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.unop ≫ f.unop = π'.unop ≫ g.unop) (h : π = π') :
     (Cofork.ofπ π w).unop ≅ Fork.ofι π'.unop w' :=
   Fork.ext (Iso.refl _) (by simp [Cofork.unop_ι, h])
 
-/-- `Cofork.ofπ π w` is a colimit cocone if and only if `Fork.ofι π.op w'` in the opposite
+/-- `Cofork.ofπ π w` is a colimit cocone if and only if `Fork.ofι π'.op w'` in the opposite
 category is a limit cone. -/
 def isColimitOfπEquivIsLimitOp {X Y P : C} {f g : X ⟶ Y} (π π' : Y ⟶ P) (w : f ≫ π = g ≫ π)
     (w' : π'.op ≫ f.op = π'.op ≫ g.op) (h : π = π') :
@@ -288,14 +288,14 @@ def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
-/-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
+/-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι'.op w'`. -/
 def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :
     (Fork.ofι ι w).op ≅ Cofork.ofπ ι'.op w' :=
   Cofork.ext (Iso.refl _) (by simp [Fork.op_π, h])
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The canonical isomorphism between `(Fork.ofι ι w).unop` and `Cofork.ofπ ι.unop w.unop`. -/
+/-- The canonical isomorphism between `(Fork.ofι ι w).unop` and `Cofork.ofπ ι'.unop w'`. -/
 def ofιUnopIsoOfπ {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
     (Fork.ofι ι w).unop ≅ Cofork.ofπ ι'.unop w' :=
@@ -308,7 +308,7 @@ def isLimitOfιEquivIsColimitOp {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (
     IsLimit (Fork.ofι ι w) ≃ IsColimit (Cofork.ofπ ι'.op w') :=
   (Fork.ofι ι w).isLimitEquivIsColimitOp.trans (IsColimit.equivIsoColimit (ofιOpIsoOfπ ι ι' w w' h))
 
-/-- `Fork.ofι ι w` is a limit cone in `Cᵒᵖ` if and only if `Cofork.ofπ ι.unop w.unop` in `C` is
+/-- `Fork.ofι ι w` is a limit cone in `Cᵒᵖ` if and only if `Cofork.ofπ ι'.unop w'` in `C` is
 a colimit cocone. -/
 def isLimitOfιEquivIsColimitUnop {X Y P : Cᵒᵖ} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.unop ≫ ι'.unop = g.unop ≫ ι'.unop) (h : ι = ι') :
@@ -376,7 +376,7 @@ def isLimitForkPushoutEquivIsColimitForkOpPullback
   right_inv := by cat_disch
 
 /-- `Fork.ofι f pushout.condition` is a limit cone in `Cᵒᵖ` if and only if
-`Cofork.ofπ f.op pullback.condition` in `C` is a colimit cocone. -/
+`Cofork.ofπ f.unop pullback.condition` in `C` is a colimit cocone. -/
 def isLimitForkPushoutEquivIsColimitForkUnopPullback
     {X Y : Cᵒᵖ} {f : X ⟶ Y} [HasPushout f f] [HasPullback f.unop f.unop] :
     IsLimit (Fork.ofι f pushout.condition) ≃ IsColimit (Cofork.ofπ f.unop pullback.condition) where
