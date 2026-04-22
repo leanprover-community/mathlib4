@@ -982,7 +982,7 @@ variable {D : Type u'} [Category.{v'} D]
 variable (F)
 variable [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 
-/-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`
+/-- The canonical morphism from the colimit of `F ⋙ G`
 to `G` applied to the colimit of `F`.
 -/
 def colimit.post : colimit (F ⋙ G) ⟶ G.obj (colimit F) :=
