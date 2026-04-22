@@ -256,6 +256,8 @@ lemma C_0 : C (0 : R) = 0 := single_zero _
 
 lemma C_add : C (a + b) = C a + C b := C.map_add a b
 
+lemma C_1 : C (1 : R) = 1 := rfl
+
 @[simp]
 lemma sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
   (C a).sum f = f 0 a := sum_single_index h
@@ -269,8 +271,6 @@ variable [MulSemiringAction (Multiplicative ℕ) R]
 def CRingHom : R →+* SkewPolynomial R := SkewMonoidAlgebra.singleOneRingHom
 
 lemma CRingHom_eq_C : CRingHom a = C a := rfl
-
-lemma C_1 : C (1 : R) = 1 := rfl
 
 lemma C_mul : C (a * b) = C a * C b := CRingHom.map_mul a b
 
