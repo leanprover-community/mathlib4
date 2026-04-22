@@ -26,10 +26,10 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 section Pullback
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given functors `F G H` and natural transformations `f : F ⟶ H` and `g : g : G ⟶ H`, together
+/-- Given functors `F G H` and natural transformations `f : F ⟶ H` and `g : G ⟶ H`, together
 with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stitch
 them together to give a pullback cone for the cospan formed by `f` and `g`.
-`combinePullbackConesIsLimit` shows that this pullback cone is limiting. -/
+`PullbackCone.combineIsLimit` shows that this pullback cone is limiting. -/
 @[simps!]
 def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f.app X) (g.app X))
     (hc : ∀ X, IsLimit (c X)) : PullbackCone f g :=
@@ -43,7 +43,7 @@ def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f
     (by ext; simp [(c _).condition])
 
 /--
-The pullback cone `combinePullbackCones` is limiting.
+The pullback cone `PullbackCone.combine` is limiting.
 -/
 def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
     (c : ∀ X, PullbackCone (f.app X) (g.app X)) (hc : ∀ X, IsLimit (c X)) :
