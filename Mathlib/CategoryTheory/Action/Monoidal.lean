@@ -160,7 +160,7 @@ variable (H : Type*) [Group H]
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
-/-- If `V` is right rigid, so is `Action V G`. -/
+/-- If `V` is right rigid, so is `Action V H`. -/
 instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
   rightRigidCategoryOfEquivalence
     (functorCategoryEquivalence V H).toAdjunction
@@ -168,14 +168,14 @@ instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
 instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
-/-- If `V` is left rigid, so is `Action V G`. -/
+/-- If `V` is left rigid, so is `Action V H`. -/
 instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
   leftRigidCategoryOfEquivalence (functorCategoryEquivalence V H).toAdjunction
 
 instance [RigidCategory V] : RigidCategory (SingleObj H ⥤ V) := by
   infer_instance
 
-/-- If `V` is rigid, so is `Action V G`. -/
+/-- If `V` is rigid, so is `Action V H`. -/
 instance [RigidCategory V] : RigidCategory (Action V H) :=
   rigidCategoryOfEquivalence (functorCategoryEquivalence V H).toAdjunction
 
