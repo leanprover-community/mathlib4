@@ -32,7 +32,7 @@ More advanced theorems about these definitions are located in other files in `Ma
   it is more general than `f '' univ` because it allows functions from `Sort*`;
 - `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
 - `Set.diagonal`: the diagonal in `α × α`;
-- `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
+- `Set.diag s`, `Set.offDiag s`: the diagonal and off-diagonal of `s ×ˢ s`;
 - `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
 - `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
@@ -242,6 +242,13 @@ def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 
 @[simp, grind =, push] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+
+/-- The diagonal of a set `s` is the set of pairs `(a, a)` with `a ∈ s`. -/
+def diag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.1 = x.2}
+
+@[simp, grind =, push]
+theorem mem_diag {x : α × α} {s : Set α} : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 :=
+  Iff.rfl
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
 def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
