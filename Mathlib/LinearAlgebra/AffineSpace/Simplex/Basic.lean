@@ -625,25 +625,25 @@ theorem closedInterior_inter_affineSubspaceMk'_affineSpan_faceOpposite {k V P : 
     (affineSpan k <| Set.range (s.faceOpposite i).points).direction = {s.points i} := by
   refine Set.Subset.antisymm ?_ <| by simp [s.point_mem_closedInterior i]
   intro p h
-  obtain ⟨hpoint, hface⟩ := (Set.mem_inter_iff _ _ _).mp h
+  obtain ⟨hinterior, hplane⟩ := (Set.mem_inter_iff _ _ _).mp h
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
-    Set.mem_of_mem_of_subset hpoint setInterior_subset_affineSpan
-  rw [affineCombination_mem_closedInterior_iff hw] at hpoint
+    Set.mem_of_mem_of_subset hinterior setInterior_subset_affineSpan
+  rw [affineCombination_mem_closedInterior_iff hw] at hinterior
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw <| s.points i,
     AffineSubspace.mem_coe, AffineSubspace.vadd_mem_iff_mem_direction _ <| by simp,
     weightedVSubOfPoint_apply, ← sum_erase_add _ _ <| show i ∈ univ by simp,
-    vsub_self, smul_zero, add_zero, AffineSubspace.direction_mk'] at hface
+    vsub_self, smul_zero, add_zero, AffineSubspace.direction_mk'] at hplane
   obtain ⟨q, hq⟩ := Classical.arbitrary <| affineSpan k <| Set.range (s.faceOpposite i).points
   have (j : Fin (n + 1)) : s.points j -ᵥ s.points i = (s.points j -ᵥ q) + (q -ᵥ s.points i) := by
     simp
-  simp_rw [this, smul_add, sum_add_distrib] at hface
+  simp_rw [this, smul_add, sum_add_distrib] at hplane
   rw [Submodule.add_mem_iff_right _ <| Submodule.sum_mem _ fun j hj ↦ Submodule.smul_mem _ _ <|
-    AffineSubspace.vsub_mem_direction (by simpa using hj) hq, ← sum_smul] at hface
+    AffineSubspace.vsub_mem_direction (by simpa using hj) hq, ← sum_smul] at hplane
   have hwj : ∑ j ∈ univ.erase i, w j = 0 := by
     by_contra
-    rw [Submodule.smul_mem_iff _ this, AffineSubspace.vsub_left_mem_direction_iff_mem hq] at hface
-    simp at hface
-  rw [sum_eq_zero_iff_of_nonneg fun j _ ↦ (hpoint j).1] at hwj
+    rw [Submodule.smul_mem_iff _ this, AffineSubspace.vsub_left_mem_direction_iff_mem hq] at hplane
+    simp at hplane
+  rw [sum_eq_zero_iff_of_nonneg fun j _ ↦ (hinterior j).1] at hwj
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw (s.points i),
     weightedVSubOfPoint_apply, ← sum_erase_add _ _ <| show i ∈ univ by simp,
     sum_eq_zero fun j hj ↦ by simp [hwj j hj]]
