@@ -101,14 +101,11 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-noncomputable instance : Algebra R W'.CoordinateRing :=
-  Quotient.algebra R
+noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
-noncomputable instance : Algebra R[X] W'.CoordinateRing :=
-  Quotient.algebra R[X]
+noncomputable instance : Algebra R[X] W'.CoordinateRing := inferInstance
 
-instance : IsScalarTower R R[X] W'.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
+instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _

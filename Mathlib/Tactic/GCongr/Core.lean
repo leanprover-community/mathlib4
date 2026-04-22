@@ -546,9 +546,8 @@ structure State where
   TODO?: split this into separate side and main goals, so that the side goals can be
   discharged using a nested `gcongr by ...` syntax. -/
   newGoals : Array MVarId := #[]
-  /-- Patterns to use when doing intro.
-  TODO: change this to ``TSyntax `rcasesPat`` to allow `rintro` patterns. -/
-  patterns : List (TSyntax ``binderIdent) := []
+  /-- Patterns to use when doing intro. -/
+  patterns : List (TSyntax `rintroPat)
 
 /-- The context used by `GCongrM`. -/
 structure Context where
@@ -561,7 +560,7 @@ structure Context where
 abbrev GCongrM := ReaderT Context <| StateRefT State MetaM
 
 /-- Run a `GCongrM` computation in `MetaM`. -/
-def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax ``binderIdent) := [])
+def GCongrM.run {α} (x : GCongrM α) (patterns : List (TSyntax `rintroPat) := [])
     (mainGoalDischarger : MVarId → MetaM Bool := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (α × Array MVarId) := do
@@ -573,10 +572,10 @@ def pushNewGoal (g : MVarId) : GCongrM Unit :=
   modify fun s ↦ { s with newGoals := s.newGoals.push g}
 
 /-- Run the `intro` tactic `n` times on the given goal. -/
-private def introN (goal : MVarId) (n : Nat) : GCongrM MVarId := do
-  let (patterns, _, goal) ← goal.introsWithBinderIdents (← get).patterns n
+private def introN (goal : MVarId) (n : Nat) : GCongrM (Array MVarId) := do
+  let (goals, patterns) ← goal.rintroWithPats (← get).patterns n
   modify ({· with patterns})
-  return goal
+  return goals.toArray
 
 /-- Run the discharger for main goals. -/
 private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
@@ -601,8 +600,8 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     unless ← mvar.mvarId!.isAssigned do
       unless lem.mainSubgoals.any (fun (n, m, k, _) ↦ n == i || m == i || k == i) do
         sideGoals := sideGoals.push mvar.mvarId!
-  let mainGoals ← lem.mainSubgoals.mapM fun (_, _, i, numHyps, isContra) ↦
-    return (← introN (mvars[i]!).mvarId! numHyps, isContra)
+  let mainGoals ← lem.mainSubgoals.flatMapM fun (_, _, i, numHyps, isContra) ↦
+    return (← introN mvars[i]!.mvarId! numHyps).map (·, isContra)
   return (mainGoals, sideGoals)
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
@@ -749,20 +748,23 @@ example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆
   exact h i
 ```
 -/
-elab "gcongr" template:(ppSpace colGt term)?
-    withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
+syntax (name := gcongr) "gcongr" (ppSpace colGt term)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+elab_rules : tactic
+| `(tactic| gcongr $[$template]? $[with $ps?*]?) => do
   let g ← getMainGoal
   g.withContext do
   let type ← withReducible g.getType'
   let some (_rel, lhs, _rhs) := getRel type
     | throwError "gcongr failed, not a relation"
-  -- Get the names from the `with x y z` list
-  let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
+  -- The patterns from the `with x y z` list
+  let patterns := (ps?.getD #[]).toList
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
   let (progress, unsolvedGoals) ← do
-    let some e := template | g.gcongr none |>.run names
+    let some e := template | g.gcongr none |>.run patterns
     if let some depth := e.raw.isNatLit? then
-      g.gcongr none depth |>.run names
+      g.gcongr none depth |>.run patterns
     else
       -- Elaborate the template (e.g. `x * ?_ + _`)
       -- First, we replace occurrences of `?_` with `gcongrHole% ?_`
@@ -776,7 +778,7 @@ elab "gcongr" template:(ppSpace colGt term)?
         throwError "invalid pattern {patt}, it does not match with {lhs}"
       let patt ← instantiateMVars patt
       let g ← g.replaceTargetDefEq (updateRel type patt true)
-      g.gcongr true |>.run names
+      g.gcongr true |>.run patterns
   if progress then
     replaceMainGoal unsolvedGoals.toList
   else
