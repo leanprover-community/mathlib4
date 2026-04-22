@@ -64,7 +64,7 @@ noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X)
   section_ := L.preimage (h.counit.app (L.obj X))
   id := by simp [← h.unit_naturality (L.preimage (h.counit.app (L.obj X)))]
 
-/-- If the right adjoint is full, then each component of the counit is a split monomorphism. -/
+/-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 instance unit_isSplitEpi_of_L_full [L.Full] (X : C) : IsSplitEpi (h.unit.app X) :=
   ⟨⟨h.unitSplitEpiOfLFull X⟩⟩
 
@@ -243,7 +243,7 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
-/-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
+/-- If `η_A` is an isomorphism, then `A` is in the essential image of `R`. -/
 theorem mem_essImage_of_unit_isIso (A : C)
     [IsIso (h.unit.app A)] : R.essImage A :=
   ⟨L.obj A, ⟨(asIso (h.unit.app A)).symm⟩⟩
