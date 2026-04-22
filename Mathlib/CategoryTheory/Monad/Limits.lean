@@ -136,8 +136,8 @@ variable {D : J ⥤ Algebra T} (c : Cocone (D ⋙ forget T)) (t : IsColimit c)
 -- But we already know that L is the point of a cocone for the diagram `D ⋙ forget T`, so it
 -- suffices to give a natural transformation `((D ⋙ forget T) ⋙ T) ⟶ (D ⋙ forget T)`:
 /-- (Impl)
-The natural transformation given by the algebra structure maps, used to construct a cocone `c` with
-point `colimit (D ⋙ forget T)`.
+The natural transformation given by the algebra structure maps, used to construct the cocone
+`newCocone` with point `colimit (D ⋙ forget T)`.
 -/
 @[simps]
 def γ : (D ⋙ forget T) ⋙ ↑T ⟶ D ⋙ forget T where app j := (D.obj j).a
@@ -154,9 +154,8 @@ def newCocone : Cocone ((D ⋙ forget T) ⋙ (T : C ⥤ C)) where
 variable [PreservesColimit (D ⋙ forget T) (T : C ⥤ C)]
 
 /-- (Impl)
-Define the map `λ : TL ⟶ L`, which will serve as the structure of the coalgebra on `L`, and
-we will show is the colimiting object. We use the cocone constructed by `c` and the fact that
-`T` preserves colimits to produce this morphism.
+Define the map `λ : TL ⟶ L`, which will serve as the structure of the algebra on `L`. We use the
+cocone `c` and the fact that `T` preserves colimits to produce this morphism.
 -/
 noncomputable abbrev lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
   (isColimitOfPreserves _ t).desc (newCocone c)
@@ -279,8 +278,8 @@ noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
     CreatesLimitsOfSize.{v, u} R :=
   createsLimitsOfNatIso (Monad.comparisonForget (monadicAdjunction R))
 
-/-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
-which the monad itself preserves.
+/-- A monadic functor creates a colimit of `K` if the induced monad preserves the required
+colimits.
 -/
 @[implicit_reducible]
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
@@ -404,7 +403,7 @@ def newCocone : Cocone (D ⋙ forget T) where
   ι := γ D ≫ whiskerRight c.ι (T : C ⥤ C) ≫ (Functor.constComp J _ (T : C ⥤ C)).hom
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The coalgebra structure which will be the point of the new colimit cone for `D`. -/
+/-- The coalgebra structure which will be the point of the new colimit cocone for `D`. -/
 @[simps]
 def coconePoint : Coalgebra T where
   A := c.pt
@@ -471,8 +470,8 @@ namespace ForgetCreatesLimits'
 variable {D : J ⥤ Coalgebra T} (c : Cone (D ⋙ forget T)) (t : IsLimit c)
 
 /-- (Impl)
-The natural transformation given by the coalgebra structure maps, used to construct a cone `c` with
-point `limit (D ⋙ forget T)`.
+The natural transformation given by the coalgebra structure maps, used to construct the cone
+`newCone` with point `limit (D ⋙ forget T)`.
 -/
 @[simps]
 def γ : D ⋙ forget T ⟶ (D ⋙ forget T) ⋙ ↑T where app j := (D.obj j).a
@@ -489,9 +488,8 @@ def newCone : Cone ((D ⋙ forget T) ⋙ (T : C ⥤ C)) where
 variable [PreservesLimit (D ⋙ forget T) (T : C ⥤ C)]
 
 /-- (Impl)
-Define the map `λ : L ⟶ TL`, which will serve as the structure of the algebra on `L`, and
-we will show is the limiting object. We use the cone constructed by `c` and the fact that
-`T` preserves limits to produce this morphism.
+Define the map `λ : L ⟶ TL`, which will serve as the structure of the coalgebra on `L`. We use the
+cone `c` and the fact that `T` preserves limits to produce this morphism.
 -/
 noncomputable abbrev lambda : c.pt ⟶ ((T : C ⥤ C).mapCone c).pt :=
   (isLimitOfPreserves _ t).lift (newCone c)
@@ -610,8 +608,8 @@ noncomputable def comonadicCreatesColimits (R : D ⥤ C) [ComonadicLeftAdjoint R
     CreatesColimitsOfSize.{v, u} R :=
   createsColimitsOfNatIso (Comonad.comparisonForget (comonadicAdjunction R))
 
-/-- The forgetful functor from the Eilenberg-Moore category for a comonad creates any limit
-which the comonad itself preserves.
+/-- A comonadic functor creates a limit of `K` if the induced comonad preserves the required
+limits.
 -/
 @[implicit_reducible]
 noncomputable def comonadicCreatesLimitOfPreservesLimit (R : D ⥤ C) (K : J ⥤ D)
