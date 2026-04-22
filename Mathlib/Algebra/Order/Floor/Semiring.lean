@@ -293,15 +293,18 @@ theorem preimage_Iic {a : R} (ha : 0 ≤ a) : (Nat.cast : ℕ → R) ⁻¹' Set.
 
 variable [IsOrderedAddMonoid R] [AddLeftStrictMono R]
 
+@[push]
 theorem floor_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n := by
   rw [floor_eq_iff (add_nonneg ha (FloorSemiring.natCast_nonneg n)), Nat.cast_add]
   refine ⟨add_le_add_left (floor_le ha) _, ?_⟩
   rw [add_right_comm, add_lt_add_iff_right]
   exact lt_floor_add_one a
 
+@[push]
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_natCast ha 1]
 
+@[push]
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n

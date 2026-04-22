@@ -56,7 +56,7 @@ variable (σ E F) in
 sometimes also called the *strong operator topology*. We avoid this terminology since so many other
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
-This topology is also known as the weak*-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
+This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
 abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]
@@ -132,8 +132,7 @@ variable (G) in
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
 convergence topology. -/
 @[simps! apply]
-def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
-    (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
+def precomp [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
   toFun f := f.comp L
   __ := ContinuousLinearMap.precompUniformConvergenceCLM G {(S : Set E) | Finite S}
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
@@ -157,7 +156,7 @@ def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁
     (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
-/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
+/-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-\* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
