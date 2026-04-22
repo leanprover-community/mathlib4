@@ -209,12 +209,12 @@ theorem locallyFinite_Icc_of_tendsto {f g : α → X}
   cases isEmpty_or_nonempty α
   · use univ
     simp [Subsingleton.elim _ (∅ : Set α)]
-  obtain ⟨x_R, hx_R⟩ := exists_gt x
   obtain ⟨x_L, hx_L⟩ := exists_lt x
-  obtain ⟨N₂, hN₂ : ∀ b ≥ N₂, x_R ≤ f b⟩ :=
-    eventually_atTop.mp <| hl.eventually <| eventually_ge_atTop x_R
+  obtain ⟨x_R, hx_R⟩ := exists_gt x
   obtain ⟨N₁, hN₁ : ∀ b ≤ N₁, g b ≤ x_L⟩ :=
     eventually_atBot.mp <| hu.eventually <| eventually_le_atBot x_L
+  obtain ⟨N₂, hN₂ : ∀ b ≥ N₂, x_R ≤ f b⟩ :=
+    eventually_atTop.mp <| hl.eventually <| eventually_ge_atTop x_R
   refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc N₁ N₂).subset ?_⟩
   rintro n ⟨y, ⟨hf, hg⟩, ⟨hxL, hxR⟩⟩
   constructor
