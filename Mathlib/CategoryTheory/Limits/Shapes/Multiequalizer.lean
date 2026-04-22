@@ -281,7 +281,7 @@ def equiv : WalkingMultispan J ≃ J.L ⊕ J.R where
   right_inv := by rintro (_ | _) <;> rfl
 
 variable (J) in
-/-- The bijection `Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.R ⊕ J.R`. -/
+/-- The bijection `Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.L ⊕ J.L`. -/
 def arrowEquiv :
     Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.L ⊕ J.L where
   toFun f := match f.hom with
@@ -345,11 +345,11 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_comp := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
-/-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst` for limiting fans. -/
+/-- The induced map `c.pt ⟶ d.pt` via `I.fst`, when `d` is limiting. -/
 def fstPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
   Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.fst i
 
-/-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd` for limiting fans. -/
+/-- The induced map `c.pt ⟶ d.pt` via `I.snd`, when `d` is limiting. -/
 def sndPiMapOfIsLimit (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : c.pt ⟶ d.pt :=
   Fan.IsLimit.lift hd fun i ↦ c.proj _ ≫ I.snd i
 
@@ -364,8 +364,7 @@ lemma sndPiMapOfIsLimit_proj (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d)
   simp [sndPiMapOfIsLimit]
 
 /-- Taking the multiequalizer over the multicospan index is equivalent to taking the equalizer over
-the two morphisms `∏ᶜ I.left ⇉ ∏ᶜ I.right`. This is the diagram of the latter for limiting fans.
--/
+the two induced morphisms `c.pt ⇉ d.pt`. This is the diagram of the latter when `d` is limiting. -/
 @[simps!]
 protected noncomputable def parallelPairDiagramOfIsLimit
     (c : Fan I.left) {d : Fan I.right} (hd : IsLimit d) : WalkingParallelPair ⥤ C :=
@@ -435,12 +434,12 @@ theorem multispan_map_fst (a) : I.multispan.map (WalkingMultispan.Hom.fst a) = I
 theorem multispan_map_snd (a) : I.multispan.map (WalkingMultispan.Hom.snd a) = I.snd a :=
   rfl
 
-/-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.fst` for colimiting cofans. -/
+/-- The induced map `c.pt ⟶ d.pt` via `I.fst`, when `c` is colimiting. -/
 def fstSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) :
     c.pt ⟶ d.pt :=
   Cofan.IsColimit.desc hc fun i ↦ I.fst i ≫ d.inj _
 
-/-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.snd` for colimiting cofans. -/
+/-- The induced map `c.pt ⟶ d.pt` via `I.snd`, when `c` is colimiting. -/
 def sndSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) :
     c.pt ⟶ d.pt :=
   Cofan.IsColimit.desc hc fun i ↦ I.snd i ≫ d.inj _
@@ -456,8 +455,8 @@ lemma inj_sndSigmaMapOfIsColimit {c : Cofan I.left} (d : Cofan I.right) (hc : Is
   simp [sndSigmaMapOfIsColimit]
 
 /-- Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer
-over the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter for colimiting
-cofans. -/
+over the two induced morphisms `c.pt ⇉ d.pt`. This is the diagram of the latter when `c` is
+colimiting. -/
 @[simps!]
 protected noncomputable def parallelPairDiagramOfIsColimit
     {c : Cofan I.left} (d : Cofan I.right) (hc : IsColimit c) : WalkingParallelPair ⥤ C :=
@@ -630,7 +629,7 @@ theorem pi_condition :
   apply Fan.IsLimit.hom_ext hd
   simp
 
-/-- Given a multifork, we may obtain a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`. -/
+/-- Given a multifork, we may obtain a fork over `c.pt ⇉ d.pt`. -/
 @[simps! pt]
 def toPiFork (K : Multifork I) :
     Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) :=
@@ -648,7 +647,7 @@ theorem toPiFork_π_app_one :
   rfl
 
 variable {hd} in
-/-- Given a fork over `∏ᶜ I.left ⇉ ∏ᶜ I.right`, we may obtain a multifork. -/
+/-- Given a fork over `c.pt ⇉ d.pt`, we may obtain a multifork. -/
 @[simps pt]
 def ofPiFork
     (a : Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd)) :
@@ -709,10 +708,9 @@ def ofPiForkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
-/-- The category of multiforks is equivalent to the category of forks over `∏ᶜ I.left ⇉ ∏ᶜ I.right`.
-It then follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it
-preserves and reflects limit cones.
--/
+/-- The category of multiforks is equivalent to the category of forks over `c.pt ⇉ d.pt`. It then
+follows from `CategoryTheory.IsLimit.ofPreservesConeTerminal` (or `reflects`) that it preserves
+and reflects limit cones. -/
 @[simps]
 def multiforkEquivPiForkOfIsLimit :
     Multifork I ≌ Fork (I.fstPiMapOfIsLimit c hd) (I.sndPiMapOfIsLimit c hd) where
@@ -736,7 +734,7 @@ preserves and reflects limit cones.
 noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPiMap :=
   multiforkEquivPiForkOfIsLimit I (limit.isLimit _) (limit.isLimit _)
 
-/-- The constant `MulticospanShape` for a pair of parallel morphisms. -/
+/-- The constant `MulticospanIndex` for a pair of parallel morphisms. -/
 @[simps]
 def ofParallelHoms (J : MulticospanShape) {X Y : C} (f g : X ⟶ Y) : MulticospanIndex J C where
   left _ := X
@@ -875,7 +873,7 @@ theorem sigma_condition :
   apply Cofan.IsColimit.hom_ext hc
   simp
 
-/-- Given a multicofork, we may obtain a cofork over `∐ I.left ⇉ ∐ I.right`. -/
+/-- Given a multicofork, we may obtain a cofork over `c.pt ⇉ d.pt`. -/
 @[simps! pt]
 noncomputable def toSigmaCofork (K : Multicofork I) :
     Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) :=
@@ -887,7 +885,7 @@ theorem toSigmaCofork_π :
   rfl
 
 variable {hc} in
-/-- Given a cofork over `∐ I.left ⇉ ∐ I.right`, we may obtain a multicofork. -/
+/-- Given a cofork over `c.pt ⇉ d.pt`, we may obtain a multicofork. -/
 @[simps pt]
 noncomputable def ofSigmaCofork
     (a : Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc)) :
@@ -966,11 +964,9 @@ noncomputable def ofSigmaCoforkFunctor :
     { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 
-/--
-The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
-It then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `reflects`) that
-it preserves and reflects colimit cocones.
--/
+/-- The category of multicoforks is equivalent to the category of coforks over `c.pt ⇉ d.pt`. It
+then follows from `CategoryTheory.IsColimit.ofPreservesCoconeInitial` (or `reflects`) that it
+preserves and reflects colimit cocones. -/
 @[simps]
 noncomputable def multicoforkEquivSigmaCoforkOfIsColimit :
     Multicofork I ≌ Cofork (I.fstSigmaMapOfIsColimit d hc) (I.sndSigmaMapOfIsColimit d hc) where
@@ -1010,8 +1006,8 @@ abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
     [HasMultiequalizer I] : C :=
   limit I.multicospan
 
-/-- For `I : MultispanIndex J C`, we say that it has a multicoequalizer if
-  the associated multicospan has a limit. -/
+/-- For `I : MultispanIndex J C`, we say that it has a multicoequalizer if the associated
+multispan has a colimit. -/
 abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 
@@ -1092,7 +1088,7 @@ namespace Multicoequalizer
 
 variable {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) [HasMulticoequalizer I]
 
-/-- The canonical map from the multiequalizer to the objects on the left. -/
+/-- The canonical map from `I.right b` to the multicoequalizer. -/
 abbrev π (b : J.R) : I.right b ⟶ multicoequalizer I :=
   colimit.ι I.multispan (WalkingMultispan.right _)
 
