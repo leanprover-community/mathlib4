@@ -16,9 +16,6 @@ For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lem
 `Mathlib.CategoryTheory.Monoidal.Limits.HasLimits` are needed to define a monoidal category
 structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
-Additionally, certain isomorphisms of pushouts and pullbacks involving terminal/initial objects are
-defined.
-
 ## TODO
 An attribute should be developed to automatically generate lemmas of this form.
 -/
@@ -31,11 +28,11 @@ namespace CategoryTheory.MonoidalCategory
 
 open Limits MonoidalCategory
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 namespace IsPushout
 
-variable [MonoidalCategory C] {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
+variable {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
     {inl : X ⟶ P} {inr : Y ⟶ P} (hP : IsPushout f g inl inr)
     {W : C} (h : X ⟶ W) (k : Y ⟶ W) (w : f ≫ h = g ≫ k)
 
@@ -113,7 +110,7 @@ end IsPushout
 
 section Pushout
 
-variable [MonoidalCategory C] [HasPushouts C]
+variable [HasPushouts C]
   {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
   (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
 

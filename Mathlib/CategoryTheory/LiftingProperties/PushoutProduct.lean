@@ -87,7 +87,7 @@ lemma hasLiftingProperty_mk_isInitial_iff' [HasPushouts C] [HasPullbacks C]
   rw [← hasLiftingProperty_mk_isInitial_iff i]
   exact HasLiftingProperty.iff_of_arrow_iso_left (braiding _ _) h
 
-/-- `f □ g` lifts against `X ⟶ ⋆` if and only if `g` lifts against `(pre f).app X`. -/
+/-- `f □ g` lifts against `X ⟶ ⋆` if and only if `g` lifts against `B ⟹ X ⟶ A ⟹ X`. -/
 lemma hasLiftingProperty_mk_isTerminal_iff [HasPushouts C] [HasPullbacks C]
     [MonoidalCategory C] [MonoidalClosed C]
     {A B K L X Y : C} {f : A ⟶ B} {g : K ⟶ L}
