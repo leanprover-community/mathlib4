@@ -249,7 +249,7 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
 open scoped Set.Notation in
-lemma QuasiSober.subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
+lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
     QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
 
 lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
