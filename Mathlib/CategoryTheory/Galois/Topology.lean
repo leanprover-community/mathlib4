@@ -65,7 +65,8 @@ scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 @[scoped instance]
 lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
 
-/-- `Aut F` is equipped with the by the embedding into `∀ X, Aut (F.obj X)` induced embedding. -/
+/-- `Aut F` is equipped with the topology induced by the embedding into
+`∀ X, Aut (F.obj X)`. -/
 instance : TopologicalSpace (Aut F) :=
   TopologicalSpace.induced (autEmbedding F) inferInstance
 
@@ -140,8 +141,8 @@ lemma continuous_mapAut_whiskeringRight (G : FintypeCat.{w} ⥤ FintypeCat.{v}) 
   change Continuous fun a ↦ G.mapAut (F.obj X) (autEmbedding F a X)
   fun_prop
 
-/-- If `G` is a fully faithful functor of categories finite types, this is the automorphism of
-topological groups `Aut F ≃ Aut (F ⋙ G)`. -/
+/-- If `G` is a fully faithful functor of categories of finite types, this is the isomorphism of
+topological groups `Aut F ≃ₜ* Aut (F ⋙ G)`. -/
 noncomputable def autEquivAutWhiskerRight {G : FintypeCat.{w} ⥤ FintypeCat.{v}}
     (h : G.FullyFaithful) :
     Aut F ≃ₜ* Aut (F ⋙ G) where
