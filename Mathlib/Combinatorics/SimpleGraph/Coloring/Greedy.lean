@@ -6,7 +6,6 @@ Authors: Snir Broshi
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
-public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
