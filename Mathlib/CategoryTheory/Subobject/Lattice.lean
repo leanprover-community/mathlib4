@@ -129,6 +129,7 @@ section Inf
 
 variable [HasPullbacks C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
@@ -155,6 +156,7 @@ def infLELeft {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ f :=
 def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
   homMk _ pullback.condition
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) :=
@@ -184,6 +186,7 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by

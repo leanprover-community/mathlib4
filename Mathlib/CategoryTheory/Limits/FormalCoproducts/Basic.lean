@@ -88,6 +88,7 @@ lemma hom_ext_iff' {X Y : FormalCoproduct.{w} C} (f g : X ⟶ Y) :
     f = g ↔ ∀ i : X.I, ∃ h₁ : f.f i = g.f i, f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i :=
   ⟨(· ▸ by simp), fun h ↦ hom_ext (funext fun i ↦ (h i).fst) fun i ↦ (h i).snd⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A way to create isomorphisms in the category of formal coproducts, by creating an `Equiv`
 between the indexing sets, and then correspondingly isomorphisms of each component. -/
 @[simps!] def isoOfComponents {X Y : FormalCoproduct.{w} C} (e : X.I ≃ Y.I)
@@ -262,6 +263,7 @@ variable {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
   (hpb : ∀ i, IsLimit (pb i))
   (T : FormalCoproduct.{w} C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, given pullback in `C` over each component,
 construct the pullback in `FormalCategory.{w} C`. -/
 def pullbackCone : PullbackCone f g :=
@@ -337,6 +339,7 @@ noncomputable section HasCoproducts
 
 variable [HasCoproducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : C ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A copresheaf valued in a category `A` with arbitrary coproducts, can be extended to the category
 of formal coproducts. -/
@@ -347,6 +350,7 @@ of formal coproducts. -/
       map_comp _ _ := Sigma.hom_ext _ _ (fun _ ↦ by simp [Sigma.ι_desc]) }
   map α := { app f := Sigma.map fun i ↦ α.app (f.obj i) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `eval(F)` restricted to the original category (via `incl`) is the original copresheaf `F`. -/
 @[simps!] def evalCompInclIsoId :
@@ -377,6 +381,7 @@ noncomputable section HasProducts
 
 variable [HasProducts.{w} A] (C) (J : Type w) (f : J → FormalCoproduct.{w} C) (F : Cᵒᵖ ⥤ A)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf valued in a category `A` with arbitrary products can be extended to the category of
 formal coproducts. -/
@@ -386,6 +391,7 @@ formal coproducts. -/
       map f := Pi.lift fun i ↦ Pi.π _ (f.unop.f i) ≫ F.map (f.unop.φ i).op }
   map α := { app f := Pi.map fun i ↦ α.app (op (f.unop.obj i)) }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` restricted to the original category (via `incl`) is the original presheaf `F`. -/
 @[simps!] def evalOpCompInlIsoId :
@@ -395,6 +401,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 variable {C A}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `evalOp(F)` preserves arbitrary products. -/
 def isLimitEvalMapConeCofanOp : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan.{w} J f).op) where

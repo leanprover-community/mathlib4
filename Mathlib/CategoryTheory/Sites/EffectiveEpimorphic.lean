@@ -70,6 +70,7 @@ lemma Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda {X : C} (R : Pre
   simp_rw [Presieve.isSheafFor_iff_generate R,
     Presieve.EffectiveEpimorphic, Sieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Presieve X}
     (hR : R.EffectiveEpimorphic) (F : Cᵒᵖ ⥤ Type w) [F.IsRepresentable] :
     R.IsSheafFor F := by
@@ -80,6 +81,7 @@ lemma Presieve.EffectiveEpimorphic.isSheafFor_of_isRepresentable {X : C} {R : Pr
   rw [isSheafFor_comp_uliftFunctor_iff]
   exact hR _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 /--
@@ -116,6 +118,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
       apply Hf.uniq _ h2
       exact hm ⟨Over.mk f, 𝟙 _, by simp⟩ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Implementation: This is a construction which will be used in the proof that
@@ -193,6 +196,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨a, g, rfl⟩
     exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.proofsInPublic true in
 /--
@@ -231,6 +235,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       intro a
       exact hm ⟨Over.mk (π a), a, 𝟙 _, by simp⟩ }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Implementation: This is a construction which will be used in the proof that

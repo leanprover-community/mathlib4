@@ -102,6 +102,7 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
@@ -120,6 +121,7 @@ def whiskerLeftIso
       (IsPushout.of_hasPushout (X₁.hom ▷ X₂.left) (X₁.left ◁ X₂.hom))).hom_ext (by
       simp) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `X₁` and `X₂ ▷ W`. -/
@@ -144,6 +146,7 @@ local instance {F : C ⥤ C}
       (((curriedTensor C).obj X₁.left).map X₂.hom)) F := by
   simpa only [curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is associative: `(X₁ □ X₂) □ X₃ ≅ X₁ □ X₂ □ X₃`. -/
 @[simps!]
@@ -180,6 +183,7 @@ def associator
       · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
       · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/
 @[simps!]
@@ -196,6 +200,7 @@ section CartesianMonoidalClosed
 
 variable [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a CCC with pushouts and an initial object, then `X □ (⊥_ C ⟶ 𝟙_ C) ≅ X`. -/
 @[simp]

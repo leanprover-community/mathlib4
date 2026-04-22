@@ -24,12 +24,14 @@ universe u
 
 open CategoryTheory Limits
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=

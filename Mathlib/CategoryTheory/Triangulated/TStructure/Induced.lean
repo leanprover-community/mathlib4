@@ -46,6 +46,7 @@ class HasInducedTStructure [P.IsTriangulated] : Prop where
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
@@ -90,6 +91,7 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
       t.triangleLEGE_distinguished 0 1 (by lia) X,
         P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
     (T : Triangle C) (hT : T ∈ distTriang C)
@@ -104,6 +106,7 @@ lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t 
   exact ⟨(P.prop_iff_of_iso (Triangle.π₁.mapIso e)).2 (P.prop_ι_obj _),
     (P.prop_iff_of_iso (Triangle.π₃.mapIso e)).2 (P.prop_ι_obj _)⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance (P P' : ObjectProperty C) [P.IsTriangulated] [P'.IsTriangulated] (t : TStructure C)
     [P.HasInducedTStructure t] [P'.HasInducedTStructure t]
     [P.IsClosedUnderIsomorphisms] [P'.IsClosedUnderIsomorphisms] :

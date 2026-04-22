@@ -743,6 +743,7 @@ lemma ιOrZero_mapBifunctorAssociatorX_hom (i₁ : ι₁) (i₂ : ι₂) (i₃ :
       mapBifunctor₂₃.ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h,
       zero_comp, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
@@ -764,6 +765,7 @@ lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
@@ -783,6 +785,7 @@ lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₃ (j j' : ι₄) :

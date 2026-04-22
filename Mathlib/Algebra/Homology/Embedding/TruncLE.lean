@@ -100,6 +100,7 @@ variable {K L M}
 noncomputable def truncLE'Map : K.truncLE' e ⟶ L.truncLE' e :=
   (unopFunctor C c.symm).map (truncGE'Map ((opFunctor C c').map φ.op) e.op).op
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
@@ -225,6 +226,7 @@ noncomputable def truncLE'Functor :
   obj K := K.truncLE' e
   map φ := HomologicalComplex.truncLE'Map φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.truncGE' e ⟶ K.restriction e` for all `K`. -/
 @[simps]
 noncomputable def truncLE'ToRestrictionNatTrans :
@@ -240,6 +242,7 @@ noncomputable def truncLEFunctor :
   obj K := K.truncLE e
   map φ := HomologicalComplex.truncLEMap φ e
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.ιTruncLE e : K.truncLE e ⟶ K` for all `K`. -/
 @[simps]
 noncomputable def ιTruncLENatTrans : e.truncLEFunctor C ⟶ 𝟭 _ where

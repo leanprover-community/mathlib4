@@ -390,6 +390,7 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Informally, this is a special case of `pullback_map_diagonal_isPullback` for `T = X`. -/
 lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :

@@ -97,6 +97,7 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--

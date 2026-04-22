@@ -59,6 +59,7 @@ def refl (f : X ⟶ Y) : P.LeftHomotopy f f where
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` and `g` are homotopic relative to a precylinder `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]

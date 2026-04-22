@@ -354,6 +354,7 @@ noncomputable def getFunctorPushforwardStructure {F : C ⥤ D} {S : Presieve X} 
   choose Z f' g h₁ h using h
   exact ⟨Z, f', g, h₁, h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 theorem functorPushforward_comp (R : Presieve X) :
     R.functorPushforward (F ⋙ G) = (R.functorPushforward F).functorPushforward G := by
   funext x
@@ -1123,6 +1124,7 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1213,6 +1215,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 
 open ConcreteCategory
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
@@ -1269,6 +1272,7 @@ theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance uliftFunctorInclusion_is_mono (S : Sieve X) :
     Mono (Sieve.uliftFunctorInclusion.{w} S) :=
@@ -1287,6 +1291,7 @@ def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYon
     refine ⟨R.map g.op t, ?_⟩
     simp [ht]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
@@ -1316,6 +1321,7 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
   map {Y Z} g f hf := by
     simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
 noncomputable
@@ -1342,6 +1348,7 @@ lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{ma
       shrinkYonedaUliftFunctorIso.{w, w'}.inv.app X :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable (S) in
 /-- Shrinking does nothing for the same universe level. -/
 @[simps! hom_app inv_app]

@@ -535,6 +535,7 @@ instance instMonoidalCategory : MonoidalCategory (Grp C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   triangle _ _ := by ext; exact triangle _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
   isTerminalTensorUnit :=
@@ -565,6 +566,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 @[to_additive]
 instance instBraidedCategory : BraidedCategory (Grp C) :=
@@ -671,18 +673,21 @@ set_option backward.isDefEq.respectTransparency false in
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to group objects. -/
 @[to_additive (attr := simps!)
 /-- Natural transformations between functors lift to additive group objects. -/]
 def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := Grp.homMk' ((mapMonNatTrans f).app X.toMon)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[to_additive (attr := simps!)
 /-- Natural isomorphisms between functors lift to additive group objects. -/]
 def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (e.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
 /-- `mapGrp` is functorial in the left-exact functor. -/
 @[to_additive (attr := simps)
@@ -755,6 +760,7 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[to_additive (attr := simps)
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts
@@ -768,6 +774,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[to_additive (attr := simps)
 /-- An equivalence of categories lifts to an equivalence of their additive group objects. -/]

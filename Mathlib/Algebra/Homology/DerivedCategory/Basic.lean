@@ -225,6 +225,7 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
@@ -255,6 +256,7 @@ def singleFunctorsPostcompQIso :
       SingleFunctors.postcompIsoOfIso
         (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).hom.hom n = 𝟙 _ := by
   ext X
@@ -264,6 +266,7 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
   erw [Category.id_comp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
   ext X

@@ -141,6 +141,7 @@ end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 

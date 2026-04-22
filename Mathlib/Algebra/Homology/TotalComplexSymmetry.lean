@@ -62,6 +62,7 @@ noncomputable def totalFlipIsoX (j : J) : (K.flip.total c).X j ≅ (K.total c).X
   hom_inv_id := by ext; simp
   inv_hom_id := by ext; simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma totalFlipIsoX_hom_D₁ (j j' : J) :
@@ -84,6 +85,7 @@ lemma totalFlipIsoX_hom_D₁ (j j' : J) :
     · rw [K.d₁_eq_zero _ _ _ _ h₂, K.flip.d₂_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₁_shape _ _ _ h₀, K.flip.D₂_shape c _ _ h₀, zero_comp, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma totalFlipIsoX_hom_D₂ (j j' : J) :

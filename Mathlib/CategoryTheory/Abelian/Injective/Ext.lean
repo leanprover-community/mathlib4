@@ -59,6 +59,7 @@ lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
   congr
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extEquivCohomologyClass_symm_add
     (x y : CohomologyClass ((singleFunctor C 0).obj X) R.cochainComplex n) :

@@ -81,6 +81,7 @@ def commGrpEquivalenceAux : CommGrp.forget C ⋙ toCommGrp C ≅
       · infer_instance
   · cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An additive category is equivalent to its category of commutative group objects. -/
 @[simps!]
 def commGrpEquivalence : C ≌ CommGrp C where

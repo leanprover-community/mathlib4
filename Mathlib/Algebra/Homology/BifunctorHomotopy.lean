@@ -183,6 +183,7 @@ noncomputable def mapBifunctorMapHomotopy₁ :
   zero := zero₁ h₁ f₂ F c
   comm := comm₁ h₁ f₂ F c
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (f₁) {f₂ f₂'} in
 open mapBifunctorMapHomotopy in

@@ -85,6 +85,7 @@ def comparisonRightAdjointObj (A : adj.toComonad.Coalgebra)
     [HasEqualizer (G.map A.a) (adj.unit.app _)] : C :=
   equalizer (G.map A.a) (adj.unit.app _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 We have a bijection of homsets which will be used to construct the right adjoint to the comparison
@@ -204,6 +205,7 @@ instance
     (G.map ((comparison adj).obj B).a)
     (adj.unit.app (G.obj ((comparison adj).obj B).A))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_unit_app
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] (B : C) :
@@ -222,6 +224,7 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring" direction of

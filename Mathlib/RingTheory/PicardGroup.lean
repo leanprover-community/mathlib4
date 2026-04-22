@@ -602,6 +602,7 @@ namespace Module.Invertible
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
 theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
   let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
@@ -771,6 +772,7 @@ instance : Flat R (submoduleAlgebra e) := .of_linearEquiv (submoduleAlgebraEquiv
 instance [Module.Invertible R M] : Module.Invertible R (submoduleAlgebra e) :=
   .congr (submoduleAlgebraEquiv e).symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When a flat `R`-module `M` is embedded as a submodule of a faithful `R`-algebra `A`,
 the multiplication map induces an isomorphism `A ⊗[R] M ≃ₗ[A] A`. -/
 noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃ₗ[A] A :=

@@ -34,6 +34,7 @@ noncomputable def piObjIso (f : α → D ⥤ C) (d : D) : (∏ᶜ f).obj d ≅ �
   limitObjIsoLimitCompEvaluation (Discrete.functor f) d ≪≫
     HasLimit.isoOfNatIso (Discrete.compNatIsoDiscrete _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem piObjIso_hom_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
@@ -58,6 +59,7 @@ noncomputable def sigmaObjIso (f : α → D ⥤ C) (d : D) : (∐ f).obj d ≅ �
   colimitObjIsoColimitCompEvaluation (Discrete.functor f) d ≪≫
     HasColimit.isoOfNatIso (Discrete.compNatIsoDiscrete _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_comp_sigmaObjIso_hom (f : α → D ⥤ C) (d : D) (s : α) :

@@ -31,6 +31,7 @@ namespace ObjectProperty
 
 variable (P : ObjectProperty C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
     P.isLocal.IsStableUnderTransfiniteCompositionOfShape J where

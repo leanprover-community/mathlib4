@@ -221,10 +221,12 @@ variable (D) in
 def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma whiskering_obj_obj_δ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
     dsimp% (((whiskering C D).obj F).obj X).δ i = F.map (X.δ i) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma whiskering_obj_obj_σ (F : C ⥤ D) (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
     dsimp% (((whiskering C D).obj F).obj X).σ i = F.map (X.σ i) := rfl
@@ -328,12 +330,14 @@ noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : ((sk n).obj X).IsLeftKanExtension ((skAdj n).unit.app _) := by
   dsimp [sk, skAdj]
   rw [lanAdjunction_unit]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
   dsimp [cosk, coskAdj]
@@ -443,6 +447,7 @@ theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
@@ -461,6 +466,7 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
         erw [η.w]
         rfl }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
@@ -490,6 +496,7 @@ def const : C ⥤ Augmented C where
 
 end Augmented
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augment a simplicial object with an object. -/
 @[simps]
 def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
@@ -510,6 +517,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The augmented simplicial object that is deduced from a simplicial object and
 a terminal object. -/
 @[simps!]
@@ -809,6 +817,7 @@ def toArrow : Augmented C ⥤ Arrow C where
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
@@ -827,6 +836,7 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
         erw [← η.w]
         rfl }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simps]
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
@@ -858,6 +868,7 @@ end Augmented
 
 open Simplicial
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Augment a cosimplicial object with an object. -/
 @[simps]
 def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
@@ -876,6 +887,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
     (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The coaugmented cosimplicial object that is deduced from a cosimplicial object and
 an initial object. -/
 @[simps!]
@@ -917,6 +929,7 @@ def CosimplicialObject.Augmented.leftOp (X : CosimplicialObject.Augmented Cᵒ�
   right := X.left.unop
   hom := NatTrans.leftOp X.hom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Converting an augmented simplicial object to an augmented cosimplicial
 object and back is isomorphic to the given object. -/
 @[simps!]
@@ -924,6 +937,7 @@ def SimplicialObject.Augmented.rightOpLeftOpIso (X : SimplicialObject.Augmented 
     X.rightOp.leftOp ≅ X :=
   Comma.isoMk X.left.rightOpLeftOpIso (CategoryTheory.eqToIso <| by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Converting an augmented cosimplicial object to an augmented simplicial
 object and back is isomorphic to the given object. -/
 @[simps!]
@@ -933,6 +947,7 @@ def CosimplicialObject.Augmented.leftOpRightOpIso (X : CosimplicialObject.Augmen
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functorial version of `SimplicialObject.Augmented.rightOp`. -/
 @[simps]
 def simplicialToCosimplicialAugmented :
@@ -948,6 +963,7 @@ def simplicialToCosimplicialAugmented :
         congr 1
         exact (congr_app f.unop.w (op x)).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A functorial version of `Cosimplicial_object.Augmented.leftOp`. -/
 @[simps]
 def cosimplicialToSimplicialAugmented :
@@ -964,6 +980,7 @@ def cosimplicialToSimplicialAugmented :
           congr 1
           exact (congr_app f.w (unop x)).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The contravariant categorical equivalence between augmented simplicial
 objects and augmented cosimplicial objects in the opposite category. -/
 @[simps! functor inverse]

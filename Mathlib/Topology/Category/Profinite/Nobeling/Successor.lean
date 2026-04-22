@@ -190,6 +190,7 @@ noncomputable
 def Linear_CC' : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
   Linear_CC'₁ C hsC ho - Linear_CC'₀ C ho
 
+set_option backward.defeqAttrib.useBackward true in
 theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x

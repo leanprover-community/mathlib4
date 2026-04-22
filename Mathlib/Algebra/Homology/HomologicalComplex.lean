@@ -345,12 +345,14 @@ instance : (forget V c).Faithful where
     ext i
     exact congr_fun h i
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The differential as a natural transformation between `eval`. -/
 @[simps] def dNatTrans (i j : ι) :
     HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
@@ -616,6 +618,7 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
 def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) : ChainComplex V α :=
@@ -876,6 +879,7 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
 def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :

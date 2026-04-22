@@ -216,6 +216,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
@@ -279,6 +280,7 @@ theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=
   map_zsmul (inclusionHom P Q) n f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `X : Karoubi C`, then `X` is a retract of `((toKaroubi C).obj X.X)`. -/
 @[simps]
 def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where

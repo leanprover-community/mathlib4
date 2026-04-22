@@ -76,6 +76,7 @@ instance : ExponentialIdeal (subterminalInclusion C) := by
   refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
@@ -162,6 +163,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
@@ -191,6 +193,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 
 variable [ExponentialIdeal i]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -218,6 +221,7 @@ def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i
         · exact (i.essImage.liftCompιIso _ _).symm.trans <|
             (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
@@ -266,6 +270,7 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
@@ -288,6 +293,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by

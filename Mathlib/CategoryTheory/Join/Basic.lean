@@ -564,6 +564,7 @@ def mapIsoWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H
 lemma mapIsoWhiskerRight_hom {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     (mapIsoWhiskerRight α H).hom = mapWhiskerRight α.hom H := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapIsoWhiskerRight_inv {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ Gₗ) (H : D ⥤ E') :
     (mapIsoWhiskerRight α H).inv = mapWhiskerRight α.inv H := by
   ext x
@@ -572,6 +573,7 @@ lemma mapIsoWhiskerRight_inv {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ≅ G�
 lemma mapIsoWhiskerLeft_hom (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     (mapIsoWhiskerLeft H α).hom = mapWhiskerLeft H α.hom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mapIsoWhiskerLeft_inv (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     (mapIsoWhiskerLeft H α).inv = mapWhiskerLeft H α.inv := by
   ext x

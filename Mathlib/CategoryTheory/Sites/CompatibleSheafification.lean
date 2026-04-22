@@ -63,6 +63,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
   refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
@@ -73,6 +74,7 @@ theorem sheafificationWhiskerLeftIso_hom_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
   dsimp [sheafificationWhiskerLeftIso, sheafifyCompIso]
   rw [Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem sheafificationWhiskerLeftIso_inv_app (P : Cᵒᵖ ⥤ D) (F : D ⥤ E)
     [∀ (F : D ⥤ E) (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
@@ -93,6 +95,7 @@ noncomputable def sheafificationWhiskerRightIso :
   refine (associator _ _ _).symm ≪≫ ?_
   exact isoWhiskerRight (J.plusFunctorWhiskerRightIso _) (J.plusFunctor E)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_hom_app :
@@ -101,6 +104,7 @@ theorem sheafificationWhiskerRightIso_hom_app :
   simp only [Category.id_comp, Category.comp_id]
   erw [Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sheafificationWhiskerRightIso_inv_app :
@@ -109,6 +113,7 @@ theorem sheafificationWhiskerRightIso_inv_app :
   simp only [Category.comp_id]
   erw [Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp, reassoc]
 theorem whiskerRight_toSheafify_sheafifyCompIso_hom :

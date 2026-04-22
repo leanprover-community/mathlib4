@@ -41,6 +41,7 @@ namespace PreZeroHypercover
 
 variable {S : C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the pre-`0`-hypercover `E` has pairwise pullbacks, the sections over the multifork
 associated to a presheaf of types are equivalent to the compatible families on `E`. -/

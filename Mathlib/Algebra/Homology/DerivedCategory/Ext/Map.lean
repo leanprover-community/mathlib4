@@ -52,6 +52,7 @@ section
 
 open DerivedCategory
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :

@@ -284,6 +284,7 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :

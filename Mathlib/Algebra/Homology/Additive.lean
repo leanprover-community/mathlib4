@@ -122,6 +122,7 @@ instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : 
 
 variable (W₁)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor on homological complexes induced by the identity functor is
 isomorphic to the identity functor. -/
 @[simps!]
@@ -142,6 +143,7 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
 
 variable {W₁}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A natural transformation between functors induces a natural transformation
 between those functors applied to homological complexes.
 -/
@@ -186,6 +188,7 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/
@@ -231,6 +234,7 @@ instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableE
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Turning an object into a complex supported at `j` then applying a functor is
 the same as applying the functor then forming the complex.
@@ -262,6 +266,7 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
         simp [single_map_f_self, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
       · apply (isZero_single_obj_X c j _ _ h).eq_of_tgt
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).hom.app X).f j =
@@ -273,6 +278,7 @@ theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : W�
     ((singleMapHomologicalComplex F c j).hom.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f j =

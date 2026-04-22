@@ -127,6 +127,7 @@ instance : F.homologicalKernel.IsTriangulated where
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
@@ -211,6 +212,7 @@ lemma homologySequence_comp :
 
 attribute [local simp] smul_smul
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
@@ -220,12 +222,14 @@ lemma homologySequence_exact₂ :
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
     (by simp) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
     ((F.shiftIso 1 n₀ n₁ (by lia)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
@@ -254,6 +258,7 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 end
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f

@@ -46,11 +46,13 @@ def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
 
 instance [Preadditive C] : Functor.Additive (inverse C) where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism of the equivalence -/
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
   eqToIso (Functor.ext (by cat_disch) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
 @[simps]
@@ -58,6 +60,7 @@ def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C
   hom := { app := fun P => { f := { f := P.p.1 } } }
   inv := { app := fun P => { f := { f := P.p.1 } } }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/
 @[simps]
 def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where

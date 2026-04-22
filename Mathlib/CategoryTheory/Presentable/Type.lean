@@ -28,6 +28,7 @@ namespace HasCardinalLT
 
 variable (X : Type u) (κ : Cardinal.{u})
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {X κ} in
 lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
@@ -98,6 +99,7 @@ def cocone : Cocone (Set.functor X κ) where
   pt := X
   ι.app _ := TypeCat.ofHom (Subtype.val)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`
 when `κ` is an infinite cardinal. (This colimit is `κ`-filtered when `κ` is
 a regular cardinal.) -/
@@ -119,6 +121,7 @@ namespace Types
 
 variable {X : Type u}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ ↔ HasCardinalLT X κ := by

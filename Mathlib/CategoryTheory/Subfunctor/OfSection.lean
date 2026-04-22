@@ -87,6 +87,7 @@ section
 
 variable {F : Cᵒᵖ ⥤ Type max v w}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ofSection_eq_range' {X : Cᵒᵖ} (x : F.obj X) :
     ofSection x = range (uliftYonedaEquiv.symm x) := by
   ext U y

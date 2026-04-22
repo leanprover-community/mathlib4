@@ -144,6 +144,7 @@ noncomputable section
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
@@ -176,6 +177,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
     Meq.equiv_symm_eq_apply]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by

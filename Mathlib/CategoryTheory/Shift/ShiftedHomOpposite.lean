@@ -43,6 +43,7 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
     (z : ShiftedHom X Z b) {c : ℤ} (h : b + a = c) :
@@ -54,6 +55,7 @@ lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
   dsimp
   simp only [assoc, Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv_symm_comp {a b : ℤ}
     (f : ShiftedHom (Opposite.op Z) (Opposite.op Y) a)
@@ -114,6 +116,7 @@ lemma opEquiv'_symm_comp (f : Y ⟶ X) {n a : ℤ} (x : Opposite.op (Z⟦a⟧) �
     (opEquiv' n a a' h).symm (x ≫ f.op⟦n⟧') = f ≫ (opEquiv' n a a' h).symm x :=
   Quiver.Hom.op_inj (by simp [opEquiv'_symm_apply, opEquiv_symm_apply])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦(0 : ℤ)⟧) :
     (opEquiv' 0 a a (zero_add a)).symm f =
@@ -139,12 +142,14 @@ section Preadditive
 
 variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opEquiv_symm_add {n : ℤ} (x y : ShiftedHom (Opposite.op Y) (Opposite.op X) n) :
     (opEquiv n).symm (x + y) = (opEquiv n).symm x + (opEquiv n).symm y := by
   dsimp [opEquiv_symm_apply]
   rw [← Preadditive.comp_add, ← Functor.map_add]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧))
     (a' : ℤ) (h : n + a = a') :

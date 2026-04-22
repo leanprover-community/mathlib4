@@ -108,6 +108,7 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
       P.costructuredArrow_iso_iff e]
     simpa using P.id_mem (L.obj Y)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
@@ -138,6 +139,7 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
@@ -169,6 +171,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
+set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
     Unique (Y ⟶ Over.mk ⊤ (𝟙 X) (P.id_mem X)) where

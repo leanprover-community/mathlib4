@@ -208,6 +208,7 @@ instance IsCofiltered.over [IsCofilteredOrEmpty C] (c : C) : IsCofiltered (Over 
     (fun c' => ⟨c', ⟨𝟙 _⟩⟩)
     (fun s s' => IsCofilteredOrEmpty.cone_maps s s') c
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the under category on any filtered or empty category is final. -/
 instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget c) :=
   final_of_exists_of_isFiltered _
@@ -218,6 +219,7 @@ instance Under.final_forget [IsFilteredOrEmpty C] (c : C) : Final (Under.forget 
       simp only [forget_obj, mk_right, forget_map, homMk_right]
       rw [IsFiltered.coeq_condition])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The forgetful functor of the over category on any cofiltered or empty category is initial. -/
 instance Over.initial_forget [IsCofilteredOrEmpty C] (c : C) : Initial (Over.forget c) :=
   initial_of_exists_of_isCofiltered _
@@ -232,6 +234,7 @@ section LocallySmall
 
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation; use `Functor.Final.exists_coeq instead`. -/
 theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
@@ -247,6 +250,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
 
 end LocallySmall
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is filtered, then we can give an explicit condition for a functor `F : C ⥤ D` to
 be final. -/
 theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
@@ -415,6 +419,7 @@ section Pi
 
 variable {α : Type u₁} {I : α → Type u₂} [∀ s, Category.{v₂} (I s)]
 
+set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := by
   classical
@@ -428,6 +433,7 @@ instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := 
     rw [Function.update_self]
     simpa using coeq_condition _ _
 
+set_option backward.defeqAttrib.useBackward true in
 open IsCofiltered in
 instance initial_eval [∀ s, IsCofiltered (I s)] (s : α) : (Pi.eval I s).Initial := by
   classical

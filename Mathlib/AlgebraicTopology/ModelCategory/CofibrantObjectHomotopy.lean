@@ -222,6 +222,7 @@ noncomputable def HoCat.ιCompResolutionNatTrans :
     ext : 1
     exact HoCat.resolutionMap_fac f.hom)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (X : CofibrantObject C) :
     WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
@@ -317,6 +318,7 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
   have : F.IsEquivalence := E.isEquivalence_functor
   exact LocalizerMorphism.IsLocalizedEquivalence.mk' (localizerMorphism C) Lcof L F
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : CofibrantObject C) :
     IsCofibrant ((localizerMorphism C).functor.obj X) := by
   dsimp; infer_instance

@@ -36,6 +36,7 @@ instance (X : Type u) : Projective ((free R).obj X) where
     obtain ⟨s, hs⟩ := hp.hasRightInverse
     exact ⟨freeDesc (TypeCat.ofHom (fun x ↦ s (f (freeMk x)))), by cat_disch⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An `R`-module `M` can be functorially written as a quotient of a
 projective `R`-module. -/

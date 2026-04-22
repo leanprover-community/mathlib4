@@ -468,6 +468,7 @@ theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormu
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
   realize_restrictFreeVar _ (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :

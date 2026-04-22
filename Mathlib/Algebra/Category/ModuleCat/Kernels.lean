@@ -43,6 +43,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
 noncomputable

@@ -37,22 +37,26 @@ def opFunctor : SimplicialObject C ⥤ SimplicialObject C :=
 def opObjIso {X : SimplicialObject C} {n : SimplexCategoryᵒᵖ} :
     (opFunctor.obj X).obj n ≅ X.obj n := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctor_map_app {X Y : SimplicialObject C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
     (opFunctor.map f).app n = opObjIso.hom ≫ f.app n ≫ opObjIso.inv := by
   simp [opFunctor, opObjIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctor_obj_map (X : SimplicialObject C) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) :
     (opFunctor.obj X).map f =
       opObjIso.hom ≫ X.map (SimplexCategory.rev.map f.unop).op ≫ opObjIso.inv := by
   simp [opFunctor, opObjIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctor_obj_δ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
     (opFunctor.obj X).δ i = opObjIso.hom ≫ X.δ i.rev ≫ opObjIso.inv := by
   simp [SimplicialObject.δ]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctor_obj_σ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
     (opFunctor.obj X).σ i = opObjIso.hom ≫ X.σ i.rev ≫ opObjIso.inv := by
@@ -66,11 +70,13 @@ def opFunctorCompOpFunctorIso : opFunctor (C := C) ⋙ opFunctor ≅ 𝟭 _ :=
     ((Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op) ≪≫
     Functor.whiskeringLeftObjIdIso
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctorCompOpFunctorIso_hom_app_app (X : SimplicialObject C) (n : SimplexCategoryᵒᵖ) :
     (opFunctorCompOpFunctorIso.hom.app X).app n = opObjIso.hom ≫ opObjIso.hom := by
   simp [opFunctorCompOpFunctorIso, opObjIso, opFunctor]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma opFunctorCompOpFunctorIso_inv_app_app (X : SimplicialObject C) (n : SimplexCategoryᵒᵖ) :
     (opFunctorCompOpFunctorIso.inv.app X).app n = opObjIso.inv ≫ opObjIso.inv := by

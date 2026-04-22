@@ -75,6 +75,7 @@ noncomputable def shortComplex : ShortComplex (C ⥤ C) where
   f := Φ.ι
   g := Φ.π
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Mono Φ.shortComplex.f := by dsimp; infer_instance
 instance : Epi Φ.shortComplex.g := by dsimp; infer_instance
 

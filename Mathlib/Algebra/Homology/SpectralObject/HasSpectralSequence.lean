@@ -326,6 +326,7 @@ instance (E : SpectralObject C EInt) : E.HasSpectralSequence coreE₂Cohomologic
     exfalso
     exact hpq (pq - (r, 1 - r)) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     E.HasSpectralSequence (coreE₂CohomologicalFin l) where
   isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn hrr' hr := by

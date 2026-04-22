@@ -212,6 +212,7 @@ lemma eTruncLT_obj_map_eTruncLTι_app_eTruncLT_map_app
   rw [show homOfLE le_top = f ≫ homOfLE le_top by rfl]
   induction j using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
 `t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
@@ -220,6 +221,7 @@ noncomputable def eTriangleLTGE : EInt ⥤ C ⥤ Triangle C where
   obj i := Triangle.functorMk (t.eTruncLTι i) (t.eTruncGEπ i) (t.eTruncGEδLT.app i)
   map f := Triangle.functorHomMk _ _ (t.eTruncLT.map f) (𝟙 _) (t.eTruncGE.map f)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma eTriangleLTGE_distinguished (i : EInt) (X : C) :
     (t.eTriangleLTGE.obj i).obj X ∈ distTriang _ := by
   induction i using WithBotTop.rec with
@@ -404,6 +406,7 @@ noncomputable def eTruncLTLTIsoLT :
   haveI := t.isIso_eTruncLTLTIsoLT a b hab
   asIso (t.eTruncLTLTToLT a b)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTLTIsoLT_hom_inv_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) ≫
@@ -505,6 +508,7 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
       (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
   (t.eTruncLTGEIsoGELT a b).hom.naturality f
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
@@ -519,6 +523,7 @@ lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoGELT]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]

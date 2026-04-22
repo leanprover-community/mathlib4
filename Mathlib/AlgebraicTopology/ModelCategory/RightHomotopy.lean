@@ -61,6 +61,7 @@ def refl (f : X ⟶ Y) : P.RightHomotopy f f where
 
 variable {P}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `f` and `g` are homotopic relative to a pre-path object `P`, then `g` and `f`
 are homotopic relative to `P.symm` -/
 @[simps]
