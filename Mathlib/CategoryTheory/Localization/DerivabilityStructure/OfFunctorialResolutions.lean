@@ -48,9 +48,9 @@ variable {Φ i}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `Φ : LocalizerMorphism W₁ W₂` corresponds to a class `W₁` that is
-the inverse image of `W₂` by the functor `Φ.functor` and that we
-have functorial right resolutions, then this is a morphism of localizers
-in the other direction. -/
+the inverse image of `W₂` by the functor `Φ.functor`, if `W₂` has the
+two-out-of-three property, and if we have functorial right resolutions,
+then this is a morphism of localizers in the other direction. -/
 @[simps]
 def localizerMorphismInv [W₂.HasTwoOutOfThreeProperty] :
     LocalizerMorphism W₂ W₁ where
@@ -67,11 +67,10 @@ def localizerMorphismInv [W₂.HasTwoOutOfThreeProperty] :
 variable [Φ.functor.Full] [Φ.functor.Faithful]
 
 variable (i) in
-/-- If `Φ : LocalizerMorphism W₁ W₂` corresponds to a class `W₁` that is
-induced by `W₂` via the fully faithful functor `Φ.functor` and we
-have functorial right resolutions given by a functor `ρ : C₂ ⥤ C₁`, then
-this is the natural transformation `𝟭 C₁ ⟶ Φ.functor ⋙ ρ` induced
-by `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`. -/
+/-- If `Φ : LocalizerMorphism W₁ W₂` is such that `Φ.functor` is fully faithful
+and we have functorial right resolutions given by a functor `ρ : C₂ ⥤ C₁`,
+then this is the natural transformation `𝟭 C₁ ⟶ Φ.functor ⋙ ρ` induced by
+`i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`. -/
 noncomputable def ι : 𝟭 C₁ ⟶ Φ.functor ⋙ ρ :=
   ((whiskeringRight C₁ C₁ C₂).obj Φ.functor).preimage (whiskerLeft Φ.functor i)
 
