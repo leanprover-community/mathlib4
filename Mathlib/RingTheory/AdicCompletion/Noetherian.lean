@@ -108,9 +108,11 @@ lemma mem_map_algebraMap_reesAlgebra_iff (f : reesAlgebra I) :
     apply this
     simpa [pow_succ'] using h i
 
+/-- The canonical morphism from `reesAlgebra` to associated graded ring. -/
 noncomputable abbrev reesAlgebraToAssociatedGraded :=
   Ideal.Quotient.mk (I.map (algebraMap R (reesAlgebra I)))
 
+/-- The ideal `⨁ i, J ⊓ Iⁱ / J ⊓ Iⁱ⁺¹` corresponding to an ideal `J` of `R`. -/
 noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
     Ideal ((reesAlgebra I) ⧸ (I.map (algebraMap R (reesAlgebra I)))) :=
   ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
