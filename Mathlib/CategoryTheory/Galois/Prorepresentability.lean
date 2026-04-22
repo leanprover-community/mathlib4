@@ -23,7 +23,7 @@ groups of all Galois objects.
 ## Main definitions
 
 - `PointedGaloisObject`: the category of pointed Galois objects
-- `PointedGaloisObject.cocone`: a cocone on `(PointedGaloisObject.incl F).op ≫ coyoneda` with
+- `PointedGaloisObject.cocone`: a cocone on `(PointedGaloisObject.incl F).op ⋙ coyoneda` with
   point `F ⋙ FintypeCat.incl`.
 - `autGaloisSystem`: the system of automorphism groups indexed by the pointed Galois objects.
 
@@ -144,8 +144,8 @@ section Specialized
 
 variable (F : C ⥤ FintypeCat.{u₂})
 
-/-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
-This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
+/-- `F ⋙ FintypeCat.incl` as a cocone over `(incl F).op ⋙ coyoneda`.
+This is a colimit cocone (see `PointedGaloisObject.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
@@ -211,7 +211,7 @@ section Specialized
 variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- The diagram sending each pointed Galois object to its automorphism group
-as an object of `C`. -/
+as an object of `GrpCat`. -/
 @[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GrpCat.{u₂} where
   obj := fun A ↦ GrpCat.of <| Aut (A : C)
@@ -252,7 +252,7 @@ lemma AutGalois.ext {f g : AutGalois F}
 
 variable [FiberFunctor F]
 
-/-- `autGalois.π` is surjective for every pointed Galois object. -/
+/-- `AutGalois.π` is surjective for every pointed Galois object. -/
 theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
     Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
   have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
@@ -273,7 +273,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 `End F` is a group, hence `End F = Aut F`. The isomorphism is built in multiple steps:
 
 - `endEquivSectionsFibers : End F ≅ (incl F ⋙ F').sections`: the endomorphisms of
-  `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
+  `F` are isomorphic to the limit over `F.obj A` for all pointed Galois objects `A`.
   This is obtained as the composition (slightly simplified):
 
   `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ (incl F ⋙ F).sections`
@@ -286,7 +286,8 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GrpCat).sections`
 
-  which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
+  which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a pointed Galois object
+  `A`.
 
 -/
 
@@ -294,7 +295,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 local notation "F'" => F ⋙ FintypeCat.incl
 
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
-Galois objects. -/
+pointed Galois objects. -/
 noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
   let i1 : End F ≃ End F' :=
     (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).homEquiv
@@ -324,7 +325,7 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
+/-- Functorial isomorphism `Aut A ≅ F.obj A` for pointed Galois objects `A`. -/
 noncomputable def autIsoFibers :
     autGaloisSystem F ⋙ forget GrpCat ≅ incl F ⋙ F' :=
   NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
@@ -413,7 +414,7 @@ lemma autMulEquivAutGalois_symm_app (x : AutGalois F) (A : C) [IsGalois A] (a : 
 end EndAutGaloisIsomorphism
 
 /-- The `Aut F` action on the fiber of a Galois object is transitive. See
-`pretransitive_of_isConnected` for the same result for connected objects. -/
+`FiberFunctor.isPretransitive_of_isConnected` for the same result for connected objects. -/
 theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) := by
   refine ⟨fun x y ↦ ?_⟩
