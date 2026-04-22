@@ -14,15 +14,15 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 /-!
 # Codiscrete categories
 
-We define `Codiscrete A` as an alias for the type `A`,
-and use this type alias to provide a `Category` instance
+We define `Codiscrete A` as a wrapper for the type `A`,
+and use this wrapper to provide a `Category` instance
 whose Hom types are `Unit`.
 
 `Codiscrete.functor` promotes a function `f : C → A` (for any category `C`) to a functor
 `f : C ⥤ Codiscrete A`.
 
-Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed families of morphisms,
-or `I`-indexed families of isomorphisms to natural transformations or natural isomorphisms.
+Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` provide the unique natural
+transformation or natural isomorphism between functors into a codiscrete category.
 
 We define `functorToCat : Type u ⥤ Cat.{0,u}` which sends a type to the codiscrete category and show
 it is right adjoint to `Cat.objects`.
@@ -88,7 +88,7 @@ def natIso {F G : C ⥤ Codiscrete A} : F ≅ G where
   inv := natTrans
 
 /-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)} to
-  `Codiscrete.as ∘ F.obj`. -/
+  `functor (Codiscrete.as ∘ F.obj)`. -/
 @[simps!]
 def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ functor (Codiscrete.as ∘ F.obj) := Iso.refl _
 
