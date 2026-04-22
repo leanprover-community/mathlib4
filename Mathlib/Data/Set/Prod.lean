@@ -423,26 +423,36 @@ instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x
   h x.1 x.2
 
 @[simp]
-theorem range_diag : (range fun x => (x, x)) = diagonal α := by
+theorem range_diagMap : (range fun x : α => (x, x)) = diagonal α := by
   ext ⟨x, y⟩
   simp [diagonal, eq_comm]
 
+@[deprecated (since := "2026-04-22")]
+alias range_diag := range_diagMap
+
 theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := by
-  rw [← range_diag, range_subset_iff]
+  rw [← range_diagMap, range_subset_iff]
 
 @[simp]
 theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 
 @[simp]
-theorem diag_preimage_prod (s t : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
+theorem diagMap_preimage_prod (s t : Set α) : (fun x : α => (x, x)) ⁻¹' s ×ˢ t = s ∩ t :=
   rfl
 
-theorem diag_preimage_prod_self (s : Set α) : (fun x => (x, x)) ⁻¹' s ×ˢ s = s :=
+@[deprecated (since := "2026-04-22")]
+alias diag_preimage_prod := diagMap_preimage_prod
+
+theorem diagMap_preimage_prod_self (s : Set α) : (fun x : α => (x, x)) ⁻¹' s ×ˢ s = s :=
   inter_self s
 
+@[deprecated (since := "2026-04-22")]
+alias diag_preimage_prod_self := diagMap_preimage_prod_self
+
+@[deprecated "Use `diag_eq_sep_prod` (or `image_diag`) instead." (since := "2026-04-22")]
 theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×ˢ s := by
-  rw [← range_diag, ← image_preimage_eq_range_inter, diag_preimage_prod_self]
+  rw [← range_diagMap, ← image_preimage_eq_range_inter, diagMap_preimage_prod_self]
 
 theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
   simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
