@@ -100,7 +100,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The Pell sequences, i.e. the sequence of integer solutions to `x ^ 2 - d * y ^ 2 = 1`, where
 `d = a ^ 2 - 1`, defined together in mutual recursion. -/
---@[nolint dup_namespace]
+@[informal "solutions to Pell's equation"]
 def pell : ℕ → ℕ × ℕ
   | 0 => (1, 0)
   | n + 1 => ((pell n).1 * a + d a1 * (pell n).2, (pell n).1 + (pell n).2 * a)
@@ -764,6 +764,7 @@ theorem xy_modEq_of_modEq {a b c} (a1 : 1 < a) (b1 : 1 < b) (h : a ≡ b [MOD c]
         rw [yn_succ_succ a1, yn_succ_succ b1]
         exact (h.mul_left _).mul (xy_modEq_of_modEq _ _ h (n + 1)).right⟩
 
+@[informal "Matiyasevič's theorem"]
 theorem matiyasevic {a k x y} :
     (∃ a1 : 1 < a, xn a1 k = x ∧ yn a1 k = y) ↔
       1 < a ∧ k ≤ y ∧ (x = 1 ∧ y = 0 ∨

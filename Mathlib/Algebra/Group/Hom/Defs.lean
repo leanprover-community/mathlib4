@@ -362,7 +362,7 @@ you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
 -/
-@[to_additive]
+@[informal "group morphism", to_additive]
 structure MonoidHom (M : Type*) (N : Type*) [MulOne M] [MulOne N]
   extends OneHom M N, M →ₙ* N
 

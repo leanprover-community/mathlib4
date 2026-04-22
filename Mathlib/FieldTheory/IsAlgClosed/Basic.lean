@@ -58,7 +58,8 @@ variable (k : Type u) [Field k]
 /-- An algebraically closed field is one where every polynomial splits. Equivalently, all
 non-constant polynomials have a root. See `IsAlgClosed.exists_root` and
 `IsAlgClosed.of_exists_root`. -/
-@[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
+@[informal "algebraically closed field",
+stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
 

@@ -383,6 +383,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is an analytic manifold,
 modelled on the Euclidean space of dimension `n`. -/
+@[informal "sphere"]
 instance EuclideanSpace.instIsManifoldSphere
     {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     IsManifold (𝓡 n) ω (sphere (0 : E) 1) :=

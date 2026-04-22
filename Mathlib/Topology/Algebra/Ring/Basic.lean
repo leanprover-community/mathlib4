@@ -55,6 +55,7 @@ class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] :
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
 multiplication as it is multiplication with `-1`. (See `IsTopologicalSemiring.continuousNeg_of_mul`
 and `IsTopologicalSemiring.toIsTopologicalRing`) -/
+@[informal "topological ring"]
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
 

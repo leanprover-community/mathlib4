@@ -96,6 +96,7 @@ namespace QuadraticMap
 
 Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
 -/
+@[informal "polar form of a quadratic"]
 def polar (f : M → N) (x y : M) :=
   f (x + y) - f x - f y
 
@@ -160,6 +161,7 @@ section QuadraticForm
 variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A quadratic form on a module. -/
+@[informal "quadratic form"]
 abbrev QuadraticForm : Type _ := QuadraticMap R M R
 
 end QuadraticForm

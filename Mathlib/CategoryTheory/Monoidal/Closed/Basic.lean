@@ -42,6 +42,7 @@ class Closed {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] (X : C) wher
   adj : tensorLeft X ⊣ rightAdj
 
 /-- A monoidal category `C` is (right) monoidal closed if every object is (right) closed. -/
+@[informal "Cartesian closed"]
 class MonoidalClosed (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   closed (X : C) : Closed X := by infer_instance
 

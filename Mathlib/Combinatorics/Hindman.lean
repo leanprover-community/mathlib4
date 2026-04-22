@@ -208,8 +208,8 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
 
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts
 contains an FP-set. -/
-@[to_additive FS_partition_regular /-- The strong form of **Hindman's theorem**: in any finite
-cover of an FS-set, one the parts contains an FS-set. -/]
+@[to_additive (attr := informal "Hindman's theorem") FS_partition_regular /-- The strong form of
+**Hindman's theorem**: in any finite cover of an FS-set, one the parts contains an FS-set. -/]
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a

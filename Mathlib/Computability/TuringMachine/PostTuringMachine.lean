@@ -131,7 +131,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
   Both `Λ` and `Γ` are required to be inhabited; the default value
   for `Γ` is the "blank" tape value, and the default value of `Λ` is
   the initial state. -/
-@[nolint unusedArguments] -- this is a deliberate addition, see comment
+@[informal "Turing machine", nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
 deriving Inhabited

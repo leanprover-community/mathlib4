@@ -429,6 +429,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     gcongr
 
+@[informal "$A[X]$ has gcd and lcm if $A$ does"]
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by

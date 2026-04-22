@@ -46,7 +46,7 @@ open Set Encodable Function Equiv
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type*) where
+@[informal "sigma-algebra", class] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -489,7 +489,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
-@[fun_prop]
+@[informal "measurable function", fun_prop]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 

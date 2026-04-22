@@ -37,6 +37,7 @@ power maps `α → α` indexed by the natural numbers, implemented as
 `{ f : ℕ → M | ∀ n, f (n + 1) ^ p = f n }`.
 
 If `α` is a ring with characteristic `p` and `p` is prime, `Perfection α p` is also a ring. -/
+@[informal "perfection of a ring"]
 def Perfection (α : Type u₁) [Pow α ℕ] (p : ℕ) : Type u₁ :=
   { f : ℕ → α // ∀ n, f (n + 1) ^ p = f n }
 

@@ -26,8 +26,8 @@ variable {G G' : Type*} [Group G] [AddGroup G'] [DecidableEq G] [DecidableEq G']
 /-- The doubling constant `σₘ[A, B]` of two finsets `A` and `B` in a group is `|A * B| / |A|`.
 
 The notation `σₘ[A, B]` is available in scope `Combinatorics.Additive`. -/
-@[to_additive
-/-- The doubling constant `σ[A, B]` of two finsets `A` and `B` in a group is `|A + B| / |A|`.
+@[to_additive (attr := informal "doubling constant") /-- The doubling constant `σ[A, B]` of two
+finsets `A` and `B` in a group is `|A + B| / |A|`.
 
 The notation `σ[A, B]` is available in scope `Combinatorics.Additive`. -/]
 def mulConst (A B : Finset G) : ℚ≥0 := #(A * B) / #A

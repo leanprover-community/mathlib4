@@ -160,6 +160,7 @@ theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Int
 variable [Nontrivial α] [Fintype α] {s : Finset α}
 
 -- Note, this lemma is false when `α` has exactly one element and boring when `α` is empty.
+@[informal "Maximum size of an intersecting family"]
 theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     (∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t) ↔ 2 * #s = Fintype.card α := by
   classical

@@ -444,6 +444,7 @@ lemma boundary_product [I.Boundaryless] :
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
 /-- The manifold structure on `[x, y]` is smooth. -/
+@[informal "closed interval"]
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)

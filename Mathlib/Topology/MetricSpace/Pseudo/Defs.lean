@@ -364,6 +364,7 @@ namespace Metric
 variable {x y z : α} {δ ε ε₁ ε₂ : ℝ} {s : Set α}
 
 /-- `ball x ε` is the set of all points `y` with `dist y x < ε` -/
+@[informal "ball"]
 def ball (x : α) (ε : ℝ) : Set α :=
   { y | dist y x < ε }
 
@@ -745,6 +746,7 @@ theorem mem_uniformity_dist {s : Set (α × α)} :
 theorem dist_mem_uniformity {ε : ℝ} (ε0 : 0 < ε) : { p : α × α | dist p.1 p.2 < ε } ∈ 𝓤 α :=
   mem_uniformity_dist.2 ⟨ε, ε0, fun _ _ ↦ id⟩
 
+@[informal "uniformly continuous function"]
 theorem uniformContinuous_iff [PseudoMetricSpace β] {f : α → β} :
     UniformContinuous f ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃a b : α⦄, dist a b < δ → dist (f a) (f b) < ε :=
   uniformity_basis_dist.uniformContinuous_iff uniformity_basis_dist

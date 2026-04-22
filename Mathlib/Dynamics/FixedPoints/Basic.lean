@@ -115,6 +115,7 @@ theorem Injective.isFixedPt_apply_iff (hf : Injective f) {x : α} :
   ⟨fun h => hf h.eq, IsFixedPt.apply⟩
 
 /-- The set of fixed points of a map `f : α → α`. -/
+@[informal "fixed points"]
 def fixedPoints (f : α → α) : Set α :=
   { x : α | IsFixedPt f x }
 

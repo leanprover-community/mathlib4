@@ -95,6 +95,7 @@ instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
   ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
+@[informal "permutation group of a type"]
 abbrev Equiv.Perm (α : Sort*) :=
   Equiv α α
 

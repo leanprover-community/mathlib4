@@ -43,6 +43,7 @@ variable [Fintype α] [Fintype β]
 /-- The pigeonhole principle for finitely many pigeons and pigeonholes.
 This is the `Fintype` version of `Finset.exists_ne_map_eq_of_card_lt_of_maps_to`.
 -/
+@[informal "finite"]
 theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Fintype.card α) :
     ∃ x y, x ≠ y ∧ f x = f y :=
   let ⟨x, _, y, _, h⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ => mem_univ (f x)
@@ -83,6 +84,7 @@ many pigeons.
 
 See also: `Finite.exists_ne_map_eq_of_infinite`
 -/
+@[informal "infinite"]
 theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     ∃ y : β, Infinite (f ⁻¹' {y}) := by
   classical

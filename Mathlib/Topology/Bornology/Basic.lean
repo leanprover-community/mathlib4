@@ -48,6 +48,7 @@ variable {ι α β : Type*}
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
 and `Bornology.ext_iff_isBounded` -/
+@[informal "Bornology"]
 class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. -/
   cobounded (α) : Filter α

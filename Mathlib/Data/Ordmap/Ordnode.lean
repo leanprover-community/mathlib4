@@ -69,6 +69,7 @@ universe u
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
   The operations on this type maintain that the tree is balanced
   and correctly stores subtree sizes at each level. -/
+@[informal "size-balanced binary search tree"]
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α

@@ -170,7 +170,7 @@
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
   "Mathlib.Tactic.Spread",
-  "Mathlib.Tactic.StacksAttribute",
+  "Mathlib.Tactic.DatabaseAttributes",
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",

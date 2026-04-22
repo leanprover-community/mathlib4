@@ -71,7 +71,7 @@ open Set
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
-@[to_dual_dont_translate]
+@[informal "filter", to_dual_dont_translate]
 structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
@@ -318,6 +318,7 @@ def map (m : α → β) (f : Filter α) : Filter β where
 /-- `Filter.Tendsto` is the generic "limit of a function" predicate.
   `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`,
   the `f`-preimage of `a` is an `l₁` neighborhood. -/
+@[informal "limit of a map with respect to filters"]
 def Tendsto (f : α → β) (l₁ : Filter α) (l₂ : Filter β) :=
   l₁.map f ≤ l₂
 

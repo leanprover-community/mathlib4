@@ -74,6 +74,7 @@ public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.DSimpPercent
+public import Mathlib.Tactic.DatabaseAttributes
 public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
@@ -135,6 +136,7 @@ public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
 public import Mathlib.Tactic.InferParam
+public import Mathlib.Tactic.InformalAttr
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
@@ -288,7 +290,6 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Tactic.Subsingleton
 public import Mathlib.Tactic.Substs
 public import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -333,4 +334,5 @@ public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import Mathlib.Tactic.Widget.StringDiagram
 public import Mathlib.Tactic.WithoutCDot
+public import Mathlib.Tactic.ZBMathAttribute
 public import Mathlib.Tactic.Zify

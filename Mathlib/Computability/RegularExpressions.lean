@@ -44,6 +44,7 @@ set_option genInjectivity false in
 * `P + Q` (`plus P Q`) matches anything that matches `P` or `Q`
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
+@[informal "regular expression"]
 inductive RegularExpression (α : Type u) : Type u
   | zero : RegularExpression α
   | epsilon : RegularExpression α

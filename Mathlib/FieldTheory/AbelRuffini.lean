@@ -314,6 +314,7 @@ private theorem induction_step {x y z : E}
   refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨z, hz'⟩)⟩ (gal_mul_isSolvable hx' hy')
   infer_instance
 
+@[informal "Abel-Ruffini theorem (one direction)"]
 theorem isSolvable_gal_minpoly {x : E} (hx : x ∈ solvableByRad F E) :
     IsSolvable (minpoly F x).Gal := by
   induction hx using solvableByRad.induction with

@@ -34,7 +34,7 @@ section
 variable (G) (A)
 
 /-- A `Group` is simple when it has exactly two normal `Subgroup`s. -/
-@[mk_iff]
+@[informal "simple group", mk_iff]
 class IsSimpleGroup : Prop extends Nontrivial G where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤

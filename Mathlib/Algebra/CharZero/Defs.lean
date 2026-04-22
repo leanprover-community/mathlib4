@@ -39,6 +39,7 @@ from the natural numbers into it is injective.
   `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
   This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
 -/
+@[informal "characteristic zero"]
 class CharZero (R) [AddMonoidWithOne R] : Prop where
   /-- An additive monoid with one has characteristic zero if the canonical map `ℕ → R` is
   injective. -/

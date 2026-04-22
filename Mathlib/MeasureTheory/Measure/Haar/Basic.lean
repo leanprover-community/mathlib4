@@ -511,7 +511,7 @@ open haar
 variable [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
-@[to_additive
+@[informal "Haar measure on a locally compact Hausdorff group", to_additive
 /-- The Haar measure on the locally compact additive group `G`, scaled so that
 `addHaarMeasure K₀ K₀ = 1`. -/]
 noncomputable def haarMeasure (K₀ : PositiveCompacts G) : Measure G :=

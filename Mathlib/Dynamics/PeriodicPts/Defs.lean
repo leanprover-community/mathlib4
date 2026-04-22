@@ -196,6 +196,7 @@ theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
       rw [← comp_apply (f := f), comp_iterate_pred_of_pos f hn, hx.eq]⟩⟩
 
 /-- The set of periodic points of a map `f : α → α`. -/
+@[informal "periodic points"]
 def periodicPts (f : α → α) : Set α :=
   { x : α | ∃ n > 0, IsPeriodicPt f n x }
 

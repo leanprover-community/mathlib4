@@ -104,6 +104,7 @@ open ZMod
 
 /-- **The Law of Quadratic Reciprocity**: if `p` and `q` are distinct odd primes, then
 `(q / p) * (p / q) = (-1)^((p-1)(q-1)/4)`. -/
+@[informal "quadratic reciprocity"]
 theorem quadratic_reciprocity (hp : p ≠ 2) (hq : q ≠ 2) (hpq : p ≠ q) :
     legendreSym q p * legendreSym p q = (-1) ^ (p / 2 * (q / 2)) := by
   have hp₁ := (Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left hp

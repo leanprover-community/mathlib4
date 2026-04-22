@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.DatabaseAttributes
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen

@@ -189,6 +189,7 @@ variable [DecidableEq n] (b : Basis n R₁ M₁)
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
+@[informal "matrix representation"]
 noncomputable def LinearMap.BilinForm.toMatrix : BilinForm R₁ M₁ ≃ₗ[R₁] Matrix n n R₁ :=
   LinearMap.toMatrix₂ b b
 

@@ -46,6 +46,7 @@ variable {α : Type u} {β : α → Type v}
 /-- `AList β` is a key-value map stored as a `List` (i.e. a linked list).
   It is a wrapper around certain `List` functions with the added constraint
   that the list have unique keys. -/
+@[informal "key-value map"]
 structure AList (β : α → Type v) : Type max u v where
   /-- The underlying `List` of an `AList` -/
   entries : List (Sigma β)

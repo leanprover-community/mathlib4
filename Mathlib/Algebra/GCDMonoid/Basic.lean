@@ -239,6 +239,7 @@ theorem out_zero : (0 : Associates α).out = 0 := by
 
 end Associates
 
+set_option linter.globalAttributeIn false in
 /-- GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and
 `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd`
 and we derive the corresponding `lcm` facts from `gcd`.
@@ -260,6 +261,8 @@ class GCDMonoid (α : Type*) [CommMonoidWithZero α] extends IsCancelMulZero α 
   lcm_zero_left : ∀ a, lcm 0 a = 0
   /-- `0` is right-absorbing. -/
   lcm_zero_right : ∀ a, lcm a 0 = 0
+in attribute [informal "greatest common divisor"] GCDMonoid.gcd
+in attribute [informal "least common multiple"] GCDMonoid.lcm
 
 attribute [instance 100] GCDMonoid.toIsCancelMulZero
 

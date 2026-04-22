@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.DatabaseAttributes
 public import Mathlib.Tactic.TryThis
 
 /-!
@@ -230,7 +230,7 @@ specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallC
 -- https://github.com/leanprover/lean4/pull/12423, the morphism universe `v` would default to
 -- being a universe output parameter.
 -- See Note [universe output parameters and typeclass caching].
-@[univ_out_params, pp_with_univ, stacks 0014]
+@[informal "category", univ_out_params, pp_with_univ, stacks 0014]
 class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} obj where
   /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f := by cat_disch
@@ -265,6 +265,7 @@ abbrev LargeCategory (C : Type (u + 1)) : Type (u + 1) := Category.{u} C
 
 /-- A `SmallCategory` has objects and morphisms in the same universe level.
 -/
+@[informal "small category"]
 abbrev SmallCategory (C : Type u) : Type (u + 1) := Category.{u} C
 
 section

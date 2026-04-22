@@ -53,6 +53,7 @@ the first time `u` is in `s` after time `n` and before time `m` (if `u` does not
 after time `n` and before `m` then the hitting time is simply `m`).
 
 The hitting time is a stopping time if the process is strongly adapted and discrete. -/
+@[informal "hitting time"]
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s

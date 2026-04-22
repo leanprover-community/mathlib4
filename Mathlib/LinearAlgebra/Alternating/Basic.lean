@@ -65,6 +65,7 @@ variable (R M N ι)
 
 /-- An alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→ₗ[R] N`,
 is a multilinear map that vanishes when two of its arguments are equal. -/
+@[informal "alternating map"]
 structure AlternatingMap extends MultilinearMap R (fun _ : ι => M) N where
   /-- The map is alternating: if `v` has two equal coordinates, then `f v = 0`. -/
   map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → toFun v = 0

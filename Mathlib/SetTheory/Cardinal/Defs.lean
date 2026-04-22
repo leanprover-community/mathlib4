@@ -76,7 +76,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 /-- `Cardinal.{u}` is the type of cardinal numbers in `Type u`,
   defined as the quotient of `Type u` by existence of an equivalence
   (a bijection with explicit inverse). -/
-@[pp_with_univ]
+@[informal "cardinal", pp_with_univ]
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 

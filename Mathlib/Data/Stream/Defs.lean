@@ -21,6 +21,7 @@ universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
+@[informal "stream"]
 def Stream' (α : Type u) := ℕ → α
 
 namespace Stream'
