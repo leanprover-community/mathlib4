@@ -90,7 +90,9 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      have hj := ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      simp only [ι_colimitLimitToLimitColimit_π_apply] at hj
+      exact hj
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h
@@ -202,6 +204,9 @@ theorem colimitLimitToLimitColimit_surjective :
       nth_rw 2 [← Bifunctor.diagonal']
       simp only [← curry_obj_obj_map, ← curry_obj_obj_obj, comp_apply, colimit.w_apply]
       rw [e, ← limit.w_apply _ f, ← e]
+      change (ConcreteCategory.hom (colimit.ι ((curry.obj F).obj j) (k j) ≫
+          colimMap ((curry.obj F).map f))) (y j) = _
+      rw [ι_colimMap]
       simp [-curry_obj_obj_obj]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
@@ -311,12 +316,12 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq,
-        ι_colimitLimitToLimitColimit_π_apply]
-      generalize_proofs _ _ _ _ _ h
-      rw [← dsimp% e j, dsimp% Limit.π_mk _ _ h]
+      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq]
+      erw [ι_colimitLimitToLimitColimit_π_apply]
+      generalize_proofs p1 p2 p3 p4 p5 p6 p7
+      erw [Limit.π_mk (h := p6), ← e j]
       dsimp only [comp_obj, colim_obj, ← curry_obj_obj_obj]
-      rw [colimit_eq_iff]
+      erw [colimit_eq_iff]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
       simp
 
