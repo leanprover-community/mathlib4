@@ -30,6 +30,9 @@ def δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     { toFun j := ⟨j.val + i, by dsimp; grind [j.isLt]⟩
       monotone' _ _ := by grind }
 
+lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
+    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by dsimp; grind [j.isLt]⟩ := rfl
+
 @[simp]
 lemma δ₀Iter_zero (n : ℕ) :
     δ₀Iter 0 (add_zero n) = 𝟙 _ := rfl
@@ -37,9 +40,6 @@ lemma δ₀Iter_zero (n : ℕ) :
 @[simp]
 lemma δ₀Iter_one (n : ℕ) :
     δ₀Iter 1 (n := n) rfl = δ 0 := rfl
-
-lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
-    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by dsimp; grind [j.isLt]⟩ := rfl
 
 @[reassoc]
 lemma δ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + i = m := by grind) :
