@@ -24,7 +24,7 @@ of the complex `R.complex` and to make computations in the `Ext`-group.
   resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
   of cochain complexes `R.complex ⟶ R'.complex`; in this context,
   we should be able to compute the precomposition of an element
-  `R.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
+  `R'.extMk f m hm hf : Ext X' Y n` by `X ⟶ X'`.
 
 -/
 
@@ -132,8 +132,9 @@ lemma extEquivCohomologyClass_zero :
   R.extAddEquivCohomologyClass.map_zero
 
 /-- Given a projective resolution `R` of an object `X` of an abelian category,
-this is a constructor for elements in `Ext X Y n` which takes as an input
-a "cocycle" `f : R.cocomplex.X n ⟶ Y`. -/
+this is a constructor for elements in `Ext X Y n` from a morphism
+`f : R.complex.X n ⟶ Y` such that `R.complex.d m n ≫ f = 0`, where
+`hm : n + 1 = m`. -/
 noncomputable def extMk {n : ℕ} (f : R.complex.X n ⟶ Y) (m : ℕ) (hm : n + 1 = m)
     (hf : R.complex.d m n ≫ f = 0) :
     Ext X Y n :=
