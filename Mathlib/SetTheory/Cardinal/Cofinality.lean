@@ -164,6 +164,10 @@ theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
   simp [← not_lt]
 
 @[simp]
+theorem aleph0_le_cof [Nonempty α] [NoMaxOrder α] : ℵ₀ ≤ cof α := by
+  rw [aleph0_le_cof_iff]; exact one_lt_cof
+
+@[simp]
 theorem cof_eq_aleph0 [NoMaxOrder α] [Nonempty α] [Countable α] : cof α = ℵ₀ :=
   ((cof_le_cardinalMk _).trans mk_le_aleph0).antisymm (by simp)
 
