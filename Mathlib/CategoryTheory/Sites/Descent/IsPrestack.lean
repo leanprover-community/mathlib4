@@ -106,9 +106,12 @@ lemma pullHom_pullHom
   dsimp [pullHom]
   rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
-    F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
-    mapComp'_inv_naturality_assoc,
-      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
+    F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop)]
+  conv_lhs => rw [eqToHom_refl]
+  conv_lhs => rw [eqToHom_refl]
+  simp only [Category.id_comp, Category.comp_id]
+  rw [mapComp'_inv_naturality_assoc,
+    ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
 
 end LocallyDiscreteOpToCat
 
@@ -136,6 +139,7 @@ def presheafHomObjHomEquiv {M N : (F.obj (.mk (op S)))} :
   Iso.homCongr ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app M)
     ((Cat.Hom.toNatIso (F.mapId (.mk (op S)))).symm.app N)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Compatibility isomorphism of `Pseudofunctor.presheafHom` with "restrictions". -/
 def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
@@ -149,7 +153,8 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
       dsimp [pullHom]
-      simp only [Category.assoc, Functor.map_comp]
+      simp only [eqToHom_refl, Category.id_comp, Category.comp_id, Category.assoc,
+        Functor.map_comp]
       rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by
           simp only [← Quiver.Hom.comp_toLoc, ← op_comp, Over.w_assoc])])
