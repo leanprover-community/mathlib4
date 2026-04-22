@@ -63,7 +63,7 @@ variable (J) in
 `C` has conical limits of shape `J` if there exists a conical limit for every functor `F : J ⥤ C`.
 -/
 class HasConicalLimitsOfShape : Prop where
-  /-- All functors `F : J ⥤ C` from `J` have limits. -/
+  /-- All functors `F : J ⥤ C` from `J` have conical limits. -/
   hasConicalLimit : ∀ F : J ⥤ C, HasConicalLimit V F := by infer_instance
 
 attribute [instance] HasConicalLimitsOfShape.hasConicalLimit
@@ -83,8 +83,8 @@ class HasConicalLimitsOfSize : Prop where
 
 attribute [instance] HasConicalLimitsOfSize.hasConicalLimitsOfShape
 
-/-- `C` has all (small) conical limits if it has limits of every shape that is as big as its
-hom-sets. -/
+/-- `C` has all (small) conical limits if it has conical limits of every shape
+that is as big as its hom-sets. -/
 abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
@@ -107,7 +107,8 @@ lemma HasConicalLimit.of_iso {F G : J ⥤ C} [HasConicalLimit V F] (e : F ≅ G)
 instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F]
     (G : J' ⥤ J) [G.IsEquivalence] : HasConicalLimit V (G ⋙ F) where
 
-/-- If a `G ⋙ F` has a limit, and `G` is an equivalence, we can construct a limit of `F`. -/
+/-- If `G ⋙ F` has a conical limit, and `G` is an equivalence, we can construct a conical limit
+of `F`. -/
 lemma HasConicalLimit.of_equiv_comp (F : J ⥤ C) (G : J' ⥤ J) [G.IsEquivalence]
     [HasConicalLimit V (G ⋙ F)] : HasConicalLimit V F :=
   have e : G.inv ⋙ G ⋙ F ≅ F := G.asEquivalence.invFunIdAssoc F
