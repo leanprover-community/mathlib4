@@ -64,7 +64,7 @@ lemma preservesLimit_rightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [PreservesColimit
   preserves {_} hc :=
     ⟨isLimitConeRightOpOfCocone _ (isColimitOfPreserves F hc.op)⟩
 
-/-- If `F.rightOp : C ⥤ Dᵒᵖ` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` preserves colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ D`
 preserves limits of `K : J ⥤ Cᵒᵖ`. -/
 lemma preservesLimit_of_rightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [PreservesColimit K.leftOp F.rightOp] :
     PreservesLimit K F where
@@ -133,7 +133,7 @@ lemma preservesColimit_unop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesLi
   preserves {_} hc :=
     ⟨isColimitCoconeUnopOfCone _ (isLimitOfPreserves F hc.op)⟩
 
-/-- If `F.unop : C ⥤ D` preserves limits of `K.op : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves
+/-- If `F.unop : C ⥤ D` preserves limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves
 colimits of `K : J ⥤ Cᵒᵖ`. -/
 lemma preservesColimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesLimit K.leftOp F.unop] :
     PreservesColimit K F where
@@ -565,7 +565,7 @@ lemma reflectsLimit_rightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [ReflectsColimit K
   reflects {_} hc :=
     ⟨isLimitOfOp <| isColimitOfReflects F <| isColimitOfConeRightOpOfCocone _ hc⟩
 
-/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` reflects colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ D`
 reflects limits of `K : J ⥤ Cᵒᵖ`. -/
 lemma reflectsLimit_of_rightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [ReflectsColimit K.leftOp F.rightOp] :
     ReflectsLimit K F where
@@ -632,7 +632,7 @@ lemma reflectsColimit_unop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimi
     ReflectsColimit K F.unop where
   reflects {_} hc := ⟨isColimitOfOp (isLimitOfReflects F hc.op)⟩
 
-/-- If `F.unop : C ⥤ D` reflects limits of `K.op : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects
+/-- If `F.unop : C ⥤ D` reflects limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` reflects
 colimits of `K : J ⥤ Cᵒᵖ`. -/
 lemma reflectsColimit_of_unop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [ReflectsLimit K.leftOp F.unop] :
     ReflectsColimit K F where
