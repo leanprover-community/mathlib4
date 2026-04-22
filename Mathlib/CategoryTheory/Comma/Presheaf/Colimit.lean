@@ -33,9 +33,9 @@ local notation "E" => Equivalence.functor (overEquivPresheafCostructuredArrow A)
 local notation "E.obj" =>
   Functor.obj (Equivalence.functor (overEquivPresheafCostructuredArrow A))
 
-/-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`, where `Y` is the
-"Yoneda embedding" `CostructuredArrow.toOver yoneda A`. This is a relative version of
-`yonedaYonedaColimit`. -/
+/-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`, where
+`Y := CostructuredArrow.toOver yoneda A`. Via `overEquivPresheafCostructuredArrow A`, this
+corresponds to the Yoneda embedding. This is a relative version of `yonedaYonedaColimit`. -/
 noncomputable def CostructuredArrow.toOverCompYonedaColimit :
     (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F) ≅
     (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) := calc
