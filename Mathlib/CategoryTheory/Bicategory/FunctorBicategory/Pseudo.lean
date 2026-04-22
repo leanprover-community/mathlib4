@@ -19,6 +19,8 @@ We scope this instance to the `CategoryTheory.Pseudofunctor.StrongTrans` namespa
 potential future conflicts with other bicategory instances on `Pseudofunctor B C`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory.Pseudofunctor

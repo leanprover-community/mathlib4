@@ -22,6 +22,8 @@ For the fact that monads are "just" monoids in the category of endofunctors, see
 `CategoryTheory.Monad.EquivMon`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
