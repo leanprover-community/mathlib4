@@ -14,7 +14,7 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 In this file we introduce `TopPair`, the category of topological pairs. It is defined as the
 category of arrows in `TopCat` which are topological embeddings.
 
-We provide the inclusion and diagonal functors `TopCat` ⥤ `TopPair` and show that they are left and
+We provide the inclusion and diagonal functors `TopCat ⥤ TopPair` and show that they are left and
 right adjoint to the first projection functor, respectively.
 
 We also define for two morphisms of topological pairs `f, g : X ⟶ Y` the structure `Homotopy f g` of
@@ -71,12 +71,12 @@ lemma Hom.w {X Y : TopPair} (f : X ⟶ Y) :
 
 attribute [local simp] Hom.w_apply
 
-/-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
+/-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
 abbrev proj₁ : TopPair ⥤ TopCat :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
-/-- The functor from topological pairs to topological spaces that forgets the first space, ie. the
+/-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
 abbrev proj₂ : TopPair ⥤ TopCat :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
