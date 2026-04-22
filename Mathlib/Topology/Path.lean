@@ -698,21 +698,14 @@ theorem exists_partition_in_cover
       Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ j : ι,
         ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
-  -- Pull back the cover along γ to get an open cover of unitInterval
-  let V : ι → Set unitInterval := fun i => γ ⁻¹' (U i)
-  have hV_open : ∀ i, IsOpen (V i) := fun i => (hU_open i).preimage γ.continuous
-  have hV_cover : (Set.univ : Set unitInterval) ⊆ ⋃ i, V i := by
-    intro s _
-    obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hU_cover (Set.mem_range_self s))
-    exact Set.mem_iUnion.mpr ⟨i, hi⟩
+  -- Pull back the cover along `γ`; the result is an open cover of `unitInterval`.
   obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
-    exists_monotone_partition_unitInterval hV_open hV_cover
-  refine ⟨n, t, ht_mono, ht0, htn, ?_⟩
-  -- Each segment is in some U j
-  intro i
+    exists_monotone_partition_unitInterval
+      (fun i ↦ (hU_open i).preimage γ.continuous)
+      (fun s _ ↦ by rw [← Set.preimage_iUnion]; exact hU_cover ⟨s, rfl⟩)
+  refine ⟨n, t, ht_mono, ht0, htn, fun i ↦ ?_⟩
   obtain ⟨j, hj⟩ := ht_cover i
-  refine ⟨j, fun s hs => ?_⟩
-  exact hj ⟨hs.1, hs.2⟩
+  exact ⟨j, fun s hs ↦ hj ⟨hs.1, hs.2⟩⟩
 
 /-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
 has a neighborhood with property P, then there exists a partition such that each segment lies
@@ -723,18 +716,12 @@ theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → 
       Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
         ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
-  -- For each z, choose a neighborhood U z with property P
   choose U hU_open hU_mem hU_P using h
-  -- These form an open cover of the path's range
-  have h_cover : Set.range γ ⊆ ⋃ z : Set.range γ, U z.val z.property := by
-    intro w hw
-    exact Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩
-  -- Apply the cover version
   obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
-    exists_partition_in_cover (fun z : Set.range γ => U z.val z.property)
-      (fun z => hU_open z.val z.property) γ h_cover
-  refine ⟨n, t, h_mono, h_start, h_end, ?_⟩
-  intro i
+    exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
+      (fun z ↦ hU_open z.val z.property) γ
+      (fun w hw ↦ Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩)
+  refine ⟨n, t, h_mono, h_start, h_end, fun i ↦ ?_⟩
   obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
   exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
 
