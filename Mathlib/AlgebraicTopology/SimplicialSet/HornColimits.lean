@@ -129,12 +129,12 @@ end horn₂₂
 
 namespace horn
 
-variable {n : ℕ} (i : Fin (n + 1))
+variable {n : ℕ}
 
 /-- The multicoequalizer diagram which expresses `Λ[n, i]` as a gluing
 of all `1`-codimensional faces of the standard simplex but one
 along suitable `2`-codimensional faces. -/
-lemma multicoequalizerDiagram :
+lemma multicoequalizerDiagram (i : Fin (n + 1)) :
     Subcomplex.MulticoequalizerDiagram Λ[n, i]
       (ι := ({i}ᶜ : Set (Fin (n + 1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
       (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
@@ -146,10 +146,102 @@ lemma multicoequalizerDiagram :
 
 /-- The horn is a multicoequalizer of all `1`-codimensional faces of the
 standard simplex but one along suitable `2`-codimensional faces. -/
-noncomputable def isColimit :
+noncomputable def isColimit (i : Fin (n + 1)) :
     IsColimit ((multicoequalizerDiagram i).multicofork.toLinearOrder.map
       Subcomplex.toSSetFunctor) :=
   (multicoequalizerDiagram i).isColimit'
+
+variable {X : SSet.{u}}
+
+lemma hom_ext' {i : Fin (n + 2)} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
+    (h : ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ f = horn.ι i j hj ≫ g) :
+    f = g := by
+  refine Multicofork.IsColimit.hom_ext  (isColimit i) (fun ⟨j, hj⟩ ↦ ?_)
+  simpa only [faceSingletonComplIso_inv_ι_assoc] using
+    (stdSimplex.faceSingletonComplIso j).inv ≫= h j hj
+
+/-- Let `i : Fin (n + 2)`. This is the condition that a family of morphisms
+`Δ[n] ⟶ X` for `j ≠ i` are the "faces" of a morphism  `Λ[n + 1, i] ⟶ X`. -/
+protected def IsCompatible
+    {i : Fin (n + 2)} (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X) : Prop := by
+  match n with
+  | 0 => exact True
+  | n + 1 => exact ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
+      stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+      stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk
+
+@[simp]
+lemma isCompatible_iff_true {i : Fin 2} (f : ∀ (j : Fin 2) (_ : j ≠ i), Δ[0] ⟶ X) :
+    horn.IsCompatible f ↔ True := Iff.rfl
+
+@[simp]
+lemma isCompatible_iff
+    {i : Fin (n + 3)} (f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), Δ[n + 1] ⟶ X) :
+    horn.IsCompatible f ↔
+    ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
+      stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+      stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk := Iff.rfl
+
+namespace IsCompatible
+
+lemma of_hom {i : Fin (n + 2)} (g : (Λ[n + 1, i] : SSet) ⟶ X) :
+    horn.IsCompatible (fun j hj ↦ horn.ι i j hj ≫ g) := by
+  obtain _ | n := n
+  · simp
+  · simp only [isCompatible_iff, ← Category.assoc]
+    intro j k hj hk hjk
+    congr 1
+    obtain ⟨j, rfl⟩ := j.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hjk)
+    obtain ⟨k, rfl⟩ := k.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hjk)
+    rw [← cancel_mono (Subcomplex.ι _), Category.assoc, Category.assoc, ι_ι, ι_ι,
+      Fin.pred_succ, Fin.castPred_castSucc, stdSimplex.δ_comp_δ (by grind)]
+
+lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (Δ[n + 1] : SSet) ⟶ X}
+    (hf : horn.IsCompatible f)
+    (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k) :
+    stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
+    stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk :=
+  hf j k hj hk hjk
+
+variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
+
+open stdSimplex in
+/-- Auxiliary definition for `horn.IsCompatible.desc`. -/
+def multicofork (hf : horn.IsCompatible f) :
+    Multicofork ((multicoequalizerDiagram i).multispanIndex.toLinearOrder.map
+      (Subcomplex.toSSetFunctor)) :=
+  Multicofork.ofπ _ X (fun ⟨j, hj⟩ ↦ (stdSimplex.faceSingletonComplIso j).inv ≫ f j hj) (by
+    obtain _ | n := n
+    · rintro ⟨⟨a, b⟩, hab⟩
+      grind
+    · rintro ⟨⟨⟨a, ha⟩, ⟨b, hb⟩⟩, hab : a < b⟩
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at ha hb
+      dsimp
+      rw [homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred_assoc _ _ hab,
+        homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred_assoc _ _ hab,
+        hf.δ_pred_comp _ _ _ _ hab])
+
+lemma exists_desc (hf : horn.IsCompatible f) :
+    ∃ (φ : (Λ[n + 1, i] : SSet) ⟶ X),
+      ∀ (j : Fin (n + 2)) (hj : j ≠ i), horn.ι i j hj ≫ φ = f j hj :=
+  ⟨(horn.isColimit.{u} i).desc hf.multicofork, fun j hj ↦ by
+    rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).inv]
+    simpa using (horn.isColimit.{u} i).fac hf.multicofork (.right ⟨j, hj⟩)⟩
+
+/-- Let `i : Fin (n + 2)`. Given a compatible family of morphisms `Δ[n] ⟶ X` for `j ≠ i`,
+this is the glued morphism `Λ[n + 1, i] ⟶ X`. -/
+@[no_expose]
+noncomputable def desc (hf : horn.IsCompatible f) :
+    (Λ[n + 1, i] : SSet) ⟶ X :=
+  hf.exists_desc.choose
+
+@[reassoc (attr := simp)]
+lemma ι_desc (hf : horn.IsCompatible f) (j : Fin (n + 2))
+    (hj : j ≠ i) :
+    horn.ι i j hj ≫ hf.desc = f j hj :=
+  hf.exists_desc.choose_spec j hj
+
+end IsCompatible
 
 end horn
 
