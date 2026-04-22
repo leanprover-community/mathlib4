@@ -34,7 +34,7 @@ associated prefunctors between the hom types are all functors. In other words, i
 * `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
-`mkOfHomFunctor`: constructs a `PrelaxFunctor` from a map on objects and functors between the
+`mkOfHomFunctors`: constructs a `PrelaxFunctor` from a map on objects and functors between the
 corresponding hom types.
 
 -/
@@ -53,8 +53,9 @@ variable (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)
 variable (C : Type u₂) [Quiver.{v₂} C] [∀ a b : C, Quiver.{w₂} (a ⟶ b)]
 variable {D : Type u₃} [Quiver.{v₃} D] [∀ a b : D, Quiver.{w₃} (a ⟶ b)]
 
-/-- A `PrelaxFunctorStruct` between bicategories consists of functions between objects,
-1-morphisms, and 2-morphisms. This structure will be extended to define `PrelaxFunctor`.
+/-- A `PrelaxFunctorStruct` between quivers equipped with quivers on their hom-types consists of
+functions between objects, 1-morphisms, and 2-morphisms. This structure will be extended to define
+`PrelaxFunctor`.
 -/
 structure PrelaxFunctorStruct extends Prefunctor B C where
   /-- The action of a lax prefunctor on 2-morphisms. -/
