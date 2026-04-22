@@ -248,7 +248,6 @@ variable (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
   (f g : A →ₐ[R] B)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private def AlgHom.tensorEqualizerAux :
     T ⊗[R] AlgHom.equalizer f g →ₗ[S]
@@ -258,7 +257,6 @@ private def AlgHom.tensorEqualizerAux :
 
 private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
@@ -268,7 +266,6 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerAux S T f g (x * y) =
@@ -278,7 +275,6 @@ private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g
   rw [AlgHom.coe_tensorEqualizerAux]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The canonical map `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)`. -/
@@ -289,15 +285,12 @@ def AlgHom.tensorEqualizer :
   AlgHom.ofLinearMap (AlgHom.tensorEqualizerAux S T f g)
     rfl (AlgHom.tensorEqualizerAux_mul S T f g)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizer S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `T` is `R`-flat, the canonical map
@@ -309,15 +302,12 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
     rfl (AlgHom.tensorEqualizerAux_mul S T f g)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
     (x : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerEquiv S T f g x = AlgHom.tensorEqualizer S T f g x :=
   rfl
 
-#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
-set_option maxHeartbeats 400000 in -- see note
 variable (R A) in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /--

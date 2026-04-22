@@ -230,7 +230,6 @@ alias _root_.ZFSet.isOrdinal_iff_isTrichotomous := _root_.ZFSet.isOrdinal_iff_tr
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
-  trans := h.isTrans.1
   trichotomous := h.trichotomous.1
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
@@ -322,7 +321,6 @@ theorem mem_toZFSet_iff {o : Ordinal} {x : ZFSet} : x ∈ o.toZFSet ↔ ∃ a < 
 theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o :=
   rank_toPSet o
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_toZFSet {o : Ordinal} : o.toZFSet = toZFSet '' Iio o := by
   ext
@@ -370,7 +368,7 @@ theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o)
 
 @[simp]
 theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
-  simpa [← coe_toZFSet, cardinalMk_coe_sort, mk_Iio_ordinal, ← lift_card] using
+  simpa [← coe_toZFSet, cardinalMk_coe_sort, Cardinal.mk_Iio_ordinal, ← lift_card] using
     Cardinal.mk_image_eq (s := Iio o) toZFSet_injective
 
 end Ordinal

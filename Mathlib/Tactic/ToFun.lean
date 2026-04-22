@@ -37,11 +37,11 @@ Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarat
 syntax (name := to_fun) "to_fun" optAttrArg : attr
 
 def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name := do
-  let `(attr| to_fun $optAttr) := stx | throwUnsupportedSyntax
+  let `(attr| to_fun%$tk $optAttr) := stx | throwUnsupportedSyntax
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
   let tgt := (src.appendBefore "fun_")
-  MetaM.run' <| addRelatedDecl src tgt stx optAttr
+  MetaM.run' <| addRelatedDecl src tgt tk optAttr
     (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
     fun value levels => do
     let type ← inferType value

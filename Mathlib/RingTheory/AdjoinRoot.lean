@@ -68,11 +68,7 @@ section CommRing
 
 variable [CommRing R] (f g : R[X])
 
-instance instCommRing : CommRing (AdjoinRoot f) :=
-  Ideal.Quotient.commRing _
-
-instance : Inhabited (AdjoinRoot f) :=
-  ⟨0⟩
+deriving instance CommRing, Inhabited for AdjoinRoot
 
 instance : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
@@ -97,10 +93,10 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 
 instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
-  Submodule.Quotient.instSMul' _
+  inferInstanceAs <| SMul S (_ ⧸ _)
 
 instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
-  Submodule.Quotient.distribSMul' _
+  inferInstanceAs <| DistribSMul S (_ ⧸ _)
 
 @[simp]
 theorem smul_mk [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R[X]) :
@@ -113,25 +109,25 @@ theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
 instance (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [IsScalarTower R₁ R₂ R] (f : R[X]) :
     IsScalarTower R₁ R₂ (AdjoinRoot f) :=
-  Submodule.Quotient.isScalarTower _ _
+  inferInstanceAs <| IsScalarTower R₁ R₂ (_ ⧸ _)
 
 instance (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [SMulCommClass R₁ R₂ R] (f : R[X]) :
     SMulCommClass R₁ R₂ (AdjoinRoot f) :=
-  Submodule.Quotient.smulCommClass _ _
+  inferInstanceAs <| SMulCommClass R₁ R₂ (_ ⧸ _)
 
 instance isScalarTower_right [DistribSMul S R] [IsScalarTower S R R] :
     IsScalarTower S (AdjoinRoot f) (AdjoinRoot f) :=
-  Ideal.Quotient.isScalarTower_right
+  inferInstanceAs <| IsScalarTower S (_ ⧸ _) (_ ⧸ _)
 
 instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
-  Submodule.Quotient.distribMulAction' _
+  inferInstanceAs <| DistribMulAction S (_ ⧸ _)
 
 /-- `R[x]/(f)` is `R`-algebra -/
 @[stacks 09FX "second part"]
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
-  Ideal.Quotient.algebra S
+  inferInstanceAs <| Algebra S (_ ⧸ _)
 
 /- TODO : generalise base ring -/
 /-- `R`-algebra homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
@@ -152,11 +148,12 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
   rfl
 
 instance finiteType [CommSemiring S] [Algebra S R] [FiniteType S R] :
-    FiniteType S (AdjoinRoot f) := by
-  unfold AdjoinRoot; infer_instance
+    FiniteType S (AdjoinRoot f) :=
+  inferInstanceAs <| FiniteType S (_ ⧸ (_ : Ideal R[X]))
 
 instance finitePresentation [CommRing S] [Algebra S R] [FinitePresentation S R] :
-    FinitePresentation S (AdjoinRoot f) := .quotient (Submodule.fg_span_singleton f)
+    FinitePresentation S (AdjoinRoot f) :=
+  .quotient (Submodule.fg_span_singleton f)
 
 /-- The adjoined root. -/
 def root : AdjoinRoot f :=
@@ -329,18 +326,6 @@ end
 section deprecated
 variable (f) [Algebra R S]
 
-/-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
-a root of `f` in `S`. -/
-@[deprecated liftAlgHom (since := "2025-10-10")]
-def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
-  liftAlgHom _ _ x hfx
-
-set_option linter.deprecated false in
-@[deprecated toRingHom_liftAlgHom (since := "2025-10-10")]
-theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
-    (liftHom f x hfx : AdjoinRoot f →+* S) = lift (algebraMap R S) x hfx :=
-  rfl
-
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
   have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
@@ -352,28 +337,6 @@ theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
   ext
   simp
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_eq_algHom (since := "2025-10-10")]
-theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
-    liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := liftAlgHom_eq_algHom ..
-
-variable (hfx : aeval a f = 0)
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_mk (since := "2025-10-10")]
-theorem liftHom_mk {g : R[X]} : liftAlgHom f _ a hfx (mk f g) = aeval a g :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_root (since := "2025-10-10")]
-theorem liftHom_root : liftHom f a hfx (root f) = a :=
-  lift_root hfx
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_of (since := "2025-10-10")]
-theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
-  lift_of hfx
 
 end deprecated
 
@@ -400,7 +363,6 @@ theorem isDomain_of_prime (hf : Prime f) : IsDomain (AdjoinRoot f) :=
   (Ideal.Quotient.isDomain_iff_prime (span {f} : Ideal R[X])).mpr <|
     (Ideal.span_singleton_prime hf.ne_zero).mpr hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f)
     (hf' : f.degree ≠ 0) : IsTorsionFree R (AdjoinRoot f) :=
   haveI := isDomain_of_prime hf
@@ -466,9 +428,9 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
   .ofAlgHom
     (mapAlgHom f p q h.symm.dvd)
     (mapAlgHom f.symm q p <| by
-      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
+      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+        .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using map_dvd f.symm.toRingHom h.dvd)
     (by ext <;> simp) (by ext <;> simp)
 
@@ -477,9 +439,9 @@ def mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h : Associated (p.map
 
 @[simp] lemma symm_mapAlgEquiv (f : S ≃ₐ[R] T) (p : S[X]) (q : T[X]) (h) :
     (mapAlgEquiv f p q h).symm = mapAlgEquiv f.symm q p (by
-      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/pull/21031
-      have : (RingHomClass.toRingHom <| (RingEquivClass.toRingEquiv f).symm).comp
-          (RingHomClass.toRingHom f) = .id S := by ext; exact f.symm_apply_apply _
+      -- FIXME: Coercion hell. See https://github.com/leanprover-community/mathlib4/issues/31365.
+      have : (RingHomClass.toRingHom f.toRingEquiv.symm).comp (RingHomClass.toRingHom f) =
+        .id S := by ext; exact f.symm_apply_apply _
       simpa [Polynomial.map_map, this] using associated_map_map f.symm.toRingHom h.symm) := rfl
 
 variable (R) in
@@ -536,11 +498,6 @@ lemma algEquivOfEq_toAlgHom (f g : S[X]) (hfg) :
 lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = root g := by
   rw [coe_algEquivOfEq, algHomOfDvd_root]
 
-@[deprecated (since := "2025-10-10")] alias algHomOfDvd_apply_root := algHomOfDvd_root
-@[deprecated (since := "2025-10-10")] alias algEquivOfEq_apply_root := algEquivOfEq_root
-@[deprecated (since := "2025-10-10")]
-alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
-
 end CommRing
 
 section Irreducible
@@ -551,7 +508,7 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 
 noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
-  Quotient.groupWithZero (span {f} : Ideal K[X])
+  fast_instance% Quotient.groupWithZero (span {f} : Ideal K[X])
 
 /-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field -/
 @[stacks 09FX "first part, see also 09FI"]
@@ -601,7 +558,6 @@ variable [CommRing R] {g : R[X]}
 theorem isIntegral_root' (hg : g.Monic) : IsIntegral R (root g) :=
   ⟨g, hg, eval₂_root g⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
 This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_leftInverse`. -/
@@ -624,7 +580,6 @@ theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicH
 theorem mk_surjective : Function.Surjective (mk g) :=
   Ideal.Quotient.mk_surjective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
 def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
@@ -652,14 +607,12 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
 -- This lemma could be autogenerated by `@[simps]` but unfortunately that would require
 -- unfolding that causes a timeout.
 -- This lemma should have the simp tag but this causes a lint issue.
-set_option backward.isDefEq.respectTransparency false in
 theorem powerBasisAux'_repr_symm_apply (hg : g.Monic) (c : Fin g.natDegree →₀ R) :
     (powerBasisAux' hg).repr.symm c = mk g (∑ i : Fin _, monomial i (c i)) :=
   rfl
 
 -- This lemma could be autogenerated by `@[simps]` but unfortunately that would require
 -- unfolding that causes a timeout.
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem powerBasisAux'_repr_apply_to_fun (hg : g.Monic) (f : AdjoinRoot g) (i : Fin g.natDegree) :
     (powerBasisAux' hg).repr f i = (modByMonicHom hg f).coeff ↑i :=
@@ -683,11 +636,9 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
       have := Finset.mem_univ i
       contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Polynomial.Monic.free_adjoinRoot (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
   .of_basis (powerBasis' hg).basis
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Polynomial.Monic.finite_adjoinRoot (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
   .of_basis (powerBasis' hg).basis
 
@@ -724,7 +675,6 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
     · exact q_monic.ne_zero
   · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
 def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := by
@@ -783,7 +733,6 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 
 open Algebra Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
 If `R` is an integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
@@ -793,7 +742,6 @@ def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S)
 
 variable {R x}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Minpoly.coe_toAdjoin :
     ⇑(Minpoly.toAdjoin R x) = liftAlgHom (minpoly R x) (Algebra.ofId R <| adjoin R {x})
@@ -1045,12 +993,12 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
                         (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
-                  (by rw [Ideal.map_map, AlgEquiv.toRingEquiv_eq_coe,
+                  (by rw [Ideal.map_map,
                       ← AlgEquiv.coe_ringHom_commutes, ← AdjoinRoot.algebraMap_eq,
                       AlgHom.comp_algebraMap]))
                 (algebraMap R (S ⧸ I.map (algebraMap R S)) x) = algebraMap R _ x from fun x => by
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
-                    RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
+                    RingHom.toFun_eq_coe, Ideal.quotientMap_mk,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
                     Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 
@@ -1086,7 +1034,6 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `p : R[X]` is monic, then there exists a finite free extension of `R` that splits `p`. -/
 lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :

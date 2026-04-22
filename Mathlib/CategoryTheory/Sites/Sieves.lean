@@ -39,11 +39,8 @@ variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A predicate on arrows with codomain `X`. -/
 def Presieve (X : C) :=
-  ∀ ⦃Y⦄, (Y ⟶ X) → Prop -- deriving CompleteLattice
-
-instance : CompleteLattice (Presieve X) := by
-  dsimp [Presieve]
-  infer_instance
+  ∀ ⦃Y⦄, (Y ⟶ X) → Prop
+deriving CompleteLattice, Inhabited
 
 @[simp]
 lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
@@ -54,9 +51,6 @@ lemma bot_apply (f : Y ⟶ X) : (⊥ : Presieve X) f ↔ False :=
   .rfl
 
 namespace Presieve
-
-noncomputable instance : Inhabited (Presieve X) :=
-  ⟨⊤⟩
 
 /-- The full subcategory of the over category `C/X` consisting of arrows which belong to a
     presieve on `X`. -/
@@ -122,8 +116,6 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
 /-- The singleton presieve. -/
 inductive singleton : Presieve X
   | mk : singleton f
-
-@[deprecated (since := "2025-08-22")] alias singleton' := singleton
 
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
@@ -320,9 +312,6 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
 class HasPairwisePullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
-
-@[deprecated (since := "2025-08-28")]
-alias hasPullbacks := HasPairwisePullbacks
 
 instance (R : Presieve X) [HasPullbacks C] : R.HasPairwisePullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
@@ -1134,7 +1123,6 @@ lemma functorPullback_functorPushforward_eq {X : C} {S : Sieve X} [F.Full] [F.Fa
     Sieve.functorPullback F (Sieve.functorPushforward F S) = S :=
   (Sieve.fullyFaithfulFunctorGaloisCoinsertion _ _).u_l_eq _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorPushforward_functor (S : Sieve X) (e : C ≌ D) :
     S.functorPushforward e.functor = (S.pullback (e.unitInv.app X)).functorPullback e.inverse := by
   ext Y iYX
@@ -1196,36 +1184,40 @@ lemma functorPushforward_ofObjects_le
 end Functor
 
 /-- A sieve induces a presheaf. -/
-@[simps]
+@[simps obj map]
 def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
   obj Y := { g : Y.unop ⟶ X // S g }
-  map f g := ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
+  map f := TypeCat.ofHom fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
 
 /-- If a sieve S is contained in a sieve T, then we have a morphism of presheaves on their induced
 presheaves.
 -/
 @[simps]
-def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where app _ f := ⟨f.1, h _ f.2⟩
+def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where
+  app _ := TypeCat.ofHom fun f ↦ ⟨f.1, h _ f.2⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
-def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app _ f := f.1
+def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where
+  app _ := TypeCat.ofHom (fun f ↦ f.1)
 
 /-- Any component `f : Y ⟶ X` of the sieve `S` induces a natural transformation from `yoneda.obj Y`
 to the presheaf induced by `S`. -/
 @[simps]
 def toFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) : yoneda.obj Y ⟶ S.functor where
-  app Z g := ⟨g ≫ f, S.downward_closed hf g⟩
+  app Z := TypeCat.ofHom fun g ↦ ⟨g ≫ f, S.downward_closed hf g⟩
 
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
   rfl
 
+open ConcreteCategory
+
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
-    simpa [Subtype.ext_iff] using congr_fun (NatTrans.congr_app h Y) y⟩
+    simpa [Subtype.ext_iff] using congr_hom (NatTrans.congr_app h Y) y⟩
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of
@@ -1237,7 +1229,6 @@ def sieveOfSubfunctor {R} (f : R ⟶ yoneda.obj X) : Sieve X where
   downward_closed := by
     rintro Y Z _ ⟨t, rfl⟩ g
     refine ⟨R.map g.op t, ?_⟩
-    rw [FunctorToTypes.naturality _ _ f]
     simp
 
 theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusion = S := by
@@ -1250,17 +1241,17 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ => TypeCat.ofHom fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
-abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type max w v₁ :=
+abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
   S.functor ⋙ CategoryTheory.uliftFunctor
 
 /-- A variant of `Sieve.natTransOfLe` with universe lifting. -/
 @[simps]
 def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
     Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
-  app _ f := ⟨f.down.1, h _ f.down.2⟩
+  app _ := TypeCat.ofHom fun f ↦ ⟨f.down.1, h _ f.down.2⟩
 
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
@@ -1272,7 +1263,7 @@ def uliftFunctorInclusion (S : Sieve X) :
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
     uliftYoneda.obj.{w} Y ⟶ Sieve.uliftFunctor.{w} S where
-  app Z g := ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+  app Z := TypeCat.ofHom fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=
@@ -1284,24 +1275,25 @@ instance uliftFunctorInclusion_is_mono (S : Sieve X) :
   ⟨fun _ _ h => by
     ext Y y
     refine ULift.ext _ _ (Subtype.ext_iff.2 ?_)
-    simpa using congr_fun (NatTrans.congr_app h Y) y⟩
+    simpa using congr_hom (NatTrans.congr_app h Y) y⟩
 
 /-- A variant of `Sieve.sieveOfSubfunctor` with universe lifting. -/
 @[simps]
-def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type max w v₁} (f : R ⟶ uliftYoneda.obj.{w} X) :
+def sieveOfUliftSubfunctor {R : Cᵒᵖ ⥤ Type (max w v₁)} (f : R ⟶ uliftYoneda.obj.{w} X) :
     Sieve X where
   arrows Y g := ∃ t, f.app (Opposite.op Y) t = { down := g }
   downward_closed := by
     intro Y Z _ ⟨t, ht⟩ g
     refine ⟨R.map g.op t, ?_⟩
-    simp [FunctorToTypes.naturality _ _ f, ht]
+    simp [ht]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
     Sieve.sieveOfUliftSubfunctor.{w} (S.uliftFunctorInclusion) = S := by
   cat_disch
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
-  ⟨⟨{ app := fun _ a => ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ ↦ TypeCat.ofHom fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
@@ -1325,7 +1317,6 @@ def shrinkFunctor [LocallySmall.{w} C] {X : C} (S : Sieve X) :
     simpa [shrinkYonedaObjObjEquiv_obj_map] using S.downward_closed hf _
 
 variable (S) in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Sieve.shrinkFunctor` is compatible with universe lifting. -/
 noncomputable
 def shrinkFunctorUliftFunctorIso [LocallySmall.{w} C] [LocallySmall.{max w' w} C] :
@@ -1353,7 +1344,7 @@ lemma shrinkFunctorUliftFunctorIso_inv_ι [LocallySmall.{w} C] [LocallySmall.{ma
 
 variable (S) in
 /-- Shrinking does nothing for the same universe level. -/
-@[simps!]
+@[simps! hom_app inv_app]
 noncomputable def shrinkFunctorIsoFunctor : (shrinkFunctor.{v₁} S).toFunctor ≅ S.functor :=
   NatIso.ofComponents (fun Y ↦ Equiv.toIso <| Equiv.subtypeEquiv shrinkYonedaObjObjEquiv (by simp))
     fun {U V} f ↦ by
