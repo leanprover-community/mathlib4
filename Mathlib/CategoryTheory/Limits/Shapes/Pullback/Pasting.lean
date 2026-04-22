@@ -353,7 +353,7 @@ variable {Y₃ Y₂ Y₁ X₃ : C} {g₂ : Y₃ ⟶ Y₂} {g₁ : Y₂ ⟶ Y₁}
 variable (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂)
   (hi₂ : i₂ = t₁.inl)
 
-/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
+/-- The `PushoutCocone` obtained by pasting two `PushoutCocone`'s vertically -/
 abbrev PushoutCocone.pasteVert
     (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂) (hi₂ : i₂ = t₁.inl) :
     PushoutCocone (g₂ ≫ g₁) i₃ :=
