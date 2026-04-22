@@ -14,8 +14,8 @@ public import Mathlib.Data.Fintype.Option
 
 In this file, it is shown that if for all `j : J` (with `J` finite),
 functors `L j : C j ⥤ D j` are localization functors with respect
-to a class of morphisms `W j : MorphismProperty (C j)`, then the product
-functor `Functor.pi L : (∀ j, C j) ⥤ ∀ j, D j` is a localization
+to a class of morphisms `W j : MorphismProperty (C j)`, and each `W j`
+contains identities, then the product functor `Functor.pi L : (∀ j, C j) ⥤ ∀ j, D j` is a localization
 functor for the product class of morphisms `MorphismProperty.pi W`.
 The proof proceeds by induction on the cardinal of `J` using the
 main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
