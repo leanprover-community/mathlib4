@@ -112,7 +112,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
         invFun := fun f => ⟨f.f, f.h⟩ }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Construct the adjunction to the comparison functor.
+/-- Construct the left adjoint functor to the comparison functor.
 -/
 def leftAdjointComparison
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
@@ -358,7 +358,7 @@ def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
   exact monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
 /-- An alternate version of **Beck's monadicity theorem**: if `G` reflects isomorphisms, preserves
-coequalizers of `G`-split pairs and `C` has coequalizers of `G`-split pairs, then it is monadic.
+coequalizers of `G`-split pairs and `D` has coequalizers of `G`-split pairs, then it is monadic.
 -/
 @[implicit_reducible]
 def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIsomorphisms]
@@ -392,8 +392,8 @@ instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra adj.toMonad,
 
 variable [PreservesColimitOfIsReflexivePair G]
 
-/-- Reflexive (crude) monadicity theorem. If `G` has a right adjoint, `D` has and `G` preserves
-reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
+/-- Reflexive (crude) monadicity theorem. If `G` has a left adjoint, `D` has reflexive
+coequalizers, `G` preserves them, and `G` reflects isomorphisms, then `G` is monadic.
 -/
 @[implicit_reducible]
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G where
