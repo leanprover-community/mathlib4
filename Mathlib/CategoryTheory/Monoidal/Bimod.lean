@@ -78,7 +78,7 @@ end
 
 /-- A bimodule object for a pair of monoid objects, all internal to some monoidal category. -/
 structure Bimod (A B : Mon C) where
-  /-- The underlying monoidal category -/
+  /-- The underlying object of the ambient monoidal category. -/
   X : C
   /-- The left action of this bimodule object -/
   actLeft : A.X ⊗ X ⟶ X
@@ -105,7 +105,7 @@ variable {A B : Mon C} (M : Bimod A B)
 /-- A morphism of bimodule objects. -/
 @[ext]
 structure Hom (M N : Bimod A B) where
-  /-- The morphism between `M`'s monoidal category and `N`'s monoidal category -/
+  /-- The morphism between the underlying objects of `M` and `N`. -/
   hom : M.X ⟶ N.X
   left_act_hom : M.actLeft ≫ hom = (A.X ◁ hom) ≫ N.actLeft := by cat_disch
   right_act_hom : M.actRight ≫ hom = (hom ▷ B.X) ≫ N.actRight := by cat_disch
