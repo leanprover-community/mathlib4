@@ -10,16 +10,16 @@ public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
-# Enumerating sets of ordinals by ordinals
+# Enumerating a cofinal set
 
-The ordinals have the peculiar property that every subset bounded above is a small type, while
-themselves not being small. As a consequence of this, every unbounded subset of `Ordinal` is order
-isomorphic to `Ordinal`.
+We define a typeclass `IsRegularCardinalOrder` for well-ordered types, whose order type equals (the
+initial ordinal of) their cofinality. This notion does not appear in the literature, but intends to
+generalize the properties of intervals `Iio c.ord`, wherever `c` is a regular cardinal. Other
+instances of this typeclass include `ℕ`, `Ordinal`, and `Cardinal`.
 
-We define this correspondence as `enumOrd`, and use it to then define an order isomorphism
-`enumOrdOrderIso`.
-
-This can be thought of as an ordinal analog of `Nat.nth`.
+If `s` is a cofinal subset of a regular cardinal order `α`, there exists a unique order isomorphism
+`α ≃o s`, which we call `Order.enum`. When `α = Ordinal`, this is often called the enumerator
+function of the set. Note that if `α = ℕ`, then this definition matches `Nat.nth`.
 -/
 
 @[expose] public section
@@ -89,6 +89,12 @@ theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s =
 @[no_expose]
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
+
+theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ha : a ∈ s)
+    (H : ∀ b < o, enum s hs b < a) : enum s hs o ≤ a := by
+  rw [← Subtype.coe_mk a ha, Subtype.coe_le_coe, ← OrderIso.le_symm_apply]
+  apply le_of_forall_lt
+  simpa [OrderIso.lt_symm_apply]
 
 end Order
 
