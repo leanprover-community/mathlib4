@@ -600,9 +600,19 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     unless ← mvar.mvarId!.isAssigned do
       unless lem.mainSubgoals.any (fun (n, m, k, _) ↦ n == i || m == i || k == i) do
         sideGoals := sideGoals.push mvar.mvarId!
-  let mainGoals ← lem.mainSubgoals.flatMapM fun (_, _, i, numHyps, isContra) ↦
-    return (← introN mvars[i]!.mvarId! numHyps).map (·, isContra)
+  let mainGoals ← lem.mainSubgoals.flatMapM fun (n, m, k, numHyps, isContra) ↦ do
+    if (← get).patterns.isEmpty then
+      let f ← mvars[n]!.mvarId!.getType
+      let f ← if f.isLambda then pure f else mvars[m]!.mvarId!.getType
+      let mvarId := (← mvars[k]!.mvarId!.introN numHyps (lambdaBinderNames f)).2
+      return #[(mvarId, isContra)]
+    else
+      return (← introN mvars[k]!.mvarId! numHyps).map (·, isContra)
   return (mainGoals, sideGoals)
+where
+  lambdaBinderNames : Expr → List Name
+    | .lam n _ b _ => n :: lambdaBinderNames b
+    | _ => []
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
