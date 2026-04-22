@@ -105,7 +105,7 @@ theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈
     apply S.mul h (S.inv hg)
   · exact fun hf => S.mul hf hg
 
-/-- The vertices of `C` on which `S` has non-trivial isotropy -/
+/-- The vertices of `C` on which `S` has nonempty isotropy -/
 def objs : Set C :=
   {c : C | (S.arrows c c).Nonempty}
 
@@ -400,7 +400,9 @@ theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap �
 theorem comap_comp {E : Type*} [Groupoid E] (ψ : D ⥤ E) : comap (φ ⋙ ψ) = comap φ ∘ comap ψ :=
   rfl
 
-/-- The kernel of a functor between subgroupoid is the preimage. -/
+/-- The kernel subgroupoid of a functor between groupoids is the preimage of the
+discrete subgroupoid.
+-/
 def ker : Subgroupoid C :=
   comap φ discrete
 
