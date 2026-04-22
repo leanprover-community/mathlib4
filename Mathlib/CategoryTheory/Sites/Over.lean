@@ -42,7 +42,6 @@ lemma Presieve.map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve
 
 namespace Sieve
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 def overEquiv {X : C} (Y : Over X) :
     Sieve Y ≃ Sieve Y.left where
@@ -98,7 +97,6 @@ lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
     Sieve.functorPullback_monotone _ _ h
   simpa using h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g
@@ -128,7 +126,6 @@ lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     overEquiv Y (.generate R) = .generate (Presieve.functorPushforward (Over.forget X) R) := by
   refine le_antisymm (fun Z g hg ↦ ?_) ?_
@@ -139,7 +136,6 @@ lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     rintro Z g ⟨W, u, v, hu, rfl⟩
     exact (overEquiv_iff _ _).mpr ⟨W, Over.homMk v, u, hu, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     (overEquiv Y).symm (.generate R) =
       .generate (Presieve.functorPullback (Over.forget X) R) := by
@@ -164,7 +160,6 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
     (S : Sieve ((Over.map f).obj U)) :
     overEquiv U (S.functorPullback (Over.map f)) =
@@ -234,7 +229,6 @@ lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
   cover_preserve hS := hS
 
-set_option backward.isDefEq.respectTransparency false in
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
   compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by

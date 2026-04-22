@@ -505,7 +505,8 @@ theorem cos_three_mul : cos (3 * x) = 4 * cos x ^ 3 - 3 * cos x := by
 
 theorem sin_three_mul : sin (3 * x) = 3 * sin x - 4 * sin x ^ 3 := by
   rw [← two_add_one_eq_three, add_one_mul, sin_add (2 * x) x]
-  grind [cos_two_mul, sin_two_mul, cos_sq']
+  simp only [cos_two_mul, sin_two_mul, cos_sq', mul_assoc, ← sq]
+  ring
 
 theorem exp_mul_I : exp (x * I) = cos x + sin x * I :=
   (cos_add_sin_I _).symm

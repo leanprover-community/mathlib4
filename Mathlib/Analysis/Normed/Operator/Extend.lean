@@ -163,7 +163,6 @@ def compLeftInverse : range g →SL[σ₁₂] F :=
     simpa [← hxy] using h y)
   else 0
 
-set_option backward.isDefEq.respectTransparency false in
 theorem compLeftInverse_apply_of_bdd (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖)
     (x : E) (y : Eₗ) (hx : g x = y) :
     f.compLeftInverse g ⟨y, ⟨x, hx⟩⟩ = f x := by
@@ -180,7 +179,6 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜
 
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
 where `E` is a normed space and `F` a complete normed space, using a dense map `e : E →ₗ[𝕜] Eₗ`
 together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
@@ -188,7 +186,6 @@ def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (Linea
 
 variable {f e}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖)
     (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
@@ -204,7 +201,6 @@ theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
     simpa only [← hxy, extendOfNorm_eq h_dense ⟨C, h_norm⟩ y] using h_norm y
   exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖)
     (g : Eₗ →SL[σ₁₂] F) (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
   apply ContinuousLinearMap.extend_unique

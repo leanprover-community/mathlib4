@@ -106,14 +106,12 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
 
 variable {T}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
