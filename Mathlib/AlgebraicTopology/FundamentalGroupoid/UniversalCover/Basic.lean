@@ -120,7 +120,7 @@ theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
   obtain ⟨hend, hq⟩ := h
   have hcast : HEq (Path.Homotopic.Quotient.mk α.toPath)
       (Path.Homotopic.Quotient.mk (α.toPath.cast rfl hend.symm)) :=
-    Path.Homotopic.hpath_hext (fun _ => rfl)
+    Path.Homotopic.hpath_hext (fun _ ↦ rfl)
   exact Path.Homotopic.Quotient.exact (eq_of_heq (hcast.symm.trans hq))
 
 /-- If two based paths have the same endpoint and homotopic `toPath`s (after casting to a
@@ -133,12 +133,12 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
   refine Sigma.ext heq ?_
   have h1 : HEq (Path.Homotopic.Quotient.mk α.toPath)
       (Path.Homotopic.Quotient.mk (α.toPath.cast rfl heq.symm)) :=
-    Path.Homotopic.hpath_hext (fun _ => rfl)
+    Path.Homotopic.hpath_hext (fun _ ↦ rfl)
   exact h1.trans (heq_of_eq (Quotient.sound h))
 
 @[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
-  change Continuous fun γ : BasedPath x₀ => γ.1 1
+  change Continuous fun γ : BasedPath x₀ ↦ γ.1 1
   exact (continuous_eval_const (1 : I)).comp continuous_subtype_val
 
 /-- The endpoint projection `UniversalCover x₀ → X` is an open map when `X` is locally
@@ -189,8 +189,8 @@ def basedPathComponent (U : Set X) {y : X} (p : Path x₀ y) : Set (BasedPath x�
 `q : Path.Homotopic.Quotient x₀ x`, expressed as a set of based paths. -/
 noncomputable def basedPathSheet (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) : Set (BasedPath x₀) :=
-  Quotient.liftOn q (fun p : Path x₀ x => basedPathComponent U p)
-    fun _ _ h => BasedPath.pathComponent_preimage_saturated hxU h
+  Quotient.liftOn q (fun p : Path x₀ x ↦ basedPathComponent U p)
+    fun _ _ h ↦ BasedPath.pathComponent_preimage_saturated hxU h
 
 @[simp] theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
     basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p := rfl
@@ -311,7 +311,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
     (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
       Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
     (hxU : x ∈ U) :
-    Pairwise fun (q₁ q₂ : Path.Homotopic.Quotient x₀ x) =>
+    Pairwise fun (q₁ q₂ : Path.Homotopic.Quotient x₀ x) ↦
       Disjoint (sheet U hxU q₁) (sheet U hxU q₂) := by
   intro q₁ q₂ hne
   refine Set.disjoint_iff.mpr ?_

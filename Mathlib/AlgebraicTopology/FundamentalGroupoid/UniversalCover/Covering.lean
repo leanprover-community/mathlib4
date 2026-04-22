@@ -47,12 +47,12 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   -- Get a good neighborhood of `x`.
   obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
   -- Shorthand.
-  let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q => sheet U hxU q
+  let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q ↦ sheet U hxU q
   -- Nonempty instances needed by `trivializationDiscrete`.
   have _ne_ι : Nonempty (Path.Homotopic.Quotient x₀ x) :=
     ⟨Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)⟩
   have _ne_fun : Nonempty (X → UniversalCover x₀) :=
-    ⟨fun _ => ofBasedPath x₀ (BasedPath.ofPath (PathConnectedSpace.somePath x₀ x₀))⟩
+    ⟨fun _ ↦ ofBasedPath x₀ (BasedPath.ofPath (PathConnectedSpace.somePath x₀ x₀))⟩
   -- Build the trivialization.
   have h_open_iff : ∀ q : Path.Homotopic.Quotient x₀ x, ∀ {W : Set X}, W ⊆ U →
       (IsOpen W ↔ IsOpen (proj (x₀ := x₀) ⁻¹' W ∩ S q)) := by
@@ -74,9 +74,9 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
       rw [← h_image_eq]
       exact isOpenMap_proj x₀ _ h_open_inter
   have h_inj : ∀ q, (S q).InjOn (proj (x₀ := x₀)) :=
-    fun q => sheet_proj_injOn hU_slsc hxU q
+    fun q ↦ sheet_proj_injOn hU_slsc hxU q
   have h_surj : ∀ q, (S q).SurjOn (proj (x₀ := x₀)) U :=
-    fun q => sheet_surjOn hU_pathConn hxU q
+    fun q ↦ sheet_surjOn hU_pathConn hxU q
   have h_disjoint : Pairwise (Function.onFun Disjoint S) := by
     unfold Function.onFun
     exact sheet_pairwise_disjoint hU_slsc hxU
@@ -104,19 +104,19 @@ private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
     intro s t
     refine ⟨mul_nonneg s.2.1 t.2.1, ?_⟩
     exact mul_le_one₀ s.2.2 t.2.1 t.2.2
-  let F_cm : I → C(I, X) := fun t =>
-    ⟨fun s => α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩, by
+  let F_cm : I → C(I, X) := fun t ↦
+    ⟨fun s ↦ α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩, by
       refine α.1.continuous.comp ?_
       exact Continuous.subtype_mk (by fun_prop) _⟩
   have hF_cont : Continuous F_cm := by
     refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    have hst_cont : Continuous (fun ts : I × I =>
+    have hst_cont : Continuous (fun ts : I × I ↦
         (⟨((ts.2 : ℝ) * (ts.1 : ℝ)), hst_mem ts.2 ts.1⟩ : I)) := by
       refine Continuous.subtype_mk ?_ _
       exact ((continuous_induced_dom.comp continuous_snd).mul
         (continuous_induced_dom.comp continuous_fst))
     exact α.1.continuous.comp hst_cont
-  let F : I → BasedPath x₀ := fun t =>
+  let F : I → BasedPath x₀ := fun t ↦
     ⟨F_cm t, by
       change α.1 ⟨(0 : ℝ) * (t : ℝ), _⟩ = x₀
       have h0 : ((0 : I) : ℝ) * (t : ℝ) = 0 := by simp
@@ -145,7 +145,7 @@ private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
     ext s
     change α.1 ⟨(s : ℝ) * (1 : ℝ), _⟩ = α.1 s
     rw [show (⟨(s : ℝ) * (1 : ℝ), hst_mem s 1⟩ : I) = s from Subtype.ext (by simp)]
-  refine ⟨⟨⟨fun t => ofBasedPath x₀ (F t), ?_⟩, ?_, ?_⟩⟩
+  refine ⟨⟨⟨fun t ↦ ofBasedPath x₀ (F t), ?_⟩, ?_, ?_⟩⟩
   · exact (continuous_ofBasedPath x₀).comp hF_bp_cont
   · exact h_start
   · exact h_end
@@ -153,7 +153,7 @@ private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
 /-- The universal cover is path-connected. -/
 theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
     PathConnectedSpace (UniversalCover x₀) := by
-  refine ⟨⟨ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))⟩, fun z₁ z₂ => ?_⟩
+  refine ⟨⟨ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))⟩, fun z₁ z₂ ↦ ?_⟩
   obtain ⟨α₁, rfl⟩ := surjective_ofBasedPath x₀ z₁
   obtain ⟨α₂, rfl⟩ := surjective_ofBasedPath x₀ z₂
   exact (joined_basepoint_of_ofBasedPath α₁).symm.trans (joined_basepoint_of_ofBasedPath α₂)
@@ -169,12 +169,12 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
       (by simpa [BasedPath.endpoint] using γ.source) 1 =
       ofBasedPath x₀ (BasedPath.append α γ) := by
   let Γ : C(I, UniversalCover x₀) := by
-    refine ⟨fun t => ofBasedPath x₀ (BasedPath.append α (Path.initialSegmentFamily γ t)),
+    refine ⟨fun t ↦ ofBasedPath x₀ (BasedPath.append α (Path.initialSegmentFamily γ t)),
       ?_⟩
     exact (continuous_ofBasedPath x₀).comp <| Continuous.subtype_mk (by
       refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
       simpa [BasedPath.append, BasedPath.ofPath] using
-        Path.trans_continuous_family (fun _ : I => α.toPath)
+        Path.trans_continuous_family (fun _ : I ↦ α.toPath)
           (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily γ)
           (Path.continuous_initialSegmentFamily_uncurry γ)) _
   have hΓ_lifts : proj (x₀ := x₀) ∘ Γ = γ := by
@@ -209,7 +209,7 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
       simp [hΓ_eq_lift]
     _ = ofBasedPath x₀ (BasedPath.append α γ) := by
       simpa [Γ] using
-        congrArg (fun δ => ofBasedPath x₀ (BasedPath.append α δ))
+        congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ))
           (Path.initialSegmentFamily_one γ)
 
 /-- The universal cover is simply connected. -/

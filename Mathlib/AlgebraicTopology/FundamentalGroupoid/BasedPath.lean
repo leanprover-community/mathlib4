@@ -133,7 +133,7 @@ original path and then a new endpoint path. -/
 noncomputable def deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) : BasedPath x₀ := by
   let tail : Path (γ.toPath.extend a) u := terminalTail γ hu a (by linarith)
-  let f : ℝ → X := fun t =>
+  let f : ℝ → X := fun t ↦
     if hta : t ≤ a then γ.toPath.extend t else
       if htb : t ≤ b then tail.extend ((t - a) / (b - a)) else δ.extend ((t - b) / (1 - b))
   have hf_cont : Continuous f := by
@@ -150,7 +150,7 @@ noncomputable def deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint 
       subst t
       simpa [tail, hab.le] using (terminalTail_source γ hu a (by linarith)).symm
   refine ⟨ContinuousMap.mk
-    (fun t : I => f t)
+    (fun t : I ↦ f t)
     (hf_cont.comp continuous_subtype_val), ?_⟩
   simpa [f, ha] using γ.toPath.source
 
@@ -193,8 +193,8 @@ noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) : Path 
 
 theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b) :
     Continuous ↿(initialSegmentFamily γ) := by
-  have htrunc : Continuous (fun ts : I × I => γ.truncate 0 ts.1 ts.2 : I × I → X) := by
-    let key : I × I → ℝ × ℝ × I := fun ts => (0, ts.1, ts.2)
+  have htrunc : Continuous (fun ts : I × I ↦ γ.truncate 0 ts.1 ts.2 : I × I → X) := by
+    let key : I × I → ℝ × ℝ × I := fun ts ↦ (0, ts.1, ts.2)
     have hkey : Continuous key := by fun_prop
     simpa [key] using γ.truncate_continuous_family.comp hkey
   simpa [initialSegmentFamily] using htrunc
@@ -227,8 +227,8 @@ theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
   rcases hsub.mp hs with ⟨V, hVγ, hVs⟩
   rcases ContinuousMap.mem_nhds_iff.1 hVγ with ⟨S, hSfin, hSdata, hSV⟩
   let T : Finset (Set I × Set X) := hSfin.toFinset
-  let Tgood : Finset (Set I × Set X) := T.filter fun KU => (1 : I) ∈ KU.1
-  let Tbad : Finset (Set I × Set X) := T.filter fun KU => (1 : I) ∉ KU.1
+  let Tgood : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∈ KU.1
+  let Tbad : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∉ KU.1
   let O : Set X := ⋂ KU ∈ Tgood, KU.2
   have hOopen : IsOpen O := by
     have hOpen : ∀ KU ∈ Tgood, IsOpen KU.2 := by
@@ -386,11 +386,11 @@ theorem joined_of_homotopic (x₀ : X) {y : X} {p q : Path x₀ y} (h : Path.Hom
     Joined (ofPath p) (ofPath q) := by
   rcases h with ⟨H⟩
   refine ⟨{
-    toFun := fun t => ofPath (H.eval t)
+    toFun := fun t ↦ ofPath (H.eval t)
     continuous_toFun := by
       apply Continuous.subtype_mk
       exact continuous_induced_dom.comp <| (Path.continuous_uncurry_iff.mp <| by
-        change Continuous fun ts : I × I => H ts
+        change Continuous fun ts : I × I ↦ H ts
         exact H.continuous)
     source' := by
       ext s
@@ -405,11 +405,11 @@ theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : Set X} 
     JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (ofPath p) (ofPath q) := by
   rcases h with ⟨H⟩
   let γ : Path (ofPath p) (ofPath q) :=
-    { toFun := fun t => ofPath (H.eval t)
+    { toFun := fun t ↦ ofPath (H.eval t)
       continuous_toFun := by
         apply Continuous.subtype_mk
         exact continuous_induced_dom.comp <| (Path.continuous_uncurry_iff.mp <| by
-          change Continuous fun ts : I × I => H ts
+          change Continuous fun ts : I × I ↦ H ts
           exact H.continuous)
       source' := by
         ext s
@@ -439,12 +439,12 @@ theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x₀)
   have h_move :
       JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (append γ γrefl) (append γ δ) := by
     let η : Path (append γ γrefl) (append γ δ) := {
-      toFun := fun t => append γ (Path.initialSegmentFamily δ t)
+      toFun := fun t ↦ append γ (Path.initialSegmentFamily δ t)
       continuous_toFun := by
         apply Continuous.subtype_mk
         refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
         simpa [BasedPath.append, BasedPath.ofPath] using
-          Path.trans_continuous_family (fun _ : I => γ.toPath)
+          Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
             (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)
             (Path.continuous_initialSegmentFamily_uncurry δ)
       source' := by
@@ -497,9 +497,9 @@ theorem exists_open_nhd_pathComponent_preimage
   have hα_V' : endpoint α ∈ V_last' := mem_pathComponentIn_self hα_W
   -- Refined V function: `V_last'` at the last partition point, `T.V` elsewhere.
   set V' : Fin (n' + 2) → Set X :=
-    Fin.snoc (fun j : Fin (n' + 1) => T.V j.castSucc) V_last' with hV'_def
+    Fin.snoc (fun j : Fin (n' + 1) ↦ T.V j.castSucc) V_last' with hV'_def
   have hV'_last_eq : V' (Fin.last (n' + 1)) = V_last' := Fin.snoc_last ..
-  have hV'_castSucc_eq : ∀ j : Fin (n' + 1), V' j.castSucc = T.V j.castSucc := fun j =>
+  have hV'_castSucc_eq : ∀ j : Fin (n' + 1), V' j.castSucc = T.V j.castSucc := fun j ↦
     Fin.snoc_castSucc ..
   have hV'_sub_TV : ∀ j : Fin (n' + 2), V' j ⊆ T.V j := by
     intro j
@@ -549,7 +549,7 @@ theorem exists_open_nhd_pathComponent_preimage
       have heq : {β : BasedPath x₀ | ∀ s : I,
               (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
                 β.1 s ∈ T.U i} =
-          (fun β : BasedPath x₀ => (β.1 : C(I, X))) ⁻¹'
+          (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
             {f : C(I, X) | Set.MapsTo f
               (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (T.U i)} := by
         ext β
@@ -612,7 +612,7 @@ theorem exists_open_nhd_pathComponent_preimage
       have hρ_succ : Set.range (ρ i.succ) ⊆ T.U i :=
         (hρ_range _).trans ((hV'_sub_TV _).trans (T.h_V_right_subset i))
       exact Path.segment_rung_homotopy (T.U i)
-        (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
+        (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
         _ _ _ _ hα_sub hβ_sub hρ_cast hρ_succ
     -- Use `T.U 0` as the SLSC neighborhood that contains the initial rung.
     have h_zero_cast : (0 : Fin (n' + 2)) =
@@ -625,7 +625,7 @@ theorem exists_open_nhd_pathComponent_preimage
     have h_paste :=
       Path.paste_segment_homotopies_slsc_source α.toPath β.toPath part ρ h_rectangles
         (T.U ⟨0, Nat.succ_pos n'⟩)
-        (fun p q hp_a hp_d hp_range hq_range =>
+        (fun p q hp_a hp_d hp_range hq_range ↦
           T.h_U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
         hρ0_range
     -- Package the final rung as a path from `endpoint α` to `endpoint β`.
@@ -650,7 +650,7 @@ theorem exists_open_nhd_pathComponent_preimage
     have h_append_to_β :
         JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (append α ρ_final) β := by
       obtain ⟨γ, hγ⟩ := h_singleton.mono (Set.preimage_mono h_subset_U)
-      exact ⟨γ.cast rfl h_β_eq.symm, fun t => hγ t⟩
+      exact ⟨γ.cast rfl h_β_eq.symm, fun t ↦ hγ t⟩
     exact h_α_to_append.trans h_append_to_β
 
 /-- For an open neighborhood `U`, path components of `endpoint ⁻¹' U` are open. -/
@@ -686,17 +686,17 @@ theorem toPath_homotopic_of_joinedIn_slsc
   set v : X := endpoint β with hv_def
   have hv : v ∈ U := heq ▸ hα_end
   -- Uncurry F to get a continuous map (t, s) ↦ (F t).1 s.
-  have hFv_cont : Continuous (fun ts : I × I => (F ts.1).1 ts.2) := by
-    have h1 : Continuous (fun t : I => ((F t).1 : C(I, X))) :=
+  have hFv_cont : Continuous (fun ts : I × I ↦ (F ts.1).1 ts.2) := by
+    have h1 : Continuous (fun t : I ↦ ((F t).1 : C(I, X))) :=
       continuous_subtype_val.comp F.continuous
     exact ContinuousMap.continuous_uncurry_of_continuous ⟨_, h1⟩
   -- The endpoint-trace loop `L : Path v v`.
   have hF0_eq : (F (0 : I)).1 = α.1 := congrArg Subtype.val F.source
   have hF1_eq : (F (1 : I)).1 = β.1 := congrArg Subtype.val F.target
   let L : Path v v :=
-    { toFun := fun t => (F t).1 1
+    { toFun := fun t ↦ (F t).1 1
       continuous_toFun := by
-        have h : Continuous (fun t : I => ((F t).1 1 : X)) := by
+        have h : Continuous (fun t : I ↦ ((F t).1 1 : X)) := by
           have := hFv_cont.comp (continuous_id.prodMk (continuous_const (y := (1 : I))))
           simpa using this
         exact h
@@ -714,8 +714,8 @@ theorem toPath_homotopic_of_joinedIn_slsc
   -- Cast α.toPath to target `v`.
   let α' : Path x₀ v := α.toPath.cast rfl heq.symm
   -- Reparameterization functions.
-  let u_real : ℝ × ℝ → ℝ := fun ts => ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
-  let v_real : ℝ × ℝ → ℝ := fun ts => min (2 * ts.2) 1
+  let u_real : ℝ × ℝ → ℝ := fun ts ↦ ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
+  let v_real : ℝ × ℝ → ℝ := fun ts ↦ min (2 * ts.2) 1
   have hu_cont : Continuous u_real :=
     (continuous_fst).add <|
       (Continuous.max continuous_const (by fun_prop)).mul (by fun_prop)
@@ -735,8 +735,8 @@ theorem toPath_homotopic_of_joinedIn_slsc
   have hv_mem : ∀ t s : I, v_real ((t : ℝ), (s : ℝ)) ∈ I := by
     intro _ s
     refine ⟨le_min (by linarith [s.2.1]) zero_le_one, min_le_right _ _⟩
-  let u_fn : I × I → I := fun ts => ⟨u_real ((ts.1 : ℝ), (ts.2 : ℝ)), hu_mem ts.1 ts.2⟩
-  let v_fn : I × I → I := fun ts => ⟨v_real ((ts.1 : ℝ), (ts.2 : ℝ)), hv_mem ts.1 ts.2⟩
+  let u_fn : I × I → I := fun ts ↦ ⟨u_real ((ts.1 : ℝ), (ts.2 : ℝ)), hu_mem ts.1 ts.2⟩
+  let v_fn : I × I → I := fun ts ↦ ⟨v_real ((ts.1 : ℝ), (ts.2 : ℝ)), hv_mem ts.1 ts.2⟩
   have hu_fn_cont : Continuous u_fn := by
     refine Continuous.subtype_mk ?_ _
     exact hu_cont.comp (by fun_prop)
@@ -744,7 +744,7 @@ theorem toPath_homotopic_of_joinedIn_slsc
     refine Continuous.subtype_mk ?_ _
     exact hv_cont_real.comp (by fun_prop)
   -- The rectangle homotopy.
-  let K_fn : I × I → X := fun ts => (F (u_fn ts)).1 (v_fn ts)
+  let K_fn : I × I → X := fun ts ↦ (F (u_fn ts)).1 (v_fn ts)
   have hK_cont : Continuous K_fn :=
     hFv_cont.comp (hu_fn_cont.prodMk hv_fn_cont)
   -- Auxiliary identities evaluating K at corners/edges.
