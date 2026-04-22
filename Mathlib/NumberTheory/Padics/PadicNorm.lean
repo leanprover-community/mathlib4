@@ -19,7 +19,7 @@ denominator of `q`. This function obeys the standard properties of a valuation, 
 assumptions on `p`.
 
 The valuation induces a norm on `ℚ`. This norm is a nonarchimedean absolute value.
-It takes values in {0} ∪ {1/p^k | k ∈ ℤ}.
+It takes values in `{0} ∪ {1/p^k | k ∈ ℤ}`.
 
 ## Implementation notes
 

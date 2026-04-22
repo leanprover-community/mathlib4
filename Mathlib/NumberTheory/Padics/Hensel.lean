@@ -12,9 +12,9 @@ public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
-# Hensel's lemma on ℤ_p
+# Hensel's lemma on `ℤ_p`
 
-This file proves Hensel's lemma on ℤ_p, roughly following Keith Conrad's writeup:
+This file proves Hensel's lemma on `ℤ_p`, roughly following Keith Conrad's writeup:
 <http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf>
 
 Hensel's lemma gives a simple condition for the existence of a root of a polynomial.
