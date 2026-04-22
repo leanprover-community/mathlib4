@@ -313,12 +313,12 @@ noncomputable instance : SmallCategory (SmallCofilteredIntermediate F) :=
 namespace SmallCofilteredIntermediate
 
 /-- The first part of a factoring of a functor from a small category to a cofiltered category
-through a small filtered category. -/
+through a small cofiltered category. -/
 noncomputable def factoring : D ⥤ SmallCofilteredIntermediate F :=
   ObjectProperty.lift _ F cofilteredClosure.base ⋙ (equivSmallModel _).functor
 
-/-- The second, fully faithful part of a factoring of a functor from a small category to a filtered
-category through a small filtered category. -/
+/-- The second, fully faithful part of a factoring of a functor from a small category to a
+cofiltered category through a small cofiltered category. -/
 noncomputable def inclusion : SmallCofilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ ObjectProperty.ι _
 
@@ -328,7 +328,7 @@ instance : (inclusion F).Faithful :=
 noncomputable instance : (inclusion F).Full :=
   inferInstanceAs ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Full
 
-/-- The factorization through a small filtered category is in fact a factorization, up to natural
+/-- The factorization through a small cofiltered category is in fact a factorization, up to natural
 isomorphism. -/
 noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
   Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight (Equivalence.unitIso _).symm _)
