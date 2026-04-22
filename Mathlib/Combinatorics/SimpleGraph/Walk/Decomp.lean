@@ -65,11 +65,7 @@ lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
     simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
     grind [mem_support_nil_iff, support_nil]
   | @cons a _ _ _ p ih =>
-    by_cases! h' : w = a
-    · grind [List.idxOf_cons_self, take_zero, copy_rfl_rfl, support_nil, takeUntil_first]
-    · rw [take_cons_eq _ _ _ (by grind), takeUntil_cons (List.mem_of_ne_of_mem h' h) h'.symm,
-        support_cons, support_copy, ih (by grind)]
-      grind
+    grind [takeUntil, support, copy_rfl_rfl, take_support_eq_support_take_succ]
 
 lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).length = p.support.idxOf w := by
