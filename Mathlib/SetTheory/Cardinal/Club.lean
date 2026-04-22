@@ -73,7 +73,7 @@ theorem IsClub.sInter_of_cof_le_one {s : Set (Set α)} (hα : Order.cof α ≤ 1
   cases isEmpty_or_nonempty α; · simp
   cases topOrderOrNoTopOrder α
   · exact .sInter_of_orderTop hs
-  · cases (Order.one_lt_cof.trans_le hα).false
+  · cases Order.one_lt_cof.not_ge hα
 
 theorem IsClub.iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : Order.cof α ≤ 1)
     (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
