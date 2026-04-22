@@ -107,7 +107,7 @@ lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasLimit_of_iso α.symm
 
-/-- Make a fan `f` into a limit fan by providing `lift`, `fac`, and `uniq` --
+/-- Make a fan `t` into a limit fan by providing `lift`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkFanLimit {f : β → C} (t : Fan f) (lift : ∀ s : Fan f, s.pt ⟶ t.pt)
@@ -139,7 +139,7 @@ lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c)
     (f g : A ⟶ c.pt) (h : ∀ i, f ≫ c.proj i = g ≫ c.proj i) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
 
-/-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
+/-- Make a cofan `s` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
 def mkCofanColimit {f : β → C} (s : Cofan f) (desc : ∀ t : Cofan f, s.pt ⟶ t.pt)
@@ -173,23 +173,23 @@ section
 
 variable (C)
 
-/-- An abbreviation for `HasLimitsOfShape (Discrete f)`. -/
+/-- An abbreviation for `HasLimitsOfShape (Discrete β)`. -/
 abbrev HasProductsOfShape (β : Type v) :=
   HasLimitsOfShape.{v} (Discrete β)
 
-/-- An abbreviation for `HasColimitsOfShape (Discrete f)`. -/
+/-- An abbreviation for `HasColimitsOfShape (Discrete β)`. -/
 abbrev HasCoproductsOfShape (β : Type v) :=
   HasColimitsOfShape.{v} (Discrete β)
 
 end
 
-/-- `piObj f` computes the product of a family of elements `f`.
+/-- `piObj f` computes the product of a family of objects `f`.
 (It is defined as an abbreviation for `limit (Discrete.functor f)`,
 so for most facts about `piObj f`, you will just use general facts about limits.) -/
 abbrev piObj (f : β → C) [HasProduct f] :=
   limit (Discrete.functor f)
 
-/-- `sigmaObj f` computes the coproduct of a family of elements `f`.
+/-- `sigmaObj f` computes the coproduct of a family of objects `f`.
 (It is defined as an abbreviation for `colimit (Discrete.functor f)`,
 so for most facts about `sigmaObj f`, you will just use general facts about colimits.) -/
 abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
@@ -216,7 +216,7 @@ lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
   limit.hom_ext (fun ⟨j⟩ => h j)
 
-/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+/-- Without this lemma, `colimit.hom_ext` would be applied, but the goal would involve terms
 in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
@@ -260,7 +260,7 @@ def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
   Cone.ext e (fun ⟨j⟩ => w j)
 
-/-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
+/-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ᶜ f` is an iso, is a product. -/
 def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
     [hc : IsIso (Pi.lift c.proj)] : IsLimit c :=
   IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f))
@@ -827,7 +827,7 @@ instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (
 def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
 
-/-- Any isomorphism is the projection from a single object product. -/
+/-- Any isomorphism is the inclusion into a single object coproduct. -/
 def Cofan.isColimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
     IsColimit (Cofan.mk Y fun _ : J ↦ e.hom) := by
   refine mkCofanColimit _ (fun s ↦ e.inv ≫ s.inj default) (fun s j ↦ ?_) fun s m hm ↦ ?_
