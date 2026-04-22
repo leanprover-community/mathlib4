@@ -548,6 +548,16 @@ end Pullback
 
 namespace Set
 
+section Diag
+
+variable {α : Type*} {s t : Set α} {a : α}
+
+@[simp]
+theorem diag_univ : (univ : Set α).diag = diagonal α :=
+  ext <| by simp
+
+end Diag
+
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {a : α}
