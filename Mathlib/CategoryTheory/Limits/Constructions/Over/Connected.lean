@@ -108,7 +108,7 @@ instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.p
           (CostructuredArrow.proj K B).map_injective (fac j))
   }⟩
 
-/-- The over category has any connected limit which the original category has. -/
+/-- `CostructuredArrow K B` has any connected limit which the original category has. -/
 instance hasLimitsOfShape_of_isConnected {B : D} [IsConnected J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CostructuredArrow K B) where
   has_limit F := hasLimit_of_created F (CostructuredArrow.proj K B)
