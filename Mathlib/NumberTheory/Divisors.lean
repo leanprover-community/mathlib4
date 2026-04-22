@@ -646,11 +646,16 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
-@[simp, grind =]
-theorem mem_divisors : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := calc
-  _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by simp [← exists_or, ← and_or_left, divisors]
+theorem mem_divisors_iff_natAbs_mem_divisors_natAbs :
+    x ∈ z.divisors ↔ x.natAbs ∈ z.natAbs.divisors := calc
+  _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by
+    simp [← exists_or, ← and_or_left, divisors]
   _ ↔ ∃ y ∈ z.natAbs.divisors, y = x.natAbs := congr(∃ y ∈ _, $(by grind))
-  _ ↔ x ∣ z ∧ z ≠ 0 := by simp
+  _ ↔ x.natAbs ∈ z.natAbs.divisors := exists_eq_right
+
+@[simp, grind =]
+theorem mem_divisors : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
+  simp [mem_divisors_iff_natAbs_mem_divisors_natAbs]
 
 theorem dvd_of_mem_divisors (h : x ∈ divisors z) : x ∣ z := (mem_divisors.mp h).1
 
