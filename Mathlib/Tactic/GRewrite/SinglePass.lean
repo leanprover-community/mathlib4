@@ -76,9 +76,8 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (g : MVarId) (symm : Bool) (config
 
 def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
   if let some rel := rel? then
-    let .forallE _ d₁ b _ ← whnfD (← inferType rel) | throwError "Not a relation: {rel}"
-    let .forallE _ d₂ _ _ ← whnfD b | throwError "Not a relation: {rel}"
-    let mvar ← mkFreshExprMVar (if inv then d₁ else d₂)
+    -- Assume that `rel` is not heterogenous.
+    let mvar ← mkFreshExprMVar (← inferType e)
     return (mvar, (if inv then mkApp2 rel mvar e else mkApp2 rel e mvar))
   else
     let mvar ← mkFreshExprMVar (Expr.sort 0)
@@ -169,9 +168,7 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv :
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
     let key := { relName, head, arity := args.size }
-    let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
-    if rel?.isNone then
-      lemmas := lemmas ++ relImpRelLemma args.size
+    let lemmas := ((gcongrExt.getState (← getEnv)).get? key).getD (relImpRelLemma args.size)
     let mctx ← getMCtx
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then
