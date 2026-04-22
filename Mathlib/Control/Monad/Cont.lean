@@ -31,10 +31,6 @@ structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) wh
 abbrev MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
 
-@[simp]
-theorem MonadCont.goto_mk {α β} {m : Type u → Type v} (f : α → m β) (a : α) :
-    goto ⟨f⟩ a = f a := rfl
-
 class MonadCont (m : Type u → Type v) where
   callCC : ∀ {α β}, (MonadCont.Label α m β → m α) → m α
 
