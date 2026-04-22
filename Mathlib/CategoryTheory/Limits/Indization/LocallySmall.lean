@@ -69,7 +69,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
   refine Eq.trans (dsimp% this _) ?_
   rw [HasLimit.isoOfNatIso_hom_π_apply]
   dsimp
-  rw [colimitYonedaHomIsoLimitOp_π_apply]
+  erw [colimitYonedaHomIsoLimitOp_π_apply]
   rfl
 
 instance : Small.{v} (colimit (F ⋙ yoneda) ⟶ G) where
