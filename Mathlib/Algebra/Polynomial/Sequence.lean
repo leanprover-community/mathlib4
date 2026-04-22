@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 
@@ -84,28 +85,38 @@ section Ring
 
 variable [Ring R] (S : Sequence R)
 
-/-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ := by
-  rw [eq_top_iff']
-  intro P
+/-- The first `m` polynomials of a polynomial sequence span all polynomials of degree `< m` if their
+    leading coefficients are units. -/
+lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
+    span R (S '' Set.Iio m) = degreeLT R m := by
+  apply span_eq_of_le
+  · intro P hP
+    obtain ⟨i, hi, rfl⟩ := (Set.mem_image _ _ _).mp hP
+    rw [SetLike.mem_coe, Polynomial.mem_degreeLT, S.degree_eq i, Nat.cast_lt]
+    exact Set.mem_Iio.mp hi
+  intro P hP
   -- we proceed via strong induction on the degree `n`, after getting the 0 polynomial done
   nontriviality R using Subsingleton.eq_zero P
   generalize hp : P.natDegree = n
   induction n using Nat.strong_induction_on generalizing P with
   | h n ih =>
-    by_cases p_ne_zero : P = 0
+    by_cases! p_ne_zero : P = 0
     · simp [p_ne_zero]
+    have hn : n < m := by
+      rw [Polynomial.mem_degreeLT] at hP
+      have := Polynomial.degree_eq_natDegree p_ne_zero
+      aesop
     -- let u be the inverse of `S n`'s leading coefficient
-    obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
+    obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n hn
     -- We'll show `P` is the difference of two terms in the span:
     --   a polynomial whose leading term matches `P`'s and lower degree terms match `S n`'s
     let head := P.leadingCoeff • u • S n -- a polynomial whose leading term matches P's and whose
     --   and then an error correcting polynomial which gets us to `P`'s actual lower degree terms
     let tail := P - head
     -- `head` is in the span because it's a multiple of `S n`
-    have head_mem_span : head ∈ span R (Set.range S) := by
-      have in_span : S n ∈ span R (Set.range S) := subset_span (by simp)
-      have smul_span := smul_mem (span R (Set.range S)) (P.leadingCoeff • u) in_span
+    have head_mem_span : head ∈ span R (S '' Set.Iio m) := by
+      have in_span : S n ∈ span R (S '' Set.Iio m) := subset_span ⟨n, by simp [hn], rfl⟩
+      have smul_span := smul_mem (span R (S '' Set.Iio m)) (P.leadingCoeff • u) in_span
       rwa [smul_assoc] at smul_span
     -- to show the tail is in the span we really need consider only when we needed to "correct" for
     -- some lower degree terms in `P`
@@ -113,15 +124,18 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     · simp [head_mem_span, sub_eq_iff_eq_add.mp tail_eq_zero]
     -- we'll do so via the induction hypothesis,
     -- and once we show we can use it, `P` is a difference of two members of the span
-    refine sub_mem_iff_left _ head_mem_span |>.mp <|
-      -- so let's prove the tail has degree less than `n`
-      ih tail.natDegree (natDegree_lt_iff_degree_lt tail_eq_zero |>.mpr ?_) _ rfl
+    apply sub_mem_iff_left _ head_mem_span |>.mp
+    -- so let's prove the tail has degree less than `n`
+    suffices tail.degree < n by
+      refine ih tail.natDegree ((natDegree_lt_iff_degree_lt tail_eq_zero).mpr this) ?_ rfl
+      grw [(Nat.cast_lt (α := WithBot ℕ)).mpr hn] at this
+      rwa [Polynomial.mem_degreeLT]
     -- first we want that `P` and `head` have the same degree
     have isRightRegular_smul_leadingCoeff : IsRightRegular (u • S n).leadingCoeff := by
       simpa [leadingCoeff_smul_of_smul_regular, IsSMulRegular.of_mul_eq_one leftinv, rightinv]
         using isRegular_one.right
     have u_degree_same := degree_smul_of_isRightRegular_leadingCoeff
-      (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n).isRegular.right
+      (left_ne_zero_of_mul_eq_one rightinv) (hCoeff n hn).isRegular.right
     have head_degree_eq := degree_smul_of_isRightRegular_leadingCoeff
       (leadingCoeff_ne_zero.mpr p_ne_zero) isRightRegular_smul_leadingCoeff
     rw [u_degree_same, S.degree_eq n, ← hp, eq_comm,
@@ -141,6 +155,23 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     -- as its leading term has been cancelled, completing our proof.
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
+
+/-- The first `m + 1` polynomials of a polynomial sequence span all polynomials of degree `≤ m` if
+    their leading coefficients are units. -/
+lemma span_degreeLE {m : ℕ} (hCoeff : ∀ i ≤ m, IsUnit (S i).leadingCoeff) :
+    span R (S '' Set.Iic m) = degreeLE R m := by
+  rw [← Set.Iio_succ_eq_Iic, span_degreeLT _ (fun i hi => hCoeff i (Order.lt_succ_iff.mp hi))]
+  simp [← Polynomial.degreeLT_succ_eq_degreeLE]
+
+/-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
+protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ := by
+  rw [eq_top_iff']
+  intro P
+  by_cases! p_ne_zero : P = 0
+  · simp [p_ne_zero]
+  suffices P ∈ span R (S '' Set.Iio (P.natDegree + 1)) from (span_mono (by simp)) this
+  rw [span_degreeLT _ (by grind), Polynomial.mem_degreeLT, ← natDegree_lt_iff_degree_lt p_ne_zero]
+  simp
 
 section IsDomain
 

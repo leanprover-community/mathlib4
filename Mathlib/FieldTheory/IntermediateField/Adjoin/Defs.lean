@@ -12,7 +12,7 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 In this file we introduce the notion of adjoining elements to fields.
 This isn't quite the same as adjoining elements to rings.
-For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
+For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
@@ -77,10 +77,10 @@ instance : CompleteLattice (IntermediateField F E) where
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra
 
 instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
-  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
+  inferInstanceAs <| Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
@@ -91,7 +91,7 @@ instance : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
 instance : Unique (IntermediateField F F) :=
-  { inferInstanceAs (Inhabited (IntermediateField F F)) with
+  { (inferInstance : Inhabited (IntermediateField F F)) with
     uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
 
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
@@ -150,9 +150,12 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
-theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
-    sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) :=
-  rfl
+theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) = ⋂ s ∈ S, ↑s :=
+  show sInf ((fun (x : IntermediateField F E) => (x : Set E)) '' S) = ⋂ s ∈ S, ↑s by simp
+
+@[simp, grind =]
+theorem mem_sInf {S : Set (IntermediateField F E)} {x : E} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
+  simpa only [Set.mem_iInter] using Set.ext_iff.1 (coe_sInf S) x
 
 @[simp]
 theorem sInf_toSubalgebra (S : Set (IntermediateField F E)) :

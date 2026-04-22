@@ -79,6 +79,7 @@ variable (G) in
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
   fun _ ↦ (not_isSolvable G) IsNilpotent.to_isSolvable
 
+open scoped IsMulCommutative in
 variable (G) in
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
   fun _ ↦ (not_isSolvable G) CommGroup.isSolvable

@@ -45,7 +45,7 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 ## References
 
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-* [Henriksen et al, *Joincompact spaces, continuous lattices and C*-algebras*][henriksen_et_al1997]
+* [Henriksen et al, *Joincompact spaces, continuous lattices and C⋆-algebras*][henriksen_et_al1997]
 
 ## Tags
 
@@ -76,12 +76,7 @@ variable {T : Set α}
 pairwise union. -/
 lemma hull_inf (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     hull T (a ⊓ b) = hull T a ∪ hull T b := by
-  ext p
-  constructor <;> intro h
-  · exact (hT p p.2).2 h
-  · rcases h with (h1 | h3)
-    · exact inf_le_of_left_le h1
-    · exact inf_le_of_right_le h3
+  grind [InfPrime.inf_le]
 
 variable [OrderTop α]
 
