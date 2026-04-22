@@ -61,6 +61,9 @@ instance : AddCommGroup (Coinvariants ρ) := inferInstanceAs <| AddCommGroup (_ 
 
 instance : Module k (Coinvariants ρ) := inferInstanceAs <| Module k (_ ⧸ _)
 
+instance [Module.Finite k V] : Module.Finite k (Coinvariants ρ) :=
+  inferInstanceAs <| Module.Finite k (V ⧸ Coinvariants.ker ρ)
+
 variable {ρ}
 
 lemma sub_mem_ker (g : G) (x : V) : ρ g x - x ∈ Coinvariants.ker ρ :=
