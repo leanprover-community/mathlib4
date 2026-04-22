@@ -1,37 +1,6 @@
 import Mathlib
+import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
 open DirectSum
-
-
-/- A lemma that exists for `Submodule`s in Mathlib but not for `AddSubmonoid`s:
---/
-open Pointwise in
-lemma AddSubmonoid.one_le {A : Type*} [AddMonoidWithOne A] {P : AddSubmonoid A} :
-  (1 : AddSubmonoid A) ≤ P ↔ (1 : A) ∈ P := by
-  rw [AddSubmonoid.one_eq_closure, AddSubmonoid.closure_le, Set.singleton_subset_iff]
-  rfl
-
-/-- An additional _of lemma for an iso already present in Mathlib
--/
-@[simp] lemma DirectSum.sigmaCurry_of
-    {ι : Type*} [DecidableEq ι]
-    {α : ι → Type*} [∀ i : ι, DecidableEq (α i)]
-    {M : (i : ι) → α i → Type*} [∀ i : ι, ∀ j : α i, AddCommMonoid (M i j)]
-    (ij : (i : ι) × α i) (m : M ij.fst ij.snd) :
-    (sigmaCurryEquiv) ((of (fun ij' ↦ M ij'.fst ij'.snd) ij ) m)
-    = (of (fun i' ↦ ⨁ (j' : α i'), M i' j') ij.fst) ((of (fun j' ↦ M ij.fst j') ij.snd ) m)
-  := by
-  exact DFinsupp.sigmaCurry_single ij m
-
-/-- An additional _of lemma for an iso already present in Mathlib
--/
-@[simp] lemma DirectSum.equivCongrLeft_of
-    {ι : Type*} [DecidableEq ι]
-    {M : ι → Type*} [(i : ι) → AddCommMonoid (M i)]
-    {κ : Type*} [DecidableEq κ] (h : ι ≃ κ) (k : κ) (m : M (h.symm k)) :
-    (equivCongrLeft h) ((of M (h.symm k)) m) = (of (fun k ↦ M (h.symm k)) k) m
-  := by
-  exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv k m
-
 
 section DirectSum.sigmaFiberAddEquiv
 /-
@@ -58,8 +27,8 @@ def DirectSum.sigmaFiberAddEquiv
      by
      let iso' : (⨁ (k : (y : ι₂) × { x // f x = y }), β ((Equiv.sigmaFiberEquiv f).symm.symm k))
                 ≃+ (⨁ (i : (x : ι₂) × { i // f i = x }), β ↑i.snd)
-                := by
-                exact AddEquiv.refl (⨁ (k : (y : ι₂) × { x // f x = y }), β ((Equiv.sigmaFiberEquiv f).symm.symm k))
+                := by exact AddEquiv.refl (⨁ (k : (y : ι₂) × { x // f x = y }), β
+                    ((Equiv.sigmaFiberEquiv f).symm.symm k))
      let iso₁ := equivCongrLeft (Equiv.sigmaFiberEquiv f).symm (β := β)
      let iso₂ := sigmaCurryEquiv (δ := fun (j : ι₂) ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i))
      --let iso' : (⨁ (k : (y : ι₂) × { x // f x = y }), M ((Equiv.sigmaFiberEquiv f).symm.symm k))
