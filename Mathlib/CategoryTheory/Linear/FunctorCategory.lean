@@ -70,7 +70,7 @@ namespace NatTrans
 variable {F G : C ⥤ D}
 
 /-- Application of a natural transformation at a fixed object,
-as group homomorphism -/
+as a linear map. -/
 @[simps]
 def appLinearMap (X : C) : (F ⟶ G) →ₗ[R] F.obj X ⟶ G.obj X where
   toFun α := α.app X
