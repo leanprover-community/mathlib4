@@ -20,13 +20,13 @@ Sifted categories can be characterized as those such that the colimit functor `(
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
-- `isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
+- `CategoryTheory.IsSifted.isSifted_of_hasBinaryCoproducts_and_nonempty`: A nonempty category with binary coproducts is
   sifted.
-- `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
+- `CategoryTheory.IsSifted.colim_preservesFiniteProducts_of_isSifted`: The `Type`-valued colimit functor for sifted
   diagrams preserves finite products.
-- `IsSifted.of_colimit_preservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
+- `CategoryTheory.IsSifted.of_colim_preservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
   preserves finite products, the category is sifted.
-- `IsSifted.of_final_functor_from_sifted`: A category admitting a final functor from a sifted
+- `CategoryTheory.IsSifted.of_final_functor_from_sifted`: A category admitting a final functor from a sifted
   category is itself sifted.
 
 ## References
@@ -269,7 +269,7 @@ end SmallCategory
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A functor admitting a final functor from a sifted category is sifted. -/
+/-- A category admitting a final functor from a sifted category is sifted. -/
 theorem IsSifted.of_final_functor_from_sifted {D : Type u₁} [Category.{v₁} D] [h₁ : IsSifted C]
     (F : C ⥤ D) [Final F] : IsSifted D := by
   rw [isSifted_iff_asSmallIsSifted] at h₁ ⊢
