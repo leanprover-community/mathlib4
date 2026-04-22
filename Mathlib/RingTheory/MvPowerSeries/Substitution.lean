@@ -493,13 +493,90 @@ section truncTotal
 
 open Finset
 
-variable {f : MvPowerSeries σ R} [Finite τ] [Finite σ]
+variable {f : MvPowerSeries σ R} [Finite τ] [Finite σ] {x : σ → ℕ} {k : ℕ}
 
-theorem truncTotal_subst {n : ℕ} (ha : HasSubst a) :
-    truncTotal n (f.subst a) = ∑ i ∈ range (n + 1), (f.homogeneousComponent i).subst
-      (fun x ↦ ((a x).truncTotal (n + 1)).toMvPowerSeries) := by
+omit [Finite σ] in
+lemma HasSubst.truncTotal (ha : HasSubst a) :
+    HasSubst (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries) where
+  const_coeff i := by
+    rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
+      ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite]
+    by_cases h : 0 < x i
+    · simp [if_pos h, ha.const_coeff i]
+    simp [if_neg h]
+  coeff_zero d :=
+    (ha.coeff_zero d).subset fun i => by contrapose; simp +contextual [coeff_truncTotal_eq_ite]
 
-  sorry
+omit [Finite σ] in
+theorem truncTotal_subst_eq_truncTotal_right_of_lt (ha : HasSubst a) (hx : ∀ i, k < x i) :
+    (f.subst a).truncTotal k = (f.subst
+      fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries).truncTotal k := by
+  classical
+  ext d
+  by_cases hd : d.degree < k
+  · rw [coeff_truncTotal _ hd, coeff_truncTotal _ hd, coeff_subst ha, coeff_subst, finsum_congr]
+    · intro n
+      congr! 1
+      rw [Finsupp.prod, Finsupp.prod, coeff_prod, coeff_prod]
+      congr! 2 with l hl i hi
+      obtain ⟨hl₁, hl₂⟩ := mem_finsuppAntidiag.mp hl
+      have : (l i).degree ≤ d.degree := by
+        rw [← hl₁, (n.support.sum l).degree_apply, Finsupp.degree_apply]
+        refine .trans (sum_le_sum_of_subset ?_) (sum_le_sum ?_)
+        · intro t ht
+          have := DFunLike.congr_fun hl₁ t
+          by_contra hc
+          simp only [Finsupp.coe_finset_sum, sum_apply] at this
+          simp_all
+        · intro t ht
+          rw [sum_apply']
+          convert single_le_sum_of_canonicallyOrdered hi (M := ℕ)
+          rfl
+      exact_mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
+    · exact HasSubst.truncTotal ha
+  simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
+
+theorem truncTotal_subst_eq_truncTotal_left (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a)
+      = (∑ i ∈ range k, (f.homogeneousComponent i).subst a).truncTotal k := by
+  ext d
+  by_cases hd : d.degree < k
+  · simp_rw [coeff_truncTotal _ hd, map_sum, coeff_subst ha]
+    letI : Fintype {n : σ →₀ ℕ | n.degree < k} := (Finsupp.finite_of_degree_lt k).fintype
+    let s := {n : σ →₀ ℕ | n.degree < k}.toFinset
+    have {r : (σ →₀ ℕ) → R} : ∑ᶠ (n : σ →₀ ℕ), r n • (coeff d) (n.prod fun s e ↦ a s ^ e) =
+      ∑ n ∈ s, r n • coeff d (n.prod fun s e ↦ a s ^ e) := by
+      rw [finsum_eq_sum_of_support_subset (s := s)]
+      intro n hn
+      contrapose! hn
+      have h : d.degree < n.degree := by grind
+      simp only [Function.mem_support, ne_eq, not_not]
+      convert smul_zero _
+      refine coeff_of_lt_order (lt_of_lt_of_le (Nat.cast_lt.mpr h)
+        (.trans ?_ (le_order_prod _ n.support)))
+      exact_mod_cast Finset.sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
+    simp_rw [this]
+    rw [sum_comm]
+    congr! 1 with n hn
+    rw [sum_eq_single n.degree _ (by grind), coeff_homogeneousComponent, if_pos rfl]
+    intro t _ ht
+    rw [coeff_homogeneousComponent, if_neg ht.symm, zero_smul]
+  simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
+
+theorem truncTotal_subst_of_lt (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0)
+    (hx : ∀ i, k < x i) :
+    truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
+      (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
+  rw [truncTotal_subst_eq_truncTotal_right_of_lt ha hx]
+  refine truncTotal_subst_eq_truncTotal_left (HasSubst.truncTotal ha) ?_
+  intro i
+  rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
+    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, if_pos (by grind), ha₁ i]
+
+theorem truncTotal_subst (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
+      (fun i ↦ ((a i).truncTotal (k + 1)).toMvPowerSeries)).truncTotal k :=
+  truncTotal_subst_of_lt ha ha₁ fun _ ↦ lt_add_one k
 
 end truncTotal
 
