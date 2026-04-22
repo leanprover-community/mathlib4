@@ -38,7 +38,7 @@ instance preservesHomology_preadditiveYonedaObj_of_injective (J : C) [hJ : Injec
   apply Functor.preservesHomology_of_preservesEpis_and_kernels
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The preadditive Yoneda functor on `J` preserves colimits if `J` is injective. -/
+/-- The preadditive Yoneda functor on `J` preserves finite colimits if `J` is injective. -/
 instance preservesFiniteColimits_preadditiveYonedaObj_of_injective (J : C) [hP : Injective J] :
     PreservesFiniteColimits (preadditiveYonedaObj J) := by
   apply Functor.preservesFiniteColimits_of_preservesHomology
