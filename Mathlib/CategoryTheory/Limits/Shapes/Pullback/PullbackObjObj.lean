@@ -24,11 +24,11 @@ canonical inclusion `(PushoutObjObj.ofHasPushout F f₁ f₂).ι`. This defines 
 
 Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
 morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃`,
-we introduce a structure `F.PullbackObjObj f₁ f₃` which
+we introduce a structure `G.PullbackObjObj f₁ f₃` which
 contains the data of a pullback of `(G.obj (op X₁)).obj X₃`
 and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
-If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
-projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
+If `sq₁₃ : G.PullbackObjObj f₁ f₃`, we have a canonical
+projection `sq₁₃.π : (G.obj (op Y₁)).obj X₃ ⟶ sq₁₃.pt`.
 
 If `C₂` has pullbacks, then we define the Leibniz pullback (often called pullback-hom) as the
 canonical projection `(PullbackObjObj.ofHasPullback G f₁ f₃).π`. This defines a bifunctor
