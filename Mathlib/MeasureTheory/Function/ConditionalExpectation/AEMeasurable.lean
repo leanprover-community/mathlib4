@@ -222,8 +222,7 @@ theorem lpMeasSubgroupToLpTrim_add (hm : m ≤ m0) (f g : lpMeasSubgroup F m p �
   grw [Lp.coeFn_add]
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm ?_ ?_
   · exact (Lp.stronglyMeasurable _).add (Lp.stronglyMeasurable _)
-  grw [lpMeasSubgroupToLpTrim_ae_eq, lpMeasSubgroupToLpTrim_ae_eq, lpMeasSubgroupToLpTrim_ae_eq,
-    ← Lp.coeFn_add]
+  grw [lpMeasSubgroupToLpTrim_ae_eq, ← Lp.coeFn_add]
   rfl
 
 theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ) :
@@ -232,7 +231,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   grw [Lp.coeFn_neg]
   refine (Lp.stronglyMeasurable _).ae_eq_trim_of_stronglyMeasurable hm (Lp.stronglyMeasurable _).neg
     ?_
-  grw [lpMeasSubgroupToLpTrim_ae_eq, lpMeasSubgroupToLpTrim_ae_eq, ← Lp.coeFn_neg]
+  grw [lpMeasSubgroupToLpTrim_ae_eq, ← Lp.coeFn_neg]
   rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
@@ -249,7 +248,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   · exact (Lp.stronglyMeasurable _).const_smul c
   grw [lpMeasToLpTrim_ae_eq]
   push_cast
-  grw [Lp.coeFn_smul, lpMeasToLpTrim_ae_eq]
+  grw [Lp.coeFn_smul]
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
 theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)

@@ -72,7 +72,7 @@ lemma AbsoluteValue.iSup_abv_linearMap_apply_le (v : AbsoluteValue K ℝ) (A : �
   refine ciSup_le fun j ↦ ?_
   grw [v.sum_le]
   simp only [map_mul]
-  grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
+  grw' [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
     dsimp only
     gcongr
@@ -339,8 +339,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
       gcongr
       · exact HH₁ v.val
-      · grw [le_max_left (iSup ..) 1]
-        exact HH₂ (fun j ↦ max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1) j
+      · grw [← HH₂, ← le_max_left]
     · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
 
 /-- Let `K` be a field with an admissible family of absolute values (giving rise

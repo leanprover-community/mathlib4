@@ -65,14 +65,14 @@ theorem MonotoneOn.intervalIntegral_slope_le {f : ℝ → ℝ} {a b c : ℝ}
         (hf'.mono_set (by grind [uIcc]))
         (hf'.mono_set (by grind [uIcc]))]
   have fU : ∫ (x : ℝ) in b..b + c, f x ≤ c * f (b + c) := by
-    grw [intervalIntegral.integral_mono_on (g := fun _ ↦ f (b + c))
+    grw' [intervalIntegral.integral_mono_on (g := fun _ ↦ f (b + c))
           (by linarith)
           (hf'.mono_set (by grind [uIcc]))
           (by simp)
           (by intros; apply hf <;> grind [uIcc])]
     simp
   have fL : c * f a ≤ ∫ (x : ℝ) in a..a + c, f x := by
-    grw [← intervalIntegral.integral_mono_on (f := fun _ ↦ f a)
+    grw' [← intervalIntegral.integral_mono_on (f := fun _ ↦ f a)
             (by linarith)
             (by simp)
             (hf'.mono_set (by grind [uIcc]))

@@ -470,7 +470,7 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
   rw [primeCounting_eq_theta_div_log_add_integral hx, add_mul, add_div]
   have hl : 0 ≤ log x := by bound
   rw [norm_of_nonneg (show 0 ≤ x / log x by bound), ← mul_div_assoc] at hx2
-  grw [theta_le_log4_mul_x (by linarith), ← hx2]
+  grw' [theta_le_log4_mul_x (by linarith), ← hx2]
   grind [le_norm_self]
 
 end PrimeCounting

@@ -135,7 +135,7 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     refine tendsto_lintegral_filter_of_dominated_convergence 1
       (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun n ↦ ae_of_all _ fun ω ↦ ?_)
       (by simp) (ae_of_all _ this)
-    grw [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
+    grw' [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
     · simp
     · exact fun j _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (ht j) _ _
     · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _
@@ -146,7 +146,7 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
     refine tendsto_lintegral_filter_of_dominated_convergence 1
       (Eventually.of_forall <| by fun_prop) (Eventually.of_forall fun _ ↦ ae_of_all _ fun _ ↦ ?_)
       (by simp) (ae_of_all _ this)
-    grw [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
+    grw' [Finset.prod_le_one (by simp), Finset.prod_le_one (by simp)]
     · simp
     · exact fun j _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (ht j) _ _
     · exact fun i _ ↦ HasOuterApproxClosed.apprSeq_apply_le_one (hs i) _ _

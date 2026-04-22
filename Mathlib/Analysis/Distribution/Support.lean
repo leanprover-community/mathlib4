@@ -131,6 +131,7 @@ theorem _root_.Filter.HasBasis.notMem_dsupport {ι : Sort*} {p : ι → Prop}
     x ∉ dsupport f ↔ ∃ i, p i ∧ IsVanishingOn f (s i) := by
   simp [hl.mem_dsupport]
 
+set_option linter.gcongr.grw false in
 @[gcongr]
 theorem dsupport_subset_dsupport
     (h : ∀ (s : Set α) (_ : IsOpen s), IsVanishingOn g s → IsVanishingOn f s) :

@@ -122,7 +122,7 @@ theorem log_stirlingSeq_diff_le (n : ℕ) :
   rcases n with (_ | n)
   · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
     apply Real.log_nonneg
-    grw [one_le_div (by positivity), Real.sqrt_le_left (by positivity), ← Real.add_one_le_exp]
+    grw' [one_le_div (by positivity), Real.sqrt_le_left (by positivity), ← Real.add_one_le_exp]
     norm_num
   set r := ((1 : ℝ) / (2 * (n + 1) + 1)) ^ 2 with hr
   have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
