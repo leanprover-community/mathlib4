@@ -1,17 +1,31 @@
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Tactic
+/-
+Copyright (c) 2026 Miraj Samarakkody. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Miraj Samarakkody
+-/
+module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Prod
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.LinearAlgebra.CrossProduct
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+/-!
+# Curves
+
+This file develops basic definitions and results about
+parametrized curves. It includes definitions of tangent vectors,
+arc-length parametrization, and related geometric concepts.
+
+-/
 open scoped InnerProductSpace
 
 namespace Curves
 
-/-- `ℝ³` denotes `EuclideanSpace ℝ (Fin 3)`, the standard 3-dimensional real Euclidean space. -/
+/-! `ℝ³` denotes `EuclideanSpace ℝ (Fin 3)`, the standard 3-dimensional real Euclidean space. -/
 scoped notation "ℝ³" => EuclideanSpace ℝ (Fin 3)
 
 /-- A parametrized differentiable curve is a smooth map `α : I → ℝ³` of an open interval
