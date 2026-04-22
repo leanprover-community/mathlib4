@@ -190,7 +190,7 @@ theorem GradesBy.decompose_single (m : M) (r : R) :
   decomposeAux_single _ _ _
 
 instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) :=
-  AddMonoidAlgebra.gradeBy.gradedAlgebra (AddMonoidHom.id _)
+  inferInstanceAs <| GradedAlgebra (gradeBy R (AddMonoidHom.id ι))
 
 theorem grade.decompose_single (i : ι) (r : R) :
     DirectSum.decompose (grade R : ι → Submodule _ _) (Finsupp.single i r : AddMonoidAlgebra _ _) =

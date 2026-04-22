@@ -191,6 +191,42 @@ end
 
 section
 
+variable {ι : Type*} {f : ι → α → β} [Preorder β] {I : Set ι}
+
+/-- Given a family of lower semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `M x : ι` such that the maximum value of
+evaluation at `x` is achieved by the function `f (M x)`, then the pointwise
+maximum of the family `f` is lower semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem lowerSemicontinuousOn_of_forall_isMaxOn_and_mem
+    (hfy : ∀ i ∈ I, LowerSemicontinuousOn (f i) s)
+    {M : α → ι}
+    (M_mem : ∀ x ∈ s, M x ∈ I)
+    (M_max : ∀ x ∈ s, IsMaxOn (fun y ↦ f y x) I (M x)) :
+    LowerSemicontinuousOn (fun x ↦ f (M x) x) s := by
+  intro x hx b hb
+  apply Filter.Eventually.mp <| hfy (M x) (M_mem x hx) x hx b hb
+  apply eventually_nhdsWithin_of_forall
+  intro z hz h
+  exact lt_of_lt_of_le h (M_max z hz (M_mem x hx))
+
+/-- Given a family of upper semicontinuous functions `f : ι → α → β` such that
+for each `x : α`, there is a choice `m x : ι` such that the minimum value of
+evaluation at `x` is achieved by the function `f (m x)`, then the pointwise
+maximum of the family `f` is upper semicontinuous.
+In the statement we restrict to subsets `I : Set ι` and `s : Set α` for more generality. -/
+theorem upperSemicontinuousOn_of_forall_isMinOn_and_mem
+    (hfy : ∀ i ∈ I, UpperSemicontinuousOn (f i) s)
+    {m : α → ι}
+    (m_mem : ∀ x ∈ s, m x ∈ I)
+    (m_min : ∀ x ∈ s, IsMinOn (fun i ↦ f i x) I (m x)) :
+    UpperSemicontinuousOn (fun x ↦ f (m x) x) s :=
+  lowerSemicontinuousOn_of_forall_isMaxOn_and_mem (β := βᵒᵈ) hfy m_mem m_min
+
+end
+
+section
+
 variable {γ : Type*} [LinearOrder γ]
 
 theorem lowerSemicontinuous_iff_isClosed_preimage {f : α → γ} :
