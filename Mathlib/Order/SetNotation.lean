@@ -136,18 +136,6 @@ section OrderSupSet
 
 variable [LE α]
 
-@[to_dual]
-theorem subset_upperBounds_lowerBounds (s : Set α) : s ⊆ upperBounds (lowerBounds s) :=
-  fun _ hx _ hy => hy hx
-
-@[to_dual]
-theorem IsGreatest.isLUB {s : Set α} {a : α} (h : IsGreatest s a) : IsLUB s a :=
-  ⟨h.2, fun _ hb => hb h.1⟩
-
-@[to_dual (attr := simp)]
-theorem isLUB_lowerBounds {s : Set α} {a : α} : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
-  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
-
 /-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
 the least upper bound of a set whenever one exists. -/
 class OrderSupSet (α : Type*) [LE α] extends SupSet α where
@@ -158,39 +146,6 @@ the greatest lower bound of a set whenever one exists. -/
 @[to_dual existing]
 class OrderInfSet (α : Type*) [LE α] extends InfSet α where
   protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)
-
-@[to_dual]
-theorem isLUB_sSup_of_isLUB [OrderSupSet α] {s : Set α} {a : α} :
-    IsLUB s a → IsLUB s (sSup s) :=
-  OrderSupSet.isLUB_sSup_of_isLUB _ _
-
-@[to_dual] protected alias IsLUB.isLUB_sSup := isLUB_sSup_of_isLUB
-
-/-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
-supremum of its lower bounds. -/
-@[to_dual
-/-- Constructs an `OrderSupSet` from an `OrderInfSet` by defining the supremum of a set as the
-infimum of its upper bounds. -/]
-abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
-    OrderInfSet α where
-  sInf s := sSup (lowerBounds s)
-  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp (isLUB_sSup_of_isLUB h.isLUB)
-
-open Classical in
-/-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
-where `sSup s` returns `d` if a least upper bound does not exist. -/
-@[to_dual
-/-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
-where `sInf s` returns `d` if a greatest lower bound does not exist. -/]
-noncomputable abbrev OrderSupSet.choose (d : α) :
-    OrderSupSet α where
-  sSup s := if h : ∃ x, IsLUB s x then h.choose else d
-  isLUB_sSup_of_isLUB _ _ h := dif_pos (Exists.intro _ h) ▸ choose_spec _
-
-@[to_dual]
-theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
-    (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
-  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
 
 end OrderSupSet
 
