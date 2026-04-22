@@ -391,9 +391,6 @@ def compDiagram₃Iso : (compDiagram₃ P Q R X Y) ≅
 instance (X : Type u) : IsLeftAdjoint (tensorRight X) :=
   Functor.isLeftAdjoint_of_iso (BraidedCategory.tensorLeftIsoTensorRight X)
 
--- attribute [elementwise] Multicofork.condition
--- attribute [simp] Multicofork.condition_apply
-
 noncomputable def compIso₃ (X : C) (Y : Fᵒᵖ) :
     (postcompose₂.obj chosenCoendFunctor ⋙ chosenCoendFunctor).obj (compDiagram₃' P Q R X Y.unop) ≅
       (((P.comp Q).comp R).obj X).obj Y := by
