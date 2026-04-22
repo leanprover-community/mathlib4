@@ -229,8 +229,8 @@ end BinaryProduct
 /-!
 ### Arbitrary products
 
-In this section, we prove that `J`-indexed products in `Over X` correspond to `J`-indexed pullbacks
-in `C`.
+In this section, we prove that `J`-indexed products in `Over B` correspond to `J`-indexed wide
+pullbacks in `C`.
 -/
 
 namespace ConstructProducts
