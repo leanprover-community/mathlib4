@@ -114,10 +114,10 @@ section
 variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 variable {I₁ I₂ I₃ J : Type*} (p : I₁ × I₂ × I₃ → J)
 
-/-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₃`, graded objects `X₁ : GradedObject I₁ C₁`,
+/-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`, graded objects `X₁ : GradedObject I₁ C₁`,
 `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃`, and a map `p : I₁ × I₂ × I₃ → J`,
 this is the `J`-graded object sending `j` to the coproduct of
-`((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)` for `p ⟨i₁, i₂, i₃⟩ = k`. -/
+`((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)` for `p ⟨i₁, i₂, i₃⟩ = j`. -/
 noncomputable def mapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
     (X₃ : GradedObject I₃ C₃)
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
@@ -492,7 +492,7 @@ variable [H : HasGoodTrifunctor₂₃Obj F G₂₃ ρ₂₃ X₁ X₂ X₃]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `cofan₃MapBifunctorBifunctor₂₃MapObj` is a colimit, see the induced isomorphism
-`mapBifunctorComp₁₂MapObjIso`. -/
+`mapBifunctorComp₂₃MapObjIso`. -/
 noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
     IsColimit (cofan₃MapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ j) := by
   let c₂₃ := fun i₂₃ => (((mapBifunctor G₂₃ I₂ I₃).obj X₂).obj X₃).cofanMapObj ρ₂₃.p i₂₃
