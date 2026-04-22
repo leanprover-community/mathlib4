@@ -230,64 +230,37 @@ theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
   let Tgood : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∈ KU.1
   let Tbad : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∉ KU.1
   let O : Set X := ⋂ KU ∈ Tgood, KU.2
-  have hOopen : IsOpen O := by
-    have hOpen : ∀ KU ∈ Tgood, IsOpen KU.2 := by
-      intro KU hKU
-      have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
-      have hKU'' : KU ∈ S := hSfin.mem_toFinset.mp hKU'
-      exact (hSdata KU.1 KU.2 hKU'').2.1
-    simpa [O] using isOpen_biInter_finset hOpen
+  -- Sub-basis entries of either `Tgood` or `Tbad` are entries of `S`, so their data applies.
+  have hS_of_T : ∀ KU, KU ∈ T → KU ∈ S := fun _ ↦ hSfin.mem_toFinset.mp
+  have hOopen : IsOpen O :=
+    isOpen_biInter_finset fun KU hKU ↦
+      (hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).2.1
   have huO : endpoint γ ∈ O := by
-    have hmem : ∀ KU ∈ Tgood, endpoint γ ∈ KU.2 := by
-      intro KU hKU
-      have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
-      have hKU'' : KU ∈ S := hSfin.mem_toFinset.mp hKU'
-      exact (hSdata KU.1 KU.2 hKU'').2.2 (by
-        simpa using (Finset.mem_filter.1 hKU).2)
-    simpa [O] using hmem
+    simp only [O, Set.mem_iInter]
+    exact fun KU hKU ↦ (hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).2.2
+      (by simpa using (Finset.mem_filter.1 hKU).2)
   rcases (isOpen_isPathConnected_basis (x := endpoint γ)).mem_iff.mp
-      (hOopen.mem_nhds huO) with ⟨W, hWbasis, hWO⟩
-  rcases hWbasis with ⟨hWopen, huW, hWpath⟩
+      (hOopen.mem_nhds huO) with ⟨W, ⟨hWopen, huW, hWpath⟩, hWO⟩
   let N : Set I := γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ
   have hNnhds : N ∈ 𝓝 (1 : I) := by
-    refine Filter.inter_mem ?_ ?_
-    · exact (hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa [endpoint] using huW)
-    · have hbadOpen : ∀ KU ∈ Tbad, IsOpen KU.1ᶜ := by
-        intro KU hKU
-        have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
-        have hKU'' : KU ∈ S := hSfin.mem_toFinset.mp hKU'
-        have hKclosed : IsClosed KU.1 := (hSdata KU.1 KU.2 hKU'').1.isClosed
-        exact hKclosed.isOpen_compl
-      have h1bad : (1 : I) ∈ ⋂ KU ∈ Tbad, KU.1ᶜ := by
-        simp [Tbad]
-      exact (isOpen_biInter_finset hbadOpen).mem_nhds h1bad
+    refine Filter.inter_mem
+      ((hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa [endpoint] using huW)) ?_
+    refine (isOpen_biInter_finset ?_).mem_nhds (by simp [Tbad])
+    exact fun KU hKU ↦
+      ((hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).1.isClosed).isOpen_compl
   rcases exists_Ioc_subset_of_mem_nhds' hNnhds (show (0 : I) < 1 by simp)
     with ⟨a₀, ha₀, hIoc⟩
   let a : ℝ := (((a₀ : I) : ℝ) + 1) / 2
   let b : ℝ := (a + 1) / 2
+  -- `ha₀_nonneg`, `ha₀_lt_one` are kept in scope for `nlinarith` to pick up.
   have ha₀_nonneg : 0 ≤ ((a₀ : I) : ℝ) := a₀.2.1
   have ha₀_lt_one : ((a₀ : I) : ℝ) < 1 := ha₀.2
-  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by
-    dsimp [a]
-    nlinarith
-  have ha0 : 0 ≤ a := by
-    dsimp [a]
-    nlinarith
-  have ha1 : a ≤ 1 := by
-    dsimp [a]
-    nlinarith
-  have hab : a < b := by
-    dsimp [b]
-    have ha_lt_one : a < 1 := by
-      dsimp [a]
-      nlinarith
-    nlinarith
-  have hb1 : b < 1 := by
-    dsimp [b]
-    have ha_lt_one : a < 1 := by
-      dsimp [a]
-      nlinarith
-    nlinarith
+  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by dsimp [a]; nlinarith
+  have ha0 : 0 ≤ a := by dsimp [a]; nlinarith
+  have ha1 : a ≤ 1 := by dsimp [a]; nlinarith
+  have ha_lt_one : a < 1 := by dsimp [a]; nlinarith
+  have hab : a < b := by dsimp [b]; nlinarith
+  have hb1 : b < 1 := by dsimp [b]; nlinarith
   refine mem_nhds_iff.mpr ⟨W, ?_, hWopen, huW⟩
   intro v hvW
   obtain ⟨δ, hδW⟩ := hWpath.exists_path huW hvW
@@ -527,44 +500,30 @@ theorem exists_open_nhd_pathComponent_preimage
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i) ∧
       (∀ j, β.1 (part.t j) ∈ V' j)} with hN_def
   refine ⟨N, ?_, ?_, ?_, ?_⟩
-  · -- `N` is open.
-    have hN_split : N =
-        {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
-              β.1 s ∈ T.U i} ∩
-        {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} := rfl
-    rw [hN_split]
+  · -- `N` is open: it is the intersection of a finite family of open segment/point conditions.
+    rw [show N = {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
+          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} ∩
+        {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} from rfl]
     refine IsOpen.inter ?_ ?_
     · -- Segment conditions: pulled back from `C(I, X)` tubes.
-      have hrewrite : {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
-              β.1 s ∈ T.U i} =
+      rw [show {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
           ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
-              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
-                β.1 s ∈ T.U i} := by
-        ext β; simp
-      rw [hrewrite]
-      apply isOpen_iInter_of_finite
-      intro i
-      have heq : {β : BasedPath x₀ | ∀ s : I,
-              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) →
-                β.1 s ∈ T.U i} =
+              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} from
+        by ext β; simp]
+      refine isOpen_iInter_of_finite fun i ↦ ?_
+      rw [show {β : BasedPath x₀ | ∀ s : I,
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
           (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
             {f : C(I, X) | Set.MapsTo f
-              (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (T.U i)} := by
-        ext β
-        simp [Set.MapsTo, Set.mem_Icc]
-      rw [heq]
+              (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (T.U i)} from
+        by ext β; simp [Set.MapsTo, Set.mem_Icc]]
       exact (ContinuousMap.isOpen_setOf_mapsTo isCompact_Icc (T.h_U_open i)).preimage
         continuous_subtype_val
     · -- Point conditions at partition points.
-      have hrewrite2 : {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} =
-          ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V' j} := by
-        ext β; simp
-      rw [hrewrite2]
-      apply isOpen_iInter_of_finite
-      intro j
-      exact (hV'_open_all j).preimage
+      rw [show {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} =
+          ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V' j} from by ext β; simp]
+      exact isOpen_iInter_of_finite fun j ↦ (hV'_open_all j).preimage
         ((continuous_eval_const (part.t j)).comp continuous_subtype_val)
   · -- `α ∈ N`.
     exact ⟨hα_tube.stays_in_U, hα_passes_V'⟩
@@ -577,18 +536,13 @@ theorem exists_open_nhd_pathComponent_preimage
     intro β hβ
     obtain ⟨hβ_stays, hβ_passes⟩ := hβ
     -- Endpoint of `β` lies in `U`.
-    have hβ_end_V' : endpoint β ∈ V_last' := by
+    have hβ_end_U : endpoint β ∈ U := by
       have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
       rw [hV'_last_eq] at h1
-      simpa [BasedPath.endpoint, part.h_end] using h1
-    have hβ_end_U : endpoint β ∈ U := hV'_sub_U hβ_end_V'
-    -- Construct rung paths in `V' j`.
-    have hrung : ∀ j : Fin (n' + 2),
-        ∃ ρ : Path (α.toPath (part.t j)) (β.toPath (part.t j)),
-          Set.range ρ ⊆ V' j := by
-      intro j
-      exact (hV'_pathConn_all j).exists_path (hα_passes_V' j) (hβ_passes j)
-    choose ρ hρ_range using hrung
+      exact hV'_sub_U (by simpa [BasedPath.endpoint, part.h_end] using h1)
+    -- Rung paths in `V' j`.
+    choose ρ hρ_range using fun j : Fin (n' + 2) ↦
+      (hV'_pathConn_all j).exists_path (hα_passes_V' j) (hβ_passes j)
     -- Rectangle homotopies on each segment.
     have h_rectangles : ∀ i : Fin (n' + 1),
         Path.Homotopic
@@ -614,44 +568,31 @@ theorem exists_open_nhd_pathComponent_preimage
       exact Path.segment_rung_homotopy (T.U i)
         (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i hp_a hp_d p q hp_range hq_range)
         _ _ _ _ hα_sub hβ_sub hρ_cast hρ_succ
-    -- Use `T.U 0` as the SLSC neighborhood that contains the initial rung.
-    have h_zero_cast : (0 : Fin (n' + 2)) =
-        ((⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc) := rfl
-    have hρ0_range : Set.range (ρ 0) ⊆ T.U ⟨0, Nat.succ_pos n'⟩ := by
-      refine (hρ_range 0).trans ?_
-      rw [h_zero_cast, hV'_castSucc_eq]
-      exact T.h_V_left_subset ⟨0, Nat.succ_pos n'⟩
-    -- Paste segment homotopies.
+    -- Paste the segment homotopies; use `T.U 0` as the enclosing SLSC neighborhood.
     have h_paste :=
       Path.paste_segment_homotopies_slsc_source α.toPath β.toPath part ρ h_rectangles
         (T.U ⟨0, Nat.succ_pos n'⟩)
         (fun p q hp_a hp_d hp_range hq_range ↦
           T.h_U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
-        hρ0_range
+        ((hρ_range 0).trans (by
+          rw [show (0 : Fin (n' + 2)) = (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc from rfl,
+            hV'_castSucc_eq]
+          exact T.h_V_left_subset ⟨0, Nat.succ_pos n'⟩))
     -- Package the final rung as a path from `endpoint α` to `endpoint β`.
     have hβ_at_last : β.toPath (part.t (Fin.last (n' + 1))) = endpoint β := by
       rw [part.h_end]; exact β.toPath.target
     let ρ_final : Path (endpoint α) (endpoint β) :=
       (ρ (Fin.last (n' + 1))).cast hα_at_last.symm hβ_at_last.symm
-    have hρ_final_range : Set.range ρ_final ⊆ U := by
-      refine (hρ_range (Fin.last (n' + 1))).trans ?_
-      rw [hV'_last_eq]; exact hV'_sub_U
-    have h_homotopic : Path.Homotopic (α.toPath.trans ρ_final) β.toPath := h_paste
-    have h_α_to_append :
-        JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) α (append α ρ_final) :=
-      joinedIn_preimage_of_append α hα ρ_final hρ_final_range
-    have h_singleton :
-        JoinedIn (endpoint (x₀ := x₀) ⁻¹' ({endpoint β} : Set X))
-          (ofPath (α.toPath.trans ρ_final)) (ofPath β.toPath) :=
-      joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := ({endpoint β} : Set X))
-        (show endpoint β ∈ ({endpoint β} : Set X) from rfl) h_homotopic
-    have h_subset_U : ({endpoint β} : Set X) ⊆ U := Set.singleton_subset_iff.mpr hβ_end_U
-    have h_β_eq : (ofPath β.toPath : BasedPath x₀) = β := by ext t; rfl
-    have h_append_to_β :
-        JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) (append α ρ_final) β := by
-      obtain ⟨γ, hγ⟩ := h_singleton.mono (Set.preimage_mono h_subset_U)
-      exact ⟨γ.cast rfl h_β_eq.symm, fun t ↦ hγ t⟩
-    exact h_α_to_append.trans h_append_to_β
+    have hρ_final_range : Set.range ρ_final ⊆ U :=
+      (hρ_range (Fin.last (n' + 1))).trans (by rw [hV'_last_eq]; exact hV'_sub_U)
+    -- Join `α` to `append α ρ_final`, then deform `append α ρ_final` to `β` via `h_paste`.
+    refine (joinedIn_preimage_of_append α hα ρ_final hρ_final_range).trans ?_
+    obtain ⟨γ, hγ⟩ :=
+      (joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := ({endpoint β} : Set X))
+        (show endpoint β ∈ ({endpoint β} : Set X) from rfl)
+        (show Path.Homotopic (α.toPath.trans ρ_final) β.toPath from h_paste)).mono
+        (Set.preimage_mono (Set.singleton_subset_iff.mpr hβ_end_U))
+    exact ⟨γ.cast rfl (by ext t; rfl), hγ⟩
 
 /-- For an open neighborhood `U`, path components of `endpoint ⁻¹' U` are open. -/
 theorem isOpen_pathComponent_preimage
@@ -696,21 +637,12 @@ theorem toPath_homotopic_of_joinedIn_slsc
   let L : Path v v :=
     { toFun := fun t ↦ (F t).1 1
       continuous_toFun := by
-        have h : Continuous (fun t : I ↦ ((F t).1 1 : X)) := by
-          have := hFv_cont.comp (continuous_id.prodMk (continuous_const (y := (1 : I))))
-          simpa using this
-        exact h
-      source' := by
-        rw [hF0_eq]; exact heq
-      target' := by
-        rw [hF1_eq]; rfl }
-  have hL_range : Set.range L ⊆ U := by
-    rintro _ ⟨t, rfl⟩
-    exact hF_U t
+        simpa using hFv_cont.comp (continuous_id.prodMk (continuous_const (y := (1 : I))))
+      source' := by rw [hF0_eq]; exact heq
+      target' := by rw [hF1_eq]; rfl }
   have hL_refl : L.Homotopic (Path.refl v) :=
-    hU_slsc hv hv L (Path.refl v) hL_range (by
-      rintro _ ⟨_, rfl⟩
-      simpa using hv)
+    hU_slsc hv hv L (Path.refl v) (by rintro _ ⟨t, rfl⟩; exact hF_U t) (by
+      rintro _ ⟨_, rfl⟩; simpa using hv)
   -- Cast α.toPath to target `v`.
   let α' : Path x₀ v := α.toPath.cast rfl heq.symm
   -- Reparameterization functions.
