@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 We define what it means for a triple of morphisms `f g : X ⟶ Y`, `ι : W ⟶ X` to be a split
 equalizer: there is a retraction `r` of `ι` and a retraction `t` of `g`, which additionally satisfy
-`t ≫ f = r ≫ ι`.
+`f ≫ t = r ≫ ι`.
 
 In addition, we show that every split equalizer is an equalizer
 (`CategoryTheory.IsSplitEqualizer.isEqualizer`) and absolute
@@ -140,11 +140,11 @@ split equalizer in `D`.
 abbrev Functor.IsCosplitPair : Prop :=
   HasSplitEqualizer (G.map f) (G.map g)
 
-/-- Get the equalizer object from the typeclass `IsCosplitPair`. -/
+/-- Get the equalizer object from the typeclass `HasSplitEqualizer`. -/
 noncomputable def HasSplitEqualizer.equalizerOfSplit [HasSplitEqualizer f g] : C :=
   (splittable (f := f) (g := g)).choose
 
-/-- Get the equalizer morphism from the typeclass `IsCosplitPair`. -/
+/-- Get the equalizer morphism from the typeclass `HasSplitEqualizer`. -/
 noncomputable def HasSplitEqualizer.equalizerι [HasSplitEqualizer f g] :
     HasSplitEqualizer.equalizerOfSplit f g ⟶ X :=
   (splittable (f := f) (g := g)).choose_spec.choose
