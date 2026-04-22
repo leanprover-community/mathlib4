@@ -241,7 +241,7 @@ theorem cocone_inr (h : IsPushout f g inl inr) : h.cocone.inr = inr :=
 noncomputable def isColimit (h : IsPushout f g inl inr) : IsColimit h.cocone :=
   h.isColimit'.some
 
-/-- API for PushoutCocone.IsColimit.lift for `IsPushout` -/
+/-- API for `PushoutCocone.IsColimit.desc` for `IsPushout` -/
 noncomputable def desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
     (w : f ≫ h = g ≫ k) : P ⟶ W :=
   PushoutCocone.IsColimit.desc hP.isColimit h k w
@@ -326,8 +326,8 @@ theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl
 
 end
 
-/-- Any object at the top left of a pullback square is
-isomorphic to the pullback provided by the `HasLimit` API. -/
+/-- Any object at the bottom right of a pushout square is
+isomorphic to the pushout provided by the `HasColimit` API. -/
 noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P ≅ pushout f g :=
   (colimit.isoColimitCocone ⟨_, h.isColimit⟩).symm
 
