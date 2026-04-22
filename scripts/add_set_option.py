@@ -115,7 +115,9 @@ def find_declaration_start(lines: list[str], error_line: int) -> int:
     """Find the start of the declaration containing the error.
 
     Walks backwards from error_line (1-indexed) to the first blank line
-    that isn't inside a block comment.
+    that isn't inside a block comment, then skips forward past any
+    `variable`/`include`/`omit`/`open` lines (which are not valid targets
+    for `set_option ... in`) to land on the actual declaration keyword.
 
     TODO: This heuristic is imperfect — it can misidentify the declaration
     boundary when there's no blank line between consecutive declarations,
@@ -124,13 +126,38 @@ def find_declaration_start(lines: list[str], error_line: int) -> int:
     """
     idx = error_line - 1  # convert to 0-indexed
 
+    start = 0
     while idx > 0:
         idx -= 1
         if lines[idx].strip() == "":
             if not is_inside_block_comment(lines, idx):
-                return idx + 1
+                start = idx + 1
+                break
 
-    return 0
+    # Skip past non-declaration preamble lines: `variable`, `include`, `omit`,
+    # `open`, and their continuation lines (starting with whitespace),
+    # plus any blank lines between them. These can't be prefixed with
+    # `set_option ... in`.
+    n = len(lines)
+    while start < n:
+        line = lines[start]
+        stripped = line.lstrip()
+        if stripped == "":
+            start += 1
+            continue
+        first_word = stripped.split()[0] if stripped.split() else ""
+        if first_word in {"variable", "include", "omit", "open"}:
+            # Consume this statement and its continuation lines
+            start += 1
+            while start < n and (lines[start].startswith((" ", "\t"))
+                                  or lines[start].strip() == ""):
+                if lines[start].strip() == "":
+                    break
+                start += 1
+            continue
+        break
+
+    return start
 
 
 # lake build outputs "error: filepath:line:col: message"
