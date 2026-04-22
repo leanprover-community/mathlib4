@@ -163,8 +163,9 @@ end
 section
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory Cat.{v', u'} C]
 
-/-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
-This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/
+/-- A type synonym for `C`, which should come equipped with a `Cat`-enriched ordinary category
+structure. This converts it to a strict bicategory extending the given category structure on `C`,
+with hom-categories transferred from the `Cat`-enriched structure. -/
 def CatEnrichedOrdinary (C : Type*) := C
 
 namespace CatEnrichedOrdinary
