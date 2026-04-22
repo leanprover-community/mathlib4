@@ -593,8 +593,8 @@ theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
 theorem Iso.cliqueFree_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ) :
     G.CliqueFree n ↔ G'.CliqueFree n := by
   contrapose
-  repeat rw [SimpleGraph.not_cliqueFree_iff]
-  refine (RelIso.relEmbeddingCongr refl f).nonempty_congr
+  repeat rw [SimpleGraph.not_cliqueFree_iff_top_isContained]
+  exact isContained_congr_right f
 
 end CliqueFree
 
