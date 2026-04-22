@@ -32,7 +32,7 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
-* construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
+* construct some elements in `ComposableArrows (Fin (n + 1)) m` for small `n`
   the precomposition with which shall induce functors
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
   (specifically faces) with good definitional properties (this might be necessary for
@@ -498,7 +498,7 @@ the last arrow. -/
 def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
 
-/-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
+/-- The `ComposableArrows C n` obtained by forgetting the last arrow. -/
 abbrev δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
 
 section
