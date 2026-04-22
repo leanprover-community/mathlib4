@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # Preservation of Kan extensions
 
-Given functors `F : A ⥤ B`, `L : B ⥤ C`, and `G : B ⥤ D`,
+Given functors `F : A ⥤ B`, `L : A ⥤ C`, and `G : B ⥤ D`,
 we introduce a typeclass `G.PreservesLeftKanExtension F L` which encodes the fact that
 the left Kan extension of `F` along `L` is preserved by the functor `G`.
 
@@ -76,20 +76,20 @@ lemma PreservesLeftKanExtension.mk_of_preserves_isUniversal (E : LeftExtension L
 
 attribute [instance] PreservesLeftKanExtension.preserves
 
-/-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves all pointwise left Kan
+/-- `G.PreservesPointwiseLeftKanExtensionAt F L c` asserts that `G` preserves all pointwise left Kan
 extensions of `F` along `L` at the point `c`. -/
 class PreservesPointwiseLeftKanExtensionAt (c : C) where
   /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : LeftExtension L F), E.IsPointwiseLeftKanExtensionAt c →
     Nonempty ((LeftExtension.postcompose₂ L F G |>.obj E).IsPointwiseLeftKanExtensionAt c)
 
-/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left Kan extensions
+/-- `G.PreservesPointwiseLeftKanExtension F L` asserts that `G` preserves all pointwise left Kan extensions
 of `F` along `L`. -/
 abbrev PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
 
 variable {F L} in
 /-- Given a pointwise left Kan extension of `F` along `L` at `c`, exhibits
-`(LeftExtension.whiskerRight L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
+`(LeftExtension.postcompose₂ L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
 `L` at `c`. -/
 def LeftExtension.IsPointwiseLeftKanExtensionAt.postcompose {c : C}
     [PreservesPointwiseLeftKanExtensionAt G F L c]
@@ -99,7 +99,7 @@ def LeftExtension.IsPointwiseLeftKanExtensionAt.postcompose {c : C}
 
 variable {F L} in
 /-- Given a pointwise left Kan extension of `F` along `L`, exhibits
-`(LeftExtension.whiskerRight L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
+`(LeftExtension.postcompose₂ L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` along
 `L`. -/
 def LeftExtension.IsPointwiseLeftKanExtension.postcompose
     [PreservesPointwiseLeftKanExtension G F L]
@@ -209,7 +209,7 @@ instance preservesPointwiseLKEOfHasPointwiseAndPreservesPointwise
 
 /-- Extract an isomorphism
 `(pointwiseLeftKanExtension L F) ⋙ G ≅ pointwiseLeftKanExtension L (F ⋙ G)` when `G` preserves
-left Kan extensions. -/
+pointwise left Kan extensions. -/
 def pointwiseLeftKanExtensionCompIsoOfPreserves
     [PreservesPointwiseLeftKanExtension G F L]
     [L.HasPointwiseLeftKanExtension F] :
@@ -318,7 +318,7 @@ lemma PreservesRightKanExtension.mk_of_preserves_isRightKanExtension
       ((Functor.associator _ _ _).inv ≫ whiskerRight α' G)
       (by ext x; simp [← G.map_comp])
 
-/-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a left
+/-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a right
 Kan extension, phrased in terms of `IsUniversal`. -/
 lemma PreservesRightKanExtension.mk_of_preserves_isUniversal (E : RightExtension L F)
     (hE : E.IsUniversal) (h : Nonempty (RightExtension.postcompose₂ L F G |>.obj E).IsUniversal) :
@@ -330,20 +330,20 @@ lemma PreservesRightKanExtension.mk_of_preserves_isUniversal (E : RightExtension
 
 attribute [instance] PreservesRightKanExtension.preserves
 
-/-- `G.PreservesRightKanExtensionAt F L c` asserts that `G` preserves all right pointwise right Kan
+/-- `G.PreservesPointwiseRightKanExtensionAt F L c` asserts that `G` preserves all pointwise right Kan
 extensions of `F` along `L` at `c`. -/
 class PreservesPointwiseRightKanExtensionAt (c : C) where
   /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : RightExtension L F), E.IsPointwiseRightKanExtensionAt c →
     Nonempty ((RightExtension.postcompose₂ L F G |>.obj E).IsPointwiseRightKanExtensionAt c)
 
-/-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right Kan
-extensions of `F` along `L` for every `F`. -/
+/-- `G.PreservesPointwiseRightKanExtension F L` asserts that `G` preserves all pointwise right Kan
+extensions of `F` along `L`. -/
 abbrev PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
 
 variable {F L} in
 /-- Given a pointwise right Kan extension of `F` along `L` at `c`, exhibits
-`(RightExtension.whiskerRight L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` along
+`(RightExtension.postcompose₂ L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` along
 `L` at `c`. -/
 def RightExtension.IsPointwiseRightKanExtensionAt.postcompose {c : C}
     [PreservesPointwiseRightKanExtensionAt G F L c]
@@ -353,7 +353,8 @@ def RightExtension.IsPointwiseRightKanExtensionAt.postcompose {c : C}
 
 variable {F L} in
 /-- Given a pointwise right Kan extension of `F` along `L`, exhibits
-`(RightExtension.whiskerRight L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` at `L`. -/
+`(RightExtension.postcompose₂ L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` along
+`L`. -/
 def RightExtension.IsPointwiseRightKanExtension.postcompose
     [PreservesPointwiseRightKanExtension G F L]
     {E : RightExtension L F} (hE : E.IsPointwiseRightKanExtension) :
@@ -438,8 +439,8 @@ lemma rightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
 
 end
 
-/-- A functor that preserves the limit of `(StructuredArrow.proj L c ⋙ F)` preserves
-the pointwise right Kan extension of `F` along `L` at c. -/
+/-- A functor that preserves the limit of `(StructuredArrow.proj c L ⋙ F)` preserves
+the pointwise right Kan extension of `F` along `L` at `c`. -/
 instance preservesPointwiseRightKanExtensionAtOfPreservesLimit (c : C)
     [Limits.PreservesLimit (StructuredArrow.proj c L ⋙ F) G] :
     G.PreservesPointwiseRightKanExtensionAt F L c where
@@ -460,7 +461,7 @@ instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
 
 /-- Extract an isomorphism
 `L.pointwiseRightKanExtension F ⋙ G ≅ L.pointwiseRightKanExtension (F ⋙ G)` when `G` preserves
-right Kan extensions. -/
+pointwise right Kan extensions. -/
 def pointwiseRightKanExtensionCompIsoOfPreserves
     [PreservesPointwiseRightKanExtension G F L]
     [L.HasPointwiseRightKanExtension F] :
