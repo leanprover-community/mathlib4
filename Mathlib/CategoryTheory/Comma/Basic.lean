@@ -332,7 +332,7 @@ naturally isomorphic to the identity functor. -/
 def mapLeftId : mapLeft R (𝟙 L) ≅ 𝟭 _ :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-/-- The functor `Comma L₁ R ⥤ Comma L₃ R` induced by the composition of two natural transformations
+/-- The functor `Comma L₃ R ⥤ Comma L₁ R` induced by the composition of two natural transformations
 `l : L₁ ⟶ L₂` and `l' : L₂ ⟶ L₃` is naturally isomorphic to the composition of the two functors
 induced by these natural transformations. -/
 @[simps!]
@@ -341,7 +341,7 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
 /-- Two equal natural transformations `L₁ ⟶ L₂` yield naturally isomorphic functors
-`Comma L₁ R ⥤ Comma L₂ R`. -/
+`Comma L₂ R ⥤ Comma L₁ R`. -/
 @[simps!]
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
@@ -517,7 +517,7 @@ def equivProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-/-- Taking the comma category of a functor into `A ⥤ Discrete PUnit` and the identity
+/-- Taking the comma category of a functor `A ⥤ Discrete PUnit` and the identity
 `Discrete PUnit ⥤ Discrete PUnit` results in a category equivalent to `A`. -/
 @[simps!]
 def toPUnitIdEquiv (L : A ⥤ Discrete PUnit) (R : Discrete PUnit ⥤ Discrete PUnit) :
@@ -555,14 +555,14 @@ def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
   obj X := ⟨op X.right, op X.left, op X.hom⟩
   map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
 
-/-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
-to `snd L R`. -/
+/-- Composing the `leftOp` of `opFunctor L R` with `fst R.op L.op` is naturally isomorphic
+to `(snd L R).op`. -/
 @[simps!]
 def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
   Iso.refl _
 
-/-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
-to `fst L R`. -/
+/-- Composing the `leftOp` of `opFunctor L R` with `snd R.op L.op` is naturally isomorphic
+to `(fst L R).op`. -/
 @[simps!]
 def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
   Iso.refl _
@@ -573,12 +573,12 @@ def unopFunctor : Comma L.op R.op ⥤ (Comma R L)ᵒᵖ where
   obj X := ⟨X.right.unop, X.left.unop, X.hom.unop⟩
   map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using f.w.symm)⟩
 
-/-- Composing `unopFunctor L R` with `(fst L R).op` is isomorphic to `snd L.op R.op`. -/
+/-- Composing `unopFunctor L R` with `(fst R L).op` is isomorphic to `snd L.op R.op`. -/
 @[simps!]
 def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
   Iso.refl _
 
-/-- Composing `unopFunctor L R` with `(snd L R).op` is isomorphic to `fst L.op R.op`. -/
+/-- Composing `unopFunctor L R` with `(snd R L).op` is isomorphic to `fst L.op R.op`. -/
 @[simps!]
 def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
   Iso.refl _
