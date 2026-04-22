@@ -29,7 +29,7 @@ For `P : HeightOneSpectrum A`, the main result of this file is that
 
 variable {A M M₁ M₂ : Type*} [CommRing A]
 
-open DirectSum IsDedekindDomain Submodule Module HeightOneSpectrum Set Function
+open IsDedekindDomain Submodule Module HeightOneSpectrum Set Function
 
 namespace Ideal
 
@@ -134,7 +134,7 @@ section IsDedekindDomain
 
 variable [IsDedekindDomain A]
 
-open nonZeroDivisors
+open scoped nonZeroDivisors
 
 theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
     ⨆ P : HeightOneSpectrum A, primaryComponent M (P : Ideal A) = ⊤ := by
@@ -165,31 +165,27 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
   refine iSup_mono (fun P x hxmem ↦ ?_)
   by_cases hPS : P ∈ S
   · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
-    one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
-    Subtype.forall, iSup_pos, S]
-    exact ⟨_, fun a₁ b ↦ hxmem _ b⟩
+      one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
+      Subtype.forall, iSup_pos, S]
+    exact ⟨(Associates.mk P.asIdeal).count (Associates.mk (span {a})).factors, fun _ b ↦ hxmem _ b⟩
   · simp_all
 
 variable (A M) in
 theorem iSupIndep_primaryComponent :
     iSupIndep fun P : HeightOneSpectrum A => primaryComponent M (P : Ideal A) := by
   rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
-  intro s p h d
-  simp only [primaryComponent_mem] at h
-  have hPairwise (n : ℕ) : (s : Set (HeightOneSpectrum A)).Pairwise
-      fun i j ↦ (·.asIdeal ^ n) i ⊔ (·.asIdeal ^ n) j = ⊤ :=
-    fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-  have (n : ℕ) := supIndep_torsionBySet_ideal (R := A) (M := M) (S := s)
-    (p := (fun x ↦ (asIdeal x) ^ n)) (hPairwise n)
-  choose! f h using h
-  let m := s.sup (f ·)
+  intro s p hmem hsum
+  simp only [primaryComponent_mem] at hmem
+  choose! f hmem using hmem
+  let m := s.sup f
   have m_prop : ∀ i ∈ s, f i ≤ m := fun i ↦ Finset.le_sup
-  apply (iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero
-    (fun i ↦ torsionBySet A M ↑(i.asIdeal ^ m : Ideal A)) (R := A)).mp _ s p _ d
-  · rw [iSupIndep_iff_supIndep]
+  have hSupIndep : iSupIndep fun i : HeightOneSpectrum A ↦ torsionBySet A M ↑(i.asIdeal ^ m) := by
+    rw [iSupIndep_iff_supIndep]
     exact fun _ ↦ supIndep_torsionBySet_ideal
-      fun P hP Q hQ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-  · exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (h P hP)
+      fun _ _ _ _ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
+  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero] at hSupIndep
+  apply hSupIndep _ _ ?_ hsum
+  exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (m_prop P hP) _ (hmem P hP)
 
 end IsDedekindDomain
 
