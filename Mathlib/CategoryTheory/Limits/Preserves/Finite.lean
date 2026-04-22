@@ -15,10 +15,10 @@ These functors are also known as left exact (flat) or right exact functors when 
 involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
-* `CategoryTheory.Limits.preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts` :
+* `CategoryTheory.Limits.preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts` :
   see `Mathlib/CategoryTheory/Limits/Constructions/LimitsOfProductsAndEqualizers.lean`.
   Also provides the dual version.
-* `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
+* `CategoryTheory.preservesFiniteLimits_iff_flat` :
   see `Mathlib/CategoryTheory/Functor/Flat.lean`.
 
 -/
@@ -73,7 +73,7 @@ instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
   PreservesLimitsOfSize.preservesFiniteLimits F
 
 attribute [local instance] uliftCategory in
-/-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
+/-- We can always derive `PreservesFiniteLimits F` by showing that we are preserving limits at an
 arbitrary universe. -/
 lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
     (h :
@@ -93,7 +93,8 @@ lemma preservesFiniteLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFi
     PreservesFiniteLimits G where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShape_of_natIso h
 
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Finite J`.
+/-- A functor `F` preserves finite products if it preserves all limits of shape `Discrete J` for
+finite `J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/
 class PreservesFiniteProducts (F : C ⥤ D) : Prop where
@@ -125,7 +126,7 @@ attribute [instance] ReflectsFiniteLimits.reflects
 
 /- Similarly to preserving finite products, quantified classes don't behave well. -/
 /--
-A functor `F` preserves finite products if it reflects limits of shape `Discrete J` for finite `J`.
+A functor `F` reflects finite products if it reflects limits of shape `Discrete J` for finite `J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance.
 -/
@@ -228,7 +229,7 @@ instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ 
   PreservesColimitsOfSize.preservesFiniteColimits F
 
 attribute [local instance] uliftCategory in
-/-- We can always derive `PreservesFiniteColimits C`
+/-- We can always derive `PreservesFiniteColimits F`
 by showing that we are preserving colimits at an arbitrary universe. -/
 lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
     (h :
@@ -249,7 +250,8 @@ lemma preservesFiniteColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [Preserves
     PreservesFiniteColimits G where
   preservesFiniteColimits _ _ _ := preservesColimitsOfShape_of_natIso h
 
-/-- A functor `F` preserves finite products if it preserves all from `Discrete J` for `Fintype J`.
+/-- A functor `F` preserves finite coproducts if it preserves all colimits of shape `Discrete J`
+for finite `J`.
 We require this for `J = Fin n` in the definition,
 then generalize to `J : Type u` in the instance. -/
 class PreservesFiniteCoproducts (F : C ⥤ D) : Prop where
@@ -299,7 +301,7 @@ instance (priority := 120) (F : C ⥤ D)
 
 /- Similarly to preserving finite coproducts, quantified classes don't behave well. -/
 /--
-A functor `F` preserves finite coproducts if it reflects colimits of shape `Discrete J`
+A functor `F` reflects finite coproducts if it reflects colimits of shape `Discrete J`
 for finite `J`.
 
 We require this for `J = Fin n` in the definition,
