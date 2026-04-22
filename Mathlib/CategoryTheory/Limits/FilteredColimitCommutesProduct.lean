@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Products
 # The IPC property
 
 Given a family of categories `I i` (`i : α`) and a family of functors `F i : I i ⥤ C`, we construct
-the natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
+the natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colimit (F s)`.
 
 Similarly to the study of finite limits commuting with filtered colimits, we then study sufficient
 conditions for this morphism to be an isomorphism. We say that `C` satisfies the `w`-IPC property if
@@ -53,14 +53,14 @@ noncomputable def pointwiseProduct : (∀ i, I i) ⥤ C where
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
-/-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
-cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
+/-- The canonical morphisms `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on
+`pointwiseProduct F` with cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
 @[simps]
 noncomputable def coconePointwiseProduct : Cocone (pointwiseProduct F) where
   pt := ∏ᶜ fun (s : α) => colimit (F s)
   ι := { app := fun k => Pi.map fun s => colimit.ι _ _ }
 
-/-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
+/-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colimit (F s)`.
 We will say that a category has the `IPC` property if this morphism is an isomorphism as long
 as the indexing categories are filtered. -/
 noncomputable def colimitPointwiseProductToProductColimit :
@@ -115,8 +115,8 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `C` has the `w`-IPC property if the natural morphism
-`colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)` is an isomorphism for any
-family of functors `F i : I i ⥤ C` with `I i` `w`-small and filtered for all `i`. -/
+`colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colimit (F s)` is an isomorphism for any `w`-small type
+`α` and any family of functors `F i : I i ⥤ C` with `I i` `w`-small and filtered for all `i`. -/
 class IsIPC [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w} C] : Prop where
   /-- `colimitPointwiseProductToProductColimit F` is always an isomorphism. -/
   isIso : ∀ (α : Type w) (I : α → Type w) [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
