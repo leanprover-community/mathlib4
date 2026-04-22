@@ -983,6 +983,7 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
 noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
