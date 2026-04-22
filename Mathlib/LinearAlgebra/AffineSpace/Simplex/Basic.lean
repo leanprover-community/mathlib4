@@ -638,15 +638,13 @@ theorem closedInterior_inter_affineSubspaceMk'_affineSpan_faceOpposite {k V P : 
     simp
   simp_rw [this, smul_add, sum_add_distrib] at hface
   rw [Submodule.add_mem_iff_right _ <| Submodule.sum_mem _ fun j hj ↦ Submodule.smul_mem _ _ <|
-    AffineSubspace.vsub_mem_direction (by simpa using hj) hq] at hface
-  rw [← sum_smul] at hface
+    AffineSubspace.vsub_mem_direction (by simpa using hj) hq, ← sum_smul] at hface
   have hwj : ∑ j ∈ univ.erase i, w j = 0 := by
     by_contra
     rw [Submodule.smul_mem_iff _ this, AffineSubspace.vsub_left_mem_direction_iff_mem hq] at hface
     simp at hface
   rw [sum_eq_zero_iff_of_nonneg fun j _ ↦ (hpoint j).1] at hwj
-  rw [Set.mem_singleton_iff,
-    affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw (s.points i),
+  rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _ hw (s.points i),
     weightedVSubOfPoint_apply, ← sum_erase_add _ _ <| show i ∈ univ by simp,
     sum_eq_zero fun j hj ↦ by simp [hwj j hj]]
   simp
