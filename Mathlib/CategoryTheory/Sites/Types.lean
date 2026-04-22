@@ -87,7 +87,6 @@ def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) :
 
 open Presieve
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a sheaf `S` on the category of types, construct a map
 `(α → S(*)) → S(α)` that is inverse to `eval`. -/
 noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
@@ -108,7 +107,6 @@ theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f :
   apply (IsSheafFor.valid_glue _ _ _ <| ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩).trans
   convert ConcreteCategory.congr_hom (S.map_id _) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
   apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
   intro β f hf
