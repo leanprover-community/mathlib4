@@ -15,8 +15,8 @@ We develop the basic relationship between adjunctions and (co)monads.
 
 Given an adjunction `h : L ⊣ R`, we have `h.toMonad : Monad C` and `h.toComonad : Comonad D`.
 We then have
-`Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.algebra`
-sending `Y : D` to the Eilenberg-Moore algebra for `L ⋙ R` with underlying object `R.obj X`,
+`Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra`
+sending `X : D` to the Eilenberg-Moore algebra for `L ⋙ R` with underlying object `R.obj X`,
 and dually `Comonad.comparison`.
 
 We say `R : D ⥤ C` is `MonadicRightAdjoint`, if it is a right adjoint and its `Monad.comparison`
@@ -147,8 +147,8 @@ noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ �
 end Adjunction
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
-sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
+/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison h`
+sending objects `X : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
 and essentially surjective when `R` is reflective.
@@ -167,7 +167,7 @@ def Monad.comparison (h : L ⊣ R) : D ⥤ h.toMonad.Algebra where
         dsimp
         rw [← R.map_comp, Adjunction.counit_naturality, R.map_comp] }
 
-/-- The underlying object of `(Monad.comparison R).obj X` is just `R.obj X`.
+/-- The underlying object of `(Monad.comparison h).obj X` is just `R.obj X`.
 -/
 @[simps]
 def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
@@ -193,8 +193,8 @@ instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
 
 set_option backward.isDefEq.respectTransparency false in
 /--
-Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
-sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
+Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison h`
+sending objects `X : C` to Eilenberg-Moore coalgebras for `R ⋙ L` with underlying object
 `L.obj X`.
 -/
 @[simps]
@@ -212,7 +212,7 @@ def Comonad.comparison (h : L ⊣ R) : C ⥤ h.toComonad.Coalgebra where
         rw [← L.map_comp]
         simp }
 
-/-- The underlying object of `(Comonad.comparison L).obj X` is just `L.obj X`.
+/-- The underlying object of `(Comonad.comparison h).obj X` is just `L.obj X`.
 -/
 @[simps]
 def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
@@ -238,8 +238,9 @@ instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
         coassoc := by simpa using X.coassoc },
       ⟨Comonad.Coalgebra.isoMk (Iso.refl _)⟩⟩
 
-/-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
-from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
+/-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor
+`Monad.comparison` from `D` to the category of Eilenberg-Moore algebras for a chosen adjunction
+is an equivalence.
 -/
 class MonadicRightAdjoint (R : D ⥤ C) where
   /-- a choice of left adjoint for `R` -/
@@ -270,8 +271,9 @@ noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
   eqv := { }
 
 /--
-A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
-from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
+A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor
+`Comonad.comparison` from `C` to the category of Eilenberg-Moore coalgebras for a chosen
+adjunction is an equivalence.
 -/
 class ComonadicLeftAdjoint (L : C ⥤ D) where
   /-- a choice of right adjoint for `L` -/
