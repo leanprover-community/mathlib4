@@ -149,6 +149,7 @@ def π₂ : F ⊡ G ⥤ C where
   obj x := x.snd
   map f := f.snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical categorical commutative square in which `CategoricalPullback F G` sits. -/
 @[simps!]
 instance catCommSq : CatCommSq (π₁ F G) (π₂ F G) F G where
@@ -279,6 +280,7 @@ def sndFunctor : CatCommSqOver F G X ⥤ X ⥤ C where
   obj S := S.snd
   map f := f.snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The structure isomorphism of a `CatCommSqOver` as a natural transformation. -/
 @[simps!]
 def e :
@@ -286,6 +288,7 @@ def e :
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
   NatIso.ofComponents (fun S ↦ S.iso)
 
+set_option backward.defeqAttrib.useBackward true in
 variable {F G X} in
 /-- A constructor for isomorphisms in CatCommSqOver -/
 @[simps!]
@@ -307,6 +310,7 @@ variable (F G)
 
 -- We need to split up the definition of `functorEquiv` to avoid timeouts.
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Interpret a functor to the categorical pullback as a `CatCommSqOver`. -/
 @[simps!]
 def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
@@ -343,6 +347,7 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
 over X. -/
@@ -366,6 +371,7 @@ def functorEquiv : (X ⥤ F ⊡ G) ≌ CatCommSqOver F G X where
 
 variable {F G X}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A constructor for natural isomorphisms of functors `X ⥤ CategoricalPullback`: to
 construct such an isomorphism, it suffices to produce isomorphisms after whiskering with
 the projections, and compatible with the canonical 2-commutative square . -/
@@ -421,6 +427,7 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
@@ -458,6 +465,7 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
@@ -504,6 +512,7 @@ variable {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
   [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
   {F₂ : A₂ ⥤ B₂} {G₂ : C₂ ⥤ B₂}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The construction `CatCommSqOver.transform` respects vertical composition
 of `CatCospanTransform`s. -/
@@ -517,6 +526,7 @@ def transformObjComp (X : Type u₁₀) [Category.{v₁₀} X]
       (Functor.associator _ _ _).symm)
     (fun {x y} f ↦ by ext <;> simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The construction `CatCommSqOver.transform` respects the identity
 `CatCospanTransform`s. -/
@@ -531,6 +541,7 @@ def transformObjId (X : Type u₄) [Category.{v₄} X]
 
 open scoped CatCospanTransform
 
+set_option backward.defeqAttrib.useBackward true in
 lemma transform_map_whiskerLeft
     (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁)
@@ -541,6 +552,7 @@ lemma transform_map_whiskerLeft
       (transformObjComp X ψ φ').inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma transform_map_whiskerRight
     (X : Type u₇) [Category.{v₇} X]
     {ψ ψ' : CatCospanTransform F G F₁ G₁} (α : ψ ⟶ ψ')
@@ -551,6 +563,7 @@ lemma transform_map_whiskerRight
       (transformObjComp X ψ' φ).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma transform_map_associator
     {A₃ : Type u₁₀} {B₃ : Type u₁₁} {C₃ : Type u₁₂}
     [Category.{v₁₀} A₃] [Category.{v₁₁} B₃] [Category.{v₁₂} C₃]
@@ -567,6 +580,7 @@ lemma transform_map_associator
       (transformObjComp X ψ (φ.comp τ)).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (λ_ ψ).hom =
@@ -575,6 +589,7 @@ lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
       (transform X |>.obj ψ).leftUnitor.hom := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma transform_map_rightUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (ρ_ ψ).hom =
@@ -593,6 +608,7 @@ variable
     {X : Type u₄} {Y : Type u₅} {Z : Type u₆}
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
@@ -620,6 +636,7 @@ def precompose :
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- The construction `precompose` respects functor identities. -/
 @[simps!]
@@ -628,6 +645,7 @@ def precomposeObjId :
   NatIso.ofComponents fun _ =>
     CatCommSqOver.mkIso (Functor.leftUnitor _) (Functor.leftUnitor _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The construction `precompose` respects functor composition. -/
 @[simps!]
 def precomposeObjComp (U : X ⥤ Y) (V : Y ⥤ Z) :
@@ -638,6 +656,7 @@ def precomposeObjComp (U : X ⥤ Y) (V : Y ⥤ Z) :
       (Functor.associator _ _ _)
       (Functor.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_whiskerLeft (U : X ⥤ Y) {V W : Y ⥤ Z} (α : V ⟶ W) :
     (precompose F G).map (whiskerLeft U α) =
     (precomposeObjComp F G U V).hom ≫
@@ -645,6 +664,7 @@ lemma precompose_map_whiskerLeft (U : X ⥤ Y) {V W : Y ⥤ Z} (α : V ⟶ W) :
       (precomposeObjComp F G U W).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_whiskerRight {U V : X ⥤ Y} (α : U ⟶ V) (W : Y ⥤ Z) :
     (precompose F G).map (whiskerRight α W) =
     (precomposeObjComp F G U W).hom ≫
@@ -652,6 +672,7 @@ lemma precompose_map_whiskerRight {U V : X ⥤ Y} (α : U ⟶ V) (W : Y ⥤ Z) :
       (precomposeObjComp F G V W).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_associator {T : Type u₇} [Category.{v₇} T]
     (U : X ⥤ Y) (V : Y ⥤ Z) (W : Z ⥤ T) :
     (precompose F G).map (U.associator V W).hom =
@@ -662,6 +683,7 @@ lemma precompose_map_associator {T : Type u₇} [Category.{v₇} T]
       (precomposeObjComp F G _ _).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_leftUnitor (U : X ⥤ Y) :
     (precompose F G).map U.leftUnitor.hom =
     (precomposeObjComp F G (𝟭 _) U).hom ≫
@@ -669,6 +691,7 @@ lemma precompose_map_leftUnitor (U : X ⥤ Y) :
       (Functor.rightUnitor _).hom := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma precompose_map_rightUnitor (U : X ⥤ Y) :
     (precompose F G).map U.rightUnitor.hom =
     (precomposeObjComp F G U (𝟭 _)).hom ≫
@@ -684,6 +707,7 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical compatibility square between (the object components of)
 `precompose` and `transform`.
 This is a "naturality square" if we think as `transform _|>.obj _` as the
@@ -707,6 +731,7 @@ instance precomposeObjTransformObjSquare
 -- Compare the next 3 lemmas with the components of a strong natural transform
 -- of pseudofunctors
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `precomposeObjTransformObjSquare` is itself natural. -/
 lemma precomposeObjTransformObjSquare_iso_hom_naturality₂
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
@@ -718,6 +743,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_naturality₂
       whiskerLeft (transform Y |>.obj ψ) (precompose F₁ G₁ |>.map α) := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `precomposeObjTransformOBjSquare` respects identities. -/
 lemma precomposeObjTransformObjSquare_iso_hom_id
     (ψ : CatCospanTransform F G F₁ G₁) (X : Type u₇) [Category.{v₇} X] :
@@ -728,6 +754,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_id
       (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `precomposeTransformSquare` respects compositions. -/
 lemma precomposeObjTransformObjSquare_iso_hom_comp
     {X : Type u₇} {Y : Type u₈} {Z : Type u₉}
@@ -747,6 +774,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_comp
       (Functor.associator _ _ _).hom := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical compatibility square between (the object components of)
 `transform` and `precompose`.
 This is a "naturality square" if we think as `precompose` as the
@@ -769,6 +797,7 @@ instance transformObjPrecomposeObjSquare
 -- Compare the next 3 lemmas with the components of a strong natural transform
 -- of pseudofunctors
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformObjPrecomposeObjSquare` is itself natural. -/
 lemma transformObjPrecomposeObjSquare_iso_hom_naturality₂
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
@@ -779,6 +808,7 @@ lemma transformObjPrecomposeObjSquare_iso_hom_naturality₂
       whiskerLeft (precompose F G |>.obj U) (transform X |>.map η) := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformObjPrecomposeObjSquare` respects identities. -/
 lemma transformObjPrecomposeObjSquare_iso_hom_id
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
@@ -791,6 +821,7 @@ lemma transformObjPrecomposeObjSquare_iso_hom_id
       (precompose F G |>.obj U).rightUnitor.inv := by
   ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The square `transformPrecomposeSquare` respects compositions. -/
 lemma transformPrecomposeObjSquare_iso_hom_comp
     {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}

@@ -84,6 +84,7 @@ lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
     h.representableBy.homEquiv f = F.map f.op x :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
     F.IsRepresentedBy (R.homEquiv (𝟙 X)) := by

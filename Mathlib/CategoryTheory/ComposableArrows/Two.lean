@@ -32,11 +32,13 @@ section
 variable {C : Type*} [Category* C]
   {i j k : C} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
 def twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
     mk₁ f ⟶ mk₁ fg :=
   homMk₁ (𝟙 _) g
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
 def twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
     mk₁ fg ⟶ mk₁ g :=
@@ -60,10 +62,12 @@ lemma twoδ₁Toδ₀_app_zero :
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIso g] : IsIso (twoδ₂Toδ₁ f g fg h) := by
   rw [isIso_iff₁]
   constructor <;> dsimp <;> infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance [IsIso f] : IsIso (twoδ₁Toδ₀ f g fg h) := by
   rw [isIso_iff₁]
   constructor <;> dsimp <;> infer_instance
