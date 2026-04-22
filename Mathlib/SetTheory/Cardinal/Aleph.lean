@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Omega, aleph, and beth functions
@@ -532,7 +533,7 @@ decreasing_by exact a.2
 theorem preBeth_strictMono : StrictMono preBeth := by
   intro a b h
   conv_rhs => rw [preBeth]
-  rw [lt_ciSup_iff' (bddAbove_of_small _)]
+  rw [lt_ciSup_iff' bddAbove_of_small]
   exact ⟨⟨a, h⟩, cantor _⟩
 
 theorem preBeth_mono : Monotone preBeth :=
@@ -570,16 +571,16 @@ theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o :=
 theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preBeth o = ⨆ a : Iio o, preBeth a := by
   rw [preBeth]
-  apply (ciSup_mono (bddAbove_of_small _) fun _ ↦ (cantor _).le).antisymm'
-  rw [ciSup_le_iff' (bddAbove_of_small _)]
+  apply (ciSup_mono bddAbove_of_small fun _ ↦ (cantor _).le).antisymm'
+  rw [ciSup_le_iff' bddAbove_of_small]
   intro a
   rw [← preBeth_succ]
-  exact le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt a.2⟩ : Iio o)
+  exact le_ciSup bddAbove_of_small (⟨_, ho.succ_lt a.2⟩ : Iio o)
 
 theorem isNormal_preBeth : Order.IsNormal preBeth := by
   rw [isNormal_iff]
   refine ⟨preBeth_strictMono, fun o ho ↦ ?_⟩
-  simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  simp [preBeth_limit ho.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
@@ -594,7 +595,7 @@ theorem preBeth_one : preBeth 1 = 1 := by
 @[simp]
 theorem preBeth_omega : preBeth ω = ℵ₀ := by
   apply le_antisymm
-  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' (bddAbove_of_small _)]
+  · rw [preBeth_limit isSuccLimit_omega0.isSuccPrelimit, ciSup_le_iff' bddAbove_of_small]
     rintro ⟨a, ha⟩
     obtain ⟨n, rfl⟩ := lt_omega0.1 ha
     rw [preBeth_nat]
@@ -635,7 +636,7 @@ theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lif
   induction o using SuccOrder.prelimitRecOn with
   | succ o _ IH => simp [IH]
   | isSuccPrelimit o ho IH =>
-    rw [preBeth_limit ho, preBeth_limit (isSuccPrelimit_lift.2 ho), lift_iSup (bddAbove_of_small _)]
+    rw [preBeth_limit ho, preBeth_limit (isSuccPrelimit_lift.2 ho), lift_iSup bddAbove_of_small]
     apply congrArg sSup
     ext x
     constructor <;> rintro ⟨⟨i, hi⟩, rfl⟩

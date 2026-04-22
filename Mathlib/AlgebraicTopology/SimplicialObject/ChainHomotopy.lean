@@ -118,6 +118,9 @@ private lemma comm_succ (n : ℕ) :
     grind
   have h₃ : Disjoint (Finset.disjUnion _ _ h₂) {(0, 0), (Fin.last _, Fin.last _)} := by
     rw [Finset.disjoint_iff_ne]
+    simp only [Finset.mem_insert, forall_eq_or_imp, Prod.forall]
+    rintro ⟨a, _⟩ ⟨b, _⟩
+    simp
     grind
   have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
     rw [Finset.disjoint_iff_ne]
@@ -125,17 +128,16 @@ private lemma comm_succ (n : ℕ) :
       Finset.mem_image, Finset.mem_filter, Finset.mem_univ, true_and, Prod.exists, ne_eq,
       Finset.mem_insert, Finset.mem_singleton, Prod.forall, Prod.mk.injEq, not_and,
       S, γ₁, γ₂, γ₃, γ₄]
-    rintro _ _ (⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩ | ⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩) _ _
+    rintro ⟨a, _⟩ ⟨b, _⟩ (⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩ | ⟨⟨j, _⟩, ⟨k, _⟩, h₁, h₂, h₃⟩) _ _
       ((⟨⟨i, _⟩, h₄, h₅⟩ | ⟨⟨i, _⟩, h₄, h₅⟩) | (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)) <;>
-      simp at h₁ h₂ h₃ <;> grind
+        simp [Fin.ext_iff] at h₁ h₂ h₃ ⊢ <;> grind
   have H : (Finset.disjUnion _ _ h₁)ᶜ = Finset.disjUnion _ _ h₃ :=
     Finset.compl_eq_of_disjoint_of_card_add_eq h₄ (by
       rw [Finset.card_disjUnion, Finset.card_disjUnion, Finset.card_disjUnion,
         Finset.card_image_of_injective _ hγ₁, Finset.card_image_of_injective _ hγ₂,
         Finset.card_image_of_injective _ hγ₃, Finset.card_image_of_injective _ hγ₄]
-      simp only [Finset.card_compl_add_card, Fintype.card_prod, Fintype.card_fin,
-        Finset.card_univ]
-      grind)
+      simp
+      lia)
   rw [eq₁, eq₂, ← S.sum_add_sum_compl, eq₃, eq₄,
     neg_add_rev, neg_neg, neg_neg, ← Finset.sum_disjUnion h₁,
     ← (Finset.disjUnion _ _ h₁).sum_add_sum_compl, neg_add,

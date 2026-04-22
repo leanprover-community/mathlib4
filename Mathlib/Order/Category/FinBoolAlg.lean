@@ -57,13 +57,13 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
+  inferInstanceAs <| Category (InducedCategory _ toBoolAlg)
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
-  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
-  InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := .of X
