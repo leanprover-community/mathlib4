@@ -21,8 +21,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 - `CategoryTheory.IsUniversalColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is universal
   if it is stable under pullbacks.
 - `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van
-  Kampen if for every cocone `c'` over the pullback of the diagram `F' : J ⥤ C'`,
-  `c'` is colimiting iff `c'` is the pullback of `c`.
+  Kampen if for every cocone `c'` over a diagram `F' : J ⥤ C`, `c'` is colimiting iff the legs
+  of `c'` are pullbacks of the corresponding legs of `c`.
 
 ## References
 - https://ncatlab.org/nlab/show/van+Kampen+colimit
@@ -48,8 +48,9 @@ def IsUniversalColimit {F : J ⥤ C} (c : Cocone F) : Prop :=
     (_ : α ≫ c.ι = c'.ι ≫ (Functor.const J).map f) (_ : NatTrans.Equifibered α),
     (∀ j : J, IsPullback (c'.ι.app j) (α.app j) f (c.ι.app j)) → Nonempty (IsColimit c')
 
-/-- A (colimit) cocone over a diagram `F : J ⥤ C` is van Kampen if for every cocone `c'` over the
-pullback of the diagram `F' : J ⥤ C'`, `c'` is colimiting iff `c'` is the pullback of `c`.
+/-- A (colimit) cocone over a diagram `F : J ⥤ C` is van Kampen if for every cocone `c'` over a
+diagram `F' : J ⥤ C`, `c'` is colimiting iff the legs of `c'` are pullbacks of the corresponding
+legs of `c`.
 
 TODO: Show that this is iff the functor `C ⥤ Catᵒᵖ` sending `x` to `C/x` preserves it.
 TODO: Show that this is iff the inclusion functor `C ⥤ Span(C)` preserves it.
@@ -868,7 +869,7 @@ variable {Y : ι' → C} {b : Cofan Y} (hbu : IsUniversalColimit b)
 set_option backward.isDefEq.respectTransparency false in
 include hau hbu in
 /-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
-`∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
+`∐ (Xᵢ ×[S] Yⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Yⱼ)`. -/
 lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
     (s : ∀ (i : ι) (j : ι'), PullbackCone (f i) (g j))
     (hs : ∀ i j, IsLimit (s i j)) (t : PullbackCone u v) (ht : IsLimit t)
@@ -898,7 +899,7 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
 
 include hau hbu in
 /-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
-`∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
+`∐ (Xᵢ ×[S] Yⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Yⱼ)`. -/
 lemma IsUniversalColimit.nonempty_isColimit_prod_of_isPullback
     {P : ι × ι' → C} {q₁ : ∀ i j, P (i, j) ⟶ X i} {q₂ : ∀ i j, P (i, j) ⟶ Y j}
     (hP : ∀ i j, IsPullback (q₁ i j) (q₂ i j) (f i) (g j))
