@@ -45,26 +45,15 @@ def Language.presburger : Language :=
 
 namespace Language.presburger
 
-instance : ZeroConstant presburger where
-  zero := presburgerFunc.zero
+instance : ZeroConstant presburger := ⟨presburgerFunc.zero⟩
+instance : OneConstant presburger := ⟨presburgerFunc.one⟩
+instance : AddFunction presburger := ⟨presburgerFunc.add⟩
 
-instance : OneConstant presburger where
-  one := presburgerFunc.one
-
-instance : AddFunction presburger where
-  add := presburgerFunc.add
-
-@[simp] theorem zero_def : presburgerFunc.zero = Constants.zero (L := presburger) := rfl
-
-@[simp] theorem one_def : presburgerFunc.one = Constants.one (L := presburger) := rfl
-
-@[simp] theorem add_def : presburgerFunc.add = Functions.add (L := presburger) := rfl
+@[simp] theorem zero_eq : presburgerFunc.zero = Constants.zero (L := presburger) := rfl
+@[simp] theorem one_eq : presburgerFunc.one = Constants.one (L := presburger) := rfl
+@[simp] theorem add_eq : presburgerFunc.add = Functions.add (L := presburger) := rfl
 
 open Structure
-
-class CompatibleStructure (M : Type*) [Zero M] [One M] [Add M]
-    extends presburger.Structure M, CompatibleZero presburger M, CompatibleOne presburger M,
-      CompatibleAdd presburger M
 
 instance {M : Type*} [Zero M] [One M] [Add M] : presburger.Structure M where
   funMap
@@ -72,9 +61,13 @@ instance {M : Type*} [Zero M] [One M] [Add M] : presburger.Structure M where
   | .one, v => 1
   | .add, v => v 0 + v 1
 
-instance {M : Type*} [Zero M] [One M] [Add M] : CompatibleStructure M where
+instance {M : Type*} [Zero M] [One M] [Add M] : CompatibleZero presburger M where
   funMap_zero _ := rfl
+
+instance {M : Type*} [Zero M] [One M] [Add M] : CompatibleOne presburger M where
   funMap_one _ := rfl
+
+instance {M : Type*} [Zero M] [One M] [Add M] : CompatibleAdd presburger M where
   funMap_add _ := rfl
 
 end FirstOrder.Language.presburger

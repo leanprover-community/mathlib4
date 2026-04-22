@@ -80,11 +80,11 @@ instance : AddFunction ring := ⟨ringFunc.add⟩
 instance : MulFunction ring := ⟨ringFunc.mul⟩
 instance : NegFunction ring := ⟨ringFunc.neg⟩
 
-@[simp] theorem zero_def : ringFunc.zero = Constants.zero (L := ring) := rfl
-@[simp] theorem one_def : ringFunc.one = Constants.one (L := ring) := rfl
-@[simp] theorem add_def : ringFunc.add = Functions.add (L := ring) := rfl
-@[simp] theorem mul_def : ringFunc.mul = Functions.mul (L := ring) := rfl
-@[simp] theorem neg_def : ringFunc.neg = Functions.neg (L := ring) := rfl
+@[simp] theorem zero_eq : ringFunc.zero = Constants.zero (L := ring) := rfl
+@[simp] theorem one_eq : ringFunc.one = Constants.one (L := ring) := rfl
+@[simp] theorem add_eq : ringFunc.add = Functions.add (L := ring) := rfl
+@[simp] theorem mul_eq : ringFunc.mul = Functions.mul (L := ring) := rfl
+@[simp] theorem neg_eq : ringFunc.neg = Functions.neg (L := ring) := rfl
 
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
@@ -93,7 +93,7 @@ instance : Fintype Language.ring.Symbols :=
        Sum.inl ⟨1, .neg⟩,
        Sum.inl ⟨0, Constants.zero⟩,
        Sum.inl ⟨0, Constants.one⟩], by
-    simp [← zero_def, ← one_def, ← add_def, ← mul_def]⟩, by
+    simp [← zero_eq, ← one_eq, ← add_eq, ← mul_eq]⟩, by
     rintro (⟨_, f⟩ | ⟨_, f⟩) <;> cases f <;> simp⟩
 
 @[simp]
