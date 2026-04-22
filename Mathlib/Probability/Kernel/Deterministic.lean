@@ -93,29 +93,29 @@ namespace MeasureTheory
 
 /-- A measure is a zero-one measure if it only takes the values `0` or `1`. -/
 class IsZeroOneMeasure (μ : Measure α) : Prop where
-  zero_one' : ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1
-
-lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
-    ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1 := IsZeroOneMeasure.zero_one'
+  zero_one₀ : ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1
 
 lemma Measure.zero_one₀ (μ : Measure α) [IsZeroOneMeasure μ] :
+    ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1 := IsZeroOneMeasure.zero_one₀
+
+lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
     ∀ s, μ s = 0 ∨ μ s = 1 := by
   intro s
   by_cases hs : MeasurableSet s
-  · exact μ.zero_one hs
+  · exact μ.zero_one₀ hs
   · obtain ⟨t, _, mt, ht⟩ := exists_measurable_superset μ s
     rw [← ht]
-    exact μ.zero_one mt
+    exact μ.zero_one₀ mt
 
 variable {μ : Measure α} [IsZeroOneMeasure μ]
 
 instance : IsZeroOrProbabilityMeasure μ where
-  measure_univ := μ.zero_one MeasurableSet.univ
+  measure_univ := μ.zero_one univ
 
 lemma exists_one_iff_univ_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
   constructor
   · rintro ⟨s, h⟩
-    rcases μ.zero_one MeasurableSet.univ with (h₀ | h₁)
+    rcases μ.zero_one univ with (h₀ | h₁)
     · have := measure_mono (μ := μ) <| subset_univ s
       rw [h] at this
       simp_all
@@ -132,7 +132,7 @@ lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
-  cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
+  cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
     rw [measure_compl (hs.inter ht) (by simp), univ_one ‹_›] at this
@@ -148,7 +148,7 @@ lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     μ (s ∩ t) = μ s * μ t := by
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
-  cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
+  cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all [inter_eq_one]
 
 /-- In a standard Borel space, a zero-one measure is either the zero measure or a Dirac measure. -/
@@ -176,7 +176,7 @@ theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Mea
       split_ifs with h
       · simp_all
       · rw [compl_compl]
-        rcases μ.zero_one₀ (A n) with (h₀ | h₁)
+        rcases μ.zero_one (A n) with (h₀ | h₁)
         · exact h₀
         · simp_all
     obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
@@ -294,7 +294,7 @@ lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Ker
     all_goals simp_all
   simp_rw [this]
   rw [lintegral_indicator ht]
-  rcases ((η ∘ₖ κ) a).zero_one hs with (h₀ | h₁)
+  rcases ((η ∘ₖ κ) a).zero_one s with (h₀ | h₁)
   · rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
     rw [comp_apply' _ _ _ hs, lintegral_eq_zero_iff <| η.measurable_coe hs] at h₀
     filter_upwards [h₀] with x hx _ using hx
