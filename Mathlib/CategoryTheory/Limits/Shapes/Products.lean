@@ -390,8 +390,18 @@ lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
-abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
+def Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
+
+@[reassoc (attr := simp)]
+lemma Pi.mapIso_hom_π {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    (Pi.mapIso p).hom ≫ π _ _ = π _ _ ≫ (p b).hom :=
+  limMap_π _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.mapIso_inv_π {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    (Pi.mapIso p).inv ≫ π _ _ = π _ _ ≫ (p b).inv :=
+  limMap_π _ _
 
 instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
     [∀ b, IsIso <| p b] : IsIso <| Pi.map p :=
