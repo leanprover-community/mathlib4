@@ -578,7 +578,7 @@ def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
 variable {F G}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cocone point.
+/-- Given a cone over `F ⋙ G`, we can construct a `Cone G` with the same cone point.
 -/
 @[simps]
 def extendCone : Cone (F ⋙ G) ⥤ Cone G where
@@ -1002,7 +1002,7 @@ theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial,
+adjoints preserve cofilteredness), as left adjoints are always initial,
 see `initial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
@@ -1013,7 +1013,7 @@ theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial,
+adjoints preserve cofilteredness), as left adjoints are always initial,
 see `initial_of_adjunction`.
 -/
 theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
@@ -1037,7 +1037,7 @@ instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E)
   rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
   exact Final.out f.right
 
-/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
+/-- The functor `CostructuredArrow.pre T S X` is initial if `T` is initial. -/
 instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
     Initial (CostructuredArrow.pre T S X) := by
   refine ⟨fun f => ?_⟩
@@ -1204,8 +1204,8 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
-/-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
-preserves the limit. -/
+/-- If `Under j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
+preserves the colimit. -/
 noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)
     [(CategoryTheory.Under.forget j).Final] : IsColimit (c.underPost j) := by
   haveI : Nonempty (Under j) := ⟨CategoryTheory.Under.mk (𝟙 j)⟩
