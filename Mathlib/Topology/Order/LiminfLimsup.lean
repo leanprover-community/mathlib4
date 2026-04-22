@@ -364,32 +364,6 @@ theorem exists_seq_tendsto_liminf [NeBot f] {u : β → α} [IsCountablyGenerate
 
 variable [CountableInterFilter f] {u : β → α}
 
-theorem eventually_le_const_iff_forall_gt_eventually_lt_const {α β} [LinearOrder β]
-    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {l : Filter α}
-    [CountableInterFilter l] {f : α → β} {b : β} :
-    (∀ᶠ x in l, f x ≤ b) ↔ ∀ c, b < c → ∀ᶠ x in l, f x < c where
-  mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
-  mpr h := by
-    rcases exists_glb_Ioi b with ⟨d, hd⟩
-    obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
-    · obtain h | _ := isTop_or_exists_gt d
-      · exact .of_forall (fun _ ↦ h _)
-      obtain ⟨u, -, -, hu_tt, hu_gt⟩ := hd.exists_seq_antitone_tendsto (by simpa)
-      replace h := fun n ↦ h (u n) (by grind)
-      rw [← eventually_countable_forall] at h
-      filter_upwards [h] with x hx
-      exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
-    · specialize h d <| by simp [← Set.mem_Ioi, H0]
-      filter_upwards [h] with x hx
-      rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
-      simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
-
-theorem eventually_const_le_iff_forall_lt_eventually_const_lt {α β} [LinearOrder β]
-    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {l : Filter α}
-    [CountableInterFilter l] {f : α → β} {b : β} :
-    (∀ᶠ x in l, b ≤ f x) ↔ ∀ c, c < b → ∀ᶠ x in l, c < f x :=
-  eventually_le_const_iff_forall_gt_eventually_lt_const (β := βᵒᵈ)
-
 theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ∀ᶠ b in f, u b ≤ f.limsup u := by
   rw [eventually_le_const_iff_forall_gt_eventually_lt_const]
