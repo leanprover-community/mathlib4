@@ -121,7 +121,7 @@ theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     c.unop.snd = c.inr.unop := by simp
 
-/-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
+/-- The obvious map `PushoutCocone f g → PullbackCone f.op g.op` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
   (Cone.postcompose (cospanOp f g).symm.hom).obj
@@ -251,7 +251,7 @@ instance {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : HasPushout 
 instance {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : HasPushout f.unop g.unop := by
   rwa [hasPushout_unop_iff_hasPullback]
 
-/-- The pullback of `f` and `g` in `C` is isomorphic to the pushout of
+/-- The pullback of `f` and `g` in `C` is isomorphic to the unop of the pushout of
 `f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pullbackIsoUnopPushout {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [h : HasPullback f g] :
     pullback f g ≅ unop (pushout f.op g.op) :=
@@ -278,7 +278,7 @@ theorem pullbackIsoUnopPushout_hom_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
     pushout.inr f.op g.op ≫ (pullbackIsoUnopPushout f g).hom.op = (pullback.snd f g).op :=
   Quiver.Hom.unop_inj <| by simp [← pullbackIsoUnopPushout_inv_snd]
 
-/-- The pullback of `f` and `g` in `Cᵒᵖ` is isomorphic to the pushout of
+/-- The pullback of `f` and `g` in `Cᵒᵖ` is isomorphic to the op of the pushout of
 `f.unop` and `g.unop` in `C`. -/
 noncomputable def pullbackIsoOpPushout {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : Y ⟶ Z) [h : HasPullback f g] :
     pullback f g ≅ op (pushout f.unop g.unop) :=
@@ -327,7 +327,7 @@ instance {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : HasPullback 
 instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : HasPullback f.unop g.unop := by
   rwa [hasPullback_unop_iff_hasPushout]
 
-/-- The pushout of `f` and `g` in `C` is isomorphic to the pullback of
+/-- The pushout of `f` and `g` in `C` is isomorphic to the unop of the pullback of
 `f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g] :
     pushout f g ≅ unop (pullback f.op g.op) :=
@@ -354,7 +354,7 @@ theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
     (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd f.op g.op = (pushout.inr f g).op :=
   Quiver.Hom.unop_inj <| by simp [← pushoutIsoUnopPullback_inr_hom]
 
-/-- The pushout of `f` and `g` in `Cᵒᵖ` is isomorphic to the pullback of
+/-- The pushout of `f` and `g` in `Cᵒᵖ` is isomorphic to the op of the pullback of
 `f.unop` and `g.unop` in `C`. -/
 noncomputable def pushoutIsoOpPullback {X Y Z : Cᵒᵖ} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g] :
     pushout f g ≅ op (pullback f.unop g.unop) :=
