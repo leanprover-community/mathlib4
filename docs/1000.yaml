@@ -1803,7 +1803,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
   date: 2020
 
 Q1694565:
@@ -2076,7 +2076,7 @@ Q2226803:
   title: Tennenbaum's theorem
 
 Q2226807:
-  title: Vantieghems theorem
+  title: Vantieghem's theorem
 
 Q2226855:
   title: Sharkovskii's theorem
@@ -3807,7 +3807,6 @@ Q7601243:
 
 Q7606897:
   title: Steinitz theorem
-  decl: Field.exists_primitive_element_iff_finite_intermediateField
 
 Q7606940:
   title: Stein–Strömberg theorem
