@@ -12,7 +12,8 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
 
-public import Mathlib.Logic.Equiv.Equivify
+public import Mathlib.Tactic.Attr.Register
+
 /-!
 # Monoids of endomorphisms, groups of automorphisms
 
@@ -105,15 +106,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[equivify, unequivify← ]
+@[equiv_simps, unequiv_simps← ]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
-@[equivify, unequivify← ]
+@[equiv_simps, unequiv_simps← ]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
-@[equivify, unequivify← ]
+@[equiv_simps, unequiv_simps← ]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -125,7 +126,7 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[simp, equivify← , unequivify]
+@[equiv_simps← , unequiv_simps]
 lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=

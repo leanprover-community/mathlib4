@@ -54,6 +54,24 @@ which gives a well-behaved subtraction. -/
 register_simp_attr zify_simps
 
 /--
+The simpset `equiv_simps` translates algebraic formulations of equivalence relations into the
+standard equivalence definitions, so for example `1 : Equiv α α` becomes `Equiv.refl α` and
+`a * b` becomes `b.trans a`.
+
+The dual simpset is `unequiv_simps`.
+-/
+register_simp_attr equiv_simps
+
+/--
+The simpset `unequiv_simps` translates the standard formulations of equivalence relations to
+algebraic, so for example `Equiv.refl α` becomes `1 : Equiv α α` and
+`b.trans a` becomes `a * b`.
+
+The dual simpset is `equiv_simps`.
+-/
+register_simp_attr unequiv_simps
+
+/--
 The simpset `mfld_simps` records several simp lemmas that are
 especially useful in manifolds. It is a subset of the whole set of simp lemmas, but it makes it
 possible to have quicker proofs (when used with `squeeze_simp` or `simp only`) while retaining
