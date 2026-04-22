@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.PUnit
 This file shows that for a functor `G : D ⥤ C` the data of an initial object in each
 `StructuredArrow` category on `G` is equivalent to a left adjoint to `G`, as well as the dual.
 
-Specifically, `adjunctionOfStructuredArrowInitials` gives the left adjoint assuming the
+Specifically, `leftAdjointOfStructuredArrowInitials` gives the left adjoint assuming the
 appropriate initial objects exist, and `mkInitialOfLeftAdjoint` constructs the initial objects
 provided a left adjoint.
 
@@ -68,8 +68,8 @@ def leftAdjointOfStructuredArrowInitials : C ⥤ D :=
   Adjunction.leftAdjointOfEquiv (leftAdjointOfStructuredArrowInitialsAux G) fun _ _ => by simp
 
 /--
-If each structured arrow category on `G` has an initial object, we have a constructed left adjoint
-to `G`.
+If each structured arrow category on `G` has an initial object, we have a constructed adjunction
+exhibiting a left adjoint to `G`.
 -/
 def adjunctionOfStructuredArrowInitials : leftAdjointOfStructuredArrowInitials G ⊣ G :=
   Adjunction.adjunctionOfEquivLeft _ _
@@ -115,8 +115,8 @@ def rightAdjointOfCostructuredArrowTerminals : C ⥤ D :=
     rw [← Equiv.eq_symm_apply]
     simp
 
-/-- If each costructured arrow category on `G` has a terminal object, we have a constructed right
-adjoint to `G`.
+/-- If each costructured arrow category on `G` has a terminal object, we have a constructed
+adjunction exhibiting a right adjoint to `G`.
 -/
 def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArrowTerminals G :=
   Adjunction.adjunctionOfEquivRight _ _
