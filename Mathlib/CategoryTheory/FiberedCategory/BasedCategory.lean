@@ -226,8 +226,8 @@ def id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
 
 variable {F G : 𝒳 ⥤ᵇ 𝒴}
 
-/-- The inverse of a based natural transformation whose underlying natural transformation is an
-isomorphism. -/
+/-- A based natural isomorphism built from a natural isomorphism of the underlying functors whose
+hom components lift identities. -/
 def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
     (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
   hom := { toNatTrans := α.hom }
