@@ -23,8 +23,9 @@ variable {K : Type v} [SmallCategory K]
 
 open Limits
 
-/-- A converse to `colimitLimitIso`: if colimits of shape `K` commute with finite
-limits, then `K` is filtered. -/
+/-- A weak converse to `colimitLimitIso`: if for every finite `J` and
+`F : J ⥤ K ⥤ Type v` there exists a morphism
+`limit (colimit F.flip) ⟶ colimit (limit F)`, then `K` is filtered. -/
 theorem isFiltered_of_nonempty_limit_colimit_to_colimit_limit
     (h : ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ K ⥤ Type v),
       Nonempty (limit (colimit F.flip) ⟶ colimit (limit F))) : IsFiltered K := by
