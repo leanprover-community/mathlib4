@@ -103,6 +103,10 @@ that occur in the formal sum `a`. -/
 def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
+lemma nonempty_support_of_ne_zero {a : FreeAbelianGroup X} (h : a ≠ 0) : Nonempty a.support := by
+  simp only [Finset.nonempty_coe_sort, FreeAbelianGroup.support, Finsupp.support_nonempty_iff]
+  exact fun hf => h ((equivFinsupp X).injective (hf.trans (equivFinsupp X).map_zero.symm))
+
 @[simp]
 theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
