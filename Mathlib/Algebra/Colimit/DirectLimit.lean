@@ -87,7 +87,7 @@ instance : Star (DirectLimit G f) where
   star := .map f f (fun _ x ↦ star x) (fun i j h x ↦ map_star (f i j h) x)
 
 lemma star_def (i : ι) (x : G i) :
-    star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x ⟩⟧ : DirectLimit G f) := by
+    star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x⟩⟧ : DirectLimit G f) := by
   rfl
 
 end Star
