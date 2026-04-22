@@ -46,7 +46,7 @@ noncomputable def lan : (C ⥤ H) ⥤ (D ⥤ H) where
   map {F₁ F₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit L F₁) _
     (φ ≫ leftKanExtensionUnit L F₂)
 
-/-- The natural transformation `F ⟶ L ⋙ (L.lan).obj G`. -/
+/-- The natural transformation `F ⟶ L ⋙ (L.lan).obj F`. -/
 noncomputable def lanUnit : (𝟭 (C ⥤ H)) ⟶ L.lan ⋙ (whiskeringLeft C D H).obj L where
   app F := leftKanExtensionUnit L F
   naturality {F₁ F₂} φ := by ext; simp [lan]
@@ -58,7 +58,7 @@ instance (F : C ⥤ H) : (L.lan.obj F).IsLeftKanExtension (L.lanUnit.app F) := b
 end
 
 /-- If there exists a pointwise left Kan extension of `F` along `L`,
-then `L.lan.obj G` is a pointwise left Kan extension of `F`. -/
+then `L.lan.obj F` is a pointwise left Kan extension of `F`. -/
 noncomputable def isPointwiseLeftKanExtensionLeftKanExtensionUnit
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
     (LeftExtension.mk _ (L.leftKanExtensionUnit F)).IsPointwiseLeftKanExtension :=
@@ -139,7 +139,7 @@ variable [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (H) in
-/-- The left Kan extension functor `L.Lan` is left adjoint to the precomposition by `L`. -/
+/-- The left Kan extension functor `L.lan` is left adjoint to the precomposition by `L`. -/
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
@@ -291,7 +291,7 @@ noncomputable def ran : (C ⥤ H) ⥤ (D ⥤ H) where
   map {F₁ F₂} φ := liftOfIsRightKanExtension _ (rightKanExtensionCounit L F₂) _
     (rightKanExtensionCounit L F₁ ≫ φ)
 
-/-- The natural transformation `L ⋙ (L.lan).obj G ⟶ L`. -/
+/-- The natural transformation `L ⋙ (L.ran).obj F ⟶ F`. -/
 noncomputable def ranCounit : L.ran ⋙ (whiskeringLeft C D H).obj L ⟶ (𝟭 (C ⥤ H)) where
   app F := rightKanExtensionCounit L F
   naturality {F₁ F₂} φ := by ext; simp [ran]
@@ -302,7 +302,7 @@ instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If there exists a pointwise right Kan extension of `F` along `L`,
-then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
+then `L.ran.obj F` is a pointwise right Kan extension of `F`. -/
 noncomputable def isPointwiseRightKanExtensionRanCounit
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
     (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
