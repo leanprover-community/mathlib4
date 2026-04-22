@@ -29,8 +29,6 @@ structure CommGrp where
   [grp : GrpObj X]
   [comm : IsCommMonObj X]
 
-@[deprecated (since := "2025-10-13")] alias CommGrp_ := CommGrp
-
 attribute [instance] CommGrp.grp CommGrp.comm
 
 namespace CommGrp
@@ -40,8 +38,6 @@ variable {C}
 /-- A commutative group object is a group object. -/
 @[simps -isSimp X]
 abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
-
-@[deprecated (since := "2025-10-13")] alias toGrp_ := toGrp
 
 /-- A commutative group object is a commutative monoid object. -/
 @[simps X]
@@ -86,13 +82,9 @@ variable (C)
 def forget₂Grp : CommGrp C ⥤ Grp C :=
   inducedFunctor CommGrp.toGrp
 
-@[deprecated (since := "2025-10-13")] alias forget₂Grp_ := forget₂Grp
-
 /-- The forgetful functor from commutative group objects to group objects is fully faithful. -/
 def fullyFaithfulForget₂Grp : (forget₂Grp C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
-
-@[deprecated (since := "2025-10-13")] alias fullyFaithfulForget₂Grp_ := fullyFaithfulForget₂Grp
 
 instance : (forget₂Grp C).Full := InducedCategory.full _
 instance : (forget₂Grp C).Faithful := InducedCategory.faithful _
@@ -289,7 +281,6 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative group
 objects. -/
 @[simps] noncomputable def mapCommGrp : F.mapCommGrp ⊣ G.mapCommGrp where

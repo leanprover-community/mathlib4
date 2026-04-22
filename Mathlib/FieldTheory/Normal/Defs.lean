@@ -177,7 +177,6 @@ theorem AlgEquiv.restrictNormal_commutes [Normal F E] (x : E) :
     algebraMap E K₂ (χ.restrictNormal E x) = χ (algebraMap E K₁ x) :=
   χ.toAlgHom.restrictNormal_commutes E x
 
-@[simp]
 theorem AlgEquiv.restrictNormal_apply (L : IntermediateField F K₁) [Normal F L] (σ : Gal(K₁/F))
     (x : L) : restrictNormal σ L x = σ x :=
   AlgEquiv.restrictNormal_commutes σ L x

@@ -107,7 +107,10 @@ instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
+/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
 instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
+
+@[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
 
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
@@ -135,10 +138,6 @@ protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
 
 theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (I : Set P)ᶜ := fun h ↦
   mt <| I.lower h
-
-/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
-  PartialOrder.lift SetLike.coe SetLike.coe_injective
 
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
@@ -358,21 +357,20 @@ instance : Max (Ideal P) :=
           le_sup_left, le_sup_right⟩
       lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
-instance : Lattice (Ideal P) :=
-  { Ideal.instPartialOrderIdeal with
-    sup := (· ⊔ ·)
-    le_sup_left := fun _ J i hi ↦
-      let ⟨w, hw⟩ := J.nonempty
-      ⟨i, hi, w, hw, le_sup_left⟩
-    le_sup_right := fun I _ j hj ↦
-      let ⟨w, hw⟩ := I.nonempty
-      ⟨w, hw, j, hj, le_sup_right⟩
-    sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
-      K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
-    inf := (· ⊓ ·)
-    inf_le_left := fun _ _ ↦ inter_subset_left
-    inf_le_right := fun _ _ ↦ inter_subset_right
-    le_inf := fun _ _ _ ↦ subset_inter }
+instance : Lattice (Ideal P) where
+  sup := (· ⊔ ·)
+  le_sup_left := fun _ J i hi ↦
+    let ⟨w, hw⟩ := J.nonempty
+    ⟨i, hi, w, hw, le_sup_left⟩
+  le_sup_right := fun I _ j hj ↦
+    let ⟨w, hw⟩ := I.nonempty
+    ⟨w, hw, j, hj, le_sup_right⟩
+  sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
+    K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
+  inf := (· ⊓ ·)
+  inf_le_left := fun _ _ ↦ inter_subset_left
+  inf_le_right := fun _ _ ↦ inter_subset_right
+  le_inf := fun _ _ _ ↦ subset_inter
 
 @[simp]
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
@@ -422,12 +420,14 @@ theorem coe_sInf : (↑(sInf S) : Set P) = ⋂ s ∈ S, ↑s :=
 theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
   simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
 
-instance : CompleteLattice (Ideal P) :=
-  { (inferInstance : Lattice (Ideal P)),
-    completeLatticeOfInf (Ideal P) fun S ↦ by
+instance : CompleteLattice (Ideal P) where
+  __ := (inferInstance : Lattice (Ideal P))
+  __ := (inferInstance : OrderTop (Ideal P))
+  __ := (inferInstance : OrderBot (Ideal P))
+  __ := completeLatticeOfInf (Ideal P) fun S ↦ by
       refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
       rw [← coe_subset_coe, coe_sInf]
-      exact biInter_subset_of_mem hs with }
+      exact biInter_subset_of_mem hs
 
 end SemilatticeSupOrderBot
 
