@@ -7,11 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Data.Int.ConditionallyCompleteOrder
-public import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.Order.AtTopBotIxx
-public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Piecewise linear interpolation
