@@ -209,18 +209,16 @@ def isoEquivSubtypeAlgEquiv : (of Λ k X hX ≅ of Λ k Y hY) ≃
   toFun i := ⟨ofIso i, residue_comp_coe_ofIso i⟩
   invFun f := isoMk f.val f.prop
 
+instance uliftResidueAlgebra : Algebra (ULift.{w'} A) k := ULift.algebra' ..
+
+instance isScalarTower_uliftResidueAlgebra : IsScalarTower Λ (ULift.{w'} A) k :=
+  ULift.isScalarTower' ..
+
 variable (Λ k) in
 /-- Universe lift functor for `LocAlgCat`. -/
 def uliftFunctor : LocAlgCat.{w} Λ k ⥤ LocAlgCat.{max w w'} Λ k where
-  obj A :=
-    letI : Algebra (ULift.{w'} A) k := ULift.algebra' ..
-    haveI : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
-    of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.surj r)
+  obj A := of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.surj r)
   map {A B} f :=
-    letI : Algebra (ULift.{w'} A) k := ULift.algebra' ..
-    haveI : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
-    letI : Algebra (ULift.{w'} B) k := ULift.algebra' ..
-    haveI : IsScalarTower Λ (ULift.{w'} B) k := ULift.isScalarTower' ..
     ofHom (ULift.algEquiv.symm.toAlgHom.comp <| f.toAlgHom.comp ULift.algEquiv.toAlgHom) (by
       have := f.isLocalHom_toAlgHom
       ext; simp) (by ext x; simpa using DFunLike.congr_fun f.residue_comp x.down)
@@ -229,10 +227,6 @@ variable (Λ k) in
 /-- The universe lift functor for `LocAlgCat` is fully faithful. -/
 def fullyFaithfulUliftFunctor : (uliftFunctor Λ k).FullyFaithful where
   preimage {A B} f :=
-    letI : Algebra (ULift.{w'} A) k := ULift.algebra' ..
-    haveI : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
-    letI : Algebra (ULift.{w'} B) k := ULift.algebra' ..
-    haveI : IsScalarTower Λ (ULift.{w'} B) k := ULift.isScalarTower' ..
     letI F : ULift A →ₐ[Λ] ULift B := f.toAlgHom
     ofHom (ULift.algEquiv.toAlgHom.comp <| F.comp ULift.algEquiv.symm.toAlgHom) (by
       have : IsLocalHom F := f.isLocalHom_toAlgHom
