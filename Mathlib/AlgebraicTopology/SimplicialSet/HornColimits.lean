@@ -196,6 +196,7 @@ lemma of_hom {i : Fin (n + 2)} (g : (Λ[n + 1, i] : SSet) ⟶ X) :
     rw [← cancel_mono (Subcomplex.ι _), Category.assoc, Category.assoc, ι_ι, ι_ι,
       Fin.pred_succ, Fin.castPred_castSucc, stdSimplex.δ_comp_δ (by grind)]
 
+@[reassoc]
 lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (Δ[n + 1] : SSet) ⟶ X}
     (hf : horn.IsCompatible f)
     (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k) :
