@@ -17,17 +17,17 @@ public import Mathlib.Tactic.AdaptationNote
 
 ## Main results
 When the underlying category is abelian:
-* `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
-  `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a cochain map
-  `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `I.ι` intertwines the descent and
-  the original morphism, see `CategoryTheory.InjectiveResolution.desc_commutes`.
+* `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution Y` and
+  `J : InjectiveResolution X`, any morphism `X ⟶ Y` admits a descent to a cochain map
+  `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `J.ι` and `I.ι` intertwine the
+  descent and the original morphism, see `CategoryTheory.InjectiveResolution.desc_commutes`.
 * `CategoryTheory.InjectiveResolution.descHomotopy`: Any two such descents are homotopic.
 * `CategoryTheory.InjectiveResolution.homotopyEquiv`: Any two injective resolutions of the same
   object are homotopy equivalent.
 * `CategoryTheory.injectiveResolutions`: If every object admits an injective resolution, we can
   construct a functor `injectiveResolutions C : C ⥤ HomotopyCategory C`.
 
-* `CategoryTheory.exact_f_d`: `f` and `Injective.d f` are exact.
+* `CategoryTheory.exact_f_d`: the short complex with maps `f` and `Injective.d f` is exact.
 * `CategoryTheory.InjectiveResolution.of`: Hence, starting from a monomorphism `X ⟶ J`, where `J`
   is injective, we can apply `Injective.d` repeatedly to obtain an injective resolution of `X`.
 -/
