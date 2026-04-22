@@ -341,9 +341,11 @@ lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f)
 
 lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f)
     (h : ∀ a : α, ∀ b : β, b < f a → ∃ (a' : α), a' < a ∧ f a' = b) (a : α) :
-    height a = height (f a) := coheight_eq_of_strictMono (α := αᵒᵈ) (β := βᵒᵈ)
-  (f := OrderDual.toDual ∘ f ∘ OrderDual.toDual)
-  (strictMono_dual_iff.mp hf) (fun a b hab ↦ h a b hab) _
+    height a = height (f a) := by
+  have : coheight (OrderDual.toDual a) = coheight (OrderDual.toDual (f a)) :=
+    coheight_eq_of_strictMono (α := αᵒᵈ) (β := βᵒᵈ) (f := OrderDual.toDual ∘ f ∘ OrderDual.toDual)
+    (strictMono_dual_iff.mp hf) (fun a b hab ↦ h a b hab) _
+  simpa [Order.coheight_toDual] using this
 
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
