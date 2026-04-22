@@ -195,8 +195,7 @@ set_option backward.privateInPublic true in
 private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
 set_option backward.privateInPublic true in
-/-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
-which has at index `x : F.obj X` the element `g x`. -/
+/-- The element in the fiber of the self product whose value at index `x : F.obj X` is `x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
@@ -226,8 +225,8 @@ private lemma selfProdProj_fiber (x : F.obj X) :
 variable [IsConnected A]
 
 set_option backward.privateInPublic true in
-/-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting onto the
-`F.map u b` factor. -/
+/-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting
+`F.map u b` to each factor of the self product. -/
 private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
   let σ (t : F.obj X) : F.obj X := F.map (selfProdProj u t) b
   apply Equiv.ofBijective σ
