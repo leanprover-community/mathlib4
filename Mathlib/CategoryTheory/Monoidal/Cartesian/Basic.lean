@@ -411,9 +411,6 @@ def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) wher
   left_inv _ := by simp
   right_inv _ := by simp
 
-/-- The diagonal map `X ⟶ X ⊗ X` induced by the identity on X on the first and second component. -/
-abbrev diag {X : C} : X ⟶ X ⊗ X := lift (𝟙 X) (𝟙 X)
-
 section BraidedCategory
 
 variable [BraidedCategory C]
