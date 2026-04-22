@@ -32,6 +32,8 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 namespace CategoryTheory

@@ -15,6 +15,8 @@ We construct pullbacks and pushouts in the opposite categories.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ u₁ u₂

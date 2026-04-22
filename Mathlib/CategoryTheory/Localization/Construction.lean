@@ -37,6 +37,8 @@ uniqueness is expressed by `uniq`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 

@@ -28,6 +28,8 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe w v₁ v u₁ u

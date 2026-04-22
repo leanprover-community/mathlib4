@@ -41,6 +41,8 @@ This also relates to Grothendieck's yoga of six operations, though this is not s
 mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
