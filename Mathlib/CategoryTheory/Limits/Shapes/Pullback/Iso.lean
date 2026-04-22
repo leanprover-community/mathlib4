@@ -187,7 +187,7 @@ open WalkingSpan
 
 variable (f : X ⟶ Y) (g : X ⟶ Z) [IsIso g]
 
-/-- If `f : X ⟶ Z` is iso, then `Y ⨿[X] Z ≅ Y`. This is the explicit colimit cocone. -/
+/-- If `g : X ⟶ Z` is iso, then `Y ⨿[X] Z ≅ Y`. This is the explicit colimit cocone. -/
 def pushoutCoconeOfRightIso : PushoutCocone f g :=
   PushoutCocone.mk (𝟙 _) (inv g ≫ f) <| by simp
 
