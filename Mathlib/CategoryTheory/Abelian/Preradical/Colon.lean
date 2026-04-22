@@ -55,7 +55,7 @@ variable (Φ Ψ : Preradical C)
 /-- The cokernel of `Φ.ι : Φ.r ⟶ 𝟭 C`. -/
 noncomputable abbrev quotient : C ⥤ C := cokernel Φ.ι
 
-/-- The canonical projection `𝟭 C ⥤ Φ.quotient` where `Φ.quotient` is the cokernel of
+/-- The canonical projection `𝟭 C ⟶ Φ.quotient` where `Φ.quotient` is the cokernel of
 `Φ.ι : Φ.r ⟶ 𝟭 C`. -/
 noncomputable def π : 𝟭 C ⟶ Φ.quotient := cokernel.π Φ.ι
   deriving Epi
@@ -152,7 +152,7 @@ lemma colon_ι_app_π_app (Φ Ψ : Preradical C) (X : C) :
   (isPullback_colon_obj Φ Ψ X).w
 
 /-- There is a morphism `Φ ⟶ (Φ.colon Ψ)` induced by the universal property for the pullback
-via `Φ.ι : Φ.r X ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶  Φ.quotient ⋙ Ψ.r`. -/
+via `Φ.ι : Φ.r ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶ Φ.quotient ⋙ Ψ.r`. -/
 noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
   MonoOver.homMk ((isPullback_colon Φ Ψ).lift Φ.ι 0 (by simp))
 
@@ -173,8 +173,8 @@ lemma toColon_hom_left_app_colon_ι_app (X : C) :
   rw [← NatTrans.comp_app, Over.w]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- For `X : C`, the morphism `(toColon Φ Ψ)` is an isomorphism if and only if
-`(Ψ.r.obj (Φ.quotient.obj X))` is the zero object. -/
+/-- For `X : C`, the morphism `((toColon Φ Ψ).hom.left.app X)` is an isomorphism if and only if
+`Ψ.r.obj (Φ.quotient.obj X)` is the zero object. -/
 theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :
     IsIso ((toColon Φ Ψ).hom.left.app X) ↔ IsZero (Ψ.r.obj (Φ.quotient.obj X)) := by
   constructor <;> intro h
