@@ -89,14 +89,14 @@ lemma Cone.toStructuredArrow_comp_toUnder_comp_forget {F : J ⥤ C} (c : Cone F)
     c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _ ⋙ Under.forget _ = F :=
   rfl
 
-/-- A cone `c` on `F : J ⥤ C` lifts to a cone in `Over c.pt` with cone point `𝟙 c.pt`. -/
+/-- A cone `c` on `F : J ⥤ C` lifts to a cone in `Under c.pt` with cone point `𝟙 c.pt`. -/
 @[simps]
 def Cone.toUnder {F : J ⥤ C} (c : Cone F) :
     Cone (c.toStructuredArrow ⋙ StructuredArrow.toUnder _ _) where
   pt := Under.mk (𝟙 c.pt)
   π := { app := fun j => Under.homMk (c.π.app j) (by simp) }
 
-/-- The limit cone for `F : J ⥤ C` lifts to a cocone in `Under (limit F)` with cone point
+/-- The limit cone for `F : J ⥤ C` lifts to a cone in `Under (limit F)` with cone point
     `𝟙 (limit F)`. This is automatically also a limit cone. -/
 noncomputable def limit.toUnder (F : J ⥤ C) [HasLimit F] :
     Cone (limit.toStructuredArrow F ⋙ StructuredArrow.toUnder _ _) where
@@ -116,8 +116,8 @@ def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X 
   pt := X
   π := { app := fun j => (G.obj j).hom }
 
-/-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
-arrows over `X` with `f` as the cone point.
+/-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.pt`, we can construct a cone of
+structured arrows over `X` with `StructuredArrow.mk f` as the cone point.
 -/
 @[simps]
 def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} (f : X ⟶ F.obj c.pt) :
@@ -276,8 +276,8 @@ def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredAr
   pt := X
   ι := { app := fun j => (G.obj j).hom }
 
-/-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
-    costructured arrows over `X` with `f` as the cone point. -/
+/-- Given a cocone `c : Cocone K` and a map `f : F.obj c.pt ⟶ X`, we can construct a cocone of
+    costructured arrows over `X` with `CostructuredArrow.mk f` as the cone point. -/
 @[simps]
 def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) {X : D}
     (f : F.obj c.pt ⟶ X) : Cocone ((F.mapCocone c).toCostructuredArrow ⋙
