@@ -153,8 +153,8 @@ variable {C D I J : Type*} [Category* C] [Category* D]
   (p : J × I → J)
   (hp : ∀ (j : J), p ⟨j, 0⟩ = j) (X X' : GradedObject J D) (φ : X ⟶ X')
 
-/-- Given `F : D ⥤ C ⥤ D`, `Y : C`, `e : F.flip.obj X ≅ 𝟭 D` and `X : GradedObject J D`,
-this is the isomorphism `((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a ≅ Y a.2`
+/-- Given `F : D ⥤ C ⥤ D`, `Y : C`, `e : F.flip.obj Y ≅ 𝟭 D` and `X : GradedObject J D`,
+this is the isomorphism `((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a ≅ X a.1`
 when `a : J × I` is such that `a.2 = 0`. -/
 @[simps!]
 noncomputable def mapBifunctorObjObjSingle₀Iso (a : J × I) (ha : a.2 = 0) :
@@ -162,7 +162,7 @@ noncomputable def mapBifunctorObjObjSingle₀Iso (a : J × I) (ha : a.2 = 0) :
   Functor.mapIso _ (singleObjApplyIsoOfEq _ Y _ ha) ≪≫ e.app (X a.1)
 
 /-- Given `F : D ⥤ C ⥤ D`, `Y : C` and `X : GradedObject J D`,
-`((mapBifunctor F J I).obj X).obj ((single₀ I).obj X) a` is an initial when `a : J × I`
+`((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a` is an initial when `a : J × I`
 is such that `a.2 ≠ 0`. -/
 noncomputable def mapBifunctorObjObjSingle₀IsInitial (a : J × I) (ha : a.2 ≠ 0) :
     IsInitial (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y) a) :=
