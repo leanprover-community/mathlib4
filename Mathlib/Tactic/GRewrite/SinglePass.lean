@@ -44,23 +44,13 @@ def GRewriteLemma.metaTelescope (lem : GRewriteLemma) : MetaM (Array Expr × Exp
   -- Use `Expr.beta` to get nicer looking proof terms.
   return (mvars, rel, proof.beta mvars)
 
-def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
-  if let some rel := rel? then
-    let .forallE _ d₁ b _ ← whnfD (← inferType rel) | throwError "Not a relation: {rel}"
-    let .forallE _ d₂ _ _ ← whnfD b | throwError "Not a relation: {rel}"
-    let mvar ← mkFreshExprMVar (if inv then d₁ else d₂)
-    return (mvar, (if inv then mkApp2 rel mvar e else mkApp2 rel e mvar))
-  else
-    let mvar ← mkFreshExprMVar (Expr.sort 0)
-    return (mvar, if inv then .forallE `_a mvar e .default else .forallE `_a e mvar .default)
-
-def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Bool := do
-  let lem ← read
+def GRewriteLemma.apply (lem : GRewriteLemma) (g : MVarId) (symm : Bool) (config : Config) :
+    MetaM (Option (Array MVarId)) := do
   withTraceNode `Meta.grewrite (fun _ ↦ return m!"applying grewrite lemma `{lem.proof}`") do
   let (mvars, rel, proof) ← lem.metaTelescope
   let (rel, proof) ←
     if symm then
-      let proof ← try proof.applySymm catch _ => return false
+      let proof ← try proof.applySymm catch _ => return none
       pure (← inferType proof, proof)
     else
       pure (rel, proof)
@@ -74,16 +64,25 @@ def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Bool 
         try tac.eval proof g; return true
         catch _ => setMCtx mctx
       return false
-  unless applied do return false
-  for mvar in mvars do
-    if ← mvar.mvarId!.isAssigned then continue
+  unless applied do return none
+  return some <| ← mvars.filterMapM fun mvar ↦ do
+    if ← mvar.mvarId!.isAssigned then return none
     let type ← mvar.mvarId!.getType
     if (← isClass? type).isSome then
       if let some inst ← synthInstance? type then
         mvar.mvarId!.assign inst
-        continue
-    pushNewGoal mvar.mvarId!
-  return true
+        return none
+    return mvar.mvarId!
+
+def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
+  if let some rel := rel? then
+    let .forallE _ d₁ b _ ← whnfD (← inferType rel) | throwError "Not a relation: {rel}"
+    let .forallE _ d₂ _ _ ← whnfD b | throwError "Not a relation: {rel}"
+    let mvar ← mkFreshExprMVar (if inv then d₁ else d₂)
+    return (mvar, (if inv then mkApp2 rel mvar e else mkApp2 rel e mvar))
+  else
+    let mvar ← mkFreshExprMVar (Expr.sort 0)
+    return (mvar, if inv then .forallE `_a mvar e .default else .forallE `_a e mvar .default)
 
 def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
   match e with
@@ -96,6 +95,19 @@ def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
   | _ => none
 
 mutual
+
+partial def processGCongrHypothesis (g : MVarId) (inv : Bool) (config : Config) :
+    GRewriteM Bool := g.withContext do
+  let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← g.getType)) |
+    throwError "invalid `gcongr` goal {g}"
+  let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
+  if let some (result, proof) ← grewriteCore relName rel? lhs inv config then
+    rhs.withApp fun mvar xs ↦ do
+      mvar.mvarId!.assign (← mkLambdaFVars xs result)
+      g.assign proof
+      return true
+  else
+    return false
 
 partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
     (config : Config) : GRewriteM Bool := do
@@ -112,6 +124,7 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       | .none => return false
       | .undef => pure ()
     unsolvedSideGoals := unsolvedSideGoals.push mvarId
+    pushNewGoal mvarId
   -- Then, recursively rewrite in the main subgoals
   let mut anyProgress := false
   for (g, isContra) in mainGoals do
@@ -131,21 +144,10 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       let some inst ← synthInstance? type | return false
       mvarId.assign inst
     else
-      dischargeSide mvarId
+      let mctx ← getMCtx
+      try GCongr.gcongrDischarger (← mvarId.intros).2
+      catch _ => setMCtx mctx
   return true
-
-partial def processGCongrHypothesis (g : MVarId) (inv : Bool) (config : Config) :
-    GRewriteM Bool := g.withContext do
-  let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← g.getType)) |
-    throwError "invalid `gcongr` goal {g}"
-  let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
-  if let some (result, proof) ← grewriteCore relName rel? lhs inv config then
-    rhs.withApp fun mvar xs ↦ do
-      mvar.mvarId!.assign (← mkLambdaFVars xs result)
-      g.assign proof
-      return true
-  else
-    return false
 
 partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv : Bool)
     (config : Config) : GRewriteM (Option (Expr × Expr)) := do
@@ -161,7 +163,8 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv :
   -- Try the given grewrite lemma.
   let lem ← read
   if e.toHeadIndex == lem.headIdx && e.headNumArgs == lem.headNumArgs then
-    if ← applyGRewrite g.mvarId! (inv != lem.symm) config then
+    if let some goals ← lem.apply g.mvarId! (inv != lem.symm) config then
+      goals.forM (pushNewGoal ·)
       return (mvar, g)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
@@ -187,7 +190,8 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
     goal.checkNotAssigned `grewrite
     if let (some (eNew, impProof), newGoals) ←
       grewriteCore `_Implies none e (!forwardImp) config |>.run lem |>.run' {} |>.run then
-      return { eNew, impProof, mvarIds := newGoals.toList }
+      let mvarIds ← newGoals.toList.filterM (not <$> ·.isAssigned)
+      return { eNew, impProof, mvarIds }
     else
       let (_, rel, _) ← lem.metaTelescope
       let some (_, lhs, rhs) := getRel (← whnf rel) | unreachable!
