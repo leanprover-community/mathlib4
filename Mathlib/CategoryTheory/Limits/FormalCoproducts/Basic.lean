@@ -22,9 +22,9 @@ In this file we construct the category of formal coproducts given a category.
 * `FormalCoproduct`: the category of formal coproducts, which are indexed sets of objects in a
   category. A morphism `∐ i : X.I, X.obj i ⟶ ∐ j : Y.I, Y.obj j` is given by a function
   `f : X.I → Y.I` and maps `X.obj i ⟶ Y.obj (f i)` for each `i : X.I`.
-* `FormalCoproduct.eval : (Cᵒᵖ ⥤ A) ⥤ ((FormalCoproduct C)ᵒᵖ ⥤ A)`:
-  the universal property that a presheaf on `C` where the target category has arbitrary coproducts,
-  can be extended to a presheaf on `FormalCoproduct C`.
+* `FormalCoproduct.eval : (C ⥤ A) ⥤ (FormalCoproduct C ⥤ A)`:
+  the universal property that a copresheaf on `C` where the target category has arbitrary
+  coproducts, can be extended to a copresheaf on `FormalCoproduct C`.
 
 ## TODO
 
@@ -55,7 +55,7 @@ structure FormalCoproduct where
 
 namespace FormalCoproduct
 
-/-- A morphism `(⨿ (i : X.I), X.obj i) ⟶ (⨿ (j : Y.I), Y.obj i)` is given by first a function
+/-- A morphism `(⨿ (i : X.I), X.obj i) ⟶ (⨿ (j : Y.I), Y.obj j)` is given by first a function
 on the indexing sets `f : X.I → Y.I`, and then for each `i : X.I` a morphism
 `X.obj i ⟶ Y.obj (f i)`. -/
 structure Hom (X Y : FormalCoproduct.{w} C) where
@@ -262,8 +262,8 @@ variable {X Y Z : FormalCoproduct.{w} C} (f : X ⟶ Z) (g : Y ⟶ Z)
   (hpb : ∀ i, IsLimit (pb i))
   (T : FormalCoproduct.{w} C)
 
-/-- Given two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, given pullback in `C` over each component,
-construct the pullback in `FormalCategory.{w} C`. -/
+/-- Given two morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, together with pullback cones in `C` over
+each component, construct a pullback cone in `FormalCoproduct.{w} C`. -/
 def pullbackCone : PullbackCone f g :=
   .mk (W := ⟨Function.Pullback f.f g.f, fun i ↦ (pb i).pt⟩)
     ⟨fun i ↦ i.1.fst, fun i ↦ (pb i).fst⟩
