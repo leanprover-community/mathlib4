@@ -11,6 +11,14 @@ public import Mathlib.Algebra.Ring.Basic
 /-!
 # Ring objects
 
+If `C` is a catersian monoidal category and `X : C`, we introduce typeclasses `RingObj X`
+which says that `X` is a ring object: it has a commutative additive group structure and
+a multiplicative monoid structure that is distributive over the additive structure.
+We also introduce `CommRingObj X` by requiring that the multiplicative law is commutative.
+
+The categories of bundled ring objects and bundled commutative ring objects are
+denoted `Rng C` and `CommRng C`.
+
 -/
 
 @[expose] public section
@@ -97,9 +105,11 @@ abbrev Hom.ring {X : C} : Ring (X ⟶ R) where
   mul_zero a := by simpa using mul_add a 0 0
   zero_mul a := by simpa using add_mul 0 0 a
 
-scoped[CategoryTheory.MonObj] attribute [instance] Hom.ring
+scoped[CategoryTheory.RingObj] attribute [instance] Hom.ring
 
 end
+
+open scoped RingObj
 
 /-- A commutative ring object in a cartesian monoidal category is a
 ring object such that the multiplicative law is commutative. -/

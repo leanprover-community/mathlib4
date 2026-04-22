@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Monoidal.Ring
 
 /-!
-# Yoneda embedding of `Ring C`
+# Yoneda embedding of `Rng C`
 
 -/
 
