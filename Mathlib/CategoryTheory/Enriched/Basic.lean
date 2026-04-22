@@ -25,7 +25,8 @@ This file contains the definitions of `V`-enriched categories and
 
 We don't yet define the `V`-object of natural transformations
 between a pair of `V`-functors (this requires limits in `V`),
-but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
+but we do provide a presheaf which, when that object exists,
+is isomorphic to its Yoneda embedding.
 
 We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
@@ -187,21 +188,22 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
-/-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
+/-- A type synonym for `C`, which should come equipped with a `W`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
 
 We obtain this category by
-transporting the enrichment in `V` along the lax monoidal functor `coyonedaTensorUnit`,
+transporting the enrichment in `W` along the lax monoidal functor
+`coyoneda.obj (op (𝟙_ W))`,
 then using the equivalence of `Type`-enriched categories with honest categories.
 
 This is sometimes called the "underlying" category of an enriched category,
-although some care is needed as the functor `coyonedaTensorUnit`,
+although some care is needed as this functor,
 which always exists, does not necessarily coincide with
-"the forgetful functor" from `V` to `Type`, if such exists.
-When `V` is any of `Type`, `Top`, `AddCommGroup`, or `Module R`,
-`coyonedaTensorUnit` is just the usual forgetful functor, however.
-For `V = Algebra R`, the usual forgetful functor is coyoneda of `R[X]`, not of `R`.
+"the forgetful functor" from `W` to `Type`, if such exists.
+When `W` is any of `Type`, `Top`, `AddCommGroup`, or `Module R`,
+it is just the usual forgetful functor, however.
+For `W = Algebra R`, the usual forgetful functor is coyoneda of `R[X]`, not of `R`.
 (Perhaps we should have a typeclass for this situation: `ConcreteMonoidal`?)
 -/
 @[nolint unusedArguments]
@@ -386,7 +388,7 @@ We now turn to natural transformations between `V`-functors.
 The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
 ```
-(𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)
+(𝟙_ V) ⟶ (F.obj X ⟶[V] G.obj X)
 ```
 satisfying an appropriate analogue of the naturality square.
 (c.f. https://ncatlab.org/nlab/show/enriched+natural+transformation)
@@ -406,8 +408,8 @@ For `EnrichedNatTransObj` to exist, it suffices to have `V` braided and complete
 
 Before assuming `V` is complete, we assume it is braided and
 define a presheaf `enrichedNatTransYoneda F G`
-which is isomorphic to the Yoneda embedding of `EnrichedNatTransObj F G`
-whether or not that object actually exists.
+which, when `EnrichedNatTransObj F G` exists,
+is isomorphic to its Yoneda embedding.
 
 This presheaf has components `(enrichedNatTransYoneda F G).obj A`
 what we call the `A`-graded enriched natural transformations,
@@ -426,7 +428,8 @@ coming from the ambient braiding on `V`.)
 
 
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
-This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
+When the `V`-object of natural transformations exists,
+this is the type of morphisms in `V` from `A` to that object.
 -/
 @[ext]
 structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
@@ -478,8 +481,9 @@ variable [BraidedCategory V]
 
 open BraidedCategory
 
-/-- A presheaf isomorphic to the Yoneda embedding of
-the `V`-object of natural transformations from `F` to `G`.
+/-- A presheaf of graded natural transformations from `F` to `G`.
+When the `V`-object of natural transformations from `F` to `G` exists,
+this presheaf is isomorphic to its Yoneda embedding.
 -/
 @[simps]
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max u₁ w where
