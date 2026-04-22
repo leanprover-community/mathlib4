@@ -211,17 +211,17 @@ theorem locallyFinite_Icc_of_tendsto {f g : α → X}
     simp [Subsingleton.elim _ (∅ : Set α)]
   obtain ⟨x_L, hx_L⟩ := exists_lt x
   obtain ⟨x_R, hx_R⟩ := exists_gt x
-  obtain ⟨N₁, hN₁ : ∀ b ≤ N₁, g b ≤ x_L⟩ :=
-    eventually_atBot.mp <| hu.eventually <| eventually_le_atBot x_L
-  obtain ⟨N₂, hN₂ : ∀ b ≥ N₂, x_R ≤ f b⟩ :=
-    eventually_atTop.mp <| hl.eventually <| eventually_ge_atTop x_R
-  refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc N₁ N₂).subset ?_⟩
+  obtain ⟨a_L, ha_L : ∀ a ≤ a_L, g a ≤ x_L⟩ :=
+    hu.eventually_le_atBot x_L |>.exists_forall_of_atBot
+  obtain ⟨a_R, ha_R : ∀ a ≥ a_R, x_R ≤ f a⟩ :=
+    hl.eventually_ge_atTop x_R |>.exists_forall_of_atTop
+  refine ⟨Ioo x_L x_R, Ioo_mem_nhds hx_L hx_R, (finite_Icc a_L a_R).subset ?_⟩
   rintro n ⟨y, ⟨hf, hg⟩, ⟨hxL, hxR⟩⟩
   constructor
   · contrapose! hxL
-    exact hg.trans (hN₁ n hxL.le)
+    exact hg.trans (ha_L n hxL.le)
   · contrapose! hxR
-    exact (hN₂ n hxR.le).trans hf
+    exact (ha_R n hxR.le).trans hf
 
 /-- A family of half-open intervals bounded by diverging limits is locally finite. -/
 theorem locallyFinite_Ico_of_tendsto {l u : α → X}
