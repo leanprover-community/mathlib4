@@ -24,7 +24,7 @@ final can be restated. We show:
 * Under categories of objects of filtered categories are filtered and their forgetful functors
   are final.
 * If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
-  condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
+  condition that for every `d : D` there is an object `c : C` and a morphism `d ⟶ F.obj c`, then
   `C` is filtered and `F` is final.
 * Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
   of (co)structured arrow categories.
@@ -53,7 +53,7 @@ theorem Functor.final_of_isFiltered_structuredArrow [∀ d, IsFiltered (Structur
     Final F where
   out _ := IsFiltered.isConnected _
 
-/-- If `CostructuredArrow F d` is filtered for any `d : D`, then `F : C ⥤ D` is initial. This is
+/-- If `CostructuredArrow F d` is cofiltered for any `d : D`, then `F : C ⥤ D` is initial. This is
 simply because cofiltered categories are connected. More profoundly, the converse is also true
 if `C` is cofiltered, see `initial_iff_isCofiltered_costructuredArrow`. -/
 theorem Functor.initial_of_isCofiltered_costructuredArrow
@@ -114,7 +114,7 @@ theorem Functor.final_const_terminal [IsFiltered C] [HasTerminal D] :
   Functor.final_const_of_isTerminal terminalIsTerminal
 
 /-- If `C` is cofiltered, then we can give an explicit condition for a functor `F : C ⥤ D` to
-be final. The converse is also true, see `initial_iff_of_isCofiltered`. -/
+be initial. The converse is also true, see `initial_iff_of_isCofiltered`. -/
 theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) (h₂ : ∀ {d : D} {c : C} (s s' : F.obj c ⟶ d),
       ∃ (c' : C) (t : c' ⟶ c), F.map t ≫ s = F.map t ≫ s') : Functor.Initial F := by
@@ -232,7 +232,7 @@ section LocallySmall
 
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
-/-- Implementation; use `Functor.Final.exists_coeq instead`. -/
+/-- Implementation; use `Functor.Final.exists_coeq` instead. -/
 theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
     (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t := by
   have : colimit.ι (F ⋙ coyoneda.obj (op d)) c s = colimit.ι (F ⋙ coyoneda.obj (op d)) c s' := by
@@ -360,7 +360,7 @@ instance StructuredArrow.final_proj_of_isFiltered [IsFilteredOrEmpty C]
   rw [isConnected_iff_of_equivalence (ofStructuredArrowProjEquivalence T Y X)]
   exact (final_comp (Under.forget X) T).out _
 
-/-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
+/-- The functor `CostructuredArrow.proj : CostructuredArrow T Y ⥤ C` is initial if `T : C ⥤ D` is
 initial and `C` is cofiltered. -/
 instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
     (T : C ⥤ D) [Initial T] (Y : D) : Initial (CostructuredArrow.proj T Y) := by
@@ -369,9 +369,9 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   exact (initial_comp (Over.forget X) T).out _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
-induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the domain of `T` is
-filtered. -/
+/-- The functor `StructuredArrow d T ⥤ StructuredArrow e T'` induced via `StructuredArrow.map₂`
+by `u : e ⟶ S.obj d` and an isomorphism `α : T ⋙ S ⟶ T'` is final, if `T` and `S` are final and
+the domain of `T` is filtered. -/
 instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Category.{v₃} E]
     {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E}
     {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α] :
@@ -397,7 +397,7 @@ instance StructuredArrow.final_post [IsFiltered C] {E : Type u₃} [Category.{v�
 
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
-filtered. -/
+cofiltered. -/
 instance CostructuredArrow.initial_map₂_id [IsCofiltered C] {E : Type u₃} [Category.{v₃} E]
     (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] (d : D) (e : E)
     (u : S.obj d ⟶ e) : Initial (map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u) := by
