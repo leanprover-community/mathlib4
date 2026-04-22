@@ -472,7 +472,7 @@ def mkEndpoints (vertexSet : Set α) (endPoint : β → Set α) (hmem : ∀ e, e
     grind [show u ∈ ({u, v} : Set α) from by simp]
 
 @[simp]
-lemma mkEndpoints_endpoints {vertexSet : Set α} {endPoint : β → Set α}
+lemma endpoints_mkEndpoints {vertexSet : Set α} {endPoint : β → Set α}
     (hcard : ∀ e, (endPoint e).encard ≤ 2) (hmem : ∀ e, endPoint e ⊆ vertexSet) (e : β) :
     (mkEndpoints vertexSet endPoint hmem).endpoints e = endPoint e := by
   ext x
