@@ -202,10 +202,10 @@ theorem fix_scott_induction {p : (∀ a, Part (β a)) → Prop} (hc : ωScottCon
   rw [fix_eq_lfp hc]
   exact ContinuousHom.lfp_induction _ h_bot h_step h_sup
 
-/-- Pointwise Scott induction for `Part.fix`: to prove `P x y` whenever `y ∈ Part.fix g x`,
+/-- Induction on membership in `Part.fix`: to prove `P x y` whenever `y ∈ Part.fix g x`,
 it suffices that for any approximation `f` on which `P` holds pointwise, `g f` still satisfies
 `P` pointwise. No continuity hypothesis is needed. -/
-theorem fix_scott_induction_pointwise {P : ∀ a, β a → Prop}
+theorem fix_induction_mem {P : ∀ a, β a → Prop}
     (h_step : ∀ f, (∀ x y, y ∈ f x → P x y) → ∀ x y, y ∈ g f x → P x y)
     {x} {y : β x} (h : y ∈ Part.fix g x) : P x y := by
   obtain ⟨n, hn⟩ := exists_mem_approx_of_mem_fix h
