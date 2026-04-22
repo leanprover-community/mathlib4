@@ -16,7 +16,7 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
 
 * show that a functor that preserves biproducts of a two-element type preserves binary biproducts,
 * construct the comparison morphisms between the image of a biproduct and the biproduct of the
-  images and show that the biproduct is preserved if one of them is an isomorphism,
+  images and show that one composite is the identity,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
 
@@ -229,8 +229,7 @@ theorem ι_biproductComparison' (j : J) :
 variable [PreservesZeroMorphisms F]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
-the biproduct, see `preservesBiproduct_of_monoBiproductComparison`. -/
+/-- The composition `biproductComparison' F f ≫ biproductComparison F f` is the identity. -/
 @[reassoc (attr := simp)]
 theorem biproductComparison'_comp_biproductComparison :
     biproductComparison' F f ≫ biproductComparison F f = 𝟙 (⨁ F.obj ∘ f) := by
@@ -238,7 +237,7 @@ theorem biproductComparison'_comp_biproductComparison :
     ext
     simp [biproduct.ι_π, ← Functor.map_comp, eqToHom_map]
 
-/-- `biproduct_comparison F f` is a split epimorphism. -/
+/-- `biproductComparison F f` is a split epimorphism. -/
 @[simps]
 def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
   section_ := biproductComparison' F f
@@ -247,7 +246,7 @@ def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
 instance : IsSplitEpi (biproductComparison F f) :=
   IsSplitEpi.mk' (splitEpiBiproductComparison F f)
 
-/-- `biproduct_comparison' F f` is a split monomorphism. -/
+/-- `biproductComparison' F f` is a split monomorphism. -/
 @[simps]
 def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
   retraction := biproductComparison F f
@@ -319,8 +318,7 @@ theorem inr_biprodComparison' : biprod.inr ≫ biprodComparison' F X Y = F.map b
 
 variable [PreservesZeroMorphisms F]
 
-/-- The composition in the opposite direction is equal to the identity if and only if `F` preserves
-the biproduct, see `preservesBinaryBiproduct_of_monoBiprodComparison`. -/
+/-- The composition `biprodComparison' F X Y ≫ biprodComparison F X Y` is the identity. -/
 @[reassoc (attr := simp)]
 theorem biprodComparison'_comp_biprodComparison :
     biprodComparison' F X Y ≫ biprodComparison F X Y = 𝟙 (F.obj X ⊞ F.obj Y) := by
