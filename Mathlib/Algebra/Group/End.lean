@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
 
+public import Mathlib.Logic.Equiv.Equivify
 /-!
 # Monoids of endomorphisms, groups of automorphisms
 
@@ -104,12 +105,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
+@[equivify, unequivify← ]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
+@[equivify, unequivify← ]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
+@[equivify, unequivify← ]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -121,7 +125,8 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
+@[simp, equivify← , unequivify]
+lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
   f.eq_symm_apply
@@ -139,7 +144,7 @@ The assumption made here is that if you're using the group structure, you want t
 simp. -/
 
 
-@[simp]
+/-@[simp]
 theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 
@@ -177,7 +182,7 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 
 @[simp]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
-  Equiv.self_trans_symm e
+  Equiv.self_trans_symm e-/
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
