@@ -208,9 +208,9 @@ def RegularMono.lift' {W : C} {f : X ⟶ Y} (hf : RegularMono f) (k : W ⟶ Y)
     { l : W ⟶ X // l ≫ f = k } :=
   Fork.IsLimit.lift' hf.isLimit _ h
 
-/-- The second leg of a pullback cone is a regular monomorphism if the right component is too.
+/-- In a pullback square, if `h` is a regular monomorphism, then so is `g`.
 
-See also `Pullback.sndOfMono` for the basic monomorphism version, and
+See also `pullback.snd_of_mono` for the basic monomorphism version, and
 `regularOfIsPullbackFstOfRegular` for the flipped version.
 -/
 def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
@@ -239,9 +239,9 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
       grind [Fork.ofι, PullbackCone.mk]
     · exact z
 
-/-- The first leg of a pullback cone is a regular monomorphism if the left component is too.
+/-- In a pullback square, if `k` is a regular monomorphism, then so is `f`.
 
-See also `Pullback.fstOfMono` for the basic monomorphism version, and
+See also `pullback.fst_of_mono` for the basic monomorphism version, and
 `regularOfIsPullbackSndOfRegular` for the flipped version.
 -/
 def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
@@ -546,9 +546,9 @@ def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h
 
-/-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
+/-- In a pushout square, if `g` is a regular epimorphism, then so is `h`.
 
-See also `Pushout.sndOfEpi` for the basic epimorphism version, and
+See also `pushout.inl_of_epi` for the basic epimorphism version, and
 `regularOfIsPushoutFstOfRegular` for the flipped version.
 -/
 def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
@@ -576,9 +576,9 @@ def regularOfIsPushoutSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
       erw [← Category.assoc, ← eq_whisker comm]
       dsimp at z; simp only [Category.assoc, z]
 
-/-- The first leg of a pushout cocone is a regular epimorphism if the left component is too.
+/-- In a pushout square, if `f` is a regular epimorphism, then so is `k`.
 
-See also `Pushout.fstOfEpi` for the basic epimorphism version, and
+See also `pushout.inr_of_epi` for the basic epimorphism version, and
 `regularOfIsPushoutSndOfRegular` for the flipped version.
 -/
 def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : Q ⟶ S} {k : R ⟶ S}
