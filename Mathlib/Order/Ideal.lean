@@ -160,9 +160,11 @@ theorem mem_toIdeal {I : Set P} (h : IsIdeal I) {a : P} : a ∈ h.toIdeal ↔ a 
 theorem coe_toIdeal {I : Set P} (h : IsIdeal I) : (h.toIdeal : Set P) = I :=
   rfl
 
+@[simp]
 theorem toIdeal_le {I : Set P} (h : IsIdeal I) {J : Ideal P} : h.toIdeal ≤ J ↔ I ⊆ J :=
   Iff.rfl
 
+@[simp]
 theorem le_toIdeal {I : Set P} (h : IsIdeal I) {J : Ideal P} : J ≤ h.toIdeal ↔ (J : Set P) ⊆ I :=
   Iff.rfl
 
@@ -632,8 +634,7 @@ instance [LE P] [OrderTop P] : IsCoatomic (Ideal P) := by
     (hS₁.image_of_map_rel _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
   · simp [Ideal.isIdeal]
   · simp
-  · simp_rw [top_notMem_iff, lt_top_iff_ne_top, ← top_notMem_iff_ne_top] at hS₃
-    simpa [← top_mem_iff_eq_top]
+  · simpa [top_notMem_iff, lt_top_iff_ne_top, ← top_mem_iff_eq_top] using hS₃
   · intro J hJ
     simpa [le_toIdeal] using Set.subset_biUnion_of_mem hJ
 
