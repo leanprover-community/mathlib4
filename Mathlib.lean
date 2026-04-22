@@ -1493,6 +1493,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Augmented.Monoidal
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
+public import Mathlib.AlgebraicTopology.SimplexCategory.DeltaZeroIter
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.NormalForms
