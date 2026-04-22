@@ -88,18 +88,23 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
 A function `f : X → Y` has locally finite support if for every `z : X`, there is a
 neighbourhood `t` around `z` such that `t ∩ f.support` is finite.
 -/
-def LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop :=
-  ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
+def LocallyFiniteSupportWithin (U : Set X) [Zero Y] (f : X → Y) : Prop :=
+  ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
+
+abbrev LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop := LocallyFiniteSupportWithin univ f
 
 lemma LocallyFiniteSupport.iff_locallyFinite_support [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔ LocallyFiniteSupport f := by
   dsimp only [LocallyFinite]
-  peel with z t ht
+  peel with z
+  simp only [singleton_inter_nonempty, mem_univ, forall_const]
+  peel with t ht
   have aux1 : t ∩ f.support = {i : f.support | ↑i ∈ t} := by aesop
   have aux2 : InjOn Subtype.val {i : f.support | ↑i ∈ t} := by aesop
-  simp only [singleton_inter_nonempty, aux1, finite_image_iff aux2]
+  simp only [aux1, finite_image_iff aux2]
 
-lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y) (h : LocallyFiniteSupport f) :
+lemma LocallyFiniteSupport.locallyFinite_support [Zero Y] (f : X → Y)
+    (h : LocallyFiniteSupport f) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) :=
   (LocallyFiniteSupport.iff_locallyFinite_support f).mpr h
 
@@ -112,9 +117,9 @@ lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
   rw [← lem f.support W]
   exact Finite.image Subtype.val this
 
-lemma Function.locallyFinsupp.locallyFiniteSupport [Zero Y] (f : locallyFinsupp X Y) :
-    LocallyFiniteSupport f.toFun :=
-  (f.supportLocallyFiniteWithinDomain' · (by trivial))
+lemma Function.locallyFinsuppWithin.locallyFiniteSupportWithin [Zero Y]
+    (f : locallyFinsuppWithin U Y) : LocallyFiniteSupportWithin U f.toFun :=
+  f.supportLocallyFiniteWithinDomain'
 
 namespace Function.locallyFinsuppWithin
 
