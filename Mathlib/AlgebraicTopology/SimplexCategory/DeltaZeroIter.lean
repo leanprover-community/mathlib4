@@ -121,7 +121,7 @@ def σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     ⦋m⦌ ⟶ ⦋n⦌ :=
   Hom.mk
     { toFun j :=
-        if j.val < i then 0 else ⟨j.val - i, by dsimp; grind⟩
+        if j.val < i then 0 else ⟨j.val - i, by grind⟩
       monotone' _ _ _ := by grind [Fin.zero_le] }
 
 lemma σ₀Iter_coe_eq_of_lt (i : ℕ) {n m : ℕ}
