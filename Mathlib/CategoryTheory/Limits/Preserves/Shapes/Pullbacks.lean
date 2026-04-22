@@ -69,8 +69,9 @@ end PullbackCone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} {h : W ⟶ X} {k : W ⟶ Y} (comm : h ≫ f = k ≫ g)
 
-/-- The map of a pullback cone is a limit iff the fork consisting of the mapped morphisms is a
-limit. This essentially lets us commute `PullbackCone.mk` with `Functor.mapCone`. -/
+/-- The map of a pullback cone is a limit iff the pullback cone consisting of the mapped
+morphisms is a limit. This essentially lets us commute `PullbackCone.mk` with `Functor.mapCone`.
+-/
 def isLimitMapConePullbackConeEquiv :
     IsLimit (mapCone G (PullbackCone.mk h k comm)) ≃
       IsLimit
@@ -78,14 +79,14 @@ def isLimitMapConePullbackConeEquiv :
           PullbackCone (G.map f) (G.map g)) :=
   (PullbackCone.mk _ _ comm).isLimitMapConeEquiv G
 
-/-- The property of preserving pullbacks expressed in terms of binary fans. -/
+/-- The property of preserving pullbacks expressed in terms of pullback cones. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
 
-/-- The property of reflecting pullbacks expressed in terms of binary fans. -/
+/-- The property of reflecting pullbacks expressed in terms of pullback cones. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     from by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
@@ -102,7 +103,7 @@ def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
     IsLimit (PullbackCone.mk (G.map (pullback.fst f g)) (G.map (pullback.snd f g)) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 
-/-- If `F` preserves the pullback of `f, g`, it also preserves the pullback of `g, f`. -/
+/-- If `G` preserves the pullback of `f, g`, it also preserves the pullback of `g, f`. -/
 lemma preservesPullback_symmetry : PreservesLimit (cospan g f) G where
   preserves {c} hc := ⟨by
     apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).toFun
@@ -175,12 +176,12 @@ namespace PushoutCocone
 
 variable {W X Y : C} {f : W ⟶ X} {g : W ⟶ Y} (c : PushoutCocone f g) (G : C ⥤ D)
 
-/-- The image of a pullback cone by a functor. -/
+/-- The image of a pushout cocone by a functor. -/
 abbrev map : PushoutCocone (G.map f) (G.map g) :=
   PushoutCocone.mk (G.map c.inl) (G.map c.inr) (by simpa using G.congr_map c.condition)
 
 /-- The map (as a cocone) of a pushout cocone is colimit iff
-the map (as a pushout cocone) is limit. -/
+the map (as a pushout cocone) is colimit. -/
 def isColimitMapCoconeEquiv :
     IsColimit (mapCocone G c) ≃ IsColimit (c.map G) :=
   (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).symm.trans <|
@@ -196,8 +197,9 @@ end PushoutCocone
 variable (G : C ⥤ D)
 variable {W X Y Z : C} {h : X ⟶ Z} {k : Y ⟶ Z} {f : W ⟶ X} {g : W ⟶ Y} (comm : f ≫ h = g ≫ k)
 
-/-- The map of a pushout cocone is a colimit iff the cofork consisting of the mapped morphisms is a
-colimit. This essentially lets us commute `PushoutCocone.mk` with `Functor.mapCocone`. -/
+/-- The map of a pushout cocone is a colimit iff the pushout cocone consisting of the mapped
+morphisms is a colimit. This essentially lets us commute `PushoutCocone.mk` with
+`Functor.mapCocone`. -/
 def isColimitMapCoconePushoutCoconeEquiv :
     IsColimit (mapCocone G (PushoutCocone.mk h k comm)) ≃
       IsColimit
@@ -209,14 +211,14 @@ def isColimitMapCoconePushoutCoconeEquiv :
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [Category.comp_id, Category.id_comp, ← G.map_comp]
 
-/-- The property of preserving pushouts expressed in terms of binary cofans. -/
+/-- The property of preserving pushouts expressed in terms of pushout cocones. -/
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
       by simp only [← G.map_comp, comm])) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (isColimitOfPreserves G l)
 
-/-- The property of reflecting pushouts expressed in terms of binary cofans. -/
+/-- The property of reflecting pushouts expressed in terms of pushout cocones. -/
 def isColimitOfIsColimitPushoutCoconeMap [ReflectsColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h =
       G.map g ≫ G.map k from by simp only [← G.map_comp, comm]))) :
@@ -234,7 +236,7 @@ def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `F` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
+/-- If `G` preserves the pushout of `f, g`, it also preserves the pushout of `g, f`. -/
 lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
   preserves {c} hc := ⟨by
     apply (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).toFun
