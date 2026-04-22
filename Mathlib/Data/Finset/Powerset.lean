@@ -116,10 +116,10 @@ theorem powerset_filter_sdiff [DecidableEq α] (s t : Finset α) (hst : s ⊆ t)
 
 theorem card_powerset_filter [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
     (t.powerset.filter (s ⊆ ·)).card = 2 ^ (t.card - s.card) := by
-  have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb (hab : a ∪ s = b ∪ s) => by
-    have ha' := disjoint_of_subset_left (mem_powerset.mp ha) disjoint_sdiff_self_left
-    have hb' := disjoint_of_subset_left (mem_powerset.mp hb) disjoint_sdiff_self_left
-    rw [← union_sdiff_cancel_right ha', hab, union_sdiff_cancel_right hb']
+  have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb hab =>
+    (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp ha))).symm.trans
+    ((congrArg (· \ s) hab).trans
+      (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp hb))))
   simp only [powerset_filter_sdiff s t hst, card_image_of_injOn hinj,
              card_powerset, card_sdiff_of_subset hst]
 
@@ -244,11 +244,12 @@ lemma card_powersetCard_filter [DecidableEq α] (s t : Finset α) (n : ℕ)
     (hst : s ⊆ t) (hsn : s.card ≤ n) :
     ((t.powersetCard n).filter (s ⊆ ·)).card =
     Nat.choose (t.card - s.card) (n - s.card) := by
-  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - s.card)) :=
-      fun a ha b hb (hab : a ∪ s = b ∪ s) => by
-    have ha' := disjoint_of_subset_left (mem_powersetCard.mp ha).1 disjoint_sdiff_self_left
-    have hb' := disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left
-    rw [← union_sdiff_cancel_right ha', hab, union_sdiff_cancel_right hb']
+  have hinj : Set.InjOn (· ∪ s) ↑((t \ s).powersetCard (n - s.card)) := fun a ha b hb hab =>
+    (union_sdiff_cancel_right
+      (disjoint_of_subset_left (mem_powersetCard.mp ha).1 disjoint_sdiff_self_left)).symm.trans
+    ((congrArg (· \ s) hab).trans
+      (union_sdiff_cancel_right
+        (disjoint_of_subset_left (mem_powersetCard.mp hb).1 disjoint_sdiff_self_left)))
   simp only [powersetCard_filter_sdiff s t n hst hsn, card_image_of_injOn hinj,
              card_powersetCard, card_sdiff_of_subset hst]
 
