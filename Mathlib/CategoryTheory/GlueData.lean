@@ -310,8 +310,8 @@ theorem ι_gluedIso_inv (i : D.J) : (D.mapGlueData F).ι i ≫ (D.gluedIso F).in
   rw [Iso.comp_inv_eq, ι_gluedIso_hom]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `F` preserves the gluing, and reflects the pullback of `U i ⟶ glued` and `U j ⟶ glued`,
-then `F` reflects the fact that `V_pullback_cone` is a pullback. -/
+/-- If `F` preserves the gluing, and reflects the pullback of `D.ι i` and `D.ι j`,
+then `F` reflects the fact that `D.vPullbackCone i j` is a pullback. -/
 def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι j)) F]
     (hc : IsLimit ((D.mapGlueData F).vPullbackCone i j)) : IsLimit (D.vPullbackCone i j) := by
   apply isLimitOfReflects F
@@ -329,8 +329,8 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   rintro (_ | _ | _)
   all_goals simp [e]; rfl
 
-/-- If there is a forgetful functor into `Type` that preserves enough (co)limits, then `D.ι` will
-be jointly surjective. -/
+/-- If a functor `F : C ⥤ Type v` preserves enough (co)limits, then the family `F.map (D.ι i)` is
+jointly surjective. -/
 theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]
     [∀ i j k : D.J, PreservesLimit (cospan (D.f i j) (D.f i k)) F] (x : F.obj D.glued) :
     ∃ (i : _) (y : F.obj (D.U i)), F.map (D.ι i) y = x := by
