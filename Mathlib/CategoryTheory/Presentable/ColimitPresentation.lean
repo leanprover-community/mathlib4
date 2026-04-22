@@ -58,7 +58,7 @@ def Total.Hom.comp {k l m : Total P} (f : k.Hom l) (g : l.Hom m) : k.Hom m where
   base := f.base ≫ g.base
   hom := f.hom ≫ g.hom
   w := by
-    simp only [Functor.const_obj_obj, Functor.map_comp, Category.assoc]
+    simp only [ Functor.map_comp, Category.assoc]
     rw [f.w_assoc, g.w]
 
 set_option backward.defeqAttrib.useBackward true in

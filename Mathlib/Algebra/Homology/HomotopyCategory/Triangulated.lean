@@ -165,7 +165,7 @@ lemma mappingConeCompHomotopyEquiv_comm₂ :
       (triangle (mappingConeCompTriangle f g).mor₁).mor₃ =
       (mappingConeCompTriangle f g).mor₃ := by
   ext n
-  simp [map, mappingConeCompHomotopyEquiv, MappingConeCompHomotopyEquiv.hom,
+  simp [ mappingConeCompHomotopyEquiv, MappingConeCompHomotopyEquiv.hom,
     lift_f _ _ _ _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
 set_option backward.defeqAttrib.useBackward true in

@@ -203,14 +203,14 @@ def commShiftUnop
   commShiftIso_zero := by
     rw [commShiftIso_zero]
     ext
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+    simp only [ NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app,
       CommShift.isoZero_inv_app, unop_comp, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
     rfl
   commShiftIso_add a b := by
     rw [commShiftIso_add]
     ext
-    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+    simp only [ NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app,
       CommShift.isoAdd_inv_app, unop_comp, Category.assoc,
       CommShift.isoAdd_hom_app]
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
@@ -231,7 +231,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
-    simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
+    simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app,
       comp_id]
     exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 

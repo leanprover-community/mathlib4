@@ -266,7 +266,7 @@ lemma fromNormalization_app {U : Y.Opens} (hU : IsAffineOpen U) :
     ← cancel_mono (((normalizationOpenCover f).X ⟨U, hU⟩).presheaf.map (eqToHom H).op)]
   dsimp [normalizationObjIso]
   rw [IsAffineOpen.fromSpec_app_self]
-  simp only [app_eq_appLE, Category.assoc, map_appLE, appLE_map, appIso_inv_appLE]
+  simp only [app_eq_appLE, Category.assoc, map_appLE, appLE_map]
   simp [Scheme.Hom.appLE, ← ΓSpecIso_inv_naturality]
   rfl
 

@@ -61,9 +61,9 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
   suffices (_ ◁ adj.unit.app _) ≫ adjRetractionAux adj c d = (ihom.ev _).app _ by
-    simp only [id_obj, comp_obj, adjRetraction, ← curry_natural_left, this]
+    simp only [id_obj, adjRetraction, ← curry_natural_left, this]
     simp [curry_eq]
-  simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
+  simp only [id_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
     simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,

@@ -112,7 +112,7 @@ lemma mono_ιK : Mono (ιK f₃ α) := by
   intro B k hk
   replace hk := (ι ⋙ shiftFunctor C (1 : ℤ)).congr_map hk
   apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
-  simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
+  simp only [ Functor.comp_map, Functor.map_comp,
     shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
   obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
   rw [eq_zero_of_hom_shift_pos hι l (by lia), zero_comp] at hl

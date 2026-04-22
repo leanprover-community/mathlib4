@@ -554,7 +554,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
   have : IsOpenImmersion α := by
     apply +allowSynthFailures IsOpenImmersion.of_comp
     · exact (inferInstance : IsOpenImmersion (pullback.fst (V F i j).ι (V F i k).ι))
-    · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, α]
+    · simp only [limit.lift_π, PullbackCone.mk_π_app, α]
       infer_instance
   have : α z = x := by
     apply (pullback.fst (C := Scheme) _ _).isOpenEmbedding.injective
@@ -673,10 +673,10 @@ def glueData : Scheme.GlueData where
     obtain ⟨l, fi, fj, fk, α, z, hα, hα₁, hα₂, e⟩ := this -- doing them in the same step times out.
     refine ⟨α.opensRange, ⟨_, e⟩, ?_⟩
     rw [← cancel_mono (pullback.snd _ _), ← cancel_mono (Scheme.Opens.ι _)]
-    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
       limit.lift_π_assoc, cospan_left, IsOpenImmersion.lift_fac, Category.id_comp]
     rw [IsOpenImmersion.comp_lift_assoc]
-    simp only [limit.lift_π_assoc, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app]
+    simp only [limit.lift_π_assoc, cospan_left, PullbackCone.mk_π_app]
     rw [← cancel_epi α.isoOpensRange.hom]
     simp_rw [Scheme.Hom.isoOpensRange_hom_ι_assoc, IsOpenImmersion.comp_lift_assoc]
     simp only [reassoc_of% hα₁, homOfLE_tAux F _ _ fi fj, Iso.hom_inv_id_assoc, reassoc_of% hα₂]
@@ -847,7 +847,7 @@ lemma ι_jointly_surjective (x : ↑(colimit F)) :
   congr 5
   have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
     (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
-  simp [cocone, Functor.const_obj_obj, eqToHom_map, ← this]
+  simp [cocone, eqToHom_map, ← this]
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=

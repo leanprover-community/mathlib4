@@ -298,7 +298,7 @@ universal property of pullbacks. -/
     fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
-    simp only [category_comp_f, category_comp_φ, eqToHom_refl, Category.comp_id]
+    simp only [ eqToHom_refl, Category.comp_id]
     exact (hpb _).hom_ext ((pb _).equalizer_ext (by aesop) (by aesop)))
   right_inv s := by ext <;> simp
 

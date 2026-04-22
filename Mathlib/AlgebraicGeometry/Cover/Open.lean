@@ -190,11 +190,8 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
     (𝒰.pullbackCoverAffineRefinementObjIso f i).inv ≫
       𝒰.affineRefinement.openCover.pullbackHom f i =
       (𝒰.X i.1).affineCover.pullbackHom (𝒰.pullbackHom f i.1) i.2 := by
-  simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
-    PreZeroHypercover.pullback₁_X, Cover.pullbackHom, AffineOpenCover.openCover_X,
-    AffineOpenCover.openCover_f, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
-    Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
-    PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
+  simp only [ Cover.pullbackHom, pullbackCoverAffineRefinementObjIso, Iso.trans_inv, asIso_inv,
+    Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π, PullbackCone.mk_π_app, Category.comp_id]
   convert pullbackSymmetry_inv_comp_fst ((𝒰.X i.1).affineCover.f i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 

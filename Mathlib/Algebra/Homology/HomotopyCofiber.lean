@@ -472,13 +472,12 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
   dsimp [nullHomotopicMap]
   by_cases! hj : ∃ (k : ι), c.Rel k j
   · obtain ⟨k, hjk⟩ := hj
-    simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
+    simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_d,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
       homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
-  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
-      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
+  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj, homotopyCofiber_d, assoc, comp_sub, comp_id,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
       homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,
       ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f, neg_comp,
@@ -495,8 +494,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
   dsimp [nullHomotopicMap]
   by_cases hj : ∃ (k : ι), c.Rel j k
   · obtain ⟨k, hjk⟩ := hj
-    simp only [Homotopy.nullHomotopicMap'_f hij hjk,
-      homotopyCofiber_X, homotopyCofiber_d, assoc, comp_add,
+    simp only [Homotopy.nullHomotopicMap'_f hij hjk, homotopyCofiber_d, assoc, comp_add,
       homotopyCofiber.inrX_d_assoc, homotopyCofiber.inrX_sndX_assoc, comp_sub,
       inrX_π_assoc, comp_id, ← Hom.comm_assoc, homotopyCofiber.inlX_d _ _ _ _ _ hjk,
       comp_neg, add_neg_cancel_left]
@@ -506,9 +504,9 @@ lemma inrX_nullHomotopy_f (j : ι) :
     · dsimp
       simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
         biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, this,
-        sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
+        sub_f_apply, sub_comp, homotopyCofiber.inr_f]
   · simp only [not_exists] at hj
-    simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj, homotopyCofiber_X,
+    simp only [assoc, Homotopy.nullHomotopicMap'_f_of_not_rel_left hij hj,
       homotopyCofiber_d, homotopyCofiber.inlX_d' _ _ _ _ (hj _), homotopyCofiber.inrX_sndX_assoc,
       comp_sub, inrX_π_assoc, comp_id, ι₀, comp_f, homotopyCofiber.inr_f]
     rw [← cancel_epi (biprodXIso K K j).inv]

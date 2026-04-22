@@ -1097,7 +1097,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   rw [ιPi, Category.assoc, ← Iso.eq_inv_comp, isoEqualizer]
-  simp only [limit.isoLimitCone_inv_π, MulticospanIndex.multiforkEquivPiFork_inverse_obj_pt,
+  simp only [limit.isoLimitCone_inv_π,
     limit.cone_x, MulticospanIndex.multiforkEquivPiFork_inverse_obj_π_app]
   rfl
 

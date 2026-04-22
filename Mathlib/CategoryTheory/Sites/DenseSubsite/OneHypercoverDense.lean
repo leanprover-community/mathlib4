@@ -401,7 +401,7 @@ lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
       ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩ _ _ ?_
     rintro ⟨X₀, a, ha⟩
     dsimp
-    simp only [assoc, ← Functor.map_comp, ← op_comp]
+    simp only [assoc, ← Functor.map_comp, - op_comp]
     exact h ⟨_, _, ha⟩)
 
 end

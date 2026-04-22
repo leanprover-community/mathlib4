@@ -107,7 +107,7 @@ lemma pullHom_pullHom
   rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
     F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop)]
-  simp only [eqToHom_refl, Category.id_comp, Category.comp_id]
+  simp only [eqToHom_refl, Category.id_comp]
   rw [mapComp'_inv_naturality_assoc,
     ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
 
@@ -151,7 +151,7 @@ def overMapCompPresheafHomIso {S' : C} (q : S' ⟶ S) :
       rintro ⟨T₁⟩ ⟨T₂⟩ ⟨f⟩
       ext g
       dsimp [pullHom]
-      simp only [eqToHom_refl, Category.id_comp, Category.comp_id, Category.assoc,
+      simp only [ Category.assoc,
         Functor.map_comp]
       rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ rfl _ rfl,
         F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ (by

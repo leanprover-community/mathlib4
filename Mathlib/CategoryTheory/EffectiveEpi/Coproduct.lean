@@ -69,24 +69,24 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   apply_fun ((Sigma.desc fun a ↦ pullback.fst g₁ (Sigma.ι X a)) ≫ ·) using
     (fun a b ↦ (cancel_epi _).mp)
   ext a
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   rw [← Category.assoc, pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   apply_fun ((Sigma.desc fun a ↦ pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·)
     using (fun a b ↦ (cancel_epi _).mp)
   ext b
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   simp only [← Category.assoc]
   rw [(Category.assoc _ _ g₂), pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   rw [← Category.assoc]
   apply h
   apply_fun (pullback.fst g₁ (Sigma.ι X a) ≫ ·) at hg
   rw [← Category.assoc, pullback.condition] at hg
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app] at hg
   apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦
     pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·) at hg
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app] at hg
   simp only [← Category.assoc] at hg
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg

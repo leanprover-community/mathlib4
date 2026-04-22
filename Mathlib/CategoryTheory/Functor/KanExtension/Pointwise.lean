@@ -570,7 +570,7 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
   app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
     (CostructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f := by
-    simp only [comp_obj, pointwiseLeftKanExtension_obj, comp_map,
+    simp only [ comp_map,
       pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
     rw [id_comp]
     let φ : CostructuredArrow.mk (L.map f) ⟶ CostructuredArrow.mk (𝟙 (L.obj X₂)) :=
@@ -678,7 +678,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
   app X := limit.π (StructuredArrow.proj (L.obj X) L ⋙ F)
     (StructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f := by
-    simp only [comp_obj, pointwiseRightKanExtension_obj, comp_map,
+    simp only [ comp_map,
       pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
     rw [comp_id]
     let φ : StructuredArrow.mk (𝟙 (L.obj X₁)) ⟶ StructuredArrow.mk (L.map f) :=

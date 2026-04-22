@@ -104,7 +104,7 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
   refine ⟨limit (preimageDiagram hF X y), limit.π (preimageDiagram hF X y) ⟨0⟩, hh,
     (coherentTopology C).yonedaEquiv (hc.lift (cone hF X y )),
     (?_ : (c.π.app (op 0)).hom.app _ _ = _)⟩
-  simp only [← (coherentTopology C).yonedaEquiv_comp, Functor.const_obj_obj, cone,
+  simp only [← (coherentTopology C).yonedaEquiv_comp, cone,
     IsLimit.fac, NatTrans.ofOpSequence_app, (coherentTopology C).yonedaEquiv_comp,
     (coherentTopology C).yonedaEquiv_yoneda_map]
   rfl

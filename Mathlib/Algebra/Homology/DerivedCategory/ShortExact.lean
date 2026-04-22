@@ -55,12 +55,12 @@ set_option backward.isDefEq.respectTransparency false in
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
     triangleOfSESδ hS₁ ≫ (Q.map f.τ₁)⟦1⟧' = Q.map f.τ₃ ≫ triangleOfSESδ hS₂ := by
-  simp only [triangleOfSESδ, CochainComplex.mappingCone.triangle_obj₁, Category.assoc,
+  simp only [triangleOfSESδ, Category.assoc,
     IsIso.inv_comp_eq]
   rw [← Functor.comp_map, ← (Q.commShiftIso (1 : ℤ)).hom.naturality, ← Category.assoc,
     ← Category.assoc, ← Category.assoc, ← Category.assoc, ← Iso.app_hom,
     Iso.cancel_iso_hom_right, ← Q.map_comp]
-  simp only [Functor.comp_obj, Functor.comp_map,
+  simp only [ Functor.comp_map,
     ← CochainComplex.mappingCone.descShortComplex_naturality f,
     Functor.map_comp, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
   rw [← Q.map_comp, ← Q.map_comp]

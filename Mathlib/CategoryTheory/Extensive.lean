@@ -126,7 +126,7 @@ instance hasPullbackInr' :
   have : IsPullback (𝟙 _) (f ≫ (coprod.braiding X Y).hom) f (coprod.braiding Y X).hom :=
     IsPullback.of_horiz_isIso ⟨by simp⟩
   have := (IsPullback.of_hasPullback (f ≫ (coprod.braiding X Y).hom) coprod.inl).paste_horiz this
-  simp only [coprod.braiding_hom, Category.comp_id, colimit.ι_desc, BinaryCofan.mk_pt,
+  simp only [coprod.braiding_hom, Category.comp_id, colimit.ι_desc,
     BinaryCofan.ι_app_left, BinaryCofan.mk_inl] at this
   exact ⟨⟨⟨_, this.isLimit⟩⟩⟩
 
@@ -504,14 +504,14 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
     inv_hom_id := by
       ext j
       · simp
-      · simp only [coprod.desc_comp, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
-          eqToHom_refl, Category.id_comp, dite_true, BinaryCofan.mk_pt, BinaryCofan.ι_app_right,
+      · simp only [coprod.desc_comp, colimit.ι_desc, Cofan.mk_ι_app,
+          eqToHom_refl, Category.id_comp, dite_true, BinaryCofan.ι_app_right,
           BinaryCofan.mk_inr, colimit.ι_desc_assoc, Discrete.functor_obj, Category.comp_id]
         exact dif_neg j.prop }
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
     hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
   have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
-    simp only [e, e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
+    simp only [e, e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc,
       BinaryCofan.ι_app_left, BinaryCofan.mk_inl]
     exact colimit.comp_coconePointUniqueUpToIso_inv _ _
   clear_value e'

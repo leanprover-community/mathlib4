@@ -405,7 +405,7 @@ lemma Scheme.ofRestrict_appLE (V W e) :
 lemma Scheme.ofRestrict_appIso (U) :
     (X.ofRestrict h).appIso U = Iso.refl _ := by
   ext1
-  simp only [restrict_presheaf_obj, Hom.appIso_hom', ofRestrict_appLE, homOfLE_refl, op_id,
+  simp only [ Hom.appIso_hom', ofRestrict_appLE, homOfLE_refl, op_id,
     CategoryTheory.Functor.map_id, Iso.refl_hom]
 
 @[simp]

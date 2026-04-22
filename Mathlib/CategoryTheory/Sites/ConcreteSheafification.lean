@@ -122,7 +122,7 @@ theorem equiv_symm_eq_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMult
     -- We can hint `ConcreteCategory.hom (Y := P.obj (op I.Y))` below to put it into `simp`-normal
     -- form, but that doesn't seem to fix the `erw`s below...
     (Multiequalizer.ι (S.index P) I) ((Meq.equiv P S).symm x) = x I := by
-  simp [← GrothendieckTopology.Cover.index_left, ← equiv_apply]
+  simp [- GrothendieckTopology.Cover.index_left, ← equiv_apply]
 
 end Meq
 

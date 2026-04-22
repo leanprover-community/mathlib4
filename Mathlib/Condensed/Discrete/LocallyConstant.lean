@@ -355,7 +355,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [unit_app, counitAppAppImage]
+    simp only [ counitAppAppImage]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
     rfl
 

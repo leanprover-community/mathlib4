@@ -194,7 +194,7 @@ lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
   have eq₁ := liftAux_map hF α s f (g ≫ a) ⟨_, _, hg⟩ (𝟙 _) (by simp)
   have eq₂ := liftAux_map hF α s f' (g ≫ b) ⟨_, _, hg⟩ (𝟙 _) (by simp [w])
   dsimp at eq₁ eq₂
-  simp only [Functor.map_comp, Functor.map_id, Category.id_comp] at eq₁ eq₂
+  simp only [Functor.map_comp, Functor.map_id] at eq₁ eq₂
   simp only [Category.assoc, eq₁, eq₂]
 
 variable {α}

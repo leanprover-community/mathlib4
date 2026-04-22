@@ -122,8 +122,7 @@ theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
   refine (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e) (hα.comp (.of_isIso _))).trans ?_
   apply forall_congr'
   intro j
-  simp only [Functor.const_obj_obj, NatTrans.comp_app,
-    Cocone.precompose_obj_pt, Cocone.precompose_obj_ι]
+  simp only [ NatTrans.comp_app, Cocone.precompose_obj_ι]
   have : IsPullback (α.app j ≫ c.ι.app j) (α.app j) (𝟙 _) (c.ι.app j) :=
     IsPullback.of_vert_isIso ⟨Category.comp_id _⟩
   rw [← IsPullback.paste_vert_iff this _, Category.comp_id]
@@ -136,7 +135,7 @@ theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
   intro F' c' α' f e hα H
   apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e) (hα.comp (.of_isIso _)))
   intro j
-  simp only [Functor.const_obj_obj, NatTrans.comp_app]
+  simp only [ NatTrans.comp_app]
   rw [← Category.comp_id f]
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨Category.comp_id _⟩)
 

@@ -481,9 +481,8 @@ def UniversalFactorizationRing.homEquiv :
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
-      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁, monicDegreeEq_coe,
-      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor,
-      MonicDegreeEq.map_coe, factor₂]
+      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁,
+      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor, factor₂]
     ext <;> simp +contextual [coeff_freeMonic, apply_dite, MonicDegreeEq.coeff_of_ge]
 
 attribute [-instance] leftModule in

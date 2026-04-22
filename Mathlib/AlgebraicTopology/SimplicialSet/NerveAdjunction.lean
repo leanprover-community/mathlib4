@@ -311,7 +311,7 @@ lemma homToNerveMk_comp {D : Type u} [SmallCategory D]
   IsStrictSegal.hom_ext (fun s ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Edge.exists_of_simplex s
     dsimp
-    simp only [homToNerveMk_app_edge, Functor.comp_obj, Functor.comp_map]
+    simp only [homToNerveMk_app_edge, Functor.comp_map]
     exact ComposableArrows.ext₁ rfl rfl (by aesop))
 
 end HomotopyCategory

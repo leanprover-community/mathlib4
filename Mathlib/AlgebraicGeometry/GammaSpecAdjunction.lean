@@ -329,16 +329,12 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
   left_triangle_components X := by
-    simp only [Functor.id_obj, Functor.rightOp_obj, Γ_obj, Functor.comp_obj,
-      Spec.toLocallyRingedSpace_obj, Spec.locallyRingedSpaceObj_toSheafedSpace,
-      Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf, Functor.rightOp_map, Γ_map,
+    simp only [Functor.id_obj, Γ_obj, Functor.rightOp_map, Γ_map,
       Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
     exact congr_arg Quiver.Hom.op (left_triangle X)
   right_triangle_components R := by
-    simp only [Spec.toLocallyRingedSpace_obj, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
-      Γ_obj, Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
-      Spec.sheafedSpaceObj_presheaf, NatIso.op_inv, NatTrans.op_app, op_unop, SpecΓIdentity_inv_app,
-      Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
+    simp only [ Functor.id_obj, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app,
+      Spec.toLocallyRingedSpace_map]
     exact right_triangle R.unop
 
 

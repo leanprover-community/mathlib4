@@ -119,7 +119,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma lanPresheafExt_inv {F G : Profinite.{u}ᵒᵖ ⥤ Type (u + 1)} (S : Profinite.{u}ᵒᵖ)
     (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toProfinite.op S) i.inv) := by
-  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+  simp only [lanPresheaf, lanPresheafExt,
     leftKanExtensionUniqueOfIso_inv, pointwiseLeftKanExtension_desc_app]
   apply colimit.hom_ext
   aesop
@@ -404,7 +404,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).hom.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.hom) := by
-  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+  simp only [lanPresheaf, lanPresheafExt,
     leftKanExtensionUniqueOfIso_hom, pointwiseLeftKanExtension_desc_app]
   apply colimit.hom_ext
   aesop
@@ -414,7 +414,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma lanPresheafExt_inv {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.inv) := by
-  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
+  simp only [lanPresheaf, lanPresheafExt,
     leftKanExtensionUniqueOfIso_inv, pointwiseLeftKanExtension_desc_app]
   apply colimit.hom_ext
   aesop
@@ -447,7 +447,7 @@ def lanPresheafNatIso
     lanPresheaf F ≅ F := by
   refine NatIso.ofComponents
     (fun ⟨S⟩ ↦ (lanPresheafIso (hF S))) fun _ ↦ ?_
-  simp only [lanPresheaf, pointwiseLeftKanExtension_obj, pointwiseLeftKanExtension_map,
+  simp only [lanPresheaf, pointwiseLeftKanExtension_map,
     lanPresheafIso_hom, Opposite.op_unop]
   exact colimit.hom_ext fun _ ↦ (by simp)
 

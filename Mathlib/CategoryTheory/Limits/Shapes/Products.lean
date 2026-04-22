@@ -254,7 +254,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
-  simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+  simp only [limit.lift_π, Fan.mk_π_app]
 
 /-- A version of `Cone.ext` for `Fan`s. -/
 @[simps!]
@@ -280,7 +280,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Sigma.ι_desc {β : Type w} {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) (b : β) :
     Sigma.ι f b ≫ Sigma.desc p = p b := by
-  simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc, Cofan.mk_ι_app]
 
 set_option backward.isDefEq.respectTransparency false in
 instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι f a)) := by
@@ -655,7 +655,7 @@ theorem map_lift_piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] (
     (g : ∀ j, P ⟶ f j) : G.map (Pi.lift g) ≫ piComparison G f = Pi.lift fun j => G.map (g j) := by
   ext j
   simp only [Category.assoc, piComparison_comp_π, ← G.map_comp,
-    limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+    limit.lift_π, Fan.mk_π_app]
 
 /-- The comparison morphism for the coproduct of `f`. This is an iso iff `G` preserves the coproduct
 of `f`, see `PreservesCoproduct.ofIsoComparison`. -/
@@ -674,8 +674,7 @@ theorem sigmaComparison_map_desc [HasCoproduct f] [HasCoproduct fun b => G.obj (
     (g : ∀ j, f j ⟶ P) :
     sigmaComparison G f ≫ G.map (Sigma.desc g) = Sigma.desc fun j => G.map (g j) := by
   ext j
-  simp only [ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc,
-    Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [ι_comp_sigmaComparison_assoc, ← G.map_comp, colimit.ι_desc, Cofan.mk_ι_app]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- `F.mapCone c` being limiting is the same as the induced fan being limiting. -/

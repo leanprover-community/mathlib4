@@ -612,7 +612,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
-  simp only [colimit.comp_coconePointUniqueUpToIso_inv, Cofork.ofπ_pt, colimit.cocone_x,
+  simp only [colimit.comp_coconePointUniqueUpToIso_inv,
     Cofork.ofπ_ι_app, colimit.cocone_ι]
 
 end

@@ -223,8 +223,7 @@ def quotientEquiv [HasFiniteColimits C] [PreservesFiniteColimits S] (A : Costruc
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
     · refine (homMk (Subobject.ofMkLEMk _ _ h).unop ((cancel_epi (S.map g.unop.left)).1 ?_)).op
       dsimp
-      simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
-        Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
+      simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w, right_eq_id, Functor.const_obj_map]
     · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _

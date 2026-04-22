@@ -524,7 +524,7 @@ noncomputable def resNatTrans (n : ℕ) :
     functor k H n ⟶ resFunctor f ⋙ functor k G n where
   app X := map f (𝟙 _) n
   naturality {X Y} φ := by
-    simp only [functor_obj, Functor.comp_obj, functor_map, Functor.comp_map,
+    simp only [ functor_map, Functor.comp_map,
       ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
       ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]

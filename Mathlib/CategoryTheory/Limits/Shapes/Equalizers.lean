@@ -1001,7 +1001,7 @@ def isLimitPrecompFork {s : Fork f g} (hs : IsLimit s) {c : PullbackCone s.ι h}
     (by simp [liftPrecomp, precompFork])
     (fun s' m h ↦ hc.hom_ext <| by
       apply PullbackCone.equalizer_ext
-      · simp only [liftPrecomp, Fork.ofι_pt, IsLimit.fac, PullbackCone.mk_π_app]
+      · simp only [liftPrecomp, IsLimit.fac, PullbackCone.mk_π_app]
         apply hs.hom_ext
         apply Fork.equalizer_ext
         simp only [Fork.ι_ofι, precompFork] at h

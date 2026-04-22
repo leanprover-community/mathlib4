@@ -411,7 +411,7 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
     apply IsZariskiLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
       (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
-    simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_X, ← Spec.map_comp,
+    simp only [CommRingCat.coe_of, ← Spec.map_comp,
       Scheme.AffineOpenCover.openCover_f, Scheme.affineOpenCoverOfSpanRangeEqTop_f]
     exact H i
   · intro R S _ _ f s hs H
@@ -548,8 +548,8 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P)
       (Scheme.Pullback.openCoverOfRight Y.affineCover f g)]
     intro i
-    simp only [Scheme.Pullback.openCoverOfRight_X, Scheme.Pullback.openCoverOfRight_f,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
+    simp only [ Scheme.Pullback.openCoverOfRight_f,
+      limit.lift_π, PullbackCone.mk_π_app, Category.comp_id]
     apply this _ (comp_of_isOpenImmersion _ _ _ H) inferInstance
   rw [iff_of_isAffine (P := P)] at H ⊢
   exact hP.pullback_fst_appTop _ (isLocal_ringHomProperty P).respectsIso _ _ H

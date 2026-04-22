@@ -114,7 +114,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   classical
   use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
-  simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
+  simp only [Fin.isValue, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
   exact h
 
@@ -163,7 +163,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩
   ext x
-  simp only [Functor.const_obj_obj, LocallyConstant.coe_comap, LocallyConstant.map_apply,
+  simp only [ LocallyConstant.coe_comap, LocallyConstant.map_apply,
     Function.comp_apply]
   dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by

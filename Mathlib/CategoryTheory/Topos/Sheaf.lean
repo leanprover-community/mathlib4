@@ -181,8 +181,8 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
 def χ (m : F ⟶ G) [Mono m] : G ⟶ Sheaf.Ω J where
   hom := (closedSieves J).lift (Presheaf.χ m.hom) (by
     intro X
-    simp only [sieves_obj, Subfunctor.range_obj, closedSieves_obj, Set.le_iff_subset,
-      Set.range_subset_iff, Set.mem_setOf_eq]
+    simp only [ Subfunctor.range_obj, closedSieves_obj, Set.le_iff_subset,
+      Set.range_subset_iff]
     exact J.isClosed_χ_app_apply_of_isSheaf_of_isSeparated m.hom
       ((isSheaf_iff_isSheaf_of_type _ _).mp F.property)
       ((isSheaf_iff_isSheaf_of_type _ _).mp G.property).isSeparated _)

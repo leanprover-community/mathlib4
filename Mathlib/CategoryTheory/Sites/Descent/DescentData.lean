@@ -137,8 +137,7 @@ def ofObj (M : F.obj (.mk (op S))) : F.DescentData f where
     (F.mapComp' (f i₁).op.toLoc f₁.op.toLoc q.op.toLoc (by grind)).inv.toNatTrans.app _ ≫
       (F.mapComp' (f i₂).op.toLoc f₂.op.toLoc q.op.toLoc (by grind)).hom.toNatTrans.app _
   pullHom_hom Y' Y g q q' hq i₁ i₂ f₁ f₂ hf₁ hf₂ gf₁ gf₂ hgf₁ hgf₂ := by
-    simp only [pullHom, Functor.map_comp, Category.assoc, eqToHom_refl,
-      Category.id_comp, Category.comp_id,
+    simp only [pullHom, Functor.map_comp, Category.assoc,
       F.mapComp'₀₁₃_inv_app (f i₁).op.toLoc f₁.op.toLoc g.op.toLoc q.op.toLoc
         gf₁.op.toLoc q'.op.toLoc (by grind) (by grind) (by grind),
       F.mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app (f i₂).op.toLoc f₂.op.toLoc g.op.toLoc
@@ -220,8 +219,7 @@ def pullFunctorObj (D : F.DescentData f) :
       (by rw [Category.assoc, w, reassoc_of% hf₂]) (gf₁ ≫ p' j₁) (gf₂ ≫ p' j₂)
       (by cat_disch) (by cat_disch)]
     dsimp [pullHom]
-    simp only [Functor.map_comp, Category.assoc, eqToHom_refl, Category.id_comp,
-      Category.comp_id]
+    simp only [Functor.map_comp, Category.assoc]
     rw [F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom_app_assoc _ _ _ _ _ _ _ _ (by cat_disch),
       mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom_app _ _ _ _ _ _ _ _ _ (by cat_disch)]
   hom_self Y q j g hg := by
@@ -359,7 +357,7 @@ def pullFunctorCompIso
         rfl (by simp [w', reassoc_of% hf₁, reassoc_of% hf₂]) (by
           simp [reassoc_of% w', reassoc_of% hf₁, hr])]
       dsimp
-      simp only [Category.assoc, eqToHom_refl, Category.id_comp, Category.comp_id]
+      simp only [Category.assoc]
       rw [mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app_assoc _ _ _ _ _ _ _
         (by grind) rfl rfl, mapComp'₀₂₃_hom_app _ _ _ _ _ _ _ _ rfl rfl]))
 

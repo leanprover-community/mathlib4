@@ -207,8 +207,7 @@ variable (S) {P Q} in
 lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P ≤ Q) :
     S.smallGrothendieckTopologyOfLE hPQ = (S.smallPretopology P Q).toGrothendieck := by
   ext X R
-  simp only [Pretopology.mem_toGrothendieck, Functor.mem_inducedTopology_sieves_iff,
-    MorphismProperty.Comma.forget_obj, mem_overGrothendieckTopology]
+  simp only [Pretopology.mem_toGrothendieck, Functor.mem_inducedTopology_sieves_iff, mem_overGrothendieckTopology]
   constructor
   · intro ⟨𝒰, h, le⟩
     have hj (j : 𝒰.I₀) : Q (𝒰.X j ↘ S) := by

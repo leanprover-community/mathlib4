@@ -162,7 +162,7 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
   · induction s using N.induction with
     | mk n x =>
       intro hx
-      simp only [Subfunctor.ofSection_le_iff, mk_dim, mk_simplex] at hx ⊢
+      simp only [Subfunctor.ofSection_le_iff, mk_simplex] at hx ⊢
       exact h _ _ hx
   · simpa using h (N.mk _ x.prop) (by simpa)
 

@@ -177,7 +177,7 @@ lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
   convert RingHom.map_zero _ using 2
   rw [← RingHom.mem_ker, ker_glueDataObjι_appTop, ← Ideal.mem_comap, Ideal.comap_comap,
     ← CommRingCat.hom_comp]
-  simp only [Scheme.affineBasicOpen_coe, homOfLE_leOfHom, Scheme.Hom.comp_base,
+  simp only [ homOfLE_leOfHom, Scheme.Hom.comp_base,
     TopologicalSpace.Opens.map_comp_obj, eqToHom_op, eqToHom_unop, ← Functor.map_comp,
     Scheme.Opens.topIso_hom, Category.assoc]
   exact I.ideal_le_comap_ideal (U := X.affineBasicOpen f) (V := V)
@@ -301,7 +301,7 @@ def glueData : Scheme.GlueData where
     apply pullback.hom_ext
     · apply pullback.hom_ext
       · rw [← cancel_mono (glueDataObjι _ _), ← cancel_mono (Scheme.Opens.ι _)]
-        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
           glueDataT'Aux_fst, limit.lift_π_assoc, cospan_left, glueDataT_fst, Scheme.homOfLE_ι,
           glueDataT'Aux_snd_ι, glueDataT'Aux_fst_assoc, glueDataT_fst_assoc, Category.id_comp]
         rw [pullback.condition_assoc (f := I.glueDataObjι i)]
@@ -310,13 +310,13 @@ def glueData : Scheme.GlueData where
         simp [pullback.condition_assoc]
     · apply pullback.hom_ext
       · rw [← cancel_mono (glueDataObjι _ _), ← cancel_mono (Scheme.Opens.ι _)]
-        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
           glueDataT'Aux_fst, limit.lift_π_assoc, cospan_left, glueDataT_fst, Scheme.homOfLE_ι,
           glueDataT'Aux_snd_ι, glueDataT'Aux_fst_assoc, glueDataT_fst_assoc, Category.id_comp]
         rw [← pullback.condition_assoc, pullback.condition_assoc (f := I.glueDataObjι i),
           X.homOfLE_ι]
       · rw [← cancel_mono (Scheme.Opens.ι _)]
-        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+        simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app,
           glueDataT'Aux_snd_ι, limit.lift_π_assoc, cospan_left, glueDataT'Aux_fst_assoc,
           glueDataT_fst_assoc, Scheme.homOfLE_ι, Category.id_comp]
         rw [pullback.condition_assoc, pullback.condition_assoc, X.homOfLE_ι]
@@ -551,8 +551,7 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   simp_rw [← Category.assoc, ← IsIso.comp_inv_eq] at this
   simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, eqToHom_unop,
     ← Functor.map_comp, IsIso.Iso.inv_inv, subschemeObjIso, Iso.trans_inv, Functor.mapIso_inv,
-    Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc,
-    Functor.op_obj, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
+    Iso.op_inv, eqToIso.inv, eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc, Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op,
     Hom.app_appIso_inv_assoc, TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe,
     homOfLE_leOfHom]
   convert (Category.comp_id _).symm

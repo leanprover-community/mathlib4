@@ -116,7 +116,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
         (pullbackShiftIso C φ a₃ b₃ h₃).inv.app X := by
   subst h₁ h₂ h
   obtain rfl : b₃ = φ a₁ + φ a₂ := by rw [h₃, φ.map_add]
-  simp only [Functor.comp_obj, NatTrans.naturality_assoc]
+  simp only [ NatTrans.naturality_assoc]
   erw [Functor.map_id, id_comp, id_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
@@ -218,7 +218,7 @@ instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     ext
     dsimp [PullbackShift.natTrans]
     simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
+      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, whiskerRight_app, whiskerLeft_app,
       assoc]
     rw [← τ.naturality_assoc]
     simp [← NatTrans.shift_app_comm_assoc]

@@ -444,16 +444,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_2]
+    simp only [Realize, restrictFreeVar]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
+    simp only [Realize, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, restrictFreeVar, freeVarFinset.eq_4]
+    simp only [Realize, restrictFreeVar]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]

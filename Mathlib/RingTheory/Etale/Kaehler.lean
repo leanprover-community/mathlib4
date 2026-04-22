@@ -349,7 +349,7 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   ext x : 3
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
-  simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
+  simp only [tensorH1CotangentOfIsLocalization,
     Extension.tensorH1CotangentOfFormallyEtale,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
     Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]

@@ -348,7 +348,7 @@ lemma mapBifunctor_triangle
     (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).inv (𝟙 X₃)))]
   ext j i₁ i₃ hj
   simp only [categoryOfGradedObjects_comp, ι_mapBifunctorMapMap_assoc,
-    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.flip_obj_obj, Functor.map_comp,
+    mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.map_comp,
     NatTrans.comp_app, categoryOfGradedObjects_id, Functor.map_id, id_comp, assoc,
     ι_mapBifunctorMapMap]
   congr 2
