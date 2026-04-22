@@ -164,8 +164,8 @@ def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G 
           congr <;> simp }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If a cocone `c` over a functor `G : Grothendieck F ⥤ H` is a colimit, then the induced cocone
-`coconeOfFiberwiseCocone G c` -/
+/-- If a cocone `c` over `fiberwiseColimit G` is a colimit, then the induced cocone over `G`
+is a colimit. -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
   desc s := hc.desc <| Cocone.mk s.pt <|
@@ -223,8 +223,8 @@ noncomputable section FiberwiseColim
 variable [∀ (c : C), HasColimitsOfShape (↑(F.obj c)) H] [HasColimitsOfShape C H]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The isomorphism `colimitFiberwiseColimitIso` induces an isomorphism of functors `(J ⥤ C) ⥤ C`
-between `fiberwiseColim F H ⋙ colim` and `colim`. -/
+/-- The isomorphism `colimitFiberwiseColimitIso` induces a natural isomorphism of functors
+from `Grothendieck F ⥤ H` to `H` between `fiberwiseColim F H ⋙ colim` and `colim`. -/
 @[simps!]
 def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
   NatIso.ofComponents (fun G => colimitFiberwiseColimitIso G)
