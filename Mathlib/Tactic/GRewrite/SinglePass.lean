@@ -31,7 +31,8 @@ structure GRewriteLemma where
   headNumArgs : Nat
   relName : Name
 
-abbrev GRewriteM := ReaderT GRewriteLemma StateRefT (Std.HashSet Expr) GCongr.GCongrM
+abbrev GRewriteM := ReaderT GRewriteLemma
+  StateRefT (Std.HashSet (Option Expr × Expr × Bool)) GCongr.GCongrM
 
 def GRewriteLemma.getValue (lem : GRewriteLemma) : MetaM Expr := do
   let us ← lem.levelParams.mapM fun _ => mkFreshLevelMVar
@@ -42,24 +43,37 @@ def GRewriteLemma.metaTelescope (lem : GRewriteLemma) : MetaM (Array Expr × Exp
   let (mvars, _, rel) ← forallMetaTelescopeReducing (← inferType proof) lem.numHyps?
   return (mvars, rel, mkAppN proof mvars)
 
-def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Unit := do
-  let (mvars, rel, proof) ← (← read).metaTelescope
+def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
+  if let some rel := rel? then
+    let .forallE _ d₁ b _ ← whnfD (← inferType rel) | throwError "Not a relation: {rel}"
+    let .forallE _ d₂ _ _ ← whnfD b | throwError "Not a relation: {rel}"
+    let mvar ← mkFreshExprMVar (if inv then d₁ else d₂)
+    return (mvar, (if inv then mkApp2 rel mvar e else mkApp2 rel e mvar))
+  else
+    let mvar ← mkFreshExprMVar (Expr.sort 0)
+    return (mvar, if inv then .forallE `_a mvar e .default else .forallE `_a e mvar .default)
+
+def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Bool := do
+  let lem ← read
+  withTraceNode `Meta.grewrite (fun _ ↦ return m!"applying grewrite lemma `{lem.proof}`") do
+  let (mvars, rel, proof) ← lem.metaTelescope
   let (rel, proof) ←
     if symm then
-      let proof ← proof.applySymm
+      let proof ← try proof.applySymm catch _ => return false
       pure (← inferType proof, proof)
     else
       pure (rel, proof)
-  withConfig (fun oldConfig => { config, oldConfig with }) do
+  let applied ← withConfig (fun oldConfig => { config, oldConfig with }) do
     if ← isDefEq (← g.getType) rel then
-      g.assign proof
+      g.assign proof; return true
     else
       let mctx ← getMCtx
       for (n, tac) in (forwardExt.getState (← getEnv)).2 do
         if n matches ``GCongr.exact | ``GCongr.symmExact | ``GCongr.exactRefl then continue
-        try tac.eval proof g; return
+        try tac.eval proof g; return true
         catch _ => setMCtx mctx
-      failure
+      return false
+  unless applied do return false
   for mvar in mvars do
     if ← mvar.mvarId!.isAssigned then continue
     let type ← mvar.mvarId!.getType
@@ -68,6 +82,17 @@ def applyGRewrite (g : MVarId) (symm : Bool) (config : Config) : GRewriteM Unit 
         mvar.mvarId!.assign inst
         continue
     pushNewGoal mvar.mvarId!
+  return true
+
+def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
+  match e with
+  | .app (.app rel lhs) rhs => rel.getAppFn.constName?.map (·, rel, lhs, rhs)
+  | .forallE _ lhs rhs _ =>
+    if !rhs.hasLooseBVars then
+      some (`_Implies, none, lhs, rhs)
+    else
+      none
+  | _ => none
 
 mutual
 
@@ -89,7 +114,7 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
   -- Then, recursively rewrite in the main subgoals
   let mut anyProgress := false
   for (g, isContra) in mainGoals do
-    if ← grewriteCongr g (inv != isContra) config then
+    if ← processGCongrHypothesis g (inv != isContra) config then
       anyProgress := true
     else
       try g.applyRflOrId
@@ -108,40 +133,50 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       dischargeSide mvarId
   return true
 
-partial def grewriteCongr (g : MVarId) (inv : Bool) (config : Config) : GRewriteM Bool :=
-  g.withContext do
-  let rel ← g.getType'
-  withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"rewriting {rel}") do
-  let some (relName, lhs, rhs) := getRel rel |
-    throwTacticEx `grewrite g m!"{rel} is not a relation"
-  let cacheKey := updateRel rel (.fvar ⟨`grewrite.placeholder⟩) inv
+partial def processGCongrHypothesis (g : MVarId) (inv : Bool) (config : Config) :
+    GRewriteM Bool := g.withContext do
+  let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← g.getType)) |
+    throwError "invalid `gcongr` goal {g}"
+  let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
+  if let some (result, proof) ← grewriteCore relName rel? lhs inv config then
+    rhs.withApp fun mvar xs ↦ do
+      mvar.mvarId!.assign (← mkLambdaFVars xs result)
+      g.assign proof
+      return true
+  else
+    return false
+
+partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv : Bool)
+    (config : Config) : GRewriteM (Option (Expr × Expr)) := do
+  withTraceNodeBefore `Meta.grewrite (fun _ ↦
+    return m!"visiting `{e}` with relation `{rel?.elim m!"→" (m!"{·}")}`") do
+  let e ← instantiateMVars e; let rel? ← rel?.mapM instantiateMVars
+  let cacheKey := (rel?, e, inv)
   if (← get).contains cacheKey then
     trace[Meta.grewrite] "cached: no rewrite"
-    return false
-  let e := if inv then rhs else lhs
+    return none
+  let (mvar, target) ← makeGCongrGoal rel? e inv
+  let g ← mkFreshExprMVar target
   -- Try the given grewrite lemma.
   let lem ← read
   if e.toHeadIndex == lem.headIdx && e.headNumArgs == lem.headNumArgs then
-    try
-      applyGRewrite g (inv != lem.symm) config
-      trace[Meta.grewrite] "applied rewrite lemma `{lem.proof}` to{indentExpr (← g.getType)}"
-      return true
-    catch _ => pure ()
+    if ← applyGRewrite g.mvarId! (inv != lem.symm) config then
+      return (mvar, g)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
     let key := { relName, head, arity := args.size }
     let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
-    if relName == `_Implies then
+    if rel?.isNone then
       lemmas := lemmas ++ relImpRelLemma args.size
     let mctx ← getMCtx
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then
-        if ← processGCongrLemma g gcongrLem inv config then
-          return true
+        if ← processGCongrLemma g.mvarId! gcongrLem inv config then
+          return (← instantiateMVars mvar, g)
         setMCtx mctx
   -- Cache the fact that there are no applicable lemmas
   modify (·.insert cacheKey)
-  return false
+  return none
 
 end
 
@@ -149,15 +184,9 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (lem : GRewriteLemma)
     (forwardImp : Bool) (config : Config) : MetaM GRewriteResult :=
   withReducible do goal.withContext do
     goal.checkNotAssigned `grewrite
-    let eNew ← mkFreshExprMVar (Expr.sort 0)
-    let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
-    let congrGoal ← mkFreshExprMVar imp
-    let (progress, newGoals) ←
-      grewriteCongr congrGoal.mvarId! (!forwardImp) config |>.run lem |>.run' {} |>.run
-    if progress then
-      let eNew ← instantiateMVars eNew
-      return { eNew, impProof := congrGoal, mvarIds := newGoals.toList }
+    if let (some (eNew, impProof), newGoals) ←
+      grewriteCore `_Implies none e (!forwardImp) config |>.run lem |>.run' {} |>.run then
+      return { eNew, impProof, mvarIds := newGoals.toList }
     else
       let (_, rel, _) ← lem.metaTelescope
       let some (_, lhs, rhs) := getRel (← whnf rel) | unreachable!
