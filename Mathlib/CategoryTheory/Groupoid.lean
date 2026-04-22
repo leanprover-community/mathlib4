@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 We define `Groupoid` as a typeclass extending `Category`,
 asserting that all morphisms have inverses.
 
-The instance `IsIso.ofGroupoid (f : X ⟶ Y) : IsIso f` means that you can then write
+The instance `IsIso.of_groupoid (f : X ⟶ Y) : IsIso f` means that you can then write
 `inv f` to access the inverse of any morphism `f`.
 
 `Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y)` provides the equivalence between
@@ -157,7 +157,7 @@ lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
     IsGroupoid C where
   all_isIso _ := isIso_of_reflects_iso _ F
 
-/-- A category equipped with a fully faithful functor to a groupoid is fully faithful -/
+/-- A category equipped with a fully faithful functor to a groupoid is a groupoid. -/
 @[implicit_reducible]
 def Groupoid.ofFullyFaithfulToGroupoid {C : Type*} [𝒞 : Category C] {D : Type u} [Groupoid.{v} D]
     (F : C ⥤ D) (h : F.FullyFaithful) : Groupoid C :=
