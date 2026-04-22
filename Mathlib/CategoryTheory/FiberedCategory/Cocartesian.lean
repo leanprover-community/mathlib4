@@ -66,7 +66,7 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
+such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = φ ≫ χ`. -/
 @[stacks 02XK]
 class IsStronglyCocartesian : Prop where
   [toIsHomLift : IsHomLift p f φ]
@@ -84,7 +84,7 @@ section
 
 variable {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ']
 
-/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒮`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`, then `IsCocartesian.map f φ φ'` is the morphism `b ⟶ b'` lying
 over `𝟙 S` obtained from the universal property of `φ`. -/
 protected noncomputable def map : b ⟶ b' :=
@@ -97,9 +97,9 @@ instance map_isHomLift : IsHomLift p (𝟙 S) (IsCocartesian.map p f φ φ') :=
 lemma fac : φ ≫ IsCocartesian.map p f φ φ' = φ' :=
   (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
-/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and another morphism
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒮`, and another morphism
 `φ' : a ⟶ b'` which also lifts `f`. Then any morphism `ψ : b ⟶ b'` lifting `𝟙 S` such that
-`g ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
+`φ ≫ ψ = φ'` must equal the map induced by the universal property of `φ`. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ') :
     ψ = IsCocartesian.map p f φ φ' :=
   (Classical.choose_spec <| IsCocartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
@@ -107,7 +107,7 @@ lemma map_uniq (ψ : b ⟶ b') [IsHomLift p (𝟙 S) ψ] (hψ : φ ≫ ψ = φ')
 
 end
 
-/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
+/-- Given a co-Cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒮`, and two morphisms
 `ψ ψ' : b ⟶ b'` lifting `𝟙 S` such that `φ ≫ ψ = φ ≫ ψ'`. Then we must have `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsCocartesian p f φ] {b' : 𝒳} (ψ ψ' : b ⟶ b')
     [IsHomLift p (𝟙 S) ψ] [IsHomLift p (𝟙 S) ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
@@ -120,7 +120,7 @@ lemma map_self : IsCocartesian.map p f φ φ = 𝟙 b := by
   simp only [comp_id]
 
 /-- The canonical isomorphism between the codomains of two co-Cartesian morphisms
-lying over the same object. -/
+lying over the same morphism. -/
 noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartesian p f φ'] :
     b ≅ b' where
   hom := IsCocartesian.map p f φ φ'
@@ -214,7 +214,7 @@ v        v        v
 R --f--> S --g--> S'
 ```
 such that `φ` is strongly co-Cartesian, and morphisms `φ' : a ⟶ b'`, `ψ : b ⟶ b'` such that
-`g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
+`φ ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
 lemma map_uniq (ψ : b ⟶ b') [IsHomLift p g ψ] (hψ : φ ≫ ψ = φ') : ψ = map p f φ hf' φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').2 ψ ⟨inferInstance, hψ⟩
 
@@ -228,7 +228,7 @@ v        v        v
 R --f--> S --g--> S'
 ```
 such that `φ` is strongly co-Cartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
-`g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
+`φ ≫ ψ = φ ≫ ψ'`. Then we have that `ψ = ψ'`. -/
 protected lemma ext (φ : a ⟶ b) [IsStronglyCocartesian p f φ] {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S')
     {ψ ψ' : b ⟶ b'} [IsHomLift p g ψ] [IsHomLift p g ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
   rw [map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ rfl, map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ' h.symm]
@@ -245,7 +245,7 @@ also be given by a `IsStronglyCocartesian.map`. In other words, given diagrams
 a --φ--> b        b'         b''
 |        |        |          |
 v        v        v          v
-R --f--> S --g--> S' --g'--> S'
+R --f--> S --g--> S' --g'--> S''
 ```
 and
 ```
