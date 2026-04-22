@@ -23,6 +23,8 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C]
 
+open scoped RingObj
+
 /-- If `R` is a ring object, then `Hom(-, R)` is a presheaf of rings. -/
 @[simps! obj]
 def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
