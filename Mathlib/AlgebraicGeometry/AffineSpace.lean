@@ -202,7 +202,6 @@ def isoOfIsAffine [IsAffine S] :
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 @[simp]
 lemma isoOfIsAffine_hom_appTop [IsAffine S] :
     (isoOfIsAffine n S).hom.appTop =
@@ -306,8 +305,6 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     conv_rhs => enter [2]; tactic => exact SpecIso_inv_appTop_coord _ _
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
-
-@[deprecated (since := "2025-10-07")] alias map_Spec_map := map_SpecMap
 
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
