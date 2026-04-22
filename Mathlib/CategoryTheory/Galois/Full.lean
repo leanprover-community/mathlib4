@@ -44,7 +44,7 @@ variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C]
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
 of `F.obj X`, on which `Aut F` acts transitively (i.e. which is connected in the Galois category
 of finite `Aut F`-sets). Then there exists a connected sub-object `Z` of `X` and an isomorphism
-`Y ≅ F.obj X` as `Aut F`-sets such that the obvious triangle commutes.
+`Y ≅ (functorToAction F).obj Z` such that the obvious triangle commutes.
 
 For a version without the connectedness assumption, see `exists_lift_of_mono`.
 -/
@@ -68,7 +68,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
 of `F.obj X`. Then there exists a sub-object `Z` of `X` and an isomorphism
-`Y ≅ F.obj X` as `Aut F`-sets such that the obvious triangle commutes.
+`Y ≅ (functorToAction F).obj Z` such that the obvious triangle commutes.
 -/
 lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
     (i : Y ⟶ (functorToAction F).obj X) [Mono i] : ∃ (Z : C) (f : Z ⟶ X)
