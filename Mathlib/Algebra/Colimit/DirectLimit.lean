@@ -607,7 +607,6 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]
 
-
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
