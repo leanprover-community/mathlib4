@@ -128,9 +128,9 @@ as long as `B` is in the essential image of `i`.
 This definition gives an equivalence: the key property that the inverse can be described
 nicely is shown in `unitCompPartialBijective_symm_apply`.
 
-This establishes there is a natural bijection `(A ⟶ B) ≃ (i.obj (L.obj A) ⟶ B)`. In other words,
-from the point of view of objects in `D`, `A` and `i.obj (L.obj A)` look the same: specifically
-that `η.app A` is an isomorphism.
+This establishes there is a natural bijection `(A ⟶ B) ≃ (i.obj (L.obj A) ⟶ B)` whenever `B`
+is in the essential image of `i`. In other words, from the point of view of morphisms into
+objects of the reflective subcategory, `A` and `i.obj (L.obj A)` look the same.
 -/
 def unitCompPartialBijective [Reflective i] (A : C) {B : C} (hB : i.essImage B) :
     (A ⟶ B) ≃ (i.obj ((reflector i).obj A) ⟶ B) :=
@@ -165,8 +165,8 @@ set_option backward.isDefEq.respectTransparency false in
 -- TODO: investigate further.
 attribute [local simp 900] ObjectProperty.ι_map in
 attribute [local ext] Functor.essImage_ext in
-/-- If `i : D ⥤ C` is reflective, the inverse functor of `i ≌ F.essImage` can be explicitly
-defined by the reflector. -/
+/-- If `i : D ⥤ C` is reflective, the inverse functor of the equivalence
+`D ≌ i.EssImageSubcategory` can be explicitly defined by the reflector. -/
 @[simps]
 def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
   functor := i.toEssImage
