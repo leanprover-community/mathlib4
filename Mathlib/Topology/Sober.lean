@@ -248,23 +248,22 @@ instance (priority := 100) R1Space.quasiSober [R1Space α] : QuasiSober α where
       exact closure_mono (singleton_subset_iff.mpr hx)
     · exact isPreirreducible_iff_forall_mem_subset_closure_singleton.mp h.isPreirreducible x hx
 
-open Topology in
 open scoped Set.Notation in
 lemma QuasiSober.subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
-    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| IsClosedEmbedding.inclusion h hV
+    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
 
 open Topology in
-lemma quasiSober_of_quasisober_inter_isClosed_right {V : Set α} (W : Set α) [QuasiSober W]
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
     (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
   refine QuasiSober.subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
   rw [Subtype.preimage_coe_self_inter W V]
   exact IsClosed.preimage_val hV
 
 open Topology in
-lemma quasiSober_of_quasisober_inter_isClosed_left {V : Set α} (W : Set α) [QuasiSober V]
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
     (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
   rw [inter_comm]
-  exact quasiSober_of_quasisober_inter_isClosed_right V hW
+  exact .inter_of_isClosed_of_quasiSober_left V hW
 
 end Sober
 
