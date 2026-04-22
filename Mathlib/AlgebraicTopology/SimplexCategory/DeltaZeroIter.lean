@@ -17,7 +17,7 @@ they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 @[expose] public section
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Simplicial
 
 namespace SimplexCategory
 
@@ -27,8 +27,11 @@ which is obtained as the `i`th iteration of `δ 0`: it sends `j : Fin (n + 1)` t
 def δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     ⦋n⦌ ⟶ ⦋m⦌ :=
   Hom.mk
-    { toFun j := ⟨j.val + i, by dsimp; grind [j.isLt]⟩
+    { toFun j := ⟨j.val + i, by grind ⟩
       monotone' _ _ := by grind }
+
+lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
+    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by grind⟩ := rfl
 
 @[simp]
 lemma δ₀Iter_zero (n : ℕ) :
@@ -37,9 +40,6 @@ lemma δ₀Iter_zero (n : ℕ) :
 @[simp]
 lemma δ₀Iter_one (n : ℕ) :
     δ₀Iter 1 (n := n) rfl = δ 0 := rfl
-
-lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
-    dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by dsimp; grind [j.isLt]⟩ := rfl
 
 @[reassoc]
 lemma δ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + i = m := by grind) :
@@ -121,7 +121,7 @@ def σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     ⦋m⦌ ⟶ ⦋n⦌ :=
   Hom.mk
     { toFun j :=
-        if j.val < i then 0 else ⟨j.val - i, by dsimp; grind⟩
+        if j.val < i then 0 else ⟨j.val - i, by grind⟩
       monotone' _ _ _ := by grind [Fin.zero_le] }
 
 lemma σ₀Iter_coe_eq_of_lt (i : ℕ) {n m : ℕ}
