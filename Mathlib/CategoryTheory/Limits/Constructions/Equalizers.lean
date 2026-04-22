@@ -11,9 +11,11 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
-# Constructing equalizers from pullbacks and binary products.
+# Constructing equalizers from pullbacks and binary products, and coequalizers from pushouts and
+binary coproducts.
 
 If a category has pullbacks and binary products, then it has equalizers.
+If a category has pushouts and binary coproducts, then it has coequalizers.
 
 TODO: generalize universe
 -/
@@ -131,12 +133,12 @@ namespace HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 
 variable [HasBinaryCoproducts C] [HasPushouts C]
 
-/-- Define the equalizing object -/
+/-- Define the coequalizing object -/
 abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
   pushout (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.left))
     (coprod.desc (𝟙 _) (F.map WalkingParallelPairHom.right))
 
-/-- Define the equalizing morphism -/
+/-- Define the coequalizing morphism -/
 abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
   pushout.inl _ _
@@ -148,7 +150,7 @@ theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
     (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Define the equalizing cocone -/
+/-- Define the coequalizing cocone -/
 abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
   Cocone.ofCofork
     (Cofork.ofπ (pushoutInl F) (by
@@ -157,7 +159,7 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
           (_ : F.obj _ ⟶ constructCoequalizer _) = _) using 1 <;> simp))
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Show the equalizing cocone is a colimit -/
+/-- Show the coequalizing cocone is a colimit -/
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
   desc c := pushout.desc (c.ι.app _) (c.ι.app _)
   fac := by rintro c (_ | _) <;> simp
@@ -176,7 +178,7 @@ end HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 open HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 
 -- This is not an instance, as it is not always how one wants to construct equalizers!
-/-- Any category with pullbacks and binary products, has equalizers. -/
+/-- Any category with pushouts and binary coproducts has coequalizers. -/
 theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproducts C]
     [HasPushouts C] : HasCoequalizers C :=
   {
