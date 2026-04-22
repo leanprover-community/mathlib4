@@ -5,7 +5,7 @@ Authors: Thomas Browning, Patrick Massot, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Algebra.Order.Sub.Basic  -- shake: keep (tactic dependency)
+public import Mathlib.Algebra.Order.Sub.Basic
 public meta import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.Group
 public import Mathlib.Tactic.Ring
@@ -67,7 +67,7 @@ syntax (name := aux_add_group₁) "aux_add_group₁" (location)? : tactic
 macro_rules
 | `(tactic| aux_add_group₁ $[at $location]?) =>
   `(tactic| simp -decide -failIfUnchanged only
-    [neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
+    [addCommutatorElement_def, neg_add_rev, neg_zero, zsmul_neg, ← neg_zsmul,
       add_zero, zero_add,
       ← natCast_zsmul, ← mul_zsmul',
       Int.natCast_add, Int.natCast_mul, neg_neg,
