@@ -13,8 +13,9 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectiv
 # Embedding opposites of Grothendieck categories
 
 If `C` is Grothendieck abelian and `F : D ⥤ Cᵒᵖ` is a functor from a small category, we construct
-an object `G : Cᵒᵖ` such that `preadditiveCoyonedaObj G : Cᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful
-and exact and its precomposition with `F` is full if `F` is.
+an object `G : Cᵒᵖ` such that, if `D` is nonempty, `preadditiveCoyonedaObj G :
+Cᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful and exact, and if `F` is also full then its
+precomposition with `F` is full.
 -/
 
 @[expose] public section
@@ -77,8 +78,9 @@ noncomputable instance : Ring (EmbeddingRing F) :=
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- This is a functor `embedding F : Cᵒᵖ ⥤ ModuleCat (EmbeddingRing F)`. We have that `embedding F`
-is faithful and preserves finite limits and colimits. Furthermore, `F ⋙ embedding F` is full. -/
+/-- This is a functor `embedding F : Cᵒᵖ ⥤ ModuleCat (EmbeddingRing F)`. It preserves finite
+limits and colimits. If `D` is nonempty, then `embedding F` is faithful, and if `F` is also full
+then `F ⋙ embedding F` is full. -/
 noncomputable def embedding : Cᵒᵖ ⥤ ModuleCat.{v} (EmbeddingRing F) :=
   preadditiveCoyonedaObj (generator F)
 
