@@ -300,11 +300,8 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     · change (Ideal.span {⟨(0, x), this⟩} : Ideal (f.hom.toAlgHom.pullback g.hom.toAlgHom)) =
         RingHom.ker (AlgHom.pullbackFst ..)
       ext ⟨⟨u, v⟩, h⟩
-      simp only [Ideal.mem_span_singleton', eq_comm, Subtype.exists,
-        MulMemClass.mk_mul_mk, Subtype.mk.injEq, AlgHom.mem_equalizer, AlgHom.coe_comp,
-        Function.comp_apply, AlgHom.fst_apply, AlgHom.snd_apply, exists_prop, Prod.exists,
-        Prod.mk_mul_mk, mul_zero, Prod.mk.injEq, and_left_comm, exists_and_left, RingHom.mem_ker,
-        Subalgebra.coe_val, and_iff_left_iff_imp]
+      suffices u = 0 → ∃ x_1 x_2, f.hom.toAlgHom x_1 = g.hom.toAlgHom x_2 ∧ v = x_2 * x by
+        simpa [Ideal.mem_span_singleton', eq_comm, and_left_comm]
       intro u_eq
       simp only [u_eq, AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply,
         AlgHom.fst_apply, map_zero, AlgHom.snd_apply] at h
@@ -325,9 +322,9 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
       apply f.hom.isLocalHom_toAlgHom.map_nonunit at this
       exact (iff_false_intro (h this)).mp hb
 
-/-- When `Λ` is a local ring and `k / ResidueField Λ` is
-a finite separable field extension, `ofPullbackOfIsSeparable` is the object in `BaseCat`
-obtained from the pullback of the underlying algebra homomorphisms of two morphisms. -/
+/-- When `Λ` is a local ring and `k / ResidueField Λ` is a finite separable field extension,
+`ofPullbackOfIsSeparable` is the object in `BaseCat` obtained from the pullback of
+the underlying algebra homomorphisms of two morphisms. -/
 def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
     BaseCat Λ k :=
   haveI : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
@@ -352,22 +349,22 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
       AlgHom.surjective_pullbackFst_of_surjective _ _ Ideal.Quotient.mk_surjective
     apply Surjective.of_comp (g := p.hom.toAlgHom)
     rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
-      pullback_comm_sq, ObjectProperty.FullSubcategory.comp_hom,
-      LocAlgCat.toAlgHom_comp, AlgHom.coe_comp]
+      pullback_comm_sq, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
+      AlgHom.coe_comp]
     refine Surjective.comp Ideal.Quotient.mk_surjective ?_
     apply isEssSurj_toOfQuot_of_le at hJ
     apply IsEssSurj.surjective_of_comp_left (f ≫ B.toOfQuot J)
-    rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc',
-      ← pullback_comm_sq, Category.assoc,
-      ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp, AlgHom.coe_comp]
+    rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc', ← pullback_comm_sq,
+      Category.assoc, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
+      AlgHom.coe_comp]
     exact hg.comp p_surj
   · apply LocAlgCat.surjective_of_surjective_mapCotangent
     apply Surjective.of_comp_left (f := LocAlgCat.mapCotangent (B.toOfQuot J).hom)
     · rw [← LinearMap.coe_comp, ← LocAlgCat.mapCotangent_comp,
         ← ObjectProperty.FullSubcategory.comp_hom, ← toOfQuot_comp_mapOfQuot (I := I) f hf,
         ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.mapCotangent_comp, LinearMap.coe_comp]
-      refine Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective) ?_
-      exact LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective
+      exact Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective)
+        <| LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective
     · exact ((LocAlgCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
   · intro C g hg
     apply isEssSurj_toOfQuot_of_le at hI
