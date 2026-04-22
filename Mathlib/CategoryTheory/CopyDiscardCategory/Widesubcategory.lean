@@ -26,7 +26,7 @@ open scoped ComonObj
 
 variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 
-/-- A braided-stable morphism property stable under comonoid counit and comultiplication. -/
+/-- A morphism property stable under the counit and comultiplication of the comonoid object `c`. -/
 class IsStableUnderComonoid (P : MorphismProperty C) (c : C) [ComonObj c] : Prop where
   counit_mem (P) : P ε[c]
   comul_mem (P) : P Δ[c]
