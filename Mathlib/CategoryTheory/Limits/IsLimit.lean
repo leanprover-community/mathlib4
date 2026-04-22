@@ -103,7 +103,7 @@ def ofExistsUnique {t : Cone F}
   choose s hs hs' using ht
   exact ⟨s, hs, hs'⟩
 
-/-- Alternative constructor for `isLimit`,
+/-- Alternative constructor for `IsLimit`,
 providing a morphism of cones rather than a morphism between the cone points
 and separately the factorisation condition.
 -/
@@ -736,7 +736,7 @@ def precomposeHomEquiv {F G : J ⥤ C} (α : F ≅ G) (c : Cocone G) :
     IsColimit ((Cocone.precompose α.hom).obj c) ≃ IsColimit c :=
   precomposeInvEquiv α.symm c
 
-/-- Constructing an equivalence `is_colimit c ≃ is_colimit d` from a natural isomorphism
+/-- Constructing an equivalence `IsColimit c ≃ IsColimit d` from a natural isomorphism
 between the underlying functors, and then an isomorphism between `c` transported along this and `d`.
 -/
 def equivOfNatIsoOfIso {F G : J ⥤ C} (α : F ≅ G) (c : Cocone F) (d : Cocone G)
@@ -886,7 +886,7 @@ theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
     (IsColimit.homIso h W).hom f = (t.extend f.down).ι :=
   rfl
 
-/-- The colimit of `F` represents the functor taking `W` to
+/-- The colimit of `F` corepresents the functor taking `W` to
   the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
   NatIso.ofComponents (IsColimit.homIso h)
@@ -969,7 +969,7 @@ will be a colimit cocone. -/
 def colimitCocone : Cocone F :=
   coconeOfHom h (𝟙 X)
 
-/-- If `F.cocones` is corepresented by `X`, the cocone corresponding to a morphism `f : Y ⟶ X` is
+/-- If `F.cocones` is corepresented by `X`, the cocone corresponding to a morphism `f : X ⟶ Y` is
 the colimit cocone extended by `f`. -/
 theorem coconeOfHom_fac {Y : C} (f : X ⟶ Y) : coconeOfHom h f = (colimitCocone h).extend f := by
   dsimp [coconeOfHom, colimitCocone, Cocone.extend]
