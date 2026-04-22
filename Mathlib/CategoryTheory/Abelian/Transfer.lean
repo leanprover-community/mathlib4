@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Preadditive.Transfer
 # Transferring "abelian-ness" across a functor
 
 If `C` is an additive category, `D` is an abelian category,
-we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
+we have `F : C ⥤ D` and `G : D ⥤ C`, with `G` preserving zero morphisms,
 `G` is left exact (that is, preserves finite limits),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian.
@@ -105,7 +105,7 @@ def abelianOfAdjunction {C : Type u₁} [Category.{v₁} C] [Preadditive C] [Has
   apply Abelian.ofCoimageImageComparisonIsIso
 
 /-- If `C` is an additive category equivalent to an abelian category `D`
-via a functor that preserves zero morphisms,
+via a functor `F : C ⥤ D`,
 then `C` is also abelian.
 -/
 @[implicit_reducible]
