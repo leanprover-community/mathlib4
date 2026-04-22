@@ -623,8 +623,7 @@ theorem closedInterior_inter_affineSubspaceMk'_affineSpan_faceOpposite {k V P : 
     [Module k V] [AffineSpace V P] {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.closedInterior ∩ AffineSubspace.mk' (s.points i)
     (affineSpan k <| Set.range (s.faceOpposite i).points).direction = {s.points i} := by
-  refine Set.Subset.antisymm ?_ <| by simp [s.point_mem_closedInterior i]
-  intro p h
+  refine Set.Subset.antisymm (fun p h ↦ ?_) <| by simp [s.point_mem_closedInterior i]
   obtain ⟨hinterior, hplane⟩ := (Set.mem_inter_iff _ _ _).mp h
   obtain ⟨w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype <|
     Set.mem_of_mem_of_subset hinterior setInterior_subset_affineSpan
