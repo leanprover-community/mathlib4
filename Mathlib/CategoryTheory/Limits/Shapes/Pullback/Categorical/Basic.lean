@@ -14,7 +14,7 @@ This file defines the basic properties of categorical pullbacks.
 
 Given a pair of functors `(F : A ⥤ B, G : C ⥤ B)`, we define the category
 `CategoricalPullback F G` as the category of triples
-`(a : A, c : C, e : F.obj a ≅ G.obj b)`.
+`(a : A, c : C, e : F.obj a ≅ G.obj c)`.
 
 The category `CategoricalPullback F G` sits in a canonical `CatCommSq`, and we formalize that
 this square is a "limit" in the following sense: functors `X ⥤ CategoricalPullback F G` are
@@ -28,14 +28,15 @@ equivalent to `CatCommSqOver F G X`.
 ## Main declarations
 
 * `CategoricalPullback F G`: the type of the categorical pullback.
-* `π₁ F G : CategoricalPullback F G` and `π₂ F G : CategoricalPullback F G`: the canonical
+* `π₁ F G : CategoricalPullback F G ⥤ A` and
+  `π₂ F G : CategoricalPullback F G ⥤ C`: the canonical
   projections.
 * `CategoricalPullback.catCommSq`: the canonical `CatCommSq (π₁ F G) (π₂ F G) F G` which exhibits
   `CategoricalPullback F G` as the pullback (in the (2,1)-categorical sense)
   of the cospan of `F` and `G`.
 * `CategoricalPullback.functorEquiv F G X`: the equivalence of categories between functors
-  `X ⥤ CategoricalPullback F G` and `CatCommSqOver F G X`, where the latter is an abbrev for
-  `CategoricalPullback (whiskeringRight X A B|>.obj F) (whiskeringRight X C B|>.obj G)`.
+  `X ⥤ CategoricalPullback F G` and `CatCommSqOver F G X`, where the latter packages a pair of
+  functors `L : X ⥤ A`, `R : X ⥤ C` and a natural isomorphism `L ⋙ F ≅ R ⋙ G`.
 
 ## References
 * [Kerodon: section 1.4.5.2](https://kerodon.net/tag/032Y)
@@ -202,10 +203,11 @@ variable (X : Type u₄) [Category.{v₄} X]
 
 variable (F G) in
 /-- The data of a categorical commutative square over a cospan `F, G` with cone point `X` is
-that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSqOver T L F G`.
+that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a natural isomorphism
+`T ⋙ F ≅ L ⋙ G`.
 Note that this is *exactly* what an object of
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)` is,
-so `CatCommSqOver F G X` is in equivalent to
+so `CatCommSqOver F G X` is equivalent to
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)`,
 though it is defined separately for performance reasons. -/
 structure CatCommSqOver where
@@ -717,7 +719,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_naturality₂
       whiskerLeft (transform Y |>.obj ψ) (precompose F₁ G₁ |>.map α) := by
   ext <;> simp
 
-/-- The square `precomposeObjTransformOBjSquare` respects identities. -/
+/-- The square `precomposeObjTransformObjSquare` respects identities. -/
 lemma precomposeObjTransformObjSquare_iso_hom_id
     (ψ : CatCospanTransform F G F₁ G₁) (X : Type u₇) [Category.{v₇} X] :
     (CatCommSq.iso (precompose F G |>.obj <| 𝟭 X) (transform X |>.obj ψ)
@@ -727,7 +729,7 @@ lemma precomposeObjTransformObjSquare_iso_hom_id
       (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv := by
   ext <;> simp
 
-/-- The square `precomposeTransformSquare` respects compositions. -/
+/-- The square `precomposeObjTransformObjSquare` respects compositions. -/
 lemma precomposeObjTransformObjSquare_iso_hom_comp
     {X : Type u₇} {Y : Type u₈} {Z : Type u₉}
     [Category.{v₇} X] [Category.{v₈} Y] [Category.{v₉} Z]
@@ -790,7 +792,7 @@ lemma transformObjPrecomposeObjSquare_iso_hom_id
       (precompose F G |>.obj U).rightUnitor.inv := by
   ext <;> simp
 
-/-- The square `transformPrecomposeSquare` respects compositions. -/
+/-- The square `transformObjPrecomposeObjSquare` respects compositions. -/
 lemma transformPrecomposeObjSquare_iso_hom_comp
     {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
     [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
