@@ -198,7 +198,7 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
     simp [reassoc_of% e]
 
 /-- If the action of `C` on `D` comes from a monoidal functor `C ⥤ (D ⥤ D)`,
-then `curriedActionMop C D` is naturally isomorphic to that functor. -/
+then `curriedAction C D` is naturally isomorphic to that functor. -/
 @[simps!]
 def curriedActionActionOfMonoidalFunctorToEndofunctorIso
     (F : C ⥤ (D ⥤ D)) [F.Monoidal] :
