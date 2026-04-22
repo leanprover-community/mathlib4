@@ -502,6 +502,77 @@ lemma faceSingletonComplIso_hom_ι {n : ℕ} (i : Fin (n + 2)) :
     (faceSingletonComplIso.{u} i).hom ≫ (face {i}ᶜ).ι =
       stdSimplex.δ i := rfl
 
+/-- The order isomorphism between `Fin n` and `{i, j}ᶜ` when `i < j` are
+elements in `Fin (n + 2)`. -/
+noncomputable def finOrderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j) :
+    Fin n ≃o ({i, j}ᶜ : Finset _) where
+  toEquiv := by
+    refine Equiv.ofBijective
+      (fun k ↦ ⟨j.succAbove ((i.castPred (Fin.ne_last_of_lt h)).succAbove k), ?_⟩)
+        ⟨fun _ _ hk ↦ ?_, fun ⟨l, hl⟩ ↦ ?_⟩
+    · simp
+      grind [Fin.succAbove, Fin.castPred]
+    · exact ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+        (Fin.succAboveOrderEmb j)).injective (by rwa [Subtype.ext_iff] at hk)
+    · obtain ⟨m, rfl⟩ : l ∈ Set.range j.succAbove := by
+        simp [Fin.range_succAbove] at hl ⊢
+        tauto
+      obtain ⟨k, hk⟩ : m ∈ Set.range (i.castPred (Fin.ne_last_of_lt h)).succAbove := by
+        simp only [Fin.range_succAbove, Set.mem_compl_iff, Set.mem_singleton_iff]
+        rintro rfl
+        simp [j.succAbove_of_castSucc_lt (i.castPred (Fin.ne_last_of_lt h)) (by simpa)] at hl
+      exact ⟨k, by simp [hk]⟩
+  map_rel_iff' :=
+    ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
+      (Fin.succAboveOrderEmb j)).map_rel_iff
+
+lemma finOrderIsoPairCompl_apply_val {n : ℕ} (i j : Fin (n + 2)) (h : i < j) (k : Fin n) :
+    (finOrderIsoPairCompl i j h k).val =
+      j.succAbove ((i.castPred (Fin.ne_last_of_lt h)).succAbove k) := rfl
+
+/-- If `i < j` are in `Fin (n + 3)`, this is the isomorphism between `Δ[n]`
+and the face of `Δ[n + 2]` corresponding to `{i, j}ᶜ`. -/
+noncomputable def facePairComplIso {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    Δ[n] ≅ (face {i, j}ᶜ : SSet.{u}) :=
+  isoOfRepresentableBy (faceRepresentableBy _ _ (finOrderIsoPairCompl i j h))
+
+@[reassoc]
+lemma facePairComplIso_hom_ι {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    (facePairComplIso.{u} i j h).hom ≫ (face {i, j}ᶜ).ι =
+      stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) ≫ stdSimplex.δ j :=
+  rfl
+
+@[reassoc]
+lemma facePairComplIso_hom_ι' {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    (facePairComplIso.{u} i j h).hom ≫ (face {i, j}ᶜ).ι =
+      stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) ≫ stdSimplex.δ i := by
+  rw [facePairComplIso_hom_ι]
+  obtain ⟨i, rfl⟩ := i.eq_castSucc_of_ne_last (Fin.ne_last_of_lt h)
+  obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero (Fin.ne_zero_of_lt h)
+  dsimp
+  rw [Fin.pred_succ, stdSimplex.δ_comp_δ (by grind)]
+
+@[reassoc]
+lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred {n : ℕ}
+    (i j : Fin (n + 3)) (h : i < j) :
+    Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
+      (faceSingletonComplIso.{u} i).inv =
+        (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
+  simp [← cancel_mono (faceSingletonComplIso i).hom,
+    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
+    facePairComplIso_hom_ι']
+
+@[reassoc]
+lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred
+    {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
+    Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
+      (faceSingletonComplIso.{u} j).inv =
+        (facePairComplIso i j h).inv ≫
+          stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
+  simp [← cancel_mono (faceSingletonComplIso j).hom,
+    ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
+    facePairComplIso_hom_ι]
+
 /-- Given `i : Fin (n + 1)`, this is the isomorphism from `Δ[0]` to the face
 of `Δ[n]` corresponding to `{i}`. -/
 noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
