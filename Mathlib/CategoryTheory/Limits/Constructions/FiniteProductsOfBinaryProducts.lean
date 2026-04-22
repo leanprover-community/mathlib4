@@ -161,7 +161,7 @@ lemma Limits.PreservesFiniteProducts.of_preserves_binary_and_terminal :
 end Preserves
 
 /-- Given `n+1` objects of `C`, a cofan for the last `n` with point `c₁.pt`
-and a binary cofan on `c₁.X` and `f 0`, we can build a cofan for all `n+1`.
+and a binary cofan on `f 0` and `c₁.pt`, we can build a cofan for all `n+1`.
 
 In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
@@ -241,8 +241,8 @@ variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
 variable [HasFiniteCoproducts.{v} C]
 
-/-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
-`Fin n` for any `n`.
+/-- If `F` preserves the initial object and binary coproducts, then it preserves coproducts indexed
+by `Fin n` for any `n`.
 -/
 lemma preserves_fin_of_preserves_binary_and_initial :
     ∀ (n : ℕ) (f : Fin n → C), PreservesColimit (Discrete.functor f) F
@@ -281,7 +281,7 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     haveI := preserves_fin_of_preserves_binary_and_initial F n fun n => K.obj ⟨n⟩
     apply preservesColimit_of_iso_diagram F that
 
-/-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
+/-- If `F` preserves the initial object and binary coproducts then it preserves finite coproducts. -/
 lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Finite J] :
     PreservesColimitsOfShape (Discrete J) F :=
   let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
