@@ -32,6 +32,8 @@ satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe t t' t'' v' v u' u
@@ -226,7 +228,6 @@ def pullFunctorObj (D : F.DescentData f) :
     rw [pullFunctorObjHom_eq _ _ _ _ _ _ _ _ rfl rfl rfl rfl rfl,
       D.hom_self _ _ (by cat_disch)]
     simp
-    rfl
   hom_comp Y q j₁ j₂ j₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
     rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
       pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₂ ≫ p' j₂) (f₃ ≫ p' j₃),
