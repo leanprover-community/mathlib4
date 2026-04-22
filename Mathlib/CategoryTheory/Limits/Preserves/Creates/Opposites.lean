@@ -88,7 +88,7 @@ def createsLimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.op F
     { liftedCone := lc.liftedCocone.unop
       validLift := (coconeLeftOpOfConeEquiv.inverse.mapIso lc.validLift.symm).unop }
 
-/-- If `F.rightOp : C ⥤ Dᵒᵖ` creates colimits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` creates colimits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ D`
 creates limits of `K : J ⥤ Cᵒᵖ`. -/
 @[implicit_reducible]
 def createsLimitOfRightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [CreatesColimit K.leftOp F.rightOp] :
@@ -180,7 +180,7 @@ def createsColimitRightOp (K : J ⥤ C) (F : Cᵒᵖ ⥤ D) [CreatesLimit K.op F
     { liftedCocone := lc.liftedCone.unop
       validLift := (coconeRightOpOfConeEquiv.functor.mapIso lc.validLift.op).symm }
 
-/-- If `F.rightOp : C ⥤ Dᵒᵖ` creates limits of `K.leftOp : Jᵒᵖ ⥤ Cᵒᵖ`, then `F : Cᵒᵖ ⥤ D`
+/-- If `F.rightOp : C ⥤ Dᵒᵖ` creates limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ D`
 creates colimits of `K : J ⥤ Cᵒᵖ`. -/
 @[implicit_reducible]
 def createsColimitOfRightOp (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ D) [CreatesLimit K.leftOp F.rightOp] :
@@ -202,7 +202,7 @@ def createsColimitUnop (K : J ⥤ C) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimit K.o
     { liftedCocone := lc.liftedCone.unop
       validLift := (coconeUnopOfConeEquiv.functor.mapIso lc.validLift.op).symm }
 
-/-- If `F.unop : C ⥤ D` creates limits of `K.op : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` creates
+/-- If `F.unop : C ⥤ D` creates limits of `K.leftOp : Jᵒᵖ ⥤ C`, then `F : Cᵒᵖ ⥤ Dᵒᵖ` creates
 colimits of `K : J ⥤ Cᵒᵖ`. -/
 @[implicit_reducible]
 def createsColimitOfUnop (K : J ⥤ Cᵒᵖ) (F : Cᵒᵖ ⥤ Dᵒᵖ) [CreatesLimit K.leftOp F.unop] :
