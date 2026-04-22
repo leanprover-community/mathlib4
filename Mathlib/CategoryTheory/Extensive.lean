@@ -25,16 +25,16 @@ public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
   coproducts, and binary coproducts are van Kampen.
 
 ## Main Results
-- `CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive`: The initial object
-  in extensive categories is strict.
+- `CategoryTheory.hasStrictInitialObjects_of_finitaryPreExtensive`: The initial object
+  in finitary pre-extensive categories is strict.
 - `CategoryTheory.FinitaryExtensive.mono_inr_of_isColimit`: Coproduct injections are monic in
   extensive categories.
 - `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
   sums are disjoint, i.e. the pullback of `X ⟶ X ⨿ Y` and `Y ⟶ X ⨿ Y` is the initial object.
 - `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
-- `CategoryTheory.FinitaryExtensive_TopCat`:
+- `CategoryTheory.finitaryExtensive_TopCat`:
   The category `Top` is extensive.
-- `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
+- `CategoryTheory.finitaryExtensive_functor`: The category `D ⥤ C` is extensive if `C`
   has all pullbacks and is extensive.
 - `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`: Finite coproducts in a
   finitary extensive category are van Kampen.
@@ -80,7 +80,7 @@ and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen -/
+  /-- In a finitary pre-extensive category, all binary coproducts are universal. -/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
@@ -91,7 +91,7 @@ and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen -/
+  /-- In a finitary extensive category, all binary coproducts are van Kampen. -/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
@@ -556,7 +556,7 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
-coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
+coproducts, i.e., `∐ (Xᵢ ×[S] Yⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Yⱼ)`.
 For an `IsPullback` version, see `FinitaryPreExtensive.isPullback_sigmaDesc`. -/
 instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreExtensive C]
     {ι ι' : Type*} [Finite ι] [Finite ι'] {S : C} {X : ι → C} {Y : ι' → C}
@@ -578,7 +578,7 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
-coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
+coproducts, i.e., `∐ (Xᵢ ×[S] Yⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Yⱼ)`.
 For a variant, see `FinitaryPreExtensive.isIso_sigmaDesc_map`. -/
 lemma FinitaryPreExtensive.isPullback_sigmaDesc [HasPullbacks C] [FinitaryPreExtensive C]
     {ι ι' : Type*} [Finite ι] [Finite ι'] {S : C} {X : ι → C} {Y : ι' → C}
