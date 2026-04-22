@@ -55,7 +55,7 @@ class PreservesFilteredColimitsOfSize (F : C ⥤ D) : Prop where
 
 /--
 A functor is said to preserve filtered colimits, if it preserves all colimits of shape `J`, where
-`J` is a filtered category which is small relative to the universe in which morphisms of the source
+`J` is a filtered category which is small relative to the universe in which morphisms of the target
 live.
 -/
 abbrev PreservesFilteredColimits (F : C ⥤ D) : Prop :=
@@ -82,7 +82,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     exact preservesColimitsOfShape_of_equiv e F
 
 /--
-`PreservesFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
+`preservesFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
 `PreservesFilteredColimitsOfSize.{w, w'} F` from some other `PreservesFilteredColimitsOfSize F`.
 -/
 lemma preservesFilteredColimitsOfSize_shrink (F : C ⥤ D)
@@ -111,7 +111,7 @@ class ReflectsFilteredColimitsOfSize (F : C ⥤ D) : Prop where
 
 /--
 A functor is said to reflect filtered colimits, if it reflects all colimits of shape `J`, where
-`J` is a filtered category which is small relative to the universe in which morphisms of the source
+`J` is a filtered category which is small relative to the universe in which morphisms of the target
 live.
 -/
 abbrev ReflectsFilteredColimits (F : C ⥤ D) : Prop :=
@@ -138,7 +138,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     exact reflectsColimitsOfShape_of_equiv e F
 
 /--
-`ReflectsFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
+`reflectsFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
 `ReflectsFilteredColimitsOfSize.{w, w'} F` from some other `ReflectsFilteredColimitsOfSize F`.
 -/
 lemma reflectsFilteredColimitsOfSize_shrink (F : C ⥤ D)
@@ -172,7 +172,7 @@ class PreservesCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
 /--
 A functor is said to preserve cofiltered limits, if it preserves all limits of shape `J`, where
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
-source live.
+target live.
 -/
 abbrev PreservesCofilteredLimits (F : C ⥤ D) : Prop :=
   PreservesCofilteredLimitsOfSize.{v₂, v₂} F
@@ -198,7 +198,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     exact preservesLimitsOfShape_of_equiv e F
 
 /--
-`PreservesCofilteredLimitsOfSizeShrink.{w, w'} F` tries to obtain
+`preservesCofilteredLimitsOfSize_shrink.{w, w'} F` tries to obtain
 `PreservesCofilteredLimitsOfSize.{w, w'} F` from some other `PreservesCofilteredLimitsOfSize F`.
 -/
 lemma preservesCofilteredLimitsOfSize_shrink (F : C ⥤ D)
@@ -228,7 +228,7 @@ class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
 /--
 A functor is said to reflect cofiltered limits, if it reflects all limits of shape `J`, where
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
-source live.
+target live.
 -/
 abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Prop :=
   ReflectsCofilteredLimitsOfSize.{v₂, v₂} F
@@ -254,7 +254,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     exact reflectsLimitsOfShape_of_equiv e F
 
 /--
-`ReflectsCofilteredLimitsOfSize_shrink.{w, w'} F` tries to obtain
+`reflectsCofilteredLimitsOfSize_shrink.{w, w'} F` tries to obtain
 `ReflectsCofilteredLimitsOfSize.{w, w'} F` from some other `ReflectsCofilteredLimitsOfSize F`.
 -/
 lemma reflectsCofilteredLimitsOfSize_shrink (F : C ⥤ D)
