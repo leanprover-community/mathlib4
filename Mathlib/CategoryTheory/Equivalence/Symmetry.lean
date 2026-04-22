@@ -68,27 +68,27 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor_unitIso_comp X := by
     simp [symm, symmEquivInverse]
 
-/-- The `inverse` functor that sends a functor to its inverse. -/
+/-- The `inverse` functor that sends an equivalence to its inverse functor. -/
 @[simps!]
 def inverseFunctor : (C ≌ D) ⥤ (D ⥤ C)ᵒᵖ :=
   (symmEquiv C D).functor ⋙ (Functor.op <| functorFunctor D C)
 
 variable {C D}
 
-/-- The `inverse` functor sends an equivalence to its inverse. -/
+/-- The `inverse` functor sends an equivalence to its inverse functor. -/
 @[simps!]
 def inverseFunctorObjIso (e : C ≌ D) :
     (inverseFunctor C D).obj e ≅ Opposite.op e.inverse := Iso.refl _
 
 /-- We can compare the way we obtain a natural isomorphism `e.inverse ≅ f.inverse` from
-an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
+an isomorphism `e ≅ f` via `inverseFunctor` with the way we get one through
 `Iso.isoInverseOfIsoFunctor`. -/
 lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
   cat_disch
 
-/-- An "unopped" version of the equivalence `inverseFunctorObj'`. -/
+/-- An "unopped" version of the isomorphism `inverseFunctorObjIso`. -/
 @[simps!]
 def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=
