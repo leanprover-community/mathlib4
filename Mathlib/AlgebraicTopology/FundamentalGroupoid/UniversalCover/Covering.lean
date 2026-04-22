@@ -99,52 +99,49 @@ theorem discreteTopology_fiber [LocPathConnectedSpace X] [PathConnectedSpace X]
 /-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
 private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
     Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) := by
-  -- Family of based paths: `F_fn t s = α(s * t)` — at `t = 0` constant at x₀, at `t = 1` α.
-  have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := by
-    intro s t
-    refine ⟨mul_nonneg s.2.1 t.2.1, ?_⟩
-    exact mul_le_one₀ s.2.2 t.2.1 t.2.2
+  -- Family of based paths: `F t s = α ⟨s * t, _⟩` — at `t = 0` constant at `x₀`, at `t = 1` `α`.
+  have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := fun s t ↦
+    ⟨mul_nonneg s.2.1 t.2.1, mul_le_one₀ s.2.2 t.2.1 t.2.2⟩
+  -- Subtype reductions at the three boundary values, in the exact form produced by `F_apply`.
+  have hst_zero_left : ∀ t : I, (⟨((0 : I) : ℝ) * (t : ℝ), hst_mem 0 t⟩ : I) = 0 :=
+    fun _ ↦ Subtype.ext (by simp)
+  have hst_zero_right : ∀ s : I, (⟨(s : ℝ) * ((0 : I) : ℝ), hst_mem s 0⟩ : I) = 0 :=
+    fun _ ↦ Subtype.ext (by simp)
+  have hst_one : ∀ s : I, (⟨(s : ℝ) * ((1 : I) : ℝ), hst_mem s 1⟩ : I) = s :=
+    fun _ ↦ Subtype.ext (by simp)
   let F_cm : I → C(I, X) := fun t ↦
     ⟨fun s ↦ α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩, by
       refine α.1.continuous.comp ?_
       exact Continuous.subtype_mk (by fun_prop) _⟩
+  have F_cm_apply : ∀ t s : I, (F_cm t) s = α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩ :=
+    fun _ _ ↦ rfl
   have hF_cont : Continuous F_cm := by
     refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    have hst_cont : Continuous (fun ts : I × I ↦
-        (⟨((ts.2 : ℝ) * (ts.1 : ℝ)), hst_mem ts.2 ts.1⟩ : I)) := by
-      refine Continuous.subtype_mk ?_ _
-      exact ((continuous_induced_dom.comp continuous_snd).mul
-        (continuous_induced_dom.comp continuous_fst))
-    exact α.1.continuous.comp hst_cont
+    exact α.1.continuous.comp <| Continuous.subtype_mk
+      ((continuous_induced_dom.comp continuous_snd).mul
+        (continuous_induced_dom.comp continuous_fst)) _
   let F : I → BasedPath x₀ := fun t ↦
-    ⟨F_cm t, by
-      change α.1 ⟨(0 : ℝ) * (t : ℝ), _⟩ = x₀
-      have h0 : ((0 : I) : ℝ) * (t : ℝ) = 0 := by simp
-      rw [show (⟨(0 : ℝ) * (t : ℝ), hst_mem 0 t⟩ : I) = (0 : I) from Subtype.ext (by simp)]
-      exact α.2⟩
-  have hF_bp_cont : Continuous F := by
-    exact Continuous.subtype_mk hF_cont _
-  -- Both boundary endpoints are `x₀`.
+    ⟨F_cm t, by rw [F_cm_apply, hst_zero_left]; exact α.2⟩
+  have F_apply : ∀ t s : I, (F t).1 s = α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩ := fun _ _ ↦ rfl
+  have hF_bp_cont : Continuous F := Continuous.subtype_mk hF_cont _
+  -- `F 0` has endpoint `x₀`; at `t = 1` the family is `α` pointwise.
   have h_F0_end :
       BasedPath.endpoint (F 0) = BasedPath.endpoint (BasedPath.ofPath (Path.refl x₀)) := by
-    change α.1 ⟨(1 : ℝ) * (0 : ℝ), _⟩ = (BasedPath.ofPath (Path.refl x₀)).1 1
-    rw [show (⟨(1 : ℝ) * (0 : ℝ), hst_mem 1 0⟩ : I) = (0 : I) from Subtype.ext (by simp)]
+    rw [BasedPath.endpoint_def, F_apply, hst_zero_right]
     simpa [BasedPath.ofPath] using α.2
   have h_start :
       ofBasedPath x₀ (F 0) = ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀)) := by
     refine ofBasedPath_eq_of_homotopic_toPath h_F0_end ?_
-    have h_paths_eq : (F 0).toPath.cast rfl h_F0_end.symm =
-        (BasedPath.ofPath (Path.refl x₀)).toPath := by
+    have : (F 0).toPath.cast rfl h_F0_end.symm = (BasedPath.ofPath (Path.refl x₀)).toPath := by
       ext s
-      change α.1 ⟨(s : ℝ) * (0 : ℝ), _⟩ = x₀
-      rw [show (⟨(s : ℝ) * (0 : ℝ), hst_mem s 0⟩ : I) = (0 : I) from Subtype.ext (by simp)]
-      exact α.2
-    rw [h_paths_eq]
+      change (F 0).1 s = (BasedPath.ofPath (Path.refl x₀)).toPath s
+      rw [F_apply, hst_zero_right]
+      simpa [BasedPath.ofPath] using α.2
+    rw [this]
   have h_end : ofBasedPath x₀ (F 1) = ofBasedPath x₀ α := by
     congr 1
     ext s
-    change α.1 ⟨(s : ℝ) * (1 : ℝ), _⟩ = α.1 s
-    rw [show (⟨(s : ℝ) * (1 : ℝ), hst_mem s 1⟩ : I) = s from Subtype.ext (by simp)]
+    rw [F_apply, hst_one]
   refine ⟨⟨⟨fun t ↦ ofBasedPath x₀ (F t), ?_⟩, ?_, ?_⟩⟩
   · exact (continuous_ofBasedPath x₀).comp hF_bp_cont
   · exact h_start
