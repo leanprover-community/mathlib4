@@ -51,11 +51,11 @@ protected abbrev image : C :=
 protected abbrev image.ι : Abelian.image f ⟶ Q :=
   kernel.ι (cokernel.π f)
 
-/-- There is a canonical epimorphism `p : P ⟶ image f` for every `f`. -/
+/-- The canonical morphism from the domain to the image. -/
 protected abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 
-/-- `f` factors through its image via the canonical morphism `p`. -/
+/-- `f` factors through its image via `Abelian.factorThruImage f`. -/
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _
 
@@ -76,11 +76,11 @@ protected abbrev coimage : C :=
 protected abbrev coimage.π : P ⟶ Abelian.coimage f :=
   cokernel.π (kernel.ι f)
 
-/-- There is a canonical monomorphism `i : coimage f ⟶ Q`. -/
+/-- The canonical morphism from the coimage to the codomain. -/
 protected abbrev factorThruCoimage : Abelian.coimage f ⟶ Q :=
   cokernel.desc (kernel.ι f) f <| kernel.condition f
 
-/-- `f` factors through its coimage via the canonical morphism `p`. -/
+/-- `f` factors through its coimage via `Abelian.factorThruCoimage f`. -/
 protected theorem coimage.fac : coimage.π f ≫ Abelian.factorThruCoimage f = f :=
   cokernel.π_desc _ _ _
 
