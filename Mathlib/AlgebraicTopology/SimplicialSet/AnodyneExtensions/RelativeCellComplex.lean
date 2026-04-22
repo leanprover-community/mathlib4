@@ -538,8 +538,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mapN_type₂ {j : ι} (c : f.Cell j) : f.mapN c.type₂ = S.mk c.s.val.simplex := by
   dsimp [mapN]
   rw [S.ext_iff, c.ι_b_app_apply, Cell.mapToSucc]
-  dsimp
-  rw [Cell.map_app_objEquiv_symm_δ_index]
+  exact c.map_app_objEquiv_symm_δ_index
 
 private lemma isPushout_aux₁ {j : ι} (s : (Subcomplex.range (f.m j)).N) :
     (f.mapN s).simplex  ∈ SSet.nonDegenerate _ _ := by

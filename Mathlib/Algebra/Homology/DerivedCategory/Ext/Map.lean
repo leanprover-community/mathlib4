@@ -67,14 +67,18 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   rw [← cancel_epi (F.mapDerivedCategory.map
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
     descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
-    ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
-    Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
-    ← Functor.map_comp_assoc]
+    ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex]
+  simp only [Functor.map_comp, Category.assoc]
+  rw [descShortComplex_triangleOfSESδ_assoc]
   dsimp
-  rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
-    ← F.mapDerivedCategoryFactors_hom_naturality_assoc, Functor.map_comp]
-  simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
-    ← Functor.map_comp_assoc]
+  simp only [← Category.assoc, ← Functor.map_comp]
+  rw [← CochainComplex.mappingCone.map_δ]
+  simp only [Functor.map_comp, ← Category.assoc]
+  rw [← F.mapDerivedCategoryFactors_hom_naturality_assoc]
+  simp only [Category.assoc, ← Q.map_comp_assoc, Iso.hom_inv_id_app, Q.map_id,
+    Category.id_comp, Iso.hom_inv_id_app_assoc, NatTrans.shift_app,
+    Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app]
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
