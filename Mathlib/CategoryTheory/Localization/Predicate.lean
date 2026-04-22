@@ -70,8 +70,8 @@ end Functor
 namespace Localization
 
 /-- This universal property states that a functor `L : C ⥤ D` inverts morphisms
-in `W` and that all functors `D ⥤ E` (for a fixed category `E`) uniquely factor
-through `L`. -/
+in `W` and that all functors `C ⥤ E` (for a fixed category `E`) which invert `W`
+uniquely factor through `L`. -/
 structure StrictUniversalPropertyFixedTarget where
   /-- the functor `L` inverts `W` -/
   inverts : W.IsInvertedBy L
@@ -173,7 +173,7 @@ instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
 
 variable (W)
 
-/-- A chosen equivalence of categories `W.Localization ≅ D` for a functor
+/-- A chosen equivalence of categories `W.Localization ≌ D` for a functor
 `L : C ⥤ D` which satisfies `L.IsLocalization W`. This shall be used in
 order to deduce properties of `L` from properties of `W.Q`. -/
 def equivalenceFromModel : W.Localization ≌ D :=
@@ -202,7 +202,7 @@ theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
         ((qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
           (equivalenceFromModel L W).counitIso.app X)⟩⟩
 
-/-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
+/-- The functor `(D ⥤ E) ⥤ W.FunctorsInverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
@@ -348,7 +348,7 @@ theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `(F₁' F₂' : D ⥤ E)` are functors which lift functors `(F₁ F₂ : C ⥤ E)`,
-a natural isomorphism `τ : F₁ ⟶ F₂` lifts to a natural isomorphism `F₁' ⟶ F₂'`. -/
+a natural isomorphism `e : F₁ ≅ F₂` lifts to a natural isomorphism `F₁' ≅ F₂'`. -/
 @[simps]
 def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W F₁ F₁'] [h₂ : Lifting L W F₂ F₂']
     (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
@@ -370,7 +370,7 @@ instance id : Lifting L W L (𝟭 D) :=
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
-if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
+if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ E`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
 @[simps, implicit_reducible]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
