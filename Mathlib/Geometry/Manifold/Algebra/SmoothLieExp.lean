@@ -33,7 +33,7 @@ The key steps, following Meinrenken §3–4, are:
   (`expLie_smul`, `isMIntegralCurve_expLie_smul`), corresponding to Proposition 4.3.
 
 * The exponential map is smooth (`contMDiff_expLie`), corresponding to the smoothness
-  assertion in Definition 4.4. This relies on `contMDiff_flow`, an axiom asserting smooth
+  assertion in Definition 4.4. This relies on `contMDiff_flow_like`, an axiom asserting smooth
   dependence of ODE solutions on parameters (Lee, *Introduction to Smooth Manifolds*,
   Theorem 9.12), which is currently missing from Mathlib.
 -/
@@ -325,8 +325,7 @@ theorem contMDiff_mulLeft_deriv :
   rw [key]
   exact contMDiff_dMultProd.comp contMDiff_zeroSectionProdFiber
 
-public theorem smooth_augmentedVF [T2Space G] [FiniteDimensional ℝ EG]
-    [IsManifold (IG.prod 𝓘(ℝ, EG)) ∞ (G × EG)] :
+public theorem smooth_augmentedVF [T2Space G] [IsManifold (IG.prod 𝓘(ℝ, EG)) ∞ (G × EG)] :
     ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent ∞
       (fun p : G × EG => (⟨p, (mfderiv IG IG (p.1 * ·) 1 p.2, 0)⟩ :
         TangentBundle (IG.prod 𝓘(ℝ, EG)) (G × EG))) := by
@@ -358,8 +357,7 @@ lemma isMIntegralCurve_prod_mk
   intro t;
   convert HasMFDerivAt.prodMk ( h₁ t ) ( h₂ t ) using 1
 
-public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G]
-  [FiniteDimensional ℝ EG] :
+public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
     ContMDiff 𝓘(ℝ, EG) IG ∞ (fun v : EG => expLie (G := G) (IG := IG) v) := by
   have hXi : ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent ∞
       (fun p : G × EG => (⟨p, (mfderiv IG IG (p.1 * ·) 1 p.2, (0:EG))⟩ :
