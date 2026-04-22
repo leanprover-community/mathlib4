@@ -59,7 +59,7 @@ structure DiagramOfCones where
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
     (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
-/-- A structure carrying a diagram of cocones over the functors `F.obj j`.
+/-- A structure carrying a diagram of cocones under the functors `F.obj j`.
 -/
 structure DiagramOfCocones where
   /-- For each object, a cocone. -/
@@ -128,8 +128,9 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Prod in
-/-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
-we can construct a cocone over the diagram consisting of the cocone points from `D`.
+/-- Given a diagram `D` of colimit cocones under the `F.obj j`, and a cocone under
+`uncurry.obj F`, we can construct a cocone under the diagram consisting of the cocone
+points from `D`.
 -/
 @[simps]
 def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj j))
@@ -426,7 +427,7 @@ variable (F)
 variable [HasColimitsOfShape K C]
 
 /-- Given a functor `F : J ⥤ K ⥤ C`, with all needed colimits,
-we can construct a diagram consisting of the colimit cocone over each functor `F.obj j`,
+we can construct a diagram consisting of the colimit cocone under each functor `F.obj j`,
 and the universal cocone morphisms between these.
 -/
 @[simps]
@@ -466,7 +467,7 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
 
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
+/-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a colimit cocone.
 -/
 noncomputable def isColimitCoconeOfHasColimitCurryCompColim :
     IsColimit (coconeOfHasColimitCurryCompColim G) :=
