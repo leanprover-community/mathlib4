@@ -113,7 +113,7 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
     apply le_antisymm
     · simp only [iSup_le_iff]
       intro p
-      have := isRegularRing_iff.mp ‹_› p.1 (Ideal.IsMaximal.isPrime' p.1)
+      have := isRegularRing_iff.mp ‹_› p.1
       have : Small.{v} (Localization.AtPrime p.1) :=
         small_of_surjective Localization.mkHom_surjective
       rw [IsRegularLocalRing.globalDimension_eq_ringKrullDim.{u, v} (Localization.AtPrime p.1),
@@ -121,7 +121,7 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
       exact le_iSup (fun i ↦ (f i : WithBot ℕ∞)) ⟨p.1, p.2⟩
     · simp only [iSup_le_iff]
       intro ⟨p, hp⟩
-      have := isRegularRing_iff.mp ‹_› p (Ideal.IsMaximal.isPrime' p)
+      have := isRegularRing_iff.mp ‹_› p
       have : Small.{v} (Localization.AtPrime p) :=
         small_of_surjective Localization.mkHom_surjective
       simp only [f, ← IsLocalization.AtPrime.ringKrullDim_eq_height p (Localization.AtPrime p),
