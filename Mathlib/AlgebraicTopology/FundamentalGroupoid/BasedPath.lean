@@ -213,6 +213,147 @@ end Path
 
 namespace BasedPath
 
+/-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
+subbasic compact sets that do not contain `1`. -/
+private theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace X]
+    (γ : BasedPath x₀) (Tgood Tbad : Finset (Set I × Set X))
+    (hTgood_open_mem : ∀ KU ∈ Tgood, IsOpen KU.2 ∧ endpoint γ ∈ KU.2)
+    (hTbad_closed : ∀ KU ∈ Tbad, IsClosed KU.1)
+    (hTbad_not_mem : ∀ KU ∈ Tbad, (1 : I) ∉ KU.1) :
+    ∃ (W : Set X) (a₀ : I) (a b : ℝ),
+      IsOpen W ∧ endpoint γ ∈ W ∧ IsPathConnected W ∧
+      (∀ KU ∈ Tgood, W ⊆ KU.2) ∧
+      Set.Ioc a₀ 1 ⊆ γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ ∧
+      ((a₀ : I) : ℝ) < a ∧ 0 ≤ a ∧ a ≤ 1 ∧ a < b ∧ b < 1 := by
+  let O : Set X := ⋂ KU ∈ Tgood, KU.2
+  have hOopen : IsOpen O :=
+    isOpen_biInter_finset fun KU hKU ↦ (hTgood_open_mem KU hKU).1
+  have huO : endpoint γ ∈ O := by
+    simp only [O, Set.mem_iInter]
+    exact fun KU hKU ↦ (hTgood_open_mem KU hKU).2
+  rcases (isOpen_isPathConnected_basis (x := endpoint γ)).mem_iff.mp
+      (hOopen.mem_nhds huO) with ⟨W, ⟨hWopen, huW, hWpath⟩, hWO⟩
+  let N : Set I := γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ
+  have hNnhds : N ∈ 𝓝 (1 : I) := by
+    refine Filter.inter_mem
+      ((hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa [endpoint] using huW)) ?_
+    refine (isOpen_biInter_finset ?_).mem_nhds ?_
+    · exact fun KU hKU ↦ (hTbad_closed KU hKU).isOpen_compl
+    · simp only [Set.mem_iInter]
+      intro KU hKU
+      exact hTbad_not_mem KU hKU
+  rcases exists_Ioc_subset_of_mem_nhds' hNnhds (show (0 : I) < 1 by simp) with ⟨a₀, ha₀, hIoc⟩
+  let a : ℝ := (((a₀ : I) : ℝ) + 1) / 2
+  let b : ℝ := (a + 1) / 2
+  have ha₀_nonneg : 0 ≤ ((a₀ : I) : ℝ) := a₀.2.1
+  have ha₀_lt_one : ((a₀ : I) : ℝ) < 1 := ha₀.2
+  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by dsimp [a]; nlinarith
+  have ha0 : 0 ≤ a := by dsimp [a]; nlinarith
+  have ha1 : a ≤ 1 := by dsimp [a]; nlinarith
+  have hab : a < b := by dsimp [a, b]; nlinarith
+  have hb1 : b < 1 := by dsimp [a, b]; nlinarith
+  refine ⟨W, a₀, a, b, hWopen, huW, hWpath, ?_, hIoc, ha₀_lt_a, ha0, ha1, hab, hb1⟩
+  intro KU hKU z hz
+  have hz' : ∀ KU ∈ Tgood, z ∈ KU.2 := by simpa [O] using hWO hz
+  exact hz' KU hKU
+
+/-- Any point in the chosen path-connected endpoint neighborhood is realized by a deformed based
+path that still lies in the original compact-open basic neighborhood. -/
+private theorem exists_deformTerminal_mem_basicNeighborhood
+    (γ : BasedPath x₀) {V : Set (C(I, X))} {S : Set (Set I × Set X)}
+    {T Tgood Tbad : Finset (Set I × Set X)}
+    (hSdata : ∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ Set.MapsTo γ.1 K U)
+    (hT_of_S : ∀ KU, KU ∈ S → KU ∈ T)
+    (hSV : {g : C(I, X) | ∀ K U, (K, U) ∈ S → Set.MapsTo g K U} ⊆ V)
+    (hTgood_iff : ∀ KU, KU ∈ Tgood ↔ KU ∈ T ∧ (1 : I) ∈ KU.1)
+    (hTbad_iff : ∀ KU, KU ∈ Tbad ↔ KU ∈ T ∧ (1 : I) ∉ KU.1)
+    {W : Set X} (huW : endpoint γ ∈ W) (hWpath : IsPathConnected W)
+    (hW_good : ∀ KU ∈ Tgood, W ⊆ KU.2)
+    {a₀ : I} {a b : ℝ}
+    (hIoc : Set.Ioc a₀ 1 ⊆ γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ)
+    (ha₀_lt_a : ((a₀ : I) : ℝ) < a) (ha0 : 0 ≤ a) (ha1 : a ≤ 1) (hab : a < b) (hb1 : b < 1) :
+    ∀ v ∈ W, ∃ η : BasedPath x₀, η.1 ∈ V ∧ endpoint η = v := by
+  classical
+  intro v hvW
+  obtain ⟨δ, hδW⟩ := hWpath.exists_path huW hvW
+  let η := deformTerminal γ rfl δ ha0 hab hb1
+  have hηV : η.1 ∈ V := by
+    apply hSV
+    intro K U hKU
+    have hKUT : (K, U) ∈ T := hT_of_S (K, U) hKU
+    by_cases h1K : (1 : I) ∈ K
+    · have hKUgood : (K, U) ∈ Tgood := by
+        exact (hTgood_iff (K, U)).2 ⟨hKUT, h1K⟩
+      show Set.MapsTo η.1 K U
+      intro t ht
+      by_cases hta : (t : ℝ) ≤ a
+      · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta, Path.extend_apply _ t.2]
+        exact (hSdata K U hKU).2.2 ht
+      · have hat : a < (t : ℝ) := lt_of_not_ge hta
+        by_cases htb : (t : ℝ) ≤ b
+        · have hrange : Set.range (terminalTail γ rfl a (by linarith)) ⊆ W := by
+            apply Path.truncateOfLE_range_subset_preimage (h := ha1)
+            intro s hs
+            have hs01 : s ∈ (Set.Icc 0 1 : Set ℝ) := ⟨le_trans ha0 hs.1, hs.2⟩
+            change γ.toPath.extend s ∈ W
+            rw [Path.extend_apply _ hs01]
+            apply (hIoc ?_).1
+            constructor
+            · change ((a₀ : I) : ℝ) < s
+              exact lt_of_lt_of_le ha₀_lt_a hs.1
+            · change s ≤ 1
+              exact hs.2
+          have hparam : (((t : ℝ) - a) / (b - a)) ∈ (Set.Icc 0 1 : Set ℝ) := by
+            have hba : 0 < b - a := sub_pos.mpr hab
+            constructor
+            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hat)) (le_of_lt hba)
+            · exact (div_le_one hba).2 <| sub_le_sub_right htb a
+          have htailW :
+              (terminalTail γ rfl a (by linarith)).extend (((t : ℝ) - a) / (b - a)) ∈ W := by
+            rw [Path.extend_apply _ hparam]
+            apply hrange
+            exact ⟨⟨((t : ℝ) - a) / (b - a), hparam⟩, rfl⟩
+          rw [BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
+          exact hW_good (K, U) hKUgood htailW
+        · have hbt : b < (t : ℝ) := lt_of_not_ge htb
+          have hparam : (((t : ℝ) - b) / (1 - b)) ∈ (Set.Icc 0 1 : Set ℝ) := by
+            have hb : 0 < 1 - b := sub_pos.mpr hb1
+            constructor
+            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hbt)) (le_of_lt hb)
+            · exact (div_le_one hb).2 <| sub_le_sub_right t.2.2 b
+          have hδt : δ.extend (((t : ℝ) - b) / (1 - b)) ∈ W := by
+            rw [Path.extend_apply _ hparam]
+            apply hδW
+            exact ⟨⟨((t : ℝ) - b) / (1 - b), hparam⟩, rfl⟩
+          rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
+          exact hW_good (K, U) hKUgood hδt
+    · have hKUbad : (K, U) ∈ Tbad := by
+        exact (hTbad_iff (K, U)).2 ⟨hKUT, h1K⟩
+      show Set.MapsTo η.1 K U
+      intro t ht
+      have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := by
+        intro htIoc
+        have htN : t ∈ γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ := hIoc htIoc
+        have htN' : ∀ KU ∈ Tbad, t ∉ KU.1 := by simpa using htN.2
+        exact htN' (K, U) hKUbad ht
+      have htle : (t : ℝ) ≤ a := by
+        by_contra hgt
+        have hat : a < (t : ℝ) := lt_of_not_ge hgt
+        have hat₀ : ((a₀ : I) : ℝ) < t := lt_trans ha₀_lt_a hat
+        exact ht_not_Ioc ⟨hat₀, t.2.2⟩
+      rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle, Path.extend_apply _ t.2]
+      exact (hSdata K U hKU).2.2 ht
+  have hend : endpoint η = v := by
+    change η.1 1 = v
+    rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 1 hb1]
+    have hbne : 1 - b ≠ 0 := sub_ne_zero.mpr hb1.ne'
+    have hratio : ((((1 : I) : ℝ) - b) / (1 - b) : ℝ) = 1 := by
+      change (1 - b) / (1 - b) = 1
+      field_simp [hbne]
+    rw [hratio]
+    simpa using δ.extend_one
+  exact ⟨η, hηV, hend⟩
+
 /-- The endpoint map `BasedPath x₀ → X` is an open map when `X` is locally path-connected. -/
 theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
     IsOpenMap (endpoint (x₀ := x₀)) := by
@@ -229,127 +370,26 @@ theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
   let T : Finset (Set I × Set X) := hSfin.toFinset
   let Tgood : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∈ KU.1
   let Tbad : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∉ KU.1
-  let O : Set X := ⋂ KU ∈ Tgood, KU.2
-  -- Sub-basis entries of either `Tgood` or `Tbad` are entries of `S`, so their data applies.
   have hS_of_T : ∀ KU, KU ∈ T → KU ∈ S := fun _ ↦ hSfin.mem_toFinset.mp
-  have hOopen : IsOpen O :=
-    isOpen_biInter_finset fun KU hKU ↦
-      (hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).2.1
-  have huO : endpoint γ ∈ O := by
-    simp only [O, Set.mem_iInter]
-    exact fun KU hKU ↦ (hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).2.2
-      (by simpa using (Finset.mem_filter.1 hKU).2)
-  rcases (isOpen_isPathConnected_basis (x := endpoint γ)).mem_iff.mp
-      (hOopen.mem_nhds huO) with ⟨W, ⟨hWopen, huW, hWpath⟩, hWO⟩
-  let N : Set I := γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ
-  have hNnhds : N ∈ 𝓝 (1 : I) := by
-    refine Filter.inter_mem
-      ((hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa [endpoint] using huW)) ?_
-    refine (isOpen_biInter_finset ?_).mem_nhds (by simp [Tbad])
-    exact fun KU hKU ↦
-      ((hSdata KU.1 KU.2 (hS_of_T KU (Finset.mem_filter.mp hKU).1)).1.isClosed).isOpen_compl
-  rcases exists_Ioc_subset_of_mem_nhds' hNnhds (show (0 : I) < 1 by simp)
-    with ⟨a₀, ha₀, hIoc⟩
-  let a : ℝ := (((a₀ : I) : ℝ) + 1) / 2
-  let b : ℝ := (a + 1) / 2
-  -- `ha₀_nonneg`, `ha₀_lt_one` are kept in scope for `nlinarith` to pick up.
-  have ha₀_nonneg : 0 ≤ ((a₀ : I) : ℝ) := a₀.2.1
-  have ha₀_lt_one : ((a₀ : I) : ℝ) < 1 := ha₀.2
-  have ha₀_lt_a : ((a₀ : I) : ℝ) < a := by dsimp [a]; nlinarith
-  have ha0 : 0 ≤ a := by dsimp [a]; nlinarith
-  have ha1 : a ≤ 1 := by dsimp [a]; nlinarith
-  have ha_lt_one : a < 1 := by dsimp [a]; nlinarith
-  have hab : a < b := by dsimp [b]; nlinarith
-  have hb1 : b < 1 := by dsimp [b]; nlinarith
+  have hT_of_S : ∀ KU, KU ∈ S → KU ∈ T := fun _ ↦ hSfin.mem_toFinset.mpr
+  obtain ⟨W, a₀, a, b, hWopen, huW, hWpath, hW_good, hIoc, ha₀_lt_a, ha0, ha1, hab, hb1⟩ :=
+    exists_endpointNeighborhood_of_basicNeighborhood γ Tgood Tbad
+      (fun KU hKU ↦ by
+        have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
+        exact ⟨(hSdata KU.1 KU.2 (hS_of_T KU hKU')).2.1,
+          (hSdata KU.1 KU.2 (hS_of_T KU hKU')).2.2 (by simpa using (Finset.mem_filter.mp hKU).2)⟩)
+      (fun KU hKU ↦ by
+        have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
+        exact (hSdata KU.1 KU.2 (hS_of_T KU hKU')).1.isClosed)
+      (fun KU hKU ↦ by simpa using (Finset.mem_filter.mp hKU).2)
   refine mem_nhds_iff.mpr ⟨W, ?_, hWopen, huW⟩
   intro v hvW
-  obtain ⟨δ, hδW⟩ := hWpath.exists_path huW hvW
-  let η := deformTerminal γ rfl δ ha0 hab hb1
-  have hηV : η.1 ∈ V := by
-    apply hSV
-    intro K U hKU
-    have hKUT : (K, U) ∈ T := hSfin.mem_toFinset.mpr hKU
-    by_cases h1K : (1 : I) ∈ K
-    · have hKUgood : (K, U) ∈ Tgood := Finset.mem_filter.mpr ⟨hKUT, h1K⟩
-      have hOU : O ⊆ U := by
-        intro z hz
-        have hz' : ∀ KU ∈ Tgood, z ∈ KU.2 := by
-          simpa [O] using hz
-        exact hz' (K, U) hKUgood
-      intro t ht
-      by_cases hta : (t : ℝ) ≤ a
-      · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta,
-          Path.extend_apply _ t.2]
-        exact (hSdata K U hKU).2.2 ht
-      · have hat : a < (t : ℝ) := lt_of_not_ge hta
-        by_cases htb : (t : ℝ) ≤ b
-        · have hrange :
-              Set.range (terminalTail γ rfl a (by linarith)) ⊆ W := by
-            apply Path.truncateOfLE_range_subset_preimage (h := ha1)
-            intro s hs
-            have hs01 : s ∈ (Set.Icc 0 1 : Set ℝ) := ⟨le_trans ha0 hs.1, hs.2⟩
-            change γ.toPath.extend s ∈ W
-            rw [Path.extend_apply _ hs01]
-            apply (hIoc ?_).1
-            constructor
-            · change ((a₀ : I) : ℝ) < s
-              exact lt_of_lt_of_le ha₀_lt_a hs.1
-            · change s ≤ 1
-              exact hs.2
-          have hparam :
-              (((t : ℝ) - a) / (b - a)) ∈ (Set.Icc 0 1 : Set ℝ) := by
-            have hba : 0 < b - a := sub_pos.mpr hab
-            constructor
-            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hat)) (le_of_lt hba)
-            · refine (div_le_one hba).2 ?_
-              exact sub_le_sub_right htb a
-          have htailW :
-              (terminalTail γ rfl a (by linarith)).extend (((t : ℝ) - a) / (b - a)) ∈ W := by
-            rw [Path.extend_apply _ hparam]
-            apply hrange
-            exact ⟨⟨((t : ℝ) - a) / (b - a), hparam⟩, rfl⟩
-          rw [BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
-          exact hOU (hWO htailW)
-        · have hbt : b < (t : ℝ) := lt_of_not_ge htb
-          have hparam : (((t : ℝ) - b) / (1 - b)) ∈ (Set.Icc 0 1 : Set ℝ) := by
-            have hb : 0 < 1 - b := sub_pos.mpr hb1
-            constructor
-            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hbt)) (le_of_lt hb)
-            · refine (div_le_one hb).2 ?_
-              exact sub_le_sub_right t.2.2 b
-          have hδt :
-              δ.extend (((t : ℝ) - b) / (1 - b)) ∈ W := by
-            rw [Path.extend_apply _ hparam]
-            apply hδW
-            exact ⟨⟨((t : ℝ) - b) / (1 - b), hparam⟩, rfl⟩
-          rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
-          exact hOU (hWO hδt)
-    · intro t ht
-      have hKUbad : (K, U) ∈ Tbad := Finset.mem_filter.mpr ⟨hKUT, h1K⟩
-      have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := by
-        intro htIoc
-        have htN : t ∈ N := hIoc htIoc
-        have htN' : ∀ KU ∈ Tbad, t ∉ KU.1 := by
-          simpa [N] using htN.2
-        exact htN' (K, U) hKUbad ht
-      have htle : (t : ℝ) ≤ a := by
-        by_contra hgt
-        have hat : a < (t : ℝ) := lt_of_not_ge hgt
-        have hat₀ : ((a₀ : I) : ℝ) < t := lt_trans ha₀_lt_a hat
-        exact ht_not_Ioc ⟨hat₀, t.2.2⟩
-      rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle,
-        Path.extend_apply _ t.2]
-      exact (hSdata K U hKU).2.2 ht
+  obtain ⟨η, hηV, hend⟩ :=
+    exists_deformTerminal_mem_basicNeighborhood γ hSdata hT_of_S hSV
+      (fun KU ↦ by simp [Tgood])
+      (fun KU ↦ by simp [Tbad])
+      huW hWpath hW_good hIoc ha₀_lt_a ha0 ha1 hab hb1 v hvW
   have hηs : endpoint η ∈ s := hVs hηV
-  have hend : endpoint η = v := by
-    change η.1 1 = v
-    rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 1 hb1]
-    have hbne : 1 - b ≠ 0 := sub_ne_zero.mpr hb1.ne'
-    have hratio : ((((1 : I) : ℝ) - b) / (1 - b) : ℝ) = 1 := by
-      change (1 - b) / (1 - b) = 1
-      field_simp [hbne]
-    rw [hratio]
-    simpa using δ.extend_one
   rw [hend] at hηs
   exact hηs
 
@@ -434,6 +474,63 @@ theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x₀)
     exact hδU ⟨t, rfl⟩
   exact h_start.trans h_move
 
+private theorem exists_refined_terminal_vertex
+    [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
+    {n' : ℕ} {U : Set X} (hU_open : IsOpen U)
+    (α : BasedPath x₀) (hα : endpoint α ∈ U)
+    (part : IntervalPartition (n' + 1)) (T : TubeData X x₀ (endpoint α) (n' + 1))
+    (hα_tube : PathInTube α.toPath part T) :
+    ∃ V_last' : Set X,
+      IsOpen V_last' ∧ IsPathConnected V_last' ∧ endpoint α ∈ V_last' ∧
+      V_last' ⊆ T.V (Fin.last (n' + 1)) ∧ V_last' ⊆ U := by
+  have hα_at_last : α.toPath (part.t (Fin.last (n' + 1))) = endpoint α := by
+    rw [part.h_end]
+    exact α.toPath.target
+  let V_last := T.V (Fin.last (n' + 1))
+  have hα_V_last : endpoint α ∈ V_last := hα_at_last ▸ hα_tube.passes_through_V _
+  let W : Set X := V_last ∩ U
+  have hW_open : IsOpen W := (T.h_V_open _).inter hU_open
+  have hα_W : endpoint α ∈ W := ⟨hα_V_last, hα⟩
+  refine ⟨pathComponentIn W (endpoint α), hW_open.pathComponentIn _, isPathConnected_pathComponentIn hα_W,
+    mem_pathComponentIn_self hα_W, ?_, ?_⟩
+  · exact pathComponentIn_subset.trans Set.inter_subset_left
+  · exact pathComponentIn_subset.trans Set.inter_subset_right
+
+private theorem isOpen_refined_tubeNeighborhood
+    {n' : ℕ} (part : IntervalPartition (n' + 1))
+    {U : Fin (n' + 1) → Set X} {V : Fin (n' + 2) → Set X}
+    (hU_open : ∀ i, IsOpen (U i)) (hV_open : ∀ j, IsOpen (V j)) :
+    IsOpen {β : BasedPath x₀ |
+      (∀ (i : Fin (n' + 1)) (s : I),
+          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
+      (∀ j, β.1 (part.t j) ∈ V j)} := by
+  rw [show {β : BasedPath x₀ |
+        (∀ (i : Fin (n' + 1)) (s : I),
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
+        (∀ j, β.1 (part.t j) ∈ V j)} =
+      {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
+          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} ∩
+      {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} from by ext β; simp]
+  refine IsOpen.inter ?_ ?_
+  · rw [show {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
+          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
+        ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} from
+      by ext β; simp]
+    refine isOpen_iInter_of_finite fun i ↦ ?_
+    rw [show {β : BasedPath x₀ | ∀ s : I,
+          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
+        (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
+          {f : C(I, X) | Set.MapsTo f
+            (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (U i)} from
+      by ext β; simp [Set.MapsTo, Set.mem_Icc]]
+    exact (ContinuousMap.isOpen_setOf_mapsTo isCompact_Icc (hU_open i)).preimage
+      continuous_subtype_val
+  · rw [show {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} =
+        ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V j} from by ext β; simp]
+    exact isOpen_iInter_of_finite fun j ↦
+      (hV_open j).preimage ((continuous_eval_const (part.t j)).comp continuous_subtype_val)
+
 /-- Variable-endpoint tube/component theorem.
 
 If `α : BasedPath x₀` has endpoint in a neighborhood `U` satisfying the path-uniqueness
@@ -456,18 +553,8 @@ theorem exists_open_nhd_pathComponent_preimage
   -- Endpoint of α at the last partition point equals `endpoint α`.
   have hα_at_last : α.toPath (part.t (Fin.last (n' + 1))) = endpoint α := by
     rw [part.h_end]; exact α.toPath.target
-  -- Refine `T.V (Fin.last (n' + 1))` by intersecting with `U` and taking a path component.
-  set V_last := T.V (Fin.last (n' + 1)) with hV_last_def
-  have hα_V_last : endpoint α ∈ V_last := hα_at_last ▸ hα_tube.passes_through_V _
-  set W : Set X := V_last ∩ U with hW_def
-  have hW_open : IsOpen W := (T.h_V_open _).inter hU_open
-  have hα_W : endpoint α ∈ W := ⟨hα_V_last, hα⟩
-  set V_last' : Set X := pathComponentIn W (endpoint α) with hV_last'_def
-  have hV'_open : IsOpen V_last' := hW_open.pathComponentIn _
-  have hV'_pathConn : IsPathConnected V_last' := isPathConnected_pathComponentIn hα_W
-  have hV'_sub_V : V_last' ⊆ V_last := pathComponentIn_subset.trans Set.inter_subset_left
-  have hV'_sub_U : V_last' ⊆ U := pathComponentIn_subset.trans Set.inter_subset_right
-  have hα_V' : endpoint α ∈ V_last' := mem_pathComponentIn_self hα_W
+  obtain ⟨V_last', hV'_open, hV'_pathConn, hα_V', hV'_sub_V, hV'_sub_U⟩ :=
+    exists_refined_terminal_vertex hU_open α hα part T hα_tube
   -- Refined V function: `V_last'` at the last partition point, `T.V` elsewhere.
   set V' : Fin (n' + 2) → Set X :=
     Fin.snoc (fun j : Fin (n' + 1) ↦ T.V j.castSucc) V_last' with hV'_def
@@ -500,31 +587,7 @@ theorem exists_open_nhd_pathComponent_preimage
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i) ∧
       (∀ j, β.1 (part.t j) ∈ V' j)} with hN_def
   refine ⟨N, ?_, ?_, ?_, ?_⟩
-  · -- `N` is open: it is the intersection of a finite family of open segment/point conditions.
-    rw [show N = {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-          (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} ∩
-        {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} from rfl]
-    refine IsOpen.inter ?_ ?_
-    · -- Segment conditions: pulled back from `C(I, X)` tubes.
-      rw [show {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
-          ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
-              (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} from
-        by ext β; simp]
-      refine isOpen_iInter_of_finite fun i ↦ ?_
-      rw [show {β : BasedPath x₀ | ∀ s : I,
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ T.U i} =
-          (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
-            {f : C(I, X) | Set.MapsTo f
-              (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (T.U i)} from
-        by ext β; simp [Set.MapsTo, Set.mem_Icc]]
-      exact (ContinuousMap.isOpen_setOf_mapsTo isCompact_Icc (T.h_U_open i)).preimage
-        continuous_subtype_val
-    · -- Point conditions at partition points.
-      rw [show {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V' j} =
-          ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V' j} from by ext β; simp]
-      exact isOpen_iInter_of_finite fun j ↦ (hV'_open_all j).preimage
-        ((continuous_eval_const (part.t j)).comp continuous_subtype_val)
+  · simpa [hN_def] using isOpen_refined_tubeNeighborhood part T.h_U_open hV'_open_all
   · -- `α ∈ N`.
     exact ⟨hα_tube.stays_in_U, hα_passes_V'⟩
   · -- `N ⊆ endpoint ⁻¹' U`.
@@ -608,6 +671,53 @@ theorem isOpen_pathComponent_preimage
   intro γ hγ_N
   exact hβ.trans (hN_joined γ hγ_N)
 
+private def joinedInSLsc_uReal (ts : ℝ × ℝ) : ℝ :=
+  ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
+
+private def joinedInSLsc_vReal (ts : ℝ × ℝ) : ℝ :=
+  min (2 * ts.2) 1
+
+private theorem joinedInSLsc_uReal_mem (t s : I) :
+    joinedInSLsc_uReal ((t : ℝ), (s : ℝ)) ∈ I := by
+  simp only [joinedInSLsc_uReal]
+  have hm_nn : (0 : ℝ) ≤ max 0 (2 * (s : ℝ) - 1) := le_max_left _ _
+  have hm_le : max 0 (2 * (s : ℝ) - 1) ≤ 1 := max_le zero_le_one (by linarith [s.2.2])
+  refine ⟨?_, ?_⟩
+  · have h0 : 0 ≤ max 0 (2 * (s : ℝ) - 1) * (1 - (t : ℝ)) :=
+      mul_nonneg hm_nn (by linarith [t.2.2])
+    linarith [t.2.1]
+  · nlinarith [t.2.1, t.2.2]
+
+private theorem joinedInSLsc_vReal_mem (t s : I) :
+    joinedInSLsc_vReal ((t : ℝ), (s : ℝ)) ∈ I := by
+  refine ⟨le_min (by linarith [s.2.1]) zero_le_one, min_le_right _ _⟩
+
+private def joinedInSLsc_uFn : I × I → I := fun ts ↦
+  ⟨joinedInSLsc_uReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLsc_uReal_mem ts.1 ts.2⟩
+
+private def joinedInSLsc_vFn : I × I → I := fun ts ↦
+  ⟨joinedInSLsc_vReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLsc_vReal_mem ts.1 ts.2⟩
+
+private theorem joinedInSLsc_uFn_zero_left (s : I) :
+    (joinedInSLsc_uFn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := by
+  simp [joinedInSLsc_uFn, joinedInSLsc_uReal]
+
+private theorem joinedInSLsc_uFn_one_left (s : I) : joinedInSLsc_uFn (1, s) = 1 :=
+  Subtype.ext (by simp [joinedInSLsc_uFn, joinedInSLsc_uReal])
+
+private theorem joinedInSLsc_uFn_one_right (t : I) : joinedInSLsc_uFn (t, 1) = 1 :=
+  Subtype.ext (by simp [joinedInSLsc_uFn, joinedInSLsc_uReal]; ring)
+
+private theorem joinedInSLsc_vFn_left (t s : I) :
+    (joinedInSLsc_vFn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
+  simp [joinedInSLsc_vFn, joinedInSLsc_vReal]
+
+private theorem joinedInSLsc_vFn_zero_right (t : I) : joinedInSLsc_vFn (t, 0) = 0 :=
+  Subtype.ext (by simp [joinedInSLsc_vFn, joinedInSLsc_vReal])
+
+private theorem joinedInSLsc_vFn_one_right (t : I) : joinedInSLsc_vFn (t, 1) = 1 :=
+  Subtype.ext (by simp [joinedInSLsc_vFn, joinedInSLsc_vReal])
+
 /-- If `α` and `β` are based paths with the same endpoint `v ∈ U`, joined inside
 `endpoint ⁻¹' U`, and `U` has the SLSC uniqueness property, then their associated paths
 `α.toPath` and `β.toPath` are homotopic (after casting to a common endpoint).
@@ -645,53 +755,23 @@ theorem toPath_homotopic_of_joinedIn_slsc
       rintro _ ⟨_, rfl⟩; simpa using hv)
   -- Cast α.toPath to target `v`.
   let α' : Path x₀ v := α.toPath.cast rfl heq.symm
-  -- Reparameterization functions.
-  let u_real : ℝ × ℝ → ℝ := fun ts ↦ ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
-  let v_real : ℝ × ℝ → ℝ := fun ts ↦ min (2 * ts.2) 1
-  have hu_cont : Continuous u_real :=
+  have hu_cont : Continuous joinedInSLsc_uReal :=
     (continuous_fst).add <|
       (Continuous.max continuous_const (by fun_prop)).mul (by fun_prop)
-  have hv_cont_real : Continuous v_real :=
+  have hv_cont_real : Continuous joinedInSLsc_vReal :=
     Continuous.min (by fun_prop) continuous_const
-  have hu_mem : ∀ t s : I, u_real ((t : ℝ), (s : ℝ)) ∈ I := by
-    intro t s
-    simp only [u_real]
-    have hm_nn : (0 : ℝ) ≤ max 0 (2 * (s : ℝ) - 1) := le_max_left _ _
-    have hm_le : max 0 (2 * (s : ℝ) - 1) ≤ 1 := max_le zero_le_one (by linarith [s.2.2])
-    refine ⟨?_, ?_⟩
-    · have h0 : 0 ≤ max 0 (2 * (s : ℝ) - 1) * (1 - (t : ℝ)) :=
-        mul_nonneg hm_nn (by linarith [t.2.2])
-      linarith [t.2.1]
-    · -- t + m(1 - t) = (1 - m) t + m ≤ (1 - m) · 1 + m = 1
-      nlinarith [t.2.1, t.2.2]
-  have hv_mem : ∀ t s : I, v_real ((t : ℝ), (s : ℝ)) ∈ I := by
-    intro _ s
-    refine ⟨le_min (by linarith [s.2.1]) zero_le_one, min_le_right _ _⟩
-  let u_fn : I × I → I := fun ts ↦ ⟨u_real ((ts.1 : ℝ), (ts.2 : ℝ)), hu_mem ts.1 ts.2⟩
-  let v_fn : I × I → I := fun ts ↦ ⟨v_real ((ts.1 : ℝ), (ts.2 : ℝ)), hv_mem ts.1 ts.2⟩
-  have hu_fn_cont : Continuous u_fn := by
+  have hu_fn_cont : Continuous joinedInSLsc_uFn := by
     refine Continuous.subtype_mk ?_ _
     exact hu_cont.comp (by fun_prop)
-  have hv_fn_cont : Continuous v_fn := by
+  have hv_fn_cont : Continuous joinedInSLsc_vFn := by
     refine Continuous.subtype_mk ?_ _
     exact hv_cont_real.comp (by fun_prop)
   -- The rectangle homotopy.
-  let K_fn : I × I → X := fun ts ↦ (F (u_fn ts)).1 (v_fn ts)
-  have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (u_fn ts)).1 (v_fn ts) := fun _ ↦ rfl
-  -- Coordinate reductions of `u_fn`/`v_fn` at the four corners/edges. These are the forms
+  let K_fn : I × I → X := fun ts ↦ (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts)
+  have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts) :=
+    fun _ ↦ rfl
+  -- Coordinate reductions of `joinedInSLsc_uFn`/`joinedInSLsc_vFn` at the four corners/edges. These are the forms
   -- that appear after `K_fn_apply` unfolds `K_fn`.
-  have u_fn_zero_left : ∀ s : I, (u_fn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := fun _ ↦ by
-    simp [u_fn, u_real]
-  have u_fn_one_left : ∀ s : I, u_fn (1, s) = 1 :=
-    fun _ ↦ Subtype.ext (by simp [u_fn, u_real])
-  have u_fn_one_right : ∀ t : I, u_fn (t, 1) = 1 :=
-    fun _ ↦ Subtype.ext (by simp [u_fn, u_real]; ring)
-  have v_fn_left : ∀ t s : I, (v_fn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := fun _ _ ↦ by
-    simp [v_fn, v_real]
-  have v_fn_zero_right : ∀ t : I, v_fn (t, 0) = 0 :=
-    fun _ ↦ Subtype.ext (by simp [v_fn, v_real])
-  have v_fn_one_right : ∀ t : I, v_fn (t, 1) = 1 :=
-    fun _ ↦ Subtype.ext (by simp [v_fn, v_real])
   have hK_cont : Continuous K_fn :=
     hFv_cont.comp (hu_fn_cont.prodMk hv_fn_cont)
   -- Auxiliary identities evaluating K at corners/edges.
@@ -701,42 +781,44 @@ theorem toPath_homotopic_of_joinedIn_slsc
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
       have h2s : 2 * (s : ℝ) - 1 ≤ 0 := by linarith
-      have hu_subt : u_fn (0, s) = (0 : I) :=
-        Subtype.ext (by rw [u_fn_zero_left, max_eq_left h2s]; rfl)
-      have hv_subt : v_fn (0, s) =
+      have hu_subt : joinedInSLsc_uFn (0, s) = (0 : I) :=
+        Subtype.ext (by rw [joinedInSLsc_uFn_zero_left, max_eq_left h2s]; rfl)
+      have hv_subt : joinedInSLsc_vFn (0, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [v_fn_left, min_eq_left (by linarith)])
+        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_left (by linarith)])
       rw [hu_subt, hv_subt, hF0_eq]
       rfl
     · rw [dif_neg hs]
       have h2s : 0 ≤ 2 * (s : ℝ) - 1 := by linarith [not_le.mp hs]
-      have hu_subt : u_fn (0, s) =
+      have hu_subt : joinedInSLsc_uFn (0, s) =
           ⟨2 * (s : ℝ) - 1,
             unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.mp hs).le, s.2.2⟩⟩ :=
-        Subtype.ext (by rw [u_fn_zero_left, max_eq_right h2s])
-      have hv_subt : v_fn (0, s) = (1 : I) :=
-        Subtype.ext (by rw [v_fn_left, min_eq_right (by linarith)]; rfl)
+        Subtype.ext (by rw [joinedInSLsc_uFn_zero_left, max_eq_right h2s])
+      have hv_subt : joinedInSLsc_vFn (0, s) = (1 : I) :=
+        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_right (by linarith)]; rfl)
       rw [hu_subt, hv_subt]
       rfl
   have hK_one : ∀ s : I, K_fn (1, s) = (β.toPath.trans (Path.refl v)) s := by
     intro s
-    rw [K_fn_apply, Path.trans_apply, u_fn_one_left]
+    rw [K_fn_apply, Path.trans_apply, joinedInSLsc_uFn_one_left]
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
-      have hv_subt : v_fn (1, s) =
+      have hv_subt : joinedInSLsc_vFn (1, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [v_fn_left, min_eq_left (by linarith)])
+        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_left (by linarith)])
       rw [hv_subt, hF1_eq]
       rfl
     · rw [dif_neg hs]
-      have hv_subt : v_fn (1, s) = (1 : I) :=
-        Subtype.ext (by rw [v_fn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
+      have hv_subt : joinedInSLsc_vFn (1, s) = (1 : I) :=
+        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
       rw [hv_subt, hF1_eq]
       rfl
   have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := fun t ↦ by
-    rw [K_fn_apply, v_fn_zero_right]; exact (F (u_fn (t, 0))).2
+    rw [K_fn_apply, joinedInSLsc_vFn_zero_right]
+    exact (F (joinedInSLsc_uFn (t, 0))).2
   have hK_at_one : ∀ t : I, K_fn (t, 1) = v := fun t ↦ by
-    rw [K_fn_apply, u_fn_one_right, v_fn_one_right, hF1_eq]; rfl
+    rw [K_fn_apply, joinedInSLsc_uFn_one_right, joinedInSLsc_vFn_one_right, hF1_eq]
+    rfl
   let K : Path.Homotopy (α'.trans L) (β.toPath.trans (Path.refl v)) :=
     { toFun := K_fn
       continuous_toFun := hK_cont

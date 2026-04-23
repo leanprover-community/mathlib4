@@ -370,14 +370,16 @@ theorem sheet_exhaustive [LocPathConnectedSpace X]
   obtain ⟨η, hη_range⟩ := hU_pathConn.exists_path he hxU
   -- Use `p := α.toPath.trans η : Path x₀ x` as the sheet index.
   let p : Path x₀ x := α.toPath.trans η
-  refine Set.mem_iUnion.mpr ⟨Path.Homotopic.Quotient.mk p, α, ?_, rfl⟩
   -- `basedPathSheet U hxU ⟦p⟧ = basedPathComponent U p = pathComponentIn _ (ofPath p)`.
-  change α ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
+  rw [Set.mem_iUnion]
+  refine ⟨Path.Homotopic.Quotient.mk p, ?_⟩
+  change ∃ β, β ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p) ∧
+    ofBasedPath x₀ β = ofBasedPath x₀ α
   -- α is joined to `ofPath p = append α η` inside `endpoint ⁻¹' U`.
   have h_join : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α
       (BasedPath.append α η) :=
     BasedPath.joinedIn_preimage_of_append α he η hη_range
-  exact h_join.symm
+  exact ⟨α, h_join.symm, rfl⟩
 
 /-- In a good neighborhood `U`, the projection `proj` is injective on each sheet. -/
 theorem sheet_proj_injOn [LocPathConnectedSpace X]
