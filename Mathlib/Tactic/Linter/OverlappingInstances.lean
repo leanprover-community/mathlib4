@@ -41,9 +41,8 @@ meta section
 
 namespace Mathlib.Linter.OverlappingInstances
 
-/-- Erase the instances from the given application.
-We use this for classes with instance parameters,
-in order to ignore the instances when checking for equality. -/
+/-- Clear the instances from the given application.
+This is used to deal with classes that have instance parameters. -/
 def eraseInstances (e : Expr) : MetaM Expr := do
   e.withApp fun f args ↦ do
   let finfo ← getFunInfo f
@@ -53,16 +52,16 @@ def eraseInstances (e : Expr) : MetaM Expr := do
       args := args.set! i default
   return mkAppN f args
 
-/--
-Compute the parent classes of `cls`. This excludes parents that have parents themselves.
-The reason to exclude these is that if there is a duplication in such a class,
+/-- Compute the data carrying parent classes of `cls`.
+This excludes parent classes that have a data carrying parent themselves.
+The reason to exclude such classes is that if there is a duplication in such a class,
 then there will necessarily also be a duplication in all of its parents.
 If `cls` is a `Prop` or a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
 The universe levels and bound variables need to be instantiated to get concrete data projections.
 -/
-partial def getAbstractParents (cls : Name) : CoreM (Array Expr) := do
+partial def getAbstractDataProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
   MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
     withLocalDeclD `self (mkAppN (.const cls (cinfo.levelParams.map .param)) xs) fun inst ↦ do
@@ -76,34 +75,35 @@ where
     if let some info := getStructureInfo? (← getEnv) cls then
       let .const _ us := type.getAppFn | panic! s!"`{inst} is not an instance"
       for info in info.parentInfo do
-        anyParent := true
         let parent := info.structName
         if (← get).contains parent then continue
         modify (·.insert parent)
+        if (← getConstInfo parent).type.getForallBody.isProp then continue
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
         acc ← go parent proj acc xs
+        anyParent := true
     if !anyParent then
       acc := acc.push (← eraseInstances (type.abstract xs))
     return acc
 
-/-- A cache for the result of `getAbstractParents`. -/
-initialize abstractParentsCache : IO.Ref (NameMap (Array Expr)) ← IO.mkRef {}
+/-- A cache for the result of `getAbstractDataProjections`. -/
+initialize dataProjectionCache : IO.Ref (NameMap (Array Expr)) ← IO.mkRef {}
 
-/-- Return the result of `getAbstractParents`, using a global cache.
+/-- Return the result of `getAbstractDataProjections`, using a global cache.
 To ensure soundness, the cache is only used for imported declarations. -/
-def getAbstractParentsCached (cls : Name) : CoreM (Array Expr) := do
+def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
   if (← getEnv).isImportedConst cls then
-    if let some result := (← abstractParentsCache.get).find? cls then
+    if let some result := (← dataProjectionCache.get).find? cls then
       return result
     else
-    let result ← getAbstractParents cls
-    abstractParentsCache.modify (·.insert cls result)
+    let result ← getAbstractDataProjections cls
+    dataProjectionCache.modify (·.insert cls result)
     return result
   else
-    getAbstractParents cls
+    getAbstractDataProjections cls
 
-/-- Find classes for which multiple different local instances can be synthesized. -/
-partial def findOverlappingInstances : MetaM (Std.HashMap Expr (Array FVarId)) := do
+/-- Find classes for which multiple different instances can be synthesized in the local context. -/
+partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId)) := do
   let mut overlaps : Std.HashMap Expr (Array FVarId) := {}
   let mut encountered : Std.HashMap Expr FVarId := {}
   for decl in ← getLCtx do
@@ -114,7 +114,7 @@ partial def findOverlappingInstances : MetaM (Std.HashMap Expr (Array FVarId)) :
         let .const cls us := f |
           return #[] -- This can happen when using `set_option checkBinderAnnotations false`
         let info ← getConstInfo cls
-        let projs ← getAbstractParentsCached cls
+        let projs ← getAbstractDataProjectionsCached cls
         projs.mapM fun proj ↦
           mkForallFVars xs <|
             (proj.instantiateLevelParams info.levelParams us).instantiateRev args
@@ -125,19 +125,19 @@ partial def findOverlappingInstances : MetaM (Std.HashMap Expr (Array FVarId)) :
           encountered := encountered.insert projCls decl.fvarId
   return overlaps
 
-/-- Lints against overlaps between instances in the local contexts of declarations. -/
+/-- Lints against data-carrying overlaps between instances in the local contexts of declarations. -/
 register_option linter.overlappingInstances : Bool := {
   defValue := true
   descr := "enable the overlapping instances linter."
 }
 
 /-- Report a warning message if there are any overlapping instances in the local context. -/
-def reportOverlappingInstances (ctx : ContextInfo) (lctx : LocalContext)
-    (expectedType? : Option Expr) : IO (Option MessageData) := do
+def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option Expr) :
+    IO (Option MessageData) := do
   ctx.runMetaM lctx do
   -- Add the hypotheses of the expected type to the local context, as it may have more instances.
   expectedType?.elim id (forallTelescope · fun _ _ => ·) do
-  let overlaps ← findOverlappingInstances
+  let overlaps ← findOverlappingDataInstances
   if overlaps.isEmpty then
     return none
   let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
@@ -145,9 +145,7 @@ def reportOverlappingInstances (ctx : ContextInfo) (lctx : LocalContext)
   -- Sort the suggestions in a (somewhat) deterministic way.
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
-  let mut isOnlyProp := true
   for (fvars, overlaps) in sortedOverlaps do
-    isOnlyProp ← pure isOnlyProp <&&> overlaps.allM isProp
     let parents ← fvars.mapM (do instantiateMVars <| ← ·.getType)
     if parents.all (· == parents[0]!) then
       msgs := msgs.push <| m!"There are {parents.size} `{.sbracket parents[0]!}` instances"
@@ -155,7 +153,7 @@ def reportOverlappingInstances (ctx : ContextInfo) (lctx : LocalContext)
       let parents := parents.map (m!"`{.sbracket ·}`")
       let children := overlaps.map fun overlap => m!"`{overlap}`"
       msgs := msgs.push <|
-        m!"{.andList parents.toList} each give an instance of {.andList children.toList}."
+        m!"{.andList parents.toList} give conflicting instances of {.andList children.toList}."
   -- Create a bulleted list if there are multiple messages, otherwise just a single line
   let declDescr ←
     if let some decl := ctx.parentDecl? then
@@ -166,11 +164,7 @@ def reportOverlappingInstances (ctx : ContextInfo) (lctx : LocalContext)
   let mut msg := m!"{declDescr} has overlapping instances:"
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
-  if isOnlyProp then
-    msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
-  else
-    msg := msg ++ m!"\n\nThese conflicting instances create a local 'diamond', \
-      which can lead to unexpected errors."
+  msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
   msg ← addMessageContextFull msg
   return some msg
 
@@ -190,7 +184,7 @@ def overlappingInstances : Linter where
       for (ref, ctx, info) in t.getDeclBodyInfos do
         let some (lctx, expectedType?) := info.getLCtx? | pure ()
         withTraceNode `overlappingInstances (fun _ ↦ return m!"linting `{ctx.parentDecl?}`") do
-        let some msg ← reportOverlappingInstances ctx lctx expectedType? | pure ()
+        let some msg ← runLinter ctx lctx expectedType? | pure ()
         logLint linter.overlappingInstances ref msg
 
 initialize addLinter overlappingInstances

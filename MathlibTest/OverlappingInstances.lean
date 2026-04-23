@@ -34,7 +34,7 @@ warning: Declaration `foo` has overlapping instances:
 
 There are 4 `[Add Nat]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -47,9 +47,9 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 @ +3:68...+4:12
 warning: Declaration `foo₁` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaq Nat]` each give an instance of `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -63,9 +63,9 @@ set_option linter.overlappingInstances true in
 warning: Declaration `foo₂` has overlapping instances:
 
 • There are 2 `[FooBarBaz Nat]` instances
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` each give an instance of `SubBar Nat`.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -77,7 +77,7 @@ warning: Declaration `foo₃` has overlapping instances:
 
 There are 2 `[FooBarBaz Nat]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -88,9 +88,9 @@ def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 warning: Declaration `foo₄` has overlapping instances:
 
 • There are 2 `[FooBarBaz Nat]` instances
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` each give an instance of `SubBar Nat`.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `SubBar Nat`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -100,9 +100,9 @@ theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 /--
 warning: Declaration `foo₅` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` each give an instance of `Baz Nat` and `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `Baz Nat` and `SubBar Nat`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -118,7 +118,7 @@ warning: Declaration `foo` has overlapping instances:
 
 There are 2 `[Add Nat]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -127,9 +127,9 @@ private def foo [Add Nat] [Add Nat] : Bool := true
 
 end Foo
 
-section Inductive
+section duplicates
 
-/-! Make sure we warn on duplicate inductive classes. -/
+/-! Make sure we warn on duplicate inductive classes and duplicate `Prop` classes. -/
 
 class inductive IndFoo where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
@@ -139,35 +139,12 @@ warning: Declaration `indFoo` has overlapping instances:
 
 There are 2 `[IndFoo]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
-
-Note: This linter can be disabled with `set_option linter.overlappingInstances false`
--/
-#guard_msgs in
-def indFoo [IndFoo] [IndFoo] : Bool := true
-
-end Inductive
-
-section prop
-
-
-class SubBarProp (α : Prop) : Prop where
-  a' : α
-
-class BarProp (α : Prop) : Prop extends SubBarProp α where
-  a : α
-
-/--
-warning: Declaration `_example` has overlapping instances:
-
-`[SubBarProp α]` and `[BarProp α]` each give an instance of `SubBarProp α`.
-
 Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
-example (α : Prop) [SubBarProp α] [BarProp α] : True := trivial
+def indFoo [IndFoo] [IndFoo] : Bool := true
 
 class inductive IndFooProp : Prop where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
@@ -184,7 +161,7 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs in
 def indFooProp [IndFooProp] [IndFooProp] : Bool := true
 
-end prop
+end duplicates
 
 section instantiateMVars
 
@@ -195,7 +172,7 @@ warning: Declaration `needsInstantiateMVars` has overlapping instances:
 
 There are 2 `[Repr α]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -216,7 +193,7 @@ warning: Declaration `fooSomething` has overlapping instances:
 
 There are 4 `[Add Nat]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -237,9 +214,9 @@ class B (α : Type u) extends A α
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α]` and `[A α]` each give an instance of `A α`.
+`[B α]` and `[A α]` give conflicting instances of `A α`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -263,9 +240,9 @@ class B' (α β : Type*) [A' α] extends B α β where
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α β]` and `[B' α β]` each give an instance of `B α β`.
+`[B α β]` and `[B' α β]` give conflicting instances of `B α β`.
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -277,16 +254,15 @@ end parameters
 /-! Test a `where` clause. -/
 
 /--
-@ +4:46...51
 warning: Declaration `lt'.go` has overlapping instances:
 
 There are 2 `[DecidableEq α]` instances
 
-These conflicting instances create a local 'diamond', which can lead to unexpected errors.
+Consider choosing different instance hypotheses.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
-#guard_msgs (positions := true) in
+#guard_msgs in
 def List.lt' {α} [DecidableEq α] (a b : List α) : Bool :=
   go a b
 where
