@@ -313,7 +313,7 @@ theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     refine not_isCyclic_units_of_mul_coprime _ _ (hn.of_dvd_nat this) ?_
       (hn.of_dvd_nat (Nat.div_dvd_of_dvd this)) ?_ ((Nat.coprime_ordCompl hp hn0).pow_left ..)
     · simpa [(hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
-    · contrapose! hnp
+    · contrapose hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
   rintro ⟨q, m, hq, -, rfl⟩
   cases (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)

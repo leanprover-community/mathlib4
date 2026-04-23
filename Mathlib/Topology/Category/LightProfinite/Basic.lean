@@ -92,14 +92,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_hom_apply]
+@[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f.hom.hom.1)
+  preimage f := InducedCategory.homMk (TypeCat.ofHom (f.hom.hom.1))
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -231,7 +231,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
 instance : lightToProfinite.PreservesEpimorphisms where
@@ -255,10 +255,10 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
 instance : Category LightDiagram :=
-  inferInstanceAs (Category (InducedCategory _ toProfinite))
+  inferInstanceAs <| Category (InducedCategory _ toProfinite)
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
-  InducedCategory.concreteCategory toProfinite
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toProfinite) _
 
 end LightDiagram
 

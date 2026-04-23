@@ -53,7 +53,7 @@ when coerced to any `R`-algebra. -/
 @[implicit_reducible]
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
-  Invertible.algebraTower ℕ R A n
+  fast_instance% Invertible.algebraTower ℕ R A n
 
 end Semiring
 end IsScalarTower

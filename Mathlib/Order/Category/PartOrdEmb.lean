@@ -236,6 +236,7 @@ instance : PartialOrder (CoconePt hc) where
       ((congr_arg (c.ι.app l) (h₃.symm.trans (h₇.trans h₅))).trans
         ((ConcreteCategory.congr_hom (c.w a) y₁).trans hy₁)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone for a functor `F : J ⥤ PartOrdEmb` from a filtered
 category that is constructed from a colimit cocone for `F ⋙ forget _`. -/
 @[simps]
@@ -260,6 +261,7 @@ def cocone : Cocone F where
         simpa [← hl₁, ← hl₂] using h }
   ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `isColimitCocone`. -/
 def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
   toFun := hc.desc ((forget _).mapCocone s)
@@ -267,15 +269,17 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
     obtain ⟨j, x', y', rfl, rfl⟩ :=
       Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
     obtain rfl := (s.ι.app j).injective
-      (((congr_fun (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
-        (congr_fun (hc.fac ((forget _).mapCocone s) j) y'))
+      (((ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x').symm.trans h).trans
+        (ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'))
     rfl
   map_rel_iff' {x y} := by
     obtain ⟨j, x', y', rfl, rfl⟩ :=
       Types.FilteredColimit.jointly_surjective_of_isColimit₂ hc x y
-    have hx := (congr_fun (hc.fac ((forget _).mapCocone s) j) x')
-    have hy := (congr_fun (hc.fac ((forget _).mapCocone s) j) y')
-    dsimp at hx hy ⊢
+    have hx := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x'
+    have hy := ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) y'
+    simp only [Functor.mapCocone_pt, Functor.comp_obj, Functor.const_obj_obj,
+      CategoryTheory.comp_apply, Functor.mapCocone_ι_app, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.coe_mk, Function.Embedding.coeFn_mk] at hx hy ⊢
     rw [hx, hy, OrderEmbedding.le_iff_le]
     refine ⟨fun h ↦ ⟨j, _, _, rfl, rfl, h⟩, fun ⟨k, x, y, hx', hy', h⟩ ↦ ?_⟩
     obtain ⟨l, f, g, hl⟩ := (Types.FilteredColimit.isColimit_eq_iff _ hc).1 hx'
@@ -288,14 +292,17 @@ def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where
 
 @[simp]
 lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
-    CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
-  congr_fun (hc.fac ((forget _).mapCocone s) j) x
+    dsimp% CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
+  ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
 obtained from a colimit cocone for `F ⋙ forget _`. -/
 def isColimitCocone : IsColimit (cocone hc) where
   desc s := ofHom (CoconePt.desc hc s)
+  fac s j := by
+    ext x
+    exact ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
   uniq s m hm := by
     ext x
     obtain ⟨j, x, rfl⟩ := Types.jointly_surjective_of_isColimit hc x

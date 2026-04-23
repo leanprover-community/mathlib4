@@ -305,7 +305,6 @@ lemma topologically_isZariskiLocalAtTarget [(topologically P).RespectsIso]
 @[deprecated (since := "2025-10-07")]
 alias topologically_isLocalAtTarget := topologically_isZariskiLocalAtTarget
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `topologically_isZariskiLocalAtTarget`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtTarget' [(topologically P).RespectsIso]
@@ -338,7 +337,6 @@ lemma topologically_isZariskiLocalAtSource [(topologically P).RespectsIso]
 @[deprecated (since := "2025-10-07")]
 alias topologically_isLocalAtSource := topologically_isZariskiLocalAtSource
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `topologically_isZariskiLocalAtSource`
 that takes one iff statement instead of two implications. -/
 lemma topologically_isZariskiLocalAtSource' [(topologically P).RespectsIso]

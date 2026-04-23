@@ -697,7 +697,7 @@ lemma chevalley_mvPolynomialC
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
-    simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
       RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
@@ -720,7 +720,7 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe,
+        simp only [ConstructibleSetData.map,
           RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image,
           BasicConstructibleSetData.map, RingHom.coe_coe, S', e] at hxS
         obtain ⟨C, hxS, rfl⟩ := hxS

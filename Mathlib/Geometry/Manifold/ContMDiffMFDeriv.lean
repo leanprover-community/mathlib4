@@ -134,8 +134,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · exact UniqueMDiffOn.uniqueDiffOn_target_inter h'u (g x₀)
   -- reformulate the previous point as `C^n` in the manifold sense (but still for a map between
   -- vector spaces)
-  have : CMDiffAt[t'] m (
-      fun x ↦ fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
+  have : CMDiffAt[t'] m
+      (fun x ↦ fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
       ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
         (extChartAt I (g x₀) (g x))) x₀ := by
     simp_rw [contMDiffWithinAt_iff_source (x := x₀),

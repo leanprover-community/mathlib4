@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
-public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces

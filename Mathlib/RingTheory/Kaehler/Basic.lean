@@ -160,7 +160,7 @@ notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
-  Submodule.Quotient.module' _
+  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]

@@ -29,3 +29,6 @@ structure MaximalSpectrum (R : Type*) [CommSemiring R] where
   isMaximal : asIdeal.IsMaximal
 
 attribute [instance] MaximalSpectrum.isMaximal
+
+instance (R : Type*) [CommSemiring R] : Coe (MaximalSpectrum R) (Ideal R) where
+  coe P := P.asIdeal

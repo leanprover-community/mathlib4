@@ -129,11 +129,12 @@ end
 presheaf of modules over itself). -/
 @[simps]
 noncomputable def freeFunctor : Type u ⥤ SheafOfModules.{u} R where
-  obj := free
+  obj X := free X
   map f := freeMap f
   map_id X := (freeHomEquiv _).injective (by ext1 i; simp)
   map_comp {I J K} f g := (freeHomEquiv _).injective (by ext1; simp [freeHomEquiv_comp_apply])
 
+set_option backward.isDefEq.respectTransparency false in
 /- If `C` was in `Type u`, we could show that `freeFunctor` is a left adjoint, and
 deduce that `freeFunctor` preserves all colimits. Instead, we use
 the natural bijection `freeHomEquiv`, which is as close as an adjunction we can get. -/
@@ -157,8 +158,7 @@ instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
         funext x
         dsimp
         rw [freeHomEquiv_comp_apply, freeHomEquiv_freeMap, Function.comp_apply,
-          sectionsMap_freeHomEquiv_symm_freeSection,
-          dsimp% hc.fac_apply (coconeTypes s) j x])
+          sectionsMap_freeHomEquiv_symm_freeSection, dsimp% hc.fac_apply (coconeTypes s) j x])
       uniq s m hm := (freeHomEquiv _).injective (by
         funext x
         obtain ⟨j, x, rfl⟩ := Functor.CoconeTypes.IsColimit.ι_jointly_surjective hc x
@@ -169,7 +169,9 @@ instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) where
         rw [freeHomEquiv_apply, freeHomEquiv_apply,
           sectionsMap_freeHomEquiv_symm_freeSection,
           Functor.coconeTypesEquiv_symm_apply_ι,
-          dsimp% hc.fac_apply (coconeTypes s) j x, hm]) }⟩⟩⟩
+          dsimp% [-Functor.const_obj_obj] hc.fac_apply (coconeTypes s) j x]
+        dsimp
+        rw [hm]) }⟩⟩⟩
 
 
 section

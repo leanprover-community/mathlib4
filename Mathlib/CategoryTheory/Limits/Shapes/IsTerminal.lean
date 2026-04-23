@@ -476,7 +476,7 @@ variable (C : Type*) [Category* C] {D : Type*} [Category* D]
 /-- The constant functor returning a specific terminal object is indeed terminal. -/
 def isTerminalConst {X : D} (hX : IsTerminal X) :
     IsTerminal ((Functor.const C).obj X) :=
-  .ofUniqueHom (fun Y => {app Z := hX.from (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+  .ofUniqueHom (fun Y => { app Z := hX.from (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
 
 @[simp]
 lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
@@ -485,7 +485,7 @@ lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
 /-- The constant functor returning a specific initial object is indeed initial. -/
 def isInitialConst {X : D} (hX : IsInitial X) :
     IsInitial ((Functor.const C).obj X) :=
-  .ofUniqueHom (fun Y => {app Z := hX.to (Y.obj Z)}) (by intros; ext; apply hX.hom_ext)
+  .ofUniqueHom (fun Y => { app Z := hX.to (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
 
 @[simp]
 lemma isInitialConst_to_app {X : D} (hX : IsInitial X)

@@ -96,20 +96,30 @@ def hasRightDualOfHasLeftDual [HasLeftDual X] : HasRightDual X where
   rightDual := ᘁX
   exact := exactPairing_swap ᘁX X
 
-instance leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigidCategory C where
+/-- If a braided category is right-rigid, then it is left-rigid.
+Not registered as an instance as this is not canonical enough. -/
+@[implicit_reducible]
+def leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigidCategory C where
   leftDual X := hasLeftDualOfHasRightDual (X := X)
 
-instance rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
+/-- If a braided category is left-rigid, then it is right-rigid.
+Not registered as an instance as this is not canonical enough. -/
+@[implicit_reducible]
+def rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
   rightDual X := hasRightDualOfHasLeftDual (X := X)
 
-/-- If `C` is a braided and right rigid category, then it is a rigid category. -/
-instance rigidCategoryOfRightRigidCategory [RightRigidCategory C] : RigidCategory C where
+/-- If `C` is a braided and right rigid category, then it is a rigid category.
+Not registered as an instance as this is not canonical enough. -/
+@[implicit_reducible]
+def rigidCategoryOfRightRigidCategory [RightRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
-  leftDual := inferInstance
+  leftDual X := hasLeftDualOfHasRightDual (X := X)
 
-/-- If `C` is a braided and left rigid category, then it is a rigid category. -/
-instance rigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RigidCategory C where
-  rightDual := inferInstance
+/-- If `C` is a braided and left rigid category, then it is a rigid category.
+Not registered as an instance as this is not canonical enough. -/
+@[implicit_reducible]
+def rigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RigidCategory C where
+  rightDual X := hasRightDualOfHasLeftDual (X := X)
   leftDual := inferInstance
 
 end CategoryTheory.BraidedCategory

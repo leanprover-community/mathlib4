@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Homology.AlternatingConst
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
@@ -31,23 +32,10 @@ universe w v u
 variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C]
 variable [Preadditive C] (n : ℕ)
 
-/--
-The singular chain complex associated to a simplicial set, with coefficients in `X : C`.
-One can recover the ordinary singular chain complex when `C := Ab` and `X := ℤ`.
--/
-def SSet.singularChainComplexFunctor :
-    C ⥤ SSet.{w} ⥤ ChainComplex C ℕ :=
-  (Functor.postcompose₂.obj (AlgebraicTopology.alternatingFaceMapComplex _)).obj
-    (sigmaConst ⋙ SimplicialObject.whiskering _ _)
-
-instance : (SSet.singularChainComplexFunctor C).Additive := by
-  dsimp [SSet.singularChainComplexFunctor, SimplicialObject.whiskering]
-  infer_instance
-
 /-- The singular chain complex functor with coefficients in `C`. -/
 def singularChainComplexFunctor :
     C ⥤ TopCat.{w} ⥤ ChainComplex C ℕ :=
-  SSet.singularChainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft _ _ _).obj TopCat.toSSet.{w}
+  SSet.chainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft _ _ _).obj TopCat.toSSet.{w}
 
 instance : (singularChainComplexFunctor C).Additive := by
   delta singularChainComplexFunctor
@@ -56,7 +44,7 @@ instance : (singularChainComplexFunctor C).Additive := by
 instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
-    dsimp [singularChainComplexFunctor, SSet.singularChainComplexFunctor]
+    dsimp [singularChainComplexFunctor, SSet.chainComplexFunctor]
     apply +allowSynthFailures Functor.map_mono
     apply +allowSynthFailures Functor.map_mono
     dsimp [SSet, SimplicialObject.whiskering, SimplicialObject]
@@ -73,20 +61,10 @@ open Limits _root_.SSet
 open scoped Simplicial
 open HomologicalComplex (eval)
 
-set_option backward.isDefEq.respectTransparency false in
-attribute [local simp] SSet.singularChainComplexFunctor in
-attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in
-/-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `X : C` and `F : SSet ⥤ C`. -/
-def SSet.singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ _ n)).obj
-    (SSet.singularChainComplexFunctor C) ⊣ (evaluation _ _).obj Δ[n] where
-  unit.app R := Sigma.ι (fun _ : Δ[n] _⦋n⦌ ↦ R) (SSet.stdSimplex.objEquiv (n := ⦋n⦌).symm (𝟙 ⦋n⦌))
-  counit.app F := { app S := Sigma.desc fun α ↦ F.map (SSet.yonedaEquiv.symm α) }
-  right_triangle_components F := by dsimp; simp
-
 /-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `X : C` and `F : Top ⥤ C`. -/
 def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ _ n)).obj
     (singularChainComplexFunctor C) ⊣ (evaluation _ _).obj (SimplexCategory.toTop.obj ⦋n⦌) :=
-  ((SSet.singularChainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
+  ((SSet.chainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
     ((evaluation TopCat C).mapIso (SSet.toTopSimplex.app _))
 
 lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
@@ -96,8 +74,9 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
   dsimp [singularChainComplexFunctorAdjunction, Adjunction.ofNatIsoRight,
     Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv,
     Adjunction.comp, singularChainComplexFunctor,
-    SSet.singularChainComplexFunctorAdjunction, SSet.singularChainComplexFunctor]
+    SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor]
   simp [stdSimplexToTop]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :
@@ -107,8 +86,8 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
       sSetTopAdj.counit.app X)
   · dsimp [singularChainComplexFunctorAdjunction, Adjunction.ofNatIsoRight,
       Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv,
-      Adjunction.comp, singularChainComplexFunctor, SSet.singularChainComplexFunctor,
-      SSet.singularChainComplexFunctorAdjunction]
+      Adjunction.comp, singularChainComplexFunctor, SSet.chainComplexFunctor,
+      SSet.chainComplexFunctorAdjunction]
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]

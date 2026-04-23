@@ -337,7 +337,7 @@ A set `s` belongs to `Filter.kernMap m f` if either of the following equivalent 
 
 1. There exists a set `t ∈ f` such that `s = Set.kernImage m t`. This is used as a definition.
 2. There exists a set `t` such that `tᶜ ∈ f` and `sᶜ = m '' t`, see `Filter.mem_kernMap_iff_compl`
-and `Filter.compl_mem_kernMap`.
+   and `Filter.compl_mem_kernMap`.
 
 This definition is useful because it gives a right adjoint to `Filter.comap`, and because it has a
 nice interpretation when working with `co-` filters (`Filter.cocompact`, `Filter.cofinite`, ...).
@@ -442,7 +442,7 @@ theorem comap_bot : comap m ⊥ = ⊥ :=
 
 theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
   rw [neBot_iff] at *
-  contrapose! h
+  contrapose h
   rw [h]
   exact comap_bot
 

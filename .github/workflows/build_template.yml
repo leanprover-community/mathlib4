@@ -743,6 +743,12 @@ jobs:
       - name: clean up the import graph file
         run: rm import_graph.dot
 
+      - name: check all scripts build successfully
+        run: |
+          lake env lean scripts/create_deprecated_modules.lean
+          lake env lean scripts/autolabel.lean
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+
       - name: build everything
         # make sure everything is available for test/import_all.lean
         # and that miscellaneous executables still work

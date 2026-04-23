@@ -56,7 +56,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     have : (rs.map c) x < ⨆ n : ℕ, f n x := by
       refine lt_of_lt_of_le (ENNReal.coe_lt_coe.2 ?_) (hsf x)
       suffices r * s x < 1 * s x by simpa
-      exact mul_lt_mul_of_pos_right ha (pos_iff_ne_zero.2 this)
+      gcongr
     rcases lt_iSup_iff.1 this with ⟨i, hi⟩
     exact mem_iUnion.2 ⟨i, le_of_lt hi⟩
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by

@@ -351,6 +351,16 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
 
+@[grind inj]
+theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
+  intro a b h
+  rw [← coeff_zero_C a, h, coeff_zero_C]
+
+theorem C_surjective [IsEmpty σ] : Function.Surjective (C : R → MvPowerSeries σ R) :=
+  fun p => ⟨p 0, by ext n; simpa [coeff_C, Subsingleton.eq_zero n] using coeff_apply _ _⟩
+
+@[simp] theorem C_inj (r s : R) : (C r : MvPowerSeries σ R) = C s ↔ r = s := (C_injective).eq_iff
+
 /-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
   monomial (single s 1) 1

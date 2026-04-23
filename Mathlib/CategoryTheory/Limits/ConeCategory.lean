@@ -299,9 +299,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
   obj c := ⟨c.right, c.hom⟩
   map f :=
     { hom := f.right
-      w := fun j => by
-        convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
-        simp }
+      w j := by simp [dsimp% congr_app f.w j] }
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
     functor. -/

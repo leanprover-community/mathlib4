@@ -284,7 +284,6 @@ to the approximating linear map.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at most `m` for any `m > det A`. -/
 theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}

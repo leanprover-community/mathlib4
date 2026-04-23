@@ -516,10 +516,10 @@ def repIsoAction : Rep.{w} k G ≌ Action (ModuleCat.{w} k) G where
   counitIso := NatIso.ofComponents (RepToAction_ActionToRep k G)
 
 instance : (RepToAction k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_functor
+  repIsoAction k G |>.isEquivalence_functor
 
 instance : (ActionToRep k G).IsEquivalence :=
-  repIsoAction k G|>.isEquivalence_inverse
+  repIsoAction k G |>.isEquivalence_inverse
 
 instance : (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)).Additive where
   map_add {X Y} f g := by ext1; simp [add_hom]
@@ -761,8 +761,9 @@ noncomputable instance : MonoidalClosed (Rep k G) where
         homEquiv := Rep.tensorHomEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Rep.hom_ext <|
           Representation.IntertwiningMap.ext <| TensorProduct.ext' fun _ _ => rfl
-        homEquiv_naturality_right := fun _ _ => Rep.hom_ext <|
-          Representation.IntertwiningMap.ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl})}
+        homEquiv_naturality_right _ _ := Rep.hom_ext <|
+          Representation.IntertwiningMap.ext <|
+            LinearMap.ext fun _ ↦ LinearMap.ext fun _ => rfl }) }
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=

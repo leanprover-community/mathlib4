@@ -222,30 +222,35 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
         rcases h : s.fst x with val | val
-        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
-            existsUnique_eq']
+        · simp
         · apply_fun f at h
-          cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val :).symm
+          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
+            (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+      refine ⟨TypeCat.ofHom (l), ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      · ext x
+        exact (hl x).symm
+      · ext x
+        exact hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         rcases h : s.fst x with val | val
         · apply_fun f at h
-          cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val :).symm
-        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
-            existsUnique_eq']
+          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
+            (ConcreteCategory.congr_hom hαX val :).symm
+        · simp
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+      refine ⟨TypeCat.ofHom l, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      · ext x
+        exact (hl x).symm
+      · ext x
+        exact hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]
-    delta Types.PullbackObj
     have : ∀ x, f x = Sum.inl PUnit.unit ∨ f x = Sum.inr PUnit.unit := by
       intro x
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
@@ -257,12 +262,12 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
-    · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
+    · exact fun s => TypeCat.ofHom fun x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
         fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
       dsimp
-      split_ifs <;> rfl
+      split_ifs with h <;> tauto
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, hx⟩
       dsimp
@@ -271,6 +276,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       · rfl
     · intro s m e₁ e₂
       ext x
+      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt, pair_obj_left,
+        Functor.const_obj_obj, pair_obj_right, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
       split_ifs
       · rw [← e₁]
         rfl

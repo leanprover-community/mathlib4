@@ -141,7 +141,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α sq' := sq'.map α.unop
+  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
 
 variable [F.IsWellOrderContinuous]
 
@@ -195,6 +195,7 @@ section
 variable (hF : ∀ (j : J) (_ : ¬IsMax j),
   HasLiftingPropertyFixedBot (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g))
 
+set_option backward.isDefEq.respectTransparency false in
 open wellOrderInductionData in
 /-- The projective system `sqFunctor c p f g` has a `WellOrderInductionData` structure. -/
 noncomputable def wellOrderInductionData :

@@ -95,14 +95,14 @@ theorem odd_length : Odd (ℓ t) := by
 
 theorem length_mul_left_ne (w : W) : ℓ (w * t) ≠ ℓ w := by
   suffices cs.lengthParity (w * t) ≠ cs.lengthParity w by
-    contrapose! this
+    contrapose this
     simp only [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
 theorem length_mul_right_ne (w : W) : ℓ (t * w) ≠ ℓ w := by
   suffices cs.lengthParity (t * w) ≠ cs.lengthParity w by
-    contrapose! this
+    contrapose this
     simp only [lengthParity_eq_ofAdd_length, this]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]

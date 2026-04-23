@@ -97,14 +97,13 @@ variable [TopologicalSpace R]
 variable (R) in
 /-- The pointwise topology on `MvPowerSeries` -/
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace ((σ →₀ ℕ) → R)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
-  simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
-  grw [htu]
-  exact iInf_le _
+  change ⨅ i, _ ≤ ⨅ i, _
+  gcongr
 
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
@@ -337,7 +336,7 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff d (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_eq_zero_of_lt_weightedOrder w <| (hi x hxi).trans_le <| ?_
@@ -371,7 +370,7 @@ variable [UniformSpace R]
 
 /-- The componentwise uniformity on `MvPowerSeries` -/
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
-  Pi.uniformSpace fun _ : σ →₀ ℕ => R
+  inferInstanceAs <| UniformSpace ((σ →₀ ℕ) → R)
 
 variable (R) in
 /-- Coefficients of a multivariate power series are uniformly continuous -/

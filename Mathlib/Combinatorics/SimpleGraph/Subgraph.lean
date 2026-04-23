@@ -622,7 +622,7 @@ lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
     · grind [verts_bot]
     · exact ⟨(hdisj hsub₀ hsub₁ <| M'.edge_vert · :), False.elim⟩
   · intro hdisj S h₀ h₁ v hvS
-    let M' : Subgraph G := {verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp}
+    let M' : Subgraph G := { verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp }
     have hle {M : Subgraph G} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
     exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton v
 
@@ -1119,7 +1119,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_mk, Sym2.eq]
-    contrapose!
+    contrapose
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
     exact h' _ hs rfl

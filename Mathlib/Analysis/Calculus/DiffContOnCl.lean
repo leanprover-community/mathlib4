@@ -116,7 +116,7 @@ theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebr
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx), hf.2.inv₀ h₀⟩
+  ⟨(differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx) :), hf.2.inv₀ h₀⟩
 
 end DiffContOnCl
 

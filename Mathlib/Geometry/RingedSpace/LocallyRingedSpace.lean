@@ -309,7 +309,6 @@ instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
 noncomputable
 def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.IsInitial.ofUnique _
 
-set_option backward.isDefEq.respectTransparency false in
 -- This actually holds for all ringed spaces with nontrivial stalks.
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by

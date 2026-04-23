@@ -199,8 +199,9 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
   refine le_antisymm (subcomplex_map_le x y f hf) ?_
   simp only [Subcomplex.ofSimplex_le_iff]
   have := isSplitEpi_of_epi f
-  exact ⟨(section_ f).op, by simp [← hf, ← FunctorToTypes.map_comp_apply, ← op_comp]⟩
+  exact ⟨(section_ f).op, by simp [← hf, ← Functor.map_comp_apply, ← op_comp]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -213,7 +214,7 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
         infer_instance
       refine ⟨(section_ f).op, this ?_⟩
       dsimp
-      rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply,
+      rw [← comp_apply, ← Functor.map_comp, ← comp_apply, ← Functor.map_comp,
         ← op_comp, ← op_comp, Category.assoc, IsSplitEpi.id, Category.comp_id]
     · simp only [Subcomplex.ofSimplex_le_iff]
       exact ⟨f.op, rfl⟩)

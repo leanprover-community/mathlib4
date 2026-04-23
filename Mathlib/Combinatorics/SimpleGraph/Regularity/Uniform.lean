@@ -368,7 +368,7 @@ lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP :
     exact Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
   · rw [mul_right_comm _ ε, mul_comm ε]
-    apply mul_lt_mul_of_pos_right _ hε
+    gcongr
     norm_cast
     exact aux (P.parts_nonempty hA.ne_empty).card_pos
 

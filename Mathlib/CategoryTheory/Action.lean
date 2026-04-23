@@ -35,12 +35,12 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
-@[simps]
+@[simps obj map]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map := (· • ·)
-  map_id _ := funext <| MulAction.one_smul
-  map_comp f g := funext fun x => (smul_smul g f x).symm
+  map f := TypeCat.ofHom (f • ·)
+  map_id _ := by ext; exact MulAction.one_smul _
+  map_comp f g := by ext x; exact (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
 from x to y is a scalar taking x to y. Due to implementation details, the object type

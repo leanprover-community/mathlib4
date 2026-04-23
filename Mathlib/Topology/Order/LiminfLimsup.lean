@@ -345,7 +345,7 @@ theorem exists_seq_tendsto_limsSup [NeBot f] [IsCountablyGenerated f]
 theorem exists_seq_tendsto_limsInf [NeBot f] [IsCountablyGenerated f]
     (hc : f.IsCobounded (· ≥ ·) := by isBoundedDefault)
     (hb : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
-    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsInf) ∧ Tendsto x atTop f  :=
+    ∃ x : ℕ → α, Tendsto x atTop (𝓝 f.limsInf) ∧ Tendsto x atTop f :=
   (ClusterPt.limsInf).exists_seq_tendsto
 
 variable {f : Filter β}

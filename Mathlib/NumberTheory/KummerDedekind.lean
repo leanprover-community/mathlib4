@@ -17,6 +17,7 @@ the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
   - An `α : S` that is integral over `R` with minimal polynomial `f`
+
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
@@ -86,7 +87,7 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
   apply (quotMapEquivQuotQuotMap hx hx').injective
-  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+  rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr

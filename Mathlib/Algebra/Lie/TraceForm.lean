@@ -387,7 +387,6 @@ lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by
   intro x (hx : x ∈ I)

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.SetTheory.Ordinal.Univ
 
 /-!
 # Omega, aleph, and beth functions

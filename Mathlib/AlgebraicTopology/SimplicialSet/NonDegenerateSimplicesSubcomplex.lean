@@ -103,7 +103,7 @@ end N
 lemma existsN {X : SSet.{u}} {n : ℕ} (s : X _⦋n⦌) {A : X.Subcomplex}
     (hs : s ∉ A.obj _) :
     ∃ (x : A.N) (f : ⦋n⦌ ⟶ ⦋x.dim⦌), Epi f ∧ X.map f.op x.simplex = s := by
-  refine ⟨⟨(S.mk s).toN, fun h ↦ hs ?_⟩, ⟨(S.mk s).toNπ, inferInstance, by simp⟩⟩
+  refine ⟨⟨(S.mk s).toN, fun h ↦ hs ?_⟩, ⟨(S.mk s).toNπ, inferInstance, S.map_toNπ_op_apply _⟩⟩
   simp only [← ofSimplex_le_iff] at h ⊢
   simpa using h
 

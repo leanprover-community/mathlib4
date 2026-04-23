@@ -48,7 +48,7 @@ def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
 
 /-- The `ULift` functor on `ModuleCat` is compatible with the one defined on categories of types. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def uliftFunctorForgetIso :
     ModuleCat.uliftFunctor.{v'} R ⋙ forget _ ≅
     forget _ ⋙ CategoryTheory.uliftFunctor.{v'} :=

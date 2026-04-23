@@ -53,7 +53,7 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   rw [mem_support_iff] at hi ⊢
-  contrapose! hi
+  contrapose hi
   simp [hi]
 
 open scoped Pointwise in

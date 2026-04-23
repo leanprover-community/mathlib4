@@ -399,7 +399,7 @@ theorem cbiInf_of_not_bddBelow {p : ι → Prop} {f : ∀ i, p i → α}
 
 theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : ¬ (∀ i, p i)) :
     ⨆ (i) (h : p i), f ⟨i, h⟩ = iSup f ⊔ sSup ∅ := by
-  rcases le_or_gt (sSup ∅) (iSup f) with le|gt
+  rcases le_or_gt (sSup ∅) (iSup f) with le | gt
   · rw [max_eq_left le]
     by_cases bdd : BddAbove (range f)
     · rw [← ciSup_subtype bdd le]

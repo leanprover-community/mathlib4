@@ -237,7 +237,7 @@ def isKanOfWhiskerLeftAdjoint
           bicategory) <| by
     intro s' τ₀'
     let τ' : t.extension ≫ h ⟶ s'.extension := τ₀'.right
-    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w.symm
+    have Hτ' : t.unit ▷ h ⊗≫ f ◁ τ' = s'.unit := by simpa [bicategoricalComp] using τ₀'.w
     ext
     apply (H' _).hom_ext
     dsimp only [StructuredArrow.homMk_right]

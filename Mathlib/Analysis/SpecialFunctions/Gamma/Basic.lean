@@ -521,7 +521,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       apply n_ih
       · intro m
         specialize hs (1 + m)
-        contrapose! hs
+        contrapose hs
         rw [← eq_sub_iff_add_eq] at hs
         rw [hs]
         push_cast

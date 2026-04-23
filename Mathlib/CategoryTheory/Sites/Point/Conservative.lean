@@ -124,7 +124,7 @@ lemma jointly_reflect_isLocallySurjective
     (hf : ∀ (Φ : P.FullSubcategory),
       Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
-  simp only [← epi_iff_surjective] at hf
+  simp only [← ofHom_epi_iff_surjective] at hf
   rw [Presheaf.isLocallySurjective_iff_whisker_forget,
     ← Presheaf.isLocallySurjective_presheafToSheaf_map_iff,
     Sheaf.isLocallySurjective_iff_epi,
@@ -154,7 +154,8 @@ lemma jointly_reflect_ofArrows_mem
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := congr_fun (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := ConcreteCategory.congr_hom
+      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
     dsimp at this ⊢
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
@@ -200,7 +201,8 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (congr_fun (NatTrans.congr_app (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
+      (pullback.condition (f := f)) (op V)) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_
@@ -221,7 +223,7 @@ private lemma mk'.isLocallySurjective
   refine ⟨V, t, ⟨y, ht.symm.trans ?_⟩, v, ?_⟩
   · simpa using (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm t.op (𝟙 _)).symm
   · refine (Φ.obj.shrinkYonedaCompPresheafFiberIso.symm.app U).toEquiv.injective ?_
-    dsimp
+    dsimp [-Functor.comp_obj]
     trans (Φ.obj.toPresheafFiber V v (shrinkYoneda.{w}.obj U)) (shrinkYonedaObjObjEquiv.symm t)
     · rw [← Φ.obj.presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app]
       exact Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality_apply t v

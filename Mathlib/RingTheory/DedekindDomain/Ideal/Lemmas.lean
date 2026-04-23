@@ -467,6 +467,9 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+instance : Coe (HeightOneSpectrum R) (Ideal R) where
+  coe P := P.asIdeal
+
 /--
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
 to an element of type `HeightOneSpectrum R`.
@@ -761,7 +764,7 @@ theorem Ideal.count_associates_eq'
     (Associates.mk (span {x})).count (Associates.mk (span {a})).factors = n := by
   obtain ⟨q, hq⟩ := hle
   apply Ideal.count_associates_eq hx _ hq
-  contrapose! hlt with hdvd
+  contrapose hlt with hdvd
   obtain ⟨q', hq'⟩ := hdvd
   use q'
   rw [hq, hq']

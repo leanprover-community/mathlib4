@@ -229,8 +229,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
-    norm_num at this
-    exact this
+    simpa
 
 end Group
 

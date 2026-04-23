@@ -49,7 +49,7 @@ lemma detp_neg_one_diagonal (d : n → R) : detp (-1) (diagonal d) = 0 := by
   rw [detp, sum_eq_zero]
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
-    contrapose! hσ
+    contrapose hσ
     rw [hσ, mem_ofSign, sign_one]
     decide
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
@@ -94,7 +94,7 @@ theorem detp_mul :
   conv_rhs => rw [add_assoc]
   refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
   replace hσ : ¬ Function.Injective σ := by
-    contrapose! hσ
+    contrapose hσ
     rw [notMem_compl, mem_map, ofSign_disjUnion]
     exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ

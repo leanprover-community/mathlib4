@@ -175,7 +175,6 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given any commuting diagram
 ```
