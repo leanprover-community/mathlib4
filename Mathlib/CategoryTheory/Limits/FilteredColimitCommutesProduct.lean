@@ -238,9 +238,9 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     obtain ⟨ky', yk₀', hyk₀'⟩ := Types.jointly_surjective' y'
     let k := IsFiltered.max ky ky'
     let yk : (pointwiseProduct F).obj k :=
-      (Functor.pi F ⋙ Pi.functor α).map (IsFiltered.leftToMax ky ky') yk₀
+      (pointwiseProduct F).map (IsFiltered.leftToMax ky ky') yk₀
     let yk' : (pointwiseProduct F).obj k :=
-      (Functor.pi F ⋙ Pi.functor α).map (IsFiltered.rightToMax ky ky') yk₀'
+      (pointwiseProduct F).map (IsFiltered.rightToMax ky ky') yk₀'
     obtain rfl : y = colimit.ι (pointwiseProduct F) k yk := by
       simp only [k, yk, colimit.w_apply, hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
