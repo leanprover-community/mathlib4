@@ -50,7 +50,7 @@ def reduceModIdeal :
         · simp [Submodule.add_mem _ hx hy])
   map_add' f g := LinearMap.ext fun _ ↦ by simp
   map_smul' r f := LinearMap.ext fun _ ↦ by simp
- 
+
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
     (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
@@ -101,7 +101,7 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
   rfl
 
 end AdicCauchySequence
- 
+
 /-- A linear map induces a map on adic completions. -/
 def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N) where
   toFun f :=
@@ -113,7 +113,7 @@ def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I 
         dsimp
         rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
   map_add' f g := by ext; simp
-  map_smul' c f := by ext; simp 
+  map_smul' c f := by ext; simp
 
 @[simp]
 theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
