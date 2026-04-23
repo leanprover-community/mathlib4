@@ -59,9 +59,15 @@ abbrev Copy := L
 
 set_option pp.explicit true in
 /--
-info:
-@AlgEquiv K L L (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
-  (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
+info: @AlgEquiv K K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+  (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²))
+  (@RingHom.id K
+    (@Semiring.toNonAssocSemiring K
+      (@DivisionSemiring.toSemiring K (@Semifield.toDivisionSemiring K (@Field.toSemifield K inst✝²)))))
+  (@RingHom.id K
+    (@Semiring.toNonAssocSemiring K
+      (@CommSemiring.toSemiring K (@Semifield.toCommSemiring K (@Field.toSemifield K inst✝²)))))
+  ⋯ ⋯ L L (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹)))
   (@DivisionSemiring.toSemiring L (@Semifield.toDivisionSemiring L (@Field.toSemifield L inst✝¹))) inst✝ inst✝ : Type uL
 -/
 #guard_msgs in
