@@ -423,26 +423,18 @@ section Lattice
 def withZeroSup [Max α] : WithZero α → WithZero α → WithZero α :=
   Option.merge (· ⊔ ·)
 
-theorem withZeroSup_zero_zero [Max α] : (withZeroSup (0 : WithZero α) 0) = 0 := rfl
-theorem withZeroSup_coe_zero [Max α] (a : α) : (withZeroSup (↑a : WithZero α) 0) = ↑a := rfl
-theorem withZeroSup_zero_coe [Max α] (b : α) : (withZeroSup (0 : WithZero α) ↑b) = ↑b := rfl
-theorem withZeroSup_coe_coe [Max α] (a b : α) :
+@[simp] theorem withZeroSup_zero_zero [Max α] : (withZeroSup (0 : WithZero α) 0) = 0 := rfl
+@[simp] theorem withZeroSup_coe_zero [Max α] (a : α) : (withZeroSup (↑a : WithZero α) 0) = ↑a := rfl
+@[simp] theorem withZeroSup_zero_coe [Max α] (b : α) : (withZeroSup (0 : WithZero α) ↑b) = ↑b := rfl
+@[simp] theorem withZeroSup_coe_coe [Max α] (a b : α) :
     (withZeroSup (↑a : WithZero α) ↑b) = ↑(a ⊔ b) := rfl
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithZero α) where
   sup := withZeroSup
-  le_sup_left x y := by
-    cases x <;> cases y <;>
-      simp [withZeroSup_zero_zero, withZeroSup_coe_zero, withZeroSup_zero_coe,
-        withZeroSup_coe_coe, WithZero.coe_le_coe, le_sup_left, WithZero.zero_le]
-  le_sup_right x y := by
-    cases x <;> cases y <;>
-      simp [withZeroSup_zero_zero, withZeroSup_coe_zero, withZeroSup_zero_coe,
-        withZeroSup_coe_coe, WithZero.coe_le_coe, le_sup_right, WithZero.zero_le]
+  le_sup_left x y := by cases x <;> cases y <;> simp
+  le_sup_right x y := by cases x <;> cases y <;> simp
   sup_le x y z := by
-    cases x <;> cases y <;> cases z <;>
-      simp [withZeroSup_zero_zero, withZeroSup_coe_zero, withZeroSup_zero_coe,
-        withZeroSup_coe_coe, WithZero.coe_le_coe, WithZero.zero_le]
+    cases x <;> cases y <;> cases z <;> simp
     simpa using sup_le
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithZero α) = (a : WithZero α) ⊔ b :=
