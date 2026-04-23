@@ -198,12 +198,6 @@ lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
   simp [-Int.cast_abs,
     finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), this]
 
-/-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
-is the maximum of the absolute values of the entries. This version is in terms of a subtype. -/
-lemma mulHeight_eq_max_abs_of_gcd_eq_one' (x : { x : ι → ℤ // Finset.univ.gcd x = 1 }) :
-    mulHeight (((↑) : ℤ →  ℚ) ∘ x.val) = ⨆ i, |x.val i| :=
-  mulHeight_eq_max_abs_of_gcd_eq_one x.prop
-
 open Real in
 /-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
 is the logarithm of the maximum of the absolute values of the entries. -/
@@ -217,18 +211,16 @@ section mulHeight₁
 
 lemma mulHeight_self_one_eq_mulHeight_num_den (q : ℚ) :
     mulHeight ![q, 1] = mulHeight ![(q.num : ℚ), q.den] := by
-  nth_rewrite 1 [← Rat.num_div_den q]
   have hq₀ : (q.den : ℚ) ≠ 0 := mod_cast q.den_nz
   rw [← mulHeight_smul_eq_mulHeight _ hq₀]
-  simp [mul_div_cancel₀ _ hq₀]
+  simp
 
 /-- The multiplicative height of a rational number is the maximum of the absolute value of
 its numerator and its denominator. -/
 lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
   rw [mulHeight₁_eq_mulHeight, mulHeight_self_one_eq_mulHeight_num_den, ← intCast_natCast q.den]
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
-    rw [show (.univ : Finset (Fin 2)) = {0, 1} by grind]
-    simpa [Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+    simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
   convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
@@ -243,8 +235,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
 open Real in
 /-- The logarithmic height of a rational number is the logarithm of the maximum of the absolute
 value of its numerator and its denominator. -/
-lemma logHeight₁_eq_log_max (q : ℚ) : logHeight₁ q = log (max q.num.natAbs q.den) := by
-  norm_cast
+lemma logHeight₁_eq_log_max (q : ℚ) : logHeight₁ q = log ↑(max q.num.natAbs q.den) := by
   rw [logHeight₁_eq_log_mulHeight₁, mulHeight₁_eq_max]
 
 /-- The multiplicative height of a positive natural number `n` cast to `ℚ` equals `n`. -/
