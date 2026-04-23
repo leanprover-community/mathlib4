@@ -54,23 +54,34 @@ protected theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f 
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
   obtain rfl | hl := eq_or_neBot l
   · simpa [limUnder, Filter.map_bot] using stronglyMeasurable_const
+  borelize E
   let e := Classical.choice hE
-  let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
-  have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
-  have hconv : StronglyMeasurable (fun x : conv ↦ limUnder l (f · x)) := by
-    refine stronglyMeasurable_of_tendsto l
-      (fun i ↦ (hf i).comp_measurable measurable_subtype_coe) ?_
-    refine tendsto_pi_nhds.2 fun x ↦ ?_
-    obtain ⟨c, hc⟩ := x.2
+  rw [stronglyMeasurable_iff_measurable_separable]; constructor
+  · let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
+    have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
+    have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
+        (fun x ↦ limUnder l (f · x)) (fun _ ↦ e) := by
+      ext x
+      by_cases hx : x ∈ conv
+      · rw [Function.extend_val_apply hx]
+      · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
+    rw [this]
+    refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend
+      (measurable_of_tendsto_metrizable' l
+        (fun i ↦ (hf i).measurable.comp measurable_subtype_coe)
+        (tendsto_pi_nhds.2 fun ⟨x, ⟨c, hc⟩⟩ ↦ ?_)) measurable_const
     rwa [hc.limUnder_eq]
-  have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
-      (fun x ↦ limUnder l (f · x)) (fun _ ↦ e) := by
-    ext x
-    by_cases hx : x ∈ conv
-    · rw [Function.extend_val_apply hx]
-    · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
-  rw [this]
-  exact (MeasurableEmbedding.subtype_coe mconv).stronglyMeasurable_extend hconv
-    stronglyMeasurable_const
+  · let s := closure (⋃ i, range (f i)) ∪ {e}
+    have hs : IsSeparable s := (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.union
+      (finite_singleton e).isSeparable
+    refine hs.mono ?_
+    rintro - ⟨x, rfl⟩
+    by_cases hx : ∃ c, Tendsto (f · x) l (𝓝 c)
+    · obtain ⟨c, hc⟩ := hx
+      simp_rw [hc.limUnder_eq]
+      exact subset_union_left <| mem_closure_of_tendsto hc
+        (Eventually.of_forall fun i ↦ mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
+    · simp_rw [limUnder_of_not_tendsto hx]
+      exact subset_union_right (mem_singleton e)
 
 end MeasureTheory.StronglyMeasurable

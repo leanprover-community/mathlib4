@@ -271,18 +271,26 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
 theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) (f : α →ₛ E)
     (hf : MemLp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by
   have hp_pos_real : 0 < p.toReal := ENNReal.toReal_pos hp_pos hp_ne_top
-  have h_lin :
-      (f.map fun x => ‖x‖ₑ ^ p.toReal).lintegral μ = ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ := by
-    simpa using ((f.map fun x => ‖x‖ₑ ^ p.toReal).lintegral_eq_lintegral μ).symm
-  have h_fin : (f.map fun x => ‖x‖ₑ ^ p.toReal).FinMeasSupp μ := by
-    refine SimpleFunc.FinMeasSupp.of_lintegral_ne_top ?_
-    rw [h_lin]
-    exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
-  have hf_fin : f.FinMeasSupp μ := by
-    rwa [SimpleFunc.FinMeasSupp.map_iff (g := fun x => ‖x‖ₑ ^ p.toReal) (by
-      intro x
-      simp [ENNReal.rpow_eq_zero_iff_of_pos hp_pos_real, enorm_eq_zero])] at h_fin
-  exact hf_fin.meas_preimage_singleton_ne_zero hy_ne
+  have hf_eLpNorm := MemLp.eLpNorm_lt_top hf
+  rw [eLpNorm_eq_eLpNorm' hp_pos hp_ne_top, f.eLpNorm'_eq, one_div,
+    ← @ENNReal.lt_rpow_inv_iff _ _ p.toReal⁻¹ (by simp [hp_pos_real]),
+    @ENNReal.top_rpow_of_pos p.toReal⁻¹⁻¹ (by simp [hp_pos_real]),
+    ENNReal.sum_lt_top] at hf_eLpNorm
+  by_cases hyf : y ∈ f.range
+  swap
+  · suffices h_empty : f ⁻¹' {y} = ∅ by
+      rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
+    exact (preimage_eq_empty_iff _ _).mpr hyf
+  specialize hf_eLpNorm y hyf
+  rw [ENNReal.mul_lt_top_iff] at hf_eLpNorm
+  cases hf_eLpNorm with
+  | inl hf_eLpNorm => exact hf_eLpNorm.2
+  | inr hf_eLpNorm =>
+    cases hf_eLpNorm with
+    | inl hf_eLpNorm =>
+      refine absurd ?_ hy_ne
+      simpa [hp_pos_real] using hf_eLpNorm
+    | inr hf_eLpNorm => simp [hf_eLpNorm]
 
 theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
     (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) : MemLp f p μ := by
@@ -540,33 +548,40 @@ theorem toSimpleFunc_toLp (f : α →ₛ E) (hfi : MemLp f p μ) : toSimpleFunc 
 variable (E μ)
 
 theorem zero_toSimpleFunc : toSimpleFunc (0 : Lp.simpleFunc E p μ) =ᵐ[μ] 0 := by
-  exact (toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ)).trans <| Lp.coeFn_zero E 1 μ
+  filter_upwards [toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ),
+    Lp.coeFn_zero E 1 μ] with _ h₁ _
+  rwa [h₁]
 
 variable {E μ}
 
 theorem add_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
     toSimpleFunc (f + g) =ᵐ[μ] toSimpleFunc f + toSimpleFunc g := by
-  refine (toSimpleFunc_eq_toFun (f + g)).trans ?_
-  refine (Lp.coeFn_add (f : Lp E p μ) g).trans ?_
-  exact (toSimpleFunc_eq_toFun f).symm.add (toSimpleFunc_eq_toFun g).symm
+  filter_upwards [toSimpleFunc_eq_toFun (f + g), toSimpleFunc_eq_toFun f,
+    toSimpleFunc_eq_toFun g, Lp.coeFn_add (f : Lp E p μ) g] with _
+  simp only [AddSubgroup.coe_add, Pi.add_apply]
+  iterate 4 intro h; rw [h]
 
 theorem neg_toSimpleFunc (f : Lp.simpleFunc E p μ) : toSimpleFunc (-f) =ᵐ[μ] -toSimpleFunc f := by
-  refine (toSimpleFunc_eq_toFun (-f)).trans ?_
-  exact (Lp.coeFn_neg (f : Lp E p μ)).trans (toSimpleFunc_eq_toFun f).symm.neg
+  filter_upwards [toSimpleFunc_eq_toFun (-f), toSimpleFunc_eq_toFun f,
+    Lp.coeFn_neg (f : Lp E p μ)] with _
+  simp only [Pi.neg_apply, AddSubgroup.coe_neg]
+  repeat intro h; rw [h]
 
 theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
     toSimpleFunc (f - g) =ᵐ[μ] toSimpleFunc f - toSimpleFunc g := by
-  refine (toSimpleFunc_eq_toFun (f - g)).trans ?_
-  refine (Lp.coeFn_sub (f : Lp E p μ) g).trans ?_
-  exact (toSimpleFunc_eq_toFun f).symm.sub (toSimpleFunc_eq_toFun g).symm
+  filter_upwards [toSimpleFunc_eq_toFun (f - g), toSimpleFunc_eq_toFun f,
+    toSimpleFunc_eq_toFun g, Lp.coeFn_sub (f : Lp E p μ) g] with _
+  simp only [AddSubgroup.coe_sub, Pi.sub_apply]
+  repeat' intro h; rw [h]
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
-  refine (toSimpleFunc_eq_toFun (k • f)).trans ?_
-  exact (Lp.coeFn_smul k (f : Lp E p μ)).trans <|
-    EventuallyEq.const_smul (toSimpleFunc_eq_toFun f).symm k
+  filter_upwards [toSimpleFunc_eq_toFun (k • f), toSimpleFunc_eq_toFun f,
+    Lp.coeFn_smul k (f : Lp E p μ)] with _
+  simp only [Pi.smul_apply, coe_smul]
+  repeat intro h; rw [h]
 
 theorem norm_toSimpleFunc [Fact (1 ≤ p)] (f : Lp.simpleFunc E p μ) :
     ‖f‖ = ENNReal.toReal (eLpNorm (toSimpleFunc f) p μ) := by

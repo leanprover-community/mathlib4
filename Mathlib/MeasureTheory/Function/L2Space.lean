@@ -204,11 +204,29 @@ variable (𝕜) {s t : Set α}
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
 theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
     (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
-  rw [inner_def, ← integral_indicator hs]
-  refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs c).mono fun x hx => ?_)
-  change ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = s.indicator (fun x => ⟪c, f x⟫) x
-  rw [hx]
-  by_cases hxs : x ∈ s <;> simp [hxs]
+  rw [inner_def, ← integral_add_compl hs (L2.integrable_inner _ f)]
+  have h_left : (∫ x in s, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
+    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∈ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = ⟪c, f x⟫ from
+      setIntegral_congr_ae hs h_ae_eq
+    have h_indicator : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp 2 hs hμs c x = c :=
+      indicatorConstLp_coeFn_mem
+    refine h_indicator.mono fun x hx hxs => ?_
+    congr
+    exact hx hxs
+  have h_right : (∫ x in sᶜ, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = 0 := by
+    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∉ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = 0 by
+      simp_rw [← Set.mem_compl_iff] at h_ae_eq
+      suffices h_int_zero :
+          (∫ x in sᶜ, ⟪indicatorConstLp 2 hs hμs c x, f x⟫ ∂μ) = ∫ _ in sᶜ, 0 ∂μ by
+        rw [h_int_zero]
+        simp
+      exact setIntegral_congr_ae hs.compl h_ae_eq
+    have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
+      indicatorConstLp_coeFn_notMem
+    refine h_indicator.mono fun x hx hxs => ?_
+    rw [hx hxs]
+    exact inner_zero_left _
+  rw [h_left, h_right, add_zero]
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/

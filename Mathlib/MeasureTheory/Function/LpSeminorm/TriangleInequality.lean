@@ -160,15 +160,22 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-theorem memLp_finset_sum' [ContinuousAdd ε']
-    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
-    MemLp (∑ i ∈ s, f i) p μ :=
-  Finset.sum_induction f (fun g => MemLp g p μ) (fun _ _ => MemLp.add)
-    (MemLp.zero' (μ := μ) (p := p)) hf
-
 theorem memLp_finset_sum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
-  simpa only [← Finset.sum_apply] using memLp_finset_sum' (μ := μ) (p := p) s hf
+  haveI : DecidableEq ι := Classical.decEq _
+  revert hf
+  refine Finset.induction_on s ?_ ?_
+  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
+  · intro i s his ih hf
+    simp only [his, Finset.sum_insert, not_false_iff]
+    exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
+
+theorem memLp_finset_sum' [ContinuousAdd ε']
+    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (∑ i ∈ s, f i) p μ := by
+  convert memLp_finset_sum s hf using 1
+  ext x
+  simp
 
 end MeasureTheory

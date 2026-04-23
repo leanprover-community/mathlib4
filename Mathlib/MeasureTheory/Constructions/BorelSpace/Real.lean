@@ -494,17 +494,25 @@ lemma measurable_of_real_real {f : EReal × EReal → β}
   · exact measurable_of_measurable_real h_top_left
 
 private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
-  rcases eq_or_ne c 0 with rfl | hc
-  · simpa only [zero_mul] using (measurable_const : Measurable fun _ : EReal => (0 : EReal))
-  · refine measurable_of_continuousOn_compl_singleton 0 ?_
-    intro x hx
-    have hx0 : x ≠ 0 := by simpa using hx
-    have hcont : ContinuousAt (fun x : EReal ↦ c * x) x :=
-      ContinuousAt.comp_of_eq (g := fun p : EReal × EReal ↦ p.1 * p.2) (f := fun x ↦ (c, x))
-        (y := (c, x))
-        (EReal.continuousAt_mul (p := (c, x)) (Or.inl hc) (Or.inl hc) (Or.inr hx0) (Or.inr hx0))
-        (continuousAt_const.prodMk continuousAt_id) rfl
-    exact hcont.continuousWithinAt
+  refine measurable_of_measurable_real ?_
+  have h1 : (fun (p : ℝ) ↦ (⊥ : EReal) * p)
+      = fun p ↦ if p = 0 then (0 : EReal) else (if p < 0 then ⊤ else ⊥) := by
+    ext p
+    split_ifs with h1 h2
+    · simp [h1]
+    · rw [bot_mul_coe_of_neg h2]
+    · rw [bot_mul_coe_of_pos]
+      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
+  have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
+    refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
+    exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
+  induction c with
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
+    simp_rw [← neg_bot, neg_mul]
+    apply Measurable.neg
+    rwa [h1]
 
 instance : MeasurableMul₂ EReal := by
   refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩

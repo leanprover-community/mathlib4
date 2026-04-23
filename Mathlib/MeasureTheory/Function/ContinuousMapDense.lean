@@ -119,11 +119,15 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : MemLp (fun x => g x • c) p μ := by
-    have h_top : MemLp (fun x : α => g x • c) ∞ μ :=
-      memLp_top_of_bound (g.continuous.aestronglyMeasurable.smul_const c) ‖c‖
-        (Filter.Eventually.of_forall gc_bd0)
-    exact h_top.mono_exponent_of_measure_support_ne_top (s := v) (fun x hx => by simp [hgv hx])
-      hμv.ne le_top
+    refine MemLp.smul (memLp_top_const _) ?_ (p := p) (q := ∞)
+    refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
+    have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
+      (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
+    refine (eLpNorm_mono fun x => ?_).trans_lt this
+    by_cases hx : x ∈ v
+    · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
+        indicator_of_mem, CStarRing.norm_one]
+    · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
   refine ⟨fun x ↦ g x • c, by fun_prop, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)

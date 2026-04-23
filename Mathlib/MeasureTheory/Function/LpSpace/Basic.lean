@@ -676,8 +676,12 @@ theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ
 defined as an element of `Lp`. -/
 def compLp (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) : Lp F p μ :=
   ⟨AEEqFun.comp g hg.continuous (f : α →ₘ[μ] E), by
-    rw [Lp.mem_Lp_iff_memLp]
-    exact (hg.comp_memLp g0 (Lp.memLp f)).ae_eq (AEEqFun.coeFn_comp _ hg.continuous _).symm⟩
+    suffices ∀ᵐ x ∂μ, ‖AEEqFun.comp g hg.continuous (f : α →ₘ[μ] E) x‖ ≤ c * ‖f x‖ from
+      Lp.mem_Lp_of_ae_le_mul this
+    filter_upwards [AEEqFun.coeFn_comp g hg.continuous (f : α →ₘ[μ] E)] with a ha
+    simp only [ha]
+    rw [← dist_zero_right, ← dist_zero_right, ← g0]
+    exact hg.dist_le_mul (f a) 0⟩
 
 theorem coeFn_compLp (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
     hg.compLp g0 f =ᵐ[μ] g ∘ f :=

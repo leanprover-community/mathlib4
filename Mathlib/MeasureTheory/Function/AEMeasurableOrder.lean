@@ -73,7 +73,11 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       _ = 0 := by simp only [tsum_zero]
   have ff' : ∀ᵐ x ∂μ, f x = f' x := by
     have : ∀ᵐ x ∂μ, x ∉ t := by
-      exact measure_eq_zero_iff_ae_notMem.1 (le_antisymm μt bot_le)
+      have : μ t = 0 := le_antisymm μt bot_le
+      change μ _ = 0
+      convert this
+      ext y
+      simp only [mem_setOf_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
@@ -82,13 +86,18 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       · simp only [H, le_top, not_false_iff, piecewise_eq_of_notMem]
       simp only [H, piecewise_eq_of_mem]
       contrapose! hx
-      obtain ⟨r, rs, xr, rq⟩ := s_dense.exists_between hx
-      exact mem_iUnion₂.2 ⟨i, ⟨⟨r, ⟨rs, xr⟩⟩, H, (huv i r).2.2.2.1 rq⟩⟩
+      obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (i : β) (f x) ∩ s :=
+        dense_iff_inter_open.1 s_dense (Ioo i (f x)) isOpen_Ioo (nonempty_Ioo.2 hx)
+      have A : x ∈ v i r := (huv i r).2.2.2.1 rq
+      refine mem_iUnion.2 ⟨i, ?_⟩
+      refine mem_iUnion.2 ⟨⟨r, ⟨rs, xr⟩⟩, ?_⟩
+      exact ⟨H, A⟩
     · intro q hq
-      obtain ⟨r, rs, xr, rq⟩ := s_dense.exists_between hq
-      exact ⟨⟨r, rs⟩, by
-        simp only [show x ∈ u' r from mem_biInter fun i _ => (huv r i).2.2.1 xr, rq,
-          piecewise_eq_of_mem]⟩
+      obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (f x) q ∩ s :=
+        dense_iff_inter_open.1 s_dense (Ioo (f x) q) isOpen_Ioo (nonempty_Ioo.2 hq)
+      refine ⟨⟨r, rs⟩, ?_⟩
+      have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
+      simp only [A, rq, piecewise_eq_of_mem]
   exact ⟨f', f'_meas, ff'⟩
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable

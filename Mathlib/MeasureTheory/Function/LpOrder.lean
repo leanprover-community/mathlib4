@@ -49,7 +49,10 @@ theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
 
 theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← coeFn_le]
-  exact ⟨(Lp.coeFn_zero E p μ).trans_le, (Lp.coeFn_zero E p μ).symm.trans_le⟩
+  have h0 := Lp.coeFn_zero E p μ
+  constructor <;> intro h <;> filter_upwards [h, h0] with _ _ h2
+  · rwa [h2]
+  · rwa [← h2]
 
 variable [IsOrderedAddMonoid E]
 
@@ -110,11 +113,13 @@ theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
 
 instance instHasSolidNorm [Fact (1 ≤ p)] :
     HasSolidNorm (Lp E p μ) :=
-  ⟨fun f g hfg => by
-    simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
-    exact eLpNorm_mono_ae <|
-      (((Lp.coeFn_abs f).symm.trans_le ((coeFn_le (|f|) (|g|)).2 hfg)).trans_eq
-        (Lp.coeFn_abs g)).mono fun _ hx => norm_le_norm_of_abs_le_abs hx⟩
+  { solid := fun f g hfg => by
+      rw [← coeFn_le] at hfg
+      simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
+      refine eLpNorm_mono_ae ?_
+      filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
+      rw [hxf, hxg] at hx
+      exact HasSolidNorm.solid hx }
 
 end Lattice
 
