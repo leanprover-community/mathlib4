@@ -534,6 +534,18 @@ theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
 
+/--
+A congruence lemma for `Function.update`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the fourth argument `a` because the result type depends on `a`.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/
+@[congr]
+lemma update_congr {β : Sort*}
+    {f₁ f₂ : α → β} (hf : f₁ = f₂) {a'₁ a'₂ : α} (ha' : a'₁ = a'₂)
+    {v₁ v₂ : β} (hv : v₁ = v₂) {a₁ a₂ : α} (ha : a₁ = a₂) :
+    Function.update f₁ a'₁ v₁ a₁ = Function.update f₂ a'₂ v₂ a₂ := by
+  subst hf; subst ha'; subst hv; subst ha; rfl
+
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
     update f a' b a = if a = a' then b else f a := by

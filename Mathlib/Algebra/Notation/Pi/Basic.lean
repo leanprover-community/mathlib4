@@ -88,6 +88,21 @@ lemma mulSingle_inj (i : ι) {x y : M i} : mulSingle i x = mulSingle i y ↔ x =
 
 variable {M : Type*} [One M]
 
+/--
+A congruence lemma for `Pi.mulSingle`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/
+@[to_additive (attr := congr) /--
+A congruence lemma for `Pi.single`, specialized for the non-dependent case. Without this,
+`simp` can't rewrite in the first and third argument (`i` and `j`) because of dependence.
+See also https://github.com/leanprover/lean4/issues/12478.
+-/]
+lemma mulSingle_congr {i₁ i₂ : ι} (hi : i₁ = i₂)
+    {x₁ x₂ : M} (hx : x₁ = x₂) {j₁ j₂ : ι} (hj : j₁ = j₂) :
+    (mulSingle i₁ x₁ : ι → M) j₁ = (mulSingle i₂ x₂ : ι → M) j₂ :=
+  update_congr rfl hi hx hj
+
 /-- On non-dependent functions, `Pi.mulSingle` can be expressed as an `ite` -/
 @[to_additive (attr := grind =)
   /-- On non-dependent functions, `Pi.single` can be expressed as an `ite` -/]
