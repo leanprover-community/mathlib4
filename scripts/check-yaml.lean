@@ -29,7 +29,7 @@ def databases : List String :=
 
 def processDb (env : Environment) (file : String) : IO Bool := do
   let lines ← readJsonFile DBFile s!"{file}.json"
-  let mut missing := #[]; let mut deprecated := #[]
+  let mut (missing, deprecated) := (#[], #[])
   for entry@(_, decl) in lines do
     if !env.contains decl then
       missing := missing.push entry
