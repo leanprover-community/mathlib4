@@ -4339,6 +4339,7 @@ public import Mathlib.Dynamics.Ergodic.Function
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Ergodic.RadonNikodym
 public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Dynamics.Flow
@@ -7584,6 +7585,7 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 public import Mathlib.Topology.Convenient.GeneratedBy
+public import Mathlib.Topology.Convenient.HomSpace
 public import Mathlib.Topology.Covering
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
