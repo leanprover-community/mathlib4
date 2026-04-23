@@ -116,7 +116,7 @@ variable [HasColimitsOfSize.{w, w} A]
 
 /-- Given a point of a site, the skyscraper presheaf functor is right adjoint
 to the fiber functor on presheaves. -/
-noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
+noncomputable def skyscraperPresheafAdjunction :
     Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv
@@ -163,7 +163,8 @@ private lemma isSheaf_skyscraperPresheaf_aux
     let α₂ : Φ.fiber.elementsMk _ y₂ ⟶ Φ.fiber.elementsMk _ x := ⟨f₂, hy₂⟩
     obtain ⟨z, q₁, q₂, fac⟩ := IsCofiltered.cospan α₁ α₂
     rw [Subtype.ext_iff] at fac
-    exact ⟨z.1, q₁.1, q₂.1, z.2, fac, by simp, by simp⟩
+    refine ⟨z.1, q₁.1, q₂.1, z.2, fac, ?_, ?_⟩
+    all_goals rw [CategoryOfElements.map_snd] -- was `simp`
   let φ₁ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
       Presieve.categoryMk _ _ hf₁ :=
     ObjectProperty.homMk (Over.homMk p₁)
@@ -187,10 +188,8 @@ lemma isSheaf_skyscraperPresheaf (M : A) :
       dsimp at hm ⊢
       ext x
       obtain ⟨Y, g, hg, y, rfl⟩ := Φ.jointly_surjective _ hR x
-      have := (isSheaf_skyscraperPresheaf_aux R hR s).choose_spec
-        (Presieve.categoryMk _ _ hg) y
-      dsimp at this
-      simp [this, ← hm (op (Presieve.categoryMk _ _ hg))] }⟩
+      simpa [← hm (op (Presieve.categoryMk _ _ hg))] using
+        ((isSheaf_skyscraperPresheaf_aux R hR s).choose_spec (Presieve.categoryMk _ _ hg) y).symm }⟩
 
 /-- Given a point `Φ` of a site `(C, J)`, this is the skyscraper sheaf functor
 `A ⥤ Sheaf J A`. -/
@@ -265,11 +264,19 @@ set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
 by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
+noncomputable def presheafToSheafCompSheafFiberIso [HasWeakSheafify J A] :
     presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
+      (by simp [sheafFiber, ← Functor.map_comp])).symm
+
+@[deprecated (since := "2026-03-08")]
+alias presheafToSheafCompSheafFiber := presheafToSheafCompSheafFiberIso
+
+noncomputable instance [HasWeakSheafify J A] :
+    Localization.Lifting (presheafToSheaf J A) J.W
+      Φ.presheafFiber Φ.sheafFiber where
+  iso := Φ.presheafToSheafCompSheafFiberIso A
 
 instance : PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
   have : PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) := inferInstance

@@ -39,6 +39,8 @@ multiplicative character
 
 @[expose] public section
 
+open scoped Ring
+
 
 /-!
 ### Definitions related to multiplicative characters
@@ -282,7 +284,7 @@ noncomputable instance hasInv : Inv (MulChar R R') :=
   ⟨inv⟩
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`. -/
-theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse (χ a) :=
+theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ʳ :=
   Eq.refl <| inv χ a
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
@@ -294,7 +296,7 @@ theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R'
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
 theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
-    χ⁻¹ a = χ (Ring.inverse a) := by
+    χ⁻¹ a = χ a⁻¹ʳ := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha

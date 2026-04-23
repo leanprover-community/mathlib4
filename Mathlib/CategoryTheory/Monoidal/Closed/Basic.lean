@@ -326,8 +326,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
@@ -348,8 +347,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
   -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
-  dsimp only [Adjunction.ofNatIsoLeft]
-  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  rw [Adjunction.homEquiv_ofNatIsoLeft_symm_apply]
   dsimp
   rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
@@ -397,8 +395,8 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (uncurry_injective)
-  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
+  2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
   3. Conclude with simp
 -/
 

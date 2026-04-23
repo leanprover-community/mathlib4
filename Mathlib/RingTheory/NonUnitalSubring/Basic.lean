@@ -356,9 +356,10 @@ theorem center_toNonUnitalSubsemiring :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
-    inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
+  __ : NonUnitalCommSemiring (center R) :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)
+  __ := (inferInstance : NonUnitalNonAssocRing (center R))
 
 variable {R}
 
@@ -376,7 +377,6 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -392,6 +392,47 @@ theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 end NonUnitalRing
+
+section Centralizer
+
+variable {R : Type*} [NonUnitalRing R]
+
+/-- The centralizer of a set as non-unital subring. -/
+def centralizer (s : Set R) : NonUnitalSubring R :=
+  { NonUnitalSubsemiring.centralizer s with
+    carrier := s.centralizer
+    neg_mem' := Set.neg_mem_centralizer }
+
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set R) :
+    (centralizer s : Set R) = s.centralizer :=
+  rfl
+
+theorem centralizer_toNonUnitalSubsemiring (s : Set R) :
+    (centralizer s).toNonUnitalSubsemiring = NonUnitalSubsemiring.centralizer s :=
+  rfl
+
+theorem mem_centralizer_iff {s : Set R} {z : R} :
+    z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
+  Iff.rfl
+
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) :
+    centralizer t ≤ centralizer s :=
+  Set.centralizer_subset h
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {s : Set R} :
+    centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+
+@[simp]
+theorem centralizer_univ : centralizer Set.univ = center R :=
+  SetLike.ext' (Set.centralizer_univ R)
+
+end Centralizer
 
 end Center
 
@@ -503,24 +544,31 @@ theorem mem_closure_iff {s : Set R} {x} :
     | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
     | neg _ _ h => exact neg_mem h⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
-@[implicit_reducible]
-def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
-    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
-  { (closure s).toNonUnitalRing with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using closure_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | zero_left x _ => exact Commute.zero_left x
-      | zero_right x _ => exact Commute.zero_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂
-      | neg_left _ _ _ _ h => exact Commute.neg_left h
-      | neg_right _ _ _ _ h => exact Commute.neg_right h }
+lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalRing R] (s : Set R) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
+semiring. -/
+theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
+    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : IsMulCommutative (closure s) :=
+  have := closure_le_centralizer_centralizer s
+  .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
+    Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
+
+open scoped IsMulCommutative in
+/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
+ring. -/
+@[deprecated isMulCommutative_closure (since := "2026-03-11")]
+abbrev closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
+    (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : NonUnitalCommRing (closure s) :=
+  have := isMulCommutative_closure hcomm
+  inferInstance
+
+instance instIsMulCommutative_closure {S R : Type*} [NonUnitalRing R]
+    [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :
+    IsMulCommutative (closure (s : Set R)) :=
+  isMulCommutative_closure fun _ h₁ _ h₂ => setLike_mul_comm h₁ h₂
 
 variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/

@@ -72,6 +72,7 @@ namespace TopCat
   limits library easier.)
 4. An open embedding `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -157,7 +158,7 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
-    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
+    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_ofHom, types_comp_apply]
     simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
@@ -250,7 +251,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   apply (forget TopCat).map_isIso
 
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
@@ -270,6 +271,7 @@ theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
 2. A bundled topological space `U i` for each `i : J`.
 3. An open set `V i j ⊆ U i` for each `i j : J`.
 4. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `V i i = U i`.
 7. `t i i` is the identity.

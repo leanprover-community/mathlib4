@@ -491,7 +491,7 @@ instance : HasTensor tensorUnit X :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
     ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor tensorUnit X)
+  inferInstanceAs <| HasTensor tensorUnit X
 
 /-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
@@ -524,7 +524,7 @@ instance : HasTensor X tensorUnit :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
     ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor X tensorUnit)
+  inferInstanceAs <| HasTensor X tensorUnit
 
 /-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=

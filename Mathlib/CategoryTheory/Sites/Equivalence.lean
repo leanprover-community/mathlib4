@@ -52,7 +52,6 @@ variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 900) [G.IsEquivalence] : IsCoverDense G J where
   is_cover U := by
     let e := (asEquivalence G).symm
@@ -79,7 +78,6 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   ext
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isDenseSubsite_functor_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
     e.functor.IsDenseSubsite J K where
@@ -132,7 +130,6 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
   NatIso.ofComponents
     (fun F ↦ ObjectProperty.isoMk _ (isoWhiskerRight e.op.counitIso F.obj))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of sheaf categories. -/
 @[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
@@ -235,7 +232,7 @@ variable {A}
 variable [G.IsCoverDense J] [G.Full]
 
 section
-variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [Functor.IsContinuous G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
@@ -279,7 +276,7 @@ lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
 end
 
 lemma PreservesSheafification.transport
-    [Functor.IsContinuous.{v₄} G K J] [Functor.IsContinuous.{v₃} G K J]
+    [Functor.IsContinuous G K J]
     [(G.sheafPushforwardContinuous B K J).EssSurj]
     [(G.sheafPushforwardContinuous A K J).EssSurj]
     [K.PreservesSheafification F] : J.PreservesSheafification F where
@@ -291,7 +288,7 @@ lemma PreservesSheafification.transport
       K.W.of_precomp (W' := MorphismProperty.isomorphisms _) _ _ (Iso.isIso_hom _) this
     rwa [K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 
-variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [Functor.IsContinuous G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
 variable [G.IsCocontinuous K J] {FA : A → A → Type*} {CA : A → Type*}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
 variable [K.WEqualsLocallyBijective A]

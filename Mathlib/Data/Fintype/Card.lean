@@ -143,6 +143,14 @@ theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α)
     #sᶜ + #s = Fintype.card α := by
   rw [Nat.add_comm, card_add_card_compl]
 
+theorem Finset.compl_eq_of_disjoint_of_card_add_eq
+    {ι : Type*} [DecidableEq ι] [Fintype ι] {S₁ S₂ : Finset ι} (h : Disjoint S₁ S₂)
+    (h' : S₁.card + S₂.card = Finset.card (.univ : Finset ι)) :
+    S₁ᶜ = S₂ :=
+  (Finset.eq_of_subset_of_card_le
+    (by rwa [Finset.subset_compl_iff_disjoint_left])
+    (by simp [← Nat.add_le_add_iff_left (n := S₁.card), h'])).symm
+
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]

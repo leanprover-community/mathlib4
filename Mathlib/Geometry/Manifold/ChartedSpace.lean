@@ -403,11 +403,11 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
 section
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
-  instInhabitedProd
+  inferInstanceAs <| Inhabited (H × H')
 
 instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
-  instTopologicalSpaceProd
+  inferInstanceAs <| TopologicalSpace (H × H')
 
 -- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
 @[simp, mfld_simps]
@@ -423,10 +423,10 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
+  inferInstanceAs <| Inhabited (∀ i, Hi i)
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (∀ i, Hi i)
 
 end
 
@@ -643,9 +643,6 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
         congr 1
         exact inter_comm _ _
       simpa [f, PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
-
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorph := ChartedSpaceCore.openPartialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/

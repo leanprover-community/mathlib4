@@ -115,10 +115,9 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
-    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv q := by
-    simp only
-    refine Quotient.inductionOn' q fun _ ↦ rfl
+    induction qa, qb using Quotient.inductionOn₂'
+    rfl
+  right_inv q := by induction q using Quotient.inductionOn'; rfl
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
@@ -133,7 +132,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     ext i
     simp
   right_inv q := by
-    refine Quotient.inductionOn' q fun _ ↦ ?_
+    induction q using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
     change Setoid.r _ _
@@ -338,8 +337,6 @@ theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x :=
 injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
-
-@[deprecated (since := "2025-10-11")] alias ker_lift_injective := kerLift_injective
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
 induced map from the quotient of α to β is injective. -/

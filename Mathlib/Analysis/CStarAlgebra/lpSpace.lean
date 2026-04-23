@@ -32,7 +32,6 @@ instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp 
   dist_eq := dist_eq_norm_neg_add
   norm_mul_le := norm_mul_le
 
-set_option backward.isDefEq.respectTransparency false in
 instance [∀ i, Nontrivial (A i)] [∀ i, CommCStarAlgebra (A i)] : CommCStarAlgebra (lp A ∞) where
 
 end
