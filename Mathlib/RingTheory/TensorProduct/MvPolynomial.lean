@@ -242,7 +242,7 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_comp_aeval :
-    (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
+    (((algebraTensorAlgEquiv (σ := σ) R A).symm.toAlgHom.restrictScalars R) :
         MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
       (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
       Algebra.TensorProduct.includeRight := by

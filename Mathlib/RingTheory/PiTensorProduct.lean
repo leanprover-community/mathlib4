@@ -195,7 +195,10 @@ def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   map_mul' a a' := by simp [map_mul]
   map_zero' := MultilinearMap.map_update_zero _ _ _
   map_add' _ _ := MultilinearMap.map_update_add _ _ _ _ _
-  map_smul' := by simp [MonoidHom.mulSingle_apply, Pi.mulSingle]
+  commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
+    rw [Algebra.algebraMap_eq_smul_one, ← Pi.one_apply, MonoidHom.mulSingle_apply, Pi.mulSingle,
+      smul_tprodCoeff]
+    rfl
 
 /--
 Lifting a multilinear map to an algebra homomorphism from tensor product

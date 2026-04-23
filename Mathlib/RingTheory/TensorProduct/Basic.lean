@@ -310,7 +310,7 @@ theorem algebraMap_apply' (r : R) :
 
 /-- The `R`-algebra morphism `A →ₐ[R] A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
-  { includeLeftRingHom with map_smul' := by simp [smul_def] }
+  { includeLeftRingHom with commutes' := by simp }
 
 @[simp]
 theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
@@ -324,7 +324,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_add' := by simp [tmul_add]
   map_one' := rfl
   map_mul' := by simp
-  map_smul' _ _ := by simp [smul_def, algebraMap_apply', -algebraMap_apply]
+  commutes' r := by simp [algebraMap_apply', -algebraMap_apply]
 
 @[simp]
 theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b = 1 ⊗ₜ b :=

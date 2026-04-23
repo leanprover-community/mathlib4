@@ -132,7 +132,8 @@ def lift : { u : A // u * u = a • 1 + b • u } ≃ (QuadraticAlgebra R a b �
               module
             _ = (z * w).re • 1 + (z * w).im • u := by
               simp
-      map_smul' := by simp [← smul_assoc]}
+      commutes' r := by
+        simp [← Algebra.algebraMap_eq_smul_one] }
   invFun f := ⟨f (ω), by
     simp [← map_mul, omega_mul_omega_eq_add]
     ⟩

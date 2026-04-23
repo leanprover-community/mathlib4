@@ -135,7 +135,7 @@ def Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor
     { toRingHom := Ideal.quotientMap _ B'.subtype le_rfl,
       commutes' := Quotient.ind fun _ ↦ rfl }
     { σ' // f.comp (Ideal.Quotient.stabilizerHom
-      (Q.under B') P (G ⧸ N.1.1) σ') = σ.toAlgHom.comp f }
+      (Q.under B') P (G ⧸ N.1.1) σ').toAlgHom = σ.toAlgHom.comp f }
   map {N N'} i := TypeCat.ofHom fun x ↦ ⟨⟨(QuotientGroup.map _ _ (.id _) (leOfHom i)) x.1,
       Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux Q i.le x.1.1 x.1.2⟩, by
     have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=

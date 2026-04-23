@@ -173,7 +173,7 @@ abbrev mkAlgHom : FreeTensorAlgebra R A →ₐ[R] FreeProduct R A :=
 
 /-- The canonical linear map from the direct sum of the `A i` to the free product -/
 abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
-  (mkAlgHom R A) ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
+  (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
     ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
@@ -190,7 +190,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
-  simp [RingQuot.mkAlgHom]
+  simp
 
 /-- The `i`th canonical injection, from `A i` to the free product, as
 a linear map -/
@@ -218,7 +218,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     RingQuot.liftAlgHom R ⟨
         TensorAlgebra.lift R <|
           DirectSum.toModule R I B <|
-            (@maps · ),
+            (@maps · |>.toLinearMap),
         fun x y r ↦ by
           cases r with
           | id => simp
@@ -229,7 +229,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     aesop (add simp [ι, ι'])
   right_inv maps := by
     ext i a
-    simp [ι, ι', -AlgHom.toLinearMap_apply]
+    aesop (add simp [ι, ι'])
 
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
@@ -239,7 +239,7 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   simp [lift_apply, ι]
 
 @[simp↓] theorem lift_algebraMap (r : R) : lift R A maps (algebraMap R _ r) = algebraMap R _ r := by
-  rw [lift_apply, AlgHom.commutes, RingHom.id_apply]
+  rw [lift_apply, AlgHom.commutes]
 
 @[aesop safe destruct] theorem lift_unique
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :

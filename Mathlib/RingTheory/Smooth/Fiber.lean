@@ -223,7 +223,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
       { __ := TensorProduct.comm _ _ _, commutes' _ := rfl }
     let e' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[R] 𝓀[Rp] ⊗[Rp] Sq :=
       ((TensorProduct.comm _ _ _).restrictScalars R).trans <|
-      ((TensorProduct.congr (.refl (R := S)) e).restrictScalars R).trans <|
+      ((TensorProduct.congr (.refl (R₁ := S)) e).restrictScalars R).trans <|
       ((TensorProduct.cancelBaseChange _ _ S _ _).restrictScalars R).trans <|
       (TensorProduct.comm _ _ _).trans (TensorProduct.equivOfCompatibleSMul ..)
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =

@@ -194,16 +194,18 @@ def AlgHom.restrictDomain : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 
 /-- Extend the scalars of an `AlgHom`. -/
-def AlgHom.extendScalars : @AlgHom B B _ _ (.id B) C D _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
+def AlgHom.extendScalars :
+    @AlgHom B B _ _ (.id B) C D _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
   __ := f
-  map_smul' _ _ := by simp [Algebra.smul_def]; rfl
+  commutes' := fun _ ↦ rfl
   __ := (f.restrictDomain B).toRingHom.toAlgebra
 
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
 def algHomEquivSigma :
-    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D, @AlgHom B B _ _ (.id B) C D _ _ _ f.toRingHom.toAlgebra where
+    (C →ₐ[A] D) ≃ Σ f : B →ₐ[A] D,
+      @AlgHom B B _ _ (.id B) C D _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra
@@ -213,10 +215,10 @@ def algHomEquivSigma :
     ext
     rfl
   right_inv := by
-    rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, hg₁⟩, _⟩, _⟩, hg⟩⟩
+    rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
     obtain rfl : f = fun x => g (algebraMap B C x) := by
       ext x
-      simpa [Algebra.smul_def, RingHom.algebraMap_toAlgebra, hg₁] using (hg x 1).symm
+      exact (hg x).symm
     rfl
 
 end AlgHomTower

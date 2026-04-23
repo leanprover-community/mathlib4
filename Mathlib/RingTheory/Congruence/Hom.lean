@@ -454,7 +454,7 @@ relations, given that the relations are equal. -/
 protected def congrₐ {c d : RingCon M} (h : c = d) :
     c.Quotient ≃ₐ[R] d.Quotient :=
   { RingCon.congr h with
-    map_smul' _ _ := by simp [Algebra.smul_def]; rfl }
+    commutes' _ := rfl }
 
 theorem congrₐ_mk {c d : RingCon M} (h : c = d) (a : M) :
     RingCon.congrₐ R h (a : c.Quotient) = (a : d.Quotient) :=
@@ -468,7 +468,8 @@ congruence relation `c` induced by an algebra homomorphism
 constant on the equivalence classes of `c`. -/
 def liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) :
     c.Quotient →ₐ[R] P :=
-  .mk' (c.lift f H) (AlgHomClass.commutes f)
+  { c.lift f H with
+    commutes' r := AlgHomClass.commutes ↑f r }
 
 theorem liftₐ_coe_toRingHom (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f.toRingHom) :
     (c.liftₐ f H).toRingHom = c.lift f H :=
@@ -583,7 +584,8 @@ variable (R)
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
     (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
-  .mk' (quotientQuotientEquivQuotient c d h) fun _ ↦ rfl
+  { quotientQuotientEquivQuotient c d h with
+    commutes' _ := by rfl }
 
 @[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :

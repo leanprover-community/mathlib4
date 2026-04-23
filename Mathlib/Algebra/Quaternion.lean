@@ -546,7 +546,7 @@ def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
   right_inv _ := by simp
   map_mul' _ _ := by ext <;> simp <;> ring
   map_add' _ _ := by ext <;> simp [add_comm]
-  map_smul' := by simp
+  commutes' _ := by simp [algebraMap_eq]
 
 end
 
@@ -676,7 +676,7 @@ def starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₁,c₂,c₃]ᵐᵒᵖ :=
     toFun := op ∘ star
     invFun := star ∘ unop
     map_mul' := fun x y => by simp
-    map_smul' := fun r x => by simp }
+    commutes' := fun r => by simp }
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] _) = op ∘ star :=

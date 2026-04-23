@@ -156,14 +156,14 @@ theorem Algebra.isIntegral_iSup {ι} (S : ι → Subalgebra R A) :
 
 /-- Mapping an integral closure along an `AlgEquiv` gives the integral closure. -/
 theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
-    (integralClosure R A).map (f : A →ₐ[R] S) = integralClosure R S := by
+    (integralClosure R A).map f.toAlgHom = integralClosure R S := by
   ext y
   rw [Subalgebra.mem_map]
   constructor
   · rintro ⟨x, hx, rfl⟩
     exact hx.map f
   · intro hy
-    use f.symm y, hy.map (f.symm : S →ₐ[R] A)
+    use f.symm y, hy.map f.symm.toAlgHom
     simp
 
 /-- An `AlgHom` between two rings restrict to an `AlgHom` between the integral closures inside
@@ -430,7 +430,7 @@ noncomputable def lift : S →ₐ[R] A where
   map_zero' := by simp only [map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, map_add]
   map_mul' x y := by simp_rw [← mk'_mul, map_mul]
-  commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap]
+  commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap, RingHom.id_apply]
 
 @[simp]
 theorem algebraMap_lift (x : S) : algebraMap A B (lift R A B x) = algebraMap S B x :=

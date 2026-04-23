@@ -56,11 +56,10 @@ instance : PartialOrder (Lifts F E K) where
     exact AlgHom.ext h₂₁'
 
 noncomputable instance : OrderBot (Lifts F E K) where
-  bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E)⟩
+  bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E).toAlgHom⟩
   bot_le L := ⟨bot_le, fun x ↦ by
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
-    simp_rw [AlgHom.comp_apply, AlgHom.coe_coe, AlgEquiv.apply_symm_apply]
-    exact L.emb.commutes x⟩
+    simp⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
@@ -118,7 +117,7 @@ noncomputable def union : Lifts F E K :=
       dsimp only [coe_type_toSubalgebra]
       rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
     _ le_rfl).comp
-      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
+      (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir).toAlgHom⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
@@ -182,7 +181,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
     fun c hext hc ↦ (isEmpty_or_nonempty c).elim
       (fun _ ↦ ⟨⊥, this, fun ϕ hϕ ↦ isEmptyElim (⟨ϕ, hϕ⟩ : c)⟩)
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
-  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
+  suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm.toAlgHom⟩
   by_contra!
   obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra

@@ -291,7 +291,7 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 ⟨fun h σ ↦ (K.fieldRange_val ▸ AlgHom.map_fieldRange K.val σ).trans
   (normal_iff_forall_fieldRange_eq.1 h _), fun h ↦ normal_iff_forall_map_le.2 (fun σ ↦ (h σ).le)⟩
 
-lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : Gal(L/F), K.map ↑σ = K :=
+lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : Gal(L/F), K.map σ.toAlgHom = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
 
 @[simp]

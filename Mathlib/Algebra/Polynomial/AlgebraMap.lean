@@ -94,7 +94,7 @@ theorem algebraMap_eq : algebraMap R R[X] = C :=
 @[simps! apply]
 def CAlgHom : A →ₐ[R] A[X] where
   toRingHom := C
-  map_smul' _ _ := by simp
+  commutes' _ := rfl
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
@@ -111,7 +111,8 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[simps!]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    map_smul' _ _ := by dsimp }
+    commutes' := fun r => by
+      dsimp }
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -129,7 +130,7 @@ theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] 
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
-  simp [map_sum, map_mul, map_pow, AlgHom.commutes]
+  simp only [map_sum, map_mul, map_pow, AlgHom.commutes]
 
 @[simp]
 theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
@@ -154,8 +155,9 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 @[simps!]
-def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B :=
-  .mk' (eval₂RingHom' f b hf) fun _ => (eval₂_C _ _).trans (f.commutes _)
+def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
+  toRingHom := eval₂RingHom' f b hf
+  commutes' _ := (eval₂_C _ _).trans (f.commutes _)
 
 section Map
 
@@ -164,7 +166,7 @@ section Map
   This is the algebra version of `Polynomial.mapRingHom`. -/
 def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
   toRingHom := mapRingHom f.toRingHom
-  map_smul' := by simp [Algebra.smul_def]
+  commutes' := by simp
 
 @[simp]
 theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map f :=
@@ -426,7 +428,7 @@ lemma coe_aeval_mk_apply {S : Subalgebra R A} (h : x ∈ S) :
     (aeval (⟨x, h⟩ : S) p : A) = aeval x p :=
   (aeval_algHom_apply S.val (⟨x, h⟩ : S) p).symm
 
-theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
+theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = f.toAlgHom.comp (aeval x) :=
   aeval_algHom (f : A →ₐ[R] B) x
 
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :

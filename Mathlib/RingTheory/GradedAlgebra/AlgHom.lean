@@ -177,13 +177,13 @@ the codomain of `f`, then `g.comp f` is the graded algebra homomorphism `x ↦ g
     (g.toGradedRingHom : ℬ →+*ᵍ 𝒞).comp (f.toGradedRingHom : 𝒜 →+*ᵍ ℬ) with }
 
 @[simp]
-theorem coe_comp (g : B →ₐ[R] C) (f : 𝒜 →ₐᵍ[R] ℬ) : ⇑(g.comp f) = g ∘ f := rfl
+theorem coe_comp (g : B →ₐ[R] C) (f : 𝒜 →ₐᵍ[R] ℬ) : ⇑(g.comp f.toAlgHom) = g ∘ f := rfl
 
 theorem comp_toGradedRingHom (g : ℬ →ₐᵍ[R] 𝒞) (f : 𝒜 →ₐᵍ[R] ℬ) :
     (g.comp f).toGradedRingHom = g.toGradedRingHom.comp f.toGradedRingHom := rfl
 
 theorem comp_toAlgHom (g : ℬ →ₐᵍ[R] 𝒞) (f : 𝒜 →ₐᵍ[R] ℬ) :
-    (g.comp f : A →ₐ[R] C) = (g : B →ₐ[R] C).comp f := rfl
+    (g.comp f : A →ₐ[R] C) = (g : B →ₐ[R] C).comp f.toAlgHom := rfl
 
 @[simp]
 theorem comp_id : f.comp (.id R 𝒜) = f := rfl
@@ -215,7 +215,7 @@ lemma cancel_right {g₁ g₂ : ℬ →ₐᵍ[R] 𝒞} {f : 𝒜 →ₐᵍ[R] �
 
 lemma cancel_left {g₁ g₂ : 𝒜 →ₐᵍ[R] ℬ} {f : ℬ →ₐᵍ[R] 𝒞} (hf : Function.Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h ↦ coe_algHom_injective <| (AlgHom.cancel_left hf).1 congr($h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ coe_algHom_injective <| (AlgHom.cancel_left hf).1 congr($(h).toAlgHom), fun h ↦ h ▸ rfl⟩
 
 /-- We enrich the existing function `toAlgHom` with the structure of a `MonoidHom`, to produce a
 bundled function that we now call `toEnd`. -/

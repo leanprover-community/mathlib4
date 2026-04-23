@@ -1262,12 +1262,12 @@ variable [MulSemiringAction G k] [SMulCommClass G k k]
 
 /-- A `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
-theorem algHom_ext ⦃φ₁ φ₂ : AlgHom (RingHom.id k) (SkewMonoidAlgebra k G) A⦄
+theorem algHom_ext ⦃φ₁ φ₂ : SkewMonoidAlgebra k G →ₐ[k] A⦄
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
     AlgHom.toLinearMap_injective (lhom_ext' fun a ↦ (LinearMap.ext_ring (h a)))
 
 @[ext high]
-theorem algHom_ext' ⦃φ₁ φ₂ : AlgHom (RingHom.id k) (SkewMonoidAlgebra k G) A⦄
+theorem algHom_ext' ⦃φ₁ φ₂ : SkewMonoidAlgebra k G →ₐ[k] A⦄
     (h : (φ₁ : SkewMonoidAlgebra k G →* A).comp (of k G) =
       (φ₂ : SkewMonoidAlgebra k G →* A).comp (of k G)) :
     φ₁ = φ₂ := algHom_ext <| DFunLike.congr_fun h

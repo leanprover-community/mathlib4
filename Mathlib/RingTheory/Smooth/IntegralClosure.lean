@@ -62,13 +62,13 @@ lemma TensorProduct.toIntegralClosure_bijective_of_tower
     (H' : Function.Bijective (toIntegralClosure S T (S ⊗[R] B))) :
     Function.Bijective (toIntegralClosure R T B) := by
   let e := (Algebra.TensorProduct.cancelBaseChange ..).symm.trans <|
-      (Algebra.TensorProduct.congr (.refl (R := T) (A₁ := T)) (.ofBijective _ H)).trans <|
+      (Algebra.TensorProduct.congr (.refl (R₁ := T) (A₁ := T)) (.ofBijective _ H)).trans <|
       (AlgEquiv.ofBijective _ H').trans <|
       (AlgEquiv.mapIntegralClosure (Algebra.TensorProduct.cancelBaseChange ..))
   convert e.bijective
   rw [← e.coe_algHom]
   congr 1
-  ext; simp [e, toIntegralClosure]
+  ext; simp [e, toIntegralClosure, AlgEquiv.ofBijective_apply]
 
 /-- "Base change preserves integral closure" can be checked Zariski-locally. -/
 lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway

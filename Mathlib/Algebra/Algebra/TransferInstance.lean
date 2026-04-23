@@ -56,10 +56,10 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
   intros
   exact
     { Equiv.ringEquiv e with
-      map_smul' _ _ := by
+      commutes' := fun r => by
         apply e.symm.injective
-        simp [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
-          Algebra.smul_def, algebraMap_def, map_mul] }
+        simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
+          symm_apply_apply, algebraMap_def, RingHom.id_apply] }
 
 @[simp]
 theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (algEquiv R e) a = e a :=

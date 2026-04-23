@@ -129,8 +129,12 @@ lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
   letI : Algebra R R' := by
     letI := f.toAlgebra
     exact Algebra.compHom _ (algebraMap R R[ε])
-  let f' : R[ε] →ₐ[R] R' := .mk' f fun _ ↦ rfl
-  let g' : R[ε] →ₐ[R] R' := .mk' g fun r ↦ (DFunLike.congr_fun h₀ r).symm
+  let f' : R[ε] →ₐ[R] R' :=
+    { toRingHom := f
+      commutes' _ := rfl }
+  let g' : R[ε] →ₐ[R] R' :=
+    { toRingHom := g
+      commutes' r := (DFunLike.congr_fun h₀ r).symm }
   exact congr_arg AlgHom.toRingHom (show f' = g' from algHom_ext hε)
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map

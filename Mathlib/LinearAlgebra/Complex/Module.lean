@@ -241,7 +241,11 @@ theorem ofRealAm_coe : ⇑ofRealAm = ((↑) : ℝ → ℂ) :=
 
 /-- `ℝ`-algebra isomorphism version of the complex conjugation function from `ℂ` to `ℂ` -/
 def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
-  .mk' { conj with invFun := conj, left_inv := star_star, right_inv := star_star } conj_ofReal
+  { conj with
+    invFun := conj
+    left_inv := star_star
+    right_inv := star_star
+    commutes' := conj_ofReal }
 
 @[simp]
 theorem conjAe_coe : ⇑conjAe = conj :=

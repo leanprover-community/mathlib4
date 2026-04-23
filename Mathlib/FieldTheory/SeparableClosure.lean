@@ -127,9 +127,9 @@ theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScal
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `separableClosure F E`
 under the map `i` is equal to `separableClosure F K`. -/
 theorem separableClosure.map_eq_of_algEquiv (i : E ≃ₐ[F] K) :
-    (separableClosure F E).map i = separableClosure F K :=
+    (separableClosure F E).map i.toAlgHom = separableClosure F K :=
   (map_le_of_algHom i.toAlgHom).antisymm
-    (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm).2 h, by simp⟩)
+    (fun x h ↦ ⟨_, (map_mem_separableClosure_iff i.symm.toAlgHom).2 h, by simp⟩)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `separableClosure F E` and
 `separableClosure F K` are also isomorphic as `F`-algebras. -/

@@ -97,7 +97,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
       convert hr
       exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
-    · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
+    · simpa [-Algebra.algebraMap_self, -AlgHom.commutesₛₐ, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
 
 variable (R S) in

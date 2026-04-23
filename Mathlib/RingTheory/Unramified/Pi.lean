@@ -79,10 +79,11 @@ theorem pi_iff :
       · intro r s; simp [Pi.single_mul]
     suffices f₁' = f₂' by
       have := AlgHom.congr_fun this (g x)
-      simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
-        LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply, ← map_sub,
-        Ideal.Quotient.mkₐ_eq_mk, ← sub_eq_zero (b := Ideal.Quotient.mk J' _), f₁', f₂',
-        Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, J'] at this
+      simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, AddHom.toFun_eq_coe,
+        LinearMap.coe_toAddHom, LinearMap.coe_comp, AlgHom.coe_toLinearMap,
+        Ideal.Quotient.mkₐ_eq_mk, LinearMap.coe_single, Function.comp_apply,
+        ← sub_eq_zero (b := Ideal.Quotient.mk J' _), ← map_sub, Ideal.Quotient.eq_zero_iff_mem,
+        Ideal.mem_span_singleton, J', f₁', f₂'] at this
       obtain ⟨c, hc⟩ := this
       apply_fun (f₁ e * ·) at hc
       rwa [← mul_assoc, mul_sub, mul_sub, mul_one, (he.map f₁).eq, sub_self, zero_mul,
@@ -93,8 +94,7 @@ theorem pi_iff :
       rw [← sub_eq_zero]
       simp only [Ideal.Quotient.algebraMap_eq, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         Function.comp_apply, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, f₁', f₂',
-        AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
-        LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
+        AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, Function.comp_apply,
         Ideal.Quotient.mkₐ_eq_mk]
       exact Ideal.mem_map_of_mem (Ideal.Quotient.mk J') (hf (Pi.single x r))
 

@@ -43,7 +43,7 @@ instance (c : RingCon A) : Algebra S c.Quotient where
 variable (S) in
 /-- The algebra morphism from `A` to the quotient by a ring congruence. -/
 @[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
-  { mk' c with map_smul' _ _ := rfl }
+  { mk' c with commutes' _ := rfl }
 
 theorem mkₐ_surjective (c : RingCon A) :
     Function.Surjective (c.mkₐ (S := S)) :=
@@ -487,7 +487,7 @@ variable (S)
 -/
 irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    map_smul' := fun _ _ => by simp [mkRingHom_def]; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
 
 @[simp]
 theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
@@ -532,11 +532,9 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   map_mul' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
     simp only [mul_quot, map_mul _ x y]
-  map_smul' := by
-    rintro x ⟨⟨r⟩⟩
-    obtain ⟨⟨x⟩⟩ := (algebraMap S (RingQuot s)) x
-    simp [smul_quot]
-     }
+  commutes' := by
+    rintro x
+    simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }
 
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
 factors uniquely through a morphism `RingQuot s →ₐ[S] B`.

@@ -137,7 +137,7 @@ A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.lmul
 def _root_.Algebra.lmul : A →ₐ[R] End R A where
   __ := NonUnitalAlgHom.lmul R A
   map_one' := mulLeft_one _ _
-  map_smul' r x := ext fun a ↦ by simp
+  commutes' r := ext fun a => (Algebra.smul_def r a).symm
 
 variable {R A}
 

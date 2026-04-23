@@ -72,7 +72,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
   classical
     refine Finset.induction_on s (fun _ ↦ ?_) fun a s _ ih H ↦ ?_
     · rw [coe_empty, Algebra.adjoin_empty]
-      exact ⟨(Algebra.ofId F L).comp (Algebra.botEquiv F K)⟩
+      exact ⟨(Algebra.ofId F L).comp (Algebra.botEquiv F K).toAlgHom⟩
     rw [forall_mem_insert] at H
     rcases H with ⟨⟨H1, H2⟩, H3⟩
     obtain ⟨f⟩ := ih H3

@@ -172,8 +172,9 @@ variable (K : Type*) [CommSemiring K] [Semiring R] [Fintype I] [Fintype J] [Alge
 variable [DecidableEq I] [DecidableEq J]
 
 /-- `Matrix.comp` as `AlgEquiv` -/
-def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R :=
-  .mk' (compRingEquiv I J R) fun _ ↦ comp_diagonal_diagonal _
+def compAlgEquiv : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R where
+  __ := compRingEquiv I J R
+  commutes' _ := comp_diagonal_diagonal _
 
 @[simp]
 theorem compAlgEquiv_apply (M : Matrix I I (Matrix J J R)) :

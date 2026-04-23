@@ -660,7 +660,7 @@ def fstHom : Unitization R A →ₐ[R] R where
   map_mul' := fst_mul
   map_zero' := fst_zero (A := A)
   map_add' := fst_add
-  map_smul' _ _ := rfl
+  commutes' := fst_inl A
 
 end Algebra
 
@@ -752,7 +752,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  map_smul' _ _ := by simp [Algebra.smul_def, algebraMap_eq_inl, fst_inl, snd_inl, mul_add]
+  commutes' := fun r => by simp [algebraMap_eq_inl]
+
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to
@@ -796,13 +797,13 @@ variable [StarModule R C]
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply apply_apply]
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
-{ toFun := fun φ ↦
-  { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
-    map_star' := fun x => by
-      simp [map_star] }
-  invFun φ := φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
-  left_inv _ := by ext; simp,
-  right_inv _ := by ext; simp }
+  { toFun := fun φ ↦
+    { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
+      map_star' := fun x => by
+        simp [map_star] }
+    invFun φ := φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
+    left_inv _ := by ext; simp,
+    right_inv _ := by ext; simp }
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about this being `@[simp]`. -/

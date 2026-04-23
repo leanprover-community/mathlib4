@@ -92,7 +92,8 @@ def liftOfDerivationToSquareZero [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : D
       simp only [map_mul, f.leibniz, add_mul, mul_add, Submodule.coe_add,
         Submodule.coe_smul_of_tower, Algebra.smul_def, this]
       ring
-    map_smul' := by simp [Algebra.smul_def, mul_add, ← IsScalarTower.algebraMap_apply]
+    commutes' := fun r => by
+      simp [Derivation.map_algebraMap, zero_add, ← IsScalarTower.algebraMap_apply R A B r]
     map_zero' := ((I.restrictScalars R).subtype.comp f.toLinearMap +
       (IsScalarTower.toAlgHom R A B).toLinearMap).map_zero }
 

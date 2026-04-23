@@ -84,13 +84,13 @@ the Gelfand-Mazur isomorphism `NormedRing.algEquivComplexOfComplete`. -/
 noncomputable def Ideal.toCharacterSpace : characterSpace ℂ A :=
   CharacterSpace.equivAlgHom.symm <|
     ((NormedRing.algEquivComplexOfComplete
-      (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm : A ⧸ I →ₐ[ℂ] ℂ).comp <|
+      (letI := Quotient.field I; isUnit_iff_ne_zero (G₀ := A ⧸ I))).symm).toAlgHom.comp <|
     Quotient.mkₐ ℂ I
 
 theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
     I.toCharacterSpace a = 0 := by
   unfold Ideal.toCharacterSpace
-  simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp only [CharacterSpace.equivAlgHom_symm_coe, AlgHom.coe_comp, AlgEquiv.coe_algHom,
     Quotient.mkₐ_eq_mk, Function.comp_apply, NormedRing.algEquivComplexOfComplete_symm_apply]
   simp_rw [Quotient.eq_zero_iff_mem.mpr ha, spectrum.zero_eq]
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem

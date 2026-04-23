@@ -112,14 +112,16 @@ Of particular interest is the case when `A i` are bundled subobjects, `f` is the
 coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure originates from
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
-@[simps!]
+@[simps]
 def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
     (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
     (⨁ i, A i) →ₐ[R] B :=
-  .mk' (toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul) fun r ↦ by
-    change toModule R _ _ f (algebraMap R _ r) = _
-    simp [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
-      ← lof_eq_of R, toModule_lof, hone]
+  { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
+    toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
+    commutes' := fun r => by
+      change toModule R _ _ f (algebraMap R _ r) = _
+      simp [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
+        ← lof_eq_of R, toModule_lof, hone] }
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
 

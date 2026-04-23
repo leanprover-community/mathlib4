@@ -244,7 +244,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   · refine Finset.sum_congr rfl fun σ _ => ?_
     letI : Algebra L E := σ.toRingHom.toAlgebra
-    simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+    simp
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
@@ -269,7 +269,7 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
     simp only [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
+      AlgEquiv.ofBijective_apply, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 end EqSumEmbeddings
 

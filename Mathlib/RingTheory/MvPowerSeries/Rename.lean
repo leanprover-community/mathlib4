@@ -115,14 +115,13 @@ variable [CommSemiring R] [CommSemiring S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
-def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R :=
-  .mk' {
+def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
   map_zero' := by ext; simp [coeff_renameFun]
-  map_add' _ _ := by ext; simp [coeff_renameFun, Finset.sum_add_distrib] }
-    (renameFun_monomial f 0)
+  map_add' _ _ := by ext; simp [coeff_renameFun, Finset.sum_add_distrib]
+  commutes' := renameFun_monomial f 0
 
 theorem coeff_rename (p : MvPowerSeries σ R) (x : τ →₀ ℕ) : coeff x (rename f p) =
     (TendstoCofinite.finite_preimage_singleton (Finsupp.mapDomain f) x).toFinset.sum
@@ -244,14 +243,13 @@ private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
 `R⟦τ⟧` to `R⟦σ⟧` that is left inverse to `rename e.injective.fiberFinite : R⟦σ⟧ → R⟦τ⟧`
 and sends the variables in the complement of the range of `e` to `0`. -/
 @[no_expose]
-def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R :=
-  .mk' {
-    toFun := killComplFun e
-    map_one' := by simpa using killComplFun_monomial_embDomain 0 1
-    map_mul' := killComplFun_mul
-    map_zero' := by ext; simp [coeff_killComplFun]
-    map_add' _ _ := by ext; simp [coeff_killComplFun] }
-    (by simpa using killComplFun_monomial_embDomain 0)
+def killCompl (e : σ ↪ τ) : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
+  toFun := killComplFun e
+  map_one' := by simpa using killComplFun_monomial_embDomain 0 1
+  map_mul' := killComplFun_mul
+  map_zero' := by ext; simp [coeff_killComplFun]
+  map_add' _ _ := by ext; simp [coeff_killComplFun]
+  commutes' := by simpa using killComplFun_monomial_embDomain 0
 
 lemma coeff_killCompl (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
     coeff x (killCompl e p) = coeff (embDomain e x) p := by rfl

@@ -110,12 +110,12 @@ protected theorem map_mul : (I * J).map g = I.map g * J.map g := by
   exact coeToSubmodule_injective (Submodule.map_mul _ _ _)
 
 @[simp]
-theorem map_map_symm (g : P ≃ₐ[R] P') : (I.map (g : P →ₐ[R] P')).map (g.symm : P' →ₐ[R] P) = I := by
+theorem map_map_symm (g : P ≃ₐ[R] P') : (I.map g.toAlgHom).map g.symm.toAlgHom = I := by
   rw [← map_comp, g.symm_comp, map_id]
 
 @[simp]
 theorem map_symm_map (I : FractionalIdeal S P') (g : P ≃ₐ[R] P') :
-    (I.map (g.symm : P' →ₐ[R] P)).map (g : P →ₐ[R] P') = I := by
+    (I.map g.symm.toAlgHom).map g.toAlgHom = I := by
   rw [← map_comp, g.comp_symm, map_id]
 
 theorem map_mem_map {f : P →ₐ[R] P'} (h : Function.Injective f) {x : P} {I : FractionalIdeal S P} :
@@ -128,8 +128,8 @@ theorem map_injective (f : P →ₐ[R] P') (h : Function.Injective f) :
 
 /-- If `g` is an equivalence, `map g` is an isomorphism -/
 def mapEquiv (g : P ≃ₐ[R] P') : FractionalIdeal S P ≃+* FractionalIdeal S P' where
-  toFun := map g
-  invFun := map g.symm
+  toFun := map g.toAlgHom
+  invFun := map g.symm.toAlgHom
   map_add' I J := FractionalIdeal.map_add I J _
   map_mul' I J := FractionalIdeal.map_mul I J _
   left_inv I := by rw [← map_comp, AlgEquiv.symm_comp, map_id]
@@ -141,8 +141,8 @@ theorem coeFun_mapEquiv (g : P ≃ₐ[R] P') :
   rfl
 
 @[simp]
-theorem mapEquiv_apply (g : P ≃ₐ[R] P') (I : FractionalIdeal S P) : mapEquiv g I = map (↑g) I :=
-  rfl
+theorem mapEquiv_apply (g : P ≃ₐ[R] P') (I : FractionalIdeal S P) :
+    mapEquiv g I = map g.toAlgHom I := rfl
 
 @[simp]
 theorem mapEquiv_symm (g : P ≃ₐ[R] P') :
@@ -474,13 +474,13 @@ variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
 protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
-    (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
+    (I / J).map h.toAlgHom = I.map h.toAlgHom / J.map h.toAlgHom := by
   by_cases H : J = 0
   · rw [H, div_zero, FractionalIdeal.map_zero, div_zero]
   · simp [← coeToSubmodule_inj, div_of_ne_zero H, div_of_ne_zero (map_ne_zero _ H)]
 
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
-    (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by
+    (1 / I).map h.toAlgHom = 1 / I.map h.toAlgHom := by
   rw [FractionalIdeal.map_div, FractionalIdeal.map_one]
 
 end Quotient

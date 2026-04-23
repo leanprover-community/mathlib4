@@ -202,7 +202,7 @@ theorem algEquiv_def : h.algEquiv h' = h.adjoinRootAlgEquiv.symm.trans h'.adjoin
 theorem algEquiv_root : h.algEquiv h' h.root = h'.root := by simp [algEquiv_def]
 
 @[simp]
-theorem algEquiv_map : AlgHom.comp (h.algEquiv h') h.map = h'.map := by
+theorem algEquiv_map : AlgHom.comp (h.algEquiv h').toAlgHom h.map = h'.map := by
   ext; simp
 
 @[simp]
@@ -228,7 +228,7 @@ and `IsAdjoinRoot.algEquiv` turns an `IsAdjoinRoot` into an `AlgEquiv`.
 -/
 @[simps! map_apply]
 def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
-  map := (e : S →ₐ[R] T).comp h.map
+  map := e.toAlgHom.comp h.map
   map_surjective := e.surjective.comp h.map_surjective
   ker_map := by ext; simp [Ideal.mem_span_singleton]
 

@@ -57,6 +57,6 @@ def uniqueRingEquiv [NonUnitalNonAssocSemiring A] : Matrix m m A ≃+* A where
 @[simps!]
 def uniqueAlgEquiv [Semiring A] [CommSemiring R] [Algebra R A] : Matrix m m A ≃ₐ[R] A where
   __ := uniqueRingEquiv
-  map_smul' := by aesop
+  commutes' r := by aesop
 
 end Matrix

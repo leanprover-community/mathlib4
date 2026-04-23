@@ -553,9 +553,9 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   · rintro x (hx : x ∈ i.range)
     let e := Subalgebra.equivOfEq _ _ ((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2
       |>.trans Subalgebra.topEquiv
-    have hrange : i.range = (i.comp (AlgHomClass.toAlgHom e)).range := by
+    have hrange : i.range = (i.comp e.toAlgHom).range := by
       ext x
-      simp only [AlgHom.mem_range, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply]
+      simp only [AlgHom.mem_range, AlgHom.coe_comp, Function.comp_apply]
       constructor
       · rintro ⟨y, rfl⟩; exact ⟨e.symm y, by simp⟩
       · rintro ⟨y, rfl⟩; exact ⟨e y, rfl⟩

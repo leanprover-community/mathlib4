@@ -364,7 +364,7 @@ instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I 
 /-- The canonical morphism `A →ₐ[R₁] A ⧸ I` as morphism of `R₁`-algebras, for `I` an ideal of
 `A`, where `A` is an `R₁`-algebra. -/
 def Quotient.mkₐ (I : Ideal A) [I.IsTwoSided] : A →ₐ[R₁] A ⧸ I :=
-  .mk' ⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩ fun _ => rfl
+  ⟨⟨⟨⟨fun a => Submodule.Quotient.mk a, rfl⟩, fun _ _ => rfl⟩, rfl, fun _ _ => rfl⟩, fun _ => rfl⟩
 
 theorem Quotient.algHom_ext {I : Ideal A} [I.IsTwoSided]
     {S} [Semiring S] [Algebra R₁ S] ⦃f g : A ⧸ I →ₐ[R₁] S⦄
@@ -421,7 +421,9 @@ section
 
 /-- `AlgHom` version of `Ideal.Quotient.factor`. -/
 def Quotient.factorₐ {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J) :
-    A ⧸ I →ₐ[R₁] A ⧸ J := .mk' (factor hIJ) fun _ ↦ rfl
+    A ⧸ I →ₐ[R₁] A ⧸ J where
+  __ := Ideal.Quotient.factor hIJ
+  commutes' _ := rfl
 
 variable {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (hIJ : I ≤ J)
 
@@ -464,13 +466,13 @@ variable [Semiring B] [Algebra R₁ B]
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
-  -- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
-  -- imports this file.
-  .mk' (lift I (f : A →+* B) hI) fun r ↦ by
-    have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
-    rw [this, RingHom.id_apply, Ideal.Quotient.lift_mk, AlgHom.coe_toRingHom,
-      Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
-      map_smul, map_one]
+  { -- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
+    -- imports this file.
+      Ideal.Quotient.lift
+      I (f : A →+* B) hI with
+    commutes' := fun r => by
+      have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
+      simp [this, Ideal.Quotient.lift_mk, Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 @[simp]
 theorem Quotient.liftₐ_apply (I : Ideal A) [I.IsTwoSided]
@@ -504,7 +506,7 @@ This is an isomorphism if `f` has a right inverse (`quotientKerAlgEquivOfRightIn
 is surjective (`quotientKerAlgEquivOfSurjective`).
 -/
 def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f) →ₐ[R₁] B :=
-  AlgHom.mk (RingHom.kerLift (f : A →+* B)) fun _ _ => KerLift.map_smul f _ _
+  AlgHom.mk' (RingHom.kerLift (f : A →+* B)) fun _ _ => KerLift.map_smul f _ _
 
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
@@ -687,8 +689,8 @@ variable [Ring B] [Algebra R₁ B] {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
-  .mk' (quotientMap J (f : A →+* B) hIJ) fun r => by simp only [quotientMap_algebraMap,
-    AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap]
+  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp [
+    quotientMap_algebraMap, Quotient.mk_algebraMap] }
 
 @[simp]
 theorem quotient_map_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
@@ -705,7 +707,7 @@ where `J = f(I)`. -/
 def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
-    map_smul' r _ := by simp [Algebra.smul_def] }
+    commutes' r := by simp }
 
 @[simp]
 lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
@@ -763,7 +765,7 @@ theorem quotientEquivAlgOfEq_mk {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h
 @[simp]
 theorem quotientEquivAlgOfEq_coe_eq_factorₐ
     {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
-    (quotientEquivAlgOfEq R₁ h : A ⧸ I →ₐ[R₁] A ⧸ J) = Quotient.factorₐ R₁ (le_of_eq h) := rfl
+    (quotientEquivAlgOfEq R₁ h).toAlgHom = Quotient.factorₐ R₁ (le_of_eq h) := rfl
 
 @[simp]
 theorem quotientEquivAlgOfEq_coe_eq_factor
@@ -829,7 +831,7 @@ variable (R S) in
 def AlgEquiv.quotientBot [CommSemiring R] [Ring S] [Algebra R S] :
     (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
   __ := RingEquiv.quotientBot S
-  map_smul' _ _ := by simp [Algebra.smul_def, ← Ideal.Quotient.mk_algebraMap]
+  commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
 
 @[simp]
 lemma AlgEquiv.quotientBot_mk [CommSemiring R] [CommRing S] [Algebra R S] (s : S) :
@@ -980,7 +982,7 @@ variable (R) {A : Type*} [CommSemiring R] [CommRing A] [Algebra R A] (I J : Idea
 
 /-- The natural algebra homomorphism `A / I → A / (I ⊔ J)`. -/
 def quotLeftToQuotSupₐ : A ⧸ I →ₐ[R] A ⧸ I ⊔ J :=
-  AlgHom.mk' (quotLeftToQuotSup I J) fun _ => rfl
+  AlgHom.mk (quotLeftToQuotSup I J) fun _ => rfl
 
 @[simp]
 theorem quotLeftToQuotSupₐ_toRingHom :
@@ -994,7 +996,7 @@ theorem coe_quotLeftToQuotSupₐ : ⇑(quotLeftToQuotSupₐ R I J) = quotLeftToQ
 /-- The algebra homomorphism `(A / I) / J' -> A / (I ⊔ J)` induced by `quotQuotToQuotSup`,
   where `J'` is the projection of `J` in `A / I`. -/
 def quotQuotToQuotSupₐ : (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) →ₐ[R] A ⧸ I ⊔ J :=
-  AlgHom.mk' (quotQuotToQuotSup I J) fun _ => rfl
+  AlgHom.mk (quotQuotToQuotSup I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotToQuotSupₐ_toRingHom :
@@ -1009,7 +1011,7 @@ theorem coe_quotQuotToQuotSupₐ : ⇑(quotQuotToQuotSupₐ R I J) = quotQuotToQ
 /-- The composition of the algebra homomorphisms `A → (A / I)` and `(A / I) → (A / I) / J'`,
   where `J'` is the projection `J` in `A / I`. -/
 def quotQuotMkₐ : A →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
-  AlgHom.mk' (quotQuotMk I J) fun _ => rfl
+  AlgHom.mk (quotQuotMk I J) fun _ => rfl
 
 @[simp]
 theorem quotQuotMkₐ_toRingHom :
@@ -1023,7 +1025,7 @@ theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
 /-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
   where `J'` is the projection `J` in `A / I`. -/
 def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
-  AlgHom.mk' (liftSupQuotQuotMk I J) fun _ => rfl
+  AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl
 
 @[simp]
 theorem liftSupQuotQuotMkₐ_toRingHom :

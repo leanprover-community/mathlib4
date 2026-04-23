@@ -71,7 +71,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_add := map_add
   map_zero := map_zero
   commutes := fun c r => by
-    simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
+    simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one, RingHom.id_apply]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
 `BialgHom`. This is declared as the default coercion from `F` to `A →ₐc[R] B`. -/
@@ -96,7 +96,8 @@ theorem counitAlgHom_comp (f : F) :
 
 @[simp]
 theorem map_comp_comulAlgHom (f : F) :
-    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) =
+      (comulAlgHom R B).comp (f : A →ₐ[R] B) :=
   AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 end

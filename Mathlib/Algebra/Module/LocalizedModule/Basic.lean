@@ -573,8 +573,7 @@ variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
   map_units s := by
-    have (r : R) := RingHom.id_apply r ▸ (Algebra.lsmul R (A := R') R M).commutes r
-    rw [← this]; exact (IsLocalization.map_units R' s).map _
+    rw [← (Algebra.lsmul R (A := R') R M).commutes]; exact (IsLocalization.map_units R' s).map _
   surj m := ⟨(m, 1), one_smul _ _⟩
   exists_of_eq h := ⟨1, congr_arg _ h⟩
 

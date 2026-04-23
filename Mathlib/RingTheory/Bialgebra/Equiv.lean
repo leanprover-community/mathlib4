@@ -311,9 +311,9 @@ variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
 
 /-- Construct a bialgebra equiv from an algebra equiv respecting counit and comultiplication. -/
 @[simps apply] def ofAlgEquiv (f : A ≃ₐ[R] B)
-    (counit_comp : (Bialgebra.counitAlgHom R B).comp f = Bialgebra.counitAlgHom R A)
-    (map_comp_comul : (Algebra.TensorProduct.map f f).comp (Bialgebra.comulAlgHom R A) =
-        (Bialgebra.comulAlgHom R B).comp f) : A ≃ₐc[R] B where
+    (counit_comp : (Bialgebra.counitAlgHom R B).comp f.toAlgHom = Bialgebra.counitAlgHom R A)
+    (map_comp_comul : (Algebra.TensorProduct.map f.toAlgHom f.toAlgHom).comp
+      (Bialgebra.comulAlgHom R A) = (Bialgebra.comulAlgHom R B).comp f.toAlgHom) : A ≃ₐc[R] B where
   __ := f
   map_smul' := map_smul f
   counit_comp := congr($(counit_comp).toLinearMap)

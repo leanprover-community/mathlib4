@@ -173,7 +173,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra E K₁] [Algebra E K₂] [
 theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+  rw [← show E.val.comp g.toAlgHom = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
     ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
     IntermediateField.fieldRange_val]
 

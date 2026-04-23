@@ -333,10 +333,10 @@ theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
     obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
     simp only [Set.mem_image, SetLike.mem_coe, exists_exists_and_eq_and]
     use restrict_on_K g
-    refine ⟨Subalgebra.mem_map.mpr ?_,
+    refine ⟨Subalgebra.mem_map (f := restrict_on_K.toAlgHom) |>.mpr ?_,
       by simpa only [compStarAlgHom'_apply, comp_apply, coe_mk, ne_eq, restrict_on_K, hg2]⟩
     use g, hg1
-    simp [AlgHom.coe_coe]
+    simp
   obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
     @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
     (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)

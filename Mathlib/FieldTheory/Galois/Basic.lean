@@ -444,13 +444,10 @@ open scoped Pointwise
 
 @[simp]
 theorem map_fixingSubgroup (σ : Gal(L/K)) :
-    (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
+    (E.map σ.toAlgHom).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
-  simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
-    IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
-  rfl
+  simp [IntermediateField.fixingSubgroup, _root_.mem_fixingSubgroup_iff,
+    ← symm_apply_eq, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
 
 /-- Let `E` be an intermediateField of a Galois extension `L / K`. If `E / K` is
 Galois extension, then `E.fixingSubgroup` is a normal subgroup of `Gal(L / K)`. -/
@@ -516,10 +513,10 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
       IsScalarTower.algebraMap_eq]
     exact (Polynomial.mem_roots (Polynomial.map_ne_zero h1)).mp hx
   let key_equiv : (K⟮x⟯.restrictScalars F →ₐ[F] E) ≃
-      Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
+      Σ f : K →ₐ[F] E, @AlgHom K K _ _ (.id K) K⟮x⟯ E _ _ _ (RingHom.toAlgebra f) := by
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
-  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
+  haveI (f : K →ₐ[F] E) : Finite (@AlgHom K K _ _ (.id K) K⟮x⟯ E _ _ _ (RingHom.toAlgebra f)) := by
     have := Finite.of_equiv _ key_equiv
     apply Finite.of_injective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
   have : FiniteDimensional F K := FiniteDimensional.left F K E

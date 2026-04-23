@@ -332,7 +332,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
 
 lemma adjoinRootXPowSubCEquiv_root :
     adjoinRootXPowSubCEquiv hζ H hα (root _) = α := by
-  rw [adjoinRootXPowSubCEquiv, AlgEquiv.coe_ofBijective, liftAlgHom_root]
+  rw [adjoinRootXPowSubCEquiv, AlgEquiv.ofBijective_apply, liftAlgHom_root]
 
 lemma adjoinRootXPowSubCEquiv_symm_eq_root :
     (adjoinRootXPowSubCEquiv hζ H hα).symm α = root _ := by
@@ -342,11 +342,12 @@ lemma adjoinRootXPowSubCEquiv_symm_eq_root :
 include hζ H hα in
 lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
-  apply Subalgebra.map_injective (B := K[n√a]) (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
+  apply Subalgebra.map_injective (B := K[n√a])
+    (f := (adjoinRootXPowSubCEquiv hζ H hα).symm.toAlgHom)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
-    (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
-    Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
+    (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin, Set.image_singleton,
+    AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
 
 include hζ H hα in
 lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :

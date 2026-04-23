@@ -314,7 +314,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 
 set_option backward.privateInPublic true in
 /-- Internal definition used to define `lift` -/
-private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A := .mk' {
+private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
       induction h
@@ -360,7 +360,8 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A := .mk' {
     simp
   map_add' := by
     rintro ⟨⟩ ⟨⟩
-    rfl } (by tauto)
+    rfl
+  commutes' := by tauto
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -383,7 +384,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         simp only [Function.comp_apply, ι_def]
       | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
-        simp [AlgHom.commutes F _]
+        rw [AlgHom.commutes F _]
       | add a b ha hb =>
         -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X

@@ -883,7 +883,7 @@ def fstHom : tsze R M →ₐ[S] R where
   map_mul' := fst_mul
   map_zero' := fst_zero (M := M)
   map_add' := fst_add
-  map_smul' _ _ := fst_inl M _
+  commutes' _r := fst_inl M _
 
 /-- `R'` as an algebra over `TrivSqZeroExt R' M`. Not an instance since it creates a different
 `Algebra (TrivSqZeroExt R' M) (TrivSqZeroExt R' M)` instance from `TrivSqZeroExt.algebra'`. -/
@@ -905,7 +905,7 @@ def inlAlgHom : R →ₐ[S] tsze R M where
   map_mul' := inl_mul _
   map_zero' := inl_zero (M := M)
   map_add' := inl_add _
-  map_smul' _ _ := by simp
+  commutes' _r := (algebraMap_eq_inl' _ _ _ _).symm
 
 variable {R R' S M}
 

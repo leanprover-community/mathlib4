@@ -112,9 +112,9 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
     (hf : Splits (f.map (algebraMap K F))) : L →ₐ[K] F :=
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
-      (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
+      (Algebra.botEquiv K L).toAlgHom.comp (show L →ₐ[K] (⊥ : Subalgebra K L) by
         rw [← (splits_iff L f).1 (show f.Splits by simp [hf0])]
-        exact Algebra.toTop
+        exact Algebra.toTop)
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>

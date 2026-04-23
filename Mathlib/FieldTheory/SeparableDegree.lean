@@ -240,11 +240,11 @@ then there is a non-canonical bijection
 def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     Emb F E × Emb E K ≃ Emb F K :=
   let e : ∀ f : E →ₐ[F] AlgebraicClosure K,
-      @AlgHom E K _ _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
+      @AlgHom E E _ _ (.id E) K _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
     (@embEquivOfIsAlgClosed E K _ _ _ _ _ f.toRingHom.toAlgebra).symm
   (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans
     (Equiv.sigmaEquivProdOfEquiv e) |>.trans <| Equiv.prodCongrLeft <|
-      fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
+      fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F _ E _ _) <|
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 

@@ -62,7 +62,7 @@ variable (R A)
 @[simps!]
 def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
-  map_smul' _ _ := rfl
+  commutes' _ := rfl
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about this being `@[simp]`. -/
@@ -79,7 +79,7 @@ an algebra homomorphism from `Aᵐᵒᵖ`. -/
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
-    map_smul' _ _ := f.map_smul .. }
+    commutes' := fun r => f.commutes r }
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -98,7 +98,7 @@ an algebra homomorphism to `Bᵐᵒᵖ`. -/
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f
-    map_smul' _ _ := unop_injective <| f.map_smul .. }
+    commutes' := fun r => unop_injective <| f.commutes r }
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -114,8 +114,8 @@ theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
-  toFun f := { RingHom.op f.toRingHom with map_smul' _ _ := unop_injective <| f.map_smul .. }
-  invFun f := { RingHom.unop f.toRingHom with map_smul' _ _ := op_injective <| f.map_smul .. }
+  toFun f := { RingHom.op f.toRingHom with commutes' := fun r => unop_injective <| f.commutes r }
+  invFun f := { RingHom.unop f.toRingHom with commutes' := fun r => op_injective <| f.commutes r }
 
 theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
@@ -141,10 +141,10 @@ This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   toFun f :=
     { RingEquiv.op f.toRingEquiv with
-      map_smul' _ _ := unop_injective <| f.map_smul .. }
+      commutes' := fun r => MulOpposite.unop_injective <| f.commutes r }
   invFun f :=
     { RingEquiv.unop f.toRingEquiv with
-      map_smul' _ _ := op_injective <| f.map_smul .. }
+      commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
 
 theorem toAlgHom_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=
@@ -175,13 +175,13 @@ variable (R S)
 multiplication. -/
 @[simps!] def moduleEndSelf : Aᵐᵒᵖ ≃ₐ[R] Module.End A A where
   __ := RingEquiv.moduleEndSelf A
-  map_smul' _ _ := by ext; simp
+  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
 
 /-- The canonical algebra isomorphism from `A` to `Module.End Aᵐᵒᵖ A` induced by the left
 multiplication. -/
 @[simps!] def moduleEndSelfOp : A ≃ₐ[R] Module.End Aᵐᵒᵖ A where
   __ := RingEquiv.moduleEndSelfOp A
-  map_smul' _ _ := by ext; simp
+  commutes' _ := by ext; simp [Algebra.algebraMap_eq_smul_one]
 
 end AlgEquiv
 
@@ -196,7 +196,7 @@ namespace AlgEquiv
 @[simps!]
 def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
   __ := RingEquiv.toOpposite A
-  map_smul' _ _ := rfl
+  commutes' _r := rfl
 
 #adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
 the simpNF linter complains about this being `@[simp]`. -/

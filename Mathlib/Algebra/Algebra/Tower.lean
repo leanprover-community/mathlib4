@@ -71,7 +71,7 @@ def lsmul : A →ₐ[R] Module.End B M where
   map_mul' a b := LinearMap.ext <| smul_assoc a b
   map_zero' := LinearMap.ext fun _ => zero_smul A _
   map_add' _a _b := LinearMap.ext fun _ => add_smul _ _ _
-  map_smul' r x := LinearMap.ext <| by simp
+  commutes' r := LinearMap.ext <| algebraMap_smul A r
 
 @[simp]
 theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
@@ -136,7 +136,7 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
 /-- In a tower, the canonical map from the middle element to the top element is an
 algebra homomorphism over the bottom element. -/
 def toAlgHom : S →ₐ[R] A :=
-  { algebraMap S A with map_smul' _ := by simp [Algebra.smul_def, (algebraMap_apply _ _ _ _).symm]}
+  { algebraMap S A with commutes' := fun _ => (algebraMap_apply _ _ _ _).symm }
 
 theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
 
@@ -152,7 +152,7 @@ variable {R S A B}
 @[simp]
 theorem _root_.AlgHom.map_algebraMap (f : A →ₐ[S] B) (r : R) :
     f (algebraMap R A r) = algebraMap R B r := by
-  simp [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
+  rw [algebraMap_apply R S A r, f.commutes, ← algebraMap_apply R S B]
 
 variable (R)
 
@@ -191,8 +191,9 @@ namespace AlgHom
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
   { (f : A →+* B) with
-    map_smul' _ _ := by
-      simp [Algebra.smul_def, algebraMap_apply R S A, algebraMap_apply R S B, f.commutes] }
+    commutes' := fun r => by
+      rw [algebraMap_apply R S A, algebraMap_apply R S B]
+      exact f.commutes (algebraMap R S r) }
 
 theorem restrictScalars_apply (f : A →ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
@@ -216,7 +217,7 @@ variable {R}
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A →ₐ[R] B) : A →ₐ[S] B where
   toRingHom := f
-  map_smul' := by simp [h.forall, Algebra.smul_def,← IsScalarTower.algebraMap_apply]
+  commutes' := by simp [h.forall, ← IsScalarTower.algebraMap_apply]
 
 @[simp]
 lemma restrictScalars_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
@@ -232,8 +233,9 @@ namespace AlgEquiv
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
   { (f : A ≃+* B) with
-    map_smul' _ := by
-      simp [Algebra.smul_def, algebraMap_apply R S A, algebraMap_apply R S B, f.commutes] }
+    commutes' := fun r => by
+      rw [algebraMap_apply R S A, algebraMap_apply R S B]
+      exact f.commutes (algebraMap R S r) }
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
@@ -267,7 +269,7 @@ variable {R}
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
   toRingEquiv := f
-  map_smul' := (f.toAlgHom.extendScalarsOfSurjective h).map_smul'
+  commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes'
 
 @[simp] lemma coe_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
     (f : A ≃ₐ[R] B) : ⇑(extendScalarsOfSurjective h f) = f := rfl
