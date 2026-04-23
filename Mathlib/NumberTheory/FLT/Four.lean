@@ -5,11 +5,35 @@ Authors: Paul van Wamelen
 -/
 module
 
-public import Mathlib.Data.Nat.Factors
 public import Mathlib.NumberTheory.FLT.Basic
-public import Mathlib.NumberTheory.PythagoreanTriples
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.NumberTheory.PythagoreanTriples
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Fermat's Last Theorem for the case n = 4

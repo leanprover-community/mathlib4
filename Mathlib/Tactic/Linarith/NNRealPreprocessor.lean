@@ -5,9 +5,28 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith
-public meta import Mathlib.Tactic.Rify
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Rify
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # NNReal linarith preprocessing

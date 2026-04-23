@@ -8,8 +8,12 @@ module
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
-public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of finite Boolean algebras

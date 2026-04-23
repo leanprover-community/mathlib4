@@ -5,11 +5,18 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Separation properties of topological spaces.

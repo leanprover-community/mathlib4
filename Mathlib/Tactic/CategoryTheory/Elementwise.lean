@@ -5,9 +5,15 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public import Batteries.Tactic.Lint.Simp
+public meta import Mathlib.Lean.Meta.Simp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

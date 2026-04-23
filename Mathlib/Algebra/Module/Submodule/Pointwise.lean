@@ -6,8 +6,18 @@ Authors: Eric Wieser, Jujian Zhang
 module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Algebra.Order.Group.Action
-public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Group.Action
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Pointwise instances on `Submodule`s
 

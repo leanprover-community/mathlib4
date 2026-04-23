@@ -5,8 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Basic
+import Mathlib.Init
+import Mathlib.Logic.Basic
 
 /-!
 # Sigma types

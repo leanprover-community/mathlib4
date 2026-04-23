@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Order.BoundedOrder.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 

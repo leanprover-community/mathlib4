@@ -6,9 +6,15 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
-public import Mathlib.Tactic.ProxyType
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Core
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.ProxyType
+import Mathlib.Tactic.SetLike
 
 /-!
 # The `Fintype` derive handler

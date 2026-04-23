@@ -5,9 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.Order.Basic
+import Batteries.Tactic.Init
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of objects in a category

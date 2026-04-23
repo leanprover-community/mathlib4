@@ -6,7 +6,8 @@ Authors: Lucas Allen, Kim Morrison
 module
 
 public meta import Lean.Elab.Tactic.Conv.Basic
-public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.SimpCongrTheorems
+import Mathlib.Init
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.

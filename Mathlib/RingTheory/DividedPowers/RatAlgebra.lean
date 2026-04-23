@@ -5,8 +5,30 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.NatCast
 public import Mathlib.RingTheory.DividedPowers.Basic
+public import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Nat.Factorial.NatCast
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Ideal.Lattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-! # Examples of divided power structures
 

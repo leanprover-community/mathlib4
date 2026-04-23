@@ -8,6 +8,16 @@ module
 public import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Factors
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `p`-adic Valuation

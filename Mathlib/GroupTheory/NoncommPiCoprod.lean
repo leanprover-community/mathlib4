@@ -5,9 +5,22 @@ Authors: Joachim Breitner
 -/
 module
 
-public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Order.SupIndep
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Canonical homomorphism from a finite family of monoids

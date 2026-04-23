@@ -7,11 +7,22 @@ module
 
 public meta import Mathlib.Control.Basic
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Tactic.Linarith.Datatypes
 public meta import Mathlib.Util.AtomM
 public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Zify
+public meta import Aesop.BuiltinRules
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Util.AtomM
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+meta import Mathlib.Tactic.Linarith.Datatypes
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Linarith preprocessing

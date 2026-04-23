@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Twisting a shift

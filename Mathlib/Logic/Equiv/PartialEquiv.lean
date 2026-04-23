@@ -5,10 +5,20 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Data.Set.Function
+import Batteries.Tactic.Trans
+import Mathlib.Data.Prod.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Substs
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partial equivalences

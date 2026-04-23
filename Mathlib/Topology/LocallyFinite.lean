@@ -6,7 +6,24 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Order.Filter.SmallSets
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Constructions.SumProd
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Nat
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
 
 /-!
 ### Locally finite families of sets

@@ -6,14 +6,19 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.Interval.Set.Final
+public import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # A structure to describe transfinite compositions

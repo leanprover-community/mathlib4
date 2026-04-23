@@ -5,8 +5,18 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan C
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalence relations: partitions

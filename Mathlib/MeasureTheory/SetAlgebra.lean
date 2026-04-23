@@ -5,8 +5,18 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-!
 # Algebra of sets

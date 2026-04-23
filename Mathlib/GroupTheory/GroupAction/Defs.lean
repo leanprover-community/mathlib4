@@ -5,12 +5,21 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Data.Set.BooleanAlgebra
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Logic.Equiv.Set
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`

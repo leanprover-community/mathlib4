@@ -5,10 +5,21 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
-public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Interval.Set.OrderEmbedding
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of unbundled upper/lower sets

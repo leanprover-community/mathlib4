@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Units in semirings and rings

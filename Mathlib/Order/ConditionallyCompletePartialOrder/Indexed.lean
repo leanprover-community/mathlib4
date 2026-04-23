@@ -5,8 +5,24 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
-public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Indexed sup / inf in conditionally complete lattices

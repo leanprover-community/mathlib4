@@ -5,10 +5,32 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Bounds
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Choose.Bounds
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Central binomial coefficients

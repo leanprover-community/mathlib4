@@ -5,7 +5,17 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Filter.Map
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.Filter.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Kernel of a filter

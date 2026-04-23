@@ -8,7 +8,14 @@ module
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Data.List.GetD
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.GetD
+import Mathlib.Data.List.Induction
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

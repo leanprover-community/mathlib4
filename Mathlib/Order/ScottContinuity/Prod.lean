@@ -6,7 +6,19 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.ScottContinuity
-public import Mathlib.Order.Bounds.Lattice
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Lattice
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Scott continuity on product spaces

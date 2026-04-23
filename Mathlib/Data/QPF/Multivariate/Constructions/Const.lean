@@ -5,8 +5,12 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Functor.Multivariate
 public import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Constant functors are QPFs

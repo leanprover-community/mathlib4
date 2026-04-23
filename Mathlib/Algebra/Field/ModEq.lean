@@ -6,8 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.ModEq
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Tactic.MinImports
+public import Aesop.BuiltinRules
+public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Push
+import Mathlib.Util.CompileInductive
 
 /-!
 # Congruence modulo multiples of an element in a (semi)field

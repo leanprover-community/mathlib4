@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.HomCongr
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Conjugate morphisms by isomorphisms

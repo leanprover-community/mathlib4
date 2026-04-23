@@ -7,6 +7,12 @@ module
 
 public import Mathlib.ModelTheory.ElementaryMaps
 public import Mathlib.ModelTheory.Definability
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Elementary Substructures

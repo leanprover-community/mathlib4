@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.Basic
-public import ProofWidgets.Component.OfRpcMethod
+public import Batteries.Tactic.Lint.Misc
+import Mathlib.Init
+import ProofWidgets.Component.OfRpcMethod
 
 /-! # GCongr widget
 

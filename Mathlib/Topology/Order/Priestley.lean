@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Order.UpperLower.Basic
 public import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Clopen
 
 /-!
 # Priestley spaces

@@ -8,6 +8,13 @@ module
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Qq.Macro
+public meta import Qq.MetaM
+public import Qq.Typ
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Expressions for bicategories

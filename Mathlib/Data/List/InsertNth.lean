@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.Common
-public import Mathlib.Util.CompileInductive
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 This is a stub file for importing `Mathlib/Data/List/InsertNth.lean`,

@@ -5,9 +5,20 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
-public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Operations
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`

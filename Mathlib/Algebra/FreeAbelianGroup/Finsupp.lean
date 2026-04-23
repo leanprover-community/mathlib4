@@ -8,6 +8,15 @@ module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Module.End
 public import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Ext
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`

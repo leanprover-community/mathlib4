@@ -6,7 +6,24 @@ Authors: Sebastian Zimmer
 module
 
 public meta import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Tactic.NormNum
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extensions for factorials
 

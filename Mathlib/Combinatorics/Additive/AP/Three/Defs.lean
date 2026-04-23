@@ -6,10 +6,24 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Combinatorics.Additive.FreimanHom
 public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Data.Finset.Powerset
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Interval.Finset.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers

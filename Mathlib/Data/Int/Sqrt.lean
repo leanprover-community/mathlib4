@@ -5,8 +5,15 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Nat.Sqrt
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Batteries.Data.Nat.Basic
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Square root of integers

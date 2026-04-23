@@ -6,9 +6,18 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Ring.CharZero
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.List.Chain
+public import Mathlib.Tactic.Tauto
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

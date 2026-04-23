@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ring structure on the order type synonyms

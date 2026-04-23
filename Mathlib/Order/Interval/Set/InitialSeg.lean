@@ -6,6 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Order.InitialSeg
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Intervals as initial segments

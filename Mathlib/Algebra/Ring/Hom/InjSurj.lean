@@ -6,8 +6,11 @@ Authors: Amelia Livingston, Jireh Loreaux
 module
 
 public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps

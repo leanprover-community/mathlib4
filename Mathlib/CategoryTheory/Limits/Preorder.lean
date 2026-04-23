@@ -6,7 +6,11 @@ Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.Order.Bounds.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # (Co)limits in a preorder category

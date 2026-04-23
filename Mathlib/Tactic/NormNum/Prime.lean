@@ -5,10 +5,20 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Basic
 public meta import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.NormNum.Result
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Init
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions on natural numbers

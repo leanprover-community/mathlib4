@@ -5,8 +5,16 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.ModelTheory.Substructures
+public meta import Mathlib.Tactic.ToAdditive
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Elementary Maps Between First-Order Structures

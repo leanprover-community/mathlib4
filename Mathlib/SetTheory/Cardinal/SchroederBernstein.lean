@@ -5,9 +5,22 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Order.FixedPoints
-public import Mathlib.Order.Zorn
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Restrict
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Order.FixedPoints
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals

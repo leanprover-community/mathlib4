@@ -9,6 +9,14 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Homological complexes.

@@ -6,7 +6,12 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 

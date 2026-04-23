@@ -6,7 +6,12 @@ Authors: Chris Hughes, Patrick Stevens
 module
 
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Factorial
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Divisibility properties of binomial coefficients

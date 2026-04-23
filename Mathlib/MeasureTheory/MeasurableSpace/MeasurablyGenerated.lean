@@ -5,12 +5,22 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Order.Filter.SmallSets
 public import Mathlib.Order.LiminfLimsup
-public import Mathlib.Tactic.FinCases
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.SetLike
 
 /-!
 # Measurably generated filters

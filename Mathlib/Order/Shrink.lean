@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Logic.Small.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order instances on Shrink

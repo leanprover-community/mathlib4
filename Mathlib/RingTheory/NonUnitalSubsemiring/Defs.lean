@@ -6,9 +6,17 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Tactic.FastInstance
+import Aesop.Frontend.Tactic
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bundled non-unital subsemirings

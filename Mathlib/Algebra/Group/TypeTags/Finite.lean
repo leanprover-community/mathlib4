@@ -6,8 +6,12 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Data.Finite.Defs
 public import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finite`, `Infinite` and `Fintype` are preserved by `Additive` and `Multiplicative`.

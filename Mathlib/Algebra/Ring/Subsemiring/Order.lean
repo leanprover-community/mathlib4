@@ -6,10 +6,15 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Order.Monoid.Submonoid
-public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

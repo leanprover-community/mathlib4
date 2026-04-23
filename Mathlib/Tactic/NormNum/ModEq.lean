@@ -5,8 +5,17 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Int.ModEq
-public import Mathlib.Tactic.NormNum.DivMod
+public meta import Aesop.BuiltinRules
+public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Data.Int.ModEq
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extensions for `Nat.ModEq` and `Int.ModEq`

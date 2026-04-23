@@ -5,14 +5,24 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Semiconj
-public import Mathlib.Algebra.Group.Commute.Units
 public import Mathlib.Data.Set.Operations
-public import Mathlib.Order.Basic
 public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Data.Nat.Init
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Data.Int.Init
+import Mathlib.Init
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Extended GCD and divisibility over ℤ

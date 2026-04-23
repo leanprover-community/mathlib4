@@ -6,7 +6,14 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Partial homeomorphisms: definitions

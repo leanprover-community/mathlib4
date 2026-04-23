@@ -8,6 +8,12 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
 public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Range of linear maps

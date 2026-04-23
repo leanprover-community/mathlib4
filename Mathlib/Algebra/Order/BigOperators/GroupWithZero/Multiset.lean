@@ -6,7 +6,14 @@ Authors: Ruben Van de Velde, Daniel Weber
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Big operators on a multiset in ordered groups with zeros

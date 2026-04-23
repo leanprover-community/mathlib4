@@ -5,10 +5,18 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Fin.Tuple.Embedding
-public import Mathlib.Data.Finite.Card
 public import Mathlib.Data.Set.Card
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Existence of embeddings from finite types
 

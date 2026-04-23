@@ -6,11 +6,23 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Functor.OfSequence
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
-public import Mathlib.CategoryTheory.Limits.Shapes.PiProd
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.Tactic.SplitIfs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.EffectiveEpi.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+import Mathlib.CategoryTheory.Limits.Shapes.PiProd
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # ℕ-indexed products as sequential limits

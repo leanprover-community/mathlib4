@@ -6,10 +6,42 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
-public import Mathlib.Tactic.DepRewrite
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-public import Mathlib.RingTheory.Smooth.IntegralClosure
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.Tactic.Algebraize
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Smooth.IntegralClosure
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Relative Normalization

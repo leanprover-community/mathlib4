@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Data.Set.Pairwise.Basic
+import Batteries.Tactic.Init
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Filtering a finite set

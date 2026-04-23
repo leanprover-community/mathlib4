@@ -6,8 +6,27 @@ Authors: Kim Morrison, Mario Carneiro
 module
 
 public meta import Mathlib.Control.Basic
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.NormNum
+public meta import Aesop.BuiltinRules
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Case bash on variables in finite intervals

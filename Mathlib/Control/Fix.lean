@@ -9,6 +9,10 @@ public import Mathlib.Data.Part
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Upto
 public import Mathlib.Data.Stream.Defs
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Fixed point

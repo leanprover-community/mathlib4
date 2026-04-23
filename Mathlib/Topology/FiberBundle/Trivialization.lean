@@ -6,10 +6,32 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Bundle
-public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 public import Mathlib.Topology.Order.Basic
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+import Mathlib.Topology.Piecewise
 
 /-!
 # Trivializations

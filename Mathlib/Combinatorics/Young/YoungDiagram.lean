@@ -5,10 +5,18 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.Nat.Find
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Young diagrams

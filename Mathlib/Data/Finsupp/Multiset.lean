@@ -5,10 +5,20 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Order.Preorder.Finsupp
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Finset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Category.BddLat
 public import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of complete lattices

@@ -7,9 +7,16 @@ Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Tactic.FastInstance
+import Aesop.Frontend.Attribute
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subsemigroups: definition

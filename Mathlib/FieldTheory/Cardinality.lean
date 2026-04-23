@@ -5,13 +5,36 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.MvPolynomial.Cardinal
-public import Mathlib.Data.Rat.Encodable
-public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.Localization.Cardinality
-public import Mathlib.SetTheory.Cardinal.Divisibility
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.Field.TransferInstance
+import Mathlib.Algebra.Field.ULift
+import Mathlib.Algebra.MvPolynomial.Cardinal
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.RingTheory.Localization.Cardinality
+import Mathlib.SetTheory.Cardinal.Divisibility
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of Fields

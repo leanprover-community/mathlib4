@@ -6,8 +6,20 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.Cover
-public import Mathlib.Order.Iterate
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Iterate
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successor and predecessor

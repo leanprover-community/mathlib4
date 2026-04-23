@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Filter.CountableSeparatingOn
 public import Mathlib.Topology.Separation.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Countable separating families of sets in topological spaces

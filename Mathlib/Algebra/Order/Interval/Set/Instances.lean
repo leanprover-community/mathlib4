@@ -5,13 +5,22 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morris
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Ring.Regular
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Algebraic instances for unit intervals

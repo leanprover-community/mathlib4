@@ -7,8 +7,17 @@ module
 
 public import Mathlib.Data.List.MinMax
 public import Mathlib.Algebra.Tropical.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

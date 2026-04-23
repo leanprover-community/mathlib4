@@ -5,10 +5,17 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.List.Chain
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Sigma.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.List.Chain
+import Mathlib.Init
+import Mathlib.Logic.Lemmas
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Connected components of a category

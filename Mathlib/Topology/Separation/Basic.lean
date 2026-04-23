@@ -7,11 +7,32 @@ module
 
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Topology.Inseparable
-public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Separation.SeparatedNhds
-public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Bases
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Compactness.Compact
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.Piecewise
 
 /-!
 # Separation properties of topological spaces

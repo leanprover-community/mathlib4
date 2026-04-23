@@ -5,15 +5,24 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.StarRingHom
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
 public import Mathlib.Algebra.Star.StarProjection
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Star ordered rings
 

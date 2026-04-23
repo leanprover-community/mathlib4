@@ -6,6 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.SetTheory.Cardinal.Regular
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The property of being of cardinality less than a cardinal

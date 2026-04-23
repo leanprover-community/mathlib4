@@ -5,11 +5,20 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Sum
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # fintype instances relating to units

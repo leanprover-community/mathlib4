@@ -6,8 +6,15 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.RingTheory.SimpleRing.Defs
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Init
+import Mathlib.RingTheory.TwoSidedIdeal.Kernel
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Basic Properties of Simple rings
 

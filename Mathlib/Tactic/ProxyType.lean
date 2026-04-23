@@ -5,8 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Logic.Equiv.Defs
 public meta import Mathlib.Tactic.Simps.Basic
+public import Lean.Elab.Term.TermElabM
+public import Mathlib.Tactic.Core
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Generating "proxy types"

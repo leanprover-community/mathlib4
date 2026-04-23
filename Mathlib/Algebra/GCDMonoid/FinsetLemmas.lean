@@ -6,9 +6,19 @@ Authors: Snir Broshi
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finset.lcm` lemmas

@@ -5,9 +5,21 @@ Authors: Yourong Zang, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
 
 /-!
 # The one-point compactification

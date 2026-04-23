@@ -6,7 +6,12 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Enriched.Basic
-public import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The bicategory of `V`-enriched categories

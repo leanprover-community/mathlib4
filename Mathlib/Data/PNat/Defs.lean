@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Neil Strickland
 -/
 module
 
-public import Mathlib.Data.Int.Order.Basic
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Order.Basic
-public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Coe
 
 /-!
 # The positive natural numbers

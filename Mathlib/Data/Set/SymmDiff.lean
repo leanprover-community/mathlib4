@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.SymmDiff
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Symmetric differences of sets -/
 

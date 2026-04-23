@@ -7,6 +7,18 @@ module
 
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.TensorPower.Basic
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.OfFn
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor algebras as direct sums of tensor powers

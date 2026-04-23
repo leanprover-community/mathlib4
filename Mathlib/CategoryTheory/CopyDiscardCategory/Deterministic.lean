@@ -6,6 +6,11 @@ Authors: Jacob Reinhold
 module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Deterministic Morphisms in Copy-Discard Categories

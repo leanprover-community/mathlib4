@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 module
 
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
+import Mathlib.Init
 
 /-!
 # The `@[to_dual]` attribute.

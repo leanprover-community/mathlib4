@@ -5,8 +5,28 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Cardinal
-public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Algebraic.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 ### Cardinality of algebraic numbers

@@ -7,7 +7,29 @@ module
 
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.RingTheory.HahnSeries.Multiplication
-public import Mathlib.Data.Rat.Cast.Lemmas
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Set
+import Mathlib.Data.Rat.Cast.Lemmas
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Summable families of Hahn Series

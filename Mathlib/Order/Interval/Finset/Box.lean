@@ -5,12 +5,27 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Disjointed
-public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Zify
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Order.Disjointed
+import Mathlib.Algebra.Order.Disjointed
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Prod
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Zify
 
 /-!
 # Decomposing a locally finite ordered ring into boxes

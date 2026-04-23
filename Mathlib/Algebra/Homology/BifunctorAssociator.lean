@@ -6,8 +6,20 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject.Associator
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The associator for actions of bifunctors on homological complexes

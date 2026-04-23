@@ -9,6 +9,10 @@ public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.Group.Units.Opposite
 public import Mathlib.Algebra.Module.Opposite
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Multiplication on the left/right as additive automorphisms

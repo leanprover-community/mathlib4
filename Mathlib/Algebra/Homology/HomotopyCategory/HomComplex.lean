@@ -7,9 +7,30 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.Algebra.Homology.Homotopy
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Ring.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! The cochain complex of homomorphisms between cochain complexes
 

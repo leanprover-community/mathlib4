@@ -6,7 +6,12 @@ Authors: Johannes Hölzl, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Group.Irreducible.Defs
-public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Prime elements

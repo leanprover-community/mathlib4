@@ -5,11 +5,23 @@ Authors: Anne Baanen, Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
-public import Mathlib.Order.Hom.Bounded
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Hom.Bounded
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # Chains of divisors

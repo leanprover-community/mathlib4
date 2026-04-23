@@ -6,7 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Order.Lattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Sorting the elements of `Sym2`

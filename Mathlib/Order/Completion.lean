@@ -8,6 +8,14 @@ module
 public import Mathlib.Order.Concept
 
 import Mathlib.Order.UpperLower.CompleteLattice
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Dedekind-MacNeille completion

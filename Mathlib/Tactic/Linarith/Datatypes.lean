@@ -6,8 +6,14 @@ Authors: Robert Y. Lewis
 module
 
 public import Mathlib.Tactic.Linarith.Lemmas
-public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Datatypes for `linarith`

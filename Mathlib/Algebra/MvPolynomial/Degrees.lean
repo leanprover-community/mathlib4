@@ -5,8 +5,23 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Degree
 public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Data.Nat.Lattice
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.MonoidAlgebra.Degree
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Degrees of polynomials

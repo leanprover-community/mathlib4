@@ -6,9 +6,15 @@ Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `ULift` creates small (co)limits

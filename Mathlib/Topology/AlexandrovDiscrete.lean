@@ -5,10 +5,24 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Image
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Inseparable
-public import Mathlib.Topology.Compactness.NhdsKer
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.Prod
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.NhdsKer
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsKer
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Alexandrov-discrete topological spaces

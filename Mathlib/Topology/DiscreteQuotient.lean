@@ -7,8 +7,15 @@ module
 
 public import Mathlib.Data.Setoid.Partition
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Separation.Regular
 
 /-!
 

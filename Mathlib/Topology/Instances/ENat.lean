@@ -6,10 +6,33 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Data.ENat.Basic
-public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Topology on extended natural numbers

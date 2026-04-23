@@ -5,10 +5,14 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-public import Mathlib.Algebra.Star.Center
+public import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Center
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Non-unital Star Subsemirings

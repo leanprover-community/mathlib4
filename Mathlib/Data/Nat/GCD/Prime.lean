@@ -5,8 +5,10 @@ Authors: Yongshun Ye
 -/
 module
 
-public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Lemmas related to `Nat.Prime` and `lcm`

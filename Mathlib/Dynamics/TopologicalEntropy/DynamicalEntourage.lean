@@ -5,8 +5,20 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Dynamical entourages

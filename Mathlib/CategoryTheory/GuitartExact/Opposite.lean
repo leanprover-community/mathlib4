@@ -5,7 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
+public import Mathlib.CategoryTheory.GuitartExact.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The opposite of a Guitart exact square

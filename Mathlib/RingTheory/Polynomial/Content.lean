@@ -6,9 +6,32 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.Polynomial.CancelLeads
 public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Polynomial.CancelLeads
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Units
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.WithBot
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # GCD structures on polynomials

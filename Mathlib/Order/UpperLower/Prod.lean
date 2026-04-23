@@ -6,6 +6,13 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.UpperLower.Closure
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Upper and lower set product

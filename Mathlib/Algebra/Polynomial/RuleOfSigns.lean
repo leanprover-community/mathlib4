@@ -6,10 +6,32 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffList
-public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Data.List.Destutter
-public import Mathlib.Data.Sign.Basic
+public import Mathlib.Data.Sign.Defs
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Destutter
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sign.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 

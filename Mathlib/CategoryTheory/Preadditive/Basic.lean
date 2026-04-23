@@ -6,12 +6,22 @@ Authors: Markus Himmel, Jakob von Raumer
 module
 
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Preadditive categories

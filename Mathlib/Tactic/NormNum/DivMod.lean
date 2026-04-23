@@ -5,7 +5,21 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Ineq
+public meta import Aesop.BuiltinRules
+public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Int.Cast.Basic
+meta import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Util.CompileInductive
 
 /-!
 # `norm_num` extension for integer div/mod and divides

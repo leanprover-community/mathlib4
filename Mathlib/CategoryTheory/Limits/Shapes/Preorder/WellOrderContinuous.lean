@@ -7,15 +7,21 @@ module
 
 public import Mathlib.CategoryTheory.Limits.IsLimit
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Data.Fin.SuccPredOrder
 public import Mathlib.Order.Interval.Set.InitialSeg
-public import Mathlib.Order.Interval.Set.Limit
-public import Mathlib.Order.SuccPred.InitialSeg
 public import Mathlib.Order.SuccPred.Limit
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.Fin.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Data.Fin.SuccPredOrder
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.SuccPred.InitialSeg
+import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Continuity of functors from well-ordered types

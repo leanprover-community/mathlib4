@@ -5,7 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.ToExpr
+public import Lean.ToExpr
+import Mathlib.Init
 
 /-!
 # `ToExpr` instances for Mathlib

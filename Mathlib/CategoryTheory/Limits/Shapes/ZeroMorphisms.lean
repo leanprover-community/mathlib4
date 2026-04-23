@@ -5,11 +5,18 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+public import Mathlib.Tactic.Constructor
+import Mathlib.Algebra.Notation.Pi.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Zero morphisms and zero objects

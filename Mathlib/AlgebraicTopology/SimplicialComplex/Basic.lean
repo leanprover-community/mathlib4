@@ -5,8 +5,21 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Independent
-public import Mathlib.Order.UpperLower.Relative
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.UpperLower.Relative
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Abstract Simplicial complexes

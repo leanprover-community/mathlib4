@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Additive and Multiplicative for group actions

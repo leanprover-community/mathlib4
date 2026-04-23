@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Rings and `Fin`

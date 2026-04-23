@@ -5,11 +5,27 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.Order.Hom.Basic
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Absolute values

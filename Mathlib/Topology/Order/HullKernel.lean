@@ -5,10 +5,16 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Data.Set.Subset
 public import Mathlib.Order.Irreducible
 public import Mathlib.Topology.Order.LowerUpperTopology
 public import Mathlib.Topology.Sets.Closeds
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Subset
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Hull-Kernel Topology

@@ -6,7 +6,10 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Mathlib.Logic.ExistsUnique
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # `IsField` predicate

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about pointwise operations in the presence of `Multiplicative` and `Additive`.

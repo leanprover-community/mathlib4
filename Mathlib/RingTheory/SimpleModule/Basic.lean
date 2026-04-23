@@ -5,19 +5,37 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Data.Finite.Card
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Order.Atoms.Finite
-public import Mathlib.Order.CompactlyGenerated.Intervals
 public import Mathlib.Order.JordanHolder
-public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
 
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Finsupp.Span
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Order.Atoms.Finite
+import Mathlib.Order.CompactlyGenerated.Intervals
+import Mathlib.Order.Cover
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Ideal.Colon
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Simple Modules

@@ -5,8 +5,14 @@ Authors: Edward van de Meent, Jasper Mulder-Sohn
 -/
 module
 
-public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Order.Preorder.Chain
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Order.SetNotation
+import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pairwise results for chains

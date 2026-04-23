@@ -5,10 +5,16 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Data.Set.SMulAntidiagonal
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Scalar multiplication by finitely supported functions.

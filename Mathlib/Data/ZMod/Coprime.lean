@@ -5,11 +5,28 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Init
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Coprimality and vanishing

@@ -5,10 +5,24 @@ Authors: Eric Wieser, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Util.Delaborators
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Notation.Pi.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Centers of magmas and semigroups

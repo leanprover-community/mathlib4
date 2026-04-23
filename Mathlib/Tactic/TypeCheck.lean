@@ -5,9 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Elab.SyntheticMVars
+import Mathlib.Init
 
 /-!
 # The `type_check` tactic

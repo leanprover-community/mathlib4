@@ -5,11 +5,56 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Order.Iterate
-public import Mathlib.Order.SemiconjSup
-public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Order.Group.End
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Group.Semiconj.Units
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Iterate
+import Mathlib.Order.SemiconjSup
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Order.IntermediateValue
+import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Order.T5
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`

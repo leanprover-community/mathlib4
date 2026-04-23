@@ -5,14 +5,23 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Union
-public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.ModularLattice
-public import Mathlib.Tactic.FinCases
+public import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Lattice.Prod
+import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Supremum independence

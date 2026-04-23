@@ -5,8 +5,14 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.SuccPred.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Set intervals in a successor-predecessor order

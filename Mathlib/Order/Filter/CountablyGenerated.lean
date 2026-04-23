@@ -6,7 +6,21 @@ Authors: Gabriel Ebner, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Logic.Equiv.List
+import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Countably generated filters

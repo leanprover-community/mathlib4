@@ -5,10 +5,18 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Order.RelClasses
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.Bounds.Defs
+public import Aesop.BuiltinRules
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Max
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounded and unbounded sets

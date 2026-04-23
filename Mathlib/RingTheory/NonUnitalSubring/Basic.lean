@@ -6,10 +6,24 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.GroupTheory.Subsemigroup.Center
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Ring.Center
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Set.Finite.Range
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.Ring.Centralizer
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `NonUnitalSubring`s

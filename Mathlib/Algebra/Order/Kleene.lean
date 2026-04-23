@@ -9,7 +9,13 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Kleene algebras

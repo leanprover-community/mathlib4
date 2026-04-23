@@ -6,6 +6,15 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
 
 /-!
 # Minimal action of a group

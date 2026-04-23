@@ -7,9 +7,20 @@ module
 
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.RingTheory.HahnSeries.Summable
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of Hahn series

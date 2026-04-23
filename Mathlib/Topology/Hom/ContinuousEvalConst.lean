@@ -6,6 +6,13 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Constructions
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
 
 /-!
 # Bundled morphisms with continuous evaluation at a point

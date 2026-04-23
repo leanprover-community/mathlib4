@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Products of `OrderedSub` types.

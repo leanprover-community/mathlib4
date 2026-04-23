@@ -6,6 +6,15 @@ Authors: Chris Hughes, Yaël Dillies
 module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.SetLike
 
 /-!
 # Closure results for permutation groups

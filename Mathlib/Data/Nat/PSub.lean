@@ -5,9 +5,15 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Data.Nat.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers

@@ -5,11 +5,28 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Set.NAry
-public import Mathlib.Data.ULift
-public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
-public import Mathlib.Order.Hom.Set
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Hom.Basic
+import Batteries.Tactic.Congr
+import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Prod
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Image
+import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Theory of complete lattices

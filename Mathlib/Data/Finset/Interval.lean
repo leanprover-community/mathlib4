@@ -5,9 +5,16 @@ Authors: Yaël Dillies, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Grade
+import Mathlib.Init
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Intervals of finsets as finsets

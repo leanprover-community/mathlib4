@@ -5,10 +5,19 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.Prime.Pow
 public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Factorization.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Pow
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Prime powers and factorizations

@@ -6,6 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Multiset.Bind
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Sections of a multiset

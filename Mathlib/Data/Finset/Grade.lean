@@ -5,10 +5,20 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
-public import Mathlib.Order.Nat
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finsets and multisets form a graded order

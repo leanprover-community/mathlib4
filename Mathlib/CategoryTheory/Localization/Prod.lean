@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Localization.Predicate
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Localization of product categories

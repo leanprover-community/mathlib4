@@ -5,13 +5,24 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Order.Preorder.Finite
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Dissociation and span

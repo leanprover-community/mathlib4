@@ -5,8 +5,15 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument

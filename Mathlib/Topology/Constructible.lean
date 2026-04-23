@@ -6,11 +6,16 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanSubalgebra
-public import Mathlib.Topology.Compactness.Bases
-public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Spectral.Hom
 public import Mathlib.Topology.Spectral.Prespectral
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Compactness.Bases
+import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Constructible sets

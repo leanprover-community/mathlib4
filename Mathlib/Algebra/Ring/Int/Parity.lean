@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic parity lemmas for the ring `ℤ`

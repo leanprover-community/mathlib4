@@ -5,8 +5,17 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Topology.SeparatedMap
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.OpenPartialHomeomorph.Composition
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Local homeomorphisms

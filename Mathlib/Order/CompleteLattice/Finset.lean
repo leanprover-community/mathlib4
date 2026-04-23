@@ -6,7 +6,15 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Option
-public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.CompleteLattice.Defs
+import Batteries.Tactic.Congr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lattice operations on finsets

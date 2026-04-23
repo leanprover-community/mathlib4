@@ -6,7 +6,11 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The dualizing functor on `Cat`

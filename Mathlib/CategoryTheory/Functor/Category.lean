@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # The category of functors and natural transformations between two fixed categories.

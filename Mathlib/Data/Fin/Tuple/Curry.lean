@@ -5,9 +5,12 @@ Authors: Eric Wieser, Brendan Murphy
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Basic
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Function.OfArity
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Currying and uncurrying of n-ary functions

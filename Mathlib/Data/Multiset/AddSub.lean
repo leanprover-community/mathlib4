@@ -6,7 +6,13 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Multiset.Count
-public import Mathlib.Data.List.Count
+public import Mathlib.Logic.OpClass
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Count
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Sum and difference of multisets

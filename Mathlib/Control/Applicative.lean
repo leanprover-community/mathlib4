@@ -10,6 +10,7 @@ public import Mathlib.Control.Functor
 public import Mathlib.Control.Basic
 
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Init
 
 /-!
 # `applicative` instances

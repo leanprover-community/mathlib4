@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Order.Notation
 public import Mathlib.Combinatorics.Quiver.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 ## Wide subquivers

@@ -6,13 +6,24 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Zify
 public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Zify
 
 /-!
 # Fibonacci numbers

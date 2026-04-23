@@ -6,10 +6,27 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 module
 
 public import Mathlib.Computability.Language
-public import Mathlib.Data.Countable.Small
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Tactic.NormNum
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Countable.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.List.Induction
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Deterministic Finite Automata

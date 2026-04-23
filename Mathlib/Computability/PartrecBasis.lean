@@ -5,8 +5,16 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.PartrecCode
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Computability.Partrec
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Computability.PartrecCode
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # A simplified basis for partial recursive functions

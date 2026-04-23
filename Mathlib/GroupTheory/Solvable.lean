@@ -5,11 +5,18 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.GroupTheory.Abelianization.Defs
-public import Mathlib.GroupTheory.Perm.ViaEmbedding
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Abelianization.Defs
+import Mathlib.GroupTheory.Perm.ViaEmbedding
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Solvable Groups

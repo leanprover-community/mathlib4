@@ -5,16 +5,26 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies, Yuyang
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
-public import Mathlib.Tactic.Tauto
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Order.Max
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered rings and semirings

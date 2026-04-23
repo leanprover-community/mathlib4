@@ -5,9 +5,16 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Fintype.Perm
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Perm
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
 

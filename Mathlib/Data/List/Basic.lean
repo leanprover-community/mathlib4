@@ -7,14 +7,18 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
-public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Common
-public import Batteries.Data.List.Lemmas
-public import Batteries.Tactic.Lint.Simp
-public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.Basic
+import Batteries.Data.List.Lemmas
+import Batteries.Tactic.SeqFocus
+import Mathlib.Init
+import Mathlib.Tactic.AdaptationNote
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic properties of lists

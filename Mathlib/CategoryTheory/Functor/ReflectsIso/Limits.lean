@@ -6,6 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Exactness of families of functors which jointly reflect isomorphisms

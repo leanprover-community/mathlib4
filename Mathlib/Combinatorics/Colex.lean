@@ -5,11 +5,24 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Nat.BitIndices
-public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.SymmDiff
+public import Mathlib.Data.Fintype.Powerset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.GeomSum
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Order.SupClosed
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Colexicographic order

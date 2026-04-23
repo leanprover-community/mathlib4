@@ -9,10 +9,53 @@ public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.RingTheory.Binomial
-public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.NumberTheory.Padics.RingHoms
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
+import Mathlib.Topology.Algebra.Order.Field
+import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Sequences
 
 /-!
 # The Mahler basis of continuous functions

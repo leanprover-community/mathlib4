@@ -6,6 +6,9 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Tactic.ArithMult.Init
+public import Aesop.Frontend.Tactic
+import Aesop.Frontend.Attribute
+import Mathlib.Init
 
 /-!
 # Multiplicativity

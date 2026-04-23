@@ -6,7 +6,14 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 module
 
 public import Mathlib.Order.BooleanAlgebra.Basic
-public import Mathlib.Logic.Equiv.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Symmetric difference and bi-implication

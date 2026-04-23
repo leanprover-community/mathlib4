@@ -10,6 +10,14 @@ public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Cofinal
 public import Mathlib.Order.UpperLower.Principal
+public import Mathlib.Order.Preorder.Chain
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma

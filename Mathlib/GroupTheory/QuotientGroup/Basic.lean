@@ -6,12 +6,22 @@ Authors: Kevin Buzzard, Patrick Massot
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.GroupTheory.Congruence.Hom
-public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Quotients of groups by normal subgroups

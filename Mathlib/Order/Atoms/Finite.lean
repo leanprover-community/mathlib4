@@ -5,10 +5,17 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Finset.Defs
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness

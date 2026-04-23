@@ -5,11 +5,22 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
-public import Mathlib.Combinatorics.SimpleGraph.Copy
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Tactic.ApplyAt
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Conv
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Complete Multipartite Graphs

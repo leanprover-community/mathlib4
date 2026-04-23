@@ -6,7 +6,14 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.PartrecBasis
-public import Mathlib.Computability.TuringMachine.PostTuringMachine
+public import Mathlib.Computability.StateTransition
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Modelling partial recursive functions using Turing machines

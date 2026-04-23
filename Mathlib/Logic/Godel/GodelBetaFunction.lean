@@ -5,14 +5,21 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 module
 
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.ChineseRemainder
-public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Pairing
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Init
+import Mathlib.Order.Fin.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Gödel's Beta Function Lemma

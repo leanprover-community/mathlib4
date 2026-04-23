@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 public import Mathlib.Order.Hom.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Preimages of intervals under order embeddings

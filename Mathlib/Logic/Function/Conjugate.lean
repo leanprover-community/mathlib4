@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
+import Mathlib.Init
 
 /-!
 # Semiconjugate and commuting maps

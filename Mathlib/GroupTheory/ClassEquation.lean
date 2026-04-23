@@ -6,10 +6,18 @@ Authors: Johan Commelin, Eric Rodriguez
 module
 
 public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Subgroup.Center
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Class Equation

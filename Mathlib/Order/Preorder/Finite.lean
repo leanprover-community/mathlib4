@@ -5,8 +5,17 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Minimal
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.Bounds.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite preorders and finite sets in a preorder

@@ -5,10 +5,28 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Finsupp
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

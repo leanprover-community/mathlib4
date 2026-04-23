@@ -6,7 +6,13 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Fixed points of a self-map

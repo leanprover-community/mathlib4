@@ -5,13 +5,23 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.Order.Fin.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.NeZero
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.EpiMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 /-!
 # Composable arrows
 

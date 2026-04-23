@@ -6,6 +6,12 @@ Authors: Kim Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Preservation and reflection of (co)limits.

@@ -5,9 +5,9 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
-public import Qq
 public import Qq.Typ
+public import Qq.Macro
+import Mathlib.Init
 
 /-!
 # Extra `Qq` helpers

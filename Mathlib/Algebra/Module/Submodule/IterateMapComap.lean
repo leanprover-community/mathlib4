@@ -6,6 +6,11 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

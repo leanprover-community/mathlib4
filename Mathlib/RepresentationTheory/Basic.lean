@@ -6,7 +6,28 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Monoid representations

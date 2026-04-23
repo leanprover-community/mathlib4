@@ -5,10 +5,19 @@ Authors: Damiano Testa, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.PiLex
 public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Data.DFinsupp.NeLocus
-public import Mathlib.Order.WellFoundedSet
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Order.PiLex
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.PiLex
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.WellFoundedSet
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lexicographic order on finitely supported dependent functions

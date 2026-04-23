@@ -5,11 +5,25 @@ Authors: Attila Gáspár
 -/
 module
 
-public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 import Mathlib.Topology.UniformSpace.Compact
+import Batteries.Tactic.Congr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Init
+import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Lift
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Hausdorff uniformity

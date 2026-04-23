@@ -7,6 +7,12 @@ module
 
 public import Batteries.Data.DList.Basic
 public import Mathlib.Data.WSeq.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Miscellaneous definitions concerning weak sequences

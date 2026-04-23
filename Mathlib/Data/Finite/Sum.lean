@@ -5,7 +5,15 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Sum
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finiteness of sum types

@@ -5,9 +5,18 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
-public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Monoidal.Closed.Braided
+import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
+import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.

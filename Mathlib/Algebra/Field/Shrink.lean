@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Logic.Small.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Transfer field structures from `α` to `Shrink α`

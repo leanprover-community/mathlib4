@@ -6,6 +6,13 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Universal ordinal and cardinal

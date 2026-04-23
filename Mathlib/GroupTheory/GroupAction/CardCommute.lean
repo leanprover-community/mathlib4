@@ -5,9 +5,21 @@ Authors: Chris Hughes, Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.GroupTheory.Coset.Card
-public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.GroupTheory.Coset.Card
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Properties of group actions involving quotient groups

@@ -5,10 +5,20 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+public import Mathlib.Order.Lex
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order properties of cast of integers

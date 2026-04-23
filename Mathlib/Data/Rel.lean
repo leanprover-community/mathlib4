@@ -5,9 +5,20 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Prod
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Order.SetNotation
+public import Mathlib.Order.BooleanAlgebra.Set
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Relations as sets of pairs

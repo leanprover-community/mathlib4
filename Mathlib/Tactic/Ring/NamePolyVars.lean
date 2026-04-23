@@ -6,6 +6,13 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (tactic dependency)
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 The command `name_poly_vars` names variables in

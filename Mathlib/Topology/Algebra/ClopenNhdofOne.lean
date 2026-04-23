@@ -5,11 +5,29 @@ Authors: Nailin Guan, Yi Song, Xuchun Li, Bryan Wang
 -/
 module
 
-public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Separation.Profinite
-public import Mathlib.Topology.Separation.Connected
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Separation.Connected
+import Mathlib.Topology.Separation.Profinite
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 

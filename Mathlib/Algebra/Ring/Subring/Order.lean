@@ -6,8 +6,15 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Order.Hom.Ring
-public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Subrings of ordered rings

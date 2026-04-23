@@ -5,13 +5,31 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.CommSq
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.SmallObject.Basic
-public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 public import Mathlib.Order.TransfiniteIteration
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+import Batteries.Tactic.Trans
+import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+import Mathlib.CategoryTheory.Subobject.HasCardinalLT
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.SuccOrder
+import Mathlib.Order.SetIsMax
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Grothendieck abelian categories have enough injectives

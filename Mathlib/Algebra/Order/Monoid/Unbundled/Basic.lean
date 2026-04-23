@@ -7,11 +7,18 @@ Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-public import Mathlib.Data.Ordering.Basic
-public import Mathlib.Order.MinMax
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.GRewrite
+public import Mathlib.Order.Lattice
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.MinMax
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.ByCases
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered monoids

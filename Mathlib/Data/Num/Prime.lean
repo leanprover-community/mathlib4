@@ -7,8 +7,17 @@ module
 
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Num.ZNum
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Util.CompileInductive
 
 /-!
 # Primality for binary natural numbers

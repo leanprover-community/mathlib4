@@ -6,8 +6,19 @@ Authors: PFR contributors
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Defs.Filter
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Clopen
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Piecewise
 
 /-!
 # Continuity of indicator functions

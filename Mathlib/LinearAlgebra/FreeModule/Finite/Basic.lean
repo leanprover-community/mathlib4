@@ -6,8 +6,21 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.Matrix.StdBasis
-public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Matrix.StdBasis
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite and free modules

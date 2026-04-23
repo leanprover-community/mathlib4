@@ -6,9 +6,18 @@ Authors: Jireh Loreaux
 module
 
 public meta import Mathlib.Tactic.Basic
-public import Mathlib.Order.Filter.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Init
+import Mathlib.Order.Filter.Basic
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # The `peel` tactic

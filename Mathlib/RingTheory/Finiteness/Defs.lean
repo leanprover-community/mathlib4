@@ -6,10 +6,20 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
-public import Mathlib.Tactic.Algebraize
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Finiteness conditions in commutative algebra

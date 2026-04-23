@@ -5,8 +5,14 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Intervals in ℤ

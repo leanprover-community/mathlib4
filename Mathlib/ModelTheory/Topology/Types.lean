@@ -7,9 +7,14 @@ Authors: Jonas van der Schaaf
 module
 
 public import Mathlib.ModelTheory.Types
-public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Connected.TotallyDisconnected
-public import Mathlib.Topology.Compactness.Compact
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Topology on the space of complete types

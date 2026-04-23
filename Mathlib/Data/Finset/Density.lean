@@ -5,11 +5,21 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.NNRat.Order
-public import Mathlib.Data.Rat.Cast.CharZero
-public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Density of a finite set

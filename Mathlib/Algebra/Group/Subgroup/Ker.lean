@@ -6,9 +6,15 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.Tactic.ApplyFun
 
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Kernel and range of group homomorphisms

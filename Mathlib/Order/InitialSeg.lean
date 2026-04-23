@@ -6,10 +6,18 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.Data.Sum.Order
-public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.UpperLower.Basic
-public import Mathlib.Order.WellFounded
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Tactic.Basic
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Order.Hom.Lex
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Initial and principal segments

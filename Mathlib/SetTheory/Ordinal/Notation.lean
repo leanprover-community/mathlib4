@@ -5,11 +5,28 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.Tactic.NormNum
+public import Mathlib.Order.Compare
+public import Mathlib.SetTheory.Ordinal.Exponential
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ordinal notation

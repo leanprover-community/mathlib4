@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Properties of morphisms

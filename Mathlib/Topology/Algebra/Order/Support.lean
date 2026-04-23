@@ -5,8 +5,15 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Topology.Algebra.Support
+import Mathlib.Algebra.Order.Group.Indicator
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Closure
 
 /-!
 # The topological support of sup and inf of functions

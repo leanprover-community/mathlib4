@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Sublocale

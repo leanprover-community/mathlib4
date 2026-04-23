@@ -6,13 +6,21 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Data.Tree.Basic
-public meta import Mathlib.Logic.Basic
-public import Mathlib.Algebra.Field.Basic
 public meta import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Tree.Basic
 public import Mathlib.Tactic.NormNum.Core
-public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Tree.Basic
+import Mathlib.Init
+meta import Mathlib.Lean.Meta
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Util.CompileInductive
+import Mathlib.Util.SynthesizeUsing
+import Qq.Match
 
 /-!
 # A tactic for canceling numeric denominators

@@ -5,10 +5,17 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Subtype
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Util.CompileInductive
 
 /-! # Least upper bound and greatest lower bound properties for integers
 

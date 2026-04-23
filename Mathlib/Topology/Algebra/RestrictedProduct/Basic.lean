@@ -5,11 +5,18 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Cofinite  -- shake: keep (used in notation only)
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Order.Filter.Tendsto
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Restricted products of sets, groups and rings

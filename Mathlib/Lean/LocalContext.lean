@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
 public import Lean.LocalContext
 public import Batteries.Control.AlternativeMonad
+import Mathlib.Init
 
 /-!
 # Additional methods about `LocalContext`

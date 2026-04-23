@@ -6,13 +6,19 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-public import Mathlib.CategoryTheory.Abelian.CommSq
-public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The class of isomorphisms modulo a Serre class

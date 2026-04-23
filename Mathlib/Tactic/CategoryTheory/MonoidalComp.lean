@@ -6,6 +6,10 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)

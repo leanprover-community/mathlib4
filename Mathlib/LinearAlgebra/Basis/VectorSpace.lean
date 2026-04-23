@@ -7,9 +7,24 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Projection
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Bases in a vector space

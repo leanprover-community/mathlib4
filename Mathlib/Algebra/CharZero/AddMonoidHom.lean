@@ -6,8 +6,11 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Transporting `CharZero` across injective `AddMonoidHom`s

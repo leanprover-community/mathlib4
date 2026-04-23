@@ -5,8 +5,25 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
 public import Mathlib.Data.Finset.Density
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Doubling and difference constants

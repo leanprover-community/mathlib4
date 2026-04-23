@@ -6,7 +6,17 @@ Authors: Zhouhang Zhou
 module
 
 public import Mathlib.Algebra.Notation.Support
-public import Mathlib.Data.Set.Piecewise
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Indicator function

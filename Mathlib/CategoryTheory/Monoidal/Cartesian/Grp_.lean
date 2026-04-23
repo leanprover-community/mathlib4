@@ -5,9 +5,18 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.Algebra.Category.Grp.Basic
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Yoneda embedding of `Grp C`

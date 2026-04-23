@@ -6,8 +6,17 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
-public import Mathlib.Topology.Sheaves.Sheaf
-public import Mathlib.Topology.Sets.Opens
+public import Mathlib.CategoryTheory.Sites.Spaces
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Sites.LeftExact
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.Presheaf
 
 /-!
 # The standard conservative family of points for the site attached to a topological space

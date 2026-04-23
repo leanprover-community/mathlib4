@@ -8,6 +8,14 @@ module
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Int.Interval
 import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Intervals of integers in strict ordered rings
 

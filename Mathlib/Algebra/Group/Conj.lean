@@ -5,8 +5,20 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
 module
 
-public import Mathlib.Algebra.Group.End
-public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Algebra.Group.Semiconj.Units
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Conjugacy of group elements

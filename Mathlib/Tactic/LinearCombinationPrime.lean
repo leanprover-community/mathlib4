@@ -5,7 +5,18 @@ Authors: Abby J. Goldberg, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Ring
+public meta import Aesop.BuiltinRules
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Attr.Core
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # `linear_combination'` Tactic

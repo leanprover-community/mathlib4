@@ -5,10 +5,16 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+import Mathlib.CategoryTheory.ObjectProperty.Equivalence
+import Mathlib.Init
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Smallness of a property of objects

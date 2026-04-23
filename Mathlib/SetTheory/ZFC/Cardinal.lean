@@ -5,8 +5,16 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.SetTheory.ZFC.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Logic.Small.Set
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinalities of ZFC sets

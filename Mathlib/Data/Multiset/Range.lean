@@ -6,6 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Multiset.UnionInter
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-! # `Multiset.range n` gives `{0, 1, ..., n-1}` as a multiset. -/
 

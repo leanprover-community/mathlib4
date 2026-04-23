@@ -6,10 +6,18 @@ Amelia Livingston, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
-public import Mathlib.Tactic.FastInstance
-public import Mathlib.Data.Set.Insert
+public import Aesop.BuiltinRules
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Submonoids: definition

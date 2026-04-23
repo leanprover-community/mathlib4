@@ -5,12 +5,20 @@ Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.SuccPred.WithBot
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Interaction between successors and arithmetic

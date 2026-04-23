@@ -6,9 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Torsion
-public import Mathlib.Algebra.GroupWithZero.Basic
-public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Torsion-free rings

@@ -5,10 +5,23 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.ModelTheory.Bundled
-public import Mathlib.ModelTheory.Skolem
-public import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Order
+import Mathlib.Init
+import Mathlib.ModelTheory.Skolem
+import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # First-Order Satisfiability

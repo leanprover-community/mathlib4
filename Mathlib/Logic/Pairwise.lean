@@ -5,9 +5,12 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Defs
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Relations holding pairwise

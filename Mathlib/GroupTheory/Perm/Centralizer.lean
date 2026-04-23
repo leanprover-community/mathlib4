@@ -5,13 +5,34 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.GroupTheory.NoncommCoprod
-public import Mathlib.GroupTheory.Perm.ConjAct
-public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-public import Mathlib.GroupTheory.Perm.DomMulAct
-public import Mathlib.GroupTheory.Rank
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Perm.ConjAct
+import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
+import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.GroupTheory.Rank
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups

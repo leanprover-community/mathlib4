@@ -6,6 +6,12 @@ Authors: Johan Commelin, Floris van Doorn
 module
 
 public import Mathlib.Order.WellFoundedSet
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-! # Multiplication antidiagonal -/
 

@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
 
 /-!
 # The natural numbers form a semiring

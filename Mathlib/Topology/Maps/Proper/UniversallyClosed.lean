@@ -8,6 +8,14 @@ module
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # A map is proper iff it is continuous and universally closed

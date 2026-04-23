@@ -5,10 +5,10 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.HeadIndex
 public import Lean.Meta.ExprLens
 public import Lean.Meta.Check
+import Mathlib.Init
 
 /-!
 

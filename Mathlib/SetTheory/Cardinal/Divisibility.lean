@@ -6,8 +6,19 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Tactic.WLOG
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinal Divisibility

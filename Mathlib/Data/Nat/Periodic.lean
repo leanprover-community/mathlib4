@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Nat.Count
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Periodic Functions on ℕ

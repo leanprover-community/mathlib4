@@ -7,8 +7,20 @@ module
 
 public import Mathlib.Data.Set.Countable
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Tactic.FunProp.Attr
-public import Mathlib.Tactic.Measurability
+public import Mathlib.Order.GaloisConnection.Basic
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Measurable spaces and measurable functions

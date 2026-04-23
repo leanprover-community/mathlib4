@@ -7,6 +7,15 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.Topology.Separation.Regular
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
 
 /-!
 # Not normal topological spaces

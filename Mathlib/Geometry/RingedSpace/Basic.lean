@@ -6,11 +6,19 @@ Authors: Justus Springer, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.Algebra.Category.Ring.FilteredColimits
-public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Geometry.RingedSpace.SheafedSpace
-public import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.Algebra.Category.Ring.FilteredColimits
+import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Ring.Units
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Ringed spaces

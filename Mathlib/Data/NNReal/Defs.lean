@@ -6,9 +6,46 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public meta import Aesop.BuiltinRules
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Nonneg.Lattice
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Logic.Equiv.Set
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Module
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Nonnegative real numbers

@@ -6,8 +6,14 @@ Authors: Jack McKoen, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Enriched.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Internal hom in functor categories

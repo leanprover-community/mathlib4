@@ -5,14 +5,36 @@ Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.RingTheory.Adjoin.FGBaseChange
-public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Adjoin.FG
+import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Colimit.TensorProduct
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Logic.UnivLE
+import Mathlib.RingTheory.Adjoin.FGBaseChange
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Small
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Flat modules

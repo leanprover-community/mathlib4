@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Order.InitialSeg
 public import Mathlib.Order.SuccPred.Limit
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Initial segments and successors

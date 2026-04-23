@@ -5,11 +5,17 @@ Authors: Wojciech Nawrocki
 -/
 module
 
-public import Aesop
-public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
+public import Lean.Expr
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Data.Html
+import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/

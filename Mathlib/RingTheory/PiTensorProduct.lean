@@ -7,8 +7,15 @@ module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct
 public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Data.Finset.NoncommProd
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor product of `R`-algebras and rings

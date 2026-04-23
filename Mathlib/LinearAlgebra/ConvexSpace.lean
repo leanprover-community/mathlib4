@@ -4,14 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 module
-public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.Tactic.Bound
-public import Mathlib.Data.Finsupp.SMul
-public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Order.Preorder.Finsupp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.SMul
+import Mathlib.Init
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Convex spaces

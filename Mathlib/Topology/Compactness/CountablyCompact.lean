@@ -8,10 +8,30 @@ module
 public import Mathlib.Topology.Defs.Sequences
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Sequences
 
-import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Topology.Perfect
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Logic.Equiv.List
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.DiscreteSubset
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.Sequences
 
 /-!
 # Countably compact sets

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Relation
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.ToDual
+import Mathlib.Init
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Shapes of homological complexes

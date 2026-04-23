@@ -5,7 +5,22 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heat
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Product and coproduct filters

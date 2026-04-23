@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Ordered structures on localizations of commutative monoids

@@ -7,6 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.Topology.Category.CompHausLike.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Products
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 /-!
 
 # The sigma-comparison map

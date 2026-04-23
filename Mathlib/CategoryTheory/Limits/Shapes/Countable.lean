@@ -8,7 +8,16 @@ module
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Countable
-public import Mathlib.Data.Countable.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Countable.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Chain
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 /-!
 # Countable limits and colimits
 

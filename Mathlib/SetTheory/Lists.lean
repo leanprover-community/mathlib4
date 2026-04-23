@@ -5,11 +5,20 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Sigma.Basic
 public import Batteries.Tactic.Lint.TypeClass
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Quot
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.CompileInductive
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Init
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # A computable model of ZFA without infinity

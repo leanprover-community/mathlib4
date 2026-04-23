@@ -5,11 +5,20 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Order.Interval.Set.OrdConnected
-public import Mathlib.Order.Nat
-public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Nat
+import Mathlib.Order.UpperLower.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`

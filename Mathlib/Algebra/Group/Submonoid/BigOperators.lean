@@ -7,8 +7,21 @@ Amelia Livingston, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Group.Support
 public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.Algebra.Notation.Support
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.List
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Submonoids: membership criteria for products and sums

@@ -7,6 +7,15 @@ module
 
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.GroupTheory.Index
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Ring.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Lemmas about units of ordered rings -/
 

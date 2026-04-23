@@ -6,8 +6,16 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Basic
-public import Mathlib.Algebra.GroupWithZero.Basic
-public import Mathlib.Data.Seq.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Basic
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Data.Seq.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions

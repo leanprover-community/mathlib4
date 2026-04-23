@@ -5,8 +5,18 @@ Authors: Eric Rodriguez, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.List.Chain
-public import Mathlib.Data.List.Dedup
+public import Aesop.BuiltinRules
+public import Mathlib.Data.List.Defs
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Induction
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Destuttering of Lists

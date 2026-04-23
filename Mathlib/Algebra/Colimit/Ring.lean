@@ -6,11 +6,28 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Colimit.DirectLimit
-public import Mathlib.Data.Finset.Order
 public import Mathlib.RingTheory.FreeCommRing
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.RingTheory.Ideal.Span
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of rings, and fields

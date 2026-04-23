@@ -6,7 +6,14 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of a module

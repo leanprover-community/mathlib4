@@ -6,7 +6,13 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Computability.RE
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Computability.PartrecCode
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Computability theory and the halting problem

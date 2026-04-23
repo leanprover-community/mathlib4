@@ -6,8 +6,10 @@ Authors: David Wärn, Matteo Cipollina
 module
 
 public import Mathlib.Combinatorics.Quiver.Subquiver
-public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Symmetric
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 ## Weakly and strongly connected components

@@ -5,10 +5,16 @@ Authors: Finn Mortimore
 -/
 module
 
-public import Mathlib.Order.Preorder.Chain
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Data.Set.Image
+public import Mathlib.Order.Interval.Set.Defs
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bourbaki-Witt Theorem

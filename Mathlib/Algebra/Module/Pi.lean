@@ -9,6 +9,10 @@ public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Ring.Pi
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Pi instances for modules

@@ -5,11 +5,23 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Prime.Defs
-public import Mathlib.Data.Nat.Sqrt
-public import Mathlib.Order.Basic
+public import Batteries.Data.Nat.Basic
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Basic
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Init
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
 
 /-!
 # Prime numbers

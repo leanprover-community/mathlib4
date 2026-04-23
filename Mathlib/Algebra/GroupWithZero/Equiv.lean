@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-! # Isomorphisms of monoids with zero -/
 

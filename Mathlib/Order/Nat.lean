@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Bounds.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The natural numbers form a linear order

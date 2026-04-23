@@ -5,9 +5,21 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Order.Filter.Finite
-public import Mathlib.Order.Filter.Map
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cardinality of a set with a countable cover

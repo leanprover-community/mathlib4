@@ -5,10 +5,18 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
-public import Mathlib.Order.Cover
 public import Mathlib.Order.LatticeIntervals
-public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Hom.Set
+public import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Set.Monotone
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Cover
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Modular Lattices

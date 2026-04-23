@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
+public import Mathlib.Order.RelClasses
+import Aesop.Frontend.Attribute
+import Mathlib.Init
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Bounded lattices

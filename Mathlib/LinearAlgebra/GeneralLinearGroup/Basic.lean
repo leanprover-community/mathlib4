@@ -6,6 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # The general linear group of linear maps

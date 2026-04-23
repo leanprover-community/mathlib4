@@ -6,8 +6,18 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct
-public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Algebra.DirectSum.Algebra
+public meta import Mathlib.Tactic.ToAdditive
+import Batteries.Tactic.Congr
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor power of a semimodule over a commutative semiring

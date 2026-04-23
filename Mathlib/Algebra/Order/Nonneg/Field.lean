@@ -6,10 +6,17 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.Positive.Ring
-public import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Order.Field.Canonical
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Semifield structure on the type of nonnegative elements

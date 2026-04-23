@@ -5,8 +5,17 @@ Authors: Alena Gusakov, Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Strongly regular graphs

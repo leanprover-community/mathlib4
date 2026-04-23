@@ -6,10 +6,20 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Galois.Basic
-public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.Algebra.Group.Action.Pretransitive
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.FintypeCat
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Galois objects in Galois categories

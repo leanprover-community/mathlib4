@@ -7,8 +7,19 @@ module
 
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Logic.Pairwise
-public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Order.ULift
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.OrderDual
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # (Semi-)lattices

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Tactic.ByContra
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Further lemmas about the natural numbers

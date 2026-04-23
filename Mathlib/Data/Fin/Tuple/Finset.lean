@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Fin-indexed tuples of finsets

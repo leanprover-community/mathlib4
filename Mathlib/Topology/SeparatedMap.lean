@@ -6,8 +6,21 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.Separation.Hausdorff
-public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Data.Set.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Connected.Clopen
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 /-!
 # Separated maps and locally injective maps out of a topological space.
 

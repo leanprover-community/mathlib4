@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely supported functions on exactly one point

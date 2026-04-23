@@ -7,7 +7,17 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Algebra.Star.Rat
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Star.Rat
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group

@@ -6,9 +6,33 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.Data.Nat.EvenOddRec
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.LinearCombination
-import Mathlib.Algebra.Group.Int.Even
+public import Batteries.Tactic.Init
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Elliptic divisibility sequences

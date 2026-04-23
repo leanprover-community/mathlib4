@@ -6,7 +6,21 @@ Authors: Riccardo Brasca, Bingyu Xia
 module
 
 public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Weight
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Functions tending to the cofinite filter

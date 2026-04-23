@@ -7,6 +7,18 @@ module
 
 public import Mathlib.Computability.Primrec.Basic
 public import Mathlib.Logic.Encodable.Pi
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Primitive recursive functions on Lists

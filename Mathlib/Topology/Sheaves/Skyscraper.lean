@@ -5,9 +5,18 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.Sheaves.PUnit
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.Functors
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Sheaves.Functors
+import Mathlib.Topology.Sheaves.Init
+import Mathlib.Topology.Sheaves.PUnit
 
 /-!
 # Skyscraper (pre)sheaves

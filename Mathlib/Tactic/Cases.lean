@@ -9,7 +9,7 @@ public meta import Lean.Elab.Tactic.Induction
 public meta import Batteries.Data.List.Basic
 public meta import Batteries.Lean.Expr
 import all Lean.Elab.Tactic.Induction
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic

@@ -6,11 +6,24 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.List.Cycle
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Periodic points

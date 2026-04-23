@@ -6,11 +6,20 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Types.Set
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Multicoequalizers in the category of types

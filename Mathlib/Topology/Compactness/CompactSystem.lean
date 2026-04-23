@@ -7,6 +7,13 @@ module
 
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Measurability.Init
+import Mathlib.Tactic.SetLike
 
 /-!
 # Compact systems

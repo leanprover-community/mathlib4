@@ -8,11 +8,37 @@ module
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Finset.Piecewise
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
-public import Mathlib.Topology.NhdsSet
+public import Mathlib.Control.ULift
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Set.Notation
+import Mathlib.Data.Bool.Set
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Sigma
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Closure
+import Mathlib.Topology.ClusterPt
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Constructions of new topological spaces from old ones

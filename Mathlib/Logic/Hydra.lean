@@ -8,6 +8,14 @@ module
 public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Order.GameAdd
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Termination of a hydra game

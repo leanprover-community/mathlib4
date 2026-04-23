@@ -6,8 +6,13 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Order.Category.PartOrd
-public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Finset.Image
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nonempty finite chains in a partially ordered type

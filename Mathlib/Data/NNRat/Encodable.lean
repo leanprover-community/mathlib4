@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Data.NNRat.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # The nonnegative rationals are `Encodable`.
 

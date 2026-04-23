@@ -5,8 +5,17 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.Filter.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters

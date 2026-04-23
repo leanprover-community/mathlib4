@@ -5,15 +5,32 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
 public import Mathlib.Algebra.Order.Hom.TypeTags
-public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Order.Cover
+import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 

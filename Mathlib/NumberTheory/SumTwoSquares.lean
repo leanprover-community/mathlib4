@@ -5,9 +5,44 @@ Authors: Chris Hughes, Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Nat.Squarefree
-public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Induction
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.PrincipalIdealDomain
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Zify
 
 /-!
 # Sums of two squares

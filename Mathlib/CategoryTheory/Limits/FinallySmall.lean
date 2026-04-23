@@ -5,9 +5,17 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Logic.Small.Set
-public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Logic.Small.Set
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finally small categories

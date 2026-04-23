@@ -5,9 +5,15 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.Tactic.DepRewrite
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category

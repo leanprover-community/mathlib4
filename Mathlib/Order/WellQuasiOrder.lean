@@ -5,10 +5,16 @@ Authors: Violeta Hernández Palacios, Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Antichain
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Well quasi-orders

@@ -6,6 +6,8 @@ Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.Group.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Eckmann-Hilton argument

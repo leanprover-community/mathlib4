@@ -5,15 +5,18 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
-public import Mathlib.Tactic.TermCongr
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Init
+import Mathlib.Tactic.TermCongr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoid, group etc. structures on `M × N`

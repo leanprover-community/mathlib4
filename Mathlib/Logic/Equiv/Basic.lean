@@ -10,6 +10,15 @@ public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
 public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between types

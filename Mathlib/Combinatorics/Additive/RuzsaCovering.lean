@@ -5,11 +5,24 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.Preorder.Finite
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Order.Preorder.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Ruzsa's covering lemma

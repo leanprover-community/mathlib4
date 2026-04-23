@@ -5,10 +5,15 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.EuclideanDomain.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Data.Int.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Instances for Euclidean domains

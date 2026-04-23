@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.List.NodupEquivFin
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`

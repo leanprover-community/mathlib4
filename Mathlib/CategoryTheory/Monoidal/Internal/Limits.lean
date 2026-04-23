@@ -5,10 +5,15 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Limits of monoid objects.

@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Group.Hom.End
 public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Module structure and endomorphisms

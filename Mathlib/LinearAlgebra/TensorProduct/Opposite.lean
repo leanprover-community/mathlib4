@@ -6,7 +6,13 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.RingTheory.TensorProduct.Maps
-public import Mathlib.Algebra.Algebra.Opposite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # `MulOpposite` distributes over `⊗`
 

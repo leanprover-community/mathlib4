@@ -5,13 +5,22 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.Logic.Small.Basic
+import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
+import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The category of (commutative) (additive) groups has all limits

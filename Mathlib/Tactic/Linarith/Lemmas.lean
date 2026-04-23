@@ -5,11 +5,20 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Batteries.Tactic.Lint.Basic
 public meta import Mathlib.Data.Ineq
-public import Mathlib.Data.Ineq
-public import Mathlib.Data.Nat.Cast.Order.Ring
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Data.Ineq
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas for `linarith`.

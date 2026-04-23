@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.Defs.Unbundled
+import Mathlib.Init
 
 /-!
 # Some `Ordering` lemmas

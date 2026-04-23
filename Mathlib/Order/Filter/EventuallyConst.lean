@@ -6,8 +6,21 @@ Authors: Yury Kudryashov, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Subsingleton
+public import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.Basic
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 /-!
 # Functions that are eventually constant along a filter
 

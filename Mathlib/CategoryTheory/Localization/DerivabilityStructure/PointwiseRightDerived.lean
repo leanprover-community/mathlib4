@@ -7,8 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
-public import Mathlib.CategoryTheory.GuitartExact.KanExtension
-public import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.GuitartExact.KanExtension
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Existence of pointwise right derived functors via derivability structures

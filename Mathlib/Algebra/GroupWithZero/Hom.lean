@@ -6,7 +6,14 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Hom.Basic
-public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Monoid with zero and group with zero homomorphisms

@@ -6,7 +6,13 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.Logic.Equiv.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Util.CompileInductive
 
 /-!
 # Full and faithful functors

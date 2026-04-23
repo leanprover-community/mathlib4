@@ -6,7 +6,15 @@ Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
-public import Mathlib.Tactic.Abel
+public meta import Lean.Meta.Tactic.Try.Collect
+public import Mathlib.Algebra.Ring.Defs
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-! # The `noncomm_ring` tactic
 

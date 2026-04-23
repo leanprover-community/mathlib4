@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Basic
 public import Mathlib.Order.Defs.LinearOrder
+import Mathlib.Init
 
 /-!
 # Booleans

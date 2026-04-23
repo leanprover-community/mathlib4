@@ -5,11 +5,40 @@ Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 module
 
-public import Mathlib.Order.Interval.Set.Image
-public import Mathlib.Order.CompleteLatticeIntervals
-public import Mathlib.Topology.Order.DenselyOrdered
-public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Set.Monotone
+import Mathlib.Data.Set.Order
+import Mathlib.Init
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Order
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Intermediate Value Theorem

@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Transport algebra morphisms between additive and multiplicative types.

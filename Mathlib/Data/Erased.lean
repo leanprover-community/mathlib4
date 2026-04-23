@@ -6,6 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # A type for VM-erased data

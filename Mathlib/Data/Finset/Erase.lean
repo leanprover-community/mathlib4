@@ -6,7 +6,14 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Filter
+public import Mathlib.Data.Multiset.AddSub
+import Batteries.Tactic.Trans
+import Mathlib.Data.Multiset.Filter
+import Mathlib.Data.Set.Insert
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Erasing an element from a finite set

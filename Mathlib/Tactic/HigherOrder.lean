@@ -9,9 +9,11 @@ public meta import Lean.Meta.Tactic.Apply
 public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
-public meta import Lean.Elab.DeclarationRange
-public import Lean.Meta.Tactic.Simp
-public import Mathlib.Init
+public meta import Lean.Elab.Term.TermElabM
+public import Lean.Meta.Basic
+public meta import Lean.Meta.Tactic.Simp.Attr
+import Lean.Meta.Tactic.Simp.SimpTheorems
+import Mathlib.Init
 
 
 /-!

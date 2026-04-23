@@ -7,10 +7,18 @@ module
 
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.LinearMap.Star
-public import Mathlib.Algebra.Module.Rat
 public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Star.Rat
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The star operation, bundled as a star-linear equiv

@@ -5,13 +5,19 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Data.Fintype.Order
-public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.Category.FinPartOrd
 public import Mathlib.Order.Category.LinOrd
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nonempty finite linear orders

@@ -5,12 +5,15 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.NumberTheory.Height.Basic
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import all Mathlib.NumberTheory.Height.Basic
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Height bounds for linear and polynomial maps

@@ -6,9 +6,21 @@ Authors: Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Fin.FlagRange
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Order.Cover
+import Mathlib.RingTheory.SimpleRing.Basic
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Flag of submodules defined by a basis

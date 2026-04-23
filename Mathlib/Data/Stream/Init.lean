@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Data.Stream.Defs
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences

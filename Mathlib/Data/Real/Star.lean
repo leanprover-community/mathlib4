@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The real numbers are a \*-ring, with the trivial \*-structure

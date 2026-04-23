@@ -5,11 +5,48 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
-public import Mathlib.Topology.Algebra.Module.Cardinality
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Dimension.Basic
+public import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Convex.Contractible
+import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Algebra.Module.Cardinality
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Closure
 
 /-!
 # Connectedness of subsets of vector spaces

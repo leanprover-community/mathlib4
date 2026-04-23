@@ -6,6 +6,18 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.TotalComplex
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Order.Units
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! The symmetry of the total complex of a bicomplex
 

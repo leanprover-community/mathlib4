@@ -5,8 +5,11 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas for units in an ordered monoid

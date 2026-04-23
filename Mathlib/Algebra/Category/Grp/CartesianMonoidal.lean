@@ -6,9 +6,17 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.Algebra.Category.Grp.Biproducts
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Chosen finite products in `GrpCat` and friends

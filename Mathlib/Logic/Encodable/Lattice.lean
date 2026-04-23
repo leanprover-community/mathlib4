@@ -6,8 +6,13 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Logic.Encodable.Basic
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lattice operations on encodable types

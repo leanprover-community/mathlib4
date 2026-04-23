@@ -5,7 +5,14 @@ Authors: Sven Manthe
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.SetLike
+public import Mathlib.Order.CompleteSublattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Infix
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.SetLike
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory

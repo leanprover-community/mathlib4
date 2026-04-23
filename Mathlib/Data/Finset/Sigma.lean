@@ -7,7 +7,14 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Set.Sigma
-public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finite sets in a sigma type

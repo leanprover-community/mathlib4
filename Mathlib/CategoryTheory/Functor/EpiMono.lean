@@ -5,9 +5,15 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+public import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms

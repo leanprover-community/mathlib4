@@ -5,10 +5,27 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Group.EvenFunction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Loop Lie algebras and their central extensions

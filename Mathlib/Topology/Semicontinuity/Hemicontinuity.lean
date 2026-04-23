@@ -6,11 +6,26 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.NhdsWithin
 
 /-! # Hemicontinuity
 

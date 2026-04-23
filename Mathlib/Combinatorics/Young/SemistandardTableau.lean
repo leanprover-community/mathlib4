@@ -6,6 +6,11 @@ Authors: Jake Levinson
 module
 
 public import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Semistandard Young tableaux

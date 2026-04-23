@@ -6,9 +6,14 @@ Authors: Mario Carneiro
 module
 
 public meta import Mathlib.Lean.Expr.Rat
-public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.NormNum.Result
 public import Mathlib.Util.Qq
+public meta import Mathlib.Lean.Meta.Simp
+public import Mathlib.Util.AtLocation
+import Mathlib.Init
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Hint
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `norm_num` core functionality

@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Conv.Pattern
+import Mathlib.Init
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics

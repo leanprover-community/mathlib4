@@ -5,11 +5,24 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WellFounded
 
 import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
+import Mathlib.Init
+import Mathlib.Order.Hom.Set
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Cofinal sets

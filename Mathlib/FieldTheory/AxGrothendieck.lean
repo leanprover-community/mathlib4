@@ -5,11 +5,37 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-public import Mathlib.ModelTheory.Algebra.Ring.Definability
-public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+public import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Totient
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.ModelTheory.Algebra.Ring.Definability
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Noetherian.Basic
+import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.GCD
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ax-Grothendieck

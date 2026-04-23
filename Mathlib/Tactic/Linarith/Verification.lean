@@ -5,9 +5,17 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Util.Qq
 public meta import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Parsing
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Util.Qq
+public meta import Qq.MetaM
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 # Deriving a proof of false

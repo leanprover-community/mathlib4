@@ -5,9 +5,15 @@ Authors: Michal Staromiejski
 -/
 module
 
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Subrings of local rings

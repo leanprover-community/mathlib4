@@ -5,9 +5,19 @@ Authors: Chris Hughes, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Quot
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
+import Batteries.Tactic.Init
+import Batteries.Tactic.Trans
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # List rotation

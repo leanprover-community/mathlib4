@@ -5,11 +5,14 @@ Authors: Vilim Lendvaj
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
-public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Control.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Control.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`

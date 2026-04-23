@@ -6,7 +6,14 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Order.Filter.Partial
-public import Mathlib.Topology.Neighborhoods
+public import Mathlib.Topology.Defs.Filter
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partial functions and topological spaces

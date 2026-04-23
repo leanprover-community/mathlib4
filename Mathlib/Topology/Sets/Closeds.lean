@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Clopen
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Copy
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Closed sets

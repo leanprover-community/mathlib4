@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
+import Batteries.Logic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Additional properties of binary recursion on `Nat`

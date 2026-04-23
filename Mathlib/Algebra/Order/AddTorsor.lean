@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
+import Batteries.Tactic.Init
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Ordered scalar multiplication and vector addition

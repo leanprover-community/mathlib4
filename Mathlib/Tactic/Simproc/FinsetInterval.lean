@@ -5,12 +5,27 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public import Mathlib.Data.Int.Interval
-public import Mathlib.Data.Int.SuccPred
-public import Mathlib.Order.Interval.Finset.Nat
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.Qq
+public import Batteries.Tactic.Lint.Misc
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Tactic.ToDual
+public meta import Qq.Simp
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.Interval
+import Mathlib.Data.Int.SuccPred
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Simproc for intervals of natural numbers

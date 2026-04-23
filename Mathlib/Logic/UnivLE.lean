@@ -6,6 +6,10 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Logic.Small.Defs
+import Mathlib.Init
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.PPWithUniv
+import Mathlib.Util.CompileInductive
 
 /-!
 # UnivLE

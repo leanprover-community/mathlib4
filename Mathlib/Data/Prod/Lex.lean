@@ -9,8 +9,13 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
-public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Order.RelClasses
+import Mathlib.Init
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic order

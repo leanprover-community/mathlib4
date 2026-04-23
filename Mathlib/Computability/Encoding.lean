@@ -5,11 +5,19 @@ Authors: Pim Spelier, Daan van Gent
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Num.Lemmas
-public import Mathlib.Data.Option.Basic
-public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Logic.Equiv.List
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Encodings

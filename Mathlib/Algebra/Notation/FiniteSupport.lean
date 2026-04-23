@@ -5,9 +5,14 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Finiteness of support

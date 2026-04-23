@@ -8,7 +8,14 @@ module
 import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 public meta import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Data.Nat.Factors
-public import Mathlib.Tactic.NormNum.Prime
+public meta import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.NormNum.Result
+public meta import Qq.Simp
+import Mathlib.Data.List.Chain
+meta import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Cast.Basic
+meta import Mathlib.Order.Basic
+meta import Mathlib.Tactic.Attr.Core
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

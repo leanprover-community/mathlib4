@@ -9,10 +9,20 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Category.Semigrp.Basic
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.WithOne.Basic
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Data.Finsupp.Basic
-public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Ext
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Adjunctions regarding the category of monoids

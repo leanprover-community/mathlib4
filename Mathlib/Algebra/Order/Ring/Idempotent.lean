@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Boolean algebra structure on idempotents in a commutative (semi)ring

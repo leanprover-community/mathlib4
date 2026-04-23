@@ -5,10 +5,15 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, A
 -/
 module
 
-public import Mathlib.Data.Fin.Rev
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
 public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Tactic.Convert
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Operation on tuples

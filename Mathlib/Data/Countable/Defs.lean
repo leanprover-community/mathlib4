@@ -6,9 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Bool.Basic
-public import Mathlib.Data.Subtype
-public import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Data.Bool.Basic
+import Mathlib.Init
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Push.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Countable and uncountable types

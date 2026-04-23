@@ -6,6 +6,11 @@ Authors: Peter Nelson, Jun Kwon
 module
 
 public import Mathlib.Combinatorics.Graph.Subgraph
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Deletion of edges and vertices

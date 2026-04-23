@@ -5,10 +5,18 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Zify
 public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # `rify` tactic

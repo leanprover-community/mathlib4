@@ -6,6 +6,11 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Finsupp
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Locus of unequal values of finitely supported functions

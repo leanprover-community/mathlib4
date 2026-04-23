@@ -7,11 +7,18 @@ module
 
 public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Group.WithOne.Defs
-public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.NAry
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.GroupWithZero.Equiv
+import Mathlib.Data.Option.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Adjoining a zero to a group

@@ -5,9 +5,18 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 module
 
-public import Mathlib.Data.List.OfFn
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Nodup
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Lemmas
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Data.List.Perm
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lists of elements of `Fin n`

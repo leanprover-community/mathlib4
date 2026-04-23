@@ -5,9 +5,26 @@ Authors: Hannah Fechtner
 -/
 module
 
-public import Mathlib.Data.List.Lex
-public import Mathlib.Order.RelClasses
-public import Mathlib.Tactic.NormNum
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Lex
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Shortlex ordering of lists.

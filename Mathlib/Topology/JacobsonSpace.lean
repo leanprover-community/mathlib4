@@ -5,9 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Sets.OpenCover
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocallyClosed
 
 /-!
 

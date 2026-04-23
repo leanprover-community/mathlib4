@@ -6,6 +6,11 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Lemmas about coprimality with big products.
 

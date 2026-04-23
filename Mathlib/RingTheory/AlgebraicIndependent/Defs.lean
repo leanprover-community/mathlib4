@@ -5,7 +5,17 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Algebraic Independence

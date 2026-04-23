@@ -7,6 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Localization functors are preserved through equivalences

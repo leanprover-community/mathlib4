@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Int.LeastGreatest
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `ℤ` forms a conditionally complete linear order

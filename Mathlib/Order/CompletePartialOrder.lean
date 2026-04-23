@@ -5,9 +5,15 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Complete Partial Orders

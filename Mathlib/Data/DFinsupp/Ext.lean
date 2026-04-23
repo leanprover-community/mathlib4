@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Data.DFinsupp.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Extensionality principles for `DFinsupp`

@@ -6,11 +6,40 @@ Authors: Lenny Taelman
 module
 
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.Topology.Category.LightProfinite.AsLimit
-public import Mathlib.Topology.Category.CompHausLike.Limits
-public import Mathlib.CategoryTheory.Functor.OfSequence
-public import Mathlib.CategoryTheory.EpiMono
-public import Mathlib.Order.RelClasses
+public import Mathlib.Topology.Category.LightProfinite.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Functor.OfSequence
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Init
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.Topology.Category.LightProfinite.AsLimit
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Separation.Profinite
 
 /-!
 

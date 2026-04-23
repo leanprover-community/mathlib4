@@ -5,8 +5,18 @@ Authors: Kenny Lau, Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Torsion-free monoids with zero

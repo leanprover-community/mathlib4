@@ -5,14 +5,23 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.AddTorsor.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 /-!
 # Affine maps
 

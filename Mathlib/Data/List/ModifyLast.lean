@@ -6,9 +6,8 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Batteries.Data.List.Basic
-public import Batteries.Tactic.Alias
-public import Mathlib.Init
 import all Init.Data.Array.Basic
+import Mathlib.Init
 
 /-! ### List.modifyLast -/
 

@@ -5,8 +5,8 @@ Authors: Arthur Paulino, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
-public import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Init
+import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Definitions on Arrays

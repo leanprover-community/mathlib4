@@ -5,8 +5,16 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Data.Finsupp.Single
-public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Fintype.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Single
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

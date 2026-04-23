@@ -8,6 +8,13 @@ module
 public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Multiset.NatAntidiagonal
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Antidiagonals in ℕ × ℕ as finsets

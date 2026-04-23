@@ -5,19 +5,51 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.CharP.Two
-public import Mathlib.Algebra.Group.Commute.Basic
-public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.Algebra.Order.Group.Action
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Data.Int.ModEq
-public import Mathlib.Dynamics.PeriodicPts.Lemmas
 public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
-public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Dynamics.PeriodicPts.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Semiconj.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Action
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Dynamics.PeriodicPts.Lemmas
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Coset.Card
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Order.Preorder.Finite
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Order of an element

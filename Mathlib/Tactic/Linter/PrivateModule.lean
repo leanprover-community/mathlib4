@@ -5,11 +5,11 @@ Authors: Thomas R. Murrills
 -/
 module
 
-public meta import Lean.Elab.Command
-public import Lean.Environment
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
+meta import Lean.Linter.Basic
+import Lean.Parser.Command
 
 /-!
 # Private module linter

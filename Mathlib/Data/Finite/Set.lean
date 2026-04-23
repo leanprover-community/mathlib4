@@ -5,7 +5,14 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas about `Finite` and `Set`s

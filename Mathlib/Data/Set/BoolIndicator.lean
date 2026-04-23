@@ -5,7 +5,13 @@ Authors: Dagur Asgeirsson, Leonardo de Moura
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Set
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Set.Operations
+import Mathlib.Init
+import Mathlib.Order.BooleanAlgebra.Set
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 # Indicator function valued in bool

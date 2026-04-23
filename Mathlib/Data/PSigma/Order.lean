@@ -6,12 +6,13 @@ Authors: Kim Morrison, Minchao Wu
 module
 
 public import Mathlib.Data.Sigma.Lex
-public import Mathlib.Util.Notation3
-public import Init.NotationExtra
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 public import Mathlib.Order.Lex
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lexicographic order on a sigma type

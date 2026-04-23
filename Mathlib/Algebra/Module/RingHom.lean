@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.End
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Util.CompileInductive
 
 /-!
 # Composing modules with a ring hom

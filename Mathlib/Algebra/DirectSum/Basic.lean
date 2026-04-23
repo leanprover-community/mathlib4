@@ -5,9 +5,21 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.DFinsupp.Sigma
-public import Mathlib.Data.DFinsupp.Submonoid
+public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Data.DFinsupp.BigOperators
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Data.DFinsupp.Ext
+import Mathlib.Data.DFinsupp.Submonoid
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Direct sum

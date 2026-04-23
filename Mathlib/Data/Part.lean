@@ -5,9 +5,16 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.ToAdditive
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partial values of a type

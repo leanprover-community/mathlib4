@@ -5,14 +5,15 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Lean.Meta.Transform
-public meta import Lean.Meta.Inductive
 public meta import Lean.Elab.Deriving.Basic
 public meta import Lean.Elab.Deriving.Util
-public import Mathlib.Data.Countable.Defs
-public import Mathlib.Data.Nat.Pairing
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Nat.Pairing
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Countable` deriving handler

@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
+import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.Data.DFinsupp.Ext
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions

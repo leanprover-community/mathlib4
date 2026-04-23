@@ -6,8 +6,23 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Data.Multiset.OrderedMonoid
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Multiset
+import Mathlib.Algebra.Group.Irreducible.Lemmas
+import Mathlib.Algebra.GroupWithZero.Equiv
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.SetLike
 
 /-!
 # Unique factorization and normalization

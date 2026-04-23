@@ -6,11 +6,26 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Basic results on finitely generated (sub)modules

@@ -10,11 +10,22 @@ public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.Group.Nat.Hom
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Int.Basic
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Find
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Set.List
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Submonoids: membership criteria

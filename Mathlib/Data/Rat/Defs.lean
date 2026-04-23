@@ -6,10 +6,15 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Rat.Init
-public import Mathlib.Order.Basic
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # Basics for the Rational Numbers

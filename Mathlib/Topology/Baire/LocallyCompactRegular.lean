@@ -5,7 +5,17 @@ Authors: Damien Thomine
 -/
 module
 
-public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Separation.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Second Baire theorem

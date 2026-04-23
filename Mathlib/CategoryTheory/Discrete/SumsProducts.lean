@@ -7,7 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Sums.Basic
-public import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Prod.Basic
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Sums and products of discrete categories.
 

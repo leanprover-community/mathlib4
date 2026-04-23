@@ -7,7 +7,6 @@ Authors: Michael Rothgang
 module
 
 import Mathlib.Init
-import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels

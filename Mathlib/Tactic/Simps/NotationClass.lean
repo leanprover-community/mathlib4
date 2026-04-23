@@ -5,9 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Elab.Exception
 public meta import Batteries.Lean.NameMapAttribute
+public meta import Lean.Meta.Basic
+public meta import Lean.Structure
+import Mathlib.Init
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`

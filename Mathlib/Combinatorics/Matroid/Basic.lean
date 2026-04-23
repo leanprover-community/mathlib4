@@ -5,11 +5,21 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Combinatorics.Matroid.Init
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Set.Finite.Powerset
 public import Mathlib.Order.UpperLower.Closure
+public import Aesop.Frontend.Tactic
+public import Mathlib.Data.Set.Lattice
+import Mathlib.Combinatorics.Matroid.Init
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Matroids

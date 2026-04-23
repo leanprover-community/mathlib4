@@ -5,12 +5,20 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 

@@ -5,10 +5,41 @@ Authors: Paul van Wamelen
 -/
 module
 
-public import Mathlib.Data.Int.NatPrime
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.Tactic.Field
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Data.ZMod.Defs
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Int.NatPrime
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Init
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Field
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pythagorean Triples

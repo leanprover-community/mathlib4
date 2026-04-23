@@ -6,8 +6,9 @@ Authors: Floris van Doorn
 module
 
 public meta import Mathlib.Lean.Expr.Basic
-public import Batteries.Tactic.Alias
-public import Lean.Exception
+public meta import Lean.Elab.Command
+import Batteries.Tactic.Alias
+import Lean.Exception
 
 /-! ## The `@[alias_in]` attribute -/
 

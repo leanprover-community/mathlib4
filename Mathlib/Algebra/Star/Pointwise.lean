@@ -6,9 +6,17 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Order.SetNotation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Pointwise star operation on sets

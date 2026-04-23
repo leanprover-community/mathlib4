@@ -5,9 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Semiconj
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Init
+import Mathlib.Logic.Basic
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.

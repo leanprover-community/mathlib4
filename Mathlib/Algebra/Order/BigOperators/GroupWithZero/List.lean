@@ -6,8 +6,17 @@ Authors: Stuart Presnell, Daniel Weber
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Push
+import Mathlib.Util.CompileInductive
 
 /-!
 # Big operators on a list in ordered groups with zeros

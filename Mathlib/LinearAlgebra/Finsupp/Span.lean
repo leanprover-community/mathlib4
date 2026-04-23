@@ -6,7 +6,18 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely supported functions and spans

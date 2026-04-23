@@ -8,8 +8,15 @@ module
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Shrink
 public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Ring.TransferInstance
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The category of (commutative) rings has all limits

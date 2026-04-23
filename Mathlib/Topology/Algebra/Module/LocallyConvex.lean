@@ -5,9 +5,40 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Topology.Connected.LocPathConnected
-public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+import Mathlib.Algebra.Order.Algebra
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.EReal.Operations
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.Closure
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Locally convex topological modules

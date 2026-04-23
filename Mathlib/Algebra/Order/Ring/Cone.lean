@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Group.Cone
 public import Mathlib.Algebra.Ring.Subsemiring.Order
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Construct ordered rings from rings with a specified positive cone.

@@ -5,9 +5,15 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Logic.Equiv.Set
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence relations

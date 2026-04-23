@@ -6,8 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Spread
+import Mathlib.Init
+import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Lifting algebraic data classes along injective/surjective maps

@@ -5,10 +5,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Limit of an ultrafilter.

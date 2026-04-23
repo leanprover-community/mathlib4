@@ -5,13 +5,13 @@ Authors: Michael Rothgang
 -/
 module
 
-public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
-public import Mathlib.Tactic.DeclarationNames
+meta import Lean.Linter.Basic
+import Lean.Parser.Module.Syntax
+meta import Lean.Server.InfoUtils
+import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters

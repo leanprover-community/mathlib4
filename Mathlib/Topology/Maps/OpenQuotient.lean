@@ -5,8 +5,19 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Maps.Basic
-public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Topology.Defs.Filter
+public import Mathlib.Topology.Defs.Induced
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Init
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Maps.Basic
 
 /-!
 # Open quotient maps

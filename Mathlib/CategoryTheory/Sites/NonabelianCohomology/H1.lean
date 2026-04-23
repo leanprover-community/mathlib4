@@ -6,6 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.Grp.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! The cohomology of a sheaf of groups in degree 1
 

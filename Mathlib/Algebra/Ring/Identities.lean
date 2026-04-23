@@ -5,7 +5,13 @@ Authors: Bryan Gin-ge Chen, Kevin Lacker
 -/
 module
 
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Util.CompileInductive
 
 /-!
 # Identities

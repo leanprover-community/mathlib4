@@ -7,7 +7,15 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Prod
-public import Mathlib.Algebra.Ring.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Products of star-ordered rings

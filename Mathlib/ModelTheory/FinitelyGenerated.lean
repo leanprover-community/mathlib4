@@ -5,8 +5,18 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.ModelTheory.Substructures
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Init
+import Mathlib.Logic.Equiv.List
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Finitely Generated First-Order Structures

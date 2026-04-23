@@ -6,6 +6,15 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.SetTheory.Cardinal.ENat
+public import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Projection from cardinal numbers to natural numbers

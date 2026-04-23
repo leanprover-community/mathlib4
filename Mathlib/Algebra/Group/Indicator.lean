@@ -9,6 +9,19 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Order.SymmDiff
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.SymmDiff
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Indicator function

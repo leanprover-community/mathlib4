@@ -5,11 +5,24 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
-public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Harris-Kleitman inequality

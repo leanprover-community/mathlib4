@@ -5,8 +5,19 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Int.Init
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Init
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Successors and predecessors of integers

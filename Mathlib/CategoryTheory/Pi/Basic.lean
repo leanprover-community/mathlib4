@@ -6,8 +6,12 @@ Authors: Simon Hudon, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Categories of indexed families of objects.

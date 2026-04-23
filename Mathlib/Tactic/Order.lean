@@ -5,15 +5,17 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Tactic.Order.CollectFacts
-public meta import Mathlib.Tactic.Order.Graph.Basic
-public import Mathlib.Tactic.ByContra
 public import Mathlib.Tactic.Order.CollectFacts
 public import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.Order.Graph.Tarjan
 public import Mathlib.Tactic.Order.Preprocessing
 public import Mathlib.Tactic.Order.ToInt
 public import Mathlib.Util.ElabWithoutMVars
+public meta import Qq.MetaM
+import Mathlib.Init
+import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `order` tactic

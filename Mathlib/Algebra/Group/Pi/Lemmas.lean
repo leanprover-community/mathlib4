@@ -8,9 +8,17 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Group.Torsion
-public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.Lattice
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extra lemmas about products of monoids and groups

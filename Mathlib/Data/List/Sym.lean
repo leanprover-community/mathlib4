@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Unordered tuples of elements of a list
 

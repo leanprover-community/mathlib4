@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers

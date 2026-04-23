@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Module operations on `Mᵐᵒᵖ`

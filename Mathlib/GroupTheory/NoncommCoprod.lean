@@ -6,10 +6,13 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Group.Commute.Hom
-public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Order.Disjoint
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Canonical homomorphism from a pair of monoids

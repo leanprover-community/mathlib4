@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Order.Monotone.Monovary
 public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Interpreting monovarying functions as monotone functions

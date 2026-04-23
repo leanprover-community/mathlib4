@@ -6,6 +6,13 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Residually Finite Groups

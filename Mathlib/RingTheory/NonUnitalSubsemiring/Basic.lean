@@ -5,19 +5,30 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.Group.Subsemigroup.Membership
 public import Mathlib.Algebra.Group.Subsemigroup.Operations
-public import Mathlib.Algebra.GroupWithZero.Center
-public import Mathlib.Algebra.Ring.Center
-public import Mathlib.Algebra.Ring.Centralizer
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Algebra.Ring.Submonoid.Basic
-public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.GroupTheory.Submonoid.Center
 public import Mathlib.GroupTheory.Subsemigroup.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Data.Fintype.Defs
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.GroupWithZero.Center
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
+import Mathlib.Algebra.Ring.Submonoid.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Bundled non-unital subsemirings

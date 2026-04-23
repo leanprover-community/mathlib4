@@ -5,8 +5,24 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 module
 
-public import Mathlib.Data.Set.Prod
-public import Mathlib.Data.Set.Restrict
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Set
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Restrict
+import Mathlib.Init
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Functions over sets

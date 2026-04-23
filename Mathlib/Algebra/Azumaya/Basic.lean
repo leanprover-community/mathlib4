@@ -6,11 +6,26 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
-public import Mathlib.Algebra.Central.End
-public import Mathlib.Algebra.Central.TensorProduct
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Algebra.Central.Defs
+import Mathlib.Algebra.Central.Basic
+import Mathlib.Algebra.Central.End
+import Mathlib.Algebra.Central.TensorProduct
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basic properties of Azumaya algebras

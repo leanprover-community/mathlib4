@@ -5,11 +5,22 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.GroupTheory.Congruence.Hom
 public import Mathlib.GroupTheory.OreLocalization.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.Widget.Calc
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Localizations of commutative monoids

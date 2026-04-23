@@ -5,7 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Parser.Extra
+public meta import Lean.PrettyPrinter.Delaborator.Basic
+public import Std.Data.HashMap.Basic
+import Mathlib.Init
 
 /-!
 # A parser for superscripts and subscripts

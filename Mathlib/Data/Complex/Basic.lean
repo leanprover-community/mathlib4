@@ -5,12 +5,30 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.CharZero
-public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Tactic.Ring
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Torsion
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # The complex numbers

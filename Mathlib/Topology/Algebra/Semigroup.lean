@@ -6,6 +6,16 @@ Authors: David Wärn
 module
 
 public import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Continuous
 
 /-!
 # Idempotents in topological semigroups

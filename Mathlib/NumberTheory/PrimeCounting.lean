@@ -5,10 +5,29 @@ Authors: Bolton Bailey, Ralf Stephan
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Nth
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.NumberTheory.SmoothNumbers
-public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Data.Nat.Nth
+public import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Nth
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Prime Counting Function

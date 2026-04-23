@@ -7,7 +7,19 @@ module
 
 public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Order.Hom.Basic
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Congr
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Util.CompileInductive
 
 /-!
 # Closure operators between preorders

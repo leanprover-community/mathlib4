@@ -5,11 +5,18 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Syntax
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.Algebra.Field.MinimalAxioms
-public import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The First-Order Theory of Fields

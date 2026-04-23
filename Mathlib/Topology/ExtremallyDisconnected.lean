@@ -7,6 +7,19 @@ module
 
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Compactification.StoneCech
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Functor
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Extremally disconnected spaces

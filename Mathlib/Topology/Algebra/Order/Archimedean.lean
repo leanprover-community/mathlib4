@@ -5,10 +5,35 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.GroupTheory.Archimedean
-public import Mathlib.Topology.Algebra.Order.Group
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Topology.Order.Basic
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Archimedean.Defs
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Data.Set.Disjoint
+import Mathlib.GroupTheory.Archimedean
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Closure
 
 /-!
 # Topology on archimedean groups and fields

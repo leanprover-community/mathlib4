@@ -6,6 +6,11 @@ Authors: Jacob Reinhold
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Comon_
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Copy-Discard Categories

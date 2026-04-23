@@ -6,9 +6,26 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.GroupTheory.Perm.ClosureSwap
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.GroupTheory.Perm.ClosureSwap
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Galois Groups of Morse Polynomials

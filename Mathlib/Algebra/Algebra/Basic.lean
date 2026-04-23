@@ -6,16 +6,25 @@ Authors: Kenny Lau, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Algebra.Module.ULift
-public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Data.Int.CharZero
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Further basic results about `Algebra`.

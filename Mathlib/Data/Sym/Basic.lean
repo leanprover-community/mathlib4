@@ -5,10 +5,16 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Multiset
 public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Data.Vector.Basic
-public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Multiset.Filter
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Symmetric powers

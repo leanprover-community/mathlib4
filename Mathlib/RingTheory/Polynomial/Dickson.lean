@@ -5,13 +5,31 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
-public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Dickson polynomials

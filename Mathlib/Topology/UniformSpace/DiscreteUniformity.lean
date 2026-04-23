@@ -6,6 +6,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Antoine Chambert-Loir, María Inés de
 module
 
 public import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Prod
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Discrete uniformity
 

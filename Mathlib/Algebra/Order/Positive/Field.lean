@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Positive.Ring
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Algebraic structures on the set of positive numbers

@@ -10,6 +10,15 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Order.Bounds.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas for the `mono` tactic
 

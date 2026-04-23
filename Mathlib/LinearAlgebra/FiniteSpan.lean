@@ -8,6 +8,13 @@ module
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

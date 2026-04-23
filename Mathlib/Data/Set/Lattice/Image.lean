@@ -5,8 +5,25 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Data.Set.BooleanAlgebra
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Restrict
+import Mathlib.Init
+import Mathlib.Logic.IsEmpty.Basic
+import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Tauto
+import Mathlib.Util.CompileInductive
 
 /-!
 # The set lattice and (pre)images of functions

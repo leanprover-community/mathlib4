@@ -5,8 +5,17 @@ Authors: Yakov Pechersky, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Image
-public import Mathlib.Data.List.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Basic
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-! # Some lemmas about lists involving sets
 

@@ -6,11 +6,23 @@ Authors: Floris van Doorn, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
-public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Pointwise operations of finsets

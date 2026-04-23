@@ -5,7 +5,24 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Radical
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.Radical.Basic
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Polynomial.Radical
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Mason-Stothers theorem

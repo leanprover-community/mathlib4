@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `Multiplicative ℤ`.

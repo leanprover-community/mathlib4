@@ -6,6 +6,13 @@ Authors: Kyle Miller, Peter Nelson
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Dart
+import Mathlib.Algebra.NeZero
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Walks

@@ -5,13 +5,34 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
-public import Mathlib.Algebra.Homology.Factorizations.CM5b
-public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.Refinements
-public import Mathlib.Algebra.Homology.SingleHomology
-public import Mathlib.CategoryTheory.Category.Factorisation
-public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.Factorizations.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+import Mathlib.Algebra.Homology.Factorizations.CM5b
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+import Mathlib.Algebra.Homology.Refinements
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Category.Factorisation
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Functor.OfSequence
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Factorization lemma

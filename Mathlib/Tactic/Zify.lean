@@ -5,12 +5,17 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Order.Basic
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 
 import Mathlib.Tactic.Attr.Register
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Init
+import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic

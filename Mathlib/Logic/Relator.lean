@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Defs
+import Mathlib.Init
+import Mathlib.Logic.Function.Defs
 
 /-!
 # Relator for functions, pairs, sums, and lists.

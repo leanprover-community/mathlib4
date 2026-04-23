@@ -8,6 +8,12 @@ module
 public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.Algebra.Category.Grp.Shrink
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Yoneda embedding for monoid objects for locally small categories

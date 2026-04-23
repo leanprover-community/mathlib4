@@ -10,6 +10,8 @@ public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain
 public import Batteries.Util.LibraryNote -- For `library_note` command.
+public import Lean.Elab.InfoTree.Main
+import Mathlib.Init
 
 /-!
 # Basic tactics and utilities for tactic writing

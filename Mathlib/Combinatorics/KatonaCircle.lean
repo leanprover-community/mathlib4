@@ -6,9 +6,20 @@ Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
-public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Katona circle method

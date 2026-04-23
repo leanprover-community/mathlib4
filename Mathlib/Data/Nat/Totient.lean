@@ -5,15 +5,37 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.CharP.Two
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Data.Nat.Cast.Field
-public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.Factorization.Induction
-public import Mathlib.Data.Nat.Periodic
+public meta import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.SetTheory.Cardinal.Finite
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Units
+import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Induction
+import Mathlib.Data.Nat.Periodic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Euler's totient function

@@ -5,9 +5,15 @@ Authors: Yury Kudryashov, Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Partially defined linear maps

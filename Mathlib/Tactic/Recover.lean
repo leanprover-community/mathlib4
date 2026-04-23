@@ -5,7 +5,8 @@ Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+import Mathlib.Init
 
 /-!
 # The `recover` tactic modifier

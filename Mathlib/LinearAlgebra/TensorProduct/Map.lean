@@ -6,6 +6,16 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.Module.Shrink
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor products and linear maps

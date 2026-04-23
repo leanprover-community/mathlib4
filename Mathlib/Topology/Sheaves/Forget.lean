@@ -6,6 +6,14 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.Sheaf
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Checking the sheaf condition on the underlying presheaf of types.

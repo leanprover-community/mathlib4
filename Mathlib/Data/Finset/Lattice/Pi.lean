@@ -5,8 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lattice operations on finsets of functions

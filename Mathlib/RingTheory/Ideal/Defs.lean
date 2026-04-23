@@ -6,7 +6,15 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 

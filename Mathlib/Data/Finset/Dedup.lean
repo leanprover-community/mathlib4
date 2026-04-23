@@ -8,6 +8,11 @@ module
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.List.Dedup
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Deduplicating Multisets to make Finsets

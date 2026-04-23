@@ -5,8 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.Ring.Commute
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Cast of natural numbers: lemmas about `Commute`

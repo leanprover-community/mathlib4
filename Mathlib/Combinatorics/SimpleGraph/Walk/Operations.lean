@@ -6,7 +6,17 @@ Authors: Kyle Miller, Pim Otte, Daniel Weber, Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
-public import Mathlib.Data.List.Zip
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.NeZero
+import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Zip
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Operations on walks

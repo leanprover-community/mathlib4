@@ -5,12 +5,35 @@ Authors: Chris Hughes, Morenikeji Neri
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Nonunits
-public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
+public import Mathlib.Algebra.EuclideanDomain.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Order.Zorn
+import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Ideal.Lattice
+import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings

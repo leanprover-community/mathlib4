@@ -5,8 +5,16 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.Data.Finset.Insert
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Finset.Empty
+public import Mathlib.Order.SetNotation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Constructions involving sets of sets.

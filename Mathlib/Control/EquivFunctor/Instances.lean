@@ -5,8 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Fintype.OfMap
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `EquivFunctor` instances

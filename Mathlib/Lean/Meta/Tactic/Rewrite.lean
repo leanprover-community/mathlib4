@@ -5,8 +5,8 @@ Authors: Kim Morrison, Patrick Massot, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Tactic.Rewrite
+import Mathlib.Init
 
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`

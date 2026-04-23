@@ -5,9 +5,12 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.TypeVec
-public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

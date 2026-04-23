@@ -5,10 +5,27 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Nilpotent maps on finite modules

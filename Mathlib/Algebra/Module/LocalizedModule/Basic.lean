@@ -5,10 +5,22 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.OreLocalization.Ring
+public import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Algebra.Regular.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FastInstance
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # Localized Module

@@ -5,9 +5,23 @@ Authors: Yury Kudryashov, Alex Kontorovich
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Order.Filter.Tendsto
-public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Order.Filter.Bases.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Piecewise
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Filter.Bases.Finite
+import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Filter.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # (Co)product of a family of filters

@@ -5,12 +5,16 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Data.Quot
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Perm
+public import Mathlib.Util.CompileInductive
+import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Multisets

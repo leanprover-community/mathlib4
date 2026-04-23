@@ -5,10 +5,15 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Option.Basic
-public import Batteries.Tactic.Congr
 public import Mathlib.Data.Set.Basic
-public import Mathlib.Tactic.Contrapose
+public import Aesop.BuiltinRules
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Data.Option.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.CompileInductive
 
 /-!
 

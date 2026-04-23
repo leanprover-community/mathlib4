@@ -6,8 +6,14 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Algebra.Order.Interval.Set.Monoid
 public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Algebraic properties of finset intervals

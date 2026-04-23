@@ -6,8 +6,20 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Order.UpperLower.Closure
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
 
 /-!
 # Lower and Upper topology

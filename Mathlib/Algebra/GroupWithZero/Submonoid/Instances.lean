@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Instances for the range submonoid of a monoid with zero hom

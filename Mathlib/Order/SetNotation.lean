@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Util.Notation3
+import Mathlib.Init
+import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.Translate.ToDual
 
 /-!
 # Notation classes for set supremum and infimum

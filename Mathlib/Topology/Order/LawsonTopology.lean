@@ -5,8 +5,13 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Topology.Order.LowerUpperTopology
 public import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lawson topology

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Order.SuccPred.WithBot
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Algebraic properties of the successor function on `WithBot`

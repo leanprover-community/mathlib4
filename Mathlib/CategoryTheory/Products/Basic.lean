@@ -6,8 +6,13 @@ Authors: Stephen Morgan, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Opposites
-public import Mathlib.Data.Prod.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Data.Prod.Basic
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Util.CompileInductive
 
 /-!
 # Cartesian products of categories

@@ -5,10 +5,20 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Qq.AssertInstancesCommute
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! # Lemmas for the `field_simp` tactic
 

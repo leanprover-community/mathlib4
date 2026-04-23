@@ -5,8 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Limits in the category of indexed families of objects.

@@ -5,15 +5,26 @@ Authors: Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Nat
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Rel
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.List.Chain
+public import Mathlib.Tactic.NthRewrite
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.List.OfFn
+import Mathlib.Init
+import Mathlib.Order.OrderIsoNat
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Series of a relation

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Scott Topological Spaces

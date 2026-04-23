@@ -5,8 +5,9 @@ Authors: Alex J. Best, Mac Malone
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Declaration
+import Lean.Parser.Syntax
+import Mathlib.Init
 
 /-!
 # Suppressing compilation to executable code in a file or in a section

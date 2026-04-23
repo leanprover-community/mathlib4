@@ -7,8 +7,25 @@ module
 
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.ENat.Basic
-public import Mathlib.Tactic.ENatToNat
-public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.Basic
+import Batteries.Tactic.Init
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Stream.Init
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic properties of sequences (possibly infinite lists)

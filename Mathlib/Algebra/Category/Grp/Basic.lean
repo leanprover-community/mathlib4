@@ -9,6 +9,12 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.

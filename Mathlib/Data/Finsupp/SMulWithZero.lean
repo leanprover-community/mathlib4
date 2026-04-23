@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Scalar multiplication on `Finsupp`

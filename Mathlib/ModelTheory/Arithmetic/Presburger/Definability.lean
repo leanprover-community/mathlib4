@@ -6,11 +6,23 @@ Authors: Dexin Zhang
 module
 
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
-public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 public import Mathlib.ModelTheory.Definability
 
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.SetLike
 
 /-!
 # Presburger definability and semilinear sets

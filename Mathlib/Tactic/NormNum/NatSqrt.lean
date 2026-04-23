@@ -6,7 +6,25 @@ Authors: Mario Carneiro, Kyle Miller
 module
 
 public meta import Batteries.Data.Nat.Basic
-public import Mathlib.Tactic.NormNum
+public meta import Aesop.BuiltinRules
+public import Batteries.Data.Nat.Basic
+public import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.ToAdditive
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # `norm_num` extension for `Nat.sqrt`
 

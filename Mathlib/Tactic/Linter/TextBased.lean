@@ -5,12 +5,14 @@ Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 module
 
-public meta import Batteries.Data.String.Matcher
 public meta import Lake.Util.Casing
-public import Batteries.Data.String.Basic
-public import Mathlib.Data.Nat.Notation
-public meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public meta import Lean.Linter.Basic
+import Batteries.Data.String.Basic
+meta import Batteries.Data.String.Matcher
+import Mathlib.Data.Nat.Notation
+import Mathlib.Init
+meta import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.

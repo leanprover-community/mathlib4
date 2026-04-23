@@ -6,8 +6,16 @@ Authors: Frédéric Dupuis, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public meta import Mathlib.Tactic.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings

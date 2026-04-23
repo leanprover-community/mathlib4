@@ -5,8 +5,15 @@ Authors: Andreas Swerdlow, Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Algebra.Algebra.Tower
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Bilinear form

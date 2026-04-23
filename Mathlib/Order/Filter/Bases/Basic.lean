@@ -5,10 +5,24 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Sigma
-public import Mathlib.Order.Filter.Defs
-public import Mathlib.Order.Filter.Map
-public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Filter.Basic
+public import Mathlib.Tactic.Attr.Core
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Data.Prod.PProd
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Sigma
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Use
+import Mathlib.Util.CompileInductive
 
 /-!
 # Basic results on filter bases

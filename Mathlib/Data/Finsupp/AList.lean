@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.List.AList
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Nodup
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Connections between `Finsupp` and `AList`

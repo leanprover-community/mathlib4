@@ -7,10 +7,18 @@ module
 
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Order.Monotone.Basic
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Monotonicity.Attr
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.Push
+import Mathlib.Util.CompileInductive
 
 /-!
 # Natural number logarithms

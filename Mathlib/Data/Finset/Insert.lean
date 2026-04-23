@@ -5,11 +5,20 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Util.Delaborators
+public import Mathlib.Data.Set.Subsingleton
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Constructing finite sets by adding one element

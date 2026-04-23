@@ -5,8 +5,20 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.Ring.Commute
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Init
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 /-!
 ## `norm_num` plugin for `^`.

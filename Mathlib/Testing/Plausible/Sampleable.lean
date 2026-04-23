@@ -12,7 +12,7 @@ public import Plausible.Sampleable
 public import Plausible.Arbitrary
 public import Plausible.Gen
 public import Plausible.Random
-public meta import Plausible.Sampleable
+import Mathlib.Init
 
 /-!
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib

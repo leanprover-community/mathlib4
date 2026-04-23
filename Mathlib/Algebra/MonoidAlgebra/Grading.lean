@@ -5,11 +5,18 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Internal
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.MonoidAlgebra.Support
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`

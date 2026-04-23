@@ -5,9 +5,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Tactic.Attr.Core
-public import Mathlib.Tactic.Common
-public import Mathlib.Util.CompileInductive
+import Mathlib.Init
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-! ### Induction principles for lists -/
 

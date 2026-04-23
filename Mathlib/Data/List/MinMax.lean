@@ -5,11 +5,17 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 module
 
-public import Mathlib.Data.List.Basic
-public import Mathlib.Order.BoundedOrder.Lattice
-public import Mathlib.Data.List.Induction
-public import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Induction
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.MinMax
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Minimum and maximum of lists

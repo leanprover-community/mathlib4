@@ -6,8 +6,14 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Continuous
 
 /-!
 # Continuous nonnegative scalar multiplication

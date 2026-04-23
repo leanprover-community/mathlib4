@@ -5,12 +5,16 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Data.PFun
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.GetD
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Turing machines

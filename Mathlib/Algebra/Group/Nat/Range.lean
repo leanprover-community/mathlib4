@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `Finset.range` and addition of natural numbers

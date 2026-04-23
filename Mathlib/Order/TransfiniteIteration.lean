@@ -6,6 +6,12 @@ Authors: Joël Riou, Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.SuccPred.Limit
+import Batteries.Tactic.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Transfinite iteration of a function `I → I`

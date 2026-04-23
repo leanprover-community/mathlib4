@@ -5,14 +5,33 @@ Authors: Eric Wieser, Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.Ring.TransferInstance
-public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.Data.ZMod.Defs
-public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.RingTheory.FreeCommRing
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.TransferInstance
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.ZMod.Defs
+import Mathlib.GroupTheory.FreeGroup.Reduce
+import Mathlib.Init
+import Mathlib.Logic.Equiv.List
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.SetTheory.Cardinal.Finsupp
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Cardinalities of free constructions

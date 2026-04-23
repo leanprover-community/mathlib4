@@ -7,6 +7,13 @@ module
 
 public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.AlexandrovDiscrete
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.NhdsKer
 
 /-!
 # T1 Alexandrov-discrete topology is discrete

@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # `Discrete PUnit` has limits and colimits

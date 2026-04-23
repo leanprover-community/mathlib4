@@ -5,11 +5,11 @@ Authors: Aaron Liu, Wojciech Nawrocki
 -/
 module
 
-public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.Tactic.Conv.Basic
 public meta import Lean.Elab.Tactic.Rewrite
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Config
+public import Lean.HeadIndex
+import Lean.Elab.Tactic.Config
+import Mathlib.Init
 
 /-! ## Dependent rewrite tactic -/
 

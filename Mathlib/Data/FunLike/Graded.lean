@@ -6,6 +6,10 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Data.SetLike.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Class of grading-preserving functions and isomorphisms
 

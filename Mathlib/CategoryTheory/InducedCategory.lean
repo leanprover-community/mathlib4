@@ -6,6 +6,11 @@ Authors: Kim Morrison, Reid Barton, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Induced categories and full subcategories

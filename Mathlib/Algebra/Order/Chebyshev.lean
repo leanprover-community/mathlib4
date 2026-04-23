@@ -5,11 +5,27 @@ Authors: Mantas Bakšys, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Monovary
-public import Mathlib.Algebra.Order.Rearrangement
-public import Mathlib.GroupTheory.Perm.Cycle.Basic
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.Monotone.Monovary
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monovary
+import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.Data.Finset.Attr
+import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.SetLike
 
 /-!
 # Chebyshev's sum inequality

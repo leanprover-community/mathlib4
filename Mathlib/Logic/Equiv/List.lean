@@ -6,6 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Logic.Denumerable
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Equivalences involving `List`-like types

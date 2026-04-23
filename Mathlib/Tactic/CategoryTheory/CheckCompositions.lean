@@ -5,9 +5,15 @@ Authors: Kim Morrison
 -/
 module
 
-public import Aesop
-public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Util.ForEachExpr
+public meta import Std.Do.Triple.SpecLemmas
+import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 The `check_compositions` tactic,

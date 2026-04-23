@@ -6,8 +6,15 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Data.Multiset.MapFold
-public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.PropInstances
+import Batteries.Tactic.Init
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.Set.Function
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Filtering multisets by a predicate

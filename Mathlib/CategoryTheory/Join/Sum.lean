@@ -7,6 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Join.Basic
 public import Mathlib.CategoryTheory.Sums.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`

@@ -7,9 +7,18 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Lemmas on integer matrices

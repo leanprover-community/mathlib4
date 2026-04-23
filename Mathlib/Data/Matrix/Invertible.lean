@@ -6,7 +6,15 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-public import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # Extra lemmas about invertible matrices
 

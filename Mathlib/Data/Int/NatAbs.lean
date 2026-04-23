@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `Int.natAbs`

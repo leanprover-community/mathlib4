@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.GroupWithZero.Action.End
 public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Tactic.Attr.Core
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Group action on rings

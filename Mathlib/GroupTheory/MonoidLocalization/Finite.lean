@@ -7,6 +7,12 @@ module
 
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Localization of a finitely generated submonoid

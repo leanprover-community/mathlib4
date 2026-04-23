@@ -5,13 +5,21 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Rat
-public import Mathlib.Algebra.Group.Commute.Basic
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.Rat.Lemmas
-public import Mathlib.Order.Nat
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Init
+import Mathlib.Order.Nat
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Casts for Rational Numbers

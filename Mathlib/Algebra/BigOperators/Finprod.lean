@@ -5,18 +5,46 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Notation.FiniteSupport
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Notation.FiniteSupport
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Finite products and sums over types and sets

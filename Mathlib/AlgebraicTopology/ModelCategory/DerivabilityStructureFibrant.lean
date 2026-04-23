@@ -6,7 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+import Mathlib.AlgebraicTopology.ModelCategory.Instances
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The right derivability structure attached to a model category

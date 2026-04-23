@@ -5,12 +5,18 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Aesop
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.SimpRw
-public import Mathlib.Tactic.SplitIfs
+public import Aesop.BuiltinRules
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Data.Int.Init
+import Mathlib.Init
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups

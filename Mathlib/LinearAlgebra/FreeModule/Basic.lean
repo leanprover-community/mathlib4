@@ -8,9 +8,17 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.ULift
-public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.GroupTheory.Submonoid.Center
+public import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.Logic.Small.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Free modules

@@ -6,6 +6,11 @@ Authors: Jeremy Avigad, Simon Hudon
 module
 
 public import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The quotient of QPF is itself a QPF

@@ -7,10 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.SetTheory.Ordinal.Exponential
-public import Mathlib.SetTheory.Ordinal.Family
 
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finsupp.AList
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cantor Normal Form

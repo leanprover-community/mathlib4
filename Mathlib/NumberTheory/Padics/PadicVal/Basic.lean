@@ -6,10 +6,42 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 module
 
 public import Mathlib.NumberTheory.Divisors
-public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 public import Mathlib.Data.Nat.MaxPowDiv
-public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Digits.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.RingTheory.Multiplicity
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Init
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
 
 /-!
 # `p`-adic Valuation

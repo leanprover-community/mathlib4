@@ -5,11 +5,9 @@ Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 module  -- shake: keep-downstream (`[csimp]` is not currently tracked)
 
-public import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Compiler.CSimpAttr
-public meta import Lean.Util.FoldConsts
-public meta import Lean.Data.AssocList
+import Mathlib.Init
 
 /-!
 # Define the `compile_inductive%` command.

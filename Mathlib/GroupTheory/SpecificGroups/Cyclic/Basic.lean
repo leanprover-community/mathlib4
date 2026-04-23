@@ -5,7 +5,17 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.ZMod.QuotientGroup
+import Mathlib.GroupTheory.Coset.Card
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Cyclic groups

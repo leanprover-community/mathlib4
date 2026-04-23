@@ -5,10 +5,29 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Divisibility.Prod
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.RingTheory.Artinian.Defs
+import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Polynomial.Eval.Coeff
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Instances related to Artinian rings

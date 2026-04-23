@@ -5,10 +5,17 @@ Authors: Alex Kontorovich, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Mul-opposite subgroups

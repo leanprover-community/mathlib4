@@ -8,6 +8,13 @@ module
 import all Lean.Elab.Tactic.Induction
 public import Mathlib.Data.PNat.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public meta import Qq.MetaM
+import Mathlib.Init
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 
 /-!

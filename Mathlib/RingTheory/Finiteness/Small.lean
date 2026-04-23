@@ -5,15 +5,28 @@ Authors: Antoine Chambert-Loir, Maria-Inés de Frutos-Fernandez
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.LinearAlgebra.Basis.Cardinality
-public import Mathlib.LinearAlgebra.StdBasis
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Data.DFinsupp.Small
+import Mathlib.Data.Countable.Small
+import Mathlib.Data.DFinsupp.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Set
+import Mathlib.Logic.UnivLE
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-! # Smallness properties of modules and algebras -/
 

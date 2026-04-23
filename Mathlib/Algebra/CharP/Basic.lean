@@ -11,9 +11,19 @@ public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Data.Nat.Cast.Prod
-public import Mathlib.Data.ULift
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
+public import Mathlib.Tactic.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Util.CompileInductive
 
 /-!
 # Characteristic of semirings

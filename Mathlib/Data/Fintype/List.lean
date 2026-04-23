@@ -6,8 +6,17 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Permutation
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Mathlib.Tactic.Use
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 

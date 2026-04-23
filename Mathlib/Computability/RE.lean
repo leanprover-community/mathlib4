@@ -5,7 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.PartrecCode
+public import Mathlib.Computability.Partrec
+import Mathlib.Computability.PartrecCode
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Computable and Recursively Enumerable Predicates

@@ -5,8 +5,15 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.Clopen
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Closure
+import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Neighborhoods
 
 /-!
 # Locally connected topological spaces

@@ -8,6 +8,11 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Conv
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Prod instances for additive and multiplicative actions

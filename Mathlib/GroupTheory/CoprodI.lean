@@ -6,11 +6,27 @@ Authors: David Wärn, Joachim Breitner
 module
 
 public import Mathlib.Algebra.Group.Action.End
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.SetTheory.Cardinal.Order
+public import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Chain
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Lattice
+import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids

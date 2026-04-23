@@ -5,13 +5,29 @@ Authors: Yaël Dillies, George Shakan
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
-public import Mathlib.Tactic.Ring
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.NNRat.Order
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # The Plünnecke-Ruzsa inequality

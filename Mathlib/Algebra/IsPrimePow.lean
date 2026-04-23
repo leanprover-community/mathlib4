@@ -5,11 +5,21 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Order.Nat
-public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Nat.Log
-public import Mathlib.Data.Nat.Prime.Pow
+public import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Algebra.Group.Commute.Units
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Pow
+import Mathlib.Init
+import Mathlib.Order.Nat
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Prime powers

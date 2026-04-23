@@ -5,8 +5,15 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Logic.Encodable.Pi
+import Batteries.Tactic.Congr
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # W types

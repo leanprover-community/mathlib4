@@ -5,15 +5,52 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Algebra.BigOperators.Balance
-public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Tactic.Choose
+import Mathlib.Algebra.Algebra.IsSimpleRing
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Module.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Analysis.Normed.Ring.Finite
+import Mathlib.Data.ENNReal.Real
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Rat.Floor
+import Mathlib.Init
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.Tactic.AdaptationNote
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.TFAE
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

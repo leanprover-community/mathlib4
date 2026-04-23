@@ -6,9 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Logic.Function.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Inductive type variant of `Fin`

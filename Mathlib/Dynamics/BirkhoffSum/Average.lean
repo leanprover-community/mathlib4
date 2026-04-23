@@ -6,7 +6,16 @@ Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 module
 
 public import Mathlib.Dynamics.BirkhoffSum.Basic
-public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Birkhoff average

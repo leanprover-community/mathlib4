@@ -5,7 +5,15 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrdConnected
+public import Aesop.BuiltinRules
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Lattice
+import Mathlib.Init
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 ### Order instances on quotients

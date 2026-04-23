@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Data.Prod.Lex
 public import Mathlib.Order.Prod.Lex.Hom
+public import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order homomorphisms for products of ordered monoids

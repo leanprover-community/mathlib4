@@ -6,6 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The submodule of elements `x : M` such that `f x = g x`

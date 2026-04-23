@@ -15,6 +15,12 @@ public import ProofWidgets.Component.HtmlDisplay
 public import ProofWidgets.Component.Panel.Basic
 public import ProofWidgets.Component.PenroseDiagram
 public import ProofWidgets.Presentation.Expr
+public import Mathlib.Data.List.Defs
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
+import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # String Diagram Widget

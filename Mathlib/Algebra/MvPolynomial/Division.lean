@@ -6,8 +6,21 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Division
-public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Weight
+import Mathlib.Init
+import Mathlib.Tactic.ApplyFun
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Nontriviality.Core
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Division of `MvPolynomial` by monomials

@@ -5,12 +5,19 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Int.Init
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Free groups

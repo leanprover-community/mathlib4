@@ -6,7 +6,29 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Topology.FiberBundle.Trivialization
-public import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Data.Set.Disjoint
+import Mathlib.Init
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.Filter.Map
+import Mathlib.Order.Interval.Set.LinearOrder
+meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
+import Mathlib.Topology.Neighborhoods
+import Mathlib.Topology.NhdsWithin
+import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Fiber bundles

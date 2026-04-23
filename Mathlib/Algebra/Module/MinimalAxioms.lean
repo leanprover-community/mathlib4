@@ -6,6 +6,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Marti
 module
 
 public import Mathlib.Algebra.Module.Defs
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Minimal Axioms for a Module

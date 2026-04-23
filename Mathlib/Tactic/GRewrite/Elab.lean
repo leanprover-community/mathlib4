@@ -7,6 +7,9 @@ module
 
 public meta import Lean.Elab.Tactic.Rewrite
 public import Mathlib.Tactic.GRewrite.Core
+public meta import Mathlib.Tactic.GRewrite.Core
+import Lean.Elab.Tactic.Config
+import Mathlib.Init
 
 /-!
 

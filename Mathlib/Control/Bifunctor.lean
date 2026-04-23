@@ -6,7 +6,11 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Control.Functor
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Mathlib.Logic.Function.Basic
+public meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Functors with two arguments

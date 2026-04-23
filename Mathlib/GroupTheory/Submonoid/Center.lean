@@ -7,6 +7,14 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.GroupTheory.Subsemigroup.Center
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Centers of monoids

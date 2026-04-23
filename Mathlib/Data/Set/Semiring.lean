@@ -6,9 +6,18 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Data.Set.BooleanAlgebra
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.NAry
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sets as a semiring under union

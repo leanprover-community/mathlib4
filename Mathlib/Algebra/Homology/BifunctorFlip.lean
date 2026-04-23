@@ -7,6 +7,16 @@ module
 
 public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.Algebra.Homology.TotalComplexSymmetry
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.CategoryTheory.CategoryStar
+import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Action of the flip of a bifunctor on homological complexes

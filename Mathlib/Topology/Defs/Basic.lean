@@ -6,10 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Order.SetNotation
-public import Mathlib.Tactic.Continuity
-public import Mathlib.Tactic.FunProp
-public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
+public import Aesop.BuiltinRules
+import Mathlib.Init
+import Mathlib.Tactic.Continuity.Init
+import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Basic definitions about topological spaces

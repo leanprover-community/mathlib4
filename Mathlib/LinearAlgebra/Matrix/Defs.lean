@@ -5,8 +5,17 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Data.Set.Operations
+import Mathlib.Algebra.Module.Pi
+import Mathlib.Init
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Matrices

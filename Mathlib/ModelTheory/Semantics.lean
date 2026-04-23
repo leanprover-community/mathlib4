@@ -5,9 +5,18 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 module
 
-public import Mathlib.Data.Finset.Basic
 public import Mathlib.ModelTheory.Syntax
-public import Mathlib.Data.List.ProdSigma
+import Batteries.Tactic.Congr
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.ProdSigma
+import Mathlib.Init
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Basics on First-Order Semantics

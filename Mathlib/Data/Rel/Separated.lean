@@ -5,8 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.Rel
+public import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Uniform separation

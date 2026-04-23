@@ -6,11 +6,17 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Semiquot
-public import Mathlib.Data.Nat.Size
 public import Mathlib.Data.PNat.Defs
 public import Mathlib.Data.Rat.Init
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Tactic.ToAdditive
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Size
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Implementation of floating-point numbers (experimental).

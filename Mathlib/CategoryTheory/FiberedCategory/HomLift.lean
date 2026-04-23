@@ -5,8 +5,11 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 

@@ -5,9 +5,11 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Ring.Defs
+public import Aesop.BuiltinRules
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupWithZero.Regular
+import Mathlib.Init
 
 /-!
 # Lemmas about regular elements in rings.

@@ -6,6 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Basic
+import Mathlib.Init
+import Mathlib.Order.Monotone.Basic
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order structures and monotonicity lemmas for `Set`

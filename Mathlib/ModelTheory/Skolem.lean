@@ -6,6 +6,15 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.ElementarySubstructures
+import Batteries.Tactic.Trans
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.ModelTheory.Encoding
+import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem

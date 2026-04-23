@@ -6,6 +6,12 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.List.Sym
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Unordered tuples of elements of a multiset
 

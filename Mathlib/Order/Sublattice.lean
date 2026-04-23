@@ -6,6 +6,15 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.SupClosed
+public import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Prod
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Sublattices

@@ -6,10 +6,29 @@ Authors: Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.IsNormal
-public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Data.List.Sort
+public import Mathlib.Logic.Small.Defs
+public import Mathlib.SetTheory.Cardinal.Order
+public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Use
+import Mathlib.Data.Countable.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Lex
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.ULift
+import Mathlib.Init
+import Mathlib.Logic.Small.Set
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Ordinals

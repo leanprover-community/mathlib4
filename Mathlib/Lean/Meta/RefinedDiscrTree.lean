@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+import Mathlib.Init
 
 /-!
 A discrimination tree for the purpose of unifying local expressions with library results.

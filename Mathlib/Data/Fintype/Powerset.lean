@@ -6,7 +6,13 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # fintype instance for `Set α`, when `α` is a fintype

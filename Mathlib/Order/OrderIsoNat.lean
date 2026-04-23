@@ -7,9 +7,15 @@ module
 
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Logic.Denumerable
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Init
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Cover
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Relation embeddings from the naturals

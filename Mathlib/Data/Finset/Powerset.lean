@@ -5,10 +5,17 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Card
-public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Multiset.Powerset
-public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The powerset of a finset

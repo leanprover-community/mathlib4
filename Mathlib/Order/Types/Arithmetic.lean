@@ -5,12 +5,24 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Order.Fin.Basic
-public import Mathlib.Order.Hom.Lex
-public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.Types.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sum.Order
+public meta import Mathlib.Tactic.ToDual
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Init
+import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Order.Hom.Lex
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 

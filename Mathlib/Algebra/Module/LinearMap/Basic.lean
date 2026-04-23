@@ -8,8 +8,13 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Algebra.Module.Torsion.Pi
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Further results on (semi)linear maps

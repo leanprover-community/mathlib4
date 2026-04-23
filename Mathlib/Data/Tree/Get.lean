@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Data.Tree.Basic
+import Mathlib.Init
+import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree get operation

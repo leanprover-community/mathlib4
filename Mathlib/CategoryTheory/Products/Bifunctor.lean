@@ -6,6 +6,10 @@ Authors: Stephen Morgan, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about functors out of product categories.

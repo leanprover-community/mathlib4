@@ -5,7 +5,8 @@ Authors: Jovan Gerbsheid
 -/
 module
 
-public import Mathlib.Init
+public meta import Lean.Attributes
+import Mathlib.Init
 
 /-!
 # Combining attributes that generate declarations with translation attributes

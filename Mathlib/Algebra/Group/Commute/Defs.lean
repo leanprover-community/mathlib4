@@ -6,6 +6,8 @@ Authors: Neil Strickland, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Semiconj.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Commuting pairs of elements in monoids

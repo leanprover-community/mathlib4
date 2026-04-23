@@ -6,6 +6,15 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Lattice
+import Mathlib.Init
+import Mathlib.Order.Filter.Map
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Computational realization of filters (experimental)

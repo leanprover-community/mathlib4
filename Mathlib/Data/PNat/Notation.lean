@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 module
 
 public import Mathlib.Data.Nat.Notation
+import Mathlib.Init
 
 /-! # Definition and notation for positive natural numbers -/
 

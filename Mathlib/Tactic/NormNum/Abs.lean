@@ -5,8 +5,20 @@ Authors: David Renshaw
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Util.CompileInductive
 
 
 /-!

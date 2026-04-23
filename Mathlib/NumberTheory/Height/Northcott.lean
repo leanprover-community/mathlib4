@@ -6,6 +6,13 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Order.Filter.Cofinite
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Init
+import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Northcott Functions

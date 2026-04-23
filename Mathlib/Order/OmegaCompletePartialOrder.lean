@@ -5,13 +5,21 @@ Authors: Simon Hudon, Ira Fesefeldt
 -/
 module
 
-public import Mathlib.Control.Monad.Basic
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.Iterate
 public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.ScottContinuity
+import Batteries.Tactic.Trans
+import Mathlib.Control.Monad.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Init
+import Mathlib.Order.Iterate
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Omega Complete Partial Orders

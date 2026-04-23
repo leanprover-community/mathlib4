@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Data.Sigma.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Sigma instances for additive and multiplicative actions

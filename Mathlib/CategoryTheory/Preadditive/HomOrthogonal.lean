@@ -6,9 +6,28 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Hom orthogonal families.

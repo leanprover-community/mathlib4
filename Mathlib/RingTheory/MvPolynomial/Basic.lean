@@ -7,10 +7,24 @@ module
 
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.MvPolynomial.Degrees
-public import Mathlib.Data.DFinsupp.Small
-public import Mathlib.Data.Fintype.Pi
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.DFinsupp.Small
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.Logic.UnivLE
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Multivariate polynomials over commutative rings

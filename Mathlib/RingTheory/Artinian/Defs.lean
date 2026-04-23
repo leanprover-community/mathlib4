@@ -6,6 +6,12 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Util.CompileInductive
 
 /-!
 # Artinian rings and modules

@@ -5,11 +5,17 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Data.String.Lemmas
 public import Mathlib.Data.List.Lex
 public import Mathlib.Data.Char
-public import Mathlib.Algebra.Order.Group.Nat
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+public import Batteries.Data.String.Legacy
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Data.String.Lemmas
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Strings

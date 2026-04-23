@@ -5,10 +5,17 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # The tensor product of R-algebras

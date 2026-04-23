@@ -5,11 +5,21 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Int.Order.Units
 public import Mathlib.Data.ZMod.IntUnitsPower
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 public import Mathlib.Algebra.DirectSum.Algebra
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Int.Order.Units
+import Mathlib.Init
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Graded tensor products over graded algebras

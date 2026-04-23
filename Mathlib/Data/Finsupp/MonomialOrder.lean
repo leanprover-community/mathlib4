@@ -6,8 +6,15 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.WellFounded
+import Mathlib.Data.Sym.Sym2.Init
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-! # Monomial orders
 

@@ -5,8 +5,15 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # `ZMod p` is a field

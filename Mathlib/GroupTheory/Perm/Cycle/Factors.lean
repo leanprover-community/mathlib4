@@ -5,11 +5,24 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.List.Iterate
-public import Mathlib.Data.Set.Pairwise.List
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.GroupTheory.NoncommPiCoprod
-public import Mathlib.Tactic.Group
+import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Order.Monoid.NatCast
+import Mathlib.Data.Finset.Attr
+import Mathlib.Data.List.Iterate
+import Mathlib.Data.Set.Pairwise.List
+import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.Group
+import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.SetLike
 
 /-!
 # Cycle factors of a permutation

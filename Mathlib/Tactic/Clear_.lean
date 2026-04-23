@@ -5,9 +5,9 @@ Authors: Joshua Clune
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Clear
 public meta import Lean.Elab.Tactic.Basic
+import Mathlib.Init
 
 /-! # `clear_` tactic -/
 

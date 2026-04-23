@@ -5,11 +5,19 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
-public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about quotients in characteristic zero

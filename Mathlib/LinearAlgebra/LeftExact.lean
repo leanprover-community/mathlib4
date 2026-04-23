@@ -7,6 +7,12 @@ module
 
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # The Left Exactness of Hom

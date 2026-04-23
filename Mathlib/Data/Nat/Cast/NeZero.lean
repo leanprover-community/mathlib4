@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 module
 
 public import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Init
 
 /-!
 # Lemmas about nonzero elements of an `AddMonoidWithOne`

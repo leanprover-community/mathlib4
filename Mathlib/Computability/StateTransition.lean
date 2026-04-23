@@ -5,11 +5,16 @@ Authors: Mario Carneiro, Pim Spelier, Daan van Gent
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.PFun
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Defs
+public import Mathlib.Tactic.Attr.Core
+import Batteries.Tactic.Trans
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-!
 # State Transition Systems

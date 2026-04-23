@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Order.Basic
+import Mathlib.Init
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Translate.ToDual
+import Mathlib.Util.CompileInductive
 
 /-!
 # Order dual

@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.ToAdditive
+import Mathlib.Init
+import Mathlib.Tactic.Simps.NotationClass
+import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 # Typeclasses for algebraic operations

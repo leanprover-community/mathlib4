@@ -5,8 +5,15 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Data.Finset.Attr
+import Mathlib.Init
+import Mathlib.RingTheory.Congruence.BigOperators
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.SetLike
 
 /-!
 # Interactions between `∑, ∏` and two-sided ideals

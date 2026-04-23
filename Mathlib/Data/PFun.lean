@@ -8,6 +8,13 @@ module
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Part
 public import Mathlib.Data.Rel
+public import Mathlib.Tactic.Convert
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Trans
+import Mathlib.Init
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Util.CompileInductive
 
 /-!
 # Partial functions
