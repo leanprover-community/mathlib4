@@ -66,18 +66,17 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
   simp only
   have x_pos : 0 < x := lt_of_lt_of_le (exp_pos a⁻¹) (le_of_le_of_eq hex rfl)
   have y_pos : 0 < y := by linarith
-  nth_rw 1 [← rpow_one y]
-  nth_rw 1 [← rpow_one x]
+  nth_rw 1 [← rpow_one y, ← rpow_one x]
   rw [← div_self (ne_of_lt ha).symm, div_eq_mul_one_div a a, rpow_mul y_pos.le, rpow_mul x_pos.le,
     log_rpow (rpow_pos_of_pos y_pos a), log_rpow (rpow_pos_of_pos x_pos a), mul_div_assoc,
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
-  refine log_div_self_antitoneOn ?_ ?_ (by gcongr) <;> rw [mem_Ici]
-  · convert rpow_le_rpow (by positivity) hex (le_of_lt ha) using 1
-    · rw [← exp_mul]
-      field_simp
-  · convert rpow_le_rpow (by positivity) (hex.trans hxy) (le_of_lt ha) using 1
-    · rw [← exp_mul]
-      field_simp
+  have hbound {z : ℝ} (hz : rexp (1 / a) ≤ z) : z ^ a ∈ {b | rexp 1 ≤ b} := by
+    rw [mem_setOf_eq]
+    convert rpow_le_rpow _ hz (le_of_lt ha) using 1
+    · simp only [← exp_mul, Real.exp_eq_exp, field]
+    positivity
+  refine log_div_self_antitoneOn (hbound hex) (hbound (hex.trans hxy)) ?_
+  gcongr
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / √x) <| .Ici (exp 2) := by
   simp_rw [sqrt_eq_rpow]

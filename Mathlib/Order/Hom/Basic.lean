@@ -963,25 +963,22 @@ theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x 
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
-@[to_dual toRelIsoGT /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
+@[to_dual /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
 
-@[to_dual (attr := simp) toRelIsoGT_apply]
+@[to_dual (attr := simp)]
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
+@[to_dual]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
 
-@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
-theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
-  rfl
-
-@[to_dual (attr := simp) coe_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
 
-@[to_dual (attr := simp) coe_symm_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
