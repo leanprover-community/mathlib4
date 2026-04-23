@@ -36,6 +36,43 @@ def getLeanLibs : IO (Array String) := do
   else
     libs
 
+/-- Skip leading ASCII whitespace and Lean comments (line `-- ...` and nested `/- ... -/` block
+comments) from the start of `s`, returning the remaining slice. -/
+partial def skipWsAndComments (s : String.Slice) : String.Slice := Id.run do
+  let s := s.trimAsciiStart
+  if s.startsWith "--" then
+    let mut t := s.drop 2
+    while !t.isEmpty && t.front != '\n' do
+      t := t.drop 1
+    return skipWsAndComments t
+  if s.startsWith "/-" then
+    let mut t := s.drop 2
+    let mut depth := 1
+    while depth > 0 && !t.isEmpty do
+      if t.startsWith "/-" then
+        depth := depth + 1
+        t := t.drop 2
+      else if t.startsWith "-/" then
+        depth := depth - 1
+        t := t.drop 2
+      else
+        t := t.drop 1
+    return skipWsAndComments t
+  return s
+
+/-- Decide whether the given aggregator-file contents use the module system,
+by checking if the first non-comment, non-whitespace token is the `module` keyword. -/
+def usesModuleSystem (content : String) : Bool :=
+  -- Strip an optional UTF-8 BOM before scanning.
+  let bom := (Char.ofNat 0xfeff).toString
+  let content := if content.startsWith bom then content.drop bom.length else content.toSlice
+  let rest := skipWsAndComments content
+  if rest.startsWith "module" then
+    let after := rest.drop "module".length
+    after.isEmpty || !(after.front.isAlphanum || after.front == '_')
+  else
+    false
+
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.
 The exit code is the number of files that the command updates/creates. -/
@@ -44,7 +81,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
-  let useModule := (args.flag? "module").isSome
+  -- The `--module` flag only affects newly created aggregator files; for existing files,
+  -- module-ness is inferred from the first non-comment, non-whitespace token.
+  let moduleFlag := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
@@ -54,8 +93,12 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
-    let useModule := useModule || d.startsWith "Mathlib"
     let fileName := addExtension d "lean"
+    let fileExists ← pathExists fileName
+    let existingContent ← if fileExists then IO.FS.readFile fileName else pure ""
+    -- If the aggregator file already exists, infer whether it uses the module system;
+    -- otherwise, fall back to the `--module` flag.
+    let useModule := if fileExists then usesModuleSystem existingContent else moduleFlag
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
@@ -64,18 +107,17 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"
-    if !(← pathExists fileName) then
+    if !fileExists then
       if check then
         IO.println s!"File '{fileName}' does not exist"
       else
         IO.println s!"Creating '{fileName}'"
         IO.FS.writeFile fileName fileContent
       updates := updates + 1
-    else if (← IO.FS.readFile fileName) != fileContent then
+    else if existingContent != fileContent then
       if check then
         IO.println s!"The file '{fileName}' is out of date: \
-          run `lake exe mk_all{if git then " --git" else ""}{if useModule then " --module" else ""}` \
-          to update it"
+          run `lake exe mk_all{if git then " --git" else ""}` to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent
@@ -100,7 +142,9 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
-    module;       "Generate `module` files with `public` imports."
+    module;       "When creating a new aggregator file, generate it as a `module` with \
+                   `public` imports. Existing files keep their current style (module or plain), \
+                   inferred from their first non-comment, non-whitespace token."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/
