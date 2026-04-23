@@ -386,7 +386,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
   unfold CliqueFree at h
   push Not at h
   apply Embedding.induce (h.choose : Set α) |>.comp
-  rw [G.isClique_iff_induce_eq.mp h.choose_spec.isClique]
+  rw [G.induce_eq_top.mpr h.choose_spec.isClique]
   exact Embedding.completeGraph <| Finset.equivFinOfCardEq h.choose_spec.card_eq |>.symm.toEmbedding
 
 theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
