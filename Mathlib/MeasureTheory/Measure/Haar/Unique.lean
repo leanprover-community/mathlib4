@@ -168,7 +168,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
           · simp [image_eq_zero_of_notMem_tsupport H]
           have : g (y⁻¹ * x) = 0 := by
             apply image_eq_zero_of_notMem_tsupport
-            contrapose! hxy
+            contrapose hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]
@@ -200,7 +200,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
           · simp [image_eq_zero_of_notMem_tsupport H]
           have : f (y * x) = 0 := by
             apply image_eq_zero_of_notMem_tsupport
-            contrapose! hxy
+            contrapose hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [M, mem_image, mem_prod, Prod.exists]

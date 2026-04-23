@@ -140,7 +140,6 @@ theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ �
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
@@ -202,7 +201,7 @@ theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
   refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
-  contrapose! hφ
+  contrapose hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with
   | inl h => rwa [h] at hφ
   | inr h => rwa [← ComplexEmbedding.isReal_conjugate_iff, h] at hφ
@@ -247,7 +246,7 @@ theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
-  contrapose! h
+  contrapose h
   rw [not_isReal_iff_isComplex]
   exact ⟨φ, h, rfl⟩
 

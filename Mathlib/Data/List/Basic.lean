@@ -95,6 +95,10 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
   | [], H => absurd H.symm <| succ_ne_zero n
   | h :: t, _ => ⟨h, t, rfl⟩
 
+theorem length_eq_succ_iff {n} {l : List α} :
+    l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by
+  grind [cases List]
+
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
@@ -591,7 +595,7 @@ theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ 
 theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dropLast) :
     l.idxOf (l.getLast hl) = l.length - 1 :=
   Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
-    contrapose! hl'
+    contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
 end IndexOf
