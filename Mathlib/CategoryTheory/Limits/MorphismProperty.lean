@@ -100,13 +100,11 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     [P.ContainsIdentities] [P.RespectsIso] :
     (P.costructuredArrowObj L (X := L.obj Y)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) where
   limitsOfShape_le := by
-    rintro X ⟨p⟩
-    let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) :=
-      p.isLimit.conePointUniqueUpToIso ((IsLimit.postcomposeInvEquiv
-        (Functor.emptyExt _ _) _).2 CostructuredArrow.mkIdTerminal)
-    rw [MorphismProperty.costructuredArrowObj_iff,
-      P.costructuredArrow_iso_iff e]
-    simpa using P.id_mem (L.obj Y)
+    rintro X p
+    letI t : IsTerminal X := (ObjectProperty.limitsOfShape_isEmpty_iff _ _ _ |>.mp p).some
+    let e : X ≅ CostructuredArrow.mk (𝟙 (L.obj Y)) := t.uniqueUpToIso CostructuredArrow.mkIdTerminal
+    simpa [MorphismProperty.costructuredArrowObj_iff,
+      P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
@@ -138,13 +136,11 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
     [P.ContainsIdentities] [P.RespectsIso] :
     (P.structuredArrowObj L (X := L.obj Y)).IsClosedUnderColimitsOfShape (Discrete PEmpty.{1}) where
   colimitsOfShape_le := by
-    rintro X ⟨p⟩
-    let e : X ≅ StructuredArrow.mk (𝟙 (L.obj Y)) :=
-      p.isColimit.coconePointUniqueUpToIso ((IsColimit.precomposeInvEquiv
-        (Functor.emptyExt _ _) _).2 StructuredArrow.mkIdInitial)
-    rw [MorphismProperty.structuredArrowObj_iff,
-      P.structuredArrow_iso_iff e]
-    simpa using P.id_mem (L.obj Y)
+    rintro X p
+    letI t : IsInitial X := (ObjectProperty.colimitsOfShape_isEmpty_iff _ _ _ |>.mp p).some
+    let e : X ≅ StructuredArrow.mk (𝟙 (L.obj Y)) := t.uniqueUpToIso StructuredArrow.mkIdInitial
+    simpa [MorphismProperty.structuredArrowObj_iff,
+      P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
@@ -160,7 +156,7 @@ lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
       isLimitOfPreserves _ d.isLimit
     have heq : Y.hom = hd.lift { pt := X, π := { app j := (d.diag.obj j).hom } } := by
       refine hd.hom_ext fun j ↦ ?_
-      simp only [Functor.const_obj_obj, IsLimit.fac]
+      simp only [IsLimit.fac]
       simp
     rw [P.structuredArrowObj_iff, heq, ← (hc _).lift_comp_conePointUniqueUpToIso_hom hd,
       P.cancel_right_of_respectsIso]
@@ -176,7 +172,6 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
@@ -315,7 +310,7 @@ instance [P.ContainsIdentities] : HasInitial (P.Under ⊤ X) :=
 
 /-- If `P` is stable under composition, cobase change and satisfies pre-cancellation,
 `Under.forget P ⊤ X` creates pushouts. -/
-noncomputable instance createsLimitsOfShape_walkingCospan [HasPushouts T]
+noncomputable instance [HasPushouts T]
     [P.IsStableUnderComposition] [P.IsStableUnderCobaseChange] [P.HasOfPrecompProperty P] :
     CreatesColimitsOfShape WalkingSpan (Under.forget P ⊤ X) := by
   apply +allowSynthFailures forgetCreatesColimitsOfShapeOfClosed

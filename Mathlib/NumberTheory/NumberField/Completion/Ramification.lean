@@ -55,7 +55,6 @@ theorem finrank_eq_two_of_isRamified [w.1.LiesOver v.1] (h : w.IsRamified K) :
       (ringEquivComplexOfIsComplex H.1) (by ext; simp),
     Complex.finrank_real_complex]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w` is an unramified place over `v` then `w.Completion` has `v.Completion` dimension one. -/
 theorem finrank_eq_one_of_isUnramified [w.1.LiesOver v.1] (h : w.IsUnramified K) :
     Module.finrank v.Completion w.Completion = 1 := by
