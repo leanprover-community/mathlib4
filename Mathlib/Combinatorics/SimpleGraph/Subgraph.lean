@@ -608,8 +608,7 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
-variable (G) in
-theorem _root_.SimpleGraph.subgraph_edgeSet_monotone : Monotone (edgeSet (G := G)) :=
+theorem edgeSet_monotone : Monotone (edgeSet (G := G)) :=
   fun _ _ ↦ edgeSet_mono
 
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :

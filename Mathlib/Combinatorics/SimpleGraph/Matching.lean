@@ -219,16 +219,12 @@ theorem IsMatching.verts_eq_biUnion_edgeSet {M : G.Subgraph} (h : M.IsMatching) 
     exact ⟨s(v, u), he, Sym2.mem_mk_left ..⟩
   · exact mem_verts_of_mem_edge he hv
 
-variable (G) in
-theorem _root_.SimpleGraph.injOn_edgeSet_isMatching :
-    (setOf IsMatching).InjOn (edgeSet (G := G)) := by
+theorem IsMatching.injOn_edgeSet : (setOf IsMatching).InjOn (edgeSet (G := G)) := by
   refine fun M₁ h₁ M₂ h₂ h ↦ Subgraph.ext ?_ <| Sym2.fromRel_eq_fromRel_iff_eq .. |>.mp h
   rw [h₁.verts_eq_biUnion_edgeSet, h₂.verts_eq_biUnion_edgeSet, h]
 
-variable (G) in
-theorem _root_.SimpleGraph.strictMonoOn_edgeSet_isMatching :
-    StrictMonoOn (edgeSet (G := G)) (setOf IsMatching) :=
-  G.subgraph_edgeSet_monotone.monotoneOn _ |>.strictMonoOn_of_injOn G.injOn_edgeSet_isMatching
+theorem IsMatching.strictMonoOn_edgeSet : StrictMonoOn (edgeSet (G := G)) (setOf IsMatching) :=
+  edgeSet_monotone.monotoneOn _ |>.strictMonoOn_of_injOn injOn_edgeSet
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
