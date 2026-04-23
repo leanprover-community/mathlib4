@@ -381,9 +381,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- The library root file (e.g. `Mathlib.lean`) imports many modules; in mathlib it imports
-  -- `Mathlib.Tactic`, which the broad imports check below would flag. Since the root file is
-  -- imports-only, we can simply skip linting it.
+  -- Defensive: skip linting the library root file itself. In practice the
+  -- `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
+  -- does not import itself), but a root module could appear in `headerTestFiles`.
   if mainModule == mainModule.getRoot then return
   let fm ← getFileMap
   let mdDocs := (getMainModuleDoc (← getEnv)).toArray
