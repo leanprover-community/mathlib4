@@ -77,9 +77,10 @@ lemma isIso_of_isCompl_closure ⦃X U V : TopPair⦄ (f : U ⟶ X) (g : V ⟶ X)
 
 end TopPair
 
-universe u
+universe u v
 
-variable {Hₚ Hₚ' : ℕ → TopPair.{u} ⥤ Ab.{u}} {H H' : ℕ → TopCat.{u} ⥤ Ab.{u}}
+variable {C : Type v} [Category C] [Limits.HasZeroMorphisms C]
+  {Hₚ Hₚ' : ℕ → TopPair.{u} ⥤ C} {H H' : ℕ → TopCat.{u} ⥤ C}
   (H_incl_Hₚ : ∀ n : ℕ, H n ≅ incl ⋙ Hₚ n) (H'_incl_Hₚ' : ∀ n : ℕ, H' n ≅ incl ⋙ Hₚ' n)
   {δ : (Π m n, (Hₚ m) ⟶ proj₂ ⋙ H n)}
 
