@@ -50,20 +50,6 @@ lemma singularHomology₀Iso_sigma_desc_id :
   dsimp only [singularHomology₀Iso, singularHomology₀ε, SSet.homology₀ε]
   cat_disch
 
--- this should be moved
-instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
-  (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
-
-instance [PathConnectedSpace X] : Nonempty (ZerothHomotopy X) :=
-  (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).1
-
-instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
-  letI : Unique (ZerothHomotopy X) := Nonempty.some (by
-    rw [unique_iff_subsingleton_and_nonempty]
-    constructor <;> infer_instance)
-  rw [SSet.isConnected_iff_nonempty_unique]
-  exact ⟨(zerothHomotopyEquiv X).symm.unique⟩
-
 instance [PathConnectedSpace X] : IsIso (X.singularHomology₀ε R) :=
   inferInstanceAs (IsIso ((toSSet.obj X).homology₀ε R))
 

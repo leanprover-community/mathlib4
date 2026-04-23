@@ -93,4 +93,11 @@ noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π�
   left_inv x := by induction x; simp
   right_inv x := by induction x; simp
 
+instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
+  letI : Unique (ZerothHomotopy X) := Nonempty.some (by
+    rw [unique_iff_subsingleton_and_nonempty]
+    constructor <;> infer_instance)
+  rw [SSet.isConnected_iff_nonempty_unique]
+  exact ⟨(zerothHomotopyEquiv X).symm.unique⟩
+
 end TopCat
