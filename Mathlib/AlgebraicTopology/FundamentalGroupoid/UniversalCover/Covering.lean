@@ -82,7 +82,7 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
     exact sheet_pairwise_disjoint hU_slsc hxU
   have h_exhaustive : proj (x₀ := x₀) ⁻¹' U ⊆ ⋃ q, S q :=
     sheet_exhaustive hU_pathConn hxU
-  haveI _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
+  have _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
     Path.Homotopic.Quotient.discreteTopology x₀ x
   refine (IsEvenlyCovered.of_trivialization (t :=
     IsOpen.trivializationDiscrete (f := proj (x₀ := x₀))

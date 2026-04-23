@@ -93,9 +93,8 @@ theorem surjective_ofBasedPath (x₀ : X) : Function.Surjective (ofBasedPath x�
 
 /-- `ofBasedPath` is a quotient map: `UniversalCover x₀` carries the quotient topology from
 `BasedPath x₀` under endpoint-preserving path homotopy. -/
-theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) := by
-  refine ⟨?_, surjective_ofBasedPath x₀⟩
-  exact ⟨rfl⟩
+theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) :=
+  ⟨⟨rfl⟩, surjective_ofBasedPath x₀⟩
 
 /-- The endpoint projection. -/
 def proj : UniversalCover x₀ → X :=

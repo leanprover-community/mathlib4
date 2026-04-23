@@ -1003,8 +1003,7 @@ theorem Path.Homotopic.Quotient.discreteTopology
     [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X] (x y : X) :
     @DiscreteTopology (Path.Homotopic.Quotient x y)
       (inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))) := by
-  letI : Setoid (Path x y) := Path.Homotopic.setoid x y
-  letI : TopologicalSpace (Path.Homotopic.Quotient x y) :=
+  let : TopologicalSpace (Path.Homotopic.Quotient x y) :=
     inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))
   rw [discreteTopology_iff_isOpen_singleton]
   intro a
