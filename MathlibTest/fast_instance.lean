@@ -62,14 +62,14 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup (Wrapped α) :=
   fast_instance% Function.Injective.commSemigroup _ val_injective (fun _ _ => rfl)
 
 /--
-info: @[instance_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
+info: @[implicit_reducible] def testing.instSemigroup.{u_1} : {α : Type u_1} → [Semigroup α] → Semigroup (Wrapped α) :=
 fun {α} [inst : Semigroup α] => @Semigroup.mk (Wrapped α) (@instMulWrapped α (@Semigroup.toMul α inst)) ⋯
 -/
 #guard_msgs in
 set_option pp.explicit true in
 #print instSemigroup
 /--
-info: @[instance_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
+info: @[implicit_reducible] def testing.instCommSemigroup.{u_1} : {α : Type u_1} →
   [CommSemigroup α] → CommSemigroup (Wrapped α) :=
 fun {α} [inst : CommSemigroup α] =>
   @CommSemigroup.mk (Wrapped α) (@instSemigroup α (@CommSemigroup.toSemigroup α inst)) ⋯
@@ -117,8 +117,8 @@ abbrev dec1 : Decidable It := isTrue sorry
 #guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/-- info: @Dec.mk It (@isTrue It dec1._proof_1) : Dec It -/
-#guard_msgs in
+/-- info: @Dec.mk It (@isTrue It _check._proof_1) : Dec It -/
+#guard_msgs (info, drop warning) in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }
 
@@ -138,3 +138,18 @@ info: @Dec.mk It dec2 : Dec It
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec2 : Dec It }
+
+/-!
+Checking that proof fields whose types already match at instances transparency
+are used directly, without wrapping in an auxiliary theorem.
+-/
+
+class Pointed (α : Type) where
+  val : α
+  h : True
+
+abbrev myPointed : Pointed Nat := ⟨0, trivial⟩
+
+/-- info: { val := 0, h := _check._proof_1 } : Pointed Nat -/
+#guard_msgs in
+#check fast_instance% (myPointed : Pointed Nat)

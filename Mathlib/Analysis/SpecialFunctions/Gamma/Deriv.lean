@@ -41,7 +41,6 @@ namespace Complex
 
 section GammaHasDeriv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Rewrite the Gamma integral as an example of a Mellin transform. -/
 theorem GammaIntegral_eq_mellin : GammaIntegral = mellin fun x => ↑(Real.exp (-x)) :=
   funext fun s => by simp only [mellin, GammaIntegral, smul_eq_mul, mul_comm]
@@ -75,7 +74,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
       rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith
     have b : ∀ m : ℕ, s + 1 ≠ -m := by
       intro m; have := h2 (1 + m)
-      contrapose! this
+      contrapose this
       rw [← eq_sub_iff_add_eq] at this
       simpa using this
     refine DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) ?_) ?_ ?_
@@ -113,7 +112,7 @@ theorem continuousAt_Gamma_one : ContinuousAt Gamma 1 :=
 theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
   rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
   refine tendsto_nhdsWithin_congr Gamma_add_one (continuousAt_iff_punctured_nhds.mp ?_)
-  exact ContinuousAt.comp' (by simp [continuousAt_Gamma_one]) (continuous_add_right 1).continuousAt
+  exact ContinuousAt.comp' (by simp [continuousAt_Gamma_one]) (continuous_add_const 1).continuousAt
 
 theorem not_continuousAt_Gamma_zero : ¬ ContinuousAt Gamma 0 :=
   tendsto_self_mul_Gamma_nhds_zero.not_tendsto (by simp) ∘
@@ -128,7 +127,7 @@ theorem not_continuousAt_Gamma_neg_nat (n : ℕ) : ¬ ContinuousAt Gamma (-n) :=
     rw [Nat.cast_zero, neg_zero]
     exact not_continuousAt_Gamma_zero
   case succ n ih =>
-    contrapose! ih
+    contrapose ih
     rw [Nat.cast_add, Nat.cast_one] at ih
     suffices ContinuousAt (fun s ↦ Gamma (s - 1 + 1)) (-n) by simpa using this
     suffices ContinuousAt (fun s ↦ Gamma (s + 1)) (-n - 1) from

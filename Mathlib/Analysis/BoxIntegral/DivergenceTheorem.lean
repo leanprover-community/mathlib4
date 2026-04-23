@@ -62,7 +62,6 @@ variable [CompleteSpace E] (I : Box (Fin (n + 1))) {i : Fin (n + 1)}
 
 open MeasureTheory
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for the divergence theorem. -/
 theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) → ℝ) → E}
     {f' : (Fin (n + 1) → ℝ) →L[ℝ] E} (hfc : ContinuousOn f (Box.Icc I)) {x : Fin (n + 1) → ℝ}
@@ -138,7 +137,6 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
         ← I.volume_face_mul i]
       ac_rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
@@ -222,8 +220,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ ≤ δ + δ := add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc)
           _ = 2 * δ := (two_mul δ).symm
       calc
-        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
-          prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
+        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ := by
+          gcongr with j _; exact this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
         (Hmaps _ Hl hy)) volume).trans ?_
@@ -251,7 +249,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ ?_) (hJc rfl)).trans ?_
     · exact ⟨hJδ hy, Box.le_iff_Icc.1 hle hy⟩
     · rw [mul_right_comm (2 : ℝ), ← Box.volume_apply]
-      exact mul_le_mul_of_nonneg_right hlt.le ENNReal.toReal_nonneg
+      gcongr
+      exacts [by dsimp; positivity, by simp]
 
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 

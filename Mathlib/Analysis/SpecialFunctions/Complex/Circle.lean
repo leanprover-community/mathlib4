@@ -86,12 +86,32 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
   simp [Circle.ext_iff, Complex.exp_eq_one_iff, ← mul_assoc, Complex.I_ne_zero,
     ← Complex.ofReal_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
   simp [AddCommGroup.modEq_iff_zsmul', ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
 
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
+
+lemma exp_injOn_of_diff_lt {s : Set ℝ}
+    (hs : ∀ x ∈ s, ∀ y ∈ s, x - y ∈ Ioo (-2 * Real.pi) (2 * Real.pi)) : InjOn exp s := by
+  intro t₁ ht₁ t₂ ht₂ heq
+  obtain ⟨h1, h2⟩ := hs t₁ ht₁ t₂ ht₂
+  rw [neg_mul] at h1
+  rw [← sub_eq_zero, ← Real.cos_eq_one_iff_of_lt_of_lt h1 h2, ← exp_ofReal_mul_I_re]
+  replace heq : cexp _ = cexp _ := congrArg Subtype.val heq
+  rw [exp_eq_exp_iff_exp_sub_eq_one, ← sub_mul, ← ofReal_sub, Complex.ext_iff] at heq
+  exact heq.1
+
+lemma exp_injOn_Icc {a b : ℝ} (h : b - a < 2 * Real.pi) : InjOn exp (Icc a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_injOn_Ico {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ico a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * Real.pi) : InjOn exp (Ioc a b) :=
+  exp_injOn_of_diff_lt <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+lemma exp_surjective : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
 
 end Circle
 
@@ -167,7 +187,6 @@ theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCirc
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
   induction a using QuotientAddGroup.induction_on

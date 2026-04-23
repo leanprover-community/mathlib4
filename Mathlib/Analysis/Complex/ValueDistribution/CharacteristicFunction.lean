@@ -132,7 +132,7 @@ For `1 ≤ r`, the characteristic function of a sum `∑ a, f a` at `⊤` is les
 of the characteristic functions of `f ·`, plus `log s.card`.
 -/
 theorem characteristic_sum_top_le {α : Type*} (s : Finset α) (f : α → ℂ → E) {r : ℝ}
-    (hf : ∀ a, Meromorphic (f a)) (hr : 1 ≤ r) :
+    (hf : ∀ a ∈ s, Meromorphic (f a)) (hr : 1 ≤ r) :
     characteristic (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (characteristic (f a) ⊤)) r + log s.card := by
   simp only [characteristic, Pi.add_apply, Finset.sum_apply]
   calc proximity (∑ a ∈ s, f a) ⊤ r + logCounting (∑ a ∈ s, f a) ⊤ r
@@ -150,7 +150,7 @@ Asymptotically, the characteristic function of a sum `∑ a, f a` at `⊤` is le
 sum of the characteristic functions of `f ·`.
 -/
 theorem characteristic_sum_top_eventuallyLE {α : Type*} (s : Finset α) (f : α → ℂ → E)
-    (hf : ∀ a, Meromorphic (f a)) :
+    (hf : ∀ a ∈ s, Meromorphic (f a)) :
     characteristic (∑ a ∈ s, f a) ⊤
       ≤ᶠ[Filter.atTop] ∑ a ∈ s, (characteristic (f a) ⊤) + fun _ ↦ log s.card := by
   filter_upwards [Filter.eventually_ge_atTop 1]
@@ -214,7 +214,6 @@ theorem characteristic_mul_top_eventuallyLE {f₁ f₂ : ℂ → ℂ}
 @[deprecated (since := "2025-12-11")]
 alias characteristic_top_mul_eventually_le := characteristic_mul_top_eventuallyLE
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the zeros of `f ^ n` equals `n` times the
 characteristic counting function for the zeros of `f`.
@@ -224,7 +223,6 @@ theorem characteristic_pow_zero {f : ℂ → ℂ} {n : ℕ} (hf : Meromorphic f)
     characteristic (f ^ n) 0 = n • characteristic f 0 := by
   simp_all [characteristic]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For natural numbers `n`, the characteristic function for the poles of `f ^ n` equals `n` times the
 characteristic function for the poles of `f`.

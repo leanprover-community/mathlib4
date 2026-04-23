@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fabrizio Barroero
+Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+public import Mathlib.Analysis.Convex.Integral
+public import Mathlib.Analysis.Polynomial.Fourier
 
 /-!
 # Mahler measure of complex polynomials
@@ -23,6 +25,8 @@ properties.
   `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
 - `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
   to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
+- `Polynomial.mapMahlerMeasure p v`: the (exponential) Mahler measure of a polynomial `p` over a
+  ring `A` whose coefficients are mapped to `ℂ` via `v : A →+* ℂ`
 
 ## Main results
 
@@ -31,6 +35,10 @@ properties.
 - `mahlerMeasure_eq_leadingCoeff_mul_prod_roots`: the Mahler measure of a polynomial is the absolute
   value of its leading coefficient times the product of the absolute values of its roots lying
   outside the unit disk.
+- `mahlerMeasure_le_sqrt_sum_sq_norm_coeff`: **Landau's inequality** — the Mahler measure is
+  at most the ℓ² norm of the coefficient vector.
+- `norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure`: **Mignotte's coefficient
+  bound** — if `f = g * h` with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
 -/
 
 @[expose] public section
@@ -111,8 +119,7 @@ theorem mahlerMeasure_eq_zero_iff : p.mahlerMeasure = 0 ↔ p = 0 := by
 lemma intervalIntegrable_mahlerMeasure :
     IntervalIntegrable (fun x ↦ log ‖p.eval (circleMap 0 1 x)‖) MeasureTheory.volume 0 (2 * π) := by
   rw [← circleIntegrable_def fun z ↦ log ‖p.eval z‖]
-  exact circleIntegrable_log_norm_meromorphicOn
-    <| (analyticOnNhd_id.aeval_polynomial p).meromorphicOn
+  exact (analyticOnNhd_id.aeval_polynomial p).meromorphicOn.circleIntegrable_log_norm
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
@@ -189,7 +196,6 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
@@ -220,7 +226,7 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
   the product of the absolute values of its roots lying outside the unit disk. -/
 theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
     ‖p.leadingCoeff‖ * (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
-  by_cases hp : p = 0;
+  by_cases hp : p = 0
   · simp [hp]
   have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
   rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
@@ -236,16 +242,26 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
 lemma one_le_prod_max_one_norm_roots (p : ℂ[X]) : 1 ≤ (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
   grind [Multiset.one_le_prod, Multiset.mem_map]
 
-lemma leading_coeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.mahlerMeasure := by
+lemma leadingCoeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.mahlerMeasure := by
   rw [← mul_one ‖_‖, mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
   gcongr
   exact one_le_prod_max_one_norm_roots p
+
+@[deprecated (since := "2026-01-02")] alias leading_coeff_le_mahlerMeasure :=
+  leadingCoeff_le_mahlerMeasure
 
 lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
   rw [← one_mul (Multiset.prod _), mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
   gcongr
   exact zero_le_one.trans <| one_le_prod_max_one_norm_roots p
+
+/-- If the leading coefficient of a polynomial has norm at least 1, then its Mahler measure
+is at least 1. This holds in particular for nonzero polynomials with integer coefficients,
+since their leading coefficient is a nonzero integer. -/
+lemma one_le_mahlerMeasure_of_one_le_norm_leadingCoeff {p : ℂ[X]}
+    (hlc : 1 ≤ ‖p.leadingCoeff‖) : 1 ≤ p.mahlerMeasure :=
+  hlc.trans (leadingCoeff_le_mahlerMeasure p)
 
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
@@ -277,7 +293,75 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     apply norm_sum_le_of_le p.support
     simp
 
-set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.emptyLine false in
+open MeasureTheory Set in
+/-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
+of its coefficient vector, `√(∑ ‖coeff i‖²)`.
+
+This is the classical inequality due to Landau (1905). Combined with the multiplicativity of the
+Mahler measure (`mahlerMeasure_mul`), it gives the Mignotte bound on coefficients of polynomial
+factors.
+
+TODO: restate using a dedicated polynomial ℓ² norm once one is defined (see the TODO in
+`Mathlib.Analysis.Polynomial.Norm`). -/
+theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
+    p.mahlerMeasure ≤ √(∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by
+  -- Proof: Jensen's inequality (twice) + Parseval's identity
+  have : IsFiniteMeasure (volume.restrict (uIoc 0 (2 * π))) := by
+    rw [uIoc_of_le (by positivity)]; infer_instance
+  have : NeZero (volume (uIoc 0 (2 * π))) := ⟨by simp⟩
+  by_cases! hp : p = 0
+  · simp [hp]
+  have : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)), 0 < ‖p.eval (circleMap 0 1 θ)‖ := by
+    rw [ae_restrict_iff' measurableSet_uIoc]
+    refine Set.Finite.measure_zero ?_ _
+    simp only [norm_pos_iff, ne_eq, compl_setOf, Classical.not_imp, Decidable.not_not]
+    refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
+    · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
+      exact (mem_roots hp).mpr heval
+    · apply InjOn.mono fun _ h ↦ h.1
+      exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [abs_of_pos pi_pos])
+  have hlogAe : ∀ᵐ (θ : ℝ) ∂volume.restrict (uIoc 0 (2 * π)),
+      exp (log ‖p.eval (circleMap 0 1 θ)‖) = ‖p.eval (circleMap 0 1 θ)‖ := by
+    filter_upwards [this] with θ hθ
+    exact exp_log hθ
+  have hcont : Continuous (fun x : ℝ ↦ ‖eval (circleMap 0 1 x) p‖) := by fun_prop
+  simp only [mahlerMeasure, logMahlerMeasure, ne_eq, hp, not_false_eq_true, ↓reduceIte]
+  rw [circleAverage_eq_intervalAverage]
+  calc exp (⨍ (θ : ℝ) in 0..(2 * π), log ‖p.eval (circleMap 0 1 θ)‖)
+    ≤ ⨍ (θ : ℝ) in 0..(2 * π), exp (log ‖p.eval (circleMap 0 1 θ)‖) := by
+        -- First Jensen's inequality invocation
+        refine convexOn_exp.map_average_le continuousOn_exp isClosed_univ (by simp) ?_ ?_
+        · rw [Set.uIoc_of_le (by positivity : 0 ≤ 2 * Real.pi)]
+          exact ((analyticOnNhd_id.aeval_polynomial p).meromorphicOn.circleIntegrable_log_norm).1
+        · exact (integrable_congr hlogAe).mpr hcont.integrableOn_uIoc
+    _ = ⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ := average_congr hlogAe
+    _ = √((⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖) ^ 2) := by
+        rw [sqrt_sq]; exact integral_nonneg (fun _ ↦ norm_nonneg _)
+    _ ≤ √(⨍ (θ : ℝ) in 0..(2 * π), ‖p.eval (circleMap 0 1 θ)‖ ^ 2) := by
+        -- Second Jensen's inequality invocation
+        gcongr
+        refine (convexOn_pow 2).map_average_le (continuousOn_pow 2)
+            isClosed_Ici (by filter_upwards; simp) ?_ ?_
+        · exact hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
+        · exact ((continuous_pow 2).comp hcont).integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
+    _ = √(circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1) := by simp [circleAverage_eq_intervalAverage]
+    _ = √(∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by simp [p.sum_sq_norm_coeff_eq_circleAverage]
+
+/-- The Mahler measure of a polynomial is at most the sup norm of the polynomial times the square
+root of its degree plus one. -/
+theorem mahlerMeasure_le_sqrt_natDegree_add_one_mul_supNorm (p : Polynomial ℂ) :
+    p.mahlerMeasure ≤ √(p.natDegree + 1) * p.supNorm :=
+  (p.mahlerMeasure_le_sqrt_sum_sq_norm_coeff).trans <| by
+    rw [show √(↑(p.natDegree) + 1) * p.supNorm = √((p.natDegree + 1) * p.supNorm ^ 2) from by
+      rw [Real.sqrt_mul (by positivity), Real.sqrt_sq p.supNorm_nonneg]]
+    gcongr
+    refine (p.support.sum_le_card_nsmul _ (p.supNorm ^ 2) fun i _ ↦ ?_).trans ?_
+    · gcongr; exact p.le_supNorm _
+    · simp only [nsmul_eq_mul]
+      gcongr
+      exact mod_cast p.card_supp_le_succ_natDegree
+
 open Multiset in
 theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
@@ -336,4 +420,108 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
       mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
         p.mahlerMeasure_nonneg
 
+/-!
+### The Mignotte bound
+-/
+
+/-- **Mignotte's coefficient bound**: if `f = g * h` and `h` has Mahler measure at least 1
+(which holds in particular when `h` has integer coefficients with nonzero leading coefficient),
+then the coefficients of `g` are bounded by a binomial coefficient times the Mahler measure
+of `g * h`.
+
+Combined with `mahlerMeasure_le_sqrt_sum_sq_norm_coeff` (Landau's inequality), this gives
+the classical Mignotte bound
+`‖g.coeff n‖ ≤ C(deg g, n) · √(∑ i ∈ f.support, ‖f.coeff i‖ ^ 2)`
+used in polynomial factorization algorithms (Berlekamp–Zassenhaus). -/
+theorem norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure (n : ℕ) (g h : ℂ[X])
+    (hh : 1 ≤ h.mahlerMeasure) :
+    ‖g.coeff n‖ ≤ g.natDegree.choose n * (g * h).mahlerMeasure :=
+  (g.norm_coeff_le_choose_mul_mahlerMeasure n).trans <| by
+    gcongr
+    rw [mahlerMeasure_mul]
+    exact le_mul_of_one_le_right g.mahlerMeasure_nonneg hh
+
 end Polynomial
+
+section generic
+
+/-!
+### Mahler Measure on Other Rings
+
+While the Mahler measure is an inherently Complex concept, we often want to work with it for
+polynomials with coefficients in subrings of `ℂ`. To do so, we introduce `mapMahlerMeasure`. This
+takes a `RingHom A ℂ` which takes the polynomial from `A[X]` to `ℂ[X]`.
+
+Some lemmas require the `RingHom` to also preserve the norm on the base ring, e.g.,
+`leadingCoeff_le_mapMahlerMeasure`. Those will come below.
+-/
+
+namespace Polynomial
+
+variable {A : Type*} [Semiring A] (p : A[X]) (v : A →+* ℂ)
+
+/-- The Mahler measure for polynomials on rings other than `ℂ`. Most theorems
+will require `A` to be a `NormedRing` and `v` to be an isometry. See, e.g.,
+`mapMahlerMeasure_const` -/
+noncomputable def mapMahlerMeasure := (p.map v).mahlerMeasure
+
+lemma mapMahlerMeasure_eq : p.mapMahlerMeasure v = (p.map v).mahlerMeasure := rfl
+
+lemma mapMahlerMeasure_mul (f g : A[X]) :
+    (f * g).mapMahlerMeasure v = (f.mapMahlerMeasure v) * (g.mapMahlerMeasure v) := by
+  simp [mapMahlerMeasure, mahlerMeasure_mul]
+
+lemma mapMahlerMeasure_nonneg : 0 ≤ p.mapMahlerMeasure v :=
+  Polynomial.mahlerMeasure_nonneg _
+
+@[simp]
+lemma mapMahlerMeasure_zero : (0 : A[X]).mapMahlerMeasure v = 0 := by
+  simp [mapMahlerMeasure]
+
+@[simp]
+lemma mapMahlerMeasure_one : (1 : A[X]).mapMahlerMeasure v = 1 := by
+  simp [mapMahlerMeasure]
+
+variable {A : Type*} [NormedRing A] (p : A[X]) (v : A →+* ℂ)
+
+lemma mapMahlerMeasure_const (hv : Isometry v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
+  simp [mapMahlerMeasure, hv.norm_map_of_map_zero (map_zero _)]
+
+lemma leadingCoeff_le_mapMahlerMeasure (hv : Isometry v) :
+    ‖p.leadingCoeff‖ ≤ p.mapMahlerMeasure v := by
+  by_cases hp : p.leadingCoeff = 0
+  · simp [hp, mapMahlerMeasure_nonneg]
+  · have hv_ne : v p.leadingCoeff ≠ 0 :=
+      fun h ↦ hp <| hv.injective <| h.trans (map_zero _).symm
+    have hv_norm : ‖v p.leadingCoeff‖ = ‖p.leadingCoeff‖ := hv.norm_map_of_map_zero (map_zero _) _
+    grw [← hv_norm, ← leadingCoeff_map_of_leadingCoeff_ne_zero v hv_ne,
+      leadingCoeff_le_mahlerMeasure, mapMahlerMeasure]
+
+variable {p} in
+lemma Monic.one_le_mapMahlerMeasure [NormOneClass A] (hv : Isometry v) (hp : p.Monic) :
+    1 ≤ p.mapMahlerMeasure v := by
+  grw [← p.leadingCoeff_le_mapMahlerMeasure v hv, hp.leadingCoeff, norm_one]
+
+variable {p} in
+theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
+    0 < p.mapMahlerMeasure v :=
+  mahlerMeasure_pos_of_ne_zero <| (Polynomial.map_eq_zero_iff hv.injective).not.mpr hp
+
+theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
+    p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
+  apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
+  rw [sum_def, sum_def, support_map_of_injective _ hv.injective]
+  exact Finset.sum_congr rfl fun x _ ↦ by
+    simp [hv.norm_map_of_map_zero (map_zero _)]
+
+theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
+    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by
+  have hv_norm : ‖p.coeff n‖ = ‖v (p.coeff n)‖ :=
+    (hv.norm_map_of_map_zero (map_zero _) _).symm
+  have hcoeff : ‖v (p.coeff n)‖ = ‖(p.map v).coeff n‖ := by simp
+  grw [hv_norm, hcoeff, norm_coeff_le_choose_mul_mahlerMeasure,
+    natDegree_map_eq_of_injective hv.injective, mapMahlerMeasure]
+
+end Polynomial
+
+end generic

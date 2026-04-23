@@ -29,9 +29,9 @@ There are also three lemmas about `iUnionLift` intended to aid with proving that
 homomorphism when defined on a Union of substructures. There is one lemma each to show that
 constants, unary functions, or binary functions are preserved. These lemmas are:
 
-*`Set.iUnionLift_const`
-*`Set.iUnionLift_unary`
-*`Set.iUnionLift_binary`
+* `Set.iUnionLift_const`
+* `Set.iUnionLift_unary`
+* `Set.iUnionLift_binary`
 
 ## Tags
 
@@ -99,7 +99,7 @@ theorem iUnionLift_const (c : T) (ci : ∀ i, S i) (hci : ∀ i, (ci i : α) = c
 /-- `iUnionLift_unary` is useful for proving that `iUnionLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
   For example, it could be used to prove that the lift of a collection
-  of linear_maps on a union of submodules preserves scalar multiplication. -/
+  of `LinearMap`s on a union of submodules preserves scalar multiplication. -/
 theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
     (hui :
       ∀ (i) (x : S i),
@@ -162,7 +162,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
 
 theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
-  iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
+  iUnionLift_of_mem ⟨x, mem_univ x⟩ hx
 
 theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _

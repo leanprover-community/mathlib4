@@ -129,7 +129,6 @@ theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a 
 theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ σ (a ^ n) :=
   pow_image_subset a n ⟨k, ⟨hk, rfl⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_pos [IsAlgClosed 𝕜] (a : A) {n : ℕ} (hn : 0 < n) :
@@ -168,9 +167,19 @@ theorem IsIdempotentElem.spectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜]
   refine fun a ha => eq_zero_or_one_of_sq_eq_self ?_
   simpa [pow_two p, hp.eq, sub_eq_zero] using ha
 
-set_option backward.isDefEq.respectTransparency false in
+lemma IsIdempotentElem.finite_spectrum (𝕜 : Type*) {A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
+    {p : A} (hp : IsIdempotentElem p) : (spectrum 𝕜 p).Finite :=
+  have : ({0, 1} : Set 𝕜).encard = (2 : ℕ) := Set.encard_pair (by simp)
+  Set.finite_of_encard_le_coe (this ▸ Set.encard_le_encard (hp.spectrum_subset 𝕜))
+
 open Unitization in
-theorem IsIdempotentElem.quasispectrum_subset {𝕜 A : Type*} [Field 𝕜] [NonUnitalRing A] [Module 𝕜 A]
-    [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+theorem IsIdempotentElem.quasispectrum_subset (𝕜 : Type*) {A : Type*} [Field 𝕜] [NonUnitalRing A]
+    [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
     quasispectrum 𝕜 p ⊆ {0, 1} :=
   quasispectrum_eq_spectrum_inr' 𝕜 𝕜 p ▸ (hp.inr _ |>.spectrum_subset _)
+
+theorem IsIdempotentElem.finite_quasispectrum (𝕜 : Type*) {A : Type*} [Field 𝕜] [NonUnitalRing A]
+    [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] {p : A} (hp : IsIdempotentElem p) :
+    (quasispectrum 𝕜 p).Finite :=
+  have : ({0, 1} : Set 𝕜).encard = (2 : ℕ) := Set.encard_pair (by simp)
+  Set.finite_of_encard_le_coe (this ▸ Set.encard_le_encard (hp.quasispectrum_subset 𝕜))

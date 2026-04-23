@@ -46,7 +46,7 @@ measures `μ ≪ ν`. This also makes `klDiv μ ν` equal to an f-divergence: it
 
 open Real MeasureTheory Set
 
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 namespace InformationTheory
 
@@ -100,6 +100,9 @@ lemma klDiv_eq_top_iff : klDiv μ ν = ∞ ↔ μ ≪ ν → ¬ Integrable (llr 
 lemma klDiv_ne_top_iff : klDiv μ ν ≠ ∞ ↔ μ ≪ ν ∧ Integrable (llr μ ν) μ := by
   simp [ne_eq, klDiv_eq_top_iff]
 
+lemma klDiv_ne_top (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) : klDiv μ ν ≠ ∞ :=
+  klDiv_ne_top_iff.mpr ⟨hμν, h_int⟩
+
 section AlternativeFormulas
 
 variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
@@ -131,6 +134,10 @@ lemma klDiv_eq_lintegral_klFun :
   · rw [← not_iff_not, ne_eq, Decidable.not_not] at h_int_iff
     symm
     simp [hμν, h_int, h_int_iff, integrable_klFun_rnDeriv_iff hμν]
+
+lemma klDiv_eq_lintegral_klFun_of_ac (h_ac : μ ≪ ν) :
+    klDiv μ ν = ∫⁻ x, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν := by
+  simp [klDiv_eq_lintegral_klFun, h_ac]
 
 end AlternativeFormulas
 
@@ -169,7 +176,141 @@ lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
     · rw [klDiv_of_not_integrable h_int, ENNReal.toReal_top]
     · rwa [integrable_klFun_rnDeriv_iff h]
 
+lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
+    (klDiv (c • μ) ν).toReal =
+      c * (klDiv μ ν).toReal + (1 - c) * ν.real univ + c * log c * μ.real univ := by
+  by_cases hc : c = 0
+  · simp [hc, measureReal_def]
+  have h_llr := llr_smul_nnreal_left hμν c (by simpa)
+  rw [toReal_klDiv hμν h_int, toReal_klDiv (hμν.smul_left c)]
+  swap
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr h_llr]
+    fun_prop
+  simp only [integral_smul_nnreal_measure, measureReal_nnreal_smul_apply]
+  rw [integral_congr_ae h_llr, integral_add h_int (integrable_const _)]
+  have h_smul (a : ℝ) : c • a = c * a := rfl
+  simp [h_smul]
+  ring
+
+lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
+    (c : ℝ≥0) :
+    (klDiv μ (c • ν)).toReal = c * (klDiv (c⁻¹ • μ) ν).toReal := by
+  by_cases hc : c = 0
+  · simp only [hc, zero_smul, NNReal.coe_zero, inv_zero, klDiv_zero_left, zero_mul]
+    rcases eq_zero_or_neZero μ with rfl | hμ <;> simp
+  have h_llr_left := llr_smul_nnreal_left hμν c⁻¹ (by simpa)
+  have h_llr_right := llr_smul_nnreal_right hμν c (by simpa)
+  rw [toReal_klDiv, toReal_klDiv]
+  rotate_left
+  · exact hμν.smul_left _
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr h_llr_left]
+    fun_prop
+  · exact hμν.smul_right (by simpa)
+  · rw [integrable_congr h_llr_right]
+    fun_prop
+  have h_smul (c : ℝ≥0) (a : ℝ) : c • a = c * a := rfl
+  simp only [measureReal_nnreal_smul_apply, integral_smul_nnreal_measure, h_smul, NNReal.coe_inv]
+  have h_llr_smul_inv := llr_smul_inv_left_eq_smul_right hμν c (by simpa) (by simp)
+  simp only [← ENNReal.coe_inv hc, Measure.coe_nnreal_smul] at h_llr_smul_inv
+  rw [integral_congr_ae h_llr_smul_inv, mul_sub, mul_add, mul_inv_cancel_left₀ (by simpa),
+    mul_inv_cancel_left₀ (by simpa)]
+
+lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
+    {c : ℝ≥0} (hc : c ≠ 0) :
+    (klDiv μ (c • ν)).toReal =
+      (klDiv μ ν).toReal + (c - 1) * ν.real univ - log c * μ.real univ := by
+  rw [toReal_klDiv_smul_right_eq_smul_left hμν h_int c, toReal_klDiv_smul_left hμν h_int c⁻¹]
+  simp only [NNReal.coe_inv, log_inv, mul_neg, neg_mul, ← sub_eq_add_neg]
+  field_simp
+
+lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :
+    (klDiv (c • μ) (c • ν)).toReal = c * (klDiv μ ν).toReal := by
+  by_cases hc : c = 0
+  · simp [hc]
+  rw [toReal_klDiv_smul_right_eq_smul_left, smul_smul, inv_mul_cancel₀ hc, one_smul]
+  · exact hμν.smul_left c
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_left hμν c (by simpa))]
+    fun_prop
+
 end Real
+
+lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c : ℝ≥0} (hc : c ≠ 0) :
+    klDiv μ (c • ν) = c * klDiv (c⁻¹ • μ) ν := by
+  have hc' : (c : ℝ≥0∞) ≠ 0 := by simpa
+  have hμ_smul : μ = c • (c⁻¹ • μ) := by rw [smul_smul, mul_inv_cancel₀ hc, one_smul]
+  have hν_smul : ν = c⁻¹ • (c • ν) := by rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
+  by_cases hμν : μ ≪ ν
+  swap
+  · rw [klDiv_of_not_ac, klDiv_of_not_ac, ENNReal.mul_top hc']
+    · refine fun h_contra ↦ hμν ?_
+      rw [hμ_smul]
+      exact h_contra.smul_left _
+    · refine fun h_contra ↦ hμν ?_
+      rw [hν_smul]
+      exact h_contra.smul_right (by simpa)
+  have hμν_right := hμν.smul_right hc'
+  simp only [Measure.coe_nnreal_smul] at hμν_right
+  by_cases h_int : Integrable (llr μ ν) μ
+  swap
+  · rw [klDiv_of_not_integrable, klDiv_of_not_integrable, ENNReal.mul_top hc']
+    · refine fun h_contra ↦ h_int ?_
+      rw [hμ_smul]
+      refine Integrable.smul_measure_nnreal ?_
+      rw [integrable_congr (llr_smul_nnreal_left (hμν.smul_left _) c hc)]
+      fun_prop
+    · refine fun h_contra ↦ h_int ?_
+      rw [hν_smul]
+      have : IsFiniteMeasure ((c : ℝ≥0∞) • ν) := by
+        simp only [Measure.coe_nnreal_smul]
+        infer_instance
+      have h := llr_smul_nnreal_right (hμν.smul_right hc') c⁻¹ (by simpa)
+      simp only [Measure.coe_nnreal_smul, NNReal.coe_inv, log_inv, sub_neg_eq_add] at h
+      rw [integrable_congr h]
+      fun_prop
+  have h_int_left : Integrable (llr (c⁻¹ • μ) ν) (c⁻¹ • μ) := by
+    refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_left hμν c⁻¹ (by simpa))]
+    fun_prop
+  have h_int_right : Integrable (llr μ (c • ν)) μ := by
+    rw [integrable_congr (llr_smul_nnreal_right hμν c (by simpa))]
+    fun_prop
+  rw [← ENNReal.ofReal_toReal (klDiv_ne_top hμν_right h_int_right),
+    toReal_klDiv_smul_right_eq_smul_left hμν h_int c]
+  simp only [NNReal.zero_le_coe, ENNReal.ofReal_mul, ENNReal.ofReal_coe_nnreal]
+  rw [ENNReal.ofReal_toReal]
+  exact klDiv_ne_top (hμν.smul_left _) h_int_left
+
+lemma klDiv_smul_same [IsFiniteMeasure μ] [IsFiniteMeasure ν] (c : ℝ≥0) :
+    klDiv (c • μ) (c • ν) = c * klDiv μ ν := by
+  by_cases hc : c = 0
+  · simp [hc]
+  have hc' : (c : ℝ≥0∞) ≠ 0 := by simpa
+  have hμ_smul (μ : Measure α) : μ = c⁻¹ • (c • μ) := by
+    rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
+  by_cases hμν : μ ≪ ν
+  swap
+  · rw [klDiv_of_not_ac hμν, klDiv_of_not_ac, ENNReal.mul_top hc']
+    refine fun h_contra ↦ hμν ?_
+    rw [hμ_smul μ, hμ_smul ν]
+    exact h_contra.smul _
+  by_cases h_int : Integrable (llr μ ν) μ
+  swap
+  · rw [klDiv_of_not_integrable h_int, klDiv_of_not_integrable, ENNReal.mul_top hc']
+    refine fun h_contra ↦ h_int ?_
+    rw [hμ_smul μ, hμ_smul ν]
+    refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_same (hμν.smul c) c⁻¹ (by simpa))]
+    fun_prop
+  rw [← ENNReal.ofReal_toReal (klDiv_ne_top (hμν.smul c) _),
+    ← ENNReal.ofReal_toReal (klDiv_ne_top hμν h_int)]
+  swap
+  · refine Integrable.smul_measure_nnreal ?_
+    rw [integrable_congr (llr_smul_nnreal_same hμν c hc)]
+    fun_prop
+  simp [toReal_klDiv_smul_same hμν h_int]
 
 section Inequalities
 

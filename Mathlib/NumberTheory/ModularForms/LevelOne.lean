@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 public import Mathlib.NumberTheory.Modular
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 /-!
@@ -21,7 +22,7 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 public section
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic MatrixGroups
 
 local notation "𝕢" => qParam
 
@@ -49,6 +50,17 @@ lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) 
     simpa [mul_zpow, zpow_ne_zero, this] using h2I2.symm.trans hI
   simpa using ofReal_inj.trans <| zpow_eq_one_iff_right₀ (two_pos.le : (0 : ℝ) ≤ 2) (by norm_num1)
 
+theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
+    (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) : ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
+  intro γ
+  have h𝒮ℒ : 𝒮ℒ = Subgroup.closure ({↑S, ↑T} : Set (GL (Fin 2) ℝ)) := by
+    change (Matrix.SpecialLinearGroup.mapGL ℝ).range = _
+    rw [MonoidHom.range_eq_map, ← SpecialLinearGroup.SL2Z_generators, MonoidHom.map_closure,
+      Set.image_pair]
+    rfl
+  exact (slash_action_generators h𝒮ℒ).mpr (fun g hg ↦ by rcases hg with rfl | rfl <;> assumption)
+    _ (MonoidHom.mem_range.mpr ⟨γ, rfl⟩)
+
 end SlashInvariantForm
 
 namespace ModularFormClass
@@ -57,7 +69,6 @@ variable [ModularFormClass F Γ(1) k]
 
 lemma one_mem_strictPeriods_SL2Z : (1 : ℝ) ∈ Γ(1).strictPeriods := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   refine eq_const_of_exists_le (fun q hq ↦ ?_) (exp_nonneg (-π)) ?_ (fun q hq ↦ ?_)
@@ -73,7 +84,6 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
         by simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     f = Function.const ℍ (cuspFunction 1 f 0) := by
   ext z

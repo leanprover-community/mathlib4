@@ -96,9 +96,6 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card_eq_fintype_card]
   simp [mem_ofStabilizer_iff]
 
-@[deprecated (since := "2025-10-03")]
-alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
-
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 :=
@@ -119,7 +116,7 @@ def _root_.SubAddAction.ofStabilizer.conjMap {G : Type*} [AddGroup G] {α : Type
 
 /-- Conjugation induces an equivariant map between the SubMulAction of
 the stabilizer of a point and that of its translate. -/
-@[to_additive existing]
+@[to_additive existing SubAddAction.ofStabilizer.conjMap]
 def ofStabilizer.conjMap {g : G} {a b : α} (hg : b = g • a) :
     MulActionHom (stabilizerEquivStabilizer hg) (ofStabilizer G a) (ofStabilizer G b) where
   toFun x := ⟨g • x.val, fun hy ↦ x.prop (by simpa [hg] using hy)⟩

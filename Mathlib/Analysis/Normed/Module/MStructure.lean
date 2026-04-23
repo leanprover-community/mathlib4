@@ -34,12 +34,12 @@ space with dual `X^*`. A closed subspace `M` of `X` is said to be an M-ideal if 
 annihilator `M^∘` is an L-summand of `X^*`.
 
 M-ideal, M-summands and L-summands were introduced by Alfsen and Effros in [alfseneffros1972] to
-study the structure of general Banach spaces. When `A` is a JB*-triple, the M-ideals of `A` are
-exactly the norm-closed ideals of `A`. When `A` is a JBW*-triple with predual `X`, the M-summands of
-`A` are exactly the weak*-closed ideals, and their pre-duals can be identified with the L-summands
-of `X`. In the special case when `A` is a C*-algebra, the M-ideals are exactly the norm-closed
-two-sided ideals of `A`, when `A` is also a W*-algebra the M-summands are exactly the weak*-closed
-two-sided ideals of `A`.
+study the structure of general Banach spaces. When `A` is a JB\*-triple, the M-ideals of `A` are
+exactly the norm-closed ideals of `A`. When `A` is a JBW\*-triple with predual `X`, the M-summands
+of `A` are exactly the weak\*-closed ideals, and their pre-duals can be identified with the
+L-summands of `X`. In the special case when `A` is a C\*-algebra, the M-ideals are exactly the
+norm-closed two-sided ideals of `A`, when `A` is also a W\*-algebra the M-summands are exactly the
+weak\*-closed two-sided ideals of `A`.
 
 ## Implementation notes
 
@@ -98,7 +98,6 @@ theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
 theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
   ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by

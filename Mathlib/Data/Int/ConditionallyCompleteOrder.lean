@@ -34,22 +34,12 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     if h : s.Nonempty ∧ BddBelow s then
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
-  le_csSup s n hs hns := by
-    have : s.Nonempty ∧ BddAbove s := ⟨⟨n, hns⟩, hs⟩
-    simp only [dif_pos this]
-    exact (greatestOfBdd _ _ _).2.2 n hns
-  csSup_le s n hs hns := by
-    have : s.Nonempty ∧ BddAbove s := ⟨hs, ⟨n, hns⟩⟩
-    simp only [dif_pos this]
-    exact hns (greatestOfBdd _ (Classical.choose_spec this.2) _).2.1
-  csInf_le s n hs hns := by
-    have : s.Nonempty ∧ BddBelow s := ⟨⟨n, hns⟩, hs⟩
-    simp only [dif_pos this]
-    exact (leastOfBdd _ _ _).2.2 n hns
-  le_csInf s n hs hns := by
-    have : s.Nonempty ∧ BddBelow s := ⟨hs, ⟨n, hns⟩⟩
-    simp only [dif_pos this]
-    exact hns (leastOfBdd _ (Classical.choose_spec this.2) _).2.1
+  isLUB_csSup _ hn hb := by
+    rw [dif_pos ⟨hn, hb⟩]
+    exact (isGreatest_coe_greatestOfBdd ..).isLUB
+  isGLB_csInf _ hn hb := by
+    rw [dif_pos ⟨hn, hb⟩]
+    exact (isLeast_coe_leastOfBdd ..).isGLB
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 

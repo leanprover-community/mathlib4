@@ -18,6 +18,7 @@ lax functors):
 * lax natural transformations;
 * oplax natural transformations;
 * strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
@@ -46,7 +47,7 @@ We also provide API for going between lax transformations and strong transformat
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
-section 4.2.
+  section 4.2.
 
 -/
 
@@ -168,7 +169,6 @@ theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       bicategory
 
 /-- Vertical composition of lax transformations. -/
-@[simps]
 def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   app a := vCompApp η θ a
   naturality := vCompNaturality η θ
@@ -176,6 +176,7 @@ def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+attribute [local simp] vCompApp vCompNaturality in
 /-- `CategoryStruct` on `B ⥤ᴸ C` where the (1-)morphisms are given by lax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
@@ -183,6 +184,9 @@ scoped instance : CategoryStruct (B ⥤ᴸ C) where
   Hom := LaxTrans
   id := LaxTrans.id
   comp := LaxTrans.vComp
+
+@[deprecated (since := "2026-03-16")] alias vComp_app := comp_app
+@[deprecated (since := "2026-03-16")] alias vComp_naturality := comp_naturality
 
 end LaxTrans
 
@@ -297,6 +301,7 @@ def vComp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+attribute [local simp] vCompApp vCompNaturality in
 /-- `CategoryStruct` on `B ⥤ᴸ C` where the (1-)morphisms are given by oplax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]

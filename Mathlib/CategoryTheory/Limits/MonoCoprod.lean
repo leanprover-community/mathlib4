@@ -90,20 +90,22 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine ⟨BinaryCofan.mk (Sum.inl : A ⟶ A ⊕ B) Sum.inr, ?_, ?_⟩
+    refine ⟨BinaryCofan.mk (TypeCat.ofHom (Sum.inl : A → A ⊕ B))
+      (TypeCat.ofHom Sum.inr), ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ x => by
+        (fun f₁ f₂ => TypeCat.ofHom fun x => by
           rcases x with x | x
           exacts [f₁ x, f₂ x])
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ m h₁ h₂ => by
-          funext x
+          ext x
           rcases x with x | x
-          · exact congr_fun h₁ x
-          · exact congr_fun h₂ x)
+          · exact ConcreteCategory.congr_hom h₁ x
+          · exact ConcreteCategory.congr_hom h₂ x)
     · rw [mono_iff_injective]
       intro a₁ a₂ h
       simpa using h
@@ -176,8 +178,8 @@ lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : 
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
   refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
     hc₁ hc₂ _ (by simp [e])
-  exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
-    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
+  exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocone.equivalenceOfReindexing
+    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocone.ext (Iso.refl _))
 
 variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
   (hc : IsColimit c) (hc₁ : IsColimit c₁)
@@ -241,7 +243,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     apply MonoCoprod.binaryCofan_inl
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
-    refine Cocones.ext (φ := eqToIso rfl) ?_
+    refine Cocone.ext (φ := eqToIso rfl) ?_
     rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 

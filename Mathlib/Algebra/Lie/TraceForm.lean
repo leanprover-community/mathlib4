@@ -105,6 +105,26 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
+variable {R L M} in
+lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
+    (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
+    (x : L) (hx : x ∈ LieAlgebra.derivedSeries R L 1) :
+    trace R M (φ x * y) = 0 := by
+  replace hx : x ∈ Submodule.span R {⁅u, v⁆ | (u : L) (v : L)} := by
+    rw [← LieAlgebra.coe_derivedSeries_one_eq]; exact hx
+  induction hx using Submodule.span_induction with
+  | mem u hu =>
+    obtain ⟨a, b, rfl⟩ := hu
+    obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
+    replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
+    rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
+      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
+      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
+      LinearMap.zero_apply, LinearMap.zero_apply]
+  | zero => simp
+  | add u v _ _ hu hv => simp [add_mul, hu, hv]
+  | smul t u _ hu => simp [hu]
+
 @[simp]
 lemma traceForm_genWeightSpace_eq [Module.Free R M]
     [IsDomain R] [IsPrincipalIdealRing R]
@@ -217,7 +237,6 @@ open TensorProduct
 
 variable [LieRing.IsNilpotent L] [IsDomain R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
@@ -238,7 +257,6 @@ lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 -- In characteristic zero (or even just `LinearWeights R L M`) a stronger result holds (no
 -- `⊓ LieAlgebra.center R L`) TODO prove this using `LieModule.traceForm_eq_sum_finrank_nsmul_mul`.
 lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Module.Finite R M] :
@@ -323,7 +341,6 @@ lemma traceForm_eq_of_le_idealizer :
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 include h hy in
 /-- Note that this result is slightly stronger than it might look at first glance: we only assume
 that `N` is trivial over `I` rather than all of `L`. This means that it applies in the important
@@ -390,7 +407,6 @@ lemma killingForm_eq :
     killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
     I ≤ LieIdeal.killingCompl R L ⊤ := by
   intro x (hx : x ∈ I)
@@ -409,7 +425,6 @@ namespace LieModule
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 variable [LieRing.IsNilpotent L] [LinearWeights K L M] [IsTriangularizable K L M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
@@ -430,7 +445,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

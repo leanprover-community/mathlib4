@@ -110,17 +110,24 @@ class RootableBy where
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
 
-@[to_additive smul_right_surj_of_divisibleBy]
-theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
-    Function.Surjective (fun a => a ^ n : A → A) := fun x =>
+@[to_additive DivisibleBy.surjective_smul]
+theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
+    Function.Surjective fun a : A => a ^ n := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
+
+@[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
+  RootableBy.surjective_pow
+
+@[deprecated (since := "2026-04-19")] alias smul_right_surj_of_divisibleBy :=
+  DivisibleBy.surjective_smul
 
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
-surjective function, i.e. the constructive version implies the textbook approach. -/]
+@[to_additive (attr := implicit_reducible) divisibleByOfSMulRightSurj
+  /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the
+  constructive version implies the textbook approach. -/]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
@@ -178,6 +185,7 @@ theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n
 
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
+@[implicit_reducible]
 noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
@@ -190,7 +198,6 @@ noncomputable def divisibleByIntOfSMulTopEqTop
 
 end AddCommGroup
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
@@ -205,7 +212,8 @@ variable (A : Type*) [Group A]
 open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
-@[to_additive /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
@@ -220,14 +228,14 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
-@[to_additive /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
-    norm_num at this
-    exact this
+    simpa
 
 end Group
 
@@ -240,7 +248,7 @@ variable (f : A → B)
 /--
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
       `α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
@@ -249,11 +257,6 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     let ⟨y, hy⟩ := hf x
     ⟨f <| RootableBy.root y n,
       (by rw [← hpow (RootableBy.root y n) n, RootableBy.root_cancel _ hn, hy] : _ ^ n = x)⟩
-
-@[to_additive DivisibleBy.surjective_smul]
-theorem RootableBy.surjective_pow (A α : Type*) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
-    {n : α} (hn : n ≠ 0) : Function.Surjective fun a : A => a ^ n := fun a =>
-  ⟨RootableBy.root a n, RootableBy.root_cancel a hn⟩
 
 end Hom
 

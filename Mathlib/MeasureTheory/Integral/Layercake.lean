@@ -27,26 +27,26 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt
+$$∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$$
 
-Variants of the formulas with measures of sets of the form {ω | f(ω) > t} instead of {ω | f(ω) ≥ t}
-are also included.
+Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
+`{ω | f(ω) ≥ t}` are also included.
 
 ## Main results
 
 * `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul`
   and `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul`:
   The general layer cake formulas with Lebesgue integrals, written in terms of measures of
-  sets of the forms {ω | t ≤ f(ω)} and {ω | t < f(ω)}, respectively.
+  sets of the forms `{ω | t ≤ f(ω)}` and `{ω | t < f(ω)}`, respectively.
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt and
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt, respectively.
+  function f we have $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$ and
+  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt.
+  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$.
 
 ## See also
 
@@ -97,7 +97,6 @@ section Layercake
 
 variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions, and a sigma-finiteness assumption.
@@ -184,7 +183,6 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
     mble₀.nullMeasurableSet
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
 integrability assumptions.
@@ -270,7 +268,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   sets `{ω | f ω > uₙ}` for `uₙ` a sequence decreasing to `M`. Therefore,
   this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
-    contrapose! H1
+    contrapose H1
     have : ∀ (n : ℕ), g =ᵐ[volume.restrict (Ioc (0 : ℝ) n)] 0 := by
       intro n
       rcases not_bddAbove_iff.1 H1 n with ⟨s, hs, ns⟩
