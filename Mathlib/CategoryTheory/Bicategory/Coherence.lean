@@ -182,8 +182,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     simp
   -- p ≠ nil required! See the docstring of `normalizeAux`.
   | whisker_left _ _ ih =>
-    simp only [normalizeIso_comp, normalizeAux_comp, quot_whisker_left,
-      Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom]
+    dsimp
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
   | whisker_right h η' ih =>
@@ -192,8 +191,6 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     have := dcongr_arg (fun x => (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
     dsimp at this; simp [this]
   | _ =>
-    simp only [normalizeIso_comp, normalizeIso_id, normalizeAux_comp, normalizeAux_id,
-      Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom]
     simp
 
 -- Not `@[simp]` because it is not in `simp`-normal form.
