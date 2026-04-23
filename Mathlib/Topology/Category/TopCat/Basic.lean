@@ -254,6 +254,7 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y �
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
 
+/-- The `MorphismProperty` in `TopCat` of a morphism being an embedding. -/
 abbrev isEmbedding : MorphismProperty TopCat :=
   fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
 
