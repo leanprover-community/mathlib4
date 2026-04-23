@@ -90,7 +90,7 @@ instance [InvolutiveStar α] : InvolutiveStar (Set α) where
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
-  Equiv.star.surjective.preimage_subset_preimage_iff
+  Equiv.Perm.star.surjective.preimage_subset_preimage_iff
 
 theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t⋆ := by
   rw [← star_subset_star, star_star]
