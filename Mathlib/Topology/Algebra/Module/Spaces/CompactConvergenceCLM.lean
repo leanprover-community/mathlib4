@@ -207,8 +207,6 @@ lemma compactConvergenceCLMCongr_symm_apply (e₁ : E ≃L[𝕜] F) (e₂ : H �
 
 end Linear
 
-end ContinuousLinearEquiv
-
 section Pi
 
 open scoped CompactConvergenceCLM
@@ -239,5 +237,7 @@ lemma CompactConvergenceCLM.piEquivL_symm_apply
   rfl
 
 end Pi
+
+end ContinuousLinearEquiv
 
 end CompactSets
