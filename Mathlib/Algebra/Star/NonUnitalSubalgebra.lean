@@ -1043,7 +1043,7 @@ theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra 
   simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
     coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
 
-theorem instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
     {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
     IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
   isMulCommutative_iSup S.monotone.directed_le
