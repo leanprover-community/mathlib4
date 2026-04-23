@@ -147,9 +147,8 @@ lemma isExtraordinaryEilenbergSteenrod_iff_of_iso (HₚIso : ∀ n : ℕ,  (Hₚ
     excision _ _ _ _ _ hf hg hcompl hU _ :=
       (NatIso.isIso_map_iff (HₚIso _) _).mp (hEES.excision _ _ hf hg hcompl hU _)
     additive _ _ := @Limits.preservesColimitsOfShape_of_natIso _ _ _ _ _ _ _ _
-      ((H_incl_Hₚ _) ≪≫
-        (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom) (Cat.Hom.isoMk (HₚIso _)))) ≪≫
-        (H'_incl_Hₚ' _).symm) (hEES.additive _ _)
+      ((H_incl_Hₚ _) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫ (H'_incl_Hₚ' _).symm)
+      (hEES.additive _ _)
     exact X n := by
       let pairSeq := ComposableArrows.mk₄ ((Hₚ (n + 1)).map X.j)
         ((δ (n + 1) n).app X) ((H n).map X.map) ((H_incl_Hₚ n).hom.app X.fst ≫ (Hₚ n).map X.j)
@@ -163,10 +162,8 @@ lemma isExtraordinaryEilenbergSteenrod_iff_of_iso (HₚIso : ∀ n : ℕ,  (Hₚ
         ComposableArrows.isoMk₄
           ((HₚIso (n + 1)).app _)
           ((HₚIso (n + 1)).app _)
-          (((H_incl_Hₚ n) ≪≫ (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-            (Cat.Hom.isoMk (HₚIso n)))) ≪≫ (H'_incl_Hₚ' n).symm).app _)
-          (((H_incl_Hₚ n) ≪≫ (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-            (Cat.Hom.isoMk (HₚIso n)))) ≪≫ (H'_incl_Hₚ' n).symm).app _)
+          (((H_incl_Hₚ n) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫ (H'_incl_Hₚ' n).symm).app _)
+          (((H_incl_Hₚ n) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫ (H'_incl_Hₚ' n).symm).app _)
           ((HₚIso n).app _)
           (by cat_disch)
           (by simp [pairSeq, pairSeq', δ', ComposableArrows.Precomp.map])
@@ -184,10 +181,8 @@ lemma isExtraordinaryEilenbergSteenrod_iff_of_iso (HₚIso : ∀ n : ℕ,  (Hₚ
     excision _ _ _ _ _ hf hg hcompl hU _ :=
       (NatIso.isIso_map_iff (HₚIso _).symm _).mp (hEES.excision _ _ hf hg hcompl hU _)
     additive _ _ := @Limits.preservesColimitsOfShape_of_natIso _ _ _ _ _ _ _ _
-      ((H'_incl_Hₚ' _) ≪≫
-        (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-          (Cat.Hom.isoMk (HₚIso _).symm))) ≪≫
-        (H_incl_Hₚ _).symm) (hEES.additive _ _)
+      ((H'_incl_Hₚ' _) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _).symm ≪≫(H_incl_Hₚ _).symm)
+      (hEES.additive _ _)
     exact X n := by
       let pairSeq := ComposableArrows.mk₄ ((Hₚ (n + 1)).map X.j) ((δ (n + 1) n).app X)
         ((H n).map X.map) ((H_incl_Hₚ n).hom.app X.fst ≫ (Hₚ n).map X.j)
@@ -201,10 +196,8 @@ lemma isExtraordinaryEilenbergSteenrod_iff_of_iso (HₚIso : ∀ n : ℕ,  (Hₚ
         ComposableArrows.isoMk₄
           ((HₚIso (n + 1)).app _)
           ((HₚIso (n + 1)).app _)
-          (((H_incl_Hₚ n) ≪≫ (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-            (Cat.Hom.isoMk (HₚIso n)))) ≪≫ (H'_incl_Hₚ' n).symm).app _)
-          (((H_incl_Hₚ n) ≪≫ (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-            (Cat.Hom.isoMk (HₚIso n)))) ≪≫ (H'_incl_Hₚ' n).symm).app _)
+          (((H_incl_Hₚ n) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫ (H'_incl_Hₚ' n).symm).app _)
+          (((H_incl_Hₚ n) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫ (H'_incl_Hₚ' n).symm).app _)
           ((HₚIso n).app _)
           (by cat_disch)
           (by simp [pairSeq, pairSeq', δ', ComposableArrows.Precomp.map])
@@ -223,14 +216,12 @@ lemma isEilenbergSteenrod_iff_of_iso (HₚIso : ∀ n : ℕ,  (Hₚ n) ≅ (Hₚ
         (by cat_disch) where
   mp hES := {
     1 := (isExtraordinaryEilenbergSteenrod_iff_of_iso H_incl_Hₚ H'_incl_Hₚ' HₚIso δ_zero).mp hES.1
-    dimension n hn := (Iso.isZero_iff (((H_incl_Hₚ _) ≪≫
-      (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom) (Cat.Hom.isoMk (HₚIso _)))) ≪≫
+    dimension n hn := (Iso.isZero_iff (((H_incl_Hₚ _) ≪≫ Functor.isoWhiskerLeft incl (HₚIso _) ≪≫
         (H'_incl_Hₚ' _).symm).app (TopCat.of PUnit))).mp (hES.dimension n hn)
   }
   mpr hES := {
     1 := (isExtraordinaryEilenbergSteenrod_iff_of_iso H_incl_Hₚ H'_incl_Hₚ' HₚIso δ_zero).mpr hES.1
     dimension n hn := (Iso.isZero_iff (((H'_incl_Hₚ' _) ≪≫
-      (Cat.Hom.toNatIso (Bicategory.whiskerLeftIso (incl.toCatHom)
-      (Cat.Hom.isoMk (HₚIso _).symm))) ≪≫
-      (H_incl_Hₚ _).symm).app (TopCat.of PUnit))).mp (hES.dimension n hn)
+        Functor.isoWhiskerLeft incl (HₚIso _).symm ≪≫ (H_incl_Hₚ _).symm).app (TopCat.of PUnit))).mp
+      (hES.dimension n hn)
   }
