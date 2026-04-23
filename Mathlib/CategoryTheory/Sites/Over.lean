@@ -138,9 +138,7 @@ lemma overEquiv_preOneHypercover_sieve₁ {X : C} {Y : Over X} (E : PreOneHyperc
   rw [overEquiv_iff]
   refine ⟨fun ⟨k, b, hb₁, hb₂⟩ ↦ ⟨k, b.left, congr($(hb₁).left), congr($(hb₂).left)⟩, ?_⟩
   intro ⟨k, b, hb₁, hb₂⟩
-  refine ⟨k, Over.homMk b (by simpa using congr($hb₁ ≫ (E.X i₁).hom).symm), ?_, ?_⟩ <;>
-  · ext
-    simpa
+  exact ⟨k, Over.homMk b (by simpa using (hb₁ =≫ (E.X i₁).hom).symm), by cat_disch, by cat_disch⟩
 
 lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     overEquiv Y (.generate R) = .generate (Presieve.functorPushforward (Over.forget X) R) := by
