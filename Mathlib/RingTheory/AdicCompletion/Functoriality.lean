@@ -39,40 +39,18 @@ variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
 
 namespace LinearMap
 
-set_option backward.privateInPublic true in
-/-- `R`-linear version of `reduceModIdeal`. -/
-private def reduceModIdealAux :
-    (M →ₗ[R] N) →ₗ[R] M ⧸ (I • ⊤ : Submodule R M) →ₗ[R] N ⧸ (I • ⊤ : Submodule R N) where
-  toFun f := Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
-    (fun x hx ↦ by
-      refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
-      · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
-      · simp [Submodule.add_mem _ hx hy])
-  map_add' f g := by ext; simp
-  map_smul' c f := by ext; simp
-
-@[local simp]
-private theorem reduceModIdealAux_apply (f : M →ₗ[R] N) (x : M) :
-    (f.reduceModIdealAux I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The induced linear map on the quotients mod `I • ⊤`. -/
 def reduceModIdeal :
     (M →ₗ[R] N) →ₗ[R] M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) where
-  toFun f :=
-    { toFun := reduceModIdealAux I f
-      map_add' := by simp
-      map_smul' := fun r x ↦ by
-        induction r, x using Quotient.inductionOn₂ with | _ r x =>
-        simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk,
-          Module.Quotient.mk_smul_mk, Submodule.Quotient.mk_smul, LinearMapClass.map_smul,
-          reduceModIdealAux_apply, RingHomCompTriple.comp_apply] }
+  toFun f := LinearMap.extendScalarsOfSurjective Ideal.Quotient.mk_surjective <|
+    Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
+      (fun x hx ↦ by
+        refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
+        · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
+        · simp [Submodule.add_mem _ hx hy])
   map_add' f g := LinearMap.ext fun _ ↦ by simp
   map_smul' r f := LinearMap.ext fun _ ↦ by simp
-
+ 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
     (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
@@ -123,36 +101,19 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
   rfl
 
 end AdicCauchySequence
-
-set_option backward.privateInPublic true in
-/-- `R`-linear version of `adicCompletion`. -/
-private def adicCompletionAux :
-    (M →ₗ[R] N) →ₗ[R] AdicCompletion I M →ₗ[R] AdicCompletion I N where
-  toFun f :=
-    AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
-      (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
-        comp_assoc, transitionMap_comp_eval])
-  map_add' f g := by simp [add_comp, ← lift_add, Pi.add_def]
-  map_smul' c f := by simp [smul_comp, ← lift_smul, Pi.smul_def]
-
-@[local simp]
-private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
-    (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
+ 
 /-- A linear map induces a map on adic completions. -/
 def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N) where
   toFun f :=
-    { toFun := adicCompletionAux I f
-      map_add' := by simp
-      map_smul' := fun r x ↦ by
-        ext n
-        simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
-        rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, LinearMap.map_smul] }
+    { __ := AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
+      (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
+        comp_assoc, transitionMap_comp_eval])
+      map_smul' r x := by
+        ext
+        dsimp
+        rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
   map_add' f g := by ext; simp
-  map_smul' c f := by ext; simp
+  map_smul' c f := by ext; simp 
 
 @[simp]
 theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :

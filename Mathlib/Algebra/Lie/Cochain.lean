@@ -115,7 +115,7 @@ lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
 
 lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
-  simp
+  simp [trivial_lie_zero]
 
 set_option backward.privateInPublic true in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
