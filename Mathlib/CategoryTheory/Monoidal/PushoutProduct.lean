@@ -54,9 +54,6 @@ variable {C : Type u} [Category.{v} C]
 attribute [local simp] PushoutObjObj.ι ofHasPushout_pt ofHasPushout_inl ofHasPushout_inr
   PullbackObjObj.ofHasPullback_π
 
-instance [MonoidalCategory C] (A : C) [Closed A] : (ihom A).IsRightAdjoint :=
-  (ihom.adjunction A).isRightAdjoint
-
 namespace MonoidalCategory
 
 namespace Arrow
@@ -202,7 +199,6 @@ variable [CartesianMonoidalCategory C] [MonoidalClosed C]
 
 noncomputable section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `X □ (∅ ⟶ W) ≅ X ▷ W` in a CCC with pushouts and an
 initial object. -/
 @[simps!]
@@ -215,7 +211,6 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
     (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
 an initial object. -/
 @[simps!]
