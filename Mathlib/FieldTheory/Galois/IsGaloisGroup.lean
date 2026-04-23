@@ -424,8 +424,8 @@ with `IsGaloisGroup G R T`, and a subgroup `H` acts on `T` with `IsGaloisGroup H
 then the fixing subgroup of `algebraMap S T` equals `H`. -/
 theorem fixingSubgroup_range_algebraMap_of_isDomain [Finite G] (R S T : Type*) [CommRing R]
     [CommRing T] [IsDomain T] [Algebra R T] [FaithfulSMul R T] [MulSemiringAction G T]
-    (H : Subgroup G) [hGRT : IsGaloisGroup G R T] [CommRing S] [Algebra S T]
-    [FaithfulSMul S T] [hH : IsGaloisGroup H S T] :
+    (H : Subgroup G) [hGRT : IsGaloisGroup G R T] [CommRing S] [Algebra S T] [FaithfulSMul S T]
+    [hH : IsGaloisGroup H S T] :
     fixingSubgroup G (Set.range (algebraMap S T)) = H := by
   have : IsDomain S := (FaithfulSMul.algebraMap_injective S T).isDomain
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R T).isDomain
