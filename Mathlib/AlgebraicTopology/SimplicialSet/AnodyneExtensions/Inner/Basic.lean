@@ -6,6 +6,7 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
@@ -56,6 +57,11 @@ lemma innerAnodyneExtensions.horn_ι {n : ℕ} {i : Fin (n + 3)}
     innerAnodyneExtensions.{u} Λ[n + 2, i].ι := by
   rw [innerAnodyneExtensions_eq_llp_rlp]
   exact le_llp_rlp _ _ (horn_ι_mem_innerHornInclusions h0 hn)
+
+lemma innerAnodyneExtensions_le : innerAnodyneExtensions ≤ anodyneExtensions.{u} := by
+  rw [anodyneExtensions_eq_llp_rlp, innerAnodyneExtensions_eq_llp_rlp, le_llp_iff_le_rlp,
+    rlp_llp_rlp]
+  exact antitone_rlp innerHornInclusions_le_J
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
   Cardinal.orderBotAleph0OrdToType
