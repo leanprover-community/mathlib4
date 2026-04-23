@@ -72,6 +72,8 @@ def DirectedCompletePartialOrder.ofLubOfNonemptyDirected
 -- TODO(review): these next ones are verbatim from ConditionallyCompletePartialOrder and
 -- CompletePartialOrder.
 
+section DirectedSets
+
 variable [DirectedCompletePartialOrder α]
 
 variable {f : ι → α} {d : Set α} {a : α}
@@ -98,5 +100,7 @@ protected lemma Directed.le_dirISup (hf : Directed (· ≤ ·) f)
 protected lemma Directed.dirISup_le [Nonempty ι] (hf : Directed (· ≤ ·) f)
     (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   hf.directedOn_range.dirSSup_le (Set.range_nonempty _) <| Set.forall_mem_range.2 ha
+
+end DirectedSets
 
 end
