@@ -604,6 +604,10 @@ noncomputable instance : Algebra R (DirectLimit G f) where
   smul_def' r := DirectLimit.induction _ fun i _ => by
     rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']; rfl
 
+lemma algebraMap_at (i : ι) (r : R) :
+    algebraMap R (DirectLimit G f) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
+  rw [← algebraMapAux_at i]; rfl
+
 end Algebra
 
 end DirectLimit
