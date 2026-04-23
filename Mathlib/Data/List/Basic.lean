@@ -95,6 +95,10 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
   | [], H => absurd H.symm <| succ_ne_zero n
   | h :: t, _ => ⟨h, t, rfl⟩
 
+theorem length_eq_succ_iff {n} {l : List α} :
+    l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by
+  grind [cases List]
+
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl

@@ -288,7 +288,7 @@ theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
     P f := by
   letI := f.toAlgebra
-  have := IsLocalization.at_units (.powers (1 : R)) (by simp)
+  have := IsLocalization.of_le_isUnit (S := .powers (1 : R)) (by simp)
   have := IsLocalization.isLocalization_of_algEquiv (.powers (1 : R))
     (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
   exact H _ 1

@@ -28,7 +28,7 @@ The most important examples for such topologies are:
   when `𝔖` is the set of `IsVonNBounded` subsets.
   This coincides with the operator norm topology in the case of `NormedSpace`s,
   and is declared as an instance on `E →L[𝕜] F`
-- the topology of pointwise convergence (also called "weak-* topology"
+- the topology of pointwise convergence (also called "weak-\* topology"
   or "strong-operator topology" depending on the context), when `𝔖` is the set of finite
   sets or the set of singletons. This is declared as an instance on `PointwiseConvergenceCLM`.
 - the topology of compact convergence, when `𝔖` is the set of compact
@@ -246,7 +246,7 @@ theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup 
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SLᵤ[σ, 𝔖] F)).HasBasis
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
-      fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
+      fun Si => { f : E →SLᵤ[σ, 𝔖] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap]
@@ -596,5 +596,50 @@ lemma uniformConvergenceCLMCongr_symm_apply (e₁ : E ≃L[𝕜] F) (e₂ : H �
   rfl
 
 end Linear
+
+section Pi
+
+open scoped UniformConvergenceCLM
+
+variable (𝕜 : Type*) [NormedField 𝕜] {E ι : Type*} (F : ι → Type*)
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →Lᵤ[𝕜, 𝔖] F i` and `E →Lᵤ[𝕜, 𝔖] Π i, F i`. -/
+def UniformConvergenceCLM.piEquivL (𝔖 : Set (Set E)) :
+    (Π i, E →Lᵤ[𝕜, 𝔖] F i) ≃L[𝕜] (E →Lᵤ[𝕜, 𝔖] Π i, F i) :=
+  letI : ∀ i, UniformSpace (F i) := fun i ↦ IsTopologicalAddGroup.rightUniformSpace (F i)
+  haveI : ∀ i, IsUniformAddGroup (F i) := fun i ↦ isUniformAddGroup_of_addCommGroup
+  { toFun F := ContinuousLinearMap.pi F
+    invFun f i := (ContinuousLinearMap.proj i).comp f
+    map_add' _ _ := by ext; rfl
+    map_smul' _ _ := by ext; rfl
+    left_inv _ := by ext; rfl
+    right_inv _ := by ext; rfl
+    continuous_toFun := by
+      rw [UniformConvergenceCLM.isEmbedding_coeFn _ _ _ |>.continuous_iff]
+      rw [UniformOnFun.uniformEquivPiComm _ _ |>.isUniformEmbedding.isEmbedding.continuous_iff]
+      refine continuous_pi fun i ↦ ?_
+      exact UniformConvergenceCLM.isEmbedding_coeFn _ _ _ |>.continuous.comp (continuous_apply i)
+    continuous_invFun := by
+      apply continuous_pi (A := fun i ↦ E →Lᵤ[𝕜, 𝔖] F i) fun i ↦ ?_
+      exact (ContinuousLinearMap.proj i : (Π j, F j) →L[𝕜] F i).postcompUniformConvergenceCLM 𝔖
+        |>.continuous}
+
+@[simp]
+lemma UniformConvergenceCLM.piEquivL_apply (𝔖 : Set (Set E))
+    (T : Π i, E →Lᵤ[𝕜, 𝔖] F i) (e : E) (i : ι) :
+    piEquivL 𝕜 F 𝔖 T e i = T i e :=
+  rfl
+
+@[simp]
+lemma UniformConvergenceCLM.piEquivL_symm_apply (𝔖 : Set (Set E))
+    (T : E →Lᵤ[𝕜, 𝔖] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜 F 𝔖).symm T i e = T e i :=
+  rfl
+
+end Pi
 
 end ContinuousLinearEquiv

@@ -201,7 +201,6 @@ namespace Adjunction
 
 variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
   factors f g _ := by

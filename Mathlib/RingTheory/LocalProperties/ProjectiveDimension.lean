@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 
 In this file, we proved that projective dimension equal to supremum over localizations
 
-# Main definition and results
+## Main definition and results
 
 -/
 
