@@ -29,6 +29,8 @@ theorem SimpleGraph.Embedding.image_neighborSet {V V' : Type*} {G : SimpleGraph 
 theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f) (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
 -- #36626
 theorem IsWellOrder.eq_id_of_injective_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {f : α → α} (hf : f.Injective) (h : ∀ x, ¬r x (f x)) : f = id := sorry
+/-- #38422 -/
+@[simps] def SimpleGraph.Coloring.homMap {V α : Type*} {G : SimpleGraph V} (f : G.Coloring α) : G →g G.map f := ⟨f, sorry⟩
 
 end Dependencies
 

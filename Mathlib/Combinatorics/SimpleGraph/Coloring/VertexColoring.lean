@@ -57,17 +57,6 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
-@[expose] public section Dependencies
-
-set_option warn.sorry false
-set_option linter.style.longLine false
-set_option linter.missingDocs false
-
-/-- #35628 -/
-@[simps] def SimpleGraph.Hom.map {V W : Type*} (f : V → W) (G : SimpleGraph V) (h : ∀ {u v}, G.Adj u v → f u ≠ f v) : G →g G.map f := ⟨f, sorry⟩
-
-end Dependencies
-
 @[expose] public section
 
 assert_not_exists Field
@@ -316,13 +305,6 @@ variable (G) in
 @[simps!]
 def coloringOfEmbedding {α : Type*} (f : V ↪ α) : G.Coloring α :=
   G.recolorOfEmbedding f G.selfColoring
-
-/-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
-This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
-the original graph `G` and considering every color class (independent set) as a single vertex. -/
-@[simps!]
-def Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
-  .map f G f.map_adj
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
