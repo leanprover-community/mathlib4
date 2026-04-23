@@ -1,15 +1,20 @@
 # olean report
-# Compares oleans in a PR branch with those in master
+# On-demand olean diff for a PR, triggered by commenting `!olean_report`.
+# Compares oleans of the PR head against the merge base.
 #
+# This workflow runs with minimal permissions (contents: read only) so it is
+# safe to run code from fork PRs. The actual PR comment is posted by the
+# companion workflow olean_report_wf_run.yaml via the privilege-escalation
+# bridge.
 name: olean report
 
 on:
-  pull_request_review_comment:
+  issue_comment:
     types: [created]
 
-# Cancel in-progress runs for the same PR
+# cancel any in-progress run when a new comment arrives.
 concurrency:
-  group: commit-verification-${{ github.event.pull_request.number }}
+  group: olean-report-${{ github.event.issue.number }}
   cancel-in-progress: true
 
 permissions:
@@ -19,16 +24,15 @@ jobs:
   report:
     name: Prepare olean report
     runs-on: ubuntu-latest
-    # Only run if there are commits with special prefixes
-    # This is a quick check to avoid unnecessary runs
+    # Skip if comment does not contain the trigger word.
+    if: >-
+      ${{
+        github.repository == 'leanprover-community/mathlib4' &&
+        github.event.issue.pull_request != null &&
+        github.event.issue.state == 'open' &&
+        contains(github.event.comment.body, '!olean_report')
+      }}
     steps:
-      - name: Checkout PR head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          # Checkout the actual PR head, not the merge commit GitHub creates
-          ref: ${{ github.event.pull_request.head.sha }}
-          # Fetch full history to access all PR commits
-          fetch-depth: 0
       - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -36,177 +40,213 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      # Fetch `master`'s cached oleans into `tools-branch` so we can compare public `.olean`
-      # files against the PR's build. With the module system, only changes that affect
-      # exported information (signatures, axioms, exposed definition bodies) touch the
-      # public `.olean`; proof-only changes leave it byte-identical and only update
-      # `.olean.private`. See scripts/public_olean_diff.sh for the comparison logic.
-      #
-      # This block is gated to same-repo PR-branch pushes on leanprover-community/mathlib4
-      # (excluding master, bors' `staging`/`trying`, nightly-testing, and any run that
-      # overrides `tools_branch_ref` to a non-master ref).
-      - name: fetch master oleans for public-olean diff
-        id: fetch_master_oleans
-        if: >-
-          ${{
-            steps.build.outcome == 'success' &&
-            github.event_name == 'push' &&
-            github.repository == 'leanprover-community/mathlib4' &&
-            github.ref != 'refs/heads/master' &&
-            github.ref != 'refs/heads/staging' &&
-            github.ref != 'refs/heads/trying' &&
-            inputs.tools_branch_ref == ''
-          }}
-        continue-on-error: true
+      # We use the GH CLI here because issue_comment events do not carry the
+      # full pull_request payload.
+      - name: Get PR info
+        id: pr_info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr_json=$(gh pr view "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --json headRefOid,baseRefOid,baseRefName)
+          echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')" >> "$GITHUB_OUTPUT"
+          echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')" >> "$GITHUB_OUTPUT"
+
+      # Using refs/pull/N/head works for both same-repo and fork PRs, since
+      # GitHub mirrors fork commits under this ref.
+      # We fetch full depth so that we can compute the merge base.
+      - name: Checkout PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          fetch-depth: 0
+          path: pr-branch
+
+      # Check out master into tools-branch.  We build the `cache` binary from
+      # here so that a single binary can fetch oleans for both checkouts.
+      - name: Checkout tools branch (master)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: master
+          fetch-depth: 1
+          path: tools-branch
+
+      # Using the merge base rather than the base-branch tip avoids spurious
+      # differences caused by commits that landed on master after this PR
+      # branched off.
+      - name: Compute merge base
+        id: merge_base
+        working-directory: pr-branch
+        run: |
+          BASE_SHA="${{ steps.pr_info.outputs.base_sha }}"
+          git fetch --depth=1 origin "$BASE_SHA"
+          MERGE_BASE=$(git merge-base HEAD FETCH_HEAD)
+          echo "sha=$MERGE_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout merge base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ steps.merge_base.outputs.sha }}
+          fetch-depth: 1
+          path: base
+
+      - name: Check toolchain compatibility
+        id: toolchain_check
+        env:
+          BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
+        run: |
+          PR_TC=$(cat pr-branch/lean-toolchain)
+          BASE_TC=$(cat base/lean-toolchain)
+          TOOLS_TC=$(cat tools-branch/lean-toolchain)
+          echo "pr_toolchain=$PR_TC" >> "$GITHUB_OUTPUT"
+          echo "base_toolchain=$BASE_TC" >> "$GITHUB_OUTPUT"
+          echo "tools_toolchain=$TOOLS_TC" >> "$GITHUB_OUTPUT"
+          if [ "$PR_TC" != "$BASE_TC" ]; then
+            echo "match=false" >> "$GITHUB_OUTPUT"
+            echo "mismatch_reason=pr_vs_base" >> "$GITHUB_OUTPUT"
+          elif [ "$BASE_REF" = "master" ] && [ "$TOOLS_TC" != "$PR_TC" ]; then
+            # it's unlikely we'll be in a situation where we run this against a PR not into master
+            # but just in case, we will them to have a different toolchain from the tools branch (master)
+            echo "match=false" >> "$GITHUB_OUTPUT"
+            echo "mismatch_reason=tools_vs_pr" >> "$GITHUB_OUTPUT"
+          else
+            echo "match=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # We use --default-toolchain none so elan itself does not download a
+      # toolchain at install time; the toolchain is resolved lazily when
+      # `lake` runs inside tools-branch.
+      - name: Install elan
+        if: steps.toolchain_check.outputs.match == 'true'
         shell: bash
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build cache binary
+        if: steps.toolchain_check.outputs.match == 'true'
         run: |
           cd tools-branch
-          ./.lake/build/bin/cache get
+          lake build cache
+          echo "CACHE_BIN=$(pwd)/.lake/build/bin/cache" >> "$GITHUB_ENV"
 
-      # Validate the fetched baseline over the same scope we intend to diff — a
-      # `--no-build` check of a single module (as used elsewhere in this workflow)
-      # would only prove that the cache contains a prefix; a partial cache could
-      # still produce a bogus "public API changed" result from missing files.
-      - name: validate master baseline
-        id: validate_master_baseline
-        if: ${{ steps.fetch_master_oleans.outcome == 'success' }}
+      - name: Fetch PR head oleans
+        id: pr_oleans
+        if: steps.toolchain_check.outputs.match == 'true'
         continue-on-error: true
-        shell: bash
         run: |
-          cd tools-branch
-          lake build --no-build Mathlib
+          cd pr-branch
+          "$CACHE_BIN" get
 
-      - name: diff public oleans against master
-        id: public_olean_diff
-        if: ${{ steps.validate_master_baseline.outcome == 'success' }}
+      - name: Check PR head oleans
+        id: pr_oleans_check
+        if: steps.toolchain_check.outputs.match == 'true'
+        run: |
+          if find pr-branch/.lake/build/lib/lean/Mathlib \
+               -name '*.olean' -print -quit 2>/dev/null | grep -q .; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Fetch oleans for the merge base (only if the PR head oleans are present,
+      # to avoid wasting time when the PR hasn't been built yet).
+      - name: Fetch merge base oleans
+        id: base_oleans
+        if: steps.pr_oleans_check.outputs.available == 'true'
         continue-on-error: true
-        shell: bash
         run: |
-          set +e
-          bash pr-branch/scripts/public_olean_diff.sh \
-            tools-branch/.lake/build/lib/lean \
-            pr-branch/.lake/build/lib/lean \
-            public-olean-diff.txt
-          diff_status=$?
-          echo "diff_status=${diff_status}" >> "$GITHUB_OUTPUT"
-          case "${diff_status}" in
-            0) echo "state=match" >> "$GITHUB_OUTPUT" ;;
-            1) echo "state=differs" >> "$GITHUB_OUTPUT" ;;
-            *) echo "state=unavailable" >> "$GITHUB_OUTPUT" ;;
-          esac
-          echo "::group::public_olean_diff output"
-          head -n 200 public-olean-diff.txt || true
-          echo "::endgroup::"
-          exit 0
+          cd base
+          "$CACHE_BIN" get
 
-      - name: upload public-olean-diff artifact
-        if: ${{ always() && steps.public_olean_diff.outcome != 'skipped' }}
+      - name: Generate olean report
+        env:
+          TOOLCHAINS_MATCH: ${{ steps.toolchain_check.outputs.match }}
+          MISMATCH_REASON: ${{ steps.toolchain_check.outputs.mismatch_reason }}
+          PR_TOOLCHAIN: ${{ steps.toolchain_check.outputs.pr_toolchain }}
+          BASE_TOOLCHAIN: ${{ steps.toolchain_check.outputs.base_toolchain }}
+          TOOLS_TOOLCHAIN: ${{ steps.toolchain_check.outputs.tools_toolchain }}
+          PR_OLEANS_OK: ${{ steps.pr_oleans_check.outputs.available }}
+          MERGE_BASE_SHA: ${{ steps.merge_base.outputs.sha }}
+          BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
+          ACTIONS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$TOOLCHAINS_MATCH" != "true" ]; then
+            if [ "$MISMATCH_REASON" = "tools_vs_pr" ]; then
+              cat > comment_body.md << MDEOF
+          ## Olean diff
+
+          **Lean toolchain mismatch — \`master\` has bumped the toolchain.**
+
+          The PR and its merge base use \`${PR_TOOLCHAIN}\` but \`master\` uses \`${TOOLS_TOOLCHAIN}\`.
+          Please merge \`master\` into your PR branch before requesting an olean report.
+
+          [CI run](${ACTIONS_URL})
+          MDEOF
+            else
+              cat > comment_body.md << MDEOF
+          ## Olean diff
+
+          **Lean toolchain mismatch — oleans are not comparable.**
+
+          The merge base uses \`${BASE_TOOLCHAIN}\` but the PR head uses \`${PR_TOOLCHAIN}\`.
+          Oleans compiled by different Lean versions are binary-incompatible; the diff would show every file as changed.
+
+          [CI run](${ACTIONS_URL})
+          MDEOF
+            fi
+          elif [ "$PR_OLEANS_OK" != "true" ]; then
+            cat > comment_body.md << 'MDEOF'
+          ## Olean diff
+
+          **Oleans for this PR are not yet available in the cache.**
+
+          Possible reasons:
+          - The CI build for this commit has not finished yet.
+            Wait for the build to complete, then post `!olean_report` again.
+          - The CI build failed or was cancelled.
+            Fix any errors and push a new commit.
+          - The cache upload step was skipped.
+
+          Check the [CI run]($ACTIONS_URL) and the Actions tab for this PR's build status.
+          MDEOF
+            # expand $ACTIONS_URL in the heredoc output
+            sed -i "s|\$ACTIONS_URL|${ACTIONS_URL}|g" comment_body.md
+          else
+            python3 "${CI_SCRIPTS_DIR}/pr_summary/olean_diff.py" \
+              base/.lake/build/lib/lean \
+              pr-branch/.lake/build/lib/lean \
+              comment_body.md \
+              olean_diff_full.txt \
+              --merge-base-sha "${MERGE_BASE_SHA}" \
+              --base-ref "${BASE_REF}" \
+              --actions-url "${ACTIONS_URL}"
+          fi
+
+      - name: Upload full olean diff
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: public-olean-diff
-          path: public-olean-diff.txt
+          name: olean-diff-full
+          path: olean_diff_full.txt
           if-no-files-found: ignore
-
-      # Only proceed with label management when the diff produced a conclusive result.
-      # `unavailable` (infra/script error) leaves existing labels untouched.
-      - name: look up PR for label management
-        id: pr_lookup
-        if: >-
-          ${{
-            steps.public_olean_diff.outcome == 'success' &&
-            (steps.public_olean_diff.outputs.state == 'match' ||
-             steps.public_olean_diff.outputs.state == 'differs')
-          }}
-        continue-on-error: true
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: ${{ github.ref_name }}
-          OWNER: ${{ github.repository_owner }}
-          SHA: ${{ github.sha }}
-        run: |
-          # For push events we have no PR context, so look up the PR by head
-          # branch. Qualify with the owner so we cannot match a same-named
-          # head branch on an unrelated fork.
-          pr_json=$(gh pr list --repo "${{ github.repository }}" --head "$OWNER:$BRANCH" \
-            --state open --json number,headRefOid --jq '.[0] // empty')
-          if [ -z "$pr_json" ]; then
-            echo "pr_number=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          pr_number=$(printf '%s' "$pr_json" | jq -r '.number // empty')
-          head_oid=$(printf '%s' "$pr_json" | jq -r '.headRefOid // empty')
-          # Guard against TOCTOU: the PR head may have advanced past the commit we
-          # built. Only label when the PR still points at exactly this SHA.
-          if [ "$head_oid" != "$SHA" ]; then
-            echo "PR head ($head_oid) has advanced past this run's SHA ($SHA); skipping label updates."
-            echo "pr_number=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "pr_number=${pr_number}" >> "$GITHUB_OUTPUT"
-
-      - name: manage no-public-api-changes label
-        if: ${{ steps.pr_lookup.outcome == 'success' && steps.pr_lookup.outputs.pr_number != '' }}
-        continue-on-error: true
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ steps.pr_lookup.outputs.pr_number }}
-          STATE: ${{ steps.public_olean_diff.outputs.state }}
-        run: |
-          if [ "$STATE" = "match" ]; then
-            gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" \
-              --add-label "no-public-api-changes"
-          elif [ "$STATE" = "differs" ]; then
-            gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" \
-              --remove-label "no-public-api-changes"
-          fi
-
-      - name: enforce expect-no-public-api-changes label
-        if: ${{ steps.pr_lookup.outcome == 'success' && steps.pr_lookup.outputs.pr_number != '' }}
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ steps.pr_lookup.outputs.pr_number }}
-          STATE: ${{ steps.public_olean_diff.outputs.state }}
-        run: |
-          expected=$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" \
-            --json labels --jq '.labels[].name' | grep -Fx "expect-no-public-api-changes" || true)
-          if [ -n "$expected" ] && [ "$STATE" = "differs" ]; then
-            echo "❌ This PR is labelled \`expect-no-public-api-changes\`, but the public"
-            echo "   \`.olean\` files differ from master. If these changes are intentional,"
-            echo "   remove the \`expect-no-public-api-changes\` label; otherwise update the"
-            echo "   PR so that only proofs/non-exported information change."
-            echo ""
-            echo "Differing public oleans (truncated to 50):"
-            head -n 50 public-olean-diff.txt || true
-            exit 1
-          fi
-
-      - name: Generate PR comment
-        if: steps.check.outputs.has_special == 'true'
-        id: comment
-        run: |
-          REPO="${{ github.repository }}"
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-
-          COMMENT=$(cat verification_result.json | "${CI_SCRIPTS_DIR}/verification/verify_commits_summary.sh" "$REPO" "$PR_NUMBER")
-
-          # Save to file (GitHub Actions has issues with multiline outputs)
-          echo "$COMMENT" > comment_body.md
+          retention-days: 5
 
       - name: Prepare bridge outputs
         run: |
           jq -n \
-            --arg has_special "${{ steps.check.outputs.has_special }}" \
-            --arg success "${{ steps.verify.outputs.success }}" \
-            '{
-              has_special: $has_special,
-              success: $success,
-            }' > bridge-outputs.json
+            --arg pr_number "${{ github.event.issue.number }}" \
+            '{ pr_number: $pr_number }' > bridge-outputs.json
 
       - name: Emit bridge artifact
         uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
