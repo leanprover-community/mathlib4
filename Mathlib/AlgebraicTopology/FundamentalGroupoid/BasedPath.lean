@@ -216,7 +216,7 @@ namespace BasedPath
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
 subbasic compact sets that do not contain `1`. -/
 private theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace X]
-    (γ : BasedPath x₀) (Tgood Tbad : Finset (Set I × Set X))
+    {x₀ : X} (γ : BasedPath x₀) (Tgood Tbad : Finset (Set I × Set X))
     (hTgood_open_mem : ∀ KU ∈ Tgood, IsOpen KU.2 ∧ endpoint γ ∈ KU.2)
     (hTbad_closed : ∀ KU ∈ Tbad, IsClosed KU.1)
     (hTbad_not_mem : ∀ KU ∈ Tbad, (1 : I) ∉ KU.1) :
@@ -260,7 +260,7 @@ private theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnect
 /-- Any point in the chosen path-connected endpoint neighborhood is realized by a deformed based
 path that still lies in the original compact-open basic neighborhood. -/
 private theorem exists_deformTerminal_mem_basicNeighborhood
-    (γ : BasedPath x₀) {V : Set (C(I, X))} {S : Set (Set I × Set X)}
+    {x₀ : X} (γ : BasedPath x₀) {V : Set (C(I, X))} {S : Set (Set I × Set X)}
     {T Tgood Tbad : Finset (Set I × Set X)}
     (hSdata : ∀ K U, (K, U) ∈ S → IsCompact K ∧ IsOpen U ∧ Set.MapsTo γ.1 K U)
     (hT_of_S : ∀ KU, KU ∈ S → KU ∈ T)
@@ -284,7 +284,7 @@ private theorem exists_deformTerminal_mem_basicNeighborhood
     by_cases h1K : (1 : I) ∈ K
     · have hKUgood : (K, U) ∈ Tgood := by
         exact (hTgood_iff (K, U)).2 ⟨hKUT, h1K⟩
-      show Set.MapsTo η.1 K U
+      change Set.MapsTo η.1 K U
       intro t ht
       by_cases hta : (t : ℝ) ≤ a
       · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta, Path.extend_apply _ t.2]
@@ -329,7 +329,7 @@ private theorem exists_deformTerminal_mem_basicNeighborhood
           exact hW_good (K, U) hKUgood hδt
     · have hKUbad : (K, U) ∈ Tbad := by
         exact (hTbad_iff (K, U)).2 ⟨hKUT, h1K⟩
-      show Set.MapsTo η.1 K U
+      change Set.MapsTo η.1 K U
       intro t ht
       have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := by
         intro htIoc
@@ -476,7 +476,7 @@ theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x₀)
 
 private theorem exists_refined_terminal_vertex
     [SemilocallySimplyConnectedSpace X] [LocPathConnectedSpace X]
-    {n' : ℕ} {U : Set X} (hU_open : IsOpen U)
+    {x₀ : X} {n' : ℕ} {U : Set X} (hU_open : IsOpen U)
     (α : BasedPath x₀) (hα : endpoint α ∈ U)
     (part : IntervalPartition (n' + 1)) (T : TubeData X x₀ (endpoint α) (n' + 1))
     (hα_tube : PathInTube α.toPath part T) :
@@ -491,13 +491,13 @@ private theorem exists_refined_terminal_vertex
   let W : Set X := V_last ∩ U
   have hW_open : IsOpen W := (T.h_V_open _).inter hU_open
   have hα_W : endpoint α ∈ W := ⟨hα_V_last, hα⟩
-  refine ⟨pathComponentIn W (endpoint α), hW_open.pathComponentIn _, isPathConnected_pathComponentIn hα_W,
-    mem_pathComponentIn_self hα_W, ?_, ?_⟩
+  refine ⟨pathComponentIn W (endpoint α), hW_open.pathComponentIn _,
+    isPathConnected_pathComponentIn hα_W, mem_pathComponentIn_self hα_W, ?_, ?_⟩
   · exact pathComponentIn_subset.trans Set.inter_subset_left
   · exact pathComponentIn_subset.trans Set.inter_subset_right
 
 private theorem isOpen_refined_tubeNeighborhood
-    {n' : ℕ} (part : IntervalPartition (n' + 1))
+    {x₀ : X} {n' : ℕ} (part : IntervalPartition (n' + 1))
     {U : Fin (n' + 1) → Set X} {V : Fin (n' + 2) → Set X}
     (hU_open : ∀ i, IsOpen (U i)) (hV_open : ∀ j, IsOpen (V j)) :
     IsOpen {β : BasedPath x₀ |
@@ -770,8 +770,6 @@ theorem toPath_homotopic_of_joinedIn_slsc
   let K_fn : I × I → X := fun ts ↦ (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts)
   have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts) :=
     fun _ ↦ rfl
-  -- Coordinate reductions of `joinedInSLsc_uFn`/`joinedInSLsc_vFn` at the four corners/edges. These are the forms
-  -- that appear after `K_fn_apply` unfolds `K_fn`.
   have hK_cont : Continuous K_fn :=
     hFv_cont.comp (hu_fn_cont.prodMk hv_fn_cont)
   -- Auxiliary identities evaluating K at corners/edges.
