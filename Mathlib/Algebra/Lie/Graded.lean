@@ -18,9 +18,7 @@ See the docstring of that typeclass for more information.
 # Graded Lie algebras
 
 This file defines typeclasses `SetLike.GradedBracket` and `GradedLieAlgebra`, for working with Lie
-algebras that are graded by a collection `ℒ` of submodules. The additivity of degree with respect to
-the bracket product is encoded by an addition condition so we can avoid the usual difficulties of
-adding elements of `A (i + j)` to elements of `A (j + i)`.
+algebras that are graded by a collection `ℒ` of submodules.
 
 ## Main definitions
 
@@ -30,10 +28,6 @@ adding elements of `A (i + j)` to elements of `A (j + i)`.
   multiplies the pieces by an additive map applied to degree.
 * `LieDerivation.ofGrading`: A Lie derivation on a graded Lie algebra, that scalar-multiplies graded
   pieces by an additive map applied to degree.
-
-
-## Main definitions
-
 * `GradedLieRing ℒ`: the typeclass, which is a combination of `SetLike.GradedBracket`, and
   `DirectSum.Decomposition ℒ`.
 * `GradedLieAlgebra ℒ`: A convenience alias for `GradedLieRing` when `ℒ` is a family of submodules.
@@ -45,6 +39,13 @@ adding elements of `A (i + j)` to elements of `A (j + i)`.
 ## Tags
 
 graded Lie algebra, decomposition
+
+## Implementation notes
+
+For now we only implement internally-graded Lie algebras; supporting the externally-graded case
+would be achieved by generalizing the `LieRing (⨁ i, ℒ i)` instance to take a family of types,
+and defining a new `GradedMonoid.GBracket` class to provide the data piecewise.
+
 -/
 
 @[expose] public section
@@ -58,7 +59,7 @@ section SetLike
 /-- A class that ensures a bracket product preserves an additive grading. -/
 class SetLike.GradedBracket [SetLike σ L] [Bracket L L] [Add ι] (ℒ : ι → σ) : Prop where
   /-- Bracket is homogeneous -/
-  bracket_mem : ∀ ⦃i j k⦄ {gi gj}, i + j = k → gi ∈ ℒ i → gj ∈ ℒ j → ⁅gi, gj⁆ ∈ ℒ k
+  bracket_mem : ∀ ⦃i j⦄ {gi gj}, gi ∈ ℒ i → gj ∈ ℒ j → ⁅gi, gj⁆ ∈ ℒ (i + j)
 
 variable [DecidableEq ι] [AddCommMonoid ι] [CommRing R] [LieRing L] [LieAlgebra R L]
   (ℒ : ι → Submodule R L)
@@ -145,7 +146,7 @@ def ofGradingSum (φ : ι →+ R) : LieDerivation R (⨁ i, ℒ i) (⨁ i, ℒ i
             add_lie, smul_add, add_sub, ← sub_sub]
           congr 1
           have : (decompose ℒ).symm ⁅of (fun i ↦ ℒ i) i a, of (fun i ↦ ℒ i) k b⁆ ∈ ℒ (i + k) := by
-            simp [SetLike.GradedBracket.bracket_mem rfl (Submodule.coe_mem a) (Submodule.coe_mem b)]
+            simp [SetLike.GradedBracket.bracket_mem (Submodule.coe_mem a) (Submodule.coe_mem b)]
           rw [hM _ _ this, hM k (of (ℒ ·) k b) (by simp), ← lie_skew (of (ℒ ·) k b),
             add_sub_right_comm, add_right_cancel_iff, add_comm i k, map_add, add_smul,
             DirectSum.add_apply, Submodule.coe_add, sub_eq_add_neg, lie_smul, add_left_cancel_iff,
