@@ -198,7 +198,7 @@ lemma weierstrassP_bound (r : ℝ) (hr : 0 < r) (s : ℂ) (hs : ‖s‖ < r) (l 
       · rw [sq_sub_sq]; simp [← sub_add, two_mul, sub_add_eq_add_sub]
       · ring
     _ = (‖s‖ * ‖2 * l - s‖) / (‖l‖ ^ 4 / 4) := by simp
-    _ = (4 * ‖s‖ * ‖2 * l - s‖) / ‖l‖ ^ 4 := by field
+    _ = (4 * ‖s‖ * ‖2 * l - s‖) / ‖l‖ ^ 4 := by ring
     _ ≤ (4 * r * (2.5 * ‖l‖)) / ‖l‖ ^ 4 := by
       gcongr (4 * ?_ * ?_) / ‖l‖ ^ 4
       refine (norm_sub_le _ _).trans ?_
@@ -397,7 +397,7 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
       simp_rw [← zpow_natCast, one_div, ← zpow_neg, Nat.cast_ofNat]
       rw [deriv_comp_sub_const (f := (· ^ (-2 : ℤ))), deriv_zpow]
       simp
-      field_simp
+      ring
     · intros x hxs
       split_ifs with hl₁
       · simp

@@ -67,7 +67,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
           _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
             rw [Finset.sum_mul]
             simp
-            field_simp
+            ring
           _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
       have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
         refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => ?_

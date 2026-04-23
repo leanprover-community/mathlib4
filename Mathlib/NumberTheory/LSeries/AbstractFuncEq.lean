@@ -299,6 +299,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
       indicator_of_notMem (notMem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), P.h_feq _ hx]
     simp_rw [rpow_neg hx.le]
+    -- TODO: linter false positive!
     match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
 lemma hf_modif_top (r : ℝ) :

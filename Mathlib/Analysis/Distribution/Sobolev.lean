@@ -340,7 +340,7 @@ theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 
     simp
   grw [h₁, h₂]
   apply le_of_eq
-  field_simp
+  field
 
 /-- The Laplacian maps `H ^ s` to `H ^ {s - 2}`. -/
 theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :

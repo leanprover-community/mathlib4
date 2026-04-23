@@ -4765,6 +4765,7 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 public import Mathlib.Lean.Meta.Simp
 public import Mathlib.Lean.Meta.Tactic.Rewrite
+public import Mathlib.Lean.Meta.WarningAsError
 public import Mathlib.Lean.Name
 public import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Lean.Thunk

@@ -402,7 +402,7 @@ lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
     ∠ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) = π - ∠ p₁ p₂ p₃ := by
   by_cases! h₃₂ : p₃ = p₂
   · simp [h₃₂]
-    field
+    ring
   rw [eq_sub_iff_add_eq]
   apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
   exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm

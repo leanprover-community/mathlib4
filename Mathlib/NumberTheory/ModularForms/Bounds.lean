@@ -97,7 +97,7 @@ lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous 
   · -- If `c ≠ 0`, then `1 ≤ c ^ 2`, so
     -- `(g • τ).im = τ.im / (c ^ 2 * τ.im ^ 2 +  ...) ≤ 1 / τ.im`.
     refine le_trans ?_ <| le_max_right _ _
-    rw [show 1 / τ.im = τ.im / τ.im ^ 2 by field_simp]
+    rw [show 1 / τ.im = τ.im / τ.im ^ 2 by field]
     gcongr
     rw [show Complex.normSq ((g 1 0) * τ + (g 1 1)) =
       ((g 1 0) * τ.re + (g 1 1)) ^ 2 + (g 1 0) ^ 2 * τ.im ^ 2 by simp [Complex.normSq_apply]; ring]

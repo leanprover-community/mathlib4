@@ -243,6 +243,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     apply smul_right_injective F this
     simpa [hb] using h₂
   have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
+    -- TODO: linter false positive!
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc

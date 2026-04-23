@@ -497,7 +497,7 @@ theorem coeff_eq_sum
   nth_rewrite 1 [eq_interpolate hvs hP, interpolate_apply, finset_sum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
-  field_simp
+  ring
 
 theorem leadingCoeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : #s = P.degree + 1) :

@@ -52,7 +52,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     have : z ≠ 0 := fun h ↦ by simp [h] at hz
     calc ‖z - a‖
     _ = ‖z⁻¹ * (z - a)‖ := by simp [hz]
-    _ = ‖1 - z⁻¹ * a‖ := by field_simp
+    _ = ‖1 - z⁻¹ * a‖ := by field
   _ = 0 := by
     rw [circleAverage_zero_one_congr_inv (f := fun x ↦ log ‖1 - x * a‖),
       HarmonicOnNhd.circleAverage_eq, zero_mul, sub_zero,
