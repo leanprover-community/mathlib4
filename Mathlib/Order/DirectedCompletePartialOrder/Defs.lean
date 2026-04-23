@@ -58,6 +58,17 @@ class DirectedCompletePartialOrder (α : Type*)
 
   -- TODO(rfc): once LawfulSup exists, drop the `SupSet` and go for `Nonempty {u | IsLUB d u}`?
 
+/--
+Create a `DirectedCompletePartialOrder` from a `PartialOrder` and `SupSet`
+such that for every nonempty directed set `d`, `sSup d` is the least upper bound of `d`.
+-/
+@[reducible]
+def DirectedCompletePartialOrder.ofLubOfNonemptyDirected (α : Type*)
+    [PartialOrder α] [SupSet α]
+    (lub_of_nonempty_directed : ∀ d : Set α, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
+    DirectedCompletePartialOrder α where
+  lubOfNonemptyDirected := lub_of_nonempty_directed
+
 -- TODO(review): these next ones are verbatim from ConditionallyCompletePartialOrder and
 -- CompletePartialOrder.
 
