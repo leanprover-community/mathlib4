@@ -335,14 +335,13 @@ instance {J : GrothendieckTopology C} (X : C) :
       (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₂ this.symm) (by ext; simpa)
     rwa [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁] at this
 
-set_option backward.isDefEq.respectTransparency false in
 instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
     (F : C ⥤ D) (X : C) [Functor.PreservesOneHypercovers.{w} F J K] :
     Functor.PreservesOneHypercovers.{w} (Over.post F) (J.over X) (K.over _) := by
   intro Y E
   let E' := (E.map (Over.forget X) J).map F K
   refine ⟨?_, ?_⟩
-  · dsimp
+  · dsimp [-Over.post_obj]
     rw [PreZeroHypercover.sieve₀_map, GrothendieckTopology.mem_over_iff,
       Sieve.functorPushforward_ofArrows, Sieve.overEquiv_ofArrows]
     exact E'.mem₀
