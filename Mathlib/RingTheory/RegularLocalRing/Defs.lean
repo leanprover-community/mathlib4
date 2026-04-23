@@ -117,7 +117,7 @@ lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegu
     IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
 
-instance (priority := low) [IsDomain R] [IsDedekindDomain R] : IsRegularRing R := by
+instance (priority := low) [IsDedekindDomain R] : IsRegularRing R := by
   rw [isRegularRing_iff]
   intro p hp
   by_cases eqbot : p = ⊥
