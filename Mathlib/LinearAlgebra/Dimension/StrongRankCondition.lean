@@ -531,7 +531,7 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
 @[simp]
-theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Subsingleton M] :
     Module.finrank R M = 0 :=
   (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
@@ -553,7 +553,11 @@ variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
-  finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+
+theorem LinearMap.finrank_le_finrank_of_surjective [Module.Finite R M] {f : M →ₗ[R] M'}
+    (hf : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_surjective _ hf) (rank_lt_aleph0 _ _)
 
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
