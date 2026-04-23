@@ -26,7 +26,7 @@ namespace TopCat
 variable (X : TopCat.{u})
 
 /-- Given two points `x` and `y` of `X : TopCat`, this is the type
-of paths from `x` to `y`, defines using a morphism `I ⟶ X`.
+of paths from `x` to `y`, defined using a morphism `I ⟶ X`.
 Set `TopCat.pathEquiv` for the relation with `_root_.Path x y`. -/
 @[ext]
 protected structure Path (x y : X) where
