@@ -496,12 +496,9 @@ theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
   nonpos_iff_eq_zero.symm.trans <| chromaticNumber_le_iff_colorable.trans colorable_zero_iff
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by
-  rw [eq_iff_le_not_lt, Order.lt_one_iff_nonpos, ← not_isEmpty_iff]
-  refine ⟨fun ⟨h1, h0⟩ ↦ ⟨?_, ?_⟩, fun ⟨h1, h0⟩ ↦ ⟨?_, ?_⟩⟩
-  · rwa [← colorable_one_iff, ← chromaticNumber_le_iff_colorable]
-  · rwa [← G.colorable_zero_iff, ← chromaticNumber_le_iff_colorable]
-  · rwa [← Nat.cast_one, chromaticNumber_le_iff_colorable, colorable_one_iff]
-  · rwa [← Nat.cast_zero, chromaticNumber_le_iff_colorable, colorable_zero_iff]
+  rw [eq_iff_le_not_lt, Order.lt_one_iff_nonpos, ← not_isEmpty_iff, ← Nat.cast_one, ← Nat.cast_zero,
+    chromaticNumber_le_iff_colorable, chromaticNumber_le_iff_colorable, colorable_one_iff,
+    colorable_zero_iff]
 
 theorem two_le_chromaticNumber_iff_ne_bot : 2 ≤ G.chromaticNumber ↔ G ≠ ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
