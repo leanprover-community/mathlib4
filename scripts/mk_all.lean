@@ -45,7 +45,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
   -- The `--module` flag only affects newly created aggregator files; for existing files,
-  -- module-ness is inferred from the first non-comment, non-whitespace token.
+  -- module-ness is inferred by parsing the header with `Lean.parseImports'`.
   let moduleFlag := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
@@ -61,9 +61,16 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let existingContent ← if fileExists then IO.FS.readFile fileName else pure ""
     -- If the aggregator file already exists, infer whether it uses the module system;
     -- otherwise, fall back to the `--module` flag.
-    let useModule ← if fileExists then do
-      let header ← Lean.parseImports' existingContent fileName.toString
-      pure header.isModule
+    let useModule ← if fileExists then
+      try
+        let header ← Lean.parseImports' existingContent fileName.toString
+        pure header.isModule
+      catch e =>
+        throw <| IO.userError s!"\
+          Could not parse the header of '{fileName}' to determine whether it should be a \
+          module file: {e.toString}\n\
+          Fix or delete the file, then re-run `mk_all` (with `--module` if you want a \
+          module-style aggregator)."
     else pure moduleFlag
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
@@ -110,7 +117,7 @@ def mkAll : Cmd := `[Cli|
     check;        "Only check if the files are up-to-date; print an error if not"
     module;       "When creating a new aggregator file, generate it as a `module` with \
                    `public` imports. Existing files keep their current style (module or plain), \
-                   inferred from their first non-comment, non-whitespace token."
+                   inferred by parsing the existing header with `Lean.parseImports'`."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/
