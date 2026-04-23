@@ -23,48 +23,6 @@ open CategoryTheory Limits AlgebraicTopology Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
-namespace ZerothHomotopy
-
-variable {X : Type w} [TopologicalSpace X]
-
-def mk (x : X) : ZerothHomotopy X := Quotient.mk _ x
-
-lemma mk_surjective : Function.Surjective (mk (X := X)) := by
-  rintro ⟨x⟩
-  exact ⟨x, rfl⟩
-
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-lemma rec {motive : ZerothHomotopy X → Prop}
-    (mk : ∀ (x : X), motive (.mk x)) (x : ZerothHomotopy X) :
-    motive x := by
-  obtain ⟨x, rfl⟩ := mk_surjective x
-  exact mk x
-
-lemma sound {x y : X} (p : Path x y) : mk x = mk y :=
-  Quotient.sound ⟨p⟩
-
-section
-
-variable {T : Type*} (f : X → T) (hf : ∀ ⦃x y : X⦄ (_ : Path x y), f x = f y)
-
-def lift : ZerothHomotopy X → T :=
-  Quotient.lift f (by rintro _ _ ⟨p⟩; exact hf p)
-
-@[simp]
-lemma lift_mk (x : X) : lift f hf (.mk x) = f x := rfl
-
-end
-
-end ZerothHomotopy
-
-section
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (e : X ≃ₜ Y)
-
-abbrev Homeomorph.continousMap : C(X, Y) := e
-
-end
-
 namespace TopCat
 
 variable (X : TopCat.{w})
@@ -81,11 +39,11 @@ variable {X} in
 @[simps!]
 def pathEquiv {x y : X} : X.Path x y ≃ _root_.Path x y where
   toFun p :=
-    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm.continousMap
+    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm
       source' := p.hom₀
       target' := p.hom₁ }
   invFun p :=
-    { hom := ofHom (p.toContinuousMap.comp TopCat.I.homeomorph.continousMap)
+    { hom := ofHom (p.toContinuousMap.comp (toContinuousMap TopCat.I.homeomorph))
       hom₀ := p.source'
       hom₁ := p.target' }
   left_inv _ := rfl
@@ -104,8 +62,8 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def toSSetObj₁Equiv :
     toSSet.obj X _⦋1⦌ ≃ (I ⟶ X) :=
   (toSSetObjEquiv _ _).trans
-    { toFun f := ofHom (f.comp TopCat.stdSimplexHomeomorphI.symm.continousMap)
-      invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI.continousMap
+    { toFun f := ofHom (f.comp (toContinuousMap TopCat.stdSimplexHomeomorphI.symm))
+      invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
       left_inv _ := by aesop
       right_inv _ := by aesop }
 
