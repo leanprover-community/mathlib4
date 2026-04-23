@@ -109,11 +109,11 @@ def proj : UniversalCover x₀ → X :=
   Sigma.fst
 
 /-- The projection of a pair in the universal cover is its endpoint. -/
-@[simp] theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
+theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
     proj ⟨x, q⟩ = x := rfl
 
 /-- `proj` composed with `ofBasedPath` reads off the endpoint of the representative. -/
-@[simp] theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
+theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
   rfl
 
@@ -124,7 +124,7 @@ theorem ofBasedPath_eq (α : BasedPath x₀) :
 
 /-- `ofBasedPath` applied to the canonical based path from `p : Path x₀ y` gives the
 endpoint-and-homotopy-class pair. -/
-@[simp] theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
+theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
     ofBasedPath x₀ (BasedPath.ofPath p) = ⟨y, Path.Homotopic.Quotient.mk p⟩ := by
   refine Sigma.ext p.target ?_
   apply Path.Homotopic.hpath_hext
@@ -223,7 +223,7 @@ noncomputable def basedPathSheet (U : Set X) (hxU : x ∈ U)
     fun _ _ h ↦ BasedPath.pathComponent_preimage_saturated hxU h
 
 /-- `basedPathSheet` of a quotient class unfolds to the path component of any representative. -/
-@[simp] theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
+theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
     basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p := rfl
 
 /-- Every based path in a `basedPathSheet` over `U` has its endpoint in `U`. -/

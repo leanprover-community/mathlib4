@@ -118,12 +118,12 @@ noncomputable def terminalTail {u : X} (γ : BasedPath x₀) (hu : endpoint γ =
   (γ.toPath.truncateOfLE (t₀ := a) (t₁ := 1) ha1).cast rfl
     (by simpa [BasedPath.endpoint] using hu.symm)
 
-@[simp] theorem terminalTail_source {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
+theorem terminalTail_source {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
     (ha1 : a ≤ 1) :
     terminalTail γ hu a ha1 0 = γ.toPath.extend a := by
   simpa [terminalTail] using (γ.toPath.truncateOfLE ha1).source
 
-@[simp] theorem terminalTail_target {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
+theorem terminalTail_target {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
     (ha1 : a ≤ 1) :
     terminalTail γ hu a ha1 1 = u := by
   have htail : terminalTail γ hu a ha1 1 = γ.toPath 1 := by
@@ -156,20 +156,20 @@ noncomputable def deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint 
     (hf_cont.comp continuous_subtype_val), ?_⟩
   simpa [f, ha] using γ.toPath.source
 
-@[simp] theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
+theorem deformTerminal_apply_of_le {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : (t : ℝ) ≤ a) :
     (deformTerminal γ hu δ ha hab hb).1 t = γ.toPath.extend t := by
   simp [deformTerminal, ht]
 
-@[simp] theorem deformTerminal_apply_of_lt_of_le {u v : X} (γ : BasedPath x₀)
+theorem deformTerminal_apply_of_lt_of_le {u v : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u) (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (hta : a < (t : ℝ)) (htb : (t : ℝ) ≤ b) :
     (deformTerminal γ hu δ ha hab hb).1 t =
       (terminalTail γ hu a (by linarith)).extend (((t : ℝ) - a) / (b - a)) := by
   simp [deformTerminal, not_le_of_gt hta, htb]
 
-@[simp] theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
+theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
     (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1)
     (t : I) (ht : b < (t : ℝ)) :
     (deformTerminal γ hu δ ha hab hb).1 t = δ.extend (((t : ℝ) - b) / (1 - b)) := by
