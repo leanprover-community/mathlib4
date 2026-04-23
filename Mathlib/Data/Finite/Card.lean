@@ -83,12 +83,8 @@ theorem card_option [Finite α] : Nat.card (Option α) = Nat.card α + 1 := by
   haveI := Fintype.ofFinite α
   simp only [Nat.card_eq_fintype_card, Fintype.card_option]
 
-@[deprecated (since := "2025-10-02")] alias card_le_of_injective := Nat.card_le_card_of_injective
-
 theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.card β :=
   Nat.card_le_card_of_injective _ f.injective
-
-@[deprecated (since := "2025-10-02")] alias card_le_of_surjective := Nat.card_le_card_of_surjective
 
 theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   haveI := Fintype.ofFinite α
@@ -132,8 +128,6 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
   card_eq_zero_of_injective f.2 h
-
-@[deprecated (since := "2025-10-02")] alias card_sum := Nat.card_sum
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
   Nat.card_le_card_of_surjective _ Set.imageFactorization_surjective

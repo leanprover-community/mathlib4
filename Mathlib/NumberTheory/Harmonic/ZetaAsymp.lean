@@ -282,7 +282,6 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · have : 1 ≤ x := le_trans (by simp) hx.1.le
       gcongr
       · exact sub_nonneg.mpr hx.1.le
-      · assumption
       · exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))

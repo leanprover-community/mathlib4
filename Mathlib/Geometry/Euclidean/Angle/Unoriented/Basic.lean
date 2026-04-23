@@ -276,13 +276,8 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
-  refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
-  rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
-  obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
-  calc
-    ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
-    _ = ‖x‖ * ‖y‖ := by ring
+  refine ⟨?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
+  grind [inner_eq_mul_norm_iff_angle_eq_zero hx hy, norm_add_pow_two_real]
 
 /-- The norm of the difference of two non-zero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
