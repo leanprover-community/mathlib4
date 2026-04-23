@@ -133,8 +133,7 @@ namespace Homotopy
 lemma w_apply' {f g : X ⟶ Y} (H : Homotopy f g) (x : TopPair.snd) (t : unitInterval) :
     H.fst (t, X.map x) = Y.map (H.snd (t, x)) := by
   have := w_apply H (x, I.homeomorph.symm t)
-  simp only [Homeomorph.apply_symm_apply] at this
-  exact this
+  cat_disch
 
 /-- Given a morphism `f` of topological pairs, we can define a `Homotopy f f` by
 `TopCat.Homotopy.refl` on the first and second components.
@@ -157,7 +156,7 @@ def symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ whe
 
 @[simp]
 theorem symm_symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
-  ext <;> simp
+  cat_disch
 
 theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
@@ -174,9 +173,8 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
   snd := F.snd.trans G.snd
   w := by
     ext ⟨_, _⟩
-    simp only [TopCat.comp_app, whiskerRight_apply, Homotopy.h_hom_apply,
-      ContinuousMap.Homotopy.trans_apply, one_div]
-    split_ifs <;> simp
+    simp only [TopCat.comp_app, Homotopy.h_hom_apply, ContinuousMap.Homotopy.trans_apply]
+    cat_disch
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
